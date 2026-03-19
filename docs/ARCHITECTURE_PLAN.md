@@ -1,0 +1,83 @@
+# Architecture Plan
+
+## Risk Grade: L2
+
+### Risk Assessment
+
+- [ ] Contains security/auth logic -> L3
+- [x] Modifies existing workflows -> L2 (skill compilation affects governance behavior)
+- [ ] UI-only changes -> L1
+
+## Three-Layer Pipeline
+
+```
+ingest/                          ← Raw skills dumped here (any format)
+  ├── third-party/               ← Skills from external sources
+  ├── internal/                  ← Skills authored internally
+  └── experimental/              ← Work-in-progress skills
+
+processed/                       ← S.H.I.E.L.D. compliant (canonical)
+  ├── ql-bootstrap.md
+  ├── ql-plan.md
+  ├── ql-audit.md
+  ├── ql-implement.md
+  ├── ql-substantiate.md
+  ├── ql-debug.md
+  ├── ql-course-correct.md       ← NEW: drift recovery
+  └── ...
+
+compiled/                        ← LLM-specific output
+  ├── .claude/
+  │   └── skills/{name}/SKILL.md
+  ├── .agent/
+  │   └── workflows/{name}.md
+  └── .kilocode/
+      └── workflows/{name}.md
+```
+
+## Personas (Skill Actors)
+
+| Persona | Role | Skills |
+|---------|------|--------|
+| Governor | Planning, alignment, routing | ql-bootstrap, ql-plan, ql-repo-release |
+| Judge | Audit, substantiation, verdicts | ql-audit, ql-substantiate, ql-validate |
+| Specialist | Implementation, precision build | ql-implement, ql-refactor |
+| Fixer | Debugging, root-cause analysis | ql-debug |
+| Navigator | Drift recovery, course correction | ql-course-correct |
+| Strategist | Research, evidence gathering | ql-research |
+
+## Processing Rules
+
+Every processed skill MUST have:
+1. `<skill>` trigger block with phase and persona
+2. Execution protocol with numbered steps
+3. Constraints section (NEVER/ALWAYS rules)
+4. Success criteria (checkboxes)
+5. Integration section (how it connects to S.H.I.E.L.D.)
+
+## Compilation Targets
+
+| Target | Format | Output Path |
+|--------|--------|-------------|
+| Claude Code | SKILL.md with YAML frontmatter | compiled/.claude/skills/{name}/SKILL.md |
+| Agent Workflows | Markdown with workflow headers | compiled/.agent/workflows/{name}.md |
+| Kilocode | Markdown with kilocode headers | compiled/.kilocode/workflows/{name}.md |
+
+## Collaborative Design Integration
+
+All planning skills (ql-bootstrap, ql-plan) MUST include:
+- One question at a time dialogue
+- Multiple choice preferred
+- 2-3 approach proposals with trade-offs
+- Incremental design validation (200-300 word sections)
+- YAGNI enforcement
+
+## Section 4 Razor Pre-Check
+
+- [x] All planned functions <= 40 lines (scripts only)
+- [x] All planned files <= 250 lines (skill files)
+- [x] No planned nesting > 3 levels
+
+---
+
+*Blueprint sealed. Awaiting GATE tribunal.*
