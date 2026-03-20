@@ -32,12 +32,21 @@ describe('[Feature Name]', () => {
 - [ ] No nested ternaries
 - [ ] Variables are noun/verbNoun (no x, data, obj)
 - [ ] Early returns to flatten logic
+- [ ] Classifiable as semantic (pure) or pragmatic (orchestrator)
+- [ ] Semantic: no side effects, no comments needed
+- [ ] Pragmatic: has doc comments noting unexpected behaviors
 
 ### File-Level (Macro KISS)
 - [ ] Total lines <= 250
 - [ ] Single responsibility
 - [ ] No "God Object" patterns
 - [ ] Clear module boundaries
+
+### Model-Level (Type Safety)
+- [ ] Enums over optional fields for mutually exclusive states
+- [ ] Brand types for domain primitives (not bare String/Uuid)
+- [ ] Model name indicates field membership
+- [ ] Composition over flattening for independent concepts
 ```
 
 ## Code Patterns

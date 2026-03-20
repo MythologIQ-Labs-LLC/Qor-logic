@@ -69,15 +69,20 @@ Confirm: path terminates, no loops, each successor exists.
 
 ---
 
-## 4. Section 4 Razor
+## 4. Section 4 Razor + Code Quality Doctrine
 
 Applies only to skills that **generate or template code**.
+Reference: `ingest/internal/references/doctrine-code-quality.md`
 
 - [ ] Template/example functions are under **40 lines** each
 - [ ] Reference file patterns are under **250 lines**
 - [ ] No nested ternaries in examples
 - [ ] No `unwrap()` in Rust examples (use `?` or explicit error handling)
 - [ ] Max nesting depth of **3** in any code block
+- [ ] Functions classifiable as **semantic** (pure, no side effects) or **pragmatic** (orchestrator, documented)
+- [ ] Models use **enums over optional fields** where states are mutually exclusive
+- [ ] Domain primitives use **brand types** (not bare String/Uuid)
+- [ ] No generic names (`process`, `handle`, `manage`) without domain qualifier
 
 **Skip condition:** Mark N/A if the skill does not produce code artifacts.
 
