@@ -48,18 +48,22 @@ Tests, static checks, and refactors are valuable, but cannot compensate for comp
 
 ## Execution Protocol
 
-### Step 1: Understand Goals
+### Step 1: Collaborative Design Dialogue
 
-Ask clarifying questions to understand what to accomplish. If requirements are unclear, ask specific questions rather than making assumptions.
+Before writing any plan, understand the design through conversation:
+
+1. **Check project context first** — read existing files, docs, recent commits
+2. **Ask questions one at a time** — prefer multiple choice when possible
+3. **Focus on understanding**: purpose, constraints, success criteria, anti-goals
+4. **Propose 2-3 approaches** with trade-offs before settling on design
+5. **Present design in sections** (200-300 words) — validate each before proceeding
+6. **YAGNI ruthlessly** — challenge every proposed feature: "Is this essential for v1?"
+
+Only proceed to write the plan file after the user has validated the design direction.
 
 ### Step 2: Research Existing Code
 
-Use existing code as foundation for plan. Identify:
-
-- Existing abstractions and patterns
-- Naming conventions
-- Test structure
-- Integration points
+Use existing code as foundation for plan. Identify existing abstractions, naming conventions, test structure, and integration points.
 
 ### Step 3: Create Plan File
 
@@ -137,6 +141,8 @@ A reader unfamiliar with code should be able to:
 - **NEVER** worry about backwards compatibility (prefer streamlined, clean codebase)
 - **NEVER** add concluding errata (future considerations belong in next plan)
 - **NEVER** include exploration steps (do research before writing plan)
+- **NEVER** skip the collaborative dialogue — do not jump straight to writing a plan file
+- **ALWAYS** ask questions one at a time (prefer multiple choice)
 - **ALWAYS** flag open questions at TOP of plan
 - **ALWAYS** group unit tests with relevant phases
 - **ALWAYS** prioritize SIMPLE over EASY
@@ -150,27 +156,6 @@ This skill implements:
 - **Value-Oriented Design**: Prefers immutable data and composable abstractions
 - **Incremental Planning**: Phased approach with clear deliverables
 
-## Output Format
-
-```markdown
-## Plan Complete
-
-**Plan File**: plan-[slug].md
-**Phases**: [count]
-**Estimated Complexity**: [assessment]
-
-### Next Steps
-
-1. Review plan for completeness
-2. Begin Phase 1 implementation
-3. Run unit tests after each phase
-4. Proceed to next phase only after tests pass
-
 ---
 
-_Plan follows Simple Made Easy principles_
-```
-
----
-
-**Remember**: Simple is not easy. Choose designs that minimize incidental complexity and maximize clarity, changeability, and robustness over time.
+**Remember**: Simple is not easy. Dialogue before design, design before plan, plan before code.
