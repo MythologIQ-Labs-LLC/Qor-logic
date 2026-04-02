@@ -9,7 +9,7 @@ description: Deep research phase for investigating external codebases, APIs, and
   <trigger>/ql-research</trigger>
   <phase>RESEARCH</phase>
   <persona>Analyst</persona>
-  <output>.failsafe/governance/RESEARCH_BRIEF.md with findings + META_LEDGER entry</output>
+  <output>docs/RESEARCH_BRIEF.md with findings + docs/META_LEDGER.md entry</output>
 </skill>
 
 ## Purpose
@@ -27,9 +27,9 @@ Your role is to discover facts, not to assume. Every finding must be traceable t
 ### Step 2: State Verification
 
 ```
-Read: .failsafe/governance/META_LEDGER.md (verify chain state)
-Read: .failsafe/governance/ARCHITECTURE_PLAN.md (understand what we're building)
-Read: memory/failsafe-bridge.md (existing knowledge to verify/update)
+Read: docs/META_LEDGER.md (verify chain state)
+Read: docs/ARCHITECTURE_PLAN.md (understand what we're building)
+Read: project memory file if present (existing knowledge to verify/update)
 ```
 
 ### Step 3: Target Discovery
@@ -97,7 +97,7 @@ Map actual runtime dependencies:
 
 ### Step 5: Cross-Reference with Blueprint
 
-Compare every finding against `.failsafe/governance/ARCHITECTURE_PLAN.md`:
+Compare every finding against `docs/ARCHITECTURE_PLAN.md`:
 
 ```markdown
 ## Blueprint Alignment Check
@@ -111,7 +111,7 @@ Compare every finding against `.failsafe/governance/ARCHITECTURE_PLAN.md`:
 
 ### Step 6: Generate Research Brief
 
-Create `.failsafe/governance/RESEARCH_BRIEF.md`:
+Create `docs/RESEARCH_BRIEF.md`:
 
 ```markdown
 # Research Brief
@@ -148,7 +148,7 @@ Create `.failsafe/governance/RESEARCH_BRIEF.md`:
 
 ## Updated Knowledge
 
-[New information that should be added to memory/failsafe-bridge.md]
+[New information that should be added to the project's persistent memory file, if one exists]
 
 ---
 
@@ -157,11 +157,11 @@ _Research complete. Findings are advisory — implementation decisions remain wi
 
 ### Step 7: Update Memory
 
-Update `memory/failsafe-bridge.md` with any new or corrected information discovered during research.
+Update the project's persistent memory file with any new or corrected information discovered during research. If no dedicated memory file exists, append a concise "Research Notes" section to `docs/RESEARCH_BRIEF.md`.
 
 ### Step 8: Update Ledger
 
-Edit: `.failsafe/governance/META_LEDGER.md`
+Edit: `docs/META_LEDGER.md`
 
 Add new entry:
 
@@ -199,13 +199,13 @@ SHA256(content_hash + previous_hash)
 
 **Target**: [what was researched]
 **Findings**: [count] verified, [count] drifts detected
-**Brief Location**: .failsafe/governance/RESEARCH_BRIEF.md
+**Brief Location**: docs/RESEARCH_BRIEF.md
 
 ### Critical Findings
 [List any DRIFT items or breaking changes]
 
 ### Memory Updated
-[What was added/changed in failsafe-bridge.md]
+[What was added/changed in the project's persistent memory file, or what Research Notes were added to `docs/RESEARCH_BRIEF.md`]
 
 ---
 
@@ -229,7 +229,7 @@ Research succeeds when:
 - [ ] Recent changes audited for bridge impact
 - [ ] Blueprint cross-referenced for drift
 - [ ] RESEARCH_BRIEF.md created with all findings
-- [ ] memory/failsafe-bridge.md updated
+- [ ] Persistent project memory updated, or Research Notes appended to `docs/RESEARCH_BRIEF.md`
 - [ ] META_LEDGER.md updated with research entry
 - [ ] All findings include file:line citations
 

@@ -47,7 +47,16 @@ git checkout -b release/vX.Y.Z
 #### Pull Latest
 
 ```bash
+# If the current branch already tracks a remote branch:
 git pull --rebase
+
+# If this is a freshly created local `release/*` branch with no upstream yet:
+git fetch origin
+git rebase origin/main
+
+# If this is a freshly created local `hotfix/*` branch with no upstream yet:
+git fetch origin
+git rebase origin/[source-base-branch]
 ```
 
 **Note**: After release, create a PR to merge the release/hotfix branch into `main`.
@@ -68,17 +77,18 @@ Report: "No seal found. Run /ql-substantiate before releasing."
 
 ### Step 2: Run Pre-Flight
 
-Execute `release-gate.cjs --preflight` from `FailSafe/extension/`:
+If the repository bundles a release helper such as `release-gate.cjs`, run its preflight from the expected working directory.
+Otherwise, run an equivalent manual preflight covering working tree cleanliness, required release docs present in this repo, and ledger/backlog consistency:
 
 ```bash
 node scripts/release-gate.cjs --preflight
 ```
 
-Additionally verify: uncommitted skill files (`git diff --name-only -- .claude/commands/ql-*.md`), help doc version markers (COMPONENT_HELP.md, PROCESS_GUIDE.md), and backlog coherence (no duplicate B-items, version table current). STOP if any check fails.
+Additionally verify any release-relevant docs that exist in the current repository, plus backlog coherence (no duplicate B-items, version table current). STOP if any check fails.
 
 ### Step 3: Confirm Version Bump
 
-Read current version from `FailSafe/extension/package.json`.
+Read the current version from the repository's canonical version source (for example `package.json`, `pyproject.toml`, `Cargo.toml`, or another project manifest).
 
 Ask the user:
 
@@ -88,11 +98,13 @@ Wait for response before proceeding.
 
 ### Step 4: Apply Version Bump
 
-Execute:
+If the repository bundles a release helper, use it:
 
 ```bash
 node scripts/release-gate.cjs --bump <level>
 ```
+
+Otherwise, update the canonical version source manually and keep all release markers in sync.
 
 Report: `vX.Y.Z -> vA.B.C (<level> bump)`
 
@@ -101,11 +113,11 @@ Report: `vX.Y.Z -> vA.B.C (<level> bump)`
 Invoke `/ql-document` in RELEASE_METADATA mode with the target version:
 
 1. Read recent META_LEDGER entries (from last DELIVER or SUBSTANTIATE to current)
-2. Read SYSTEM_STATE.md for implementation summary
+2. Read `docs/SYSTEM_STATE.md` for implementation summary
 3. Author the 3 required files:
-   - `FailSafe/extension/CHANGELOG.md` — `## [A.B.C] - YYYY-MM-DD`
-   - `FailSafe/extension/README.md` — Current Release + What's New
-   - Root `CHANGELOG.md` — `## [A.B.C]`
+   - `./CHANGELOG.md` - `## [A.B.C] - YYYY-MM-DD`
+   - `./README.md` - Current Release + What's New
+   - `./docs/BACKLOG.md` - Mark previous version RELEASED and add the new version row
 4. Present authored content to user for review before writing
 
 **Confirmation gate** — Show authored content. User approves or edits before files are written.
@@ -114,13 +126,13 @@ Invoke `/ql-document` in RELEASE_METADATA mode with the target version:
 
 **INTERDICTION**: Documentation versioning MUST be verified complete before any commit or tag. This gate cannot be bypassed.
 
-Execute `release-gate.cjs --preflight`:
+Run the same preflight approach from Step 2:
 
 ```bash
 node scripts/release-gate.cjs --preflight
 ```
 
-**INTERDICTION**: If ANY check shows [FAIL], ABORT. List failing checks and return to Step 5. All version markers (CHANGELOG, README, COMPONENT_HELP, PROCESS_GUIDE, BACKLOG) must show vA.B.C before proceeding.
+**INTERDICTION**: If ANY check shows [FAIL], ABORT. List failing checks and return to Step 5. All version markers in files that exist for this repository (for example `CHANGELOG.md`, `README.md`, repo-specific docs, and `docs/BACKLOG.md`) must show vA.B.C before proceeding.
 
 ### Step 7: Stage and Commit
 
@@ -135,21 +147,21 @@ Ask: "Stage and commit these changes as `[RELEASE] vA.B.C`? (y/n)"
 If confirmed:
 
 ```bash
-git add -f FailSafe/extension/package.json FailSafe/extension/CHANGELOG.md FailSafe/extension/README.md FailSafe/extension/docs/COMPONENT_HELP.md FailSafe/extension/docs/PROCESS_GUIDE.md CHANGELOG.md README.md docs/BACKLOG.md
+git add -f [canonical version file] ./CHANGELOG.md ./README.md ./docs/BACKLOG.md [other existing release docs]
 git commit -m "[RELEASE] vA.B.C"
 ```
 
-Note: `-f` is required because `FailSafe/extension/docs/` is in `.gitignore` but tracked.
+Note: `-f` may be required for gitignored-but-tracked paths in this repository.
 
 ### Step 8: Create Tag
 
-Execute:
+If the repository bundles a release helper, use it:
 
 ```bash
 node scripts/release-gate.cjs --tag
 ```
 
-This runs preflight internally and creates an annotated git tag.
+Otherwise, create an annotated git tag manually after confirming the preflight is still green.
 
 ### Step 9: Confirm Push
 
@@ -197,16 +209,16 @@ Calculate and record content hash and chain hash per standard Merkle chain proto
 - **NEVER** skip the pre-flight validation
 - **NEVER** proceed past Step 6 if preflight has ANY [FAIL] — Step 6 is a hard ABORT gate
 - **NEVER** commit `[RELEASE] vX.Y.Z` without confirmed preflight PASS (the commit-msg hook enforces this at the git layer)
-- **NEVER** release from a feature branch — must be on `main`
-- **NEVER** tag without pulling latest `main` first
+- **NEVER** release from a feature branch - must be on `release/*` or `hotfix/*`
+- **NEVER** tag without pulling latest changes from the branch's source base first
 - **ALWAYS** use `/ql-document` for release metadata authoring
 - **ALWAYS** run pre-flight twice (before and after metadata authoring)
 - **ALWAYS** use `[RELEASE] vX.Y.Z` commit message format
 - **ALWAYS** record the delivery in META_LEDGER
-- **ALWAYS** update version markers in `docs/COMPONENT_HELP.md` and `docs/PROCESS_GUIDE.md`
-- **ALWAYS** update `README.md` (root) Current Release marker and Socket badge version
+- **ALWAYS** update version markers in any release-relevant docs that exist for this repository
+- **ALWAYS** update `README.md` (root) if it includes release/version markers
 - **ALWAYS** update `docs/BACKLOG.md` version summary table: mark previous version RELEASED, add new version row
-- **ALWAYS** use `git add -f` for gitignored-but-tracked paths (e.g., `FailSafe/extension/docs/`)
+- **ALWAYS** use `git add -f` for gitignored-but-tracked paths when needed
 
 ## Success Criteria
 

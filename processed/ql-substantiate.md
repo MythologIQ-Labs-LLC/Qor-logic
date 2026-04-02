@@ -28,7 +28,7 @@ Your role is to prove, not to improve. Verify what was built matches what was pr
 ```
 Read: docs/META_LEDGER.md
 Read: docs/ARCHITECTURE_PLAN.md
-Read: .failsafe/governance/AUDIT_REPORT.md
+Read: .agent/staging/AUDIT_REPORT.md
 ```
 
 **INTERDICTION**: If no PASS verdict exists:
@@ -56,12 +56,12 @@ Read: Plan file (docs/Planning/plan-*.md or docs/ARCHITECTURE_PLAN.md)
 Extract: Target Version from plan header
 ```
 
-**INTERDICTION**: If Target Version ≤ Current Tag → ABORT (version already shipped).
-**INTERDICTION**: If governance files reference wrong version → PAUSE (fix before sealing).
+If no tags exist, treat this as the initial release and set Current Tag = `NONE`.
 
-Log: "Version validated: v[current] → v[target] (change type: [hotfix|feature|breaking])"
+**INTERDICTION**: If Current Tag is not `NONE` and Target Version <= Current Tag -> ABORT (version already shipped).
+**INTERDICTION**: If governance files reference the wrong version -> PAUSE (fix before sealing).
 
-### Step 3: Reality Audit
+Log: "Version validated: [current-tag-or-NONE] -> v[target] (change type: [hotfix|feature|breaking])"
 
 Compare implementation against blueprint:
 
@@ -109,19 +109,19 @@ Template: `.claude/commands/references/ql-substantiate-templates.md`.
 
 ### Step 4.5: Skill File Integrity Check
 
-If any skill files (`.claude/commands/ql-*.md`) were modified during this session:
+If any packaged skill files (`skills/*/SKILL.md`) were modified during this session:
 
 1. List modified skill files from git diff
 2. For each modified skill:
-   - Verify it still has required sections: `<skill>` block, `## Execution Protocol`, `## Constraints`, `## Next Step`
-   - Verify the `## Next Step` section references valid successor skills
-   - Log in ledger: "Skill file [name] modified — structure verified"
+   - Verify the YAML frontmatter still parses and the skill name still matches the directory name
+   - Verify the skill still contains its core workflow structure (for example `<skill>` block when used, `## Execution Protocol`, `## Constraints`, and any referenced bundled files)
+   - Log in ledger: "Skill file [name] modified - structure verified"
 
-If any skill is missing required sections after modification:
+If any skill has malformed frontmatter, missing workflow structure, or broken bundled references after modification:
 
 ```
 PAUSE
-Report: "Skill [name] missing required section: [section]. Fix before sealing."
+Report: "Skill [name] has malformed frontmatter, missing workflow structure, or broken bundled references. Fix before sealing."
 ```
 
 ### Step 4.6: Reliability Interdictions (B49/B50/B51)
@@ -150,7 +150,10 @@ Template: `.claude/commands/references/ql-substantiate-templates.md`.
 
 Calculate session seal:
 
-Reference implementation: `.claude/commands/scripts/calculate-session-seal.py`.
+1. Compute a content hash for the sealed substantiation artifacts using a deterministic file order
+2. Read the previous chain hash from the latest `docs/META_LEDGER.md` entry
+3. Calculate the new chain hash as `SHA256(content_hash + previous_hash)`
+4. Record both hashes in `docs/META_LEDGER.md`
 
 Update `docs/META_LEDGER.md`:
 
@@ -158,15 +161,15 @@ Template: `.claude/commands/references/ql-substantiate-templates.md`.
 
 ### Step 8: Cleanup Staging
 
-Clear: .failsafe/governance/
+Clear: `.agent/staging/`
 
-Preserve only the final AUDIT_REPORT.md (or archive it).
+Preserve `AUDIT_REPORT.md` for traceability, or archive it after sealing if the workflow requires a clean staging area.
 
 ### Step 9: Final Report
 
 Template: `.claude/commands/references/ql-substantiate-templates.md`.
 
-### Step 9.5: Final Commit & Push
+### Step 9.5: Stage Artifacts (for user review)
 
 **Stage All Artifacts**:
 ```bash
@@ -176,23 +179,20 @@ git add docs/META_LEDGER.md
 git add docs/SYSTEM_STATE.md
 git add docs/BACKLOG.md
 git add src/
+git add tests/
 ```
 
-**Commit Session Seal**:
-```bash
-git commit -m "seal: [plan-slug] - Session substantiated
+**Next Steps**: Review the staged files and then commit and push when ready.
 
+Example commit message:
+```
+seal: [plan-slug] - Session substantiated
 Merkle seal: [chain-hash]
 Verdict: PASS
-Files: [file-count]"
+Files: [file-count]
 ```
 
-**Push to Remote**:
-```bash
-git push origin [current-branch]
-```
-
-REPORT: "Session committed and pushed to [current-branch]"
+REPORT: "Session seal complete. Artifacts staged on [current-branch] and ready for user review."
 
 ### Step 9.6: Merge Options
 
@@ -230,7 +230,7 @@ Substantiation succeeds when:
 - [ ] Section 4 Razor final check passed
 - [ ] SYSTEM_STATE.md synced with actual file tree
 - [ ] Merkle seal calculated and recorded in META_LEDGER
-- [ ] Session committed and pushed
+- [ ] Session artifacts staged for user review
 - [ ] Merge/PR/tag options presented to user
 
 ## Integration with S.H.I.E.L.D.
