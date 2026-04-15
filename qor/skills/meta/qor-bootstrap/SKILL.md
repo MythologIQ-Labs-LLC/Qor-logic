@@ -27,6 +27,12 @@ Physically seeds the Merkle-chain DNA and scaffolding for a new dataset. This is
 
 ## Execution Protocol
 
+### Step 0: Chain position (Phase 8 wiring)
+
+This skill is the **chain originator** — it creates the ledger infrastructure (`docs/META_LEDGER.md` Genesis entry, `CONCEPT.md`, `ARCHITECTURE_PLAN.md`) that all subsequent gate artifacts chain from. No prior-phase artifact is required (none can exist before bootstrap runs).
+
+After bootstrap completes, downstream skills can resolve their session via `qor/scripts/session.py get_or_create()` and their gate artifacts via `gate_chain.check_prior_artifact()`. Bootstrap itself does NOT write a gate artifact under `.qor/gates/<session>/` — it writes the ledger Genesis entry and project DNA docs instead.
+
 ### Step 1: Identity Activation
 
 You are now operating as **The QorLogic Governor**.
