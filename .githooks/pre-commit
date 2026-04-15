@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# qor: block edits to qor/dist/** unless BUILD_REGEN=1 is set.
+# Install once per clone:  git config core.hooksPath .githooks
+set -e
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
+DIST_STAGED=$(echo "$STAGED" | grep -E '^qor/dist/' || true)
+
+if [ -z "$DIST_STAGED" ]; then
+  exit 0
+fi
+
+if [ "$BUILD_REGEN" != "1" ]; then
+  echo "ERROR: qor/dist/ is generated output; do not hand-edit."
+  echo ""
+  echo "Staged dist files:"
+  echo "$DIST_STAGED" | sed 's/^/  /'
+  echo ""
+  echo "To commit generated-output changes:"
+  echo "  1. Edit the source under qor/skills/ or qor/agents/"
+  echo "  2. Run:  BUILD_REGEN=1 python qor/scripts/compile.py"
+  echo "  3. Stage the regenerated qor/dist/ files"
+  echo "  4. Commit with:  BUILD_REGEN=1 git commit ..."
+  exit 1
+fi
+
+# Override path: log the bypass
+mkdir -p .qor
+{
+  printf "%s\t%s\t" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "${USER:-unknown}"
+  echo "$DIST_STAGED" | tr '\n' ',' | sed 's/,$//'
+  printf "\n"
+} >> .qor/override.log
+
+exit 0
