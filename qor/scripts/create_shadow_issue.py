@@ -113,6 +113,21 @@ def mark_addressed(events_log: list[dict], target_ids: set[str], url: str) -> li
     return events_log
 
 
+def flip_events_only(log_path: Path, target_ids: set[str], url: str) -> int:
+    """Update matching events to addressed=true with the given url. Returns count flipped.
+
+    Used by the cross-repo collector (Phase 5) to apply a single consolidated
+    issue URL across multiple repos without each repo opening its own issue.
+    """
+    all_events = shadow_process.read_events(log_path)
+    before = sum(1 for e in all_events if e["id"] in target_ids and not e["addressed"])
+    if before == 0:
+        return 0
+    updated = mark_addressed(all_events, target_ids, url)
+    shadow_process.write_events(updated, log_path)
+    return before
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
     ap.add_argument("--repo", default=DEFAULT_REPO)
@@ -120,7 +135,22 @@ def main() -> int:
     ap.add_argument("--log", type=Path, default=shadow_process.LOG_PATH)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--skip-auth", action="store_true", help="For testing only")
+    ap.add_argument("--flip-only", metavar="URL",
+                    help="Skip gh; just flip matching events to addressed=true with URL. "
+                         "Used by cross-repo collector.")
     args = ap.parse_args()
+
+    # Flip-only mode: no gh call, no marker load
+    if args.flip_only:
+        if not args.events:
+            print("ERROR: --flip-only requires --events <ids>", file=sys.stderr)
+            return 2
+        target_ids = set(args.events.split(","))
+        flipped = flip_events_only(args.log, target_ids, args.flip_only)
+        print(f"Flipped {flipped} event(s) in {args.log}")
+        if MARKER_PATH.exists():
+            MARKER_PATH.unlink()
+        return 0
 
     if not args.skip_auth and not args.dry_run:
         ensure_gh_auth()
