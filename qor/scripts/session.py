@@ -50,7 +50,9 @@ def _marker_fresh(path: Path, now: datetime) -> bool:
     return (now - mtime) < SESSION_TTL
 
 
-def get_or_create(marker: Path = MARKER_PATH, now: datetime | None = None) -> str:
+def get_or_create(marker: Path | None = None, now: datetime | None = None) -> str:
+    if marker is None:
+        marker = MARKER_PATH
     now = now or datetime.now(timezone.utc)
     if _marker_fresh(marker, now):
         content = marker.read_text(encoding="utf-8").strip()
@@ -61,7 +63,9 @@ def get_or_create(marker: Path = MARKER_PATH, now: datetime | None = None) -> st
     return new_id
 
 
-def current(marker: Path = MARKER_PATH, now: datetime | None = None) -> str | None:
+def current(marker: Path | None = None, now: datetime | None = None) -> str | None:
+    if marker is None:
+        marker = MARKER_PATH
     now = now or datetime.now(timezone.utc)
     if not _marker_fresh(marker, now):
         return None
@@ -69,7 +73,9 @@ def current(marker: Path = MARKER_PATH, now: datetime | None = None) -> str | No
     return content if SESSION_ID_PATTERN.match(content) else None
 
 
-def end_session(marker: Path = MARKER_PATH) -> None:
+def end_session(marker: Path | None = None) -> None:
+    if marker is None:
+        marker = MARKER_PATH
     if marker.exists():
         marker.unlink()
 
