@@ -34,6 +34,12 @@ Drop-in instructions for Claude Code (and similar harnesses). Keep responses ter
 - **Definition of done = green tests.** Code is not done until its tests pass. A skill, helper, or feature with no tests is not done; it is a draft.
 - **Tests must be reliable.** No flakes, no hidden time/random/network coupling, no live-state hardcoding (e.g., asserting against a specific ledger entry's hash). Run new tests at least twice in a row to confirm determinism before claiming green.
 
+## Governance flow
+
+- After substantiation passes, commit automatically; do not offer continuation.
+- Each `/qor-plan` starts a new `phase/<NN>-<slug>` branch (digit phase numbers).
+- Each substantiation bumps version per plan-declared `**change_class**:` and creates `v{X.Y.Z}` tag.
+
 ## Authority
 
-User instructions override this file. Full doctrines: `qor/references/doctrine-token-efficiency.md`, `qor/references/doctrine-test-discipline.md`. Bundle protocol: `qor/gates/workflow-bundles.md`. Skill handoff matrix: `qor/gates/delegation-table.md`.
+User instructions override this file. Full doctrines: `qor/references/doctrine-token-efficiency.md`, `qor/references/doctrine-test-discipline.md`, `qor/references/doctrine-governance-enforcement.md`. Bundle protocol: `qor/gates/workflow-bundles.md`. Skill handoff matrix: `qor/gates/delegation-table.md`.

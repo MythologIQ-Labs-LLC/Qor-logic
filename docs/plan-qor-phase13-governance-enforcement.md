@@ -1,6 +1,7 @@
 # Plan: Phase 13 — Governance Enforcement (Branching + Versioning + Behavior)
 
-**Status**: Active (post-dialogue ratified Q1=(a), Q2=(a), Q3=(c))
+**change_class**: feature
+**Status**: Superseded by v4 (Entry #28). Historical retention; retroactive `change_class` added for forward-boundary test scope (NN >= 13).
 **Author**: QorLogic Governor
 **Date**: 2026-04-15
 **Triggered by**: Operator governance correction — agent had been offering "keep going" instead of substantiating-and-committing. Plus push/merge optionality, per-phase branching, version-bump-on-seal.

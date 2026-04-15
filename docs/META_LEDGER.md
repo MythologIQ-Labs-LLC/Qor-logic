@@ -830,3 +830,154 @@ SHA256(content_hash + previous_hash)
 
 *Chain integrity: VALID*
 *Session: OPEN (audit tribunal active, round 2)*
+
+---
+
+### Entry #27: GATE TRIBUNAL — plan-qor-phase13-v3
+
+**Timestamp**: 2026-04-15
+**Phase**: GATE (pre-implementation audit, round 3)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase13-v3.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `ee452e8a1adb297e6d2956a4120618b774e36238a7b5c086cefd80b5fe54ee20`
+**Previous Hash**: `a2813438015ec88805ef5e99951b5c39c29818ec73423eacd72dc471ab83d008`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 01420b4e1c380ad91b0b4a8b0d3c0f67b347993d8e3d95c9d32919ca39a9f80b
+```
+
+**Verdict Summary**: 4 residual violations on v3 (Entry #26 closure 6/7 substantive; 1 conditional). W-1 doctrine/test keyword drift ("Annotated tag" vs test substring "tag annotation") — V-1 remediation test fails first run; V-2 recurrence in a new domain. W-2 `test_plans_declare_change_class` scope ambiguity: fails on all pre-13 digit-suffix plans lacking `change_class:` header. W-3 undefined `phase_num` local in §B.2 Step 7.5 snippet (missing `derive_phase_metadata` call). W-4 `bump_version` interdiction (tag collision / target ≤ current) specified without test — self-contradicts §A.4 Rule 4 "Rule = Test" the very phase elevating it (S-1 recurrence).
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active, round 3)*
+
+---
+
+### Entry #28: GATE TRIBUNAL — plan-qor-phase13-v4
+
+**Timestamp**: 2026-04-15
+**Phase**: GATE (pre-implementation audit, round 4)
+**Author**: Judge
+**Verdict**: **PASS**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase13-v4.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `de5f64fe09b203381b1fcf5259f58e55577dc1082ca5f82b9ef6e9456054f44b`
+**Previous Hash**: `01420b4e1c380ad91b0b4a8b0d3c0f67b347993d8e3d95c9d32919ca39a9f80b`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= a85a4f1f3ac4c70897892474f6755c72c7695c3f13dd0cf3bd8a4a068a63088e
+```
+
+**Verdict Summary**: v4 closes all 4 Entry #27 residuals (W-1 literal-keyword discipline; W-2 numeric forward-boundary NN>=13; W-3 phase_num derivation inserted at prescribed position; W-4 +2 interdiction tests, suite 9->11, total 202 passing). All Entry #26 prior closures PASS. Fresh adversarial pass finds no new defects: dogfood header OK, Step 9.6 verbatim quote preserved, Rule 4 cite verified at file:line, arithmetic consistent, no residual verify grounding tags, W-1 meta-discipline captured as Constraints invariant. Implementation gate UNLOCKED.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (implementation tribunal pending)*
+
+---
+
+### Entry #29: IMPLEMENTATION — Phase 13 v4 Governance Enforcement
+
+**Timestamp**: 2026-04-15
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L1
+
+**Plan**: `docs/plan-qor-phase13-v4.md` (PASS — Entry #28)
+
+**Files Created**:
+- `qor/scripts/governance_helpers.py` (InterdictionError + 7 functions)
+- `qor/references/doctrine-governance-enforcement.md` (6 sections)
+- `tests/test_governance_helpers.py` (11 tests)
+
+**Files Modified**:
+- `qor/references/doctrine-test-discipline.md` (Rule 4 "Rule = Test" added)
+- `CLAUDE.md` (Governance flow section)
+- `qor/skills/sdlc/qor-plan/SKILL.md` (Step 0.5 — dirty-tree check + phase branch)
+- `qor/skills/governance/qor-substantiate/SKILL.md` (Step 7.5 bump+tag; Step 9.6 4-option menu)
+- `tests/test_skill_doctrine.py` (4 new tests)
+- `docs/plan-qor-phase13-governance-enforcement.md` (retroactive `**change_class**: feature` header for test scope)
+
+**Test Results**: 202 passed + 6 skipped (deterministic across 2 runs). +11 helper +4 doctrine from 187 baseline.
+
+**Drift**: clean (variants regenerated via BUILD_REGEN=1).
+**Ledger chain**: Entries #24-#28 verified.
+
+**Content Hash** (implementation-manifest):
+`f7a0f85730710295abb08ff20af284028002a0bf08e4f210d900a82ab963d35f`
+
+**Previous Hash**:
+`a85a4f1f3ac4c70897892474f6755c72c7695c3f13dd0cf3bd8a4a068a63088e`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 67ad10b6497e2a49db40954c174f83caf3b8da71480a617f77e4903f67589c46
+```
+
+**Decision**: Phase 13 v4 Reality matches Promise. All Entry #26 + #27 violations closed in code. Self-enforcing governance infrastructure in place: dirty-tree interdiction, bold-change_class parser, tag-collision + downgrade guards, 4-option push/merge menu, GitHub-native phase index (no PHASE_HISTORY.md). Rule 4 "Rule = Test" meta-doctrine enforced by `test_plans_declare_change_class` + `test_governance_doctrine_documents_github_hygiene`. Ready for substantiation.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (substantiation pending)*
+
+---
+
+### Entry #30: SESSION SEAL — Phase 13 v4 substantiated
+
+**Timestamp**: 2026-04-15
+**Phase**: SUBSTANTIATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase13-v4.md`
+**Change Class**: `feature`
+**Version**: `0.2.0 → 0.3.0`
+**Tag**: `v0.3.0` (pending — see Step 9.6 operator decision)
+
+**Verification Results**:
+- Version gate: PASS (no prior v* tag; 0.3.0 > none)
+- Reality audit: PASS (all plan v4 files present; no orphans)
+- Test discipline: 202 passed + 6 skipped, deterministic across 2 runs
+- Section 4 Razor: PASS (governance_helpers.py 141 lines; all functions <40)
+- Drift: clean (variants regenerated via BUILD_REGEN=1)
+- Ledger chain: Entries #24-#29 verified
+
+**Skill files modified**: qor-plan/SKILL.md (Step 0.5 added); qor-substantiate/SKILL.md (Steps 7.5 + 9.6 revised). Structure verified — all required sections present.
+
+**Content Hash** (substantiate-manifest: pyproject.toml + governance_helpers.py + doctrine-governance-enforcement.md):
+`2cbb33ec08c1de15fea2cebe3f52ddbfca826a577fbde114130df49425906778`
+
+**Previous Hash**:
+`67ad10b6497e2a49db40954c174f83caf3b8da71480a617f77e4903f67589c46`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= 8b2a94f300881845c097cacbebf00648da87fa8e427f8d77cea6e866102b63dd
+```
+
+**Decision**: Phase 13 v4 sealed. Governance enforcement in Reality = Promise. First dogfood of Phase 13 pipeline: bump_version helper ran 0.2.0→0.3.0 via its own code. All Entry #26 + #27 violations closed. Rule 4 "Rule = Test" enforced by the very tests guarding this phase. Next: Step 9.6 push/merge operator decision (4-option menu).
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: 8b2a94f3...*

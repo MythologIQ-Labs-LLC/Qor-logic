@@ -208,6 +208,22 @@ Update `docs/META_LEDGER.md`:
 
 Template: `references/qor-substantiate-templates.md`.
 
+### Step 7.5: Version bump + annotated tag (Phase 13 wiring)
+
+```python
+# Phase 13 wiring: bump version + tag (W-3 fix: phase_num derived explicitly)
+import sys; sys.path.insert(0, 'qor/scripts')
+import governance_helpers as gh
+
+plan_path = gh.current_phase_plan_path()              # V-5: lexicographic suffix
+phase_num, slug = gh.derive_phase_metadata(plan_path) # W-3: derive before use
+change_class = gh.parse_change_class(plan_path)       # V-2: bold-form enforced
+new_version = gh.bump_version(change_class)           # V-6 + W-4: tag-collision + downgrade interdiction
+tag = gh.create_seal_tag(
+    new_version, merkle_seal, ledger_entry_num, phase_num, change_class,
+)
+```
+
 ### Step 8: Cleanup Staging
 
 Clear: .failsafe/governance/
@@ -242,9 +258,16 @@ Template: `references/qor-substantiate-templates.md`.
 
 REPORT: "Session committed and pushed to [current-branch]"
 
-### Step 9.6: Merge Options
+### Step 9.6: Push/Merge Options (Phase 13 — 4-option menu)
 
-Prompt user with three options: (1) merge to main, (2) create PR, (3) stay on branch. If version changed, offer to create annotated tag.
+Prompt user with four options (never offer continuation menus when work is sealable; the next decision is push/merge, not "what next phase"):
+
+1. **Push only** — `git push origin <branch>`.
+2. **Push + open PR** — `gh pr create` (description must cite plan file, ledger entry `#<n>`, and Merkle seal hash per `doctrine-governance-enforcement.md` §6).
+3. **Merge to main locally (dry-run first)** — `git merge --no-commit --no-ff <branch>`; on conflict, abort and prompt operator.
+4. **Hold local** — no push/merge this session.
+
+Annotated tag was already created in Step 7.5; do not re-offer.
 
 Template: `references/qor-substantiate-templates.md`.
 

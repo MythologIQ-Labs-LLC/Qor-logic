@@ -240,6 +240,25 @@ Record of rejected artifacts and failure patterns to prevent repetition.
 
 **Remediation**: 7 mandatory items issued in audit report.
 
+### Entry #11: VETO — plan-qor-phase13-v3
+
+**Timestamp**: 2026-04-15
+**Target**: `docs/plan-qor-phase13-v3.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Ledger Entry**: #27
+
+**Failure Pattern**: Doctrine/test keyword drift (V-2 pattern recurrence). V-1 remediation introduced both a doctrine clause ("Annotated tag...") and its guarding test (substring match "tag annotation") in the same plan section, in the same authoring pass — and they still disagree on word order. When rule and test are co-authored, sequence must be: write test literal first → paste literal into doctrine → grep to verify. Paraphrase between them is the drift engine.
+
+**Failure Pattern**: Rule-without-test recurrence inside the phase elevating "Rule = Test" to Rule 4. §C.1 spec says `bump_version` raises `InterdictionError` on tag collision or downgrade; §D.2 lists 9 tests, none covers the interdiction. S-1's original surface was `gate_writes` frontmatter without execution test. Pattern is identical — security-relevant interdiction specified in prose without assertion. Doctrine gains keepers only when the test exists.
+
+**Failure Pattern**: Scope-implicit test. `test_plans_declare_change_class` specifies coverage by enumerated exclusion list ("11d/12-v2") rather than numeric forward-boundary (`phase >= 13`). Enumerated exclusions hide the real rule; next author adds a plan file and silently breaks the suite. Forward boundaries must be numeric.
+
+**Failure Pattern**: Undefined local in prescribed code snippet. §B.2 Step 7.5 references `phase_num` never derived. Same class as Entry #26 V-4 (InterdictionError undefined) — symbol used in prose without definition in the same snippet. Plans-as-code must be runnable as written.
+
+**Lesson**: Co-authored rule-test pairs require literal-paste discipline, not paraphrase. Numeric boundaries beat enumerated exceptions. Every interdiction specified in prose requires a test before the plan is gate-passable.
+
+**Remediation**: 4 mandatory items issued in audit report.
+
 ---
 
 *Shadow integrity: ACTIVE*

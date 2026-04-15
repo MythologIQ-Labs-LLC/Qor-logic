@@ -212,3 +212,54 @@ def test_no_tools_reliability_references():
         if "tools/reliability/" in text:
             failures.append(str(skill_md.relative_to(REPO_ROOT)))
     assert not failures, "Vestigial tools/reliability/ references (tools never built):\n  " + "\n  ".join(failures)
+
+
+# ----- Phase 13: governance enforcement doctrine tests -----
+
+DOCS_ROOT = REPO_ROOT / "docs"
+GOV_DOCTRINE = REPO_ROOT / "qor" / "references" / "doctrine-governance-enforcement.md"
+QOR_PLAN_SKILL = SKILLS_ROOT / "sdlc" / "qor-plan" / "SKILL.md"
+QOR_SUBSTANTIATE_SKILL = SKILLS_ROOT / "governance" / "qor-substantiate" / "SKILL.md"
+
+_PHASE_NN_RE = re.compile(r"^plan-qor-phase(\d+)")
+_CHANGE_CLASS_BOLD_RE = re.compile(
+    r"^\*\*change_class\*\*:\s+(hotfix|feature|breaking)\s*$", re.MULTILINE,
+)
+
+
+def test_plan_skill_documents_branch_creation():
+    text = QOR_PLAN_SKILL.read_text(encoding="utf-8")
+    assert "phase/" in text, "qor-plan/SKILL.md must document phase/ branch creation"
+
+
+def test_substantiate_skill_documents_version_bump():
+    text = QOR_SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
+    assert "bump_version" in text or "create_seal_tag" in text, (
+        "qor-substantiate/SKILL.md must reference bump_version or create_seal_tag"
+    )
+
+
+def test_plans_declare_change_class():
+    missing: list[str] = []
+    for plan in sorted(DOCS_ROOT.glob("plan-qor-phase*.md")):
+        m = _PHASE_NN_RE.match(plan.name)
+        if not m:
+            continue
+        nn = int(m.group(1))
+        if nn < 13:
+            continue  # grandfathered forward-boundary (W-2)
+        text = plan.read_text(encoding="utf-8")
+        if not _CHANGE_CLASS_BOLD_RE.search(text):
+            missing.append(plan.name)
+    assert not missing, (
+        "Plans with phase>=13 must declare `**change_class**: <hotfix|feature|breaking>` "
+        "(bold per V-2):\n  " + "\n  ".join(missing)
+    )
+
+
+def test_governance_doctrine_documents_github_hygiene():
+    text = GOV_DOCTRINE.read_text(encoding="utf-8").lower()
+    for keyword in ("issue label", "pr description", "branch name", "tag annotation"):
+        assert keyword in text, (
+            f"doctrine-governance-enforcement.md missing required keyword: {keyword!r}"
+        )

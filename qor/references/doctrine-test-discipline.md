@@ -70,6 +70,17 @@ When a test starts hardcoded-coupling another module's state:
 2. Replace with synthetic input + computed expected
 3. If the test was specifically meant to validate the live state (e.g., "verify ledger Entry #20 didn't change"), move it to a separate `tests/integration/` suite that's opt-in
 
+## Rule 4: Rule = Test
+
+When a plan introduces a new rule (a constraint, format, requirement, or
+convention), the same plan MUST add the doctrine test enforcing it. Rule
+without test = optional.
+
+Verified instances:
+- `docs/research-brief-full-audit-2026-04-15.md §S-1` — `gate_writes` declared without execution test.
+- Phase 13 V-1 — `change_class:` declared without parser test.
+- Phase 13 W-4 — `bump_version` interdiction (tag collision / downgrade) declared without test.
+
 ## Update protocol
 
 When new test failure modes emerge, append to the Anti-patterns table with where-seen citation. The doctrine grows with the project's failure history; it does not shrink.
