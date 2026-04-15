@@ -306,3 +306,160 @@ SHA256(content_hash + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: 1877524d...*
+
+---
+
+### Entry #12: GATE TRIBUNAL — plan-qor-migration
+
+**Timestamp**: 2026-04-15
+**Phase**: GATE (audit)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L2
+
+**Target**: `docs/plan-qor-migration.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash** (AUDIT_REPORT.md):
+`707a2f6d64b419047a15de4275d58f50e37cd89e56766e6d43bc2a2e2e07f18f`
+
+**Previous Hash**:
+`1877524df25b0a9e5a1ab2d57ed10317979fd7b975734b6e42d19e6c4d5d7740`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 433e9e326cf76d068ac802fa4c92c0086967a9558148c686138ca7a2c95c2a9f
+```
+
+**Verdict Summary**: 4 ghost handlers, 5 unspecified dependencies, 3 macro-level violations, 7 orphan artifacts, 1 critical chain-integrity risk, 5 validation gaps, 7 spec gaps. 13 mandatory remediation items issued. No implementation authorized.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active)*
+
+---
+
+### Entry #13: GATE TRIBUNAL — plan-qor-migration-v2
+
+**Timestamp**: 2026-04-15 (round 2)
+**Phase**: GATE (audit)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-migration-v2.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash** (AUDIT_REPORT.md):
+`4996a420ceea1454d1810c6c04be17083a2d4a6e6719f218035e80fcba76ae86`
+
+**Previous Hash**:
+`433e9e326cf76d068ac802fa4c92c0086967a9558148c686138ca7a2c95c2a9f`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 63c83b2bf5234076377f88bc24aab8706587f0a620111392a608bc3c51c8ea21
+```
+
+**Verdict Summary**: 0 security, 0 ghost handlers (v1 resolved), 1 dependency contradiction, 1 macro-level spec gap (subagent mapping), 4 orphans (`tests/`, fixtures, pytest config, codex empty dir), 1 chain-integrity gap (Entry #13 content subject), 1 shadow-genome flaw (severity-blind stale expiry), 1 concurrency issue (session_id collision), 3 validation gaps. 10 mandatory remediation items. 12 violations down from 33 in v1.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active, round 2)*
+
+---
+
+### Entry #14: GATE TRIBUNAL — plan-qor-migration-v3
+
+**Timestamp**: 2026-04-15 (round 3)
+**Phase**: GATE (audit)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-migration-v3.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash** (AUDIT_REPORT.md):
+`948ba4ef20d90d55224e171280a4c1a2caac0c60ab1c0f5c46a1c6ae9e4b418f`
+
+**Previous Hash**:
+`63c83b2bf5234076377f88bc24aab8706587f0a620111392a608bc3c51c8ea21`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= d048e5b0df5f84140c1034e081ea597e1ea45013897599e751f5265254feb271
+```
+
+**Verdict Summary**: 1 ghost handler (manifest generator unnamed), 1 macro-level (plan self-SoT split across v2+v3), 1 orphan (skill_samples fixtures), 1 governance (escalation loop idempotence), 1 concurrency (session carrier ambiguous), 1 CI (broken grep guard). 6 violations, down from 12 in v2 and 33 in v1. Trend approaching PASS.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active, round 3)*
+
+---
+
+### Entry #15: GATE TRIBUNAL — plan-qor-migration-final
+
+**Timestamp**: 2026-04-15 (round 4)
+**Phase**: GATE (audit)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-migration-final.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash** (AUDIT_REPORT.md):
+`8d6bdf7c396979018da9449b33914a7f1cf7316f3739016f2644c84bac43cf56`
+
+**Previous Hash**:
+`d048e5b0df5f84140c1034e081ea597e1ea45013897599e751f5265254feb271`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 741ecc9d93ae49d1b59fd46deb428e438ffb2252622607f84b035fa55e619397
+```
+
+**Verdict Summary**: Plan consolidated successfully (V-2 from round 3 cleared). Remaining: 1 CI guard (anchor error), 1 wrong path (ingest/ql vs ingest/skills/ql), 1 scope mapping (90 ingest/skills items), 1 portability (os.rename vs os.replace on Windows), 1 macro-scope (9 ingest/ subdirs undispositioned). 5 violations, down from 6. All precision-level.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active, round 4)*
+
+---
+
+### Entry #16: GATE TRIBUNAL — plan-qor-migration-final (amended)
+
+**Timestamp**: 2026-04-15 (round 5)
+**Phase**: GATE (audit)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-migration-final.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `a6633e96c30daccbd41f31122256400cf4202bdbf344d09b9f23df4ddda7a0c8`
+**Previous Hash**: `741ecc9d93ae49d1b59fd46deb428e438ffb2252622607f84b035fa55e619397`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 9730f979b790a5b07866525cefd70b6db10e5666783434074f143257fe53325f
+```
+
+**Verdict Summary**: Round 4 items resolved. New violations: §2.B destinations missing from §2 structure tree (4 paths), 21-item collision between ingest/skills and ingest/scripts unresolved, merge-order ambiguity for ingest/internal/scripts, R-5/R-6 deferred decisions, Phase 7 grep over-aggressive (breaks on 15 historical audit references in META_LEDGER and SHADOW_GENOME). 5 violations.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active, round 5)*
