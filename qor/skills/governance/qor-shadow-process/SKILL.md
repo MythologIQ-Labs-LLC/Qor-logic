@@ -51,21 +51,65 @@ Events flow into a threshold-gated GitHub issue pipeline (see `qor/scripts/check
 - Severity ≥ 3 never stale-expires
 - Reverse transitions forbidden (re-opening requires a new event)
 
-## Execution Protocol (record-only, minimal)
+## Execution Protocol
 
-1. Accept event payload matching schema.
-2. Validate severity, event_type, timestamp.
-3. Append as single-line JSON to `docs/PROCESS_SHADOW_GENOME.md`.
-4. Atomic write via `os.replace()` (Windows-safe).
-5. Return event id (SHA256 of first 7 fields).
+### Recording an event
+
+Invoke `qor/scripts/shadow_process.py` via its library interface:
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+import shadow_process
+event = {
+    "ts": shadow_process.now_iso(),
+    "skill": "qor-audit",
+    "session_id": "<UTC-ISO-MIN>-<6hex>",
+    "event_type": "gate_override",
+    "severity": 1,
+    "details": {...},
+    "addressed": False,
+    "issue_url": None,
+    "addressed_ts": None,
+    "addressed_reason": None,
+    "source_entry_id": None,
+}
+event_id = shadow_process.append_event(event)
+```
+
+Validates against `qor/gates/schema/shadow_event.schema.json`, computes `id` = SHA256 of canonical event fields, appends atomically via `os.replace()`.
+
+### Threshold check (periodic or post-skill-run)
+
+```bash
+python qor/scripts/check_shadow_threshold.py
+```
+
+- Applies stale expiry: severities 1–2 unaddressed > 90 days → `addressed=true`, `addressed_reason="stale"`
+- Applies aged-high-severity self-escalation: severities ≥ 3 unaddressed > 90 days → emit one `aged_high_severity_unremediated` (sev 5) per source (idempotent via `source_entry_id`)
+- Sums unaddressed severity. If ≥ 10: writes `.qor/remediate-pending` marker, exits 10.
+
+Exit 10 is the `/qor-remediate` trigger signal. Skills consuming this script should check the exit code; the marker file persists across invocations so later skills see `Path(".qor/remediate-pending").exists()` and can prompt the user.
+
+### Issue creation (manual or via /qor-remediate)
+
+```bash
+python qor/scripts/create_shadow_issue.py
+```
+
+- Validates `gh auth status`
+- Reads marker, aggregates events, builds structured issue body
+- `gh issue create --repo MythologIQ-Labs-LLC/Qor-logic --label qor-shadow`
+- Flips matched events to `addressed=true`, `addressed_reason="issue_created"`, `issue_url=<url>`
+- Removes marker
 
 ## Constraints
 
-- **NEVER** modify existing events (append-only)
-- **NEVER** delete events (use addressed=true to close)
+- **NEVER** modify existing events (append-only; use `addressed=true` to close)
+- **NEVER** delete events
 - **ALWAYS** use atomic write primitive (`os.replace`)
-- **ALWAYS** validate schema before append
+- **ALWAYS** validate against schema before append
+- **ALWAYS** compute deterministic id; identical events produce identical ids
 
-## Status
+## Tested behaviors
 
-**STUB (minimal)** — threshold automation, issue creation, cross-repo aggregation, self-escalation idempotence all deferred to `plan-qor-tooling-deferred.md`. This file exists so the skill registry is complete and gate_override events have a named recorder.
+See `tests/test_shadow.py` (18 tests): id determinism, schema validation, threshold sum, severity-gated expiry, self-escalation idempotence, marker lifecycle, issue creation flipping `addressed`.

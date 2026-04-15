@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qor-logic.mythologiq/schemas/shadow_event.schema.json",
+  "title": "QoreLogic Process Shadow Event",
+  "description": "One event in docs/PROCESS_SHADOW_GENOME.md (append-only JSONL).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ts",
+    "skill",
+    "session_id",
+    "event_type",
+    "severity",
+    "details",
+    "addressed",
+    "issue_url",
+    "addressed_ts",
+    "addressed_reason",
+    "source_entry_id"
+  ],
+  "properties": {
+    "id": {
+      "description": "SHA256 of (ts + skill + session_id + event_type + severity + json(details) + source_entry_id). Computed on append; immutable.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ts": {
+      "description": "ISO-8601 UTC timestamp, seconds precision.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "skill": {
+      "description": "Qor skill that emitted this event.",
+      "type": "string",
+      "pattern": "^qor-[a-z-]+$"
+    },
+    "session_id": {
+      "description": "Session identifier: <UTC-ISO-MIN>-<6hex> or a bootstrap label.",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "gate_override",
+        "regression",
+        "hallucination",
+        "degradation",
+        "capability_shortfall",
+        "aged_high_severity_unremediated"
+      ]
+    },
+    "severity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "details": {
+      "description": "Event-specific payload; shape depends on event_type.",
+      "type": "object"
+    },
+    "addressed": {
+      "type": "boolean"
+    },
+    "issue_url": {
+      "type": ["string", "null"]
+    },
+    "addressed_ts": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "addressed_reason": {
+      "type": ["string", "null"],
+      "enum": [
+        "issue_created",
+        "remediated",
+        "stale",
+        null
+      ]
+    },
+    "source_entry_id": {
+      "description": "For aged_high_severity_unremediated: the id of the event being escalated. Null otherwise.",
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
