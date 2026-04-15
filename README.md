@@ -116,84 +116,83 @@ agents/
 ## Repository Structure
 
 ```
-QoreLogic/
-  deployable state/       <-- READY-TO-DEPLOY outputs (copy these)
-    claude/                 Claude Code format
-      skills/               17 governance skills
-      agents/               8 agent personas
-    kilo-code/              Kilocode format
-      qor-*/                17 governance skills (one per directory)
-      agents/               8 agent personas
-  kilo-code/              <-- Same compiled output, repo-root mirror
-    qor-*/
-  .claude/                 Claude Code skills loaded in this repo
-  ingest/                  Raw skill sources
-    internal/               Governance skills, agents, references
-    third-party/            External agent definitions
-    experimental/           Work-in-progress
-  processed/               Pipeline-normalized skills
-  compiled/                Intermediate compilation output
-  scripts/                 Pipeline tooling
-  docs/                    Architecture, registry, audit checklists
+Qor-logic/
+  qor/                   <-- SSoT; edit here
+    skills/
+      governance/          qor-audit, qor-validate, qor-substantiate, qor-shadow-process,
+                           qore-governance-compliance
+      sdlc/                qor-research, qor-plan, qor-implement, qor-refactor, qor-debug,
+                           qor-remediate
+      memory/              qor-status, qor-document, qor-organize, log-decision,
+                           track-shadow-genome, qore-docs-technical-writing
+      meta/                qor-bootstrap, qor-help, qor-repo-audit, qor-repo-release,
+                           qor-repo-scaffold, qore-meta-*
+      custom/              (reserved for qor-scoped custom content)
+    agents/
+      governance/          qor-governor, qor-judge
+      sdlc/                qor-specialist, qor-strategist, qor-fixer, qor-ux-evaluator,
+                           project-planner
+      memory/              qor-technical-writer, documentation-scribe, learning-capture
+      meta/                agent-architect, system-architect, build-doctor
+    vendor/
+      agents/              7 generic specialists + third-party/ (wshobson-agents)
+      skills/              ~65 third-party skill packs (tauri/, chrome-devtools/, custom/,
+                           _system/, agents/, plus flat framework skills)
+    scripts/
+      ledger_hash.py       Content/chain hashing, manifest generation, chain verify
+      calculate-session-seal.py
+      legacy/              Pre-migration pipeline (preserved for reference)
+      utilities/           Assorted utility scripts
+    references/            Doctrine + patterns + ql-* examples
+    experimental/          Non-canonical research (tauri2-*, tauri-launcher, build-doctor)
+    templates/             Doc templates (ARCHITECTURE_PLAN, CONCEPT, SYSTEM_STATE, ...)
+  docs/
+    META_LEDGER.md         Hash-chained governance ledger (20 entries sealed)
+    SHADOW_GENOME.md       Audit-verdict failure records
+    PROCESS_SHADOW_GENOME.md  Process-failure log (JSONL append-only)
+    SYSTEM_STATE.md        Current system snapshot
+    SKILL_REGISTRY.md      Category-organized skill index
+    plan-qor-*.md          Migration plan history
+    migration-manifest-*.json
+    archive/2026-04-15/    Pre-migration snapshots
+  pyproject.toml           Python 3.11+, pytest, jsonschema
+  README.md
 ```
 
-## Pipeline
+## Pipeline (current state)
 
-```
-ingest/ -> processed/ -> compiled/ -> deployable state/
-```
+- **Edit**: `qor/skills/<category>/<skill>/SKILL.md` — canonical source.
+- **Consume**: hand-copy directories into your project's `.claude/skills/` or `.kilo/skills/`.
+- **Verify chain**: `python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md` — all entries OK.
 
-- **ingest/** -- Raw skills from any source. `internal/` for governance, `third-party/` for external agents, `experimental/` for WIP.
-- **processed/** -- Skills normalized to S.H.I.E.L.D. structural compliance.
-- **compiled/** -- LLM-specific intermediate output.
-- **deployable state/** -- Final, copy-ready artifacts for Claude Code and Kilocode.
+## Pipeline (deferred)
 
-### Pipeline Scripts
+A compile pipeline (`qor/scripts/compile.py`) that regenerates per-variant outputs under `qor/dist/variants/{claude,kilo-code,codex}/` from the SSoT is tracked in [`docs/plan-qor-tooling-deferred.md`](docs/plan-qor-tooling-deferred.md) (Phase 2). Pre-commit hook + CI drift check will prevent hand-edits to generated variants once Phase 2 ships.
 
-| Script | Purpose |
-|--------|---------|
-| `process-skills.py` | Normalize raw skills to S.H.I.E.L.D. compliance |
-| `compile-claude.py` | Compile to Claude Code `SKILL.md` format |
-| `compile-agent.py` | Compile to Agent workflow format |
-| `compile-all.py` | Run all compilation targets |
-| `intent-lock.py` | Lock skill intent to prevent drift |
-| `admit-skill.py` | Admit a new skill into the pipeline |
-| `gate-skill-matrix.py` | Validate skill matrix against registry |
-
-```bash
-python scripts/process-skills.py    # ingest/ -> processed/
-python scripts/compile-all.py       # processed/ -> compiled/
-```
-
-Downstream projects reference compiled output via:
-
-```bash
-export QORELOGIC_SKILLS_PATH="G:/MythologIQ/Qorelogic/deployable state"
-```
-
-Never edit skills inside downstream project repos. All changes flow through the QoreLogic pipeline.
+Until then: no build step required — consume `qor/skills/` directly.
 
 ## Governance Skills
 
-| Skill | Trigger | Phase | Persona |
-|-------|---------|-------|---------|
-| qor-bootstrap | `/qor-bootstrap` | ALIGN + ENCODE | Governor |
-| qor-plan | `/qor-plan` | PLAN | Governor |
-| qor-audit | `/qor-audit` | GATE | Judge |
-| qor-implement | `/qor-implement` | IMPLEMENT | Specialist |
-| qor-refactor | `/qor-refactor` | IMPLEMENT | Specialist |
-| qor-substantiate | `/qor-substantiate` | SUBSTANTIATE | Judge |
-| qor-repo-release | `/qor-repo-release` | DELIVER | Governor |
-| qor-debug | `/qor-debug` | IMPL/SUBST/GATE | Fixer |
-| qor-course-correct | `/qor-course-correct` | RECOVER | Navigator |
-| qor-research | `/qor-research` | RESEARCH | Analyst |
-| qor-document | `/qor-document` | DELIVER/IMPL | Tech Writer |
-| qor-validate | `/qor-validate` | ANY | Judge |
-| qor-status | `/qor-status` | ANY | Governor |
-| qor-help | `/qor-help` | ANY | Governor |
-| qor-organize | `/qor-organize` | ORGANIZE | Governor |
-| qor-repo-audit | `/qor-repo-audit` | AUDIT | Judge |
-| qor-repo-scaffold | `/qor-repo-scaffold` | IMPLEMENT | Specialist |
+| Skill | Trigger | Phase | Persona | Category |
+|-------|---------|-------|---------|----------|
+| qor-audit | `/qor-audit` | GATE | Judge | governance |
+| qor-validate | `/qor-validate` | ANY | Judge | governance |
+| qor-substantiate | `/qor-substantiate` | SUBSTANTIATE | Judge | governance |
+| qor-shadow-process | `/qor-shadow-process` | CROSS-CUTTING | Judge | governance (stub) |
+| qor-research | `/qor-research` | RESEARCH | Analyst | sdlc |
+| qor-plan | `/qor-plan` | PLAN | Governor | sdlc |
+| qor-implement | `/qor-implement` | IMPLEMENT | Specialist | sdlc |
+| qor-refactor | `/qor-refactor` | IMPLEMENT | Specialist | sdlc |
+| qor-debug | `/qor-debug` | IMPL/SUBST/GATE | Fixer | sdlc |
+| qor-remediate | `/qor-remediate` | RECOVER | Governor | sdlc (stub, absorbs qor-course-correct) |
+| qor-status | `/qor-status` | ANY | Governor | memory |
+| qor-document | `/qor-document` | DELIVER/IMPL | Tech Writer | memory |
+| qor-organize | `/qor-organize` | ORGANIZE | Governor | memory |
+| qor-bootstrap | `/qor-bootstrap` | ALIGN + ENCODE | Governor | meta |
+| qor-help | `/qor-help` | ANY | Governor | meta |
+| qor-repo-audit | `/qor-repo-audit` | AUDIT | Judge | meta |
+| qor-repo-release | `/qor-repo-release` | DELIVER | Governor | meta |
+| qor-repo-scaffold | `/qor-repo-scaffold` | IMPLEMENT | Specialist | meta |
 
 ### Lifecycle Coverage
 
@@ -207,14 +206,17 @@ Cross-cutting: RESEARCH, DEBUG, STATUS, VALIDATE, ORGANIZE, RECOVER.
 
 | Persona | Role |
 |---------|------|
-| qor-governor | Senior Architect -- ALIGN, ENCODE, LEDGER |
-| qor-judge | Security Auditor -- GATE, PASS/VETO |
-| qor-specialist | Implementation Expert -- ENCODE, VERIFY |
-| qor-fixer | Diagnostic Specialist -- 4-layer root-cause |
-| qor-technical-writer | Documentation quality -- README, API, changelog |
-| qor-ux-evaluator | UI/UX testing -- Playwright, accessibility |
-| qor-strategist | Strategic planning and architecture |
-| qor-ultimate-debugger | Deep diagnostic investigation |
+| qor-governor | Senior Architect -- ALIGN, ENCODE, LEDGER (`qor/agents/governance/`) |
+| qor-judge | Security Auditor -- GATE, PASS/VETO (`qor/agents/governance/`) |
+| qor-specialist | Implementation Expert -- ENCODE, VERIFY (`qor/agents/sdlc/`) |
+| qor-strategist | Strategic planning and architecture (`qor/agents/sdlc/`) |
+| qor-fixer | Diagnostic Specialist -- 4-layer root-cause (`qor/agents/sdlc/`) |
+| qor-ux-evaluator | UI/UX testing -- Playwright, accessibility (`qor/agents/sdlc/`) |
+| qor-technical-writer | Documentation quality -- README, API, changelog (`qor/agents/memory/`) |
+
+Plus: `project-planner` (sdlc), `documentation-scribe`, `learning-capture` (memory), `agent-architect`, `system-architect`, `build-doctor` (meta).
+
+Vendor agents (non-qor-scoped): `accessibility-specialist`, `code-reviewer`, `devops-engineer`, `tauri-launcher`, `ui-correction-specialist`, `ultimate-debugger`, `voice-integration-specialist` under `qor/vendor/agents/`, plus the wshobson-agents category collection under `qor/vendor/agents/third-party/`.
 
 ## Quality Gate
 
@@ -230,7 +232,7 @@ Verdicts: PASS, CONDITIONAL (minor issues with fix plan), or FAIL.
 
 ## AI Code Quality Doctrine
 
-Reference: `ingest/internal/references/doctrine-code-quality.md`
+Reference: `qor/references/doctrine-code-quality.md`
 
 - **Semantic functions** -- pure, no side effects, single responsibility
 - **Pragmatic functions** -- orchestration with documented side effects
