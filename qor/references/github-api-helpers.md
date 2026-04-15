@@ -2,7 +2,7 @@
 
 ## Overview
 
-Reference for GitHub API operations used by `/ql-repo-*` skills. Uses `gh` CLI which handles authentication automatically.
+Reference for GitHub API operations used by `/qor-repo-*` skills. Uses `gh` CLI which handles authentication automatically.
 
 ## Authentication
 
@@ -72,4 +72,4 @@ fi
 ```
 
 ---
-_Used by: /ql-repo-audit, /ql-repo-scaffold, /ql-repo-release_
+_Used by: /qor-repo-audit, /qor-repo-scaffold, /qor-repo-release_

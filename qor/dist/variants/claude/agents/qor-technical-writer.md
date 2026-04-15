@@ -1,5 +1,5 @@
 ---
-name: ql-technical-writer
+name: qor-technical-writer
 description: >
   Documentation Agent
 tools: Read, Glob, Grep, Edit, Write, Bash
@@ -7,14 +7,14 @@ model: inherit
 ---
 
 ---
-name: ql-technical-writer
-description: QoreLogic Technical Writer Agent - Documentation quality specialist
+name: qor-technical-writer
+description: QorLogic Technical Writer Agent - Documentation quality specialist
 ---
 
-# ql-technical-writer - Documentation Agent
+# qor-technical-writer - Documentation Agent
 
 <agent>
-  <name>ql-technical-writer</name>
+  <name>qor-technical-writer</name>
   <persona>Technical Writer</persona>
   <scope>Documentation quality, consistency, and completeness</scope>
 </agent>
@@ -96,14 +96,14 @@ git log --oneline --no-merges [last_tag]..HEAD
 ### Automatic Triggers
 
 Called internally by:
-- `/ql-repo-scaffold` - Generates initial documentation
-- `/ql-implement` - Updates docs for code changes
-- `/ql-repo-release` - Finalizes changelog entries
+- `/qor-repo-scaffold` - Generates initial documentation
+- `/qor-implement` - Updates docs for code changes
+- `/qor-repo-release` - Finalizes changelog entries
 
 ### Direct Invocation
 
 ```bash
-/ql-technical-writer [target]
+/qor-technical-writer [target]
 ```
 
 **Targets**:
@@ -117,7 +117,7 @@ Called internally by:
 ### Example Usage
 
 ```
-/ql-technical-writer README
+/qor-technical-writer README
 ```
 
 Output:
@@ -190,4 +190,4 @@ When generating documentation, output in appropriate format:
 - Target total: <6KB per invocation
 
 ---
-_Part of: /ql-repo-* skill family | Triggered by: scaffold, implement, release_
+_Part of: /qor-repo-* skill family | Triggered by: scaffold, implement, release_

@@ -8,7 +8,7 @@ Software development is inherently iterative. Features change, requirements evol
 
 ### Linear Chain (Not Branching)
 
-The QoreLogic Merkle chain is **strictly linear**. Each entry builds on the previous one, regardless of iteration:
+The QorLogic Merkle chain is **strictly linear**. Each entry builds on the previous one, regardless of iteration:
 
 ```
 GENESIS -> ENCODE -> AUDIT -> IMPLEMENT -> SEAL -> ENCODE_v2 -> AUDIT_v2 -> IMPLEMENT_v2 -> SEAL_v2
@@ -42,7 +42,7 @@ You're implementing Feature A, but requirements change.
 1. Seal the current state (even if incomplete)
 2. Update ARCHITECTURE_PLAN.md with changes
 3. Create new ENCODE_UPDATE entry
-4. Run /ql-audit on the updated plan
+4. Run /qor-audit on the updated plan
 5. Continue implementation
 
 **Chain Result**:
@@ -55,7 +55,7 @@ You're implementing Feature A, but requirements change.
 You need to refactor code created in a previous iteration.
 
 **Correct Approach**:
-1. Run /ql-refactor
+1. Run /qor-refactor
 2. This creates a REFACTOR entry
 3. The entry hashes the refactored files
 4. Chain continues normally
@@ -71,7 +71,7 @@ A bug is discovered after a session was sealed.
 
 **Correct Approach**:
 1. Start new iteration (ENCODE_UPDATE for the fix)
-2. Run /ql-audit (can be L1 for minor fixes)
+2. Run /qor-audit (can be L1 for minor fixes)
 3. Implement fix
 4. Seal new session
 
@@ -103,7 +103,7 @@ Two developers working on different features simultaneously.
 
 ## Validation Logic for Iterations
 
-The /ql-validate command handles iterations by:
+The /qor-validate command handles iterations by:
 
 1. **Ignoring iteration boundaries**: Chain validation is purely sequential
 2. **Verifying hash continuity**: Each entry's `previous_hash` must match the prior entry's `chain_hash`
@@ -157,7 +157,7 @@ def deep_validate(ledger):
 - OK Seal sessions before major changes
 - OK Use ENCODE_UPDATE when requirements change
 - OK Keep iterations small and focused
-- OK Run /ql-validate regularly
+- OK Run /qor-validate regularly
 
 ### DON'T:
 - FAIL Don't skip audit for L2/L3 changes

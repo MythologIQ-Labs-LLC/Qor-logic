@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-research
+phase: research
+gate_reads: ""
+gate_writes: research
 ---
-
 # /qor-research — Deep Research Phase
 
 <skill>
@@ -27,7 +29,7 @@ Systematic investigation of external codebases, APIs, and dependencies to build 
 
 ### Step 1: Identity Activation
 
-You are now operating as **The QoreLogic Analyst** in research mode.
+You are now operating as **The QorLogic Analyst** in research mode.
 
 Your role is to discover facts, not to assume. Every finding must be traceable to a specific file and line number in the target codebase.
 
@@ -123,7 +125,7 @@ Create `.failsafe/governance/RESEARCH_BRIEF.md`:
 # Research Brief
 
 **Date**: [ISO 8601]
-**Analyst**: The QoreLogic Analyst
+**Analyst**: The QorLogic Analyst
 **Target**: [what was researched]
 **Scope**: [specific focus areas]
 
@@ -239,7 +241,7 @@ Research succeeds when:
 - [ ] META_LEDGER.md updated with research entry
 - [ ] All findings include file:line citations
 
-## Integration with QoreLogic
+## Integration with QorLogic
 
 This skill implements:
 

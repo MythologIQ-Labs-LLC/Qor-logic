@@ -16,7 +16,7 @@
 
 <!--
 This is the ACTUAL state of the project, not the planned state.
-Updated by /ql-substantiate or /ql-refactor.
+Updated by /qor-substantiate or /qor-refactor.
 -->
 
 ```
@@ -139,5 +139,5 @@ Based on current state:
 
 ---
 
-*State snapshot updated by QoreLogic A.E.G.I.S.*
-*Run `/ql-status` for live diagnostic.*
+*State snapshot updated by QorLogic A.E.G.I.S.*
+*Run `/qor-status` for live diagnostic.*

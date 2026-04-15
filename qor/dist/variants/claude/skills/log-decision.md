@@ -1,16 +1,16 @@
 # Log Decision Skill
 ## Implement Meta-Ledger for Auditable Decision Tracking
 
-**Skill Name:** qore-meta-log-decision
+**Skill Name:** qor-meta-log-decision
 **Version:** 1.0
-**Purpose:** Implement QoreLogic SOA Ledger for development decisions
+**Purpose:** Implement QorLogic SOA Ledger for development decisions
 
 ---
 
 ## Usage
 
 ```
-/qore-meta-log-decision <decision_type> <decision> <rationale> [risk_grade]
+/qor-meta-log-decision <decision_type> <decision> <rationale> [risk_grade]
 ```
 
 Or invoke in conversation:
@@ -20,7 +20,7 @@ Or invoke in conversation:
 
 ## What This Skill Does
 
-Implements QoreLogic's **SOA Ledger** principle for meta-governance: maintaining a Merkle-chained,
+Implements QorLogic's **SOA Ledger** principle for meta-governance: maintaining a Merkle-chained,
 cryptographically signed audit trail of all major development decisions. Enables traceability,
 accountability, and rollback capability.
 
@@ -285,7 +285,7 @@ This decision requires explicit user approval before implementation.
 
 **Command:**
 ```
-/qore-meta-log-decision ARCHITECTURE "Use SQLite for Phases 1-2" "KISS - no proven bottleneck" L2
+/qor-meta-log-decision ARCHITECTURE "Use SQLite for Phases 1-2" "KISS - no proven bottleneck" L2
 ```
 
 **Output:**
@@ -309,7 +309,7 @@ This decision requires explicit user approval before implementation.
 
 **Command:**
 ```
-/qore-meta-log-decision SECURITY "Migrate passphrase to platform keystore" "Fix CRITICAL vulnerability" L3
+/qor-meta-log-decision SECURITY "Migrate passphrase to platform keystore" "Fix CRITICAL vulnerability" L3
 ```
 
 **Output:**
@@ -324,7 +324,7 @@ This decision requires explicit user approval before implementation.
 **Approval Required By:** 2025-12-25 16:00:00 UTC (24 hours)
 
 **Rationale:**
-Current plaintext storage at ~/.qorelogic/security/identity.secret creates single point of compromise. Platform keystore (Windows Credential Manager, macOS Keychain, Linux Secret Service) provides OS-level encryption and access control.
+Current plaintext storage at ~/.qor/security/identity.secret creates single point of compromise. Platform keystore (Windows Credential Manager, macOS Keychain, Linux Secret Service) provides OS-level encryption and access control.
 
 **Trade-offs:**
 - **Accepting:** Platform dependency, different implementation per OS
@@ -345,7 +345,7 @@ Please review and respond with:
 
 **Command:**
 ```
-/qore-meta-log-decision SCOPE_CHANGE "Defer PyVeritas to Phase 3" "Focus on validated features first" L2
+/qor-meta-log-decision SCOPE_CHANGE "Defer PyVeritas to Phase 3" "Focus on validated features first" L2
 ```
 
 **Output:**
@@ -455,7 +455,7 @@ This skill succeeds when:
 
 ---
 
-## Integration with QoreLogic
+## Integration with QorLogic
 
 This skill implements:
 

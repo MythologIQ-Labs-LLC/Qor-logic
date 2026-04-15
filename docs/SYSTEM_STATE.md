@@ -1,4 +1,4 @@
-# Qorelogic System State
+# Qorlogic System State
 
 **Snapshot**: 2026-04-15
 **Chain Status**: ACTIVE (18 entries)
@@ -11,7 +11,7 @@ All canonical Qor content lives under `qor/`. Variant outputs (`claude`, `kilo-c
 ## File Tree
 
 ```
-G:/MythologIQ/Qorelogic/
+G:/MythologIQ/Qorlogic/
 ├── qor/                                   Single source of truth
 │   ├── skills/
 │   │   ├── governance/                    Gate & audit authority
@@ -19,7 +19,7 @@ G:/MythologIQ/Qorelogic/
 │   │   │   ├── qor-validate/
 │   │   │   ├── qor-substantiate/
 │   │   │   ├── qor-shadow-process/        (stub — full impl deferred)
-│   │   │   └── qore-governance-compliance/
+│   │   │   └── qor-governance-compliance/
 │   │   ├── sdlc/                          Research → implement cycle
 │   │   │   ├── qor-research/
 │   │   │   ├── qor-plan/
@@ -33,15 +33,15 @@ G:/MythologIQ/Qorelogic/
 │   │   │   ├── qor-organize/
 │   │   │   ├── log-decision.md
 │   │   │   ├── track-shadow-genome.md
-│   │   │   └── qore-docs-technical-writing/
+│   │   │   └── qor-docs-technical-writing/
 │   │   ├── meta/                          Bootstrapping & repo management
 │   │   │   ├── qor-bootstrap/
 │   │   │   ├── qor-help/
 │   │   │   ├── qor-repo-audit/
 │   │   │   ├── qor-repo-release/
 │   │   │   ├── qor-repo-scaffold/
-│   │   │   ├── qore-meta-log-decision/
-│   │   │   └── qore-meta-track-shadow/
+│   │   │   ├── qor-meta-log-decision/
+│   │   │   └── qor-meta-track-shadow/
 │   │   └── custom/                        (reserved; empty until qor-scoped custom content identified)
 │   │
 │   ├── agents/
@@ -65,7 +65,7 @@ G:/MythologIQ/Qorelogic/
 │   │   │                                  intent-lock.py)
 │   │   └── utilities/                     Assorted utility scripts
 │   │
-│   ├── references/                        Doctrine + patterns + ql-* examples
+│   ├── references/                        Doctrine + patterns + qor-* examples
 │   ├── experimental/                      Non-canonical research (tauri2-state, tauri-launcher, etc.)
 │   └── templates/                         Doc templates (ARCHITECTURE_PLAN, CONCEPT, SYSTEM_STATE, etc.)
 │

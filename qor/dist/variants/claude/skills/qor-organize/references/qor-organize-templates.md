@@ -5,24 +5,24 @@
 ### Forbidden Paths (NEVER reorganize)
 
 ```
-FORBIDDEN_PATHS = ['.agent/', '.claude/', '.qorelogic/', '.failsafe/']
+FORBIDDEN_PATHS = ['.agent/', '.claude/', '.qor/', '.failsafe/']
 ```
 
 ### FailSafe Dev Repo Detection
 
 If ALL present: `src/Genesis/workflows/*.yml`, `build/transform.ps1`, `targets/`
-Then also exclude: `src/`, `qorelogic/`, `build/`, `targets/`, `PROD-Extension/`
+Then also exclude: `src/`, `qor-logic/`, `build/`, `targets/`, `PROD-Extension/`
 
 ### Path Validation
 
 ```python
 def is_path_safe_to_reorganize(path):
-    FORBIDDEN = ['.agent/', '.claude/', '.qorelogic/', '.failsafe/']
+    FORBIDDEN = ['.agent/', '.claude/', '.qor/', '.failsafe/']
     for f in FORBIDDEN:
         if path.startswith(f):
             return False
     if is_failsafe_dev_repo():
-        for f in ['src/', 'qorelogic/', 'build/', 'targets/', 'PROD-Extension/']:
+        for f in ['src/', 'qor-logic/', 'build/', 'targets/', 'PROD-Extension/']:
             if path.startswith(f):
                 return False
     return True
@@ -107,7 +107,7 @@ project/
 ├── docs/         # CONCEPT.md, ARCHITECTURE_PLAN.md, META_LEDGER.md
 ├── .agent/staging/
 ├── .claude/      # Claude Code config
-├── .qorelogic/   # QoreLogic config
+├── .qor/   # QorLogic config
 ├── src/          # Implementation
 └── README.md
 ```
@@ -193,7 +193,7 @@ mv "[dest]" "[source]"
 .agent/
 .claude/
 .failsafe/
-.qorelogic/
+.qor/
 CLAUDE.md
 GEMINI.md
 

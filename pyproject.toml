@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "qorelogic"
+name = "qor-logic"
 version = "0.2.0"
-description = "QoreLogic S.H.I.E.L.D. governance skills for Claude Code, Kilo Code, and future AI coding hosts"
+description = "QorLogic S.H.I.E.L.D. governance skills for Claude Code, Kilo Code, and future AI coding hosts"
 requires-python = ">=3.11"
 license = { text = "Proprietary" }
 dependencies = ["jsonschema>=4"]

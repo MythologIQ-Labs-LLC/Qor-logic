@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-repo-audit
+phase: audit
+gate_reads: ""
+gate_writes: audit
 ---
-
 # /qor-repo-audit - Repository Governance Audit
 
 <skill>

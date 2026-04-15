@@ -1,7 +1,7 @@
 # Plan: Phase 3 — Gate Chain Runtime
 
 **Status**: Active (scope-limited)
-**Author**: QoreLogic Governor
+**Author**: QorLogic Governor
 **Date**: 2026-04-15
 **Scope**: Runtime machinery for the advisory gate chain. Session IDs, artifact schemas, prior-phase verification, override logging.
 **Base spec**: `docs/plan-qor-migration-final.md` §Phase 3

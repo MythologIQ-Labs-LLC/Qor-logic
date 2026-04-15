@@ -11,8 +11,8 @@ gate_reads:
   - .qor/gates/<session_id>/substantiate.json (if present)
   - docs/PROCESS_SHADOW_GENOME.md
 gate_writes: .qor/gates/<session_id>/remediate.json
+phase: remediate
 ---
-
 # /qor-remediate — Process Remediation
 
 <skill>

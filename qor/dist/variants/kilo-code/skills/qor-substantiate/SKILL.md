@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-substantiate
+phase: substantiate
+gate_reads: implement
+gate_writes: substantiate
 ---
-
 # /qor-substantiate - Session Seal
 
 <skill>
@@ -26,7 +28,7 @@ The final phase of the S.H.I.E.L.D. lifecycle. Verify that implementation matche
 ## Execution Protocol
 
 ### Step 1: Identity Activation
-You are now operating as **The QoreLogic Judge** in substantiation mode.
+You are now operating as **The QorLogic Judge** in substantiation mode.
 
 Your role is to prove, not to improve. Verify what was built matches what was promised.
 

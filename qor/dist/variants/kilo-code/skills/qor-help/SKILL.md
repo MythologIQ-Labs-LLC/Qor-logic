@@ -1,22 +1,24 @@
 ---
 name: qor-help
 description: >-
-  Quick reference that summarizes the purpose and usage of all QoreLogic commands. Use when: (1) Need to understand available commands, (2) Unsure which command to use, or (3) Looking for command overview.
+  Quick reference that summarizes the purpose and usage of all QorLogic commands. Use when: (1) Need to understand available commands, (2) Unsure which command to use, or (3) Looking for command overview.
 metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-help
+phase: help
+gate_reads: ""
+gate_writes: ""
 ---
-
 # /qor-help - Command Summary
 
 <skill>
   <trigger>/qor-help</trigger>
   <phase>ANY</phase>
   <persona>Governor</persona>
-  <output>Concise summary of available QoreLogic commands</output>
+  <output>Concise summary of available QorLogic commands</output>
 </skill>
 
 ## Execution Protocol
@@ -33,7 +35,7 @@ If the user asks about a specific command, direct them to invoke it. If unsure, 
 
 | Command            | Purpose                                                                      | Typical When                                    |
 | ------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------- |
-| `/qor-bootstrap`    | Initialize QoreLogic DNA for a **new workspace** (CONCEPT, ARCHITECTURE_PLAN, META_LEDGER). | First-time setup only. NOT for new features. |
+| `/qor-bootstrap`    | Initialize QorLogic DNA for a **new workspace** (CONCEPT, ARCHITECTURE_PLAN, META_LEDGER). | First-time setup only. NOT for new features. |
 | `/qor-plan`         | Create implementation plan for a **new feature** (plan-*.md with phases, tests). | Planning a feature in an existing workspace. |
 | `/qor-status`       | Diagnose lifecycle stage and next required action.                           | Any time you need current state.                |
 | `/qor-audit`        | Judge review for L2/L3 risk work; produces PASS/VETO.                        | Before any high-risk change.                    |

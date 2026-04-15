@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-repo-release
+phase: deliver
+gate_reads: validate
+gate_writes: deliver
 ---
-
 # /qor-repo-release - Delivery Gate Orchestration
 
 <skill>

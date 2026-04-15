@@ -1,7 +1,7 @@
 # AI Code Quality Doctrine
 
 Rules for writing code that resists degradation from AI agents and human developers alike.
-Inspired by QoreLogic Section 4 Razor + Ben Swerdlow's AI coding principles.
+Inspired by QorLogic Section 4 Razor + Ben Swerdlow's AI coding principles.
 
 ## 1. Semantic vs Pragmatic Functions
 

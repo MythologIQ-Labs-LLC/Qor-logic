@@ -7,8 +7,8 @@ requires: []
 enhances_with: []
 gate_reads: []
 gate_writes: docs/PROCESS_SHADOW_GENOME.md (append-only)
+phase: governance
 ---
-
 # /qor-shadow-process — Process Shadow Genome Recorder
 
 <skill>

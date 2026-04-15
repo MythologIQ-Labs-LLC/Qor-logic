@@ -1,4 +1,4 @@
-# Qorelogic Skill Registry
+# Qorlogic Skill Registry
 
 **Snapshot**: 2026-04-15
 **Authoritative location**: `qor/skills/<category>/<skill>/`
@@ -15,7 +15,7 @@ Gate, audit, and compliance authority.
 | qor-validate | `qor/skills/governance/qor-validate/` | Active |
 | qor-substantiate | `qor/skills/governance/qor-substantiate/` | Active |
 | qor-shadow-process | `qor/skills/governance/qor-shadow-process/` | Stub (full impl deferred) |
-| qore-governance-compliance | `qor/skills/governance/qore-governance-compliance/` | Active (migrated) |
+| qor-governance-compliance | `qor/skills/governance/qor-governance-compliance/` | Active (migrated) |
 
 ## sdlc/ (6)
 
@@ -41,7 +41,7 @@ State tracking, documentation, decision logs.
 | qor-organize | `qor/skills/memory/qor-organize/` | Active |
 | log-decision | `qor/skills/memory/log-decision.md` | Active (migrated) |
 | track-shadow-genome | `qor/skills/memory/track-shadow-genome.md` | Active (migrated) |
-| qore-docs-technical-writing | `qor/skills/memory/qore-docs-technical-writing/` | Active (migrated) |
+| qor-docs-technical-writing | `qor/skills/memory/qor-docs-technical-writing/` | Active (migrated) |
 
 ## meta/ (7)
 
@@ -54,8 +54,8 @@ Bootstrapping, help, repo management, meta-tracking.
 | qor-repo-audit | `qor/skills/meta/qor-repo-audit/` | Active |
 | qor-repo-release | `qor/skills/meta/qor-repo-release/` | Active |
 | qor-repo-scaffold | `qor/skills/meta/qor-repo-scaffold/` | Active |
-| qore-meta-log-decision | `qor/skills/meta/qore-meta-log-decision/` | Active (migrated) |
-| qore-meta-track-shadow | `qor/skills/meta/qore-meta-track-shadow/` | Active (migrated) |
+| qor-meta-log-decision | `qor/skills/meta/qor-meta-log-decision/` | Active (migrated) |
+| qor-meta-track-shadow | `qor/skills/meta/qor-meta-track-shadow/` | Active (migrated) |
 
 ## custom/ (0)
 
@@ -74,7 +74,7 @@ See `qor/vendor/agents/` for 7 generic specialists + `third-party/` (wshobson-ag
 
 ~65 third-party skill packs under `qor/vendor/skills/` — not listed per-file here. Browse the directory. Notable groupings:
 
-- `tauri/` — Tauri 2 skill cluster (qore-tauri2-* + deferred tauri2-* with collision policy applied)
+- `tauri/` — Tauri 2 skill cluster (qor-tauri2-* + deferred tauri2-* with collision policy applied)
 - `chrome-devtools/` — Chrome DevTools MCP audit
 - `custom/` — Bundled third-party collection (LICENSE files present from ElevenLabs and wshobson-agents)
 - `_system/` — openai-docs, skill-creator, skill-installer

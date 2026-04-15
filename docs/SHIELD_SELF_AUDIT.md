@@ -1,8 +1,8 @@
 # A.E.G.I.S. Self-Audit Report --- requires update to S.H.I.E.L.D. Framework
 
-**Auditor**: The QoreLogic Judge
+**Auditor**: The QorLogic Judge
 **Date**: 2026-01-20
-**Target**: QoreLogic Claude Adaptation Framework
+**Target**: QorLogic Claude Adaptation Framework
 **Risk Grade**: L2 (Logic changes, framework design)
 
 ---
@@ -13,7 +13,7 @@
 
 ## Executive Summary
 
-The QoreLogic A.E.G.I.S. framework adaptation for Claude Code has been audited against its own principles. The framework is structurally sound, provides comprehensive coverage of the development lifecycle, and correctly implements both macro and micro KISS evaluation. Minor recommendations are provided for enhancement.
+The QorLogic A.E.G.I.S. framework adaptation for Claude Code has been audited against its own principles. The framework is structurally sound, provides comprehensive coverage of the development lifecycle, and correctly implements both macro and micro KISS evaluation. Minor recommendations are provided for enhancement.
 
 ---
 
@@ -46,7 +46,7 @@ The QoreLogic A.E.G.I.S. framework adaptation for Claude Code has been audited a
 
 | Requirement | Status | Evidence |
 |-------------|--------|----------|
-| Adversarial audit | OK PASS | `skills/ql-audit.md` is explicitly adversarial |
+| Adversarial audit | OK PASS | `skills/qor-audit.md` is explicitly adversarial |
 | Security pass | OK PASS | Checks for stubs, placeholders, ghosts |
 | KISS pass | OK PASS | Section 4 Razor verification |
 | Dependency audit | OK PASS | Hallucination detection |
@@ -90,23 +90,23 @@ The QoreLogic A.E.G.I.S. framework adaptation for Claude Code has been audited a
 
 | File | Lines | Status |
 |------|-------|--------|
-| ql-governor.md | ~150 | OK PASS |
-| ql-judge.md | ~200 | OK PASS |
-| ql-specialist.md | ~220 | OK PASS |
+| qor-governor.md | ~150 | OK PASS |
+| qor-judge.md | ~200 | OK PASS |
+| qor-specialist.md | ~220 | OK PASS |
 
 ### Skill Files
 
 | File | Lines | Status |
 |------|-------|--------|
-| ql-bootstrap.md | ~180 | OK PASS |
-| ql-status.md | ~170 | OK PASS |
-| ql-audit.md | ~220 | OK PASS |
-| ql-implement.md | ~250 | OK PASS (at limit) |
-| ql-refactor.md | ~240 | OK PASS |
-| ql-validate.md | ~200 | OK PASS |
-| ql-substantiate.md | ~230 | OK PASS |
+| qor-bootstrap.md | ~180 | OK PASS |
+| qor-status.md | ~170 | OK PASS |
+| qor-audit.md | ~220 | OK PASS |
+| qor-implement.md | ~250 | OK PASS (at limit) |
+| qor-refactor.md | ~240 | OK PASS |
+| qor-validate.md | ~200 | OK PASS |
+| qor-substantiate.md | ~230 | OK PASS |
 
-**Finding**: All documentation files within 250-line limit. `ql-implement.md` is at the boundary - monitor for growth.
+**Finding**: All documentation files within 250-line limit. `qor-implement.md` is at the boundary - monitor for growth.
 
 ### Macro KISS (Project Structure)
 
@@ -172,14 +172,14 @@ The QoreLogic A.E.G.I.S. framework adaptation for Claude Code has been audited a
 
 ### Priority 1 (Should Implement)
 
-1. **Add `/ql-test` skill**: Integrate TDD-Light with common test runners
+1. **Add `/qor-test` skill**: Integrate TDD-Light with common test runners
 2. **Add iteration field to all entries**: Currently shown in templates but not enforced
 
 ### Priority 2 (Nice to Have)
 
-3. **Add `/ql-diff` skill**: Show what changed since last seal
+3. **Add `/qor-diff` skill**: Show what changed since last seal
 4. **Add CI hook examples**: GitHub Actions / GitLab CI templates
-5. **Add recovery skill**: `/ql-repair` for chain breaks
+5. **Add recovery skill**: `/qor-repair` for chain breaks
 
 ### Priority 3 (Future Consideration)
 
@@ -210,10 +210,10 @@ This framework adaptation:
 - OK Maintains Merkle chain integrity
 - OK Properly gates security paths
 
-**The QoreLogic A.E.G.I.S. Framework for Claude Code is certified for use.**
+**The QorLogic A.E.G.I.S. Framework for Claude Code is certified for use.**
 
 ---
 
-*Audited by The QoreLogic Judge*
+*Audited by The QorLogic Judge*
 *A.E.G.I.S. Phase: GATE (self-audit)*
 *Verdict Hash: [Would be calculated from this document]*

@@ -1,5 +1,5 @@
 ---
-name: ql-ux-evaluator
+name: qor-ux-evaluator
 description: >
   UI/UX Testing Agent
 tools: Read, Glob, Grep, Edit, Write, Bash
@@ -7,14 +7,14 @@ model: inherit
 ---
 
 ---
-name: ql-ux-evaluator
-description: QoreLogic UX Evaluator Agent - UI/UX testing with optional Playwright
+name: qor-ux-evaluator
+description: QorLogic UX Evaluator Agent - UI/UX testing with optional Playwright
 ---
 
-# ql-ux-evaluator - UI/UX Testing Agent
+# qor-ux-evaluator - UI/UX Testing Agent
 
 <agent>
-  <name>ql-ux-evaluator</name>
+  <name>qor-ux-evaluator</name>
   <persona>UX Evaluator</persona>
   <scope>User experience validation via automated testing</scope>
   <tools>playwright (optional)</tools>
@@ -168,7 +168,7 @@ test('accessibility scan', async ({ page }) => {
 ## Invocation
 
 ```bash
-/ql-ux-evaluator [scope]
+/qor-ux-evaluator [scope]
 ```
 
 **Scopes**:
@@ -183,16 +183,16 @@ test('accessibility scan', async ({ page }) => {
 
 ```bash
 # Test a specific component
-/ql-ux-evaluator component:LoginForm
+/qor-ux-evaluator component:LoginForm
 
 # Test a page
-/ql-ux-evaluator page:/dashboard
+/qor-ux-evaluator page:/dashboard
 
 # Test a user flow
-/ql-ux-evaluator flow:signup
+/qor-ux-evaluator flow:signup
 
 # Full evaluation
-/ql-ux-evaluator full
+/qor-ux-evaluator full
 ```
 
 ## Report Output
@@ -252,14 +252,14 @@ npx playwright test --grep "accessibility"
 
 ## Integration
 
-### With /ql-implement
+### With /qor-implement
 
 After implementation, suggest UX evaluation:
 ```markdown
 Implementation complete.
 
 Run UX evaluation? (requires Playwright)
-- `/ql-ux-evaluator component:[ComponentName]`
+- `/qor-ux-evaluator component:[ComponentName]`
 ```
 
 ### With CI/CD
@@ -294,4 +294,4 @@ export default {
 - Target total: <10KB per evaluation
 
 ---
-_Part of: /ql-* agent family | Optional tool: Playwright_
+_Part of: /qor-* agent family | Optional tool: Playwright_

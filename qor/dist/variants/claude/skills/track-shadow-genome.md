@@ -1,16 +1,16 @@
 # Track Shadow Genome Skill
 ## Record Failed Approaches to Prevent Repetition
 
-**Skill Name:** qore-meta-track-shadow
+**Skill Name:** qor-meta-track-shadow
 **Version:** 1.0
-**Purpose:** Implement QoreLogic Shadow Genome for meta-governance - learn from failures
+**Purpose:** Implement QorLogic Shadow Genome for meta-governance - learn from failures
 
 ---
 
 ## Usage
 
 ```
-/qore-meta-track-shadow <context> <attempted_solution> <failure_mode>
+/qor-meta-track-shadow <context> <attempted_solution> <failure_mode>
 ```
 
 Or invoke in conversation:
@@ -20,7 +20,7 @@ Or invoke in conversation:
 
 ## What This Skill Does
 
-Implements QoreLogic's **Shadow Genome** principle: treating failures as data rather than mistakes.
+Implements QorLogic's **Shadow Genome** principle: treating failures as data rather than mistakes.
 Records failed approaches with context, failure mode analysis, and lessons learned to prevent
 repetition.
 
@@ -48,7 +48,7 @@ Collect comprehensive details about the failed approach:
 
 ### 2. Classify Failure Mode
 
-Use QoreLogic failure taxonomy:
+Use QorLogic failure taxonomy:
 
 | Failure Mode | Description | Example |
 |--------------|-------------|---------|
@@ -272,7 +272,7 @@ This skill succeeds when:
 
 ---
 
-## Integration with QoreLogic
+## Integration with QorLogic
 
 This skill implements:
 

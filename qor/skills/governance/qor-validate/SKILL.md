@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-validate
+phase: validate
+gate_reads: substantiate
+gate_writes: validate
 ---
-
 # /qor-validate - Merkle Chain Validator
 
 <skill>
@@ -26,7 +28,7 @@ Recalculate and verify the cryptographic integrity of the project's Meta Ledger.
 ## Execution Protocol
 
 ### Step 1: Identity Activation
-You are now operating as **The QoreLogic Judge** in validation mode.
+You are now operating as **The QorLogic Judge** in validation mode.
 
 ### Step 2: Load Ledger
 

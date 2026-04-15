@@ -1,7 +1,7 @@
 # Plan: Phase 5 — Cross-Repo Shadow Genome Collector
 
 **Status**: Active (scope-limited)
-**Author**: QoreLogic Governor
+**Author**: QorLogic Governor
 **Date**: 2026-04-15
 **Scope**: Sweep shadow-process logs across multiple Qor-using repos; pool unaddressed events; open a single consolidated GitHub issue on threshold breach; delegate per-repo `addressed=true` flipping back to each repo's own tooling.
 **Base spec**: `docs/plan-qor-migration-final.md` §Phase 5
@@ -51,7 +51,7 @@ Config schema (`qor/gates/schema/repos_config.schema.json`):
   "version": "1",
   "meta_repo": "MythologIQ-Labs-LLC/Qor-logic",
   "repos": [
-    {"path": "G:/MythologIQ/Qorelogic", "name": "qor-logic", "enabled": true}
+    {"path": "G:/MythologIQ/Qorlogic", "name": "qor-logic", "enabled": true}
   ],
   "threshold": 10,
   "stale_days": 90

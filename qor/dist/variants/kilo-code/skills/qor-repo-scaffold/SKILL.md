@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-repo-scaffold
+phase: implement
+gate_reads: ""
+gate_writes: implement
 ---
-
 # /qor-repo-scaffold - Generate Governance Scaffold
 
 <skill>

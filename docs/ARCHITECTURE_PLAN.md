@@ -17,13 +17,13 @@ ingest/                          ← Raw skills dumped here (any format)
   └── experimental/              ← Work-in-progress skills
 
 processed/                       ← S.H.I.E.L.D. compliant (canonical)
-  ├── ql-bootstrap.md
-  ├── ql-plan.md
-  ├── ql-audit.md
-  ├── ql-implement.md
-  ├── ql-substantiate.md
-  ├── ql-debug.md
-  ├── ql-course-correct.md       ← NEW: drift recovery
+  ├── qor-bootstrap.md
+  ├── qor-plan.md
+  ├── qor-audit.md
+  ├── qor-implement.md
+  ├── qor-substantiate.md
+  ├── qor-debug.md
+  ├── qor-course-correct.md       ← NEW: drift recovery
   └── ...
 
 compiled/                        ← LLM-specific output
@@ -39,12 +39,12 @@ compiled/                        ← LLM-specific output
 
 | Persona | Role | Skills |
 |---------|------|--------|
-| Governor | Planning, alignment, routing | ql-bootstrap, ql-plan, ql-repo-release |
-| Judge | Audit, substantiation, verdicts | ql-audit, ql-substantiate, ql-validate |
-| Specialist | Implementation, precision build | ql-implement, ql-refactor |
-| Fixer | Debugging, root-cause analysis | ql-debug |
-| Navigator | Drift recovery, course correction | ql-course-correct |
-| Strategist | Research, evidence gathering | ql-research |
+| Governor | Planning, alignment, routing | qor-bootstrap, qor-plan, qor-repo-release |
+| Judge | Audit, substantiation, verdicts | qor-audit, qor-substantiate, qor-validate |
+| Specialist | Implementation, precision build | qor-implement, qor-refactor |
+| Fixer | Debugging, root-cause analysis | qor-debug |
+| Navigator | Drift recovery, course correction | qor-course-correct |
+| Strategist | Research, evidence gathering | qor-research |
 
 ## Processing Rules
 
@@ -65,7 +65,7 @@ Every processed skill MUST have:
 
 ## Collaborative Design Integration
 
-All planning skills (ql-bootstrap, ql-plan) MUST include:
+All planning skills (qor-bootstrap, qor-plan) MUST include:
 - One question at a time dialogue
 - Multiple choice preferred
 - 2-3 approach proposals with trade-offs

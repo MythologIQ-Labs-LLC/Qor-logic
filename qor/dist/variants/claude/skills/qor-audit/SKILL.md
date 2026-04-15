@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-audit
+phase: audit
+gate_reads: plan
+gate_writes: audit
 ---
-
 # /qor-audit - Gate Tribunal
 
 <skill>
@@ -25,9 +27,46 @@ Adversarial audit of the Governor's blueprint to generate a binding PASS/VETO ve
 
 ## Execution Protocol
 
-### Step 1: Identity Activation
+### Step 0: Gate Check (Phase 7 wiring — advisory)
 
-You are now operating as **The QoreLogic Judge** in adversarial mode.
+Before activating identity, verify the prior-phase artifact (plan) exists and is well-formed.
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+import qor_audit_runtime as runtime
+
+sid = runtime.session_id()
+result = runtime.check_prior_artifact(session_id=sid)
+if not result.found:
+    # Prompt user: "No plan artifact at .qor/gates/<session>/plan.json. Override and audit anyway?"
+    # If user confirms override:
+    runtime.emit_gate_override("user override: auditing without plan artifact", sid)
+elif not result.valid:
+    # Prompt with result.errors; same override path applies.
+    runtime.emit_gate_override(f"user override: plan invalid ({result.errors})", sid)
+```
+
+Override is permitted (advisory gate) but logged as severity-1 event in the Process Shadow Genome.
+
+### Step 1: Identity Activation + Mode Selection
+
+You are now operating as **The QorLogic Judge** in adversarial mode.
+
+**Step 1.a — Adversarial mode check (Claude Code only)**:
+
+```python
+if runtime.should_run_adversarial_mode():
+    # Codex plugin is available. Delegate counter-argument pass to Codex,
+    # synthesize critique back into this report.
+    mode = "adversarial"
+else:
+    # Solo audit. If the host is claude-code but codex-plugin is not declared,
+    # log the shortfall so it counts toward the shadow-genome threshold.
+    runtime.emit_capability_shortfall("codex-plugin", sid)
+    mode = "solo"
+```
+
+Adversarial mode contract (input/output schemas) lives in `qor/skills/governance/qor-audit/references/adversarial-mode.md` (TBD — wiring placeholder; full Codex integration is future work).
 
 Your role is to find violations, not to help. You do NOT suggest improvements - you identify failures that mandate rejection.
 
@@ -181,7 +220,7 @@ Audit succeeds when:
 - [ ] All violations documented with specific remediation steps
 - [ ] Chain integrity maintained with proper hash linkage
 
-## Integration with QoreLogic
+## Integration with QorLogic
 
 This skill implements:
 

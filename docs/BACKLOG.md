@@ -5,23 +5,23 @@
 ### Development Blockers
 - [x] [D1] Import existing QL skills from FailSafe extension into ingest/internal/ (Complete)
 - [x] [D2] Create processing script that normalizes skills to S.H.I.E.L.D. format (Complete — scripts/process-skills.py)
-- [x] [D3] Create ql-document skill (Complete — ingest/internal/governance/ql-document.md)
+- [x] [D3] Create qor-document skill (Complete — ingest/internal/governance/qor-document.md)
 
 ## Backlog (Planned Work)
-- [x] [B1] Import all existing ql-* skills from G:/MythologIQ/FailSafe/.claude/commands/ (Complete)
+- [x] [B1] Import all existing qor-* skills from G:/MythologIQ/FailSafe/.claude/commands/ (Complete)
 - [x] [B2] Create compilation script for Claude Code format (Complete — scripts/compile-claude.py)
 - [x] [B3] Create compilation script for Agent workflow format (Complete — scripts/compile-agent.py)
-- [x] [B4] Process collaborative design principles into ql-plan and ql-bootstrap (Complete)
-- [x] [B5] Create ql-course-correct skill (Complete — Navigator persona, 190 lines)
+- [x] [B4] Process collaborative design principles into qor-plan and qor-bootstrap (Complete)
+- [x] [B5] Create qor-course-correct skill (Complete — Navigator persona, 190 lines)
 - [x] [B6] Identify and fill skill gaps for e2e autonomous building (Complete — all gaps filled)
 - [x] [B7] Create skill quality audit checklist (Complete — docs/SKILL_AUDIT_CHECKLIST.md)
-- [x] [B8] Create ql-fixer subagent definition (Complete — 4-layer methodology, 122 lines)
+- [x] [B8] Create qor-fixer subagent definition (Complete — 4-layer methodology, 122 lines)
 - [x] [B9] Reliability scripts (Complete — intent-lock.py, admit-skill.py, gate-skill-matrix.py)
 - [x] [B10] Create SKILL_REGISTRY.md — comprehensive index of all content (Complete)
 - [x] [B11] Consolidate utility skills — archive, merge, distill (Complete)
-- [x] [B12] Wire ql-document → ql-technical-writer subagent dispatch (Complete)
+- [x] [B12] Wire qor-document → qor-technical-writer subagent dispatch (Complete)
 
-- [ ] [B13] Encode AI code quality doctrine into QoreLogic governance. Add explicit guidance for semantic vs pragmatic functions, stronger model-shaping rules, and anti-slop guardrails inspired by Ben Swerdlow's AI coding write-up at https://aicode.swerdlow.dev/
+- [ ] [B13] Encode AI code quality doctrine into QorLogic governance. Add explicit guidance for semantic vs pragmatic functions, stronger model-shaping rules, and anti-slop guardrails inspired by Ben Swerdlow's AI coding write-up at https://aicode.swerdlow.dev/
 
 ## Lifecycle Coverage
 
@@ -37,11 +37,11 @@ Cross-cutting: RESEARCH ✓, DEBUG ✓, STATUS ✓, VALIDATE ✓, ORGANIZE ✓, 
 
 | Governance Skill | Subagent | Status |
 |-----------------|----------|--------|
-| ql-debug | ql-fixer | PAIRED |
-| ql-document | ql-technical-writer | PAIRED |
-| ql-audit | (parallel-auditor) | PROPOSED |
-| ql-implement | (test-writer) | PROPOSED |
-| ql-substantiate | (verification-auditor) | PROPOSED |
+| qor-debug | qor-fixer | PAIRED |
+| qor-document | qor-technical-writer | PAIRED |
+| qor-audit | (parallel-auditor) | PROPOSED |
+| qor-implement | (test-writer) | PROPOSED |
+| qor-substantiate | (verification-auditor) | PROPOSED |
 
 ## Final Inventory
 
@@ -49,7 +49,7 @@ Cross-cutting: RESEARCH ✓, DEBUG ✓, STATUS ✓, VALIDATE ✓, ORGANIZE ✓, 
 |----------|-------|----------|
 | Governance skills | 17 | ingest/internal/governance/ — ALL COMPLIANT |
 | Agent personas | 6 | ingest/internal/agents/ |
-| Reference docs | 14 | ingest/internal/references/ (7 ql-templates + 7 patterns) |
+| Reference docs | 14 | ingest/internal/references/ (7 qor-templates + 7 patterns) |
 | Utility skills | 4 | ingest/internal/utilities/ (meta-skills + generic) |
 | Third-party agents | 229 | ingest/third-party/agents/ (3 enhanced) |
 | Archived | 5 | ingest/experimental/ |
@@ -65,4 +65,4 @@ All backlog items complete. Repository fully operational.
 
 ---
 
-_Updated by /ql-* commands automatically_
+_Updated by /qor-* commands automatically_

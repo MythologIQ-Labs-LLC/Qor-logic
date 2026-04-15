@@ -8,22 +8,22 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PROCESSED_DIR = REPO_ROOT / "processed"
-HANDOFF_RE = re.compile(r"/ql-([a-z][\w-]*)")
+HANDOFF_RE = re.compile(r"/qor-([a-z][\w-]*)")
 
 
 def collect_skills() -> dict[str, Path]:
     """Map skill trigger names to their file paths."""
     skills: dict[str, Path] = {}
     for filepath in sorted(PROCESSED_DIR.glob("*.md")):
-        trigger = filepath.stem  # e.g. "ql-implement"
+        trigger = filepath.stem  # e.g. "qor-implement"
         skills[trigger] = filepath
     return skills
 
 
 def extract_references(filepath: Path) -> list[str]:
-    """Extract all /ql-* handoff references from a skill file."""
+    """Extract all /qor-* handoff references from a skill file."""
     content = filepath.read_text(encoding="utf-8", errors="replace")
-    return [f"ql-{m}" for m in HANDOFF_RE.findall(content)]
+    return [f"qor-{m}" for m in HANDOFF_RE.findall(content)]
 
 
 def build_matrix(

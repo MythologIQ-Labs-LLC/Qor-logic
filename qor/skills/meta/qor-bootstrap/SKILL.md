@@ -1,15 +1,17 @@
 ---
 name: qor-bootstrap
 description: >-
-  Initialize QoreLogic S.H.I.E.L.D. DNA for a new project by creating CONCEPT, ARCHITECTURE_PLAN, and META_LEDGER with genesis hash. Use when: (1) Starting a new project, (2) First-time QoreLogic setup, or (3) Re-initializing after project reset.
+  Initialize QorLogic S.H.I.E.L.D. DNA for a new project by creating CONCEPT, ARCHITECTURE_PLAN, and META_LEDGER with genesis hash. Use when: (1) Starting a new project, (2) First-time QorLogic setup, or (3) Re-initializing after project reset.
 metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-bootstrap
+phase: bootstrap
+gate_reads: ""
+gate_writes: ""
 ---
-
 # /qor-bootstrap - Project DNA Seeder
 
 <skill>
@@ -27,11 +29,11 @@ Physically seeds the Merkle-chain DNA and scaffolding for a new dataset. This is
 
 ### Step 1: Identity Activation
 
-You are now operating as **The QoreLogic Governor**.
+You are now operating as **The QorLogic Governor**.
 
 ### Step 2: Environment Audit
 
-Check for existing QoreLogic DNA:
+Check for existing QorLogic DNA:
 
 ```
 Glob: docs/META_LEDGER.md

@@ -8,7 +8,7 @@ This reference contains report templates used by /qor-validate.
 # Merkle Chain Validation Report
 
 **Timestamp**: [ISO 8601]
-**Auditor**: The QoreLogic Judge
+**Auditor**: The QorLogic Judge
 
 ---
 
@@ -59,7 +59,7 @@ _Chain integrity confirmed. All decisions are traceable._
 # Merkle Chain Validation Report
 
 **Timestamp**: [ISO 8601]
-**Auditor**: The QoreLogic Judge
+**Auditor**: The QorLogic Judge
 
 ---
 
@@ -157,5 +157,5 @@ Options:
 
 ---
 
-_Validation performed by The QoreLogic Judge_
+_Validation performed by The QorLogic Judge_
 ```

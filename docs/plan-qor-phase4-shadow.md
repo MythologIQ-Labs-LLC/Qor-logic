@@ -1,7 +1,7 @@
 # Plan: Phase 4 — Process Shadow Genome Automation
 
 **Status**: Active (scope-limited; incremental post-SSoT tooling)
-**Author**: QoreLogic Governor
+**Author**: QorLogic Governor
 **Date**: 2026-04-15
 **Scope**: Automate the self-improvement loop: append events, compute threshold, trigger `/qor-remediate`, create GitHub issue, manage `addressed` state.
 **Base spec**: `docs/plan-qor-migration-final.md` §Phase 4 (authoritative; this plan inherits all decisions, adds wiring)

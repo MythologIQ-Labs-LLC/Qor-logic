@@ -1,6 +1,6 @@
 # QL Implement Patterns and Templates
 
-This reference contains code patterns and templates used by /ql-implement.
+This reference contains code patterns and templates used by /qor-implement.
 
 ## TDD-Light Test Template
 
@@ -160,7 +160,7 @@ const value = safeGet(obj, 'a.b.c');
 **Section 4 Razor Compliance**: VERIFIED
 
 ### Next Action
-Implementation complete. The Judge must now invoke `/ql-substantiate` to verify and seal.
+Implementation complete. The Judge must now invoke `/qor-substantiate` to verify and seal.
 
 ---
 

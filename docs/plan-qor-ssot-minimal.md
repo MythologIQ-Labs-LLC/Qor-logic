@@ -1,7 +1,7 @@
 # Plan: Qor SSoT Migration — MINIMAL
 
 **Status**: Active (override-accepted; advisory gate VETO carried as sev-1 in PROCESS_SHADOW_GENOME)
-**Author**: QoreLogic Governor
+**Author**: QorLogic Governor
 **Date**: 2026-04-15
 **Supersedes**: All prior `plan-qor-migration*.md` iterations (retained in `docs/` for ledger continuity; do not implement from them)
 **Scope**: Phases 0, 1, 1.5, 7 only. Tooling phases (2, 3, 4, 5, 6, 8) deferred to `plan-qor-tooling-deferred.md`.
@@ -89,11 +89,11 @@ Explicitly deleted post-migration: `kilo-code/`, `deployable state/`, `processed
 **Canonical Qor skills**: move `kilo-code/qor-<name>/` → `qor/skills/<category>/qor-<name>/` per structure above. Retire `qor-course-correct`. Create stubs: `qor/skills/sdlc/qor-remediate/` and `qor/skills/governance/qor-shadow-process/` (SKILL.md minimal — full behavior deferred).
 
 **`ingest/skills/` (90 items)**: apply §3.B rules from `plan-qor-migration-final.md`:
-- R-1: delete 10 `ql-*.md` (superseded)
-- R-2: promote `qore-*` to `qor/skills/<category>/` or `qor/vendor/skills/` per name
+- R-1: delete 10 `qor-*.md` (superseded)
+- R-2: promote `qor-*` to `qor/skills/<category>/` or `qor/vendor/skills/` per name
 - R-3: `log-decision.md`, `track-shadow-genome.md` → `qor/skills/memory/`
 - R-4: delete `_quarantine/`
-- R-5/R-6: inspect `agents/` and `custom/` at execution; default qor-scoped if content uses qor/ql frontmatter, else vendor
+- R-5/R-6: inspect `agents/` and `custom/` at execution; default qor-scoped if content uses qor/qor frontmatter, else vendor
 - R-7: all remaining third-party → `qor/vendor/skills/<name>/`
 
 **Collision policy (accepting carried violation V-2)**: when an item in `ingest/skills/<name>` and `ingest/scripts/<name>` both target the same `qor/vendor/skills/<name>/`, the `ingest/skills/` version wins. Discarded content is logged to `.qor/migration-discards.log` for post-hoc review. Not automated; executor logs manually during Phase 1.
@@ -103,13 +103,13 @@ Explicitly deleted post-migration: `kilo-code/`, `deployable state/`, `processed
 - `ingest/experimental/` → `qor/experimental/`
 - `ingest/internal/` → split: `agents/` → `qor/agents/` (merge; skill-name wins on collision); `governance/` → `qor/skills/governance/`; `references/` → per-skill `references/`; `scripts/` → `qor/scripts/utilities/` (NOT `qor/scripts/` root — avoids V-3 collision with canonical scripts); `utilities/` → `qor/scripts/utilities/`
 - `ingest/lessons-learned/` → `docs/Lessons-Learned/`
-- `ingest/references/` → per-skill `references/` folders (ql-*-patterns routed by name; tauri2-* links → `qor/vendor/skills/tauri*/references/`)
+- `ingest/references/` → per-skill `references/` folders (qor-*-patterns routed by name; tauri2-* links → `qor/vendor/skills/tauri*/references/`)
 - `ingest/scripts/` → `calculate-session-seal.py` → `qor/scripts/`; framework subdirs → `qor/vendor/skills/<name>/` (collision policy above)
 - `ingest/templates/` → `qor/templates/`
 - `ingest/third-party/` → `qor/vendor/` (merge)
-- `ingest/workflows/` → DELETE (legacy ql-* alternates; superseded)
+- `ingest/workflows/` → DELETE (legacy qor-* alternates; superseded)
 
-**Deletions in this phase**: all five hearthlink-*, ten ingest/skills/ql-*.md, ingest/skills/_quarantine/, ingest/workflows/ (content), `kilo-code/qor-course-correct/`.
+**Deletions in this phase**: all five hearthlink-*, ten ingest/skills/qor-*.md, ingest/skills/_quarantine/, ingest/workflows/ (content), `kilo-code/qor-course-correct/`.
 
 ## Phase 1.5 — Ledger continuation
 

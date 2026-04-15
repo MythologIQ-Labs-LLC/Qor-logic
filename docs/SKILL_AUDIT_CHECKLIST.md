@@ -1,7 +1,7 @@
 # Skill Audit Checklist (B7)
 
 Quality gate for evaluating S.H.I.E.L.D. governance skills.
-Use during `/ql-audit` or manual review. Every skill must pass Section 1.
+Use during `/qor-audit` or manual review. Every skill must pass Section 1.
 Sections 2-5 apply based on skill type.
 
 ---

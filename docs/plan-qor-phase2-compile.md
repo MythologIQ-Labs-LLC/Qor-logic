@@ -1,7 +1,7 @@
 # Plan: Phase 2 — Compile Pipeline + Drift Guard
 
 **Status**: Active (scope-limited)
-**Author**: QoreLogic Governor
+**Author**: QorLogic Governor
 **Date**: 2026-04-15
 **Scope**: Regenerate per-variant outputs under `qor/dist/variants/{claude,kilo-code,codex}/` from `qor/skills/` and `qor/agents/` SSoT. Prevent hand-edits via pre-commit hook + CI drift check.
 **Base spec**: `docs/plan-qor-migration-final.md` §Phase 2

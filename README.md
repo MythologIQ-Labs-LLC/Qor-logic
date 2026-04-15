@@ -1,5 +1,5 @@
 <p align="center">
-  <strong>QoreLogic</strong><br>
+  <strong>QorLogic</strong><br>
   Canonical S.H.I.E.L.D. Skills Repository
 </p>
 
@@ -21,7 +21,7 @@ qor/
   agents/<category>/     governance, sdlc, memory, meta
   vendor/                third-party skills and agents (~65 + wshobson)
   scripts/               ledger_hash.py, utilities/, legacy/
-  references/            doctrine + patterns + ql-* examples
+  references/            doctrine + patterns + qor-* examples
   experimental/          non-canonical research
   templates/             doc templates
 ```
@@ -120,13 +120,13 @@ Qor-logic/
   qor/                   <-- SSoT; edit here
     skills/
       governance/          qor-audit, qor-validate, qor-substantiate, qor-shadow-process,
-                           qore-governance-compliance
+                           qor-governance-compliance
       sdlc/                qor-research, qor-plan, qor-implement, qor-refactor, qor-debug,
                            qor-remediate
       memory/              qor-status, qor-document, qor-organize, log-decision,
-                           track-shadow-genome, qore-docs-technical-writing
+                           track-shadow-genome, qor-docs-technical-writing
       meta/                qor-bootstrap, qor-help, qor-repo-audit, qor-repo-release,
-                           qor-repo-scaffold, qore-meta-*
+                           qor-repo-scaffold, qor-meta-*
       custom/              (reserved for qor-scoped custom content)
     agents/
       governance/          qor-governor, qor-judge
@@ -143,7 +143,7 @@ Qor-logic/
       calculate-session-seal.py
       legacy/              Pre-migration pipeline (preserved for reference)
       utilities/           Assorted utility scripts
-    references/            Doctrine + patterns + ql-* examples
+    references/            Doctrine + patterns + qor-* examples
     experimental/          Non-canonical research (tauri2-*, tauri-launcher, build-doctor)
     templates/             Doc templates (ARCHITECTURE_PLAN, CONCEPT, SYSTEM_STATE, ...)
   docs/

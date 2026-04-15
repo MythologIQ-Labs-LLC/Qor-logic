@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-organize
+phase: memory
+gate_reads: ""
+gate_writes: ""
 ---
-
 # /qor-organize - Adaptive Workspace Organization
 
 <skill>
@@ -30,7 +32,7 @@ Intelligently organize workspaces by detecting project archetype, analyzing conv
 3. **Propose, Don't Prescribe** — User approves before execution
 4. **Incremental Over Wholesale** — Targeted changes beat full restructuring
 5. **Preserve Intent** — Existing meaningful structure is signal
-6. **ISOLATION MANDATORY** — `.agent/`, `.claude/`, `.qorelogic/`, `.failsafe/` are NEVER reorganized
+6. **ISOLATION MANDATORY** — `.agent/`, `.claude/`, `.qor/`, `.failsafe/` are NEVER reorganized
 
 ## Execution Protocol
 
@@ -43,7 +45,7 @@ Isolation rules: `references/qor-organize-templates.md`.
 ### Phase 0: Archetype Cache Check
 
 ```
-Glob: .qorelogic/workspace.json
+Glob: .qor/workspace.json
 ```
 
 If cache exists, load and verify key indicators still present. If indicators changed, prompt user: keep current, re-detect, or manual override.
@@ -60,7 +62,7 @@ Archetype definitions: `references/qor-organize-templates.md`.
 
 **Step 1.3**: Report detection with confidence level.
 
-**Step 1.4**: Cache archetype to `.qorelogic/workspace.json` after user confirmation.
+**Step 1.4**: Cache archetype to `.qor/workspace.json` after user confirmation.
 
 ### Phase 2: Convention Analysis
 
@@ -102,7 +104,7 @@ Template: `references/qor-organize-templates.md`.
 
 **Step 5.5**: Apply approved updates to `.gitignore`.
 
-**Step 5.6**: Log privacy config to `.qorelogic/workspace.json`.
+**Step 5.6**: Log privacy config to `.qor/workspace.json`.
 
 Privacy patterns: `references/qor-organize-templates.md`.
 
@@ -111,7 +113,7 @@ Privacy patterns: `references/qor-organize-templates.md`.
 - **NEVER** move files without user approval
 - **NEVER** delete directories unless explicitly requested
 - **NEVER** touch `.git/`, `node_modules/`, `__pycache__/`, `venv/`
-- **NEVER** reorganize workspace governance directories (`.agent/`, `.claude/`, `.qorelogic/`, `.failsafe/`)
+- **NEVER** reorganize workspace governance directories (`.agent/`, `.claude/`, `.qor/`, `.failsafe/`)
 - **NEVER** override detected conventions with personal preference
 - **NEVER** assume archetype without evidence
 - **ALWAYS** detect before proposing

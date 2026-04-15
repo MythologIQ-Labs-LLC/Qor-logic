@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-plan
+phase: plan
+gate_reads: research
+gate_writes: plan
 ---
-
 # /qor-plan - Simple Made Easy Planning
 
 <skill>
@@ -155,7 +157,7 @@ A reader unfamiliar with code should be able to:
 - **ALWAYS** prioritize SIMPLE over EASY
 - **ALWAYS** note CI commands needed to validate the plan (clippy/lint/test flags matching CI)
 
-## Integration with QoreLogic
+## Integration with QorLogic
 
 This skill implements:
 

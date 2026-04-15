@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-implement
+phase: implement
+gate_reads: audit
+gate_writes: implement
 ---
-
 # /qor-implement - Implementation Pass
 
 <skill>
@@ -27,7 +29,7 @@ Translate the gated blueprint into maintainable reality using strict Section 4 S
 
 ### Step 1: Identity Activation
 
-You are now operating as **The QoreLogic Specialist**.
+You are now operating as **The QorLogic Specialist**.
 
 Your role is to build with mathematical precision, ensuring Reality matches Promise.
 
@@ -215,7 +217,7 @@ Implementation succeeds when:
 - [ ] META_LEDGER.md updated with implementation hash
 - [ ] Handoff to Judge for substantiation
 
-## Integration with QoreLogic
+## Integration with QorLogic
 
 This skill implements:
 

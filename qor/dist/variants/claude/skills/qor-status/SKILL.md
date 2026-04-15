@@ -6,10 +6,12 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ/QorLogic
     path: processed/skills-output/qor-status
+phase: memory
+gate_reads: ""
+gate_writes: ""
 ---
-
 # /qor-status - Quick Lifecycle Check
 
 <skill>

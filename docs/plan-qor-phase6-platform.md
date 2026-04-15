@@ -1,7 +1,7 @@
 # Plan: Phase 6 — Platform Detection & Capability Catalog
 
 **Status**: Active (scope-limited, infra-only)
-**Author**: QoreLogic Governor
+**Author**: QorLogic Governor
 **Date**: 2026-04-15
 **Scope**: Ship the platform module + capability catalog + 5 profile docs. Skills unchanged (wiring is future work).
 **Base spec**: `docs/plan-qor-migration-final.md` §Phase 6

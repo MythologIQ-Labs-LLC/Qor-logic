@@ -1,6 +1,6 @@
 # QL Substantiate Templates
 
-This reference contains report templates used by /ql-substantiate.
+This reference contains report templates used by /qor-substantiate.
 
 ## Reality vs Promise Comparison
 
@@ -137,7 +137,7 @@ SHA256(content_hash + previous_hash)
 ---
 
 _Chain Status: SEALED_
-_Next Session: Run /ql-bootstrap for new feature or /ql-status to review_
+_Next Session: Run /qor-bootstrap for new feature or /qor-status to review_
 ```
 
 ## Substantiation Report Template
@@ -190,9 +190,9 @@ State: SYNCHRONIZED
 *Substantiated. Reality matches Promise. Session Sealed at [seal_prefix]...*
 
 **Next Actions**:
-- New feature: `/ql-bootstrap`
-- Check status: `/ql-status`
-- Validate chain: `/ql-validate`
+- New feature: `/qor-bootstrap`
+- Check status: `/qor-status`
+- Validate chain: `/qor-validate`
 ```
 
 ## Failure Report Template
@@ -208,7 +208,7 @@ Implementation does not match blueprint.
 | --------- | ----------------------- | ----------------------------- |
 | MISSING   | [file] not created      | Implement or update blueprint |
 | UNPLANNED | [file] not in blueprint | Remove or update blueprint    |
-| VIOLATION | Section 4 breach in [file]     | Run /ql-refactor              |
+| VIOLATION | Section 4 breach in [file]     | Run /qor-refactor              |
 
 ### Disposition
 

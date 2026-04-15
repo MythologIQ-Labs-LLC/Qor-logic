@@ -1,6 +1,6 @@
 # QL Refactor Examples and Templates
 
-This reference contains the example transformations and report templates used by /ql-refactor.
+This reference contains the example transformations and report templates used by /qor-refactor.
 
 ## Function Decomposition Example
 
@@ -237,7 +237,7 @@ SHA256(content_hash + previous_hash)
 
 ### Next Action
 
-The Judge should invoke `/ql-substantiate` to verify and seal.
+The Judge should invoke `/qor-substantiate` to verify and seal.
 
 ---
 
