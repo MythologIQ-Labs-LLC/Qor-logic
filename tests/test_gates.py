@@ -23,13 +23,14 @@ def test_session_id_format():
 
 
 def test_session_id_collision_resistant():
-    # 24 bits entropy => birthday-paradox expected collision count for N draws
-    # is roughly N^2 / (2 * 2^24). For N=1000, ~0.03 expected collisions.
-    # We require zero collisions for pragmatic concurrency (no two sessions
-    # started in the same minute should ever collide in practice).
+    # 24 bits entropy. Birthday-paradox expected collisions for N=500 draws
+    # in the same minute: ~500^2 / (2 * 2^24) = ~0.0075 (1 in ~135 runs).
+    # We assert <= 1 collision out of 500 draws to keep the test reliable
+    # while still detecting catastrophic regression in entropy quality.
     fixed = datetime(2026, 4, 15, 17, 46, tzinfo=timezone.utc)
-    ids = {session.generate_id(fixed) for _ in range(1000)}
-    assert len(ids) == 1000
+    ids = [session.generate_id(fixed) for _ in range(500)]
+    collisions = len(ids) - len(set(ids))
+    assert collisions <= 1, f"Expected <= 1 collision in 500 draws, got {collisions}"
 
 
 # ----- Marker file lifecycle -----

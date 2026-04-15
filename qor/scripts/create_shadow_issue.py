@@ -128,6 +128,26 @@ def flip_events_only(log_path: Path, target_ids: set[str], url: str) -> int:
     return before
 
 
+def mark_resolved(log_path: Path, target_ids: set[str], reason: str = "remediated") -> int:
+    """Update matching events to addressed=true without an issue URL.
+
+    For when an operator resolves a process issue via direct action and there's
+    no GitHub issue to attach. addressed_reason='remediated'; issue_url remains null.
+    """
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    all_events = shadow_process.read_events(log_path)
+    flipped = 0
+    for e in all_events:
+        if e["id"] in target_ids and not e["addressed"]:
+            e["addressed"] = True
+            e["addressed_ts"] = now
+            e["addressed_reason"] = reason
+            flipped += 1
+    if flipped:
+        shadow_process.write_events(all_events, log_path)
+    return flipped
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
     ap.add_argument("--repo", default=DEFAULT_REPO)
@@ -138,7 +158,21 @@ def main() -> int:
     ap.add_argument("--flip-only", metavar="URL",
                     help="Skip gh; just flip matching events to addressed=true with URL. "
                          "Used by cross-repo collector.")
+    ap.add_argument("--mark-resolved", action="store_true",
+                    help="Skip gh; flip events to addressed=true with "
+                         "addressed_reason='remediated', no URL. For operator-driven "
+                         "resolution when there's no GitHub issue to attach.")
     args = ap.parse_args()
+
+    # Mark-resolved mode: no gh, no URL, manual resolution
+    if args.mark_resolved:
+        if not args.events:
+            print("ERROR: --mark-resolved requires --events <ids>", file=sys.stderr)
+            return 2
+        target_ids = set(args.events.split(","))
+        flipped = mark_resolved(args.log, target_ids)
+        print(f"Marked {flipped} event(s) resolved in {args.log}")
+        return 0
 
     # Flip-only mode: no gh call, no marker load
     if args.flip_only:

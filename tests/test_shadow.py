@@ -268,6 +268,57 @@ def test_create_shadow_issue_no_matching_events(tmp_path, monkeypatch):
     assert rc == 0  # graceful exit, nothing done
 
 
+# ----- mark-resolved (Phase 11A, Gap #2) -----
+
+def test_mark_resolved_flips_events_without_url(tmp_path):
+    e1 = make_event(severity=3)
+    e2 = make_event(severity=4, ts="2026-04-15T13:00:00Z", session_id="s-2")
+    log = tmp_path / "shadow.md"
+    log.write_text("\n".join(json.dumps(e) for e in [e1, e2]) + "\n", encoding="utf-8")
+
+    flipped = csi.mark_resolved(log, {e1["id"], e2["id"]})
+    assert flipped == 2
+
+    after = shadow_process.read_events(log)
+    for e in after:
+        assert e["addressed"] is True
+        assert e["addressed_reason"] == "remediated"
+        assert e["issue_url"] is None
+        assert e["addressed_ts"] is not None
+
+
+def test_mark_resolved_skips_already_addressed(tmp_path):
+    e1 = make_event(addressed=True)
+    e2 = make_event(severity=2, ts="2026-04-15T13:00:00Z")
+    log = tmp_path / "shadow.md"
+    log.write_text("\n".join(json.dumps(e) for e in [e1, e2]) + "\n", encoding="utf-8")
+
+    flipped = csi.mark_resolved(log, {e1["id"], e2["id"]})
+    assert flipped == 1  # only e2 was unaddressed
+
+
+def test_mark_resolved_cli_requires_events(tmp_path):
+    log = tmp_path / "shadow.md"
+    log.write_text("", encoding="utf-8")
+    import sys as _s
+    _s.argv = ["create", "--mark-resolved", "--log", str(log)]
+    rc = csi.main()
+    assert rc == 2  # missing --events
+
+
+def test_mark_resolved_cli_happy_path(tmp_path):
+    e = make_event(severity=3)
+    log = tmp_path / "shadow.md"
+    log.write_text(json.dumps(e) + "\n", encoding="utf-8")
+    import sys as _s
+    _s.argv = ["create", "--mark-resolved", "--log", str(log), "--events", e["id"]]
+    rc = csi.main()
+    assert rc == 0
+    after = shadow_process.read_events(log)
+    assert after[0]["addressed"] is True
+    assert after[0]["addressed_reason"] == "remediated"
+
+
 # ----- Append helper -----
 
 def test_append_event_atomic(tmp_path):

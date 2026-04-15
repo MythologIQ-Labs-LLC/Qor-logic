@@ -31,27 +31,64 @@ Present the command table and decision tree below. No file reads required.
 
 If the user asks about a specific command, direct them to invoke it. If unsure, recommend `/qor-status` first.
 
-## Summary
+## SDLC Chain (research → plan → audit → implement → substantiate → validate)
 
-| Command            | Purpose                                                                      | Typical When                                    |
-| ------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------- |
-| `/qor-bootstrap`    | Initialize QorLogic DNA for a **new workspace** (CONCEPT, ARCHITECTURE_PLAN, META_LEDGER). | First-time setup only. NOT for new features. |
-| `/qor-plan`         | Create implementation plan for a **new feature** (plan-*.md with phases, tests). | Planning a feature in an existing workspace. |
-| `/qor-status`       | Diagnose lifecycle stage and next required action.                           | Any time you need current state.                |
-| `/qor-audit`        | Judge review for L2/L3 risk work; produces PASS/VETO.                        | Before any high-risk change.                    |
-| `/qor-implement`    | Execute work under KISS constraints after a PASS verdict.                    | After `/qor-audit` PASS.                         |
-| `/qor-refactor`     | Apply scoped refactors with guardrails.                                      | After initial implementation or when requested. |
-| `/qor-validate`     | Verify Merkle chain integrity and artifacts.                                 | Before delivery or handoff.                     |
-| `/qor-substantiate` | Seal the session and record evidence.                                        | End of a completed work session.                |
+| Command | Purpose | Typical When |
+|---|---|---|
+| `/qor-research` | Investigate before planning. Surface conventions, deps, prior art. | Beginning of any non-trivial work; chain start. |
+| `/qor-plan` | Author plan-*.md with phases, tests, open questions. | After research; before audit. |
+| `/qor-audit` | Adversarial PASS/VETO review. Razor → `/qor-refactor`; Orphan/Macro → `/qor-organize`. | Before any L2/L3 risk implementation. |
+| `/qor-implement` | Execute work under KISS constraints after PASS. | After `/qor-audit` PASS. |
+| `/qor-refactor` | File-internal logic shape (Section 4). | When audit/implement detects bloat. |
+| `/qor-debug` | Root-cause diagnosis (cross-cutting). | Regression / hallucination / degradation. |
+| `/qor-substantiate` | Seal session, record Merkle evidence. | End of completed work session. |
+| `/qor-validate` | Verify chain integrity + criteria. | Before delivery; on repeat failure → `/qor-remediate`. |
+| `/qor-remediate` | Process-level fix (NOT code). Absorbs `/qor-course-correct`. | Process Shadow Genome threshold breach or repeat failure. |
+
+## Memory & Meta
+
+| Command | Purpose | Typical When |
+|---|---|---|
+| `/qor-status` | Diagnose lifecycle stage + next action. | Any time you need current state. |
+| `/qor-document` | Author / update governance docs. | Before delivery; doc rot detected. |
+| `/qor-organize` | Project-level structure (directory topology). | When audit flags Orphan/Macro; reorganization needed. |
+| `/qor-bootstrap` | Initialize QorLogic DNA for a **new workspace**. | First-time setup. NOT for new features. |
+| `/qor-help` | This command. | When uncertain. |
+| `/qor-repo-audit` | Repo-level audit (separate from per-feature audits). | Before release; audit rotation. |
+| `/qor-repo-release` | Release ceremony + tagging. | After validate PASS; when shipping. |
+| `/qor-repo-scaffold` | Create new repo from template. | First-time repo creation. |
+
+## Governance
+
+| Command | Purpose | Typical When |
+|---|---|---|
+| `/qor-shadow-process` | Append a process-failure event to PROCESS_SHADOW_GENOME. | Auto-invoked by override paths; rarely called manually. |
+
+## Workflow Bundles (multi-skill orchestration)
+
+| Bundle | Composition | Typical When |
+|---|---|---|
+| `/qor-deep-audit` | recon (3 phases) + remediate (3 phases) — large, decomposed | Pre-release readiness, absorbing a codebase, comprehensive tech-debt inventory. |
+| `/qor-deep-audit-recon` | research subagents → synthesize RESEARCH_BRIEF → 3× verification | Investigation only; ends at brief. |
+| `/qor-deep-audit-remediate` | plan → implement → validate (consumes RESEARCH_BRIEF) | Action half; after recon brief is approved. |
+| `/qor-onboard-codebase` | research → organize → audit → plan (4 phases, 3 checkpoints) | Inheriting / merging an external codebase. |
+| `/qor-process-review-cycle` | shadow-sweep → remediate → audit (3 phases, 2 checkpoints) | Periodic process health check (weekly/monthly/post-incident). |
+
+Bundles honor `qor/gates/workflow-bundles.md` (checkpoints, budgets, decomposition) and `qor/references/doctrine-token-efficiency.md`.
 
 ## Quick Decision Tree
 
 ```
-New workspace?     → /qor-bootstrap
-New feature?       → /qor-plan
-Check state?       → /qor-status
-Ready to build?    → /qor-audit → /qor-implement
-Done with session? → /qor-substantiate
+New workspace?              → /qor-bootstrap
+New feature?                → /qor-research → /qor-plan → /qor-audit → /qor-implement
+Check state?                → /qor-status
+Refactor needed?            → /qor-refactor (file-internal) or /qor-organize (project-level)
+Bug / regression?           → /qor-debug
+Done with session?          → /qor-substantiate
+Process drift?              → /qor-process-review-cycle
+Onboarding a codebase?      → /qor-onboard-codebase
+Pre-release deep audit?     → /qor-deep-audit (or recon-only first)
+Repeat process failures?    → /qor-remediate
 ```
 
 ## Constraints
