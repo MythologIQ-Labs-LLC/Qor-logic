@@ -655,3 +655,64 @@ SHA256(content_hash + previous_hash)
 
 *Chain integrity: VALID*
 *Session: OPEN (audit tribunal active)*
+
+---
+
+### Entry #22: GATE TRIBUNAL — plan-qor-phase12-budget-ledger-tests
+
+**Timestamp**: 2026-04-15
+**Phase**: GATE (pre-implementation audit)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase12-budget-ledger-tests.md` + premature `tests/test_ledger_hash.py`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash** (AUDIT_REPORT.md):
+`802e0b73d01463a17d79f6e247d81eac28a6a9c1333e8580fd2269df0acba994`
+
+**Previous Hash**:
+`17a7ab5f8011c7c5ef2f65452ca2d0b2d6361a90874930b59da2e500246eda4e`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 9624e89f550bc3d6e1b1d24ce09acd8d6623a000a5ef1e68d5a37d4580aa897d
+```
+
+**Verdict Summary**: 11 violations — V-1 plan written without ratifying dialogue (process gap), V-2 pyyaml decision deferred-in-prose, V-3 atomicity test misnamed (verifies os.replace is called, not atomicity), V-4 combined-assertion test name, V-5 caching heuristic fragile, V-6 test couples to Entry #20 (use synthetic), V-7 missing gate_chain.write_gate_artifact coverage, V-8 TDD claim mismatch (regression coverage, not TDD), V-9 test count mismatch (10 vs 15), V-10 missing parser-robustness test, V-11 CI commands incomplete. Plan substantively sound; remediation is mechanical.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active, round 2)*
+
+---
+
+### Entry #23: GATE TRIBUNAL — plan-qor-phase12-v2
+
+**Timestamp**: 2026-04-15
+**Phase**: GATE (pre-implementation audit, round 2)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase12-v2.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `9aab4386aaf5f2b9875e1e6bc7fe46e7cfe2ab598c85646ff5f5c5d9ee3b6617`
+**Previous Hash**: `9624e89f550bc3d6e1b1d24ce09acd8d6623a000a5ef1e68d5a37d4580aa897d`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 34aa81c323859e5a4925323e8423a2f586155b4138ae988b0bed99ddd6f0fa0c
+```
+
+**Verdict Summary**: 7 violations — V-A test count math wrong (says 184; actual will be 190), V-B ironic complect (V-10 test name combines 3 conditions; reproduces the v1 V-4 defect), V-C doctrine rule 4 wording broader than scope, V-D missing test for explicit session_id arg, V-E missing grep-for-callers verification step, V-F ratification header omits Q-A/Q-B/Q-C, V-G typo "1 modified, 1 modified". Plan v1's 11 defects all addressed; v2 introduces 7 new — pattern matches "amendment-drift" lesson from prior multi-round audit loops.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active, round 2)*

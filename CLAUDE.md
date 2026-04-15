@@ -28,6 +28,12 @@ Drop-in instructions for Claude Code (and similar harnesses). Keep responses ter
 - Suggest a fresh session on topic shift.
 - Workflow bundles abort on budget breach; honor resume markers.
 
+## Test discipline (mandatory)
+
+- **Tests before code.** Write the failing test first; then make it green. No "I'll add a test after." Skipped TDD must be classified explicitly as "regression coverage backfill" with rationale.
+- **Definition of done = green tests.** Code is not done until its tests pass. A skill, helper, or feature with no tests is not done; it is a draft.
+- **Tests must be reliable.** No flakes, no hidden time/random/network coupling, no live-state hardcoding (e.g., asserting against a specific ledger entry's hash). Run new tests at least twice in a row to confirm determinism before claiming green.
+
 ## Authority
 
-User instructions override this file. Full doctrine: `qor/references/doctrine-token-efficiency.md`. Bundle protocol: `qor/gates/workflow-bundles.md`. Skill handoff matrix: `qor/gates/delegation-table.md`.
+User instructions override this file. Full doctrines: `qor/references/doctrine-token-efficiency.md`, `qor/references/doctrine-test-discipline.md`. Bundle protocol: `qor/gates/workflow-bundles.md`. Skill handoff matrix: `qor/gates/delegation-table.md`.

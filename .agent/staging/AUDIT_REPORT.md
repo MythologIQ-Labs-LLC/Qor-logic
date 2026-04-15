@@ -1,8 +1,8 @@
-# AUDIT REPORT — research-brief-full-audit-2026-04-15.md
+# AUDIT REPORT — plan-qor-phase12-v2.md
 
 **Tribunal Date**: 2026-04-15
-**Target**: `docs/research-brief-full-audit-2026-04-15.md`
-**Risk Grade**: L1 (precision + completeness defects; brief is substantively sound)
+**Target**: `docs/plan-qor-phase12-v2.md`
+**Risk Grade**: L1 (precision defects + 1 ironic complect)
 **Auditor**: The QorLogic Judge
 
 ---
@@ -13,51 +13,41 @@
 
 ### Executive Summary
 
-Brief surfaces a real and consequential systemic gap (S-1 — gate_writes never executed) and a coherent set of doc-rot patterns. Substantively correct on most claims. **VETO** is for precision defects: count over-claims, conflations of doctrine with gaps, and one missing meta-finding the user has independently surfaced ("tests passed"). Brief is salvageable with targeted edits, not rewrite.
+Plan v2 addresses all 11 V-* items from v1 audit, but introduces 5 new defects — most consequential: a test-count arithmetic error and a complect-named test that reproduces the exact V-4 defect v2 was meant to fix. Plan substantively sound; remediation is mechanical.
 
 ### Audit Results
 
-#### Security Pass
-**Result**: PASS. No L3 violations (research doc, no auth/secrets surface).
-
-#### Ghost UI Pass
-**Result**: N/A (research doc).
-
-#### Section 4 Razor Pass
-**Result**: PASS. Brief is 233 lines; recommendations are scannable; no nested ternaries.
+#### Security/Ghost UI/Razor/Macro/Orphan Passes
+**Result**: PASS.
 
 #### Dependency Pass
-**Result**: PASS. No new code or deps proposed in scope.
-
-#### Macro-Level Coherence Pass
-**Result**: FAIL. See V-1 through V-3 below.
-
-#### Orphan Pass (evidence backing each finding)
-**Result**: FAIL. See V-4.
+**Result**: PASS — pyyaml decision committed to "regex only" (V-2 closure verified).
 
 ### Violations Found
 
 | ID | Category | Location | Description |
 |---|---|---|---|
-| V-1 | Precision | brief §S-1 | Count claims 9 affected skills; verified actual count is **8**. `qor-shadow-process` declares `gate_writes: docs/PROCESS_SHADOW_GENOME.md(append-only)` — that's a free-form path to a JSONL log, not a `.qor/gates/<sid>/<phase>.json` artifact. Brief's filter swept it in incorrectly. |
-| V-2 | Doctrine conflation | brief §S-8 | "16 skills missing from delegation-table" treats cross-cutting and bundle skills as gaps. Brief later acknowledges this ("Some legitimately don't have a fixed handoff") but the headline count remains misleading. The actual gap is "table doesn't acknowledge cross-cutting skills exist", not "16 missing rows". |
-| V-3 | Doctrine over-claim | brief §S-12 | "Most agents have NO /qor-* refs" treats this as a defect. Whether agents should reference invoking skills is a doctrine choice, not a doctrine-violation. Brief should propose adopting the doctrine first; only then can absence be a gap. |
-| V-4 | Evidence | brief throughout | qor-research protocol Step 4a mandates "file:line for every finding". Brief cites file:line for ~6 of 24 findings; the rest say "many skills" or "X skills". Without citations, future readers can't verify or act precisely. |
-| V-5 | Missing meta-finding | brief omits | Tests pass with all these systemic gaps present — therefore test coverage doctrine doesn't include SKILL.md compliance. This is **Systemic Pattern S-14**: tests verify Python module behavior; nothing verifies SKILL.md doctrine compliance (no test asserts "if gate_writes declared, body contains write step"). User surfaced this independently; brief should have caught it. |
-| V-6 | Factual | brief §"qor-deep-audit (and sub-bundles)" | Verified `grep "Invoking .qor-deep-audit. directly" qor/skills/meta/qor-deep-audit/SKILL.md` returns 0 matches. Brief implies the prose exists ("§Decomposition mentions sequencing"); the finding-as-stated is correct (sequencing prose IS missing) but the brief's framing under "specific findings" suggests it merely needs polish, not authoring. |
+| V-A | Math error | plan §Success Criteria line "Full suite 184/184 passing (163 prior + 7 workflow + 1 V-10 + 4 V-7 + 9 unchanged ledger tests already running)" | Verified `pytest tests/` returns **178**, not 163. The existing `tests/test_ledger_hash.py` (15 tests, uncommitted) IS being discovered. Correct math: 178 prior + 7 (Track A workflow) + 1 (V-10 parser robustness) + 4 (V-7 gate_chain) = **190**. Plan asserts 184 with mystery "9 unchanged ledger tests" — the ledger file has 15 tests, not 9. Plan arithmetic broken; final count wrong by 6. |
+| V-B | Ironic complect | plan §Track B.1 V-10 line "add `test_verify_handles_malformed_entry_header` — fake ledger with non-monotonic entry numbers + entries missing required hash markers + entries with malformed numeric IDs" | Single test name combines THREE distinct conditions. This is exactly the V-4 defect (combined-assertion test name) that v2 was meant to fix. Reproduces in the same plan. Split into `test_verify_handles_non_monotonic_entry_numbers`, `test_verify_handles_missing_hash_markers`, `test_verify_handles_malformed_numeric_ids`. |
+| V-C | Doctrine wording broader than rule | plan §Track A.1 rule 4 first sentence "Aggressive caching mandatory: workflows installing Python deps MUST use ..." vs the narrowed scope on the next line "rule applies only to workflows that explicitly use `setup-python` action" | Two adjacent sentences disagree on scope. Reader sees the first sentence's "MUST" + "Python deps" as universal; only the second sentence narrows. A doctrine doc cannot have its rule and its scope-restriction in tension. Rewrite as one sentence: "Workflows that explicitly use `actions/setup-python@` MUST also declare the `cache:` parameter (or use `actions/cache` for explicit pip cache). Workflows using uv/poetry/pdm/Docker images choose their own caching mechanism." |
+| V-D | Test coverage gap | plan §Track B.2 lists 4 tests; none covers the `session_id` argument explicit case | `write_gate_artifact(session_id=...)` is the dual path to `session_id=None`. Tests cover the None path (`test_write_gate_artifact_uses_session_get_or_create`); explicit-session-id path is uncovered. Add `test_write_gate_artifact_respects_explicit_session_id`. |
+| V-E | Missing verification step | plan §Track B.1 V-3 says "rename + update docstring" with no instruction to verify no callers reference the old name | After rename, must `grep -r "test_write_manifest_atomic_write" tests/` to confirm zero callers. Add as success criterion. |
+| V-F | Ratification incomplete | plan header line "post-dialogue with user Q1=(a), Q2=(a), Q3=(i) decisions ratified" | Only cites the FIRST dialogue round. The SECOND round (Q-A=(a), Q-B=(a), Q-C=(b)) is incorporated in body but not in the explicit ratification line. Per V-1 doctrine, plan header must declare ALL ratified decisions. Update to "Q1=(a), Q2=(a), Q3=(i), Q-A=(a), Q-B=(a), Q-C=(b)". |
+| V-G | Cosmetic | plan §Affected Files line "Track B (1 modified, 1 modified)" | Typo: should be "(2 modified)". |
 
 ### Required Remediation
 
-1. **V-1**: Recount S-1 to 8 skills; remove `qor-shadow-process` from the affected list.
-2. **V-2**: Restructure S-8 — split "missing rows" (3-4 actual table additions: bundles, qor-organize, qor-shadow-process) from "doctrine extension" (cross-cutting acknowledgement section). Headline count drops from 16 to a real number.
-3. **V-3**: Either drop S-12 or convert it to a doctrine proposal: "Propose: agents declare 'invoked by /qor-*' line at bottom; affects 13 agents." Without the doctrine, it's not a gap.
-4. **V-4**: Add file:line citations for at least the systemic patterns. For S-1 cite one example file:line per affected skill (e.g., `qor-plan/SKILL.md:5`). Spot-check verified count, not full enumeration.
-5. **V-5**: Add **Systemic Pattern S-14 — Test coverage doctrine doesn't include SKILL.md compliance**. Recommend new test category: doctrine-compliance tests that grep SKILL.md bodies for required patterns based on frontmatter declarations. Recommendation slots into Phase 11D as item #6.
-6. **V-6**: Reword the deep-audit finding to clearly state: "Sequencing prose is absent (verified)." Move from "Specific findings" to either S-class systemic if it applies to other bundles, or keep as specific with the verification noted.
+1. **V-A**: Recalc and update plan §Success Criteria. Current pre-Phase-12 state is `pytest tests/` = 178. After Phase 12: 178 + 7 + 1 + 4 = **190**. Plan must say 190.
+2. **V-B**: Split combined-condition V-10 test into 3 tests, each named for one condition.
+3. **V-C**: Rewrite doctrine rule 4 as one sentence whose scope matches its assertion.
+4. **V-D**: Add `test_write_gate_artifact_respects_explicit_session_id` to Track B.2 (5 tests, not 4).
+5. **V-E**: Add to plan §Success Criteria: "[ ] `grep -r test_write_manifest_atomic_write tests/` returns zero matches after V-3 rename".
+6. **V-F**: Update header ratification line to include all six decisions (Q1, Q2, Q3, Q-A, Q-B, Q-C).
+7. **V-G**: Fix typo "1 modified, 1 modified" → "2 modified".
 
 ### Verdict Hash
 
-(computed at ledger entry — see Entry #21)
+(computed at ledger entry — see Entry #23)
 
 ---
 _This verdict is binding._

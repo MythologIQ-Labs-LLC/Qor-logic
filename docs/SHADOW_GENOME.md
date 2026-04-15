@@ -148,4 +148,52 @@ Record of rejected artifacts and failure patterns to prevent repetition.
 
 ---
 
+---
+
+### Entry #7: VETO — plan-qor-phase12-budget-ledger-tests
+
+**Timestamp**: 2026-04-15
+**Target**: `docs/plan-qor-phase12-budget-ledger-tests.md` + premature `tests/test_ledger_hash.py`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Ledger Entry**: #22
+
+**Failure Pattern**: Plan-without-ratification. Governor drafted plan + began coding without surfacing design questions for user validation. /qor-plan skill mandates dialogue first; this iteration skipped it. User had to invoke /qor-plan to interrupt mid-execution.
+
+**Failure Pattern**: Deferred-decision-as-prose. Plan said "If pyyaml is already a transitive dep ... use it." Decision determined by runtime check rather than committed in plan. A plan with conditional decisions is not a plan; it's a wish.
+
+**Failure Pattern**: Misnamed test. `test_write_manifest_atomic_write` docstring claimed "no torn state on partial write" but body only verified os.replace was called. Test name describes intent; assertion describes mechanism. When they disagree, the assertion wins (and the name lies).
+
+**Failure Pattern**: TDD-claimed but regression-coverage-actual. Plan invoked TDD enforcement language but tests verified existing code. The skill's TDD discipline was not honored; the work is regression coverage backfill — which is fine, but should be classified honestly.
+
+**Failure Pattern**: Hardcoded coupling to live state. Test recomputed Entry #20's chain hash by hardcoding its values. If Entry #20 is ever superseded the test breaks. Tests should derive expected values from the algorithm, not from frozen examples of the algorithm's output (use synthetic inputs with computed expected outputs).
+
+**Lesson**: The /qor-plan skill exists for a reason. When the Governor jumps to coding, it bypasses the dialogue checkpoint that catches design questions BEFORE they become test artifacts that need rewriting. Pre-implementation audits catch some of this; ratifying dialogue catches more, earlier, cheaper.
+
+**Remediation**: 11 mandatory items issued in audit report.
+
+---
+
+---
+
+### Entry #8: VETO — plan-qor-phase12-v2
+
+**Timestamp**: 2026-04-15
+**Target**: `docs/plan-qor-phase12-v2.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Ledger Entry**: #23
+
+**Failure Pattern**: Ironic complect. Plan v2's V-10 remediation introduced a single test name (`test_verify_handles_malformed_entry_header`) covering THREE distinct conditions — exactly the V-4 complect defect v2 was meant to fix. Remediation plans authored quickly can reproduce the defects they're remediating; second-pass discipline matters as much as first-pass.
+
+**Failure Pattern**: Stale arithmetic. Plan said "163 prior + ... = 184" while `pytest tests/` actually returns 178 (uncommitted test_ledger_hash.py is being discovered). Test counts in plans must be re-verified against the running suite, not inferred from "last known state".
+
+**Failure Pattern**: Adjacent-sentence-disagreement in doctrine. Rule 4 first sentence asserted universal scope ("workflows installing Python deps"); the next sentence narrowed the scope. Doctrine rules and their exceptions belong in the same sentence, not as adjacent paragraphs that contradict each other.
+
+**Failure Pattern**: Incomplete ratification. Plan header cited Q1/Q2/Q3 from the first dialogue round but omitted Q-A/Q-B/Q-C from the second round. Ratification headers are not "best of" lists; they enumerate ALL decisions.
+
+**Lesson**: Multi-round audit loops produce v2/v3/v4 plans where each round addresses prior defects but seeds new ones. The "amendment-drift" pattern from the original Phase 1 plan-migration loop applies to remediation plans too. Either (a) accept rougher plans and iterate faster, or (b) bake more ruthless self-review into v2 authoring before re-audit.
+
+**Remediation**: 7 mandatory items issued in audit report.
+
+---
+
 *Shadow integrity: ACTIVE*

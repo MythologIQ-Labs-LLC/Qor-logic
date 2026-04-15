@@ -272,3 +272,99 @@ def test_write_artifact_rejects_invalid(tmp_path, monkeypatch):
 
     with pytest.raises(ValueError, match="Cannot write invalid"):
         vga.write_artifact("plan", {"ts": "bad"}, session_id=sid)
+
+
+# ----- V-7 + V-D (Phase 12 v2 audit) gate_chain.write_gate_artifact coverage -----
+
+def test_write_gate_artifact_creates_file_at_correct_path(tmp_path, monkeypatch):
+    """Helper writes to .qor/gates/<sid>/<phase>.json."""
+    gates = tmp_path / "gates"
+    monkeypatch.setattr(gate_chain, "GATES_DIR", gates)
+    monkeypatch.setattr(vga, "GATES_DIR", gates)
+    marker = tmp_path / "current_session"
+    monkeypatch.setattr(session, "MARKER_PATH", marker)
+    sid = session.get_or_create(marker)
+
+    payload = {
+        "ts": "2026-04-15T18:00:00Z",
+        "plan_path": "docs/plan.md",
+        "phases": ["p1"],
+    }
+    out = gate_chain.write_gate_artifact("plan", payload, session_id=sid)
+    assert out == gates / sid / "plan.json"
+    assert out.exists()
+
+
+def test_write_gate_artifact_validates_payload_against_schema(tmp_path, monkeypatch):
+    """Invalid payload (missing required field) raises ValueError."""
+    gates = tmp_path / "gates"
+    monkeypatch.setattr(gate_chain, "GATES_DIR", gates)
+    monkeypatch.setattr(vga, "GATES_DIR", gates)
+    marker = tmp_path / "current_session"
+    monkeypatch.setattr(session, "MARKER_PATH", marker)
+    sid = session.get_or_create(marker)
+
+    bad_payload = {"ts": "2026-04-15T18:00:00Z"}  # missing required plan_path, phases
+    with pytest.raises(ValueError):
+        gate_chain.write_gate_artifact("plan", bad_payload, session_id=sid)
+
+
+def test_write_gate_artifact_uses_session_get_or_create_when_sid_none(tmp_path, monkeypatch):
+    """When session_id=None, helper invokes session.get_or_create."""
+    gates = tmp_path / "gates"
+    monkeypatch.setattr(gate_chain, "GATES_DIR", gates)
+    monkeypatch.setattr(vga, "GATES_DIR", gates)
+    marker = tmp_path / "current_session"
+    monkeypatch.setattr(session, "MARKER_PATH", marker)
+    # No session yet; helper must create one
+    assert not marker.exists()
+
+    payload = {
+        "ts": "2026-04-15T18:00:00Z",
+        "plan_path": "docs/plan.md",
+        "phases": ["p1"],
+    }
+    out = gate_chain.write_gate_artifact("plan", payload)
+    assert marker.exists()  # session.get_or_create was invoked
+    assert out.exists()
+
+
+def test_write_gate_artifact_respects_explicit_session_id(tmp_path, monkeypatch):
+    """When session_id is provided, helper uses that exact id (no implicit create)."""
+    gates = tmp_path / "gates"
+    monkeypatch.setattr(gate_chain, "GATES_DIR", gates)
+    monkeypatch.setattr(vga, "GATES_DIR", gates)
+    marker = tmp_path / "current_session"
+    monkeypatch.setattr(session, "MARKER_PATH", marker)
+
+    explicit_sid = "2026-04-15T1800-explicit"
+    payload = {
+        "ts": "2026-04-15T18:00:00Z",
+        "plan_path": "docs/plan.md",
+        "phases": ["p1"],
+    }
+    out = gate_chain.write_gate_artifact("plan", payload, session_id=explicit_sid)
+    assert out == gates / explicit_sid / "plan.json"
+    # Marker may or may not exist; but the artifact MUST be at the explicit-sid path
+    import json as _json
+    data = _json.loads(out.read_text())
+    assert data["session_id"] == explicit_sid
+
+
+def test_write_gate_artifact_returns_path(tmp_path, monkeypatch):
+    """Return value is the written Path (not None, not str)."""
+    gates = tmp_path / "gates"
+    monkeypatch.setattr(gate_chain, "GATES_DIR", gates)
+    monkeypatch.setattr(vga, "GATES_DIR", gates)
+    marker = tmp_path / "current_session"
+    monkeypatch.setattr(session, "MARKER_PATH", marker)
+    sid = session.get_or_create(marker)
+
+    payload = {
+        "ts": "2026-04-15T18:00:00Z",
+        "plan_path": "docs/plan.md",
+        "phases": ["p1"],
+    }
+    result = gate_chain.write_gate_artifact("plan", payload, session_id=sid)
+    from pathlib import Path
+    assert isinstance(result, Path)
