@@ -1,4 +1,0 @@
-interface:
-  display_name: "Aegis Skill Router"
-  short_description: "Routes a request to the best skill"
-  default_prompt: "Select the most appropriate skill for the user's request and explain why."

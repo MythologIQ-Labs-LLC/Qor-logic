@@ -463,3 +463,33 @@ SHA256(content_hash + previous_hash)
 
 *Chain integrity: VALID*
 *Session: OPEN (audit tribunal active, round 5)*
+
+---
+
+### Entry #17: MIGRATION-SEAL — pre-move manifest
+
+**Timestamp**: 2026-04-15
+**Phase**: MIGRATE (SSoT, Phase 1.5 pre-move)
+**Author**: Governor
+**Purpose**: Freeze content-hash state of all migration-source paths before Phase 1 file moves.
+
+**Manifest**: `docs/migration-manifest-pre.json` (2176 paths; covers `kilo-code/`, `ingest/`, `deployable state/`, `processed/`, `compiled/`)
+
+**Content Hash** (migration-manifest-pre.json):
+`58e0e53900c91bacccf2e75d7da6afd982385d0f2a183d85f3ca588cb57fb37e`
+
+**Previous Hash**:
+`9730f979b790a5b07866525cefd70b6db10e5666783434074f143257fe53325f`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 37d3fc0a51af3c071a31c918afe1f2653716148df0b9d9df9f0cd660b5d1453d
+```
+
+**Decision**: SSoT migration beginning. All content below this point operates under `qor/` canonical structure per `docs/plan-qor-ssot-minimal.md`. Historical entries #1-#16 frozen; chain continues via content-hash equality through the rebase map (derivable from pre/post manifest pair).
+
+---
+
+*Chain integrity: VALID*
+*Session: MIGRATION IN PROGRESS*
