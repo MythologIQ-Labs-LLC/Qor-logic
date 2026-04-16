@@ -343,4 +343,24 @@ Cognitive pattern: when editing a plan mid-draft, the author updated the prose n
 
 ---
 
+### Entry #16: VETO — plan-qor-phase19-packaging-foundation (third SG-038 recurrence)
+
+**Date**: 2026-04-16
+**Verdict ID**: Entry #56
+**Failure Mode**: DOCUMENTATION_DRIFT (SG-038 recurrence #3)
+
+#### What Failed
+Plan's header claimed "5 of 18 gaps closed" but Track A and Track D extended scope to 7 gaps (added PKG-04 readme + PKG-05 metadata). Header, Track A Changes footer, Track D test list, and the Constraints section's "SG-038 lockstep" line all disagreed on the gap count.
+
+#### Why It Failed
+Third occurrence of SG-038 pattern (prose-code drift) in Phase 17a v1 (Entry #44), Phase 15 v1 (the original SG-035 discovery), and now Phase 19. The plan author expanded Track A's content mid-draft (added readme/classifiers/keywords/urls/authors after initial scoping) but didn't update the header's gap count. This was the first plan explicitly authored under SG-036 "no grace period" discipline after SG-038 was codified — yet the very discipline SG-038 prescribed was violated.
+
+#### Pattern to Avoid (reinforcement)
+**SG-038 is empirically sticky.** Codifying it in the doctrine did not prevent its recurrence one plan later. Future mitigation options: (a) author plans in a template that grep-asserts prose-code consistency; (b) add a plan-linter test that validates "Closes gaps" header enumerates exactly the same IDs as each Track's Changes footer; (c) require the final Draft→Resolve pass to explicitly grep the plan for every enumerated list and cross-check.
+
+#### Remediation
+3 mandatory items in audit report. V-1: pick scope (keep 7 or shrink to 5) and reconcile header / tracks / tests / constraints / CI Commands. V-2: update Out-of-scope section to match. V-3: fix off-by-one grounding claim.
+
+---
+
 *Shadow integrity: ACTIVE*
