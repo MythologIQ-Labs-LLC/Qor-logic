@@ -1229,4 +1229,87 @@ SHA256(content_hash + previous_hash)
 ---
 
 *Chain integrity: VALID*
-*Session: OPEN (implementation gate unlocked)*
+
+---
+
+### Entry #38: IMPLEMENTATION — Phase 15 Shadow Genome Countermeasures Doctrine
+
+**Timestamp**: 2026-04-16
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase15-v2-shadow-genome-doctrine.md`
+
+**Files Created**:
+- `qor/references/doctrine-shadow-genome-countermeasures.md` (69 lines, 7 SG sections: 016, 017, 019, 020, 021, 032, 033, 034, 035)
+- `tests/test_shadow_genome_doctrine.py` (155 lines, 9 tests)
+
+**Files Modified**:
+- `qor/skills/sdlc/qor-plan/SKILL.md` (Step 2b pointer inserted; 274 → 278, +4 lines net)
+
+**Test Results**: 228 passed + 6 skipped (deterministic across 2 runs). +9 from 219 baseline.
+
+**Drift**: clean (121 files after BUILD_REGEN=1).
+**Ledger chain**: Entries #12-#37 verified.
+
+**Content Hash** (implementation-manifest):
+`6e259e92a2644d358561f27b222680519ea6203771f59d59c9dc45de347d03e5`
+
+**Previous Hash**:
+`896a54e495295d7baded954393eee54b9d929e6df0baeceddb1bfbf57b20da83`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= dc355150023336dd9489eef36fdd1acc520e456ce8230fe82d86be45c3d6ce05
+```
+
+**Decision**: Phase 15 v2 Reality matches Promise. Doctrine file consolidates 9 SG entries (016/017/019/020/021/032/033 from prior phases + 034/035 surfaced in Entry #36). AST-enforced SG-033 test; proximity-anchored doctrine tests with negative-path validation; Step 2b in qor-plan as 3-line pointer. All 4 Entry #36 violations closed in code.
+
+---
+
+*Chain integrity: VALID*
+
+---
+
+### Entry #39: SESSION SEAL — Phase 15 v2 substantiated
+
+**Timestamp**: 2026-04-16
+**Phase**: SUBSTANTIATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase15-v2-shadow-genome-doctrine.md`
+**Change Class**: `feature`
+**Version**: `0.4.0 → 0.5.0`
+**Tag**: `v0.5.0` (pending operator decision)
+
+**Verification Results**:
+- Version gate: PASS (0.5.0 > 0.4.0)
+- Reality audit: PASS (2 new files + 1 skill edit all present)
+- Test discipline: 228 passed + 6 skipped, deterministic 2x
+- Section 4 Razor: PASS (doctrine 69; test 155; qor-plan SKILL.md 274→278, pre-existing overflow disposed per plan v2)
+- Drift: clean (121 files, no drift after BUILD_REGEN=1)
+- Ledger chain: Entries #12-#38 verified
+
+**Content Hash** (substantiate-manifest: pyproject.toml + doctrine + test file):
+`c31610231036b9be27c8ee2c5ad07d36c0d941ad4c2bf5bcee9bad9a83b09442`
+
+**Previous Hash**:
+`dc355150023336dd9489eef36fdd1acc520e456ce8230fe82d86be45c3d6ce05`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= a33db577eff5be4d9ddee9117e8d31de9e0f69012e90a5ec724c4e3a398a4e3c
+```
+
+**Decision**: Phase 15 v2 sealed. Shadow Genome countermeasures now canonical in `qor/references/`. SG-033 enforced by AST test; SG-034/035 meta-lessons encoded and tested. qor-plan cites doctrine by path (single source of truth). Next: Step 9.6 push/merge operator decision.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: a33db577...*

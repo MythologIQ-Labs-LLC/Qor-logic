@@ -151,6 +151,10 @@ Contract for `teams` mode (reserved for future harness wiring): `TeamCreate(<spe
 
 Use existing code as foundation for plan. Identify existing abstractions, naming conventions, test structure, and integration points.
 
+### Step 2b: Grounding Protocol (MANDATORY)
+
+See `qor/references/doctrine-shadow-genome-countermeasures.md` for the full Grounding Protocol and Shadow Genome countermeasure inventory. Residual `{{verify: ...}}` tags in a plan block its submission.
+
 ### Step 3: Create Plan File
 
 Create plan markdown file with specific requirements:
