@@ -9,14 +9,10 @@ list instead of silently dropped. Caller decides whether to abort or warn.
 """
 from __future__ import annotations
 
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-# Make shadow_process importable when run as a script
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import shadow_process  # noqa: E402
+from qor.scripts import shadow_process
 
 
 def mark_addressed(

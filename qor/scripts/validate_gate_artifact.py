@@ -14,13 +14,13 @@ from pathlib import Path
 
 import jsonschema
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+from qor.scripts import session
 
-import session  # noqa: E402
+from qor import resources as _resources
+from qor import workdir as _workdir
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-SCHEMA_DIR = REPO_ROOT / "qor" / "gates" / "schema"
-GATES_DIR = REPO_ROOT / ".qor" / "gates"
+SCHEMA_DIR = Path(str(_resources.asset("gates", "schema")))
+GATES_DIR = _workdir.gate_dir()
 
 PHASES = [
     "research",

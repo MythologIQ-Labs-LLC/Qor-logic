@@ -10,10 +10,11 @@ import argparse
 import shutil
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-SKILLS_SRC = REPO_ROOT / "qor" / "skills"
-AGENTS_SRC = REPO_ROOT / "qor" / "agents"
-DEFAULT_OUT = REPO_ROOT / "qor" / "dist"
+from qor import resources as _resources
+
+SKILLS_SRC = Path(str(_resources.asset("skills")))
+AGENTS_SRC = Path(str(_resources.asset("agents")))
+DEFAULT_OUT = Path(str(_resources.asset("dist")))
 
 TARGETS = ("claude", "kilo-code", "codex")
 

@@ -8,15 +8,12 @@ Used by qor-audit to:
 """
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import gate_chain  # noqa: E402
-import qor_platform as qplat  # noqa: E402
-import session  # noqa: E402
-import shadow_process  # noqa: E402
+from qor.scripts import gate_chain
+from qor.scripts import qor_platform as qplat
+from qor.scripts import session
+from qor.scripts import shadow_process
 
 CURRENT_PHASE = "audit"
 

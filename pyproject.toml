@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qor-logic"
-version = "0.10.0"
+version = "0.11.0"
 description = "QorLogic S.H.I.E.L.D. governance skills for Claude Code, Kilo Code, and future AI coding hosts"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -57,6 +57,8 @@ qor = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["tests"]
+addopts = "-m 'not integration'"
 markers = [
     "integration: live environment probes; opt-in via '-m integration'",
 ]

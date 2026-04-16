@@ -7,18 +7,16 @@ the prompt to the user.
 """
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+from qor.scripts import session
+from qor.scripts import shadow_process
+from qor.scripts import validate_gate_artifact as vga
 
-import session  # noqa: E402
-import shadow_process  # noqa: E402
-import validate_gate_artifact as vga  # noqa: E402
+from qor import workdir as _workdir
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-GATES_DIR = REPO_ROOT / ".qor" / "gates"
+GATES_DIR = _workdir.gate_dir()
 
 # Phase sequence (remediate is out-of-band, not listed here)
 CHAIN = ["research", "plan", "audit", "implement", "substantiate", "validate"]

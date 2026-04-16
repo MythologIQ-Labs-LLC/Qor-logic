@@ -19,8 +19,9 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-MARKER_PATH = REPO_ROOT / ".qor" / "current_session"
+from qor import workdir as _workdir
+
+MARKER_PATH = _workdir.root() / ".qor" / "current_session"
 SESSION_TTL = timedelta(hours=24)
 
 SESSION_ID_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{4}-[0-9a-f]{6}$")

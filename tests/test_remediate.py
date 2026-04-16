@@ -11,12 +11,12 @@ from pathlib import Path
 
 import pytest
 
-import shadow_process
-import remediate_read_context as rrc
-import remediate_pattern_match as rpm
-import remediate_propose as rp
-import remediate_mark_addressed as rma
-import remediate_emit_gate as reg
+from qor.scripts import shadow_process
+from qor.scripts import remediate_read_context as rrc
+from qor.scripts import remediate_pattern_match as rpm
+from qor.scripts import remediate_propose as rp
+from qor.scripts import remediate_mark_addressed as rma
+from qor.scripts import remediate_emit_gate as reg
 
 
 def make_event(

@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-import qor_audit_runtime as runtime
-import qor_platform as qplat
-import shadow_process
-import gate_chain
-import session
+from qor.scripts import qor_audit_runtime as runtime
+from qor.scripts import qor_platform as qplat
+from qor.scripts import shadow_process
+from qor.scripts import gate_chain
+from qor.scripts import session
 
 
 # ----- check_prior_artifact -----

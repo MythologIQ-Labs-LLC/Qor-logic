@@ -7,13 +7,9 @@ by (event_type, skill, session_id) for downstream pattern classification.
 """
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
-# Make shadow_process importable when run as a script
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import shadow_process  # noqa: E402
+from qor.scripts import shadow_process
 
 
 GroupKey = tuple[str, str, str]

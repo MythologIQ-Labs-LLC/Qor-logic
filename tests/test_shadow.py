@@ -8,9 +8,9 @@ from pathlib import Path
 
 import pytest
 
-import shadow_process
-import check_shadow_threshold as cst
-import create_shadow_issue as csi
+from qor.scripts import shadow_process
+from qor.scripts import check_shadow_threshold as cst
+from qor.scripts import create_shadow_issue as csi
 
 
 def make_event(

@@ -16,10 +16,12 @@ from typing import Literal
 
 import jsonschema
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-SCHEMA_PATH = REPO_ROOT / "qor" / "gates" / "schema" / "shadow_event.schema.json"
-LOCAL_LOG_PATH = REPO_ROOT / "docs" / "PROCESS_SHADOW_GENOME.md"
-UPSTREAM_LOG_PATH = REPO_ROOT / "docs" / "PROCESS_SHADOW_GENOME_UPSTREAM.md"
+from qor import resources as _resources
+from qor import workdir as _workdir
+
+SCHEMA_PATH = Path(str(_resources.schema("shadow_event.schema.json")))
+LOCAL_LOG_PATH = _workdir.shadow_log()
+UPSTREAM_LOG_PATH = _workdir.shadow_log_upstream()
 LOG_PATH = LOCAL_LOG_PATH
 
 _SCHEMA_CACHE: dict | None = None

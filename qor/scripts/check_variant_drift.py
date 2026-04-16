@@ -8,16 +8,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+from qor.scripts import compile as compile_mod
 
-import compile as compile_mod  # noqa: E402
+from qor import resources as _resources
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-COMMITTED_DIST = REPO_ROOT / "qor" / "dist"
+COMMITTED_DIST = Path(str(_resources.asset("dist")))
 
 
 def hash_tree(root: Path) -> dict[str, str]:

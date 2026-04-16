@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+from qor import workdir as _workdir
 
 
 def emit(
@@ -26,7 +26,7 @@ def emit(
 
     Returns the path written. Adds a `ts` field to the payload.
     """
-    root = base_dir if base_dir is not None else REPO_ROOT
+    root = base_dir if base_dir is not None else _workdir.root()
     out_dir = root / ".qor" / "gates" / session_id
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / "remediate.json"

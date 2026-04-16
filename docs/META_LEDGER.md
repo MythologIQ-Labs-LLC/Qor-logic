@@ -2062,6 +2062,100 @@ SHA256(content_hash + previous_hash)
 
 ---
 
+### Entry #60: IMPLEMENTATION -- Phase 20 Import Migration
+
+**Timestamp**: 2026-04-15
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+
+**Target**: Phase 20 Import Migration (7 tracks)
+**Change Class**: `feature`
+**Version**: `0.10.0 -> 0.11.0`
+
+**Files Modified** (32 files):
+- `qor/resources.py` (NEW -- packaged-asset accessor)
+- `qor/workdir.py` (NEW -- consumer workdir anchor)
+- `qor/scripts/shadow_process.py` (REPO_ROOT -> qor.resources + qor.workdir)
+- `qor/scripts/session.py` (REPO_ROOT -> qor.workdir)
+- `qor/scripts/gate_chain.py` (sys.path + REPO_ROOT -> package imports + qor.workdir)
+- `qor/scripts/validate_gate_artifact.py` (sys.path + REPO_ROOT -> package imports + qor.resources/workdir)
+- `qor/scripts/compile.py` (REPO_ROOT -> qor.resources)
+- `qor/scripts/check_variant_drift.py` (sys.path + REPO_ROOT -> package import + qor.resources)
+- `qor/scripts/check_shadow_threshold.py` (sys.path + REPO_ROOT -> package import + qor.workdir)
+- `qor/scripts/create_shadow_issue.py` (sys.path + REPO_ROOT -> package import + qor.workdir)
+- `qor/scripts/collect_shadow_genomes.py` (sys.path + REPO_ROOT + hardcoded paths -> package imports + module invocation)
+- `qor/scripts/qor_platform.py` (REPO_ROOT -> qor.resources + qor.workdir)
+- `qor/scripts/qor_audit_runtime.py` (sys.path -> package imports)
+- `qor/scripts/remediate_emit_gate.py` (REPO_ROOT -> qor.workdir)
+- `qor/scripts/remediate_mark_addressed.py` (sys.path -> package import)
+- `qor/scripts/remediate_read_context.py` (sys.path -> package import)
+- `qor/scripts/calculate-session-seal.py` (hardcoded paths -> qor.workdir)
+- `tests/conftest.py` (removed sys.path.insert)
+- `tests/test_governance_helpers.py` (sys.path -> package import)
+- `tests/test_shadow.py`, `tests/test_shadow_attribution.py`, `tests/test_collect.py`, `tests/test_compile.py`, `tests/test_e2e.py`, `tests/test_gates.py`, `tests/test_platform.py`, `tests/test_qor_audit_runtime.py`, `tests/test_remediate.py`, `tests/test_ledger_hash.py` (bare imports -> from qor.scripts)
+- `tests/test_packaging_install.py` (NEW -- 4 integration tests)
+- `pyproject.toml` (addopts, pythonpath, version bump)
+- `.github/workflows/ci.yml` (install-smoke job)
+
+**Verification Results**:
+- Tests: 278 passed + 4 deselected (integration), deterministic 2x
+- Integration: 4 passed (run separately with -m integration)
+- Drift: clean (123 files)
+- Compile: 27 skill dirs, 2 loose skills, 13 agents
+- Ledger chain: Entries #12-#59 verified
+
+**Deviations from plan**:
+- `qor/reliability/gate-skill-matrix.py` and `skill-admission.py` retain REPO_ROOT (dashed filenames cannot be imported as modules; standalone scripts need explicit path setup)
+- `pythonpath = ["tests"]` added to pyproject.toml to preserve `import bundle_runner` for test_bundles.py
+- Branch named `phase/20-import-migration-impl` (phase/20-import-migration already held by main worktree)
+
+**Content Hash**: `01acf5b2d67fa1f689ac59eb9588a51106bccc26e2eb3a26e9b64f90d014a43b`
+**Previous Hash**: `0f821248ed30b40da4d4f69b10ce010616f3e681fec93af6a1229542417a4cd0`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= db24cd7d72631b5379c6b9bdad1f4ef8465346f961278235236db50c7f2102ee
+```
+
+**Decision**: Phase 20 Import Migration implemented. All 7 tracks complete. 9 sys.path.insert sites deleted from qor/scripts/, 11 REPO_ROOT sites replaced with qor.resources/qor.workdir, 2 REPO_ROOT sites retained in dashed-name reliability scripts (documented deviation). conftest.py cleaned. 4 integration tests added. CI install-smoke job appended.
+
+---
+
+### Entry #61: SESSION SEAL -- Phase 20 substantiated
+
+**Timestamp**: 2026-04-15
+**Phase**: SUBSTANTIATE
+**Author**: Specialist
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Target**: Phase 20 Import Migration
+**Change Class**: `feature`
+**Version**: `0.10.0 -> 0.11.0`
+**Tag**: `v0.11.0` (pending operator push)
+
+**Verification Results**:
+- Version gate: PASS (0.11.0 > 0.10.0)
+- Reality audit: PASS (32 files modified/created as documented)
+- Test discipline: 278 passed + 4 deselected, deterministic 2x; 282 total with integration
+- Drift: clean (123 files)
+- Ledger chain: Entries #12-#60 verified
+
+**Content Hash**: `9f6be66a4c9052a850d0bab630976c73ad112e0ccf50c2a516d6d1a7cfa8bd41`
+**Previous Hash**: `db24cd7d72631b5379c6b9bdad1f4ef8465346f961278235236db50c7f2102ee`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= 7785c951c7fb726a28fe161fd64346e93333313ddc9d6d29f23ccad54fd4c619
+```
+
+**Decision**: Phase 20 sealed. Import migration complete: all qor/scripts/ modules use package-relative imports; REPO_ROOT replaced by qor.resources (packaged assets) and qor.workdir (consumer state); test suite fully ported to from-imports; CI install-smoke added. 2 dashed-name reliability scripts retain REPO_ROOT (documented deviation).
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED*
-*Merkle seal: 0f821248...*
+*Merkle seal: 7785c951...*

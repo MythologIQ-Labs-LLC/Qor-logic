@@ -14,18 +14,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import sys
 import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-# Make shadow_process importable when run as a script
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+from qor.scripts import shadow_process
 
-import shadow_process  # noqa: E402
+from qor import workdir as _workdir
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-MARKER_PATH = REPO_ROOT / ".qor" / "remediate-pending"
+MARKER_PATH = _workdir.root() / ".qor" / "remediate-pending"
 
 THRESHOLD = 10
 STALE_DAYS = 90

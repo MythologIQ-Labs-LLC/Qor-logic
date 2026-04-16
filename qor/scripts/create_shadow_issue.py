@@ -19,12 +19,11 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+from qor.scripts import shadow_process
 
-import shadow_process  # noqa: E402
+from qor import workdir as _workdir
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-MARKER_PATH = REPO_ROOT / ".qor" / "remediate-pending"
+MARKER_PATH = _workdir.root() / ".qor" / "remediate-pending"
 DEFAULT_REPO = "MythologIQ-Labs-LLC/Qor-logic"
 
 

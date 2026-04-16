@@ -18,9 +18,11 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-MARKER_PATH = REPO_ROOT / ".qor" / "platform.json"
-PROFILES_DIR = REPO_ROOT / "qor" / "platform" / "profiles"
+from qor import resources as _resources
+from qor import workdir as _workdir
+
+MARKER_PATH = _workdir.root() / ".qor" / "platform.json"
+PROFILES_DIR = Path(str(_resources.asset("platform", "profiles")))
 
 KNOWN_HOSTS = ("claude-code", "kilo-code", "codex-standalone", "unknown")
 

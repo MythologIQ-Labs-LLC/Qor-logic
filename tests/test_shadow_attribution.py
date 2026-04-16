@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-import shadow_process
+from qor.scripts import shadow_process
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -67,7 +67,7 @@ def test_append_event_requires_attribution_or_log_path():
 
 def test_collector_warns_on_legacy_only(tmp_path, capsys):
     import sys
-    import collect_shadow_genomes as collect
+    from qor.scripts import collect_shadow_genomes as collect
 
     repo = tmp_path / "repo1"
     (repo / "docs").mkdir(parents=True)

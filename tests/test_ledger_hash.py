@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-import ledger_hash as lh
+from qor.scripts import ledger_hash as lh
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 LEDGER_MD = REPO_ROOT / "docs" / "META_LEDGER.md"

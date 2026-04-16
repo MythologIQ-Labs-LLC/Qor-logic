@@ -10,11 +10,7 @@ from pathlib import Path
 
 import pytest
 
-import sys
-REPO_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO_ROOT / "qor" / "scripts"))
-
-import governance_helpers as gh  # noqa: E402
+from qor.scripts import governance_helpers as gh
 
 
 def _write_plan(path: Path, change_class: str | None, bold: bool = True) -> None:

@@ -26,16 +26,15 @@ from pathlib import Path
 
 import jsonschema
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+from qor.scripts import shadow_process
 
-import shadow_process  # noqa: E402
+from qor import resources as _resources
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-SCHEMA_PATH = REPO_ROOT / "qor" / "gates" / "schema" / "repos_config.schema.json"
+SCHEMA_PATH = Path(str(_resources.schema("repos_config.schema.json")))
 DEFAULT_CONFIG = Path.home() / ".qor" / "repos.json"
 
-CHECK_SCRIPT = "qor/scripts/check_shadow_threshold.py"
-ISSUE_SCRIPT = "qor/scripts/create_shadow_issue.py"
+CHECK_SCRIPT = [sys.executable, "-m", "qor.scripts.check_shadow_threshold"]
+ISSUE_SCRIPT = [sys.executable, "-m", "qor.scripts.create_shadow_issue"]
 UPSTREAM_LOG_REL = "docs/PROCESS_SHADOW_GENOME_UPSTREAM.md"
 LEGACY_LOG_REL = "docs/PROCESS_SHADOW_GENOME.md"
 
@@ -74,7 +73,7 @@ def sweep_one(repo: dict) -> list[dict]:
         return []
 
     result = subprocess.run(
-        [sys.executable, CHECK_SCRIPT],
+        CHECK_SCRIPT,
         cwd=str(repo_path),
         capture_output=True,
         text=True,
@@ -182,7 +181,7 @@ def flip_per_repo(url: str, events: list[dict], config: dict) -> dict:
             print(f"WARN: no config entry for source_repo {repo_name}", file=sys.stderr)
             continue
         result = subprocess.run(
-            [sys.executable, ISSUE_SCRIPT,
+            [*ISSUE_SCRIPT,
              "--flip-only", url,
              "--events", ",".join(ids)],
             cwd=str(repo["path"]),

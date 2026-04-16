@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-import qor_platform as qplat
+from qor.scripts import qor_platform as qplat
 
 
 # ----- Host detection -----

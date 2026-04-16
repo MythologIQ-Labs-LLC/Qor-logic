@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-import collect_shadow_genomes as collect
-import shadow_process
+from qor.scripts import collect_shadow_genomes as collect
+from qor.scripts import shadow_process
 
 
 # ----- Helpers -----
@@ -279,7 +279,7 @@ def test_flip_per_repo_skips_unknown_source_repo(tmp_path, monkeypatch, capsys):
 # ----- Integration with --flip-only mode -----
 
 def test_flip_only_mode_updates_events_without_gh(tmp_path, monkeypatch):
-    import create_shadow_issue as csi
+    from qor.scripts import create_shadow_issue as csi
 
     events = [
         _mk_event(severity=5, session_id="s-1"),
@@ -303,7 +303,7 @@ def test_flip_only_mode_updates_events_without_gh(tmp_path, monkeypatch):
 
 
 def test_flip_only_preserves_other_events(tmp_path):
-    import create_shadow_issue as csi
+    from qor.scripts import create_shadow_issue as csi
     e1 = _mk_event(severity=5, session_id="s-1")
     e2 = _mk_event(severity=3, session_id="s-2", ts="2026-04-15T13:00:00Z")
     e3 = _mk_event(severity=1, session_id="s-3", ts="2026-04-15T14:00:00Z", addressed=True)

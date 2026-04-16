@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pytest
 
-import session
-import validate_gate_artifact as vga
-import gate_chain
-import shadow_process
+from qor.scripts import session
+from qor.scripts import validate_gate_artifact as vga
+from qor.scripts import gate_chain
+from qor.scripts import shadow_process
 
 
 # ----- Session ID format & collision resistance -----

@@ -13,14 +13,14 @@ from pathlib import Path
 
 import pytest
 
-import session
-import gate_chain
-import shadow_process
-import qor_platform as qplat
-import qor_audit_runtime as audit_runtime
-import check_shadow_threshold as cst
-import create_shadow_issue as csi
-import collect_shadow_genomes as collect
+from qor.scripts import session
+from qor.scripts import gate_chain
+from qor.scripts import shadow_process
+from qor.scripts import qor_platform as qplat
+from qor.scripts import qor_audit_runtime as audit_runtime
+from qor.scripts import check_shadow_threshold as cst
+from qor.scripts import create_shadow_issue as csi
+from qor.scripts import collect_shadow_genomes as collect
 
 
 # ----- Fixtures -----
@@ -238,8 +238,8 @@ def test_session_continuity_across_modules(isolated):
 
 def test_compile_drift_full_cycle(tmp_path, monkeypatch):
     """Compile real fake source → tamper dist → drift detects → recompile → clean."""
-    import compile as compile_mod
-    import check_variant_drift as drift_mod
+    from qor.scripts import compile as compile_mod
+    from qor.scripts import check_variant_drift as drift_mod
 
     # Build a minimal source tree
     skills = tmp_path / "skills"
@@ -304,13 +304,13 @@ def test_collector_subprocess_chain(tmp_path, monkeypatch):
 
     def fake_run(cmd, *args, **kwargs):
         # check_shadow_threshold per repo: exit 10 (breach)
-        if cmd[1].endswith("check_shadow_threshold.py"):
+        if "qor.scripts.check_shadow_threshold" in cmd:
             return subprocess.CompletedProcess(cmd, 10, "BREACH", "")
         # gh issue create: returns URL
         if cmd[:3] == ["gh", "issue", "create"]:
             return subprocess.CompletedProcess(cmd, 0, fake_url + "\n", "")
-        # create_shadow_issue.py --flip-only: succeed silently
-        if cmd[1].endswith("create_shadow_issue.py"):
+        # create_shadow_issue --flip-only: succeed silently
+        if "qor.scripts.create_shadow_issue" in cmd:
             return subprocess.CompletedProcess(cmd, 0, "Flipped 1 event(s)", "")
         raise AssertionError(f"Unexpected: {cmd}")
 

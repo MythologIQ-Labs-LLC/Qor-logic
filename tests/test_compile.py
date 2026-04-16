@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-import compile as compile_mod
-import check_variant_drift as drift_mod
+from qor.scripts import compile as compile_mod
+from qor.scripts import check_variant_drift as drift_mod
 
 
 @pytest.fixture
