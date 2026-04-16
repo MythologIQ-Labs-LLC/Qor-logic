@@ -282,4 +282,25 @@ Read-modify-write with a post-hoc id-based split cannot handle events created du
 
 ---
 
+### Entry #13: VETO — plan-qor-phase15 (shadow-genome countermeasures doctrine)
+
+**Date**: 2026-04-16
+**Verdict ID**: Entry #36
+**Failure Mode**: VALIDATION_GAP / COMPLEXITY_VIOLATION
+
+#### What Failed
+Plan v1 for the Shadow Genome countermeasures doctrine introduced a static-analysis test for SG-033 (keyword-only signature discipline). The AST walker's positional-arg check used naive length comparison that misclassifies calls containing `ast.Starred` nodes. Doctrine-content tests checked for keywords anywhere in body rather than anchored to the relevant SG section.
+
+#### Why It Failed
+SG-034: AST-based code-pattern tests need explicit handling for special node types (`Starred`, `AsyncFunctionDef`, `keyword`); naive `len(args)` comparisons produce false positives on valid Python patterns. SG-035: doctrine-content tests checking for unanchored keywords can pass even when the section they claim to verify is missing entirely; W-1 literal-keyword discipline requires proximity/structure anchoring.
+
+#### Pattern to Avoid
+**SG-034**: When writing AST-based tests, enumerate every relevant node type family (`FunctionDef`+`AsyncFunctionDef`; `Starred`+`keyword` in `Call.args`; `Attribute`+`Name` in `Call.func`). A walker that misses a family produces either false positives or false negatives depending on which side of the check the omission falls.
+**SG-035**: Doctrine-content tests must anchor keywords to their semantic section (regex proximity, header parsing, or explicit section-scoped reads). `body.contains(keyword)` tests pass on accidental keyword co-occurrence, undermining the rule they claim to enforce.
+
+#### Remediation
+4 mandatory items in audit report. V-1: handle `ast.Starred` in call args. V-2: anchor doctrine tests to their section. V-3: resolve `qor-plan/SKILL.md` Razor state (trim or explicit exemption). V-4: include `AsyncFunctionDef` in walker.
+
+---
+
 *Shadow integrity: ACTIVE*

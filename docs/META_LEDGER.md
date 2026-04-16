@@ -1171,3 +1171,32 @@ SHA256(content_hash + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: 937dec79...*
+
+---
+
+### Entry #36: GATE TRIBUNAL — plan-qor-phase15-shadow-genome-doctrine
+
+**Timestamp**: 2026-04-16
+**Phase**: GATE (pre-implementation audit)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase15-shadow-genome-doctrine.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `6b3bc769555562ed2908f024242acd6cc07c7be602c7dc31e425d6efb0c1f6aa`
+**Previous Hash**: `937dec794308dcca09765003004042f8afd622b8b93b438aedad44af9dc66440`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= d9984335ef244f39ae2e9ee53aa25ef1b128808a49b149308d31b0d7963ed1c0
+```
+
+**Verdict Summary**: 4 violations. V-1: AST walker's `len(node.args) > len(positional)` check false-positives on `ast.Starred` in call args (legitimate `fn(x, *rest, kw=1)` calls would be flagged). V-2: doctrine-content tests (`test_doctrine_documents_sg032/033_countermeasure`) check for keywords anywhere in body rather than anchored to the specific SG section — violates W-1 literal-keyword discipline. V-3: Track B adds ~15 lines to `qor/skills/sdlc/qor-plan/SKILL.md` (already 274 lines, 24 over Razor); plan does not acknowledge pre-existing overflow. V-4: AST walker misses `ast.AsyncFunctionDef` (trivial type-check fix).
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active)*
