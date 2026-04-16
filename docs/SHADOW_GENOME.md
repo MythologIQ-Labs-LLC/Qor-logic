@@ -363,4 +363,31 @@ Third occurrence of SG-038 pattern (prose-code drift) in Phase 17a v1 (Entry #44
 
 ---
 
+### Entry #17: VETO — plan-qor-phase20-import-migration (fourth SG-038 recurrence)
+
+**Date**: 2026-04-16
+**Verdict ID**: Entry #60
+**Failure Mode**: DOCUMENTATION_DRIFT (SG-038 recurrence #4)
+
+#### What Failed
+Phase 20 plan has 3 arithmetic inconsistencies in its Affected-Files and gap-count summaries. "Scripts (12)" over a list of 15. "Modified (14)" over a section that sums to 20. "11 open after this phase" when actual post-phase remaining is 7.
+
+#### Why It Failed
+SG-038 was codified in Phase 17a v2, yet has recurred in every planning phase since: Phase 15 v1, Phase 17a v1, Phase 19 v1, Phase 20 v1. Narrative awareness of the pattern does not prevent it. The author writes the header count first, then expands the content, and doesn't go back to reconcile.
+
+#### Pattern Confirmed
+**SG-038 is empirically sticky despite doctrine.** Four consecutive VETOes at Phase 20 say doctrine-only mitigation fails. The prescribed countermeasure in the doctrine ("grep the plan for every occurrence of that element and update all copies in lockstep") is correct but the human-in-the-loop discipline is fragile. Mechanical enforcement is needed.
+
+#### Proposed Mechanical Mitigation (to ship as part of Phase 20 remediation)
+A plan-linter test `tests/test_plan_self_consistency.py` that parses any `docs/plan-qor-phase*.md` file and asserts:
+- Every `Scripts (N):` / `Modified (N)` / `New (N)` / etc. header where `N` is a digit matches the number of enumerated items that follow.
+- Every "X of 18" or similar gap-count claim is internally arithmetic-consistent with enumerated GAP-* IDs in the same plan.
+
+This is small (~50 lines), catches the pattern mechanically, and can run in CI.
+
+#### Remediation
+3 mandatory items in audit report. V-1: 12 → 15 scripts. V-2: 14 → 20 total. V-3: 11 → 7 remaining after Phase 20.
+
+---
+
 *Shadow integrity: ACTIVE*

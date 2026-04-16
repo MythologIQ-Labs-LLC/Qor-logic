@@ -2065,3 +2065,33 @@ SHA256(content_hash + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: 0f821248...*
+
+---
+
+### Entry #60: GATE TRIBUNAL — plan-qor-phase20-import-migration
+
+**Timestamp**: 2026-04-16
+**Phase**: GATE (pre-implementation audit)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase20-import-migration.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Bundle context**: Phase 20 is Sprint 2 of the 4-sprint PyPI packaging remediation plan (RESEARCH_BRIEF.md)
+
+**Content Hash**: `be37ddbcb054c36eefebeecf71a6788dde91399562e075a834b0255dcca3f191`
+**Previous Hash**: `0f821248ed30b40da4d4f69b10ce010616f3e681fec93af6a1229542417a4cd0`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 698d5c49cca5c27c15b6129fe6a3f103b3d11e17de65b54916780c2ba31942fd
+```
+
+**Verdict Summary**: 3 violations, all SG-038 arithmetic recurrences — **4th consecutive planning phase** to fail this discipline (Phase 15 v1 → Phase 17a v1 → Phase 19 v1 → Phase 20 v1). V-1: "Scripts (12)" header but 15 enumerated. V-2: "Modified (14)" but section sums to 20. V-3: "11 open after this phase" conflates pre-phase with post-phase counts; correct is 7. Design substance is sound; arithmetic discipline is the failure mode. Recommendation: add a plan-linter test to the Phase 20 remediation scope.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active)*
