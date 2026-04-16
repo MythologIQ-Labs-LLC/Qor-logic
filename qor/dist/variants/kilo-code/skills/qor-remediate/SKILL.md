@@ -41,23 +41,47 @@ This skill is **cross-cutting** — invoked when the Process Shadow Genome thres
 
 ### Step 1 — Read context
 
-- Parse `docs/PROCESS_SHADOW_GENOME.md` (JSONL) filtering `addressed=false`.
-- Identify pattern: cluster events by `event_type`, `skill`, `session_id`.
-- Read latest substantiate gate artifact if present.
+Invoke `qor/scripts/remediate_read_context.py` via its library interface:
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+import remediate_read_context as rrc
+groups = rrc.load_unaddressed_groups()
+```
+
+- Reads both `docs/PROCESS_SHADOW_GENOME.md` (LOCAL) and `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` via `shadow_process.read_all_events()`.
+- Filters `addressed=false`.
+- Groups by `(event_type, skill, session_id)`.
+- Empty-log case returns `{}`.
+- Read latest substantiate gate artifact if present (external to helper).
 
 ### Step 2 — Pattern match
 
-Categorize the failure pattern:
+Invoke `qor/scripts/remediate_pattern_match.py`:
 
-- **Gate-loop**: repeated overrides on same gate (plan-audit, audit-implement). Root cause likely plan-quality or audit-calibration.
-- **Regression**: implement-substantiate cycle producing worse state than prior cycle.
+```python
+import remediate_pattern_match as rpm
+classifications = rpm.classify(groups)
+```
+
+Categorizes each group into one pattern (priority-ordered, highest wins):
+
+- **Aged-high-severity**: sev >= 3 event unaddressed > 90 days (auto-escalated via `qor/scripts/check_shadow_threshold.py`).
 - **Hallucination**: unverified mechanism naming caught at substantiate.
-- **Capability-shortfall aggregation**: ≥3 capability_shortfall events in one session.
-- **Aged-high-severity**: sev ≥ 3 event unaddressed > 90 days (auto-escalated).
+- **Regression**: implement-substantiate cycle producing worse state than prior cycle.
+- **Gate-loop**: >=2 `gate_override` events in same group (plan-audit, audit-implement). Root cause likely plan-quality or audit-calibration.
+- **Capability-shortfall aggregation**: >=3 `capability_shortfall` events in one session.
 
 ### Step 3 — Propose process change
 
-Not a code change — a **skill / agent / gate / doctrine** change.
+Invoke `qor/scripts/remediate_propose.py`:
+
+```python
+import remediate_propose as rp
+proposals = [rp.propose(c) for c in classifications]
+```
+
+Each proposal maps pattern to proposal_kind (`skill | agent | gate | doctrine`) with a skeleton `proposal_text`. Not a code change — a **skill / agent / gate / doctrine** change.
 
 Examples:
 - Add a grounding check to `qor-plan` Step 2b for a specific mechanism class
@@ -68,12 +92,27 @@ Examples:
 
 ### Step 4 — Mark events addressed
 
-For every event the proposal addresses, update `docs/PROCESS_SHADOW_GENOME.md`:
-- `addressed: true`, `addressed_ts: <ISO-8601>`, `addressed_reason: "remediated by /qor-remediate session <id>"`.
+Invoke `qor/scripts/remediate_mark_addressed.py`:
+
+```python
+import remediate_mark_addressed as rma
+flipped, missing = rma.mark_addressed(proposal["addressed_event_ids"], session_id=sid)
+```
+
+- Routes write-back to each event's origin file (LOCAL or UPSTREAM) via `shadow_process.id_source_map()` + `write_events_per_source`.
+- Returns `(flipped_count, missing_ids)`. `missing_ids` is the list of IDs not found in either log — surfaced per SG-032 instead of silently dropped.
+- Writes `addressed: true`, `addressed_ts: <ISO-8601>`, `addressed_reason: "remediated"` (schema enum value; detailed reason is recorded in the gate artifact).
 
 ### Step 5 — Emit remediate gate artifact
 
-Write `.qor/gates/<session_id>/remediate.json` with the proposal for downstream audit.
+Invoke `qor/scripts/remediate_emit_gate.py`:
+
+```python
+import remediate_emit_gate as reg
+path = reg.emit(proposal, session_id=sid)
+```
+
+Writes `.qor/gates/<session_id>/remediate.json` with the proposal plus a `ts` field for downstream audit.
 
 ## Constraints
 
@@ -81,7 +120,8 @@ Write `.qor/gates/<session_id>/remediate.json` with the proposal for downstream 
 - **NEVER** mark events addressed without a concrete remediation paired to each
 - **ALWAYS** cite shadow events by `id` in the remediation proposal
 - **ALWAYS** write the gate artifact; remediation that doesn't pass downstream audit is advisory-only until reviewed
+- **ALWAYS** check `missing_ids` from `mark_addressed`; non-empty indicates a stale or typo'd event ID and warrants operator attention
 
-## Status
+## Tested behaviors
 
-**STUB (minimal)** — Full behavior deferred to `plan-qor-tooling-deferred.md`. This file exists so the skill registry is complete and the category structure is stable.
+See `tests/test_remediate.py` (18 tests): context loading + filtering + grouping, empty-state handling, pattern classification for all 5 patterns, proposal shape + kind mapping + id preservation, mark-addressed flip + origin-file routing + missing-id surfacing, gate artifact write path + payload roundtrip.

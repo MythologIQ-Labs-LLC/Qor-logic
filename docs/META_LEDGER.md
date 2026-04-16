@@ -1769,3 +1769,145 @@ SHA256(content_hash + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: fb03e46c...*
+
+---
+
+### Entry #52: GATE TRIBUNAL — plan-qor-phase18-qor-remediate
+
+**Timestamp**: 2026-04-16
+**Phase**: GATE (pre-implementation audit)
+**Author**: Judge (via parallel subagent)
+**Verdict**: **VETO**
+**Risk Grade**: L2
+
+**Target**: `docs/plan-qor-phase18-qor-remediate.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `7ad29bf87719f2fa3c01c4f9fb10f32afb55bd4087392424dc34face272d2a28`
+**Previous Hash**: `fb03e46c1d0081bf2e5e20b0b9448fd2548eee7729612caf1fef0d939c9a4a1c`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= f09b2c7b31142e6f88bb7642b21d1eda4fc04795d353c8f1017cd181234990f0
+```
+
+**Verdict Summary**: 2 violations. V-1 (SG-032 recurrence): Track D's `mark_addressed` routes unknown IDs through `write_events_per_source` without fallback; doctrine forbids lookup-table silent-drop. Prescription: return `(flipped_count, missing_ids)` and add Test 17. V-2: Track A enumerates 3 tests but none cover empty-log state. Prescription: add Test 18.
+
+**Parallel-execution note**: This entry and Entries #53-55 originated from a parallel Phase 18 subagent in an isolated worktree. Main session rechained hashes against Phase 17's Entry #51 seal (was chained from #47) and renumbered 48→52, 49→53, 50→54, 51→55 at merge time. Content hashes preserved as historical records.
+
+---
+
+*Chain integrity: VALID*
+
+---
+
+### Entry #53: GATE TRIBUNAL — plan-qor-phase18-v2-qor-remediate
+
+**Timestamp**: 2026-04-16
+**Phase**: GATE (pre-implementation audit, round 2)
+**Author**: Judge (via parallel subagent)
+**Verdict**: **PASS**
+**Risk Grade**: L2
+
+**Target**: `docs/plan-qor-phase18-v2-qor-remediate.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `44fbd713dcd353021fb9c22ff1ef2f363f23fa2189b95df8f60d3b049f991c8b`
+**Previous Hash**: `f09b2c7b31142e6f88bb7642b21d1eda4fc04795d353c8f1017cd181234990f0`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= a1405a9d09780f86e6dc382a721d14d8b795aff8964ae1f04e8a4aa984267839
+```
+
+**Verdict Summary**: Both Entry #52 violations closed. V-1: `mark_addressed` returns `(flipped_count, missing_ids)` tuple; Test 16 exercises unknown-id path. V-2: Test 4 seeds empty log and asserts `{}`. 18-test grid enumerated; 234+18=252 arithmetic verified. SG-038 lockstep: prose, code, criteria all agree.
+
+---
+
+*Chain integrity: VALID*
+
+---
+
+### Entry #54: IMPLEMENTATION — Phase 18 qor-remediate Full Implementation
+
+**Timestamp**: 2026-04-16
+**Phase**: IMPLEMENT
+**Author**: Specialist (via parallel subagent)
+**Risk Grade**: L2
+
+**Target**: `docs/plan-qor-phase18-v2-qor-remediate.md`
+
+**Files Added**:
+- `qor/scripts/remediate_read_context.py` (Track A)
+- `qor/scripts/remediate_pattern_match.py` (Track B — 5-pattern priority)
+- `qor/scripts/remediate_propose.py` (Track C)
+- `qor/scripts/remediate_mark_addressed.py` (Track D — tuple-return with `missing_ids`)
+- `qor/scripts/remediate_emit_gate.py` (Track E — writes `.qor/gates/<sid>/remediate.json`)
+- `tests/test_remediate.py` (18 TDD tests)
+
+**Files Modified**:
+- `qor/skills/sdlc/qor-remediate/SKILL.md` (STUB removed; Steps 1-5 reference helpers; 88 → 127 lines)
+
+**Variants Regenerated**: `BUILD_REGEN=1 python qor/scripts/compile.py` — claude, kilo-code, codex.
+
+**Test Discipline (subagent)**: 252 passed + 6 skipped (234 baseline + 18 new). Post-merge with Phase 17 (+11 tests): 263 expected.
+
+**Content Hash**: `022aea4e9ccc24a85447e7d2554c5bd1a60a94be58849fab1b27d71bcc7106d7`
+**Previous Hash**: `a1405a9d09780f86e6dc382a721d14d8b795aff8964ae1f04e8a4aa984267839`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 1c8832a722170c9d3a5477894f76e36423d723920fe7770cc4bc90be5c201e72
+```
+
+**Decision**: `qor-remediate` transitions from STUB to executable. SG-032 guarded via tuple return; SG-033 clean; SG-036 inline grounding; SG-038 lockstep maintained.
+
+---
+
+*Chain integrity: VALID*
+
+---
+
+### Entry #55: SESSION SEAL — Phase 18 substantiated (merge-reconciled)
+
+**Timestamp**: 2026-04-16
+**Phase**: SUBSTANTIATE
+**Author**: Judge (subagent-sealed; main-session rechained + version-reconciled)
+**Risk Grade**: L2
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase18-v2-qor-remediate.md`
+**Change Class**: `feature`
+**Version (subagent seal)**: `0.7.0 → 0.8.0`
+**Version (main-session reconciliation)**: `0.8.0 → 0.9.0` (Phase 17 took 0.8.0 at merge; Phase 18 bumped to 0.9.0)
+**Tag**: `v0.9.0` (pending operator push)
+
+**Verification Results**:
+- Reality audit: PASS (5 helpers + 18 tests + skill update all present post-merge)
+- Test discipline (subagent): 252 passed + 6 skipped, deterministic 2x
+- Section 4 Razor: PASS — helpers 35/51/73/57/47 lines, all under 100
+- SG-032/033/036/038: PASS
+- Ledger chain: Entries #12-#54 verified post-rechain (content hashes preserved as historical)
+
+**Content Hash** (substantiate-manifest, as-sealed in worktree):
+`6f375b3da54e413850c26773da9d84519d8e97d002fa55330e0f84cc5fb13985`
+
+**Previous Hash**:
+`1c8832a722170c9d3a5477894f76e36423d723920fe7770cc4bc90be5c201e72`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= 44d5991e33a5907ee0b9e21b4aed63976c01c98a4749cd603af0057727481530
+```
+
+**Decision**: Phase 18 sealed in worktree; rechained + merged to main. First use of parallel end-to-end subagents with main-session merge reconciliation. Both phases (17 + 18) delivered concurrently; governance chain preserved via rechain at merge time.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: 44d5991e...*

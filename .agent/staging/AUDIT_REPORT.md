@@ -1,58 +1,73 @@
-# AUDIT REPORT — Phase 17 v2 Reliability Scripts
+# AUDIT REPORT — plan-qor-phase18-v2-qor-remediate.md
 
-**Date**: 2026-04-16
-**Author**: The QoreLogic Judge (adversarial re-audit)
-**Target**: `docs/plan-qor-phase17-v2-reliability-scripts.md`
-**Supersedes**: v1 audit (Entry #48 VETO)
-**Verdict**: **PASS**
+**Tribunal Date**: 2026-04-16
+**Target**: `docs/plan-qor-phase18-v2-qor-remediate.md`
+**Risk Grade**: L2
+**Auditor**: The QorLogic Judge
+**Supersedes**: v1 audit (VETO, Entry #48)
 
-## Methodology
+---
 
-Read v2 as The Judge. Cross-referenced doctrine (all 12 SG patterns) and v1 findings (V-1, V-2, V-4). Ran grounding checks.
+## VERDICT: **PASS**
 
-## V-1 closure verification
+---
 
-v1 claim: "28 skill files". v2 body: "27 SKILL.md files under `qor/skills/**`" with inline `find qor/skills -name SKILL.md | wc -l` 2026-04-16 provenance. Grounded by Judge: `find qor/skills -name SKILL.md | wc -l` → 27. **CLOSED**.
+### Executive Summary
 
-## V-2 closure verification
+Plan v2 closes both Entry #48 violations.
 
-v1 claim: fabricated "splits at 400" policy in `patterns-skill-lifecycle.md`. v2 body (Track 4 Size impact): states plainly both skills are already above 250-line Razor; adding ~16-21 lines does not materially change that; splitting deferred. No citation to `patterns-skill-lifecycle.md` for a splitting policy. Grounded by Judge: `grep -n "400|split" qor/references/patterns-skill-lifecycle.md` remains 0; v2 does not invoke that file. **CLOSED**.
+V-1 (SG-032 unknown-id silent drop) resolved: `mark_addressed` now returns `(flipped_count, missing_ids)`; Test 16 exercises the unknown-id path explicitly with a 64-char non-matching id. SG-032 recurrence prevented — unmapped records surface as a list instead of vanishing.
 
-## V-4 closure verification
+V-2 (empty-state coverage gap) resolved: Test 4 `test_read_context_empty_returns_empty_dict` seeds no events and asserts `{}`. Latent regression vector closed.
 
-v1 claim: `<current-plan>` placeholder with no resolver. v2 Step 5.5 block (line ~140): `PLAN_PATH=$(python -c "...from governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")` and passes `"$PLAN_PATH"` to `--plan`. Grounded by Judge: `governance_helpers.current_phase_plan_path()` exists (verified in Phase 13 wiring, substantiate Step 7.5). **CLOSED**.
+Lockstep discipline (SG-038) verified: prose (line "8 new + 3 modified"), code block (8-item bullet list), and success criteria ("18 tests", "252 passed + 6 skipped") all agree. 234+18=252 arithmetic holds. Implementation gate UNLOCKED.
 
-## SG-038 lockstep re-check
+### Audit Results
 
-Counts cited in v2:
-- Manifest: 3 scripts, 2 skills, 11 tests (4+3+3+1)
-- Tracks 1-4 individually: 4 tests, 3 tests, 3 tests, 1 test
-- Affected Files Summary: 3 scripts, 2 skills, 11 new test functions
-- Success Criteria: 3 scripts, 11 tests (Track 1 = 4, Track 2 = 3, Track 3 = 3, Track 4 = 1), 2 skills
+#### Security Pass
+**Result**: PASS. Local file I/O only.
 
-All four enumerations agree. **PASS**.
+#### Ghost UI Pass
+**Result**: PASS. No UI.
 
-## SG-036 re-check
+#### Section 4 Razor Pass
+**Result**: PASS. Track D target raised 70 → 80 for the missing-ids tracking; still well under 100-line helper ceiling.
 
-Every file-size claim in v2 carries inline `wc -l` provenance with date 2026-04-16 (verified by inspection: legacy script sizes, current skill file sizes, baseline test count). **PASS**.
+#### Dependency Pass
+**Result**: PASS. Stdlib + `jsonschema` + `pytest`. No new deps.
 
-## Residual doctrine sweep
+#### TDD Pass
+**Result**: PASS. 18 tests enumerated before implementation; empty-input (Test 4) and unknown-id (Test 16) paths now covered.
 
-- SG-016: no generic-convention paths. Specific paths only (`.qor/intent-lock/`, `tools/reliability/`).
-- SG-017/SG-020: no invented security/mechanism claims.
-- SG-019: no CLI flag portability assumption. Git subprocess uses stdlib `subprocess.run`.
-- SG-021: closed via V-4.
-- SG-032: N/A (no batch-split-write logic).
-- SG-033: N/A (no keyword-only signature changes).
-- SG-034: N/A (no AST walker).
-- SG-035: test #4 (Track 4 skill-edit test) is proximity-anchored per plan spec (`re.search(step_header, body) within 500 chars of path`).
-- SG-037: N/A (no doctrine-content test anchored to a single file).
-- SG-038: closed (verified above).
+#### Grounding Protocol (SG-016/036)
+**Result**: PASS. Every line-number / count / location claim carries inline 2026-04-16 citation. Baseline 234+6 re-verified. Line numbers for `shadow_process` symbols re-asserted against v1-grounded values (unchanged).
 
-## Verdict
+#### Prose/Code Lockstep (SG-038)
+**Result**: PASS.
+- Prose: "5 helpers + 1 test file + 2 plan files = 8 new" (line ~"File count: 8 new").
+- Code block: Affected Files → 8 items in **New** list (v1 + v2 plans + 5 helpers + 1 test).
+- Success criteria #1: "18 tests". Success criteria #2: "252 passed + 6 skipped (234 baseline + 18 new)". 234+18=252.
+- Test numbering: Track A = 4, B = 6, C = 3, D = 3, E = 2. Sum = 18. Consistent.
 
-**PASS**. All three v1 findings remediated. SG-038 lockstep holds. SG-036 grounding holds. No new violations surfaced.
+#### SG-032 Pass (batch-split-write coverage gap)
+**Result**: PASS. Unknown IDs surfaced as `missing_ids` return value. Test 16 guards against silent drop. No mid-cycle creation elsewhere in the helpers. Doctrine prescription (b) — "add a default bucket in the split for unmatched records" — satisfied via explicit return tuple instead of a fallback file, which is equally valid since `mark_addressed` is not creating records.
 
-## Next Steps
+#### SG-033 Pass (positional-to-keyword)
+**Result**: PASS. Plan introduces no new `*` in any signature. `mark_addressed(event_ids, session_id) -> tuple[int, list[str]]`, `emit(proposal, session_id, base_dir=None)`, `load_unaddressed_groups()`, `classify(groups)`, `propose(classification)` — all positional-friendly.
 
-Proceed to `/qor-implement` on v2 plan.
+#### SG-034 Pass
+**Result**: N/A. No AST walkers.
+
+#### SG-035 Pass
+**Result**: N/A. No new doctrine sections.
+
+#### SG-037 Pass (knowledge-surface drift)
+**Result**: PASS. Skill body updates + helper references in the same commit as any future knowledge moves.
+
+### Required Deltas
+
+None. v2 is implementation-ready.
+
+### Next Action
+
+Proceed to `/qor-implement`. Write `tests/test_remediate.py` first, confirm all 18 tests fail red, then build helpers Track A → E + Track F skill update.
