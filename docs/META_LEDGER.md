@@ -1009,4 +1009,32 @@ SHA256(content_hash + previous_hash)
 ---
 
 *Chain integrity: VALID*
-*Session: OPEN (audit tribunal active)*
+
+---
+
+### Entry #32: GATE TRIBUNAL — plan-qor-phase14-v2-shadow-attribution
+
+**Timestamp**: 2026-04-15
+**Phase**: GATE (pre-implementation audit, round 2)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase14-v2-shadow-attribution.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `80f2ad9af6a36720ac3fa3a27cc2c02224bc9e29bb53616b4576e6819a9efe9b`
+**Previous Hash**: `54ef6a4281b361dea2f5c704d5b962caf4d278a87272ba87654b3317674a7d1b`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 4d23775ffea278cb176dc1560066d14f7692c05b4ad5ac73033bb3ad0f46e17b
+```
+
+**Verdict Summary**: 4 violations on v2 (all 5 Entry #31 violations closed in design). V-1 (CRITICAL): `id_source_map()` write-back pattern silently drops new escalation events in `check_shadow_threshold.py` — IDs not yet on disk match neither LOCAL nor UPSTREAM filter; data loss. V-2: `append_event` keyword-only `*` signature breaks 2 positional callers in `tests/test_shadow.py:329,341` (unaccounted breaking change). V-3: `create_shadow_issue.py` (227 lines) + ~25 lines dual-file changes = ~252, exceeding 250-line Razor. V-4: plan header "Modified — scripts (5)" enumerates 6 files.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active, round 2)*

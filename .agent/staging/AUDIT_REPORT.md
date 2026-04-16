@@ -1,8 +1,8 @@
-# AUDIT REPORT — plan-qor-phase14-shadow-attribution.md
+# AUDIT REPORT — plan-qor-phase14-v2-shadow-attribution.md
 
 **Tribunal Date**: 2026-04-15
-**Target**: `docs/plan-qor-phase14-shadow-attribution.md`
-**Risk Grade**: L1 (scope-incomplete; pipeline survey missing)
+**Target**: `docs/plan-qor-phase14-v2-shadow-attribution.md`
+**Risk Grade**: L1 (spec-level defects; no security concerns)
 **Auditor**: The QorLogic Judge
 
 ---
@@ -13,43 +13,59 @@
 
 ### Executive Summary
 
-Design direction is sound (dual-file schema confirmed in dialogue). VETO issued because plan surveys only 1 of 5 shadow-pipeline scripts and 1 of 2 shadow-tracking skills — the other 4 scripts + 1 skill still read/write the legacy single-path model. Shipping Phase 14 as drafted leaves the pipeline internally inconsistent: collector reads upstream, threshold-checker and issue-updater write to legacy. This is an SG-021 pattern recurrence (multi-layer edit compressed into a single verb that hides which files need editing). Also 2 spec-level defects. Remediation reduces ambiguity and expands scope to the verified pipeline surface.
+Plan v2 closes all 5 Entry #31 violations and correctly expands scope to 7 writer call sites (good grounding work). VETO issued for 2 substantive defects: (1) the proposed `id_source_map()` write-back pattern silently drops newly-created events (escalation events in `check_shadow_threshold.py` and new events from any future caller), and (2) the signature change from `append_event(event, log_path=None)` to keyword-only `(event, *, attribution=None, log_path=None)` breaks 2 existing test call sites that pass `log_path` positionally. Both are fixable without redesign.
 
 ### Audit Results
 
-#### Security / Ghost UI / Dependency Passes
-**Result**: PASS. No new dependencies. No credentials or placeholder auth.
+#### Security Pass
+**Result**: PASS. No credentials, auth stubs, or security bypasses. Plan is governance/process infrastructure only.
 
-#### Section 4 Razor
-Planned changes: doctrine markdown (one file, ~60 lines est.); collector single-constant edit + small fallback block (~10 lines est.); 2 SKILL.md edits (cosmetic). **Result**: PASS.
+#### Ghost UI Pass
+**Result**: PASS. No UI elements proposed.
 
-#### Macro-Level / Orphan Passes
-**Result**: FAIL — see V-1 (pipeline scope incomplete).
+#### Section 4 Razor Pass
+**Result**: CONDITIONAL PASS — see V-3.
+
+| Check | Limit | Blueprint Proposes | Status |
+|---|---|---|---|
+| Max function lines | 40 | All proposed functions <20 lines | OK |
+| Max file lines | 250 | `create_shadow_issue.py`: 227 + ~25 est. = ~252 | MARGINAL |
+| Max nesting depth | 3 | Max 2 (conditional in collector) | OK |
+| Nested ternaries | 0 | 0 | OK |
+
+`shadow_process.py` (121 + ~24 = ~145): OK. `check_shadow_threshold.py` (150 + ~20 = ~170): OK. `create_shadow_issue.py` (227 + ~25 = ~252): borderline.
+
+#### Dependency Pass
+**Result**: PASS. No new dependencies.
+
+#### Orphan Pass
+**Result**: PASS. All proposed files connect to existing import chains. `doctrine-shadow-attribution.md` is referenced by 4 skills + test. `PROCESS_SHADOW_GENOME_UPSTREAM.md` is read by collector + shadow_process constants. `test_shadow_attribution.py` is discovered by pytest.
+
+#### Macro-Level Architecture Pass
+**Result**: FAIL — see V-1 (silent data loss in write-back pattern).
 
 ### Violations Found
 
 | ID | Category | Location | Description |
 |---|---|---|---|
-| V-1 | Scope-incomplete (SG-021 recurrence) | §Track C + §Affected Files | Plan changes `SHADOW_LOG_REL` in `collect_shadow_genomes.py` only. Grep confirms 5 scripts reference `PROCESS_SHADOW_GENOME`: `collect_shadow_genomes.py`, `check_shadow_threshold.py:2`, `shadow_process.py:20` (hardcoded `LOG_PATH = REPO_ROOT / "docs" / "PROCESS_SHADOW_GENOME.md"`), `create_shadow_issue.py:9` (updates events in-file), `gate_chain.py`. After the plan's edit, `collect_shadow_genomes.py` reads UPSTREAM but `shadow_process.py` still writes LEGACY only (its `LOG_PATH` is a fixed constant, not classification-aware). The `qor-shadow-process` SKILL.md will instruct routing to two files, but the Python helper it wraps cannot split writes. Pipeline is internally inconsistent. Required: plan must survey and disposition ALL 5 scripts. `shadow_process.py` needs a `log_path_for(attribution)` helper; `check_shadow_threshold.py` and `create_shadow_issue.py` need to know which file (or both files) to operate on. |
-| V-2 | Scope-incomplete (skills) | §Affected Files | Plan modifies `qor-shadow-process/SKILL.md` + `qor-audit/SKILL.md`. Grep confirms 2 additional skill files reference shadow-genome paths: `qor/skills/memory/track-shadow-genome.md` + `qor/skills/meta/qor-meta-track-shadow/SKILL.md`. These are user-invocable skills that instruct agents where to log. Leaving them pointing at the single-file model leaves agents writing to the wrong file ~50% of the time. Required: audit both skills; update or explicitly disposition (out-of-scope with rationale). |
-| V-3 | Self-contradiction | §Track C "Changes" | Plan says: "Single-line edit. Consumer repos without upstream file produce zero events (graceful); collector skips missing files." Immediately followed by: "Add fallback read of legacy `PROCESS_SHADOW_GENOME.md` only if upstream file is missing AND legacy has entries → warn operator..." Two sentences, contradictory specs. Either it's a single-line constant change OR it's a multi-line conditional with fallback + warning. Required: pick one; if fallback is wanted, describe the conditional explicitly and add a test (`test_collector_warns_on_legacy_only`). |
-| V-4 | Doctrine scope omission | §Track A doctrine §5 | §5 "File routing: UPSTREAM → PROCESS_SHADOW_GENOME_UPSTREAM.md; LOCAL → PROCESS_SHADOW_GENOME.md." Does not mention narrative `docs/SHADOW_GENOME.md` (the VETO failure-pattern log written by `/qor-audit` Step 6). Plan text claims narrative file is "out of scope" but the doctrine itself should say so explicitly — otherwise an agent reading the doctrine may route VETO narrative entries into one of the two structured files. Required: add §6 "Out of scope" stating `docs/SHADOW_GENOME.md` (narrative) is unchanged and not subject to attribution classification. |
-| V-5 | gate_writes frontmatter syntax | §Track B changes | Plan proposes: `gate_writes: docs/PROCESS_SHADOW_GENOME.md (append-only) OR docs/PROCESS_SHADOW_GENOME_UPSTREAM.md (append-only)`. The `OR` syntax is not an existing convention; grep `gate_writes:` across all SKILL.md files to confirm existing patterns use single path or comma-separated list. Required: verify the existing convention (likely comma-separated or a list in YAML frontmatter); use that. If YAML list, the frontmatter parser must tolerate it — verify `qor_audit_runtime.py` or whichever reads frontmatter. |
+| V-1 | Data loss (silent drop) | Track E, `check_shadow_threshold.py` write-back | `id_source_map()` is built from existing events on disk. New escalation events created by `sweep()` (line 64-83 of `check_shadow_threshold.py`) have IDs not yet in either file. The plan's write-back pattern `src_map.get(e["id"]) == LOCAL_LOG_PATH` returns `None` for these new IDs — they match neither `local` nor `upstream` filter and are silently dropped from both files. Same exposure in `create_shadow_issue.py` if any new events are ever appended during a read-modify-write cycle. |
+| V-2 | Breaking change (unaccounted) | Track C, `append_event` signature | Current signature: `append_event(event: dict, log_path: Path \| None = None)` — `log_path` is a regular parameter, passable positionally. Plan proposes: `append_event(event: dict, *, attribution=None, log_path=None)` — the `*` makes `log_path` keyword-only. Two existing test call sites pass `log_path` positionally: `tests/test_shadow.py:329` (`shadow_process.append_event(e, log)`) and `tests/test_shadow.py:341` (`shadow_process.append_event(e, log)`). Both raise `TypeError` under the new signature. Plan says "existing body unchanged" but does not account for this positional-to-keyword breakage. |
+| V-3 | Section 4 Razor (marginal) | Track E, `create_shadow_issue.py` | File is 227 lines today. Dual-file changes to `flip_events_only`, `mark_resolved`, and main flow add ~25 lines → ~252, exceeding the 250-line Razor limit. Plan does not estimate or address. |
+| V-4 | Plan-internal inconsistency | Affected Files summary, line 240 | Header reads "Modified — scripts (5)" but enumerates 6 files (`shadow_process.py`, `collect_shadow_genomes.py`, `gate_chain.py`, `qor_audit_runtime.py`, `check_shadow_threshold.py`, `create_shadow_issue.py`). |
 
 ### Required Remediation
 
-1. **V-1**: Add §Track C.1–C.5 with one subsection per script (`collect_shadow_genomes.py`, `shadow_process.py`, `check_shadow_threshold.py`, `create_shadow_issue.py`, `gate_chain.py`). Each states: current behavior, required change (or explicit no-op with rationale). `shadow_process.py` requires a classification-aware write path (e.g., `append_event(event: dict)` reads `event["attribution"]` and picks the file). Add corresponding tests.
-2. **V-2**: Survey `qor/skills/memory/track-shadow-genome.md` and `qor/skills/meta/qor-meta-track-shadow/SKILL.md`. Either update both to reference the doctrine + dual files, OR explicitly disposition as out-of-scope with rationale. Add doctrine-test `test_shadow_tracking_skills_reference_attribution_doctrine`.
-3. **V-3**: Resolve contradiction. Recommend: keep the fallback (graceful rollout matters). Rewrite Track C as explicit conditional: if upstream exists → use it; elif legacy has entries → emit a stderr warning + read legacy for this cycle; else → zero events. Add `test_collector_warns_on_legacy_only`.
-4. **V-4**: Add doctrine §6 "Out of scope" declaring `docs/SHADOW_GENOME.md` narrative log unchanged. Add test `test_doctrine_declares_narrative_log_out_of_scope` (substring match on `out of scope` + narrative filename).
-5. **V-5**: Grep existing `gate_writes:` syntax in repo; use established convention. If no multi-path convention exists, propose one explicitly and add a parser-tolerance test.
+1. **V-1**: New events created during a read-modify-write cycle must not be lost. Prescribed fix: extend `id_source_map()` to accept an `extras` parameter (or return a builder), OR — simpler — classify new escalation events at creation time. In `check_shadow_threshold.py`, escalation events are infrastructure-generated → UPSTREAM. The sweep function should assign new events to a file explicitly (e.g., `new_event["_target_path"] = shadow_process.UPSTREAM_LOG_PATH`), and the write-back pattern should handle events with no map entry by checking `_target_path`. Alternatively, rewrite `sweep()` to call `shadow_process.append_event(new_event, attribution="UPSTREAM")` immediately instead of batching, eliminating the need for a post-hoc split. This second option is simpler (no `_target_path` metadata) but changes the write-back flow from batch-rewrite to incremental-append-then-rewrite-originals. Pick one; add test `test_escalation_events_not_dropped_during_sweep`.
+2. **V-2**: Explicitly update `tests/test_shadow.py:329` and `tests/test_shadow.py:341` from `shadow_process.append_event(e, log)` to `shadow_process.append_event(e, log_path=log)`. Add these 2 files to Track F "Modified — tests" with the change note. Also grep for any other positional callers in tests (the 2 found are from `test_append_event_atomic` and its multi-event variant; verify no others exist in `test_e2e.py`, `test_gates.py`, `test_qor_audit_runtime.py`).
+3. **V-3**: Either (a) extract a `write_events_per_source(events, src_map)` helper into `shadow_process.py` (keeps `create_shadow_issue.py` thin — callers shrink by ~10 lines each), or (b) state an explicit estimate showing the file stays at or under 250 lines. Option (a) also de-duplicates the pattern between `check_shadow_threshold.py` and `create_shadow_issue.py`.
+4. **V-4**: Correct header to "Modified — scripts (6)".
 
 ### Verdict Hash
 
-**Content Hash**: `64e47b223beb7157f47a241b8f85837a55ce8ddc580f461ffec3aeadb74e9b9a`
-**Previous Hash**: `8b2a94f300881845c097cacbebf00648da87fa8e427f8d77cea6e866102b63dd`
-**Chain Hash**: `54ef6a4281b361dea2f5c704d5b962caf4d278a87272ba87654b3317674a7d1b`
-(sealed as Entry #31)
+**Content Hash**: `80f2ad9af6a36720ac3fa3a27cc2c02224bc9e29bb53616b4576e6819a9efe9b`
+**Previous Hash**: `54ef6a4281b361dea2f5c704d5b962caf4d278a87272ba87654b3317674a7d1b`
+**Chain Hash**: `4d23775ffea278cb176dc1560066d14f7692c05b4ad5ac73033bb3ad0f46e17b`
+(sealed as Entry #32)
 
 ---
 _This verdict is binding._

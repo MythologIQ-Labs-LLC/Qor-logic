@@ -261,4 +261,25 @@ Record of rejected artifacts and failure patterns to prevent repetition.
 
 ---
 
+### Entry #12: VETO — plan-qor-phase14-v2 (shadow attribution remediation)
+
+**Date**: 2026-04-15
+**Verdict ID**: Entry #32
+**Failure Mode**: DATA_LOSS / BREAKING_CHANGE
+
+#### What Failed
+Plan v2 introduced `id_source_map()` for dual-file write-back in `check_shadow_threshold.py` and `create_shadow_issue.py`. The map is built from events on disk; newly-created escalation events (with IDs not yet persisted) fall through both filters and are silently dropped. Separately, `append_event` signature changed to keyword-only but 2 existing test callers pass `log_path` positionally.
+
+#### Why It Failed
+Read-modify-write with a post-hoc id-based split cannot handle events created during the modify step. The split assumes all events have a prior on-disk identity — a closed-world assumption violated by the escalation sweep.
+
+#### Pattern to Avoid
+**SG-032**: When designing a batch-split-write pattern, verify that the split criterion covers ALL events in the batch, including those created mid-cycle. Newly minted records have no prior identity in any lookup table. Either (a) classify at creation time, or (b) provide a default/fallback bucket for unmatched records.
+**SG-033**: When changing a function signature from positional to keyword-only (`*`), grep all call sites including tests. "Existing body unchanged" does not mean "existing callers unchanged."
+
+#### Remediation
+4 mandatory items issued in audit report. V-1 prescribes classify-at-creation or `_target_path` metadata. V-2 prescribes updating 2 test call sites to keyword form.
+
+---
+
 *Shadow integrity: ACTIVE*
