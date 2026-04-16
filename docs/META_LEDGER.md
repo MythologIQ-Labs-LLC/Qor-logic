@@ -2301,3 +2301,34 @@ SHA256(content_hash + previous_hash)
 ---
 
 *Chain integrity: VALID*
+
+---
+
+### Entry #67: SESSION SEAL -- Phase 21 substantiated
+
+**Timestamp**: 2026-04-15
+**Phase**: SEAL
+**Author**: Governor
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase21-cli-harness-polish.md`
+**Change Class**: `feature`
+**Version**: `0.11.0 -> 0.12.0`
+**Tag**: `v0.12.0` (pending operator push)
+
+**Content Hash**: `d08613c738643fa8f50bd115c660652a7316130f595426eb6de4a9a8f2dbe583`
+**Previous Hash**: `c254d1322dd7c76d01e2e38c70fffc90db2bd45bd39774213c21db41bd9ec76d`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= bc6123251954a6d8067255e9c9a1a2a432551e4539554fc9656c00aa7277ae92
+```
+
+**Decision**: Phase 21 sealed. CLI harness operational: `qorlogic install --host claude` copies compiled variants to host skill/agent directories. Host resolver supports claude, kilo-code, custom --target. All 18 RESEARCH_BRIEF gaps now closed (Sprints 1-4 complete). 298 tests passing.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: bc612325...*

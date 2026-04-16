@@ -7,7 +7,7 @@ import shutil
 import sys
 from pathlib import Path
 
-__version__ = "0.11.0"
+__version__ = "0.12.0"
 
 
 def _default_dist_root() -> Path:
