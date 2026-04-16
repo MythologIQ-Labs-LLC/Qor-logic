@@ -261,9 +261,10 @@ def test_plans_declare_change_class():
 
 def test_governance_doctrine_documents_github_hygiene():
     text = GOV_DOCTRINE.read_text(encoding="utf-8").lower()
+    import re as _re
     for keyword in ("issue label", "pr description", "branch name", "tag annotation"):
-        assert keyword in text, (
-            f"doctrine-governance-enforcement.md missing required keyword: {keyword!r}"
+        assert _re.search(rf"github hygiene.{{0,1500}}{_re.escape(keyword)}", text, _re.DOTALL), (
+            f"doctrine-governance-enforcement.md 'GitHub hygiene' section must contain: {keyword!r}"
         )
 
 

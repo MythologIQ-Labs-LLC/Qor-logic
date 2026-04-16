@@ -67,3 +67,27 @@ Tests asserting `"keyword-only" in body` pass when the doctrine section they cla
 **Countermeasure**: Anchor keyword checks to the section header (regex proximity or markdown header parsing). A doctrine test that passes with its subject section removed does not enforce what it claims.
 
 **Verification hint**: use `re.search(r"<SG-ID>.{0,500}<keyword>", body, re.DOTALL)` or parse headers. Include a negative-path test (e.g., `test_proximity_anchor_fails_when_section_missing`) that strips the section and proves the test fails. Source incident: Phase 15 v1 (Entry #36 V-2).
+
+## SG-036: doctrine adoption grace period
+
+A doctrine codified in phase N does not become automatically load-bearing in phase N+1 unless the author treats it as active. "I'll verify during implementation" is a deferral, not compliance. The Grounding Protocol requires inline citation at plan-authoring time, not implementation time.
+
+**Countermeasure**: Treat newly codified doctrine as active immediately. Run all grep/read verifications inline with date-stamped provenance. No grace period.
+
+**Verification hint**: plan body contains phrases like "grounded via `wc -l`" or "verified 2026-MM-DD" for every file-size/phrase-location claim. Source incident: Phase 16 v1 (Entry #40 V-1).
+
+## SG-037: knowledge-surface drift
+
+Doctrine tests anchored to a single file produce false negatives when refactoring moves knowledge across files. The test asserts `"phase/" in SKILL_A.read_text()`; refactor extracts the content to a companion references file; test fails even though the knowledge surface was preserved.
+
+**Countermeasure**: Doctrine tests must check the combined knowledge surface (skill + declared companion references), not a single file. When a skill declares its companions (via `Read:` pointers or `See <path>` citations), tests should read the union.
+
+**Verification hint**: test reads `skill_body + extensions_body` before asserting. When a skill moves content to a reference file, update the associated doctrine tests in the same commit. Source incident: Phase 16 Track C refactor (Entry #42 implementation note).
+
+## SG-038: prose-code mismatch in plans
+
+A plan document encodes the same spec in two places: prose descriptions and code blocks. These drift independently when the author edits mid-draft. Prose says "test covers 11 IDs"; code block lists 9; implementer following the code produces partial coverage while prose claims full.
+
+**Countermeasure**: When a plan updates a list, enumeration, or count, grep the plan for every occurrence of that element and update all copies in lockstep. Prose, code blocks, and success criteria must cite the same values.
+
+**Verification hint**: Judge cross-checks prose claims against code blocks during audit; any mismatch is VETO-grade. Optional future enforcement: lint plans for prose+code consistency on named enumerations. Source incident: Phase 17a v1 (Entry #44 V-1).

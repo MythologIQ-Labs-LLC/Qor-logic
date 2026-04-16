@@ -61,7 +61,9 @@ def test_doctrine_shadow_genome_countermeasures_exists():
 
 def test_doctrine_lists_all_sg_ids():
     body = DOCTRINE.read_text(encoding="utf-8")
-    for sg in ("SG-016", "SG-017", "SG-019", "SG-020", "SG-021", "SG-032", "SG-033"):
+    for sg in ("SG-016", "SG-017", "SG-019", "SG-020", "SG-021",
+              "SG-032", "SG-033", "SG-034", "SG-035",
+              "SG-036", "SG-037", "SG-038"):
         assert sg in body, f"Doctrine must contain {sg}"
 
 
@@ -190,3 +192,33 @@ def test_step_extensions_content_moved_not_copied():
         assert anchor not in skill, (
             f"{anchor!r} must NOT appear in qor-plan/SKILL.md (content should be moved, not copied)"
         )
+
+
+# ----- Phase 17a: SG-036, SG-037, SG-038 proximity anchors -----
+
+
+def test_doctrine_documents_sg036_grace_period():
+    body = DOCTRINE.read_text(encoding="utf-8")
+    assert re.search(r"SG-036.{0,500}(grace period|deferral|inline)",
+                     body, re.DOTALL), (
+        "SG-036 section must contain 'grace period', 'deferral', or 'inline' "
+        "within 500 chars of the ID"
+    )
+
+
+def test_doctrine_documents_sg037_surface_drift():
+    body = DOCTRINE.read_text(encoding="utf-8")
+    assert re.search(r"SG-037.{0,500}(surface|moves|combined)",
+                     body, re.DOTALL), (
+        "SG-037 section must contain 'surface', 'moves', or 'combined' "
+        "within 500 chars of the ID"
+    )
+
+
+def test_doctrine_documents_sg038_prose_code_mismatch():
+    body = DOCTRINE.read_text(encoding="utf-8")
+    assert re.search(r"SG-038.{0,500}(prose|code block|lockstep)",
+                     body, re.DOTALL), (
+        "SG-038 section must contain 'prose', 'code block', or 'lockstep' "
+        "within 500 chars of the ID"
+    )

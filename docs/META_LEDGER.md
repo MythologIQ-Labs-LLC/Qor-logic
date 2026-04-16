@@ -1519,4 +1519,85 @@ SHA256(content_hash + previous_hash)
 ---
 
 *Chain integrity: VALID*
-*Session: OPEN (implementation gate unlocked)*
+
+---
+
+### Entry #46: IMPLEMENTATION — Phase 17a v2 Doctrine Completion
+
+**Timestamp**: 2026-04-16
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase17a-v2-doctrine-completion.md`
+
+**Files Modified**:
+- `qor/references/doctrine-shadow-genome-countermeasures.md` (69 → 93 lines; +3 sections: SG-036, SG-037, SG-038)
+- `tests/test_shadow_genome_doctrine.py` (192 → 224 lines; +3 proximity tests; `test_doctrine_lists_all_sg_ids` expanded to all 12 IDs)
+- `tests/test_skill_doctrine.py` (296 lines; line 265 `test_governance_doctrine_documents_github_hygiene` rewritten with 1500-char proximity anchor to "github hygiene" section)
+
+**Test Results**: 234 passed + 6 skipped (deterministic 2x). +3 from 231 baseline (exactly matches plan arithmetic).
+
+**Drift**: clean (123 files after BUILD_REGEN=1).
+**Ledger chain**: Entries #12-#45 verified.
+
+**Content Hash** (implementation-manifest):
+`61e8a90b5de1f887dccec64f0d4c77f9b2ea61173e464651c77b1fc013681a74`
+
+**Previous Hash**:
+`ab32d30b1e20284dcf904a9e65b79a7a284a81978ef34e074daba62e04eda3be`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 116bf79d2b61dc0d40dad7b70499d0fdf4373193dd74ae39e202cd77f80ddd23
+```
+
+**Decision**: Phase 17a v2 Reality matches Promise. Doctrine now carries 12 SG entries (016/017/019/020/021/032/033/034/035/036/037/038). `test_doctrine_lists_all_sg_ids` covers all 12. Line 265 governance-hygiene check anchored to its section. SG-038 dogfood applied: plan prose-code lockstep verified pre-audit.
+
+---
+
+*Chain integrity: VALID*
+
+---
+
+### Entry #47: SESSION SEAL — Phase 17a v2 substantiated
+
+**Timestamp**: 2026-04-16
+**Phase**: SUBSTANTIATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase17a-v2-doctrine-completion.md`
+**Change Class**: `feature`
+**Version**: `0.6.0 → 0.7.0`
+**Tag**: `v0.7.0` (pending operator decision)
+
+**Verification Results**:
+- Version gate: PASS (0.7.0 > 0.6.0)
+- Reality audit: PASS (3 modified files, doctrine + 2 test files)
+- Test discipline: 234 passed + 6 skipped, deterministic 2x
+- Section 4 Razor: PASS (doctrine 93; test_shadow_genome_doctrine 224; both under 250)
+- Drift: clean (123 files)
+- Ledger chain: Entries #12-#46 verified
+
+**Content Hash** (substantiate-manifest):
+`b1dfc41a54d504041f3c7dc2aa0c04a8f45508428e2c5b482c856964078ed234`
+
+**Previous Hash**:
+`116bf79d2b61dc0d40dad7b70499d0fdf4373193dd74ae39e202cd77f80ddd23`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= 0050069050ba743f3a0d29b8819a5a8cbaef8d305f6864340a8d5f08b98119ab
+```
+
+**Decision**: Phase 17a v2 sealed. Doctrine completion: all surfaced SG patterns now load-bearing. 12 IDs indexed and tested. SG-036/037/038 codified with proximity-anchored tests.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: 00500690...*
