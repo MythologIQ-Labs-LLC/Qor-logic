@@ -1601,3 +1601,81 @@ SHA256(content_hash + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: 00500690...*
+
+---
+
+### Entry #48: GATE TRIBUNAL — plan-qor-phase17-reliability-scripts (VETO)
+
+**Timestamp**: 2026-04-16
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: VETO
+
+**Target**: `docs/plan-qor-phase17-reliability-scripts.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Findings**:
+- V-1 (SG-016/SG-036): "28 skill files" — actual is 27. Fabricated grounding.
+- V-2 (SG-017/SG-021): invented citation of "patterns-skill-lifecycle.md splits at 400". No such policy exists in that file.
+- V-3: SG-038 lockstep holds — PASS.
+- V-4 (SG-021): `<current-plan>` placeholder in Step 5.5 block lacks resolver; must cite `governance_helpers.current_phase_plan_path()` explicitly.
+
+**Content Hash**:
+`11d4522fd87e6c6dd283225c78f909f1345ad33e3f52bec9e88364173be7541a`
+
+**Previous Hash**:
+`0050069050ba743f3a0d29b8819a5a8cbaef8d305f6864340a8d5f08b98119ab`
+
+**Chain Hash**:
+```
+SHA256(content + previous)
+= 0e2570604ffd7c3f0d6702e1dd9b9a07e9565ae25fbc0a5539be8b83c429f1f4
+```
+
+**Decision**: VETO. Remediate V-1, V-2, V-4 in v2. Re-audit expected to PASS.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (awaiting v2)*
+
+---
+
+### Entry #49: GATE TRIBUNAL — plan-qor-phase17-v2-reliability-scripts (PASS)
+
+**Timestamp**: 2026-04-16
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase17-v2-reliability-scripts.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Supersedes**: Entry #48 (VETO'd v1)
+
+**Closures**:
+- V-1: skill count corrected 28 -> 27 with real `find` provenance.
+- V-2: fabricated "splits at 400" citation removed; size impact stated plainly.
+- V-4: Step 5.5 now resolves plan path via `governance_helpers.current_phase_plan_path()`.
+
+**SG sweep**: SG-016, SG-017, SG-019, SG-020, SG-021, SG-035, SG-036, SG-038 all clean. SG-032/033/034/037 N/A to this plan.
+
+**Content Hash**:
+`0f9254323aa521fc3f7e1594a96a365c181762644981a22aa411556d7f411963`
+
+**Previous Hash**:
+`0e2570604ffd7c3f0d6702e1dd9b9a07e9565ae25fbc0a5539be8b83c429f1f4`
+
+**Chain Hash**:
+```
+SHA256(content + previous)
+= 04680997530a5d84fa70f858a683617e323f5499b4ab672cd2241e058084ecc0
+```
+
+**Decision**: PASS. Proceed to implement.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (implement phase)*
