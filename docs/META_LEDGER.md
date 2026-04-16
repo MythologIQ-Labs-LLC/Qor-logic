@@ -1341,4 +1341,34 @@ SHA256(content_hash + previous_hash)
 ---
 
 *Chain integrity: VALID*
-*Session: OPEN (audit tribunal active)*
+
+---
+
+### Entry #41: GATE TRIBUNAL — plan-qor-phase16-v2-governance-polish
+
+**Timestamp**: 2026-04-16
+**Phase**: GATE (pre-implementation audit, round 2)
+**Author**: Judge
+**Verdict**: **PASS**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase16-v2-governance-polish.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `0efea95a940d8b51b6715cb8706506a3e6fe9d4dd39460e10358c5cfb7d6de55`
+**Previous Hash**: `dc830d12a64062886fcd3ec4433714d13faa7e0b9866de8fb179d36587c69b27`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= c25166aee5fb780510e7f1d1b738444fe70936d7121fb13b9d026d01c9ce9a4f
+```
+
+**Verdict Summary**: All 3 Entry #40 violations closed with inline-grounded citations. V-1: `qor-audit/SKILL.md` at 237 lines cited inline (Judge re-verified via `wc -l`); post-edit 240, under Razor. V-2: `test_step_extensions_content_moved_not_copied` uses body-unique anchors `InterdictionError` and `capability_shortfall` (Judge re-verified via grep). V-3: pointers omit anchors, match Phase 15 Step 2b style. SG-036 dogfood corrected: plan cites every file-size and phrase-location claim with date-stamped provenance. Fresh adversarial sweep: no new violations. Implementation gate UNLOCKED.
+
+**Decision**: Phase 16 v2 plan implementation-ready. 3 tracks bundled (housekeeping, doctrine wiring, SKILL.md trim), 1 new file, 4 modified files, +3 tests (228 → 231).
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (implementation gate unlocked)*
