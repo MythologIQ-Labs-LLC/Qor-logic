@@ -1723,3 +1723,49 @@ SHA256(content + previous)
 
 *Chain integrity: VALID*
 *Session: OPEN (substantiate phase)*
+
+---
+
+### Entry #51: SESSION SEAL — Phase 17 Reliability Scripts substantiated
+
+**Timestamp**: 2026-04-16
+**Phase**: SUBSTANTIATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase17-v2-reliability-scripts.md`
+**Change Class**: `feature`
+**Version**: `0.7.0 -> 0.8.0`
+**Tag**: `v0.8.0` (pending operator decision)
+
+**Verification Results**:
+- Version gate: PASS (0.8.0 > 0.7.0)
+- Reality audit: PASS (3 new scripts exist, 2 skills unwired, 11 new tests, variants regenerated)
+- Test discipline: 245 passed + 6 skipped, deterministic 2x
+- Section 4 Razor: PASS (intent-lock 143; skill-admission 98; gate-skill-matrix 116; all under 250; all functions under 40 lines — max 30)
+- Dogfood: `gate-skill-matrix.py` reports `Skills: 27 | Handoffs: 100 | Broken: 0`; `skill-admission.py qor-substantiate` returns ADMITTED.
+- Ledger chain: Entries #12-#50 verified.
+- SG-038 lockstep (plan prose + code + success criteria) held through v2.
+
+**Manifest** (seal-manifest): `PHASE_17_SEAL|v0.8.0|reliability-scripts|3 scripts|11 tests|245+6 passing|2 skills unwired`
+
+**Content Hash** (substantiate-manifest):
+`3a772488c4ba2e27adcf0971e075f6a5a158dab1cba80c0f0c8fd1323e150dfa`
+
+**Previous Hash**:
+`cab2e6fcd353c7ac2b2f286dd4076d109b335470ac6d15bc6957c94489c18646`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= fb03e46c1d0081bf2e5e20b0b9448fd2548eee7729612caf1fef0d939c9a4a1c
+```
+
+**Decision**: Phase 17 sealed. Reliability enforcement wired: intent-lock captures pre-implementation fingerprint; skill-admission gates invocations; gate-skill-matrix validates handoffs. Deferred no-ops in qor-implement Step 5.5 and qor-substantiate Step 4.6 now live-invoke real scripts.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: fb03e46c...*
