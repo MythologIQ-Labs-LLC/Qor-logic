@@ -1313,3 +1313,32 @@ SHA256(content_hash + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: a33db577...*
+
+---
+
+### Entry #40: GATE TRIBUNAL — plan-qor-phase16-governance-polish
+
+**Timestamp**: 2026-04-16
+**Phase**: GATE (pre-implementation audit)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase16-governance-polish.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `cd742dd02a1ade50e2d96adb9b7aabecf6075e24ec8556e0fcf9b781c713f450`
+**Previous Hash**: `a33db577eff5be4d9ddee9117e8d31de9e0f69012e90a5ec724c4e3a398a4e3c`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= dc830d12a64062886fcd3ec4433714d13faa7e0b9866de8fb179d36587c69b27
+```
+
+**Verdict Summary**: 3 violations — all dogfood failures of Phase 15's countermeasures doctrine. V-1 (SG-016 recurrence): plan defers `qor-audit/SKILL.md` size verification ("Current file size needs verification before implementing") instead of resolving inline. Judge-grounded during audit: file is 237 lines, Track B's +3 → 240 (safe substantively; procedurally violates Grounding Protocol). V-2: Track C's "verbatim extraction" rule lacks enforcing test; proposed test only checks substring presence. V-3: pointer anchors like `#step-05` won't resolve under GitHub-flavored markdown — recommend omitting anchors to match Phase 15's Step 2b precedent.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active)*

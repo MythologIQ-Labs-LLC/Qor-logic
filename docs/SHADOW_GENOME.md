@@ -303,4 +303,24 @@ SG-034: AST-based code-pattern tests need explicit handling for special node typ
 
 ---
 
+### Entry #14: VETO — plan-qor-phase16-governance-polish (dogfood failure)
+
+**Date**: 2026-04-16
+**Verdict ID**: Entry #40
+**Failure Mode**: DOCUMENTATION_DRIFT / VALIDATION_GAP
+
+#### What Failed
+Phase 16 plan — authored immediately after Phase 15 codified the Grounding Protocol into `doctrine-shadow-genome-countermeasures.md` — violated SG-016 in its Track B by deferring file-size verification instead of resolving it inline.
+
+#### Why It Failed
+Cognitive pattern: the plan author (operating as Governor) treated the countermeasures doctrine as a reference for future phases rather than an active constraint on the phase being written. The verify was acknowledged ("needs verification before implementing") but not executed, creating the exact "I know this already" failure mode the doctrine warned against.
+
+#### Pattern to Avoid
+**SG-036**: A doctrine codified in phase N does not become automatically load-bearing in phase N+1 unless the author treats it as active. "I'll verify during implementation" is a deferral, not compliance. The Grounding Protocol requires inline citation at plan-authoring time, not at implementation time. This is especially important for phases immediately following doctrine adoption — no grace period.
+
+#### Remediation
+3 mandatory items in audit report. V-1: cite verified line counts inline. V-2: strengthen "verbatim extraction" test to check content movement, not just substring presence. V-3: omit invalid anchors, match Phase 15 pointer style.
+
+---
+
 *Shadow integrity: ACTIVE*
