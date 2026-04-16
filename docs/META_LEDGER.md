@@ -2094,4 +2094,32 @@ SHA256(content_hash + previous_hash)
 ---
 
 *Chain integrity: VALID*
-*Session: OPEN (audit tribunal active)*
+
+---
+
+### Entry #61: GATE TRIBUNAL — plan-qor-phase20-v2-import-migration
+
+**Timestamp**: 2026-04-16
+**Phase**: GATE (pre-implementation audit, round 2)
+**Author**: Judge
+**Verdict**: **VETO**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase20-v2-import-migration.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `2fd64ce359e139670c2f0daa1e5604290316fac4d56f729e9a2e8b03eaed7289`
+**Previous Hash**: `698d5c49cca5c27c15b6129fe6a3f103b3d11e17de65b54916780c2ba31942fd`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 02c379b80148a5a43800d01c901579fb68cdf55a15e36e981271b481be36eed3
+```
+
+**Verdict Summary**: All 3 Entry #60 violations closed cleanly (Scripts 15, Modified 20, 7 open after). 1 fresh finding V-1: plan's "+4 skipped by default" target is unachievable as specified — `@pytest.mark.integration` is a declared marker (documentation) not an auto-skip mechanism; no `addopts` in pyproject; no module-level skip proposed. Under default `pytest tests/` the 4 integration tests would RUN and FAIL (no installed wheel). Remediation: one of 3 skip mechanisms; (a) `addopts = "-m 'not integration'"` in pyproject recommended.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (audit tribunal active, round 2)*

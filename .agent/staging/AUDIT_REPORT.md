@@ -1,7 +1,7 @@
-# AUDIT REPORT — plan-qor-phase20-import-migration.md
+# AUDIT REPORT — plan-qor-phase20-v2-import-migration.md
 
 **Tribunal Date**: 2026-04-16
-**Target**: `docs/plan-qor-phase20-import-migration.md`
+**Target**: `docs/plan-qor-phase20-v2-import-migration.md`
 **Risk Grade**: L1
 **Auditor**: The QorLogic Judge
 
@@ -13,57 +13,63 @@
 
 ### Executive Summary
 
-Design is sound: use-case-agnostic working-dir anchor, `importlib.resources` for packaged assets, install-smoke CI test, non-SDLC scope respected. Grounded counts (13 sibling imports, 13 REPO_ROOT sites, 9 sys.path.insert sites) verified via independent grep. VETO issued for 3 SG-038 arithmetic recurrences in the plan's own enumerations — the fourth time since SG-038 was codified (Phase 15 v1, Phase 17a v1, Phase 19 v1, now Phase 20 v1). V-1: Scripts header says "(12)" but enumerates 15. V-2: Modified header says "(14)" but section sums to 20 (15 scripts + 2 reliability + 2 tests + 1 CI). V-3: gap-remaining arithmetic — "11 open after this phase" conflates pre-phase with post-phase counts; actual post-Phase-20 remaining = 18 − 7 (Phase 19) − 4 (Phase 20) = **7**, not 11.
+All 3 Entry #60 violations closed cleanly: "Scripts (15)" matches 15 enumerated, "Modified (20)" matches 15+2+2+1, "7 open after this phase" matches 18−7−4. Old values (12 / 14 / 11) appear only in historical closure-note quotes. Grounded counts re-verified independently (9 sys.path sites, 13 REPO_ROOT, 13 sibling imports). VETO issued for 1 fresh finding: V-1 — plan's Track F claims "Default target: 278 passed + 4 skipped" but provides no mechanism for integration tests to skip under default `pytest tests/` invocation. `@pytest.mark.integration` is merely declared in pyproject.toml markers (documentation only), not auto-skip; no `addopts = "-m 'not integration'"` configured; no module-level `pytest.skip(..., allow_module_level=True)` proposed. Under default pytest, the 4 new tests would run and fail (no installed wheel).
 
 ### Audit Results
 
 #### Security Pass
-**Result**: PASS. Subprocess calls in proposed `detect_git_root()` use list-form argv with static head; 5-second timeout bounded. No credential exposure.
-
-#### Ghost UI Pass
-**Result**: PASS. No UI.
-
-#### Section 4 Razor Pass
 **Result**: PASS.
 
-| Check | Limit | Proposed | Status |
-|---|---|---|---|
-| Max function lines | 40 | `qor/resources.py` helpers ≤5 lines; `qor/workdir.py` `detect_git_root` ~12 lines | OK |
-| Max file lines | 250 | `resources.py` ~25; `workdir.py` ~45; `test_packaging_install.py` ~40 | OK |
-| Max nesting depth | 3 | ≤2 | OK |
-| Nested ternaries | 0 | 0 | OK |
+#### Ghost UI Pass
+**Result**: PASS.
+
+#### Section 4 Razor Pass
+**Result**: PASS. `qor/resources.py` ~25 lines; `qor/workdir.py` ~45 lines; `test_packaging_install.py` ~40 lines. All under 250.
 
 #### Dependency Pass
-**Result**: PASS. Stdlib `importlib.resources`, `subprocess`, `os`, `pathlib`. No external deps.
+**Result**: PASS. Stdlib only.
 
 #### Orphan Pass
-**Result**: PASS. `qor/resources.py` + `qor/workdir.py` imported by Track C/D/E files; `tests/test_packaging_install.py` discovered by pytest; CI smoke job references the new test module by path.
+**Result**: PASS. `qor/resources.py` + `qor/workdir.py` imported by 14 Track C/D/E files.
 
 #### Macro-Level Architecture Pass
-**Result**: PASS. Clean module boundary: `qor.resources` owns packaged-asset lookup; `qor.workdir` owns consumer-state anchor; no cross-import. Non-SDLC scope preserved: default chain has no git dependency.
+**Result**: PASS. Clean `resources` vs `workdir` boundary; no cyclic deps.
+
+### Entry #60 Closure Verification
+
+| ID | Status | Re-Verification |
+|---|---|---|
+| V-1 (Scripts count) | CLOSED | Grep: "Scripts (15):" header; `sed -n '/### Modified (20)/,/^##/p' \| grep -c "qor/scripts/"` → 15. |
+| V-2 (Modified total) | CLOSED | Header "Modified (20)"; sub-groups 15+2+2+1=20. |
+| V-3 (remaining count) | CLOSED | "7 open after this phase" 2×; old "11" only in quoted historical note. |
 
 ### Violations Found
 
 | ID | Category | Location | Description |
 |---|---|---|---|
-| V-1 | SG-038 recurrence (scripts count) | "Affected Files (summary) → Modified → Scripts" | Header reads "Scripts (12):" followed by 15 enumerated paths (shadow_process, validate_gate_artifact, session, remediate_read_context, remediate_mark_addressed, remediate_emit_gate, qor_audit_runtime, qor_platform, gate_chain, create_shadow_issue, collect_shadow_genomes, compile, check_variant_drift, check_shadow_threshold, calculate-session-seal = 15). Verified via `sed -n '/Modified (14)/,/^## /p' \| grep -c "qor/scripts/"` → 15. Count is off by 3. |
-| V-2 | SG-038 recurrence (total modified count) | "Affected Files (summary) → Modified (14)" | Section total header says "Modified (14)" but the sub-group counts sum to 15 scripts + 2 reliability + 2 tests + 1 CI = **20 files**. Off by 6. If V-1 were reconciled to "Scripts (15)", the total would be "Modified (20)". |
-| V-3 | SG-038 recurrence (remaining-gap arithmetic) | Plan header "Closes gaps: ... (4 of 18; 11 open after this phase)" | 18 total gaps minus 7 closed in Phase 19 (PKG-01/02/03/04/05, CI-01/02) minus 4 closing now (IMP-01/02/03/05) = **7 open after Phase 20**, not 11. The "11 open" value matches pre-Phase-20 count (18 − 7 = 11), suggesting the author conflated "open before this phase" with "open after". |
+| V-1 | Spec gap (test-skip mechanism unspecified) | Track F + Track G | Plan states "Default target: 278 → 278 passed + 4 skipped" and "Tests integration: 282 passing in CI smoke". Relies on `@pytest.mark.integration` causing the 4 tests to skip under default `pytest tests/`. Judge-verified: (a) no existing `@pytest.mark.integration` tests in repo (grep returned empty), (b) pyproject.toml's `[tool.pytest.ini_options].markers` only DECLARES the marker; it does not configure auto-skip, (c) no `addopts = "-m 'not integration'"` exists in pyproject. Under standard pytest, declared markers do not auto-skip; the 4 tests would RUN under default `pytest tests/` and likely fail (no installed wheel). The plan's "+4 skipped default" target is unachievable without an explicit skip mechanism. Also: the existing `test` CI job (ci.yml) runs `python -m pytest tests/ -v` with no marker filter, so it too would run and fail on the new integration tests, before the install-smoke job has a chance to exercise them correctly. |
 
 ### Required Remediation
 
-1. **V-1**: Update header from "Scripts (12)" to "Scripts (15)". Verify the 15 paths match actual Track coverage (Tracks C + D + E should all reference files in the list; recount).
-2. **V-2**: Update header from "Modified (14)" to "Modified (20)" (or whatever the corrected sub-group sum is after V-1 resolution).
-3. **V-3**: Update the plan header claim from "11 open after this phase" to "7 open after this phase". Or — for clarity — rewrite as "(4 of 18; 11 currently open, 7 remaining after Phase 20)" to show both checkpoint values.
+1. **V-1**: Pick one of:
+   - **(a) `addopts = "-m 'not integration'"` in pyproject.toml `[tool.pytest.ini_options]`** — global default excludes integration; CI install-smoke job opt-ins via `-m integration` explicitly. Cleanest.
+   - **(b) Module-level skip** in `tests/test_packaging_install.py`:
+     ```python
+     import os, pytest
+     if not os.environ.get("QOR_RUN_INTEGRATION"):
+         pytest.skip("Opt-in via QOR_RUN_INTEGRATION=1", allow_module_level=True)
+     ```
+     Env-var-gated; CI install-smoke sets `QOR_RUN_INTEGRATION=1`.
+   - **(c) Per-test conditional skip** via `@pytest.mark.skipif(...)` decorator on each of the 4 tests.
 
-Also: this is the **4th SG-038 recurrence since codification** (Phase 15 v1 → Phase 17a v1 → Phase 19 v1 → Phase 20 v1). Doctrine-alone is not preventing the pattern. Consider adding to the Phase 20 remediation a tiny plan-linter test that asserts `header_count == len(enumerated_list)` for the `Scripts ()`/`Modified ()`/`Closes gaps ()` headers.
+   Recommend (a) — one line in pyproject, matches pytest convention, implicit for operators running `pytest tests/`. Also update the existing ci.yml `test` job prose to note that integration tests are excluded by default (no CI change needed since `addopts` is picked up automatically). Update Track F to describe the chosen mechanism explicitly.
 
 ### Verdict Hash
 
-**Content Hash**: `be37ddbcb054c36eefebeecf71a6788dde91399562e075a834b0255dcca3f191`
-**Previous Hash**: `0f821248ed30b40da4d4f69b10ce010616f3e681fec93af6a1229542417a4cd0`
-**Chain Hash**: `698d5c49cca5c27c15b6129fe6a3f103b3d11e17de65b54916780c2ba31942fd`
-(sealed as Entry #60)
+**Content Hash**: `2fd64ce359e139670c2f0daa1e5604290316fac4d56f729e9a2e8b03eaed7289`
+**Previous Hash**: `698d5c49cca5c27c15b6129fe6a3f103b3d11e17de65b54916780c2ba31942fd`
+**Chain Hash**: `02c379b80148a5a43800d01c901579fb68cdf55a15e36e981271b481be36eed3`
+(sealed as Entry #61)
 
 ---
 _This verdict is binding._
