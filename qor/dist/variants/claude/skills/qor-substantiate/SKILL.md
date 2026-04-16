@@ -180,6 +180,26 @@ PAUSE
 Report: "Skill [name] missing required section: [section]. Fix before sealing."
 ```
 
+### Step 4.6: Reliability Sweep (Phase 17 wiring)
+
+Three reliability enforcement gates run sequentially. Each is an interdiction: non-zero exit aborts substantiation.
+
+```bash
+SESSION_ID=$(cat .qor/session/current 2>/dev/null || echo default)
+
+# Re-verify the intent lock captured at /qor-implement Step 5.5.
+# Fails if plan, audit, or HEAD commit drifted since capture.
+python tools/reliability/intent-lock.py verify --session "$SESSION_ID" || ABORT
+
+# Verify current skill is registered and frontmatter is well-formed.
+python tools/reliability/skill-admission.py qor-substantiate || ABORT
+
+# Verify all /qor-* handoff references across skills resolve to real skills.
+python tools/reliability/gate-skill-matrix.py || ABORT
+```
+
+Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit, re-admit, or fix broken handoff) and re-run substantiation.
+
 ### Step 5: Section 4 Razor Final Check
 
 Template: `references/qor-substantiate-templates.md`.

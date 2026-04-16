@@ -1679,3 +1679,47 @@ SHA256(content + previous)
 
 *Chain integrity: VALID*
 *Session: OPEN (implement phase)*
+
+---
+
+### Entry #50: IMPLEMENTATION — Phase 17 Reliability Scripts
+
+**Timestamp**: 2026-04-16
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L1
+**Verdict**: GREEN (TDD-first, 11 tests added, full suite deterministic 2x)
+
+**Target**: `docs/plan-qor-phase17-v2-reliability-scripts.md`
+
+**Files**:
+- `tools/reliability/intent-lock.py` (143 lines, 9 functions, max function 30 lines)
+- `tools/reliability/skill-admission.py` (98 lines, 5 functions, max function 23 lines)
+- `tools/reliability/gate-skill-matrix.py` (116 lines, 7 functions, max function 23 lines)
+- `tests/test_reliability_scripts.py` (11 new tests — Track 1 = 4, Track 2 = 3, Track 3 = 3, Track 4 = 1)
+- `qor/skills/sdlc/qor-implement/SKILL.md` (+Step 5.5 Intent Lock Capture)
+- `qor/skills/governance/qor-substantiate/SKILL.md` (+Step 4.6 Reliability Sweep)
+- `tests/test_skill_doctrine.py` (S-10 guard inverted: now asserts referenced scripts exist)
+
+**Test results**: 245 passed + 6 skipped (baseline 234 + 11 new). Deterministic 2x back-to-back.
+
+**Section 4 Razor**: all new scripts under 250 lines; all new functions under 40 lines (max 30). Skill files accepted at 324/334 per plan.
+
+**Content Hash** (implementation-manifest):
+`6df330abb2bf9a68c78370ff4d593e626d8b794366db5bf94b297ed594080156`
+
+**Previous Hash**:
+`04680997530a5d84fa70f858a683617e323f5499b4ab672cd2241e058084ecc0`
+
+**Chain Hash**:
+```
+SHA256(content + previous)
+= cab2e6fcd353c7ac2b2f286dd4076d109b335470ac6d15bc6957c94489c18646
+```
+
+**Decision**: Implementation complete. Proceed to substantiate.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (substantiate phase)*

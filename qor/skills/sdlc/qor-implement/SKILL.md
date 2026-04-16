@@ -146,6 +146,21 @@ Template: `references/qor-implement-patterns.md`.
 
 **Constraint**: Define exactly ONE success condition that proves Reality matches Promise.
 
+### Step 5.5: Intent Lock Capture (Phase 17 wiring)
+
+Capture a fingerprint of the implementer's intent (plan + PASS audit + HEAD commit) before writing any implementation code. Interdicts drift during implementation.
+
+```bash
+PLAN_PATH=$(python -c "import sys; sys.path.insert(0,'qor/scripts'); from governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
+SESSION_ID=$(cat .qor/session/current 2>/dev/null || echo default)
+python tools/reliability/intent-lock.py capture \
+  --session "$SESSION_ID" \
+  --plan "$PLAN_PATH" \
+  --audit .agent/staging/AUDIT_REPORT.md
+```
+
+On non-zero exit, ABORT implementation and report the intent-lock reason (audit not PASS, missing plan, etc.). Lock is re-verified in `/qor-substantiate` Step 4.6.
+
 ### Step 6: Precision Build
 
 Apply the Section 4 Razor to EVERY function and file.
