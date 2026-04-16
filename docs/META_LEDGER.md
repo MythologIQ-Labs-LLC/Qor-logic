@@ -1199,4 +1199,34 @@ SHA256(content_hash + previous_hash)
 ---
 
 *Chain integrity: VALID*
-*Session: OPEN (audit tribunal active)*
+
+---
+
+### Entry #37: GATE TRIBUNAL — plan-qor-phase15-v2-shadow-genome-doctrine
+
+**Timestamp**: 2026-04-16
+**Phase**: GATE (pre-implementation audit, round 2)
+**Author**: Judge
+**Verdict**: **PASS**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase15-v2-shadow-genome-doctrine.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `697749846b203fc46af6c46e0dd5b01e13782e7b9c230d902c9ab5c960b85f3a`
+**Previous Hash**: `d9984335ef244f39ae2e9ee53aa25ef1b128808a49b149308d31b0d7963ed1c0`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 896a54e495295d7baded954393eee54b9d929e6df0baeceddb1bfbf57b20da83
+```
+
+**Verdict Summary**: All 4 Entry #36 violations closed. V-1: `ast.Starred` excluded from positional count via `concrete_args` filter; grounding test confirmed. V-2: regex proximity anchor `SG-XXX.{0,500}keyword` + negative-path test proving anchor detects missing sections. V-3: Step 2b reduced to 3-line pointer (+4 net vs. v1's +15); pre-existing 24-line overflow explicitly deferred. V-4: `AsyncFunctionDef` added with dedicated test. Fresh adversarial sweep: no new violations. Implementation gate UNLOCKED.
+
+**Decision**: Phase 15 v2 plan implementation-ready. 2 new files (doctrine + tests), 1 modified skill. +9 tests (219 → 228). AST-based SG-033 enforcement + proximity-anchored doctrine tests close SG-033 (keyword-only discipline) and the meta-lessons SG-034 (AST node-family enumeration) + SG-035 (doctrine-content test anchoring) surfaced in Entry #36.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (implementation gate unlocked)*
