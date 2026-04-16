@@ -1,71 +1,89 @@
-# AUDIT REPORT — plan-qor-phase14-v2-shadow-attribution.md
+# AUDIT REPORT — plan-qor-phase14-v3-shadow-attribution.md
 
 **Tribunal Date**: 2026-04-15
-**Target**: `docs/plan-qor-phase14-v2-shadow-attribution.md`
-**Risk Grade**: L1 (spec-level defects; no security concerns)
+**Target**: `docs/plan-qor-phase14-v3-shadow-attribution.md`
+**Risk Grade**: L1
 **Auditor**: The QorLogic Judge
 
 ---
 
-## VERDICT: **VETO**
+## VERDICT: **PASS**
 
 ---
 
 ### Executive Summary
 
-Plan v2 closes all 5 Entry #31 violations and correctly expands scope to 7 writer call sites (good grounding work). VETO issued for 2 substantive defects: (1) the proposed `id_source_map()` write-back pattern silently drops newly-created events (escalation events in `check_shadow_threshold.py` and new events from any future caller), and (2) the signature change from `append_event(event, log_path=None)` to keyword-only `(event, *, attribution=None, log_path=None)` breaks 2 existing test call sites that pass `log_path` positionally. Both are fixable without redesign.
+Plan v3 closes all 4 Entry #32 violations with minimal, targeted changes. The classify-at-creation pattern (V-1) eliminates the closed-world assumption that caused silent data loss. The `write_events_per_source` helper (V-3) centralizes the dual-file split pattern and keeps `create_shadow_issue.py` under the 250-line Razor. Positional callers are accounted for (V-2). File count header corrected (V-4). All Entry #31 closures from v2 are preserved. Fresh adversarial sweep finds no new violations. Implementation gate UNLOCKED.
 
 ### Audit Results
 
 #### Security Pass
-**Result**: PASS. No credentials, auth stubs, or security bypasses. Plan is governance/process infrastructure only.
+**Result**: PASS. No credentials, auth stubs, or security bypasses. Governance/process infrastructure only.
 
 #### Ghost UI Pass
 **Result**: PASS. No UI elements proposed.
 
 #### Section 4 Razor Pass
-**Result**: CONDITIONAL PASS — see V-3.
+**Result**: PASS.
 
 | Check | Limit | Blueprint Proposes | Status |
 |---|---|---|---|
 | Max function lines | 40 | All proposed functions <20 lines | OK |
-| Max file lines | 250 | `create_shadow_issue.py`: 227 + ~25 est. = ~252 | MARGINAL |
-| Max nesting depth | 3 | Max 2 (conditional in collector) | OK |
+| Max file lines | 250 | `shadow_process.py` ~157; `check_shadow_threshold.py` ~150; `create_shadow_issue.py` ~225 | OK |
+| Max nesting depth | 3 | Max 2 (collector conditional) | OK |
 | Nested ternaries | 0 | 0 | OK |
-
-`shadow_process.py` (121 + ~24 = ~145): OK. `check_shadow_threshold.py` (150 + ~20 = ~170): OK. `create_shadow_issue.py` (227 + ~25 = ~252): borderline.
 
 #### Dependency Pass
 **Result**: PASS. No new dependencies.
 
 #### Orphan Pass
-**Result**: PASS. All proposed files connect to existing import chains. `doctrine-shadow-attribution.md` is referenced by 4 skills + test. `PROCESS_SHADOW_GENOME_UPSTREAM.md` is read by collector + shadow_process constants. `test_shadow_attribution.py` is discovered by pytest.
+**Result**: PASS. All proposed files connect to existing import chains. `write_events_per_source` is called by `check_shadow_threshold.py` and `create_shadow_issue.py`. `doctrine-shadow-attribution.md` is referenced by 4 skills + tests. `PROCESS_SHADOW_GENOME_UPSTREAM.md` is read by collector + module constants.
 
 #### Macro-Level Architecture Pass
-**Result**: FAIL — see V-1 (silent data loss in write-back pattern).
+**Result**: PASS.
+- Module boundaries: `shadow_process.py` centralizes all event I/O; callers delegate. No mixed domains.
+- No cyclic dependencies: callers → shadow_process (one-way).
+- `write_events_per_source` de-duplicates the split-write pattern between 2 callers.
+- `id_source_map()` is the single source of truth for event-to-file mapping.
+- Classify-at-creation (SG-032) eliminates the closed-world gap.
+
+### Entry #32 Closure Verification
+
+| Entry #32 ID | Status | Verification |
+|---|---|---|
+| V-1 (data loss) | CLOSED | `sweep()` calls `append_event(attribution="UPSTREAM")` immediately; no post-hoc split for new events. Test: `test_escalation_events_not_dropped_during_sweep`. |
+| V-2 (breaking change) | CLOSED | Plan explicitly updates `test_shadow.py:329,341` to `log_path=log`. SG-033 grep mandate at implementation. |
+| V-3 (Razor) | CLOSED | `write_events_per_source()` extracted to `shadow_process.py`. `create_shadow_issue.py` net estimate ~225 lines. Test: `test_write_events_per_source_splits_correctly`. |
+| V-4 (count error) | CLOSED | Header corrected to "Modified — scripts (6)". |
+
+### Entry #31 Prior Closure Verification
+
+| Entry #31 ID | Status | Carried through v2→v3 |
+|---|---|---|
+| V-1 (SG-021 pipeline scope) | CLOSED | All 7 writer call sites surveyed (5 path-referencing + 2 function-call-only). |
+| V-2 (skill scope) | CLOSED | 4 skills in Affected Files; test `test_shadow_tracking_skills_reference_attribution_doctrine`. |
+| V-3 (self-contradiction) | CLOSED | Explicit conditional in Track D with fallback + warning; test `test_collector_warns_on_legacy_only`. |
+| V-4 (doctrine out-of-scope) | CLOSED | Doctrine §6 "Out of scope" for narrative SHADOW_GENOME.md; test `test_doctrine_declares_narrative_log_out_of_scope`. |
+| V-5 (gate_writes syntax) | CLOSED | YAML list; no runtime parser (verified); doctrinal convention only. |
+
+### Fresh Adversarial Findings
+
+None. Swept for:
+- `sweep()` return type change impact on `main()` caller: `breach_sum` calculation is internal to `sweep()` and unchanged in meaning; existing threshold tests enforce correct math.
+- `--log` single-file mode consistency: plan states "single-file mode for tests" with `log_path` threading; `write_events_per_source` only applies to default dual-file path.
+- `write_events_per_source` skip behavior for unmapped IDs: safe because V-1 classify-at-creation eliminates unmapped events in all known callers.
+- Shadow-tracking skills (`track-shadow-genome.md`, `qor-meta-track-shadow/SKILL.md`): correctly reference narrative system; plan adds attribution doctrine reference to make agents aware of the structured dual-file system.
 
 ### Violations Found
 
-| ID | Category | Location | Description |
-|---|---|---|---|
-| V-1 | Data loss (silent drop) | Track E, `check_shadow_threshold.py` write-back | `id_source_map()` is built from existing events on disk. New escalation events created by `sweep()` (line 64-83 of `check_shadow_threshold.py`) have IDs not yet in either file. The plan's write-back pattern `src_map.get(e["id"]) == LOCAL_LOG_PATH` returns `None` for these new IDs — they match neither `local` nor `upstream` filter and are silently dropped from both files. Same exposure in `create_shadow_issue.py` if any new events are ever appended during a read-modify-write cycle. |
-| V-2 | Breaking change (unaccounted) | Track C, `append_event` signature | Current signature: `append_event(event: dict, log_path: Path \| None = None)` — `log_path` is a regular parameter, passable positionally. Plan proposes: `append_event(event: dict, *, attribution=None, log_path=None)` — the `*` makes `log_path` keyword-only. Two existing test call sites pass `log_path` positionally: `tests/test_shadow.py:329` (`shadow_process.append_event(e, log)`) and `tests/test_shadow.py:341` (`shadow_process.append_event(e, log)`). Both raise `TypeError` under the new signature. Plan says "existing body unchanged" but does not account for this positional-to-keyword breakage. |
-| V-3 | Section 4 Razor (marginal) | Track E, `create_shadow_issue.py` | File is 227 lines today. Dual-file changes to `flip_events_only`, `mark_resolved`, and main flow add ~25 lines → ~252, exceeding the 250-line Razor limit. Plan does not estimate or address. |
-| V-4 | Plan-internal inconsistency | Affected Files summary, line 240 | Header reads "Modified — scripts (5)" but enumerates 6 files (`shadow_process.py`, `collect_shadow_genomes.py`, `gate_chain.py`, `qor_audit_runtime.py`, `check_shadow_threshold.py`, `create_shadow_issue.py`). |
-
-### Required Remediation
-
-1. **V-1**: New events created during a read-modify-write cycle must not be lost. Prescribed fix: extend `id_source_map()` to accept an `extras` parameter (or return a builder), OR — simpler — classify new escalation events at creation time. In `check_shadow_threshold.py`, escalation events are infrastructure-generated → UPSTREAM. The sweep function should assign new events to a file explicitly (e.g., `new_event["_target_path"] = shadow_process.UPSTREAM_LOG_PATH`), and the write-back pattern should handle events with no map entry by checking `_target_path`. Alternatively, rewrite `sweep()` to call `shadow_process.append_event(new_event, attribution="UPSTREAM")` immediately instead of batching, eliminating the need for a post-hoc split. This second option is simpler (no `_target_path` metadata) but changes the write-back flow from batch-rewrite to incremental-append-then-rewrite-originals. Pick one; add test `test_escalation_events_not_dropped_during_sweep`.
-2. **V-2**: Explicitly update `tests/test_shadow.py:329` and `tests/test_shadow.py:341` from `shadow_process.append_event(e, log)` to `shadow_process.append_event(e, log_path=log)`. Add these 2 files to Track F "Modified — tests" with the change note. Also grep for any other positional callers in tests (the 2 found are from `test_append_event_atomic` and its multi-event variant; verify no others exist in `test_e2e.py`, `test_gates.py`, `test_qor_audit_runtime.py`).
-3. **V-3**: Either (a) extract a `write_events_per_source(events, src_map)` helper into `shadow_process.py` (keeps `create_shadow_issue.py` thin — callers shrink by ~10 lines each), or (b) state an explicit estimate showing the file stays at or under 250 lines. Option (a) also de-duplicates the pattern between `check_shadow_threshold.py` and `create_shadow_issue.py`.
-4. **V-4**: Correct header to "Modified — scripts (6)".
+None.
 
 ### Verdict Hash
 
-**Content Hash**: `80f2ad9af6a36720ac3fa3a27cc2c02224bc9e29bb53616b4576e6819a9efe9b`
-**Previous Hash**: `54ef6a4281b361dea2f5c704d5b962caf4d278a87272ba87654b3317674a7d1b`
-**Chain Hash**: `4d23775ffea278cb176dc1560066d14f7692c05b4ad5ac73033bb3ad0f46e17b`
-(sealed as Entry #32)
+**Content Hash**: `1b29cbb28db8c487743843af40146b94ada15150e66b3962b7c80cda5ac9a301`
+**Previous Hash**: `4d23775ffea278cb176dc1560066d14f7692c05b4ad5ac73033bb3ad0f46e17b`
+**Chain Hash**: `98a26463c8b51ec48251cd32a90dfb72a0cc83a8692427dd1e72bba4fa4ef41b`
+(sealed as Entry #33)
 
 ---
 _This verdict is binding._

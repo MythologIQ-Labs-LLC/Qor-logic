@@ -1037,4 +1037,34 @@ SHA256(content_hash + previous_hash)
 ---
 
 *Chain integrity: VALID*
-*Session: OPEN (audit tribunal active, round 2)*
+
+---
+
+### Entry #33: GATE TRIBUNAL — plan-qor-phase14-v3-shadow-attribution
+
+**Timestamp**: 2026-04-15
+**Phase**: GATE (pre-implementation audit, round 3)
+**Author**: Judge
+**Verdict**: **PASS**
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase14-v3-shadow-attribution.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Content Hash**: `1b29cbb28db8c487743843af40146b94ada15150e66b3962b7c80cda5ac9a301`
+**Previous Hash**: `4d23775ffea278cb176dc1560066d14f7692c05b4ad5ac73033bb3ad0f46e17b`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 98a26463c8b51ec48251cd32a90dfb72a0cc83a8692427dd1e72bba4fa4ef41b
+```
+
+**Verdict Summary**: All 4 Entry #32 violations closed. V-1: classify-at-creation eliminates closed-world assumption (SG-032). V-2: positional callers updated to keyword form (SG-033). V-3: `write_events_per_source` helper keeps `create_shadow_issue.py` ~225 lines. V-4: count header fixed. All 5 Entry #31 prior closures verified. Fresh adversarial sweep: no new violations. Implementation gate UNLOCKED.
+
+**Decision**: Phase 14 v3 plan is implementation-ready. 3 new files, 6 modified scripts, 4 modified skills, 3 modified test files. +17 tests (202 → 219). Classify-at-creation pattern + shared `write_events_per_source` helper are the two architectural additions over v2.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN (implementation gate unlocked)*
