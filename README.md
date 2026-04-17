@@ -30,7 +30,7 @@
 
 QorLogic is a governance framework that ships curated skills, doctrines, and runtime enforcement to AI coding agents. It covers the full software development lifecycle with hash-chained evidence, machine-enforceable policies, and a process-failure feedback loop.
 
-Supported hosts: **Claude Code**, **Kilo Code**, **Codex** (provisional).
+Supported hosts: **Claude Code**, **Kilo Code**, **Codex** (provisional), **Gemini CLI**.
 
 Built around **S.H.I.E.L.D.**: Single-purpose, Hash-chained, Idempotent, Explicit, Layered, Delegating.
 
@@ -44,22 +44,38 @@ pip install qor-logic
 
 ### Deploy skills to your AI coding host
 
-```bash
-# Initialize with your host and use-case profile
-qorlogic init --host claude --profile sdlc
+By default QorLogic installs into the **current workspace** (`./.<host>/`). Use `--scope global` for user-wide install under `~/.<host>/`.
 
-# Install all governance skills and agent personas
-qorlogic install --host claude
+```bash
+# Initialize with host + scope (scope defaults to repo)
+qorlogic init --host claude --profile sdlc                 # repo scope
+qorlogic init --host gemini --profile sdlc --scope global  # global scope
+
+# Install governance skills and agent personas
+qorlogic install --host claude                # -> ./.claude/
+qorlogic install --host gemini                # -> ./.gemini/commands/
+qorlogic install --host codex --scope global  # -> ~/.codex/
 
 # Verify the installation
 qorlogic list --available
 ```
 
+Supported host layouts:
+
+| Host | Default folder (repo scope) | File format |
+|------|-----------------------------|-------------|
+| `claude` | `./.claude/skills/`, `./.claude/agents/` | Markdown |
+| `kilo-code` | `./.kilo-code/skills/`, `./.kilo-code/agents/` | Markdown |
+| `codex` | `./.codex/skills/`, `./.codex/agents/` | Markdown |
+| `gemini` | `./.gemini/commands/` | TOML |
+
+Set `QORLOGIC_PROJECT_DIR` to override the repo root.
+
 ### Or install to a custom target
 
 ```bash
 # Non-standard host, filesystem governance, or data pipeline projects
-qorlogic install --target /path/to/.claude/
+qorlogic install --host claude --target /path/to/custom/dir/
 ```
 
 ### Use in your AI coding session
@@ -216,9 +232,9 @@ qor-logic/
     gates/            Phase chain, delegation table, workflow bundles, 9 JSON schemas
     resources.py      importlib.resources wrapper for packaged assets
     workdir.py        $QOR_ROOT / CWD anchor for consumer-state paths
-    hosts.py          Host-to-install-path resolver (claude, kilo, codex)
+    hosts.py          Host-to-install-path resolver (claude, kilo, codex, gemini)
     cli.py            qorlogic CLI entry point
-    dist/variants/    Pre-compiled per-host outputs (claude, kilo-code, codex)
+    dist/variants/    Pre-compiled per-host outputs (claude, kilo-code, codex, gemini)
   tests/              323 tests (unit, integration, e2e, doctrine, bundle contract)
   .github/workflows/  CI (6-job matrix) + PyPI release (OIDC trusted publisher)
 ```
@@ -226,10 +242,10 @@ qor-logic/
 ## CLI Reference
 
 ```
-qorlogic install --host <claude|kilo-code|codex> [--target <path>] [--dry-run]
-qorlogic uninstall --host <host>
-qorlogic init --host <host> --profile <sdlc|filesystem|data|research>
-qorlogic list [--available] [--installed]
+qorlogic install --host <claude|kilo-code|codex|gemini> [--scope <repo|global>] [--target <path>] [--dry-run]
+qorlogic uninstall --host <host> [--scope <repo|global>]
+qorlogic init --host <host> [--scope <repo|global>] --profile <sdlc|filesystem|data|research>
+qorlogic list [--available] [--installed] [--host <host>] [--scope <repo|global>]
 qorlogic info <skill-name>
 qorlogic compile [--dry-run]
 qorlogic verify-ledger [<path>]

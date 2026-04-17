@@ -10,26 +10,27 @@ import pytest
 
 # ---- Track A: Host resolver (tests 1-6) ----
 
-def test_host_resolver_claude_default():
+def test_host_resolver_claude_global_scope():
+    """Phase 24: global scope produces ~/.claude (was default pre-Phase 24)."""
     from qor.hosts import resolve
-    target = resolve("claude")
+    target = resolve("claude", scope="global")
     assert target.name == "claude"
     assert target.skills_dir == Path.home() / ".claude" / "skills"
     assert target.agents_dir == Path.home() / ".claude" / "agents"
 
 
-def test_host_resolver_kilo_default():
+def test_host_resolver_kilo_global_scope():
     from qor.hosts import resolve
-    target = resolve("kilo-code")
+    target = resolve("kilo-code", scope="global")
     assert target.name == "kilo-code"
     assert target.skills_dir == Path.home() / ".kilo-code" / "skills"
     assert target.agents_dir == Path.home() / ".kilo-code" / "agents"
 
 
 def test_host_resolver_codex_resolves():
-    """Phase 22: codex now resolves instead of raising."""
+    """Phase 22: codex resolves instead of raising."""
     from qor.hosts import resolve
-    target = resolve("codex")
+    target = resolve("codex", scope="global")
     assert target.name == "codex"
     assert "codex" in str(target.skills_dir)
 
@@ -41,10 +42,11 @@ def test_host_resolver_target_override(tmp_path):
     assert target.agents_dir == tmp_path / "agents"
 
 
-def test_host_resolver_claude_project_dir_env(tmp_path, monkeypatch):
+def test_host_resolver_qorlogic_project_dir_env(tmp_path, monkeypatch):
+    """Phase 24: CLAUDE_PROJECT_DIR no longer consulted; QORLOGIC_PROJECT_DIR replaces it."""
     from qor.hosts import resolve
-    monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path))
-    target = resolve("claude")
+    monkeypatch.setenv("QORLOGIC_PROJECT_DIR", str(tmp_path))
+    target = resolve("claude", scope="repo")
     assert target.skills_dir == tmp_path / ".claude" / "skills"
     assert target.agents_dir == tmp_path / ".claude" / "agents"
 

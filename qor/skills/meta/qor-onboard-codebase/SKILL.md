@@ -4,6 +4,7 @@ type: workflow-bundle
 description: >-
   Absorb an external codebase into governed scope. Investigates structure, normalizes layout, audits architecture, produces an integration plan. Use when (1) inheriting an unfamiliar project, (2) merging an external repo into a governed monorepo, (3) onboarding a contractor's codebase.
 phases: [research, organize, audit, plan]
+tone_aware: false
 checkpoints: [after-research, after-organize, after-audit]
 budget:
   max_phases: 4

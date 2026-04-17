@@ -7,26 +7,48 @@ import sys
 from pathlib import Path
 
 
+def _init_config_base(host: str, scope: str, target: Path | None) -> Path:
+    """Resolve the directory into which ``.qorlogic/config.json`` is written."""
+    if target is not None:
+        return target
+    if scope == "global":
+        from qor.hosts import resolve
+        return resolve(host, scope="global").base
+    from qor.hosts import _repo_root
+    return _repo_root()
+
+
 def do_init(args: argparse.Namespace) -> int:
-    """Initialize a .qorlogic/config.json in the current directory."""
-    config_dir = Path.cwd() / ".qorlogic"
+    """Initialize a .qorlogic/config.json.
+
+    Location depends on --scope:
+    - repo (default): ``$QORLOGIC_PROJECT_DIR or cwd`` / ``.qorlogic/config.json``
+    - global: ``resolve(host, scope=global).base`` / ``.qorlogic/config.json``
+    - --target: ``target`` / ``.qorlogic/config.json`` (overrides scope)
+    """
+    host = getattr(args, "host", "claude")
+    profile = getattr(args, "profile", "sdlc")
+    scope = getattr(args, "scope", "repo")
+    target = getattr(args, "target", None)
+    tone = getattr(args, "tone", None) or "technical"
+
+    base = _init_config_base(host, scope, target)
+    config_dir = base / ".qorlogic"
     config_dir.mkdir(parents=True, exist_ok=True)
     config_path = config_dir / "config.json"
 
-    host = getattr(args, "host", "claude")
-    profile = getattr(args, "profile", "sdlc")
-    target = getattr(args, "target", None)
-
     config = {
         "host": host,
+        "scope": scope,
         "profile": profile,
+        "tone": tone,
         "target": str(target) if target else None,
         "governance_scope": "git_root" if profile == "sdlc" else "cwd",
     }
     config_path.write_text(
         json.dumps(config, indent=2) + "\n", encoding="utf-8",
     )
-    print(f"Initialized .qorlogic/config.json (host={host}, profile={profile})")
+    print(f"Initialized {config_path} (host={host}, scope={scope}, tone={tone}, profile={profile})")
     return 0
 
 

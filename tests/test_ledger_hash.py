@@ -275,6 +275,74 @@ def test_verify_handles_missing_hash_markers_gracefully(tmp_path):
     assert rc == 0  # No errors; entries are skipped, not failed
 
 
+def test_verify_accepts_inline_backtick_chain_hash(tmp_path):
+    """Chain hashes written as `` `<hex>` `` verify identically to `= <hex>` form.
+
+    Ensures the canonical inline-backtick markup (symmetric with Content/Previous)
+    is accepted by the verifier. Regression test for downstream projects whose
+    ledgers adopt the inline form to satisfy all three hash-field regexes with
+    one consistent markup.
+    """
+    content_a = "a" * 64
+    prev_a = "0" * 64
+    chain_a = lh.chain_hash(content_a, prev_a)
+    content_b = "b" * 64
+    chain_b = lh.chain_hash(content_b, chain_a)
+
+    fake_ledger = tmp_path / "ledger.md"
+    fake_ledger.write_text(f"""### Entry #1: INLINE-BACKTICK CHAIN
+**Content Hash**: `{content_a}`
+**Previous Hash**: `{prev_a}`
+**Chain Hash**: `{chain_a}`
+
+### Entry #2: ALSO INLINE
+**Content Hash**: `{content_b}`
+**Previous Hash**: `{chain_a}`
+**Chain Hash**: `{chain_b}`
+""", encoding="utf-8")
+    rc = lh.verify(fake_ledger)
+    assert rc == 0
+
+
+def test_verify_accepts_mixed_chain_hash_forms(tmp_path):
+    """A ledger with one `= <hex>` entry and one `` `<hex>` `` entry verifies clean."""
+    content_a = "a" * 64
+    prev_a = "0" * 64
+    chain_a = lh.chain_hash(content_a, prev_a)
+    content_b = "b" * 64
+    chain_b = lh.chain_hash(content_b, chain_a)
+
+    fake_ledger = tmp_path / "ledger.md"
+    fake_ledger.write_text(f"""### Entry #1: EQUATION FORM
+**Content Hash**: `{content_a}`
+**Previous Hash**: `{prev_a}`
+Chain Hash = {chain_a}
+
+### Entry #2: INLINE FORM
+**Content Hash**: `{content_b}`
+**Previous Hash**: `{chain_a}`
+**Chain Hash**: `{chain_b}`
+""", encoding="utf-8")
+    rc = lh.verify(fake_ledger)
+    assert rc == 0
+
+
+def test_verify_detects_tampered_inline_backtick_chain(tmp_path):
+    """Inline-backtick chain with a wrong hash should still be detected as FAIL."""
+    content_a = "a" * 64
+    prev_a = "0" * 64
+    wrong_chain = "deadbeef" * 8  # 64 hex but wrong
+
+    fake_ledger = tmp_path / "ledger.md"
+    fake_ledger.write_text(f"""### Entry #1: TAMPERED INLINE
+**Content Hash**: `{content_a}`
+**Previous Hash**: `{prev_a}`
+**Chain Hash**: `{wrong_chain}`
+""", encoding="utf-8")
+    rc = lh.verify(fake_ledger)
+    assert rc == 1
+
+
 def test_verify_handles_malformed_numeric_id(tmp_path):
     """Verify() processes entry headers even if surrounding markup is unusual.
 

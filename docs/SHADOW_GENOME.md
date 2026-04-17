@@ -391,3 +391,144 @@ This is small (~50 lines), catches the pattern mechanically, and can run in CI.
 ---
 
 *Shadow integrity: ACTIVE*
+
+
+## Entry SG-Phase24-A: Razor Creep via Cumulative Plan Additions
+
+**Date**: 2026-04-17
+**Phase Target**: 24 (multi-host install)
+**Judge Verdict**: VETO
+
+### Pattern
+`qor/cli.py` crossed the 250-line razor during Phase 22's CLI expansion (init, policy, compliance). Subsequent plans have continued to grow it without mandating a split. Phase 24 would have pushed it to ~320 lines. `_do_install` is likewise already 54 lines (54 > 40) and every install-related plan extends it without decomposition.
+
+### Why It Matters
+Razor violations are binary per `/qor-audit`. "Already over the limit" is not an exception -- each new plan that adds to the file is a fresh violation. Without a refactor gate, growth compounds until readability collapses.
+
+### Countermeasure
+Any plan that touches `qor/cli.py` or `_do_install` must either:
+1. Keep net line-delta <= 0 (substitution, not addition), or
+2. Include a Phase 0 refactor that extracts logic to restore compliance, or
+3. Delegate explicitly to `/qor-refactor` before implementation.
+
+### Pattern ID
+SG-Phase24-A (cumulative razor creep in CLI harness)
+
+---
+
+## Entry SG-Phase24-B: YAML Parser Introduction Without Safe-Load Commitment
+
+**Date**: 2026-04-17
+**Phase Target**: 24 (multi-host install)
+**Judge Verdict**: VETO (contributing ground)
+
+### Pattern
+Phase 24 Plan line 118: "parse skill/agent frontmatter". The codebase currently has zero YAML usage in `qor/scripts/`. Plans that introduce a new parser class (YAML, pickle, shelve, plistlib) without naming the specific safe API invite A08 deserialization vulnerabilities. Implementers reach for the import autocomplete (`yaml.load`, `pickle.loads`) rather than the safe sibling.
+
+### Countermeasure
+When a plan introduces a deserializer for a new format, it must name the exact safe API: `yaml.safe_load`, `json.loads` (no custom hooks), `pickle` is BANNED, `tomllib.loads`, `plistlib.loads(fmt=FMT_XML)`. Audit VETOes plans that say "parse X" without naming the safe entry point.
+
+### Pattern ID
+SG-Phase24-B (unsafe deserializer defaults)
+
+---
+
+## Entry SG-Phase24-C: Third-Party Dependency Preferred Over Trivial Vanilla
+
+**Date**: 2026-04-17
+**Phase Target**: 24 (multi-host install)
+**Judge Verdict**: VETO (contributing ground)
+
+### Pattern
+Plan line 121 proposed `tomli_w` for TOML writing when the output schema is five scalar keys + one triple-quoted prompt. A vanilla writer fits in <15 lines. The dependency was proposed reflexively ("there's a library for this") rather than by necessity. Pre-existing project discipline (`pyproject.toml` has exactly one runtime dep, `jsonschema>=4`) should resist this drift.
+
+### Countermeasure
+Dependency audit asks "<10 lines vanilla?" -- the answer governs. For narrow output formats (fixed schema, bounded key set), the vanilla answer is almost always yes. Plans adding a dependency for serialization must justify by pointing to either schema breadth or edge-case correctness that vanilla cannot address.
+
+### Pattern ID
+SG-Phase24-C (reflexive dependency introduction for trivial serializers)
+
+---
+
+*Shadow integrity: ACTIVE*
+
+
+## Entry SG-Phase24-D: Remediation Target Mismatch
+
+**Date**: 2026-04-17
+**Phase Target**: 24 (multi-host install)
+**Judge Verdict**: VETO (Pass 2)
+
+### Pattern
+After Entry #70 VETO listed three grounds (A08 safe_load, Razor, tomli_w dependency), the Governor ran `/qor-refactor` -- which is the correct skill for Razor but cannot by design address the other two grounds, which live in plan text (Phase 2 Changes block). The subsequent audit (Entry #72) found Grounds 1 and 3 unchanged and re-VETOed.
+
+### Why It Matters
+`/qor-refactor` mutates code. Plan-text violations (unsafe-parser commitments, unjustified dependencies) can only be cleared by editing the plan. Running the code-shape skill and then re-auditing without touching the plan is a loop: the code-shape ground clears, but the plan-text grounds persist forever.
+
+### Countermeasure
+When an audit VETO lists multiple grounds, the Governor must classify each ground:
+- **Code-shape ground** (Razor, Ghost UI in implementation, Orphan) -> `/qor-refactor` or `/qor-organize`
+- **Plan-text ground** (Dependency choice, A08 safe-parser commitment, missing tests for violations) -> edit `docs/plan-qor-phase*.md` directly, no skill required
+
+Then re-audit only after BOTH classes of remediation have been applied.
+
+### Pattern ID
+SG-Phase24-D (remediation target mismatch: running code skill when plan-text edits are required)
+
+---
+
+*Shadow integrity: ACTIVE*
+
+
+## Entry SG-Phase25-A: A08 Discipline Scope Gap (test code)
+
+**Date**: 2026-04-17
+**Phase Target**: 25 (prompt resilience + workspace seed)
+**Judge Verdict**: VETO
+
+### Pattern
+Phase 24 introduced `tests/test_yaml_safe_load_discipline.py` as a codebase-wide ban on unsafe YAML APIs. The test's `rglob("*.py")` walk is rooted at `qor/` only. Test code is not scanned. Phase 25 plan adds YAML frontmatter parsing in new test files (`test_prompt_resilience_lint.py`, `test_skill_prerequisite_coverage.py`) without committing to `yaml.safe_load`, leaving a silent drift path: an implementer can use `yaml.load(...)` in a test and CI stays green.
+
+### Why It Matters
+Discipline tests are only as strong as their scope. Any path not walked is a future vulnerability the lint can't see. When a plan extends YAML parsing into an uncovered directory, it must either (a) commit to safe_load explicitly in plan text, or (b) widen the discipline test's scope, or ideally both.
+
+### Countermeasure
+Any plan that adds deserializer calls in a directory not currently covered by the relevant discipline test must, as part of that plan:
+1. Name the safe API explicitly in the plan's Changes/Unit Tests blocks.
+2. Widen the discipline test's walk to cover the new directory, OR justify in plan text why the new directory is exempt.
+3. Add a planted-call negative test proving the widened scope catches violations.
+
+### Pattern ID
+SG-Phase25-A (discipline-test scope does not track new usage sites)
+
+---
+
+*Shadow integrity: ACTIVE*
+
+
+## Entry SG-Phase25-B: Ghost Feature via Metadata-Only Declaration
+
+**Date**: 2026-04-17
+**Phase Target**: 25 (Phase 4 -- communication tiers)
+**Judge Verdict**: VETO (Pass 2)
+
+### Pattern
+Phase 4 added `tone_aware: true|false` to every skill's frontmatter and added a lint test verifying the flag's *presence*. It did NOT require the skill's body to contain per-tier rendering instructions, and it did NOT instruct any skill to read the persisted config `tone` value. The metadata declared an intent ("this skill can render differently per tier") without any mechanism that delivers on it. Adversarial outcome: operator runs `qorlogic init --tone plain`, observes no change in output, has no way to diagnose why -- all tests pass.
+
+### Why It Matters
+A governance framework whose features are metadata-only is worse than one that doesn't claim the feature at all: the audit trail suggests behavior that isn't there. This is the same family as Ghost UI (frontend buttons without backend handlers) but at the documentation/skill layer.
+
+### Countermeasure
+Any plan that introduces a behavioral flag in frontmatter must ALSO:
+1. Require a canonical section in the skill body that implements the flag's claimed behavior (delimited by a `<!-- qor:<feature>-section -->` marker pair so lint can find it deterministically).
+2. Require at least one consumer of any persisted config value the flag depends on (instruction in the skill body, or a helper function the skill calls).
+3. Include a lint assertion that ties the metadata claim to the body content: `if flag == true, body must contain <marker> AND <content-assertion>`.
+
+Without all three, the flag is a ghost.
+
+### Pattern ID
+SG-Phase25-B (metadata-only feature declaration without enforced behavior)
+
+---
+
+*Shadow integrity: ACTIVE*

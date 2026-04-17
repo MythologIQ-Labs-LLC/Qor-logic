@@ -9,6 +9,7 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/sdlc/qor-plan
 phase: plan
+tone_aware: false
 gate_reads: research
 gate_writes: plan
 ---

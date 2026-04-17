@@ -3,6 +3,8 @@ name: qor-deep-audit-remediate
 type: workflow-bundle
 description: >-
   Plan + implement + validate the gaps catalogued in a RESEARCH_BRIEF.md (typically produced by /qor-deep-audit-recon). Sprint-by-sprint execution with per-sprint checkpoints. Use after recon when the gap inventory is verified and you are ready to act.
+autonomy: autonomous
+tone_aware: false
 phases: [plan, implement, validate]
 checkpoints: [after-plan, after-each-sprint, after-implement]
 budget:

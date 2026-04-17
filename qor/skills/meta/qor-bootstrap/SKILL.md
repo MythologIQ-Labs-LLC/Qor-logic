@@ -9,6 +9,8 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/meta/qor-bootstrap
 phase: bootstrap
+tone_aware: false
+autonomy: interactive
 gate_reads: ""
 gate_writes: ""
 ---
@@ -46,11 +48,9 @@ Glob: docs/META_LEDGER.md
 Glob: .failsafe/governance/
 ```
 
+<!-- qor:fail-fast-only reason="inverse interdiction (ledger already present); bootstrap must not overwrite" -->
 **INTERDICTION**: If `docs/META_LEDGER.md` exists:
-```
-ABORT
-Report: "Integrity Violation: Genesis already exists. Use /qor-status to resume."
-```
+Abort with "Integrity Violation: Genesis already exists. Use /qor-status to resume."
 
 ### Step 2.5: Repository Readiness Check
 

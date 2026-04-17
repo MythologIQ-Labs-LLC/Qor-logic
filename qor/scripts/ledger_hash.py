@@ -85,7 +85,13 @@ def _atomic_write_json(path: Path, data: dict) -> None:
 ENTRY_RE = re.compile(r"^### Entry #(\d+):", re.MULTILINE)
 CONTENT_HASH_RE = re.compile(r"\*\*Content Hash\*\*.*?`([0-9a-f]{64})`", re.DOTALL)
 PREV_HASH_RE = re.compile(r"\*\*Previous Hash\*\*.*?`([0-9a-f]{64})`", re.DOTALL)
-CHAIN_HASH_RE = re.compile(r"Chain Hash.*?= ([0-9a-f]{64})", re.DOTALL)
+# Chain Hash accepts either form: `= <hex>` (fenced/equation) or `` `<hex>` `` (inline backtick).
+# The inline-backtick form is symmetric with CONTENT_HASH_RE / PREV_HASH_RE; the equation form
+# preserves backward compatibility with legacy entries written before Phase 23.
+CHAIN_HASH_RE = re.compile(
+    r"Chain Hash.*?(?:=\s*([0-9a-f]{64})\b|`([0-9a-f]{64})`)",
+    re.DOTALL,
+)
 
 
 def verify(ledger_md: Path) -> int:
@@ -111,7 +117,8 @@ def verify(ledger_md: Path) -> int:
         if not (ch and ph and xh):
             skipped += 1
             continue
-        recorded = xh.group(1)
+        # CHAIN_HASH_RE has two alternation groups; exactly one is populated.
+        recorded = xh.group(1) or xh.group(2)
         new_expected = chain_hash(ch.group(1), ph.group(1))
         old_expected = legacy_chain_hash(ch.group(1), ph.group(1))
         if new_expected == recorded or old_expected == recorded:

@@ -9,6 +9,7 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/sdlc/qor-research
 phase: research
+tone_aware: false
 gate_reads: ""
 gate_writes: research
 ---

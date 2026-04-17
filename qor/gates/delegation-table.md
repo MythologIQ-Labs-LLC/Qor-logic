@@ -38,6 +38,7 @@ These skills are invokable from any phase. They have no chain prior, no chain su
 | Skill | When to invoke | Notes |
 |---|---|---|
 | `/qor-status` | Any time | Diagnose lifecycle stage + next action; pure read |
+| `/qor-tone` | Any time | Session-level communication tier selector (technical / standard / plain) |
 | `/qor-document` | Any time | Author / update governance docs |
 | `/qor-organize` | Any time (also as destination from `qor-audit` Orphan/Macro VETO) | Project-level structure |
 | `/qor-debug` | After any phase that emits regression / hallucination / degradation | Cross-cutting diagnosis |

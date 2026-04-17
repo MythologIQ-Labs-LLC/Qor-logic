@@ -1,8 +1,8 @@
 # Qorlogic System State
 
-**Snapshot**: 2026-04-15
-**Chain Status**: ACTIVE (18 entries)
-**Phase**: SSoT migration complete; tooling (compile, gates, shadow automation, platform detect, test suite) deferred per `docs/plan-qor-tooling-deferred.md`
+**Snapshot**: 2026-04-17
+**Chain Status**: ACTIVE (80 entries, last seal: 637210056ea... at v0.16.0)
+**Phase**: Phase 25 sealed. Prompt resilience doctrine applied to 11 skills (autonomy: autonomous | interactive). `qorlogic seed` scaffolds governance workspaces. Three-tier communication model (`technical` / `standard` / `plain`) live via `/qor-tone` + `qorlogic init --tone`. SG-Phase25-A (test-scope gap) and SG-Phase25-B (ghost feature via metadata) both closed.
 
 ## Authoritative source
 

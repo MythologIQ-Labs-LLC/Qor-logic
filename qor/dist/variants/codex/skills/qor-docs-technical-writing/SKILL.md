@@ -2,6 +2,7 @@
 name: qor-docs-technical-writing
 description: Concise professional technical writing with narrative context around product conception, development, and life beyond. Use when drafting or editing READMEs, release notes, product briefs, architecture overviews, extension listings, or documentation where accuracy, technical rigor, and brevity are required.
 phase: memory
+tone_aware: false
 gate_reads: ""
 gate_writes: ""
 ---

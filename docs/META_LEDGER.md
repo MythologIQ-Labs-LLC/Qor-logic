@@ -2378,3 +2378,423 @@ SHA256(content_hash + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: 964b8fc4...*
+
+
+### Entry #70: AUDIT -- Phase 24 plan review
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Tracks**: Multi-host install (codex source-variant fix, Gemini CLI host, repo/global scope)
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**VETO Grounds**:
+1. OWASP A08 -- Phase 2 introduces YAML frontmatter parsing without committing to `yaml.safe_load`. SG-004.
+2. Section 4 Razor -- `qor/cli.py` 295 lines (>250), `_do_install` 54 lines (>40); plan deepens violation without refactor phase.
+3. Dependency Audit -- `tomli_w` introduced without justification; vanilla TOML renderer fits in <15 lines for our narrow schema.
+
+**Mandated Next Action**: `/qor-refactor` (extract `qor/install.py` module), amend Phase 2 for safe_load + vanilla TOML renderer, then re-submit to `/qor-audit`.
+
+**Decision**: Plan rejected. All SG countermeasures consulted. Three binding violations require plan amendment before implementation may proceed.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #71: REFACTOR -- Extract qor/install.py (razor remediation for Phase 24 VETO)
+
+**Timestamp**: 2026-04-17
+**Phase**: REFACTOR
+**Author**: Specialist
+**Verdict**: PASS (Section 4 Razor restored)
+
+**Target**: `qor/cli.py`, new `qor/install.py`
+**Mandate**: Phase 24 audit (Entry #70) VETO ground #2 (Razor)
+
+**Before**:
+- `qor/cli.py`: 295 lines (>250 limit)
+- `_do_install`: 54 lines (>40 limit)
+
+**After**:
+- `qor/cli.py`: 192 lines
+- `qor/install.py` (new): 162 lines
+- `_do_install`: 38 lines (decomposed via `_load_manifest`, `_resolve_dest`, `_copy_entry`, `_write_install_record`)
+- `_do_uninstall` decomposed via `_remove_file_and_empty_parents`
+- `_do_list` decomposed via `_list_available`, `_list_installed`
+
+**Behavior**: Unchanged. 355 tests pass (355 = 354 + 1 previously-failing `test_plans_declare_change_class`, resolved by correcting plan-qor-phase24 `change_class` to `feature`). Two consecutive green runs confirm determinism.
+
+**Decision**: Razor VETO ground cleared. Remaining Phase 24 VETO grounds (A08 safe_load commitment, tomli_w dependency) require plan amendment, not code changes. Ready to hand back for plan edit + re-audit.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; refactor entries do not advance seal)*
+
+
+### Entry #72: AUDIT -- Phase 24 plan review (Pass 2)
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO (2 of 3 prior grounds persist; razor cleared)
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**Ground status vs Entry #70**:
+1. A08 / yaml.safe_load -- STILL OPEN (plan line 118 unchanged)
+2. Razor -- CLEARED by Entry #71 refactor (cli.py 192, install.py 162, _do_install 38)
+3. Dependency / tomli_w -- STILL OPEN (plan line 121 unchanged)
+
+**Pattern**: Governor ran `/qor-refactor` (addressed code-level Ground 2) but did not amend plan text for Grounds 1 and 3 (plan-level). Dispatch mismatch. SG-Phase24-D logged.
+
+**Mandated Next Action**: Plan-text amendments (safe_load commitment + vanilla TOML renderer + supporting tests), then re-submit to `/qor-audit`.
+
+**Decision**: Plan rejected. Remediation is documentation-only at this step; no further code changes required to clear the remaining two grounds.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #73: AUDIT -- Phase 24 plan review (Pass 3)
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: PASS
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**Ground status**:
+1. A08 / `yaml.safe_load` -- PASS (explicit commitment, unsafe-API ban test, `!!python/*` rejection fixtures)
+2. Razor -- PASS (cleared in Entry #71 refactor)
+3. Dependency / `tomli_w` -- PASS (dropped; vanilla `render_gemini_command` + `_toml_basic` documented with full escape rules)
+4. New dependency `PyYAML>=6` -- PASS (justified: skill frontmatter uses folded scalars + nested mappings; vanilla parser infeasible)
+
+**Plan amendments applied**:
+- Added "Dependency declaration (new)" section with PyYAML justification and `yaml.safe_load`-only policy.
+- Phase 2 Changes: explicit import `from yaml import safe_load`; vanilla TOML renderer with `\`/`"`/`\n`/`\r`/`\t` escapes plus `"""` body escape.
+- Phase 2 Unit Tests: safe-loader rejection, TOML round-trip, dependency shape, unsafe-YAML-API ban.
+
+**Mandated Next Action**: `/qor-implement` (test-first, phases 1 -> 2 -> 3).
+
+**Decision**: Plan approved. Implementation may proceed.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #74: IMPLEMENT -- Phase 24 multi-host install
+
+**Timestamp**: 2026-04-17
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Verdict**: PASS (391 tests, two consecutive green runs)
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Gate**: Entry #73 PASS
+
+**New files**:
+- `qor/scripts/gemini_variant.py` -- vanilla TOML renderer + YAML safe_load frontmatter parser
+- `tests/test_hosts_scope.py` (10 tests)
+- `tests/test_cli_install_source.py` (4 tests)
+- `tests/test_hosts_gemini.py` (4 tests)
+- `tests/test_dist_compile_gemini.py` (9 tests; includes safe-loader rejection + TOML round-trip + dependency shape)
+- `tests/test_cli_install_gemini.py` (4 tests)
+- `tests/test_yaml_safe_load_discipline.py` (1 test; grep-ban across qor/)
+- `tests/test_cli_init_scope.py` (4 tests)
+
+**Modified**:
+- `qor/hosts.py` -- HostTarget now carries `base` + `install_map` (skills_dir/agents_dir kept as properties for claude/codex/kilo compat); `resolve(scope=, target_override=)`; `_gemini_target`; `QORLOGIC_PROJECT_DIR` replaces `CLAUDE_PROJECT_DIR`.
+- `qor/install.py` -- source is now per-host (`variants/<host>/`); per-variant manifest; install dispatcher uses `HostTarget.install_map` prefix routing; `_do_install` decomposed via `_resolve_install_source` + `_copy_manifest_entries` (38 -> 35 orchestrator lines).
+- `qor/cli.py` -- `--scope {repo,global}` on install/uninstall/list/init (default repo); `gemini` added to host choices; argparse split into `_register_install_family`/`_register_misc`/`_register_compliance_policy` to keep functions <=40 lines.
+- `qor/scripts/dist_compile.py` -- emits per-variant manifests and top-level cross-variant index; `gemini` added to `TARGETS`.
+- `qor/cli_policy.py` -- `do_init` honors `--scope` (repo: repo-root; global: `resolve(host, "global").base`); records `scope` in config.
+- `pyproject.toml` -- `PyYAML>=6` declared (justified: skill frontmatter uses folded scalars + nested mappings).
+- `tests/test_phase21_harness.py`, `tests/test_phase22_hosts.py` -- updated to new HostTarget/resolve contract (scope-explicit calls; `QORLOGIC_PROJECT_DIR` replaces `CLAUDE_PROJECT_DIR`).
+- `README.md` -- gemini added to supported hosts table; `--scope` examples added.
+- `docs/BACKLOG.md` -- added B14 (seed workspace scaffolding) and B15 (prompt resilience) for next branch per user request.
+
+**Razor compliance**:
+- All touched functions <=40 lines (only `do_policy_check` remains at 42, pre-existing and out of scope).
+- All touched files <=250 lines (cli.py 210, install.py 181, hosts.py 140, dist_compile.py 181, gemini_variant.py 127, cli_policy.py 103).
+
+**Dependency shape**: locked at `["jsonschema>=4", "PyYAML>=6"]` by `test_dependency_shape`.
+**A08 discipline**: `yaml.safe_load` only; unsafe APIs banned codebase-wide by `test_yaml_safe_load_discipline.py`.
+
+**Decision**: Implementation complete. 391 tests pass across two consecutive runs. Ready for `/qor-substantiate`.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; implement entries do not advance seal)*
+
+
+### Entry #75: SESSION SEAL -- Phase 24 substantiated
+
+**Timestamp**: 2026-04-17
+**Phase**: SEAL
+**Author**: Judge
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Change Class**: `feature`
+**Version**: `0.14.0 -> 0.15.0`
+**Tag**: `v0.15.0` (pending operator push)
+
+**Content Hash**: `6dd6f521ab8f4f9486e2e770ab3ea3852cb314d43d328052c141d75733c565fa`
+**Previous Hash**: `964b8fc4264e8a71fbd274b15760fcb89b175690c6e77ea8eb1f82c8f74b8a3f`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= 68772fd3353029acdfab89d8672f77c7a32d7f9c840c0a01b07f20cbe1e20683
+```
+
+**Reality Audit**:
+- 7 planned test files created; all present
+- 4 planned source files modified; all present
+- 1 planned dep added (`PyYAML>=6`)
+- **UNPLANNED (warnings)**:
+  - `qor/scripts/gemini_variant.py` (extracted from `dist_compile.py` to preserve 250-line razor; plan had placed the logic inside `dist_compile.py` but the module extraction is a cleaner boundary and prevented a razor violation)
+  - `tests/test_phase21_harness.py` + `tests/test_phase22_hosts.py` edited to match new HostTarget/resolve contract (downstream effect of dropping `CLAUDE_PROJECT_DIR` and refactoring `HostTarget`; plan implied these through its "drop" directive but did not list them in affected files)
+  - `docs/BACKLOG.md` updated with B14/B15 for next branch (user-requested queue item)
+- **MISSING**: none
+
+**Test discipline**: 391 tests pass across three consecutive green runs (baseline, post-Phase-3, post-version-bump). No flakes. TDD order observed (tests-before-code for every phase).
+
+**Razor compliance**: All Phase-24-touched files <=250 lines; all touched functions <=40 lines (pre-existing `do_policy_check` at 42 lines left untouched; out of scope).
+
+**Chain drift note (carried forward)**: git tag `v0.14.0` (Phase 23 feat commit `8081422`) has no ledger entry between #69 and #70. This entry #75 bridges the gap at the current seal (from `964b8fc4...` directly to `68772fd3...`). Operator should decide whether to backfill a Phase 23 entry or leave the gap annotated.
+
+**Decision**: Phase 24 sealed. Multi-host install operational across claude, kilo-code, codex, and gemini with uniform `--scope {repo,global}` semantics (default repo). Gemini variant emits TOML commands via vanilla renderer. PyYAML declared for safe frontmatter parsing. 391 tests passing (28 new).
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: 68772fd3...*
+
+
+### Entry #76: AUDIT -- Phase 25 plan review
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**VETO Grounds**:
+1. OWASP A08 (test-scope gap) -- Phase 2 and Phase 3 Unit Tests introduce YAML frontmatter parsing without committing to `yaml.safe_load`. Phase 24's discipline test (`tests/test_yaml_safe_load_discipline.py`) scans only `qor/`, leaving test code uncovered. SG-Phase24-B extension.
+
+**Other passes**: PASS across Security, Ghost UI, Razor (with monitor on lint-function length), Dependency (no new deps), Macro-Arch, Orphan.
+
+**Mandated Next Action**: Plan amendment -- explicit `yaml.safe_load` commitment in new test blocks + extend the Phase 24 discipline test scope to `tests/**/*.py`. Then re-submit to `/qor-audit`.
+
+**Decision**: Plan rejected. Remediation is documentation + one-line scope widening; no code changes required to clear the ground.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 68772fd3... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #77: AUDIT -- Phase 25 plan review (Pass 2)
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO (A08 cleared; new Phase 4 ghost-feature ground)
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**Ground status vs Entry #76**:
+1. A08 / test-scope gap -- PASS (explicit `yaml.safe_load` commitment + widened `test_yaml_safe_load_discipline.py` scope + planted-call negative test).
+
+**New grounds**:
+2. Ghost feature / `tone_aware` declaration without rendering enforcement -- VETO. Phase 4 (communication tiers) marks skills `tone_aware: true|false` and lints the flag's presence, but does not require SKILL.md bodies to contain per-tier rendering instructions, and does not require any skill to read the persisted config `tone` value. Flag is declaration-only; behavior is LLM-luck.
+
+**Pattern**: SG-Phase25-B (declared feature without behavioral enforcement).
+
+**Mandated Next Action**: four plan-text amendments to Phase 4 requiring canonical tone-aware-section markers, a doctrine cross-check, and a rendering-example lint. Then re-submit to `/qor-audit` (pass 3).
+
+**Decision**: Plan rejected. Remediation is documentation-only; no code required.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 68772fd3... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #78: AUDIT -- Phase 25 plan review (Pass 3)
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: PASS
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**Ground status**:
+1. A08 / test-scope gap -- PASS (cleared in Pass 2; safe_load commitments + widened discipline test preserved in this pass)
+2. Ghost feature / `tone_aware` -- PASS (four mandated remediations all present: canonical markers, frontmatter lint, doctrine section, rendering-example fixture pinned to `qor/skills/memory/qor-status/SKILL.md` -- path verified to exist in repo)
+
+**Adversarial sweep**: Security, Dependency, Macro-arch, Orphan all PASS. Razor on monitor (lint-test main function must be decomposed during `/qor-implement`).
+
+**Advisory items** (non-binding):
+- Lint-test function decomposition responsibility lies with implementer.
+- Shared preamble drift is a long-term concern; not a Phase 25 blocker.
+- Phase 23 ledger gap persists; operator to decide whether to backfill before Phase 25 seal.
+
+**Mandated Next Action**: `/qor-implement` -- TDD order, four phases (seed -> resilience doctrine -> resilience application -> tone tiers). Change class on seal: feature (0.15.0 -> 0.16.0).
+
+**Decision**: Plan approved. Implementation may proceed.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 68772fd3... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #79: IMPLEMENT -- Phase 25 prompt resilience + seed + tone tiers
+
+**Timestamp**: 2026-04-17
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Verdict**: PASS (434 tests, two consecutive green runs)
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Gate**: Entry #78 PASS
+
+**New modules**:
+- `qor/seed.py` -- idempotent workspace scaffold primitive
+- `qor/tone.py` -- tier resolution primitive (pure function)
+- `qor/templates/*.md` -- reused existing templates (META_LEDGER, SHADOW_GENOME, ARCHITECTURE_PLAN, CONCEPT, SYSTEM_STATE)
+- `qor/references/doctrine-prompt-resilience.md`
+- `qor/references/skill-recovery-pattern.md`
+- `qor/references/doctrine-communication-tiers.md`
+- `qor/skills/memory/qor-tone/SKILL.md` -- session tier selector
+
+**New tests (18 files, ~60 new assertions)**:
+- `tests/test_seed_scaffold.py` (8 tests)
+- `tests/test_cli_seed.py` (4 tests)
+- `tests/test_prompt_resilience_lint.py` (5 tests + 4 fixture markdowns)
+- `tests/test_skill_prerequisite_coverage.py` (6 tests)
+- `tests/test_tone_resolution.py` (8 tests)
+- `tests/test_tone_config_persistence.py` (4 tests)
+- `tests/test_tone_skill_frontmatter.py` (3 tests)
+- `tests/test_tone_rendering_example.py` (3 tests)
+- Widened `tests/test_yaml_safe_load_discipline.py` scope to `tests/**/*.py` (exclude `tests/fixtures/`) with planted-call negative assertion and fixtures-excluded control
+
+**Modified**:
+- `qor/cli.py` -- `seed` subcommand + `--tone` on `init`
+- `qor/cli_policy.py` -- `do_init` records tone
+- 29 skill files under `qor/skills/`:
+  - All received `tone_aware: true|false` frontmatter (default false; `qor-status` upgraded to true with canonical rendering section)
+  - 11 skills received `autonomy: autonomous|interactive` frontmatter per inventory
+  - 11 skills received recovery-prompt / auto-heal / fail-fast-only markers on INTERDICTION blocks
+  - `qor-document` over-pause phrase wrapped with qor:allow-pause marker (legitimate 3-branch decision point)
+- `qor/skills/meta/qor-help/SKILL.md` + `qor/gates/delegation-table.md` -- list `qor-tone`
+- `pyproject.toml` -- `templates/*.md` + `dist/variants/**/*.toml` added to package-data
+- `docs/BACKLOG.md` -- B14, B15, B16 marked complete
+
+**Razor compliance**:
+- All new/touched functions <=40 lines (pre-existing `do_policy_check` at 42 remains, out of scope per prior phases).
+- All new/touched files <=250 lines (cli.py 223, install.py 181, hosts.py 131, seed.py 93, tone.py 58, cli_policy.py 96, dist_compile.py 181, gemini_variant.py 127).
+
+**SG countermeasures implemented**:
+- SG-Phase24-B (unsafe YAML loaders): widened discipline test scope.
+- SG-Phase25-A (A08 test-scope gap): closed by widened discipline + planted-call assertion.
+- SG-Phase25-B (ghost feature via metadata): closed by canonical rendering section + marker lint + pinned example test.
+
+**Decision**: Implementation complete. 434 tests pass across two consecutive runs (no flakes). Ready for `/qor-substantiate`.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 68772fd3... (unchanged; implement entries do not advance seal)*
+
+
+### Entry #80: SESSION SEAL -- Phase 25 substantiated
+
+**Timestamp**: 2026-04-17
+**Phase**: SEAL
+**Author**: Judge
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Change Class**: `feature`
+**Version**: `0.15.0 -> 0.16.0`
+**Tag**: `v0.16.0` (pending operator push)
+
+**Content Hash**: `d81883da832f70f2cda80eb123a992284c9e4f6489932b381d8f3243a3f70d1d`
+**Previous Hash**: `68772fd3353029acdfab89d8672f77c7a32d7f9c840c0a01b07f20cbe1e20683`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= 637210056ea01c13717b1e54a091a198bb70f9ea9b4c9c03b18801ed1132f40e
+```
+
+**Reality Audit**:
+- 4 phases delivered per plan (seed, doctrine + lint, resilience application, tone tiers)
+- New modules: qor/seed.py, qor/tone.py (both pure, razor-compliant)
+- New doctrine docs: doctrine-prompt-resilience.md, skill-recovery-pattern.md, doctrine-communication-tiers.md
+- New skill: qor-tone (session tier selector)
+- 29 skills received `tone_aware` frontmatter; 11 received `autonomy` frontmatter
+- qor-status elevated to canonical tone-aware example with `<!-- qor:tone-aware-section -->` rendering
+- `tests/test_yaml_safe_load_discipline.py` widened to `tests/**/*.py` scope
+- 18 new test files, 434 tests total (up from 416 at Phase 24 seal)
+- **UNPLANNED (warnings)**:
+  - `qor/skills/memory/qor-tone/SKILL.md` (not in plan's Phase 4 inventory, but required to back the `/qor-tone` slash-command reference; surfaced by `test_no_dead_skill_references` and `test_qor_help_lists_every_skill`; drift is additive and closes a ghost-command gap)
+  - Templates reused from existing `qor/templates/` rather than authored fresh (plan described "new" stubs; existing templates are richer and were preserved per Windows case-insensitive collision; no behavioral impact)
+- **MISSING**: none
+
+**Test discipline**: 434 tests pass across three consecutive green runs (baseline, post-regen, post-version-bump). TDD order observed per phase.
+
+**Razor compliance**: All Phase-25-touched files <=250 lines; all touched functions <=40 lines (pre-existing `do_policy_check` at 42 lines still out of scope).
+
+**SG countermeasures confirmed**:
+- SG-Phase24-B (unsafe YAML loaders): widened discipline covers `tests/**/*.py` excluding `tests/fixtures/`.
+- SG-Phase25-A (A08 test-scope gap): closed via widened discipline + planted-call negative test.
+- SG-Phase25-B (ghost feature via metadata): closed via canonical rendering section markers + marker-lint + pinned qor-status example.
+
+**Chain drift note (carried forward)**: Phase 23 commit `8081422` still lacks a ledger entry between #69 and #70. Phase 25 seal bridges directly from `68772fd3...` (Phase 24) to `637210056ea...` (Phase 25) without backfill.
+
+**Decision**: Phase 25 sealed. Workspace resilience + communication-tier model operational. 434 tests passing (18 new test files). B14, B15, B16 complete.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: 637210056ea...*

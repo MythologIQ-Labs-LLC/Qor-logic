@@ -4,6 +4,7 @@ type: workflow-bundle
 description: >-
   Periodic process health check: sweep the Process Shadow Genome, propose remediations for accumulated events, audit the proposed remediation. Use weekly/monthly or after a long stretch of work to keep process drift in check.
 phases: [shadow-sweep, remediate, audit]
+tone_aware: false
 checkpoints: [after-shadow-sweep, after-remediate]
 budget:
   max_phases: 3

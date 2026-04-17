@@ -19,7 +19,7 @@ SKILLS_SRC = Path(str(_resources.asset("skills")))
 AGENTS_SRC = Path(str(_resources.asset("agents")))
 DEFAULT_OUT = Path(str(_resources.asset("dist")))
 
-TARGETS = ("claude", "kilo-code", "codex")
+TARGETS = ("claude", "kilo-code", "codex", "gemini")
 
 
 def list_source_skills(src: Path) -> list[Path]:
@@ -101,6 +101,9 @@ def compile_all(out_root: Path, dry_run: bool = False) -> dict:
             emit_kilocode(skills_dirs, loose_skills, agents, variant_root)
         elif target == "codex":
             emit_codex(skills_dirs, loose_skills, agents, variant_root)
+        elif target == "gemini":
+            from qor.scripts.gemini_variant import emit_gemini
+            emit_gemini(skills_dirs, loose_skills, agents, variant_root)
 
     if not dry_run:
         _emit_manifest(out_root)
@@ -108,18 +111,13 @@ def compile_all(out_root: Path, dry_run: bool = False) -> dict:
     return summary
 
 
-def _emit_manifest(out_root: Path) -> None:
-    """Write manifest.json listing all claude variant files with sha256."""
-    claude_root = out_root / "variants" / "claude"
-    if not claude_root.exists():
-        return
-    files = []
-    for p in sorted(claude_root.rglob("*")):
+def _build_manifest_entries(variant_root: Path) -> list[dict]:
+    files: list[dict] = []
+    for p in sorted(variant_root.rglob("*")):
         if not p.is_file():
             continue
-        rel = p.relative_to(claude_root).as_posix()
+        rel = p.relative_to(variant_root).as_posix()
         sha = hashlib.sha256(p.read_bytes()).hexdigest()
-        # Derive a skill id from the path
         parts = rel.split("/")
         skill_id = parts[1] if len(parts) >= 2 and parts[0] == "skills" else parts[-1]
         files.append({
@@ -128,15 +126,41 @@ def _emit_manifest(out_root: Path) -> None:
             "install_rel_path": rel,
             "sha256": sha,
         })
+    return files
+
+
+def _write_manifest(path: Path, files: list[dict]) -> None:
     manifest = {
         "schema_version": "1",
         "generated_ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "files": files,
     }
-    manifest_path = out_root / "manifest.json"
-    manifest_path.write_text(
-        json.dumps(manifest, indent=2) + "\n", encoding="utf-8",
-    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+
+def _emit_manifest(out_root: Path) -> None:
+    """Write per-variant manifests and a top-level cross-variant index.
+
+    Each compiled variant at ``variants/<host>/`` gets its own ``manifest.json``.
+    The top-level ``out_root/manifest.json`` is the claude variant entries kept
+    as a backwards-compatible cross-variant index for ``list --available``.
+    """
+    variants_root = out_root / "variants"
+    if not variants_root.exists():
+        return
+    claude_files: list[dict] = []
+    for variant_dir in sorted(variants_root.iterdir()):
+        if not variant_dir.is_dir():
+            continue
+        files = _build_manifest_entries(variant_dir)
+        if not files:
+            continue
+        _write_manifest(variant_dir / "manifest.json", files)
+        if variant_dir.name == "claude":
+            claude_files = files
+    if claude_files:
+        _write_manifest(out_root / "manifest.json", claude_files)
 
 
 def main() -> int:

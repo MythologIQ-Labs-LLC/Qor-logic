@@ -13,6 +13,7 @@ metadata:
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Edit, Write, Bash
 phase: debug
+tone_aware: false
 gate_reads: ""
 gate_writes: ""
 ---
