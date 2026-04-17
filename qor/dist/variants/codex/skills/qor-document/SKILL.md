@@ -9,6 +9,8 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/memory/qor-document
 phase: memory
+tone_aware: false
+autonomy: interactive
 gate_reads: ""
 gate_writes: ""
 ---
@@ -171,6 +173,7 @@ Create/update `docs/WHATS_NEXT.md`:
 
 ### Step 5: User Review Gate
 
+<!-- qor:fail-fast-only reason="user approval is a genuine decision point; cannot self-heal or auto-proceed" -->
 **INTERDICTION**: Never write documentation without user approval.
 
 Present authored content in full:
@@ -190,6 +193,7 @@ Present authored content in full:
 Approve and write? (y/n/edit)
 ```
 
+<!-- qor:allow-pause reason="documentation write is a user-facing consent action with three branching outcomes (write / discard / edit); this is a genuine decision point" -->
 Wait for user response:
 - **y**: Write all files
 - **n**: Discard and explain what to change

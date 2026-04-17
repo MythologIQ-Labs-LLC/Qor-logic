@@ -9,6 +9,8 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/governance/qor-substantiate
 phase: substantiate
+tone_aware: false
+autonomy: interactive
 gate_reads: implement
 gate_writes: substantiate
 ---
@@ -70,16 +72,14 @@ Read: .failsafe/governance/AUDIT_REPORT.md
 ```
 
 **INTERDICTION**: If no PASS verdict exists:
-```
-ABORT
-Report: "Cannot substantiate without PASS verdict. Run /qor-audit first."
-```
+
+<!-- qor:fail-fast-only reason="PASS verdict is produced by /qor-audit, not by qorlogic seed; cannot auto-heal" -->
+Abort with "Cannot substantiate without PASS verdict. Run /qor-audit first."
 
 **INTERDICTION**: If no implementation exists:
-```
-ABORT
-Report: "No implementation found. Run /qor-implement first."
-```
+
+<!-- qor:fail-fast-only reason="implementation is /qor-implement's output, not scaffold; cannot auto-heal" -->
+Abort with "No implementation found. Run /qor-implement first."
 
 ### Step 2.5: Version Validation (MANDATORY)
 
@@ -94,6 +94,7 @@ Read: Plan file (docs/Planning/plan-*.md or docs/ARCHITECTURE_PLAN.md)
 Extract: Target Version from plan header
 ```
 
+<!-- qor:fail-fast-only reason="version-state checks are logic gates, not scaffold; recovery requires operator correction" -->
 **INTERDICTION**: If Target Version ≤ Current Tag → ABORT (version already shipped).
 **INTERDICTION**: If governance files reference wrong version → PAUSE (fix before sealing).
 

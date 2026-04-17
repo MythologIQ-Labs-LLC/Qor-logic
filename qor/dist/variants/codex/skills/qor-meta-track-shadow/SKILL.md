@@ -4,6 +4,7 @@ description: Capture failed approaches in the QorLogic Shadow Genome to prevent 
 creator: MythologIQ Labs, LLC
 license: Proprietary (FailSafe Project)
 phase: meta
+tone_aware: false
 gate_reads: ""
 gate_writes: ""
 ---

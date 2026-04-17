@@ -478,3 +478,57 @@ SG-Phase24-D (remediation target mismatch: running code skill when plan-text edi
 ---
 
 *Shadow integrity: ACTIVE*
+
+
+## Entry SG-Phase25-A: A08 Discipline Scope Gap (test code)
+
+**Date**: 2026-04-17
+**Phase Target**: 25 (prompt resilience + workspace seed)
+**Judge Verdict**: VETO
+
+### Pattern
+Phase 24 introduced `tests/test_yaml_safe_load_discipline.py` as a codebase-wide ban on unsafe YAML APIs. The test's `rglob("*.py")` walk is rooted at `qor/` only. Test code is not scanned. Phase 25 plan adds YAML frontmatter parsing in new test files (`test_prompt_resilience_lint.py`, `test_skill_prerequisite_coverage.py`) without committing to `yaml.safe_load`, leaving a silent drift path: an implementer can use `yaml.load(...)` in a test and CI stays green.
+
+### Why It Matters
+Discipline tests are only as strong as their scope. Any path not walked is a future vulnerability the lint can't see. When a plan extends YAML parsing into an uncovered directory, it must either (a) commit to safe_load explicitly in plan text, or (b) widen the discipline test's scope, or ideally both.
+
+### Countermeasure
+Any plan that adds deserializer calls in a directory not currently covered by the relevant discipline test must, as part of that plan:
+1. Name the safe API explicitly in the plan's Changes/Unit Tests blocks.
+2. Widen the discipline test's walk to cover the new directory, OR justify in plan text why the new directory is exempt.
+3. Add a planted-call negative test proving the widened scope catches violations.
+
+### Pattern ID
+SG-Phase25-A (discipline-test scope does not track new usage sites)
+
+---
+
+*Shadow integrity: ACTIVE*
+
+
+## Entry SG-Phase25-B: Ghost Feature via Metadata-Only Declaration
+
+**Date**: 2026-04-17
+**Phase Target**: 25 (Phase 4 -- communication tiers)
+**Judge Verdict**: VETO (Pass 2)
+
+### Pattern
+Phase 4 added `tone_aware: true|false` to every skill's frontmatter and added a lint test verifying the flag's *presence*. It did NOT require the skill's body to contain per-tier rendering instructions, and it did NOT instruct any skill to read the persisted config `tone` value. The metadata declared an intent ("this skill can render differently per tier") without any mechanism that delivers on it. Adversarial outcome: operator runs `qorlogic init --tone plain`, observes no change in output, has no way to diagnose why -- all tests pass.
+
+### Why It Matters
+A governance framework whose features are metadata-only is worse than one that doesn't claim the feature at all: the audit trail suggests behavior that isn't there. This is the same family as Ghost UI (frontend buttons without backend handlers) but at the documentation/skill layer.
+
+### Countermeasure
+Any plan that introduces a behavioral flag in frontmatter must ALSO:
+1. Require a canonical section in the skill body that implements the flag's claimed behavior (delimited by a `<!-- qor:<feature>-section -->` marker pair so lint can find it deterministically).
+2. Require at least one consumer of any persisted config value the flag depends on (instruction in the skill body, or a helper function the skill calls).
+3. Include a lint assertion that ties the metadata claim to the body content: `if flag == true, body must contain <marker> AND <content-assertion>`.
+
+Without all three, the flag is a ghost.
+
+### Pattern ID
+SG-Phase25-B (metadata-only feature declaration without enforced behavior)
+
+---
+
+*Shadow integrity: ACTIVE*

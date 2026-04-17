@@ -6,6 +6,7 @@ description: Enforce FailSafe physical isolation and environment compliance cons
 creator: MythologIQ Labs, LLC
 license: Proprietary (FailSafe Project)
 phase: governance
+tone_aware: false
 gate_reads: ""
 gate_writes: ""
 ---

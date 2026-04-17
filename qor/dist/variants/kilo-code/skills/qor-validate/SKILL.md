@@ -9,6 +9,8 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/governance/qor-validate
 phase: validate
+tone_aware: false
+autonomy: interactive
 gate_reads: substantiate
 gate_writes: validate
 ---
@@ -66,10 +68,12 @@ Read: docs/META_LEDGER.md
 ```
 
 **INTERDICTION**: If ledger does not exist:
-```
-ABORT
-Report: "No Meta Ledger found. Project may be uninitialized. Run /qor-bootstrap first."
-```
+
+<!-- qor:recovery-prompt -->
+Ask the user: "docs/META_LEDGER.md not found. Should I correct it by running 'qorlogic seed' or pause? [Y/n]"
+
+- On Y or empty: run `qorlogic seed` (idempotent), then continue.
+- On N: abort with "Run `qorlogic seed` to create the governance scaffold, then re-run this skill."
 
 ### Step 3: Parse Entries
 

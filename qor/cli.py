@@ -10,7 +10,7 @@ from qor.install import (
     _do_uninstall,
 )
 
-__version__ = "0.15.0"
+__version__ = "0.16.0"
 
 
 def _default_dist_root() -> Path:
@@ -93,6 +93,15 @@ def _do_verify_ledger(args: argparse.Namespace) -> int:
     return ledger_hash.verify(ledger_path)
 
 
+def _do_seed(args: argparse.Namespace) -> int:
+    """Scaffold governance files in a workspace."""
+    from qor.seed import seed
+    base = getattr(args, "target", None) or Path.cwd()
+    result = seed(base=base, quiet=False)
+    print(f"seed: {len(result.created)} created, {len(result.skipped)} skipped")
+    return 0
+
+
 _HOSTS_CHOICES = ["claude", "kilo-code", "codex", "gemini"]
 _SCOPES_CHOICES = ["repo", "global"]
 _PROFILE_CHOICES = ["sdlc", "filesystem", "data", "research"]
@@ -120,6 +129,7 @@ def _register_install_family(sub) -> None:
     sp_init.add_argument("--host", default="claude", choices=_HOSTS_CHOICES)
     sp_init.add_argument("--scope", default="repo", choices=_SCOPES_CHOICES)
     sp_init.add_argument("--profile", default="sdlc", choices=_PROFILE_CHOICES)
+    sp_init.add_argument("--tone", default=None, choices=["technical", "standard", "plain"])
     sp_init.add_argument("--target", type=Path, default=None)
 
 
@@ -129,6 +139,8 @@ def _register_misc(sub) -> None:
     sp_compile = sub.add_parser("compile", help="regenerate variants from source")
     sp_compile.add_argument("--dry-run", action="store_true")
     sub.add_parser("verify-ledger", help="verify META_LEDGER.md chain")
+    sp_seed = sub.add_parser("seed", help="scaffold governance files in a workspace")
+    sp_seed.add_argument("--target", type=Path, default=None)
 
 
 def _register_compliance_policy(sub) -> tuple[argparse.ArgumentParser, argparse.ArgumentParser]:
@@ -170,6 +182,7 @@ def _dispatch(args: argparse.Namespace) -> int | None:
         "info": lambda: _do_info(args),
         "compile": lambda: _do_compile(args),
         "verify-ledger": lambda: _do_verify_ledger(args),
+        "seed": lambda: _do_seed(args),
     }
     if args.command in direct:
         return direct[args.command]()

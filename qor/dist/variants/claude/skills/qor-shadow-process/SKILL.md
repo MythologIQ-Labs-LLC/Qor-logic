@@ -10,6 +10,7 @@ gate_writes:
   - docs/PROCESS_SHADOW_GENOME.md
   - docs/PROCESS_SHADOW_GENOME_UPSTREAM.md
 phase: governance
+tone_aware: false
 ---
 # /qor-shadow-process — Process Shadow Genome Recorder
 

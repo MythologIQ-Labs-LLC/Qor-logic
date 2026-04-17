@@ -3,6 +3,8 @@ name: qor-deep-audit-recon
 type: workflow-bundle
 description: >-
   Reconnaissance + synthesis + verification rounds for a production gap audit. Output is a verified RESEARCH_BRIEF.md ready for remediation planning. Use as the first half of /qor-deep-audit when you want a hard checkpoint between investigation and action.
+autonomy: autonomous
+tone_aware: false
 phases: [recon, synthesis, verification]
 checkpoints: [after-recon, after-synthesis, after-verification]
 budget:

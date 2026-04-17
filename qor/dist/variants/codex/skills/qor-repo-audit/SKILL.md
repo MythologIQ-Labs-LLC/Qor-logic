@@ -9,6 +9,7 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/meta/qor-repo-audit
 phase: audit
+tone_aware: false
 gate_reads: ""
 gate_writes: audit
 ---

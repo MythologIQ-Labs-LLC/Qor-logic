@@ -9,6 +9,7 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/sdlc/qor-refactor
 phase: implement
+tone_aware: false
 gate_reads: audit
 gate_writes: implement
 ---

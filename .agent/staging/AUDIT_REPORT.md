@@ -1,99 +1,121 @@
-# AUDIT REPORT -- plan-qor-phase24-multi-host-install.md (Pass 3)
+# AUDIT REPORT -- plan-qor-phase25-prompt-resilience-and-seed.md (Pass 3)
 
 **Tribunal Date**: 2026-04-17
-**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
 **Risk Grade**: L1
 **Auditor**: The QorLogic Judge
 **Mode**: Solo (codex-plugin capability shortfall logged)
-**Prior Audits**: Entry #70 (VETO, three grounds) -> Entry #72 (VETO, two grounds) -> this pass
+**Prior Audits**: Entry #76 (VETO, A08) -> Entry #77 (VETO, ghost feature) -> this pass
 
 ---
 
 ## VERDICT: **PASS**
 
-All three prior VETO grounds cleared. No new violations identified.
+Both prior VETO grounds cleared. No new violations surfaced under adversarial review.
 
 ---
 
 ## Pass 1: Security (L3) -- PASS
 
-No auth placeholders, secrets, mock auth, or disabled checks. Filesystem writes land in user-scoped host directories.
+No auth, no secrets, no bypass. Tier system adds metadata + rendering guidance only; no new attack surface.
 
-## Pass 2: OWASP Top 10 -- **PASS** (A08 cleared)
+## Pass 2: OWASP Top 10 -- PASS
 
-- **A08 Software/Data Integrity**: Plan now commits explicitly to `yaml.safe_load` (line 21, 100, 134, 135). `yaml.load` and its unsafe siblings (`load_all`, `full_load`, `unsafe_load`) are banned at the codebase level via `tests/test_yaml_safe_load_discipline.py` (grep assertion). A safe-loader rejection test (`!!python/object/apply:os.system` and `!!python/name:builtins.print` fixtures) proves SafeLoader is the actual loader wired. SG-Phase24-B countermeasure satisfied.
-- A03 Injection: grep test uses `re`, not shell. No subprocess. PASS.
-- A04 Insecure Design: no fail-open. PASS.
-- A05 Security Misconfiguration: no secrets. PASS.
+- **A08** (cleared in Pass 2 of Entry #77): `yaml.safe_load` commitment holds across all three new test-file blocks. Widened discipline test scope to `tests/**/*.py` with `tests/fixtures/` excluded remains in the plan. Planted-call negative test still required.
+- A03, A04, A05: unchanged pass.
 
-## Pass 3: Ghost UI -- PASS
+## Pass 3: Ghost UI / Ghost Feature -- **PASS** (SG-Phase25-B closed)
 
-CLI subcommands all dispatch to live handlers after Phase 1 / Phase 3 amendments. No orphan flags.
+The four mandated remediations from Entry #77 all landed in plan text:
 
-## Pass 4: Section 4 Razor -- **PASS** (cleared in Entry #71)
+1. **Phase 4 Changes (skill bulk edit)**: every `tone_aware: true` skill gains a `## Output rendering by tone` section delimited by `<!-- qor:tone-aware-section -->` / `<!-- /qor:tone-aware-section -->` markers (plan line 364), three sub-sections (`### technical`, `### standard`, `### plain`) with non-empty content lines per tier (line 365), and a shared preamble paragraph pasted from the doctrine doc (line 366).
+2. **Phase 4 Unit Tests (`test_tone_skill_frontmatter.py`)**: asserts markers are present (open + close), all three tier names appear, each tier has at least one non-empty non-blank content line, and "tier-name followed immediately by another tier name or the closing marker" fails the test (plan lines 325-330). Test output names file:line and specific missing element.
+3. **Phase 4 Changes (doctrine)**: `doctrine-communication-tiers.md` now required to carry a `## How skills read the tone value` section explaining session-override -> config -> default resolution, the `qor.tone.resolve_tone` helper, and the markdown preamble pattern (plan line 358). `test_tone_resolution.py` asserts this section exists (line 310).
+4. **Phase 4 Unit Tests (new file)**: `tests/test_tone_rendering_example.py` pins `qor/skills/memory/qor-status/SKILL.md` (verified to exist in repo) as the canonical reference example and asserts each tier's sub-section matches tier-register heuristics (plan lines 331-337). Anchors the doctrine in at least one worked example.
 
-| Check | Limit | Current | Status |
-|-------|-------|---------|--------|
-| `qor/cli.py` file lines | 250 | 192 | OK |
-| `qor/install.py` file lines | 250 | 162 | OK |
-| `qor/scripts/dist_compile.py` file lines | 250 | 157 today; plan adds ~60-80 for `_emit_gemini_variant` + `render_gemini_command` + `_toml_basic` -> est. 220-240 | OK, monitor |
-| `_do_install` function lines | 40 | 38 | OK |
-| Max nesting depth | 3 | 3 | OK |
+Adversarial scenario from Entry #77 reconsidered: operator runs `qorlogic init --tone plain`, expects skills to render in plain language. Now: `tone_aware: true` flag is load-bearing because (a) lint requires the rendering section with tier-specific content; (b) doctrine includes the skill-side lookup pattern; (c) canonical example anchors the doctrine. Metadata claim is tied to body content, config value has a documented consumer, and at least one skill is proven to conform.
+
+Residual observation (not a VETO): the per-tier rendering heuristics (technical has SG/OWASP tag, standard has complete sentence without SG, plain has no jargon / no hash token) are loose regex shape-enforcement, not content-validation. An adversarial author could technically bypass them with creative prose. Plan acknowledges this trade-off explicitly (line 337: "authors retain editorial freedom while the shape is enforced"). The shape test catches obvious ghosts -- the strictest-possible content test would require LLM evaluation, which is out of reach for a unit-test framework. Accepted trade-off.
+
+## Pass 4: Section 4 Razor -- PASS (with monitoring)
+
+| Check | Limit | Blueprint Proposes | Status |
+|-------|-------|---------------------|--------|
+| `qor/seed.py` | 250 | 80-120 | OK |
+| `qor/tone.py` | 250 | 30-40 | OK |
+| `qor/cli.py` | 250 | 210 + ~6 (seed + --tone) = ~216 | OK |
+| `qor/cli_policy.py` | 250 | 103 + ~5 (tone persistence) = ~108 | OK |
+| `qor/scripts/gemini_variant.py` | 250 | 127 (unchanged this phase) | OK |
+| Lint-test main fn | 40 | est. 25-35 if decomposed | OK, watch |
+| `resolve_tone` fn | 40 | 12-18 | OK |
+| `seed` fn | 40 | 15-20 | OK |
+| Nesting | 3 | 2 | OK |
 | Nested ternaries | 0 | 0 | OK |
 
-`render_gemini_command` and `_toml_basic` as described are small pure functions (est. <25 and <15 lines respectively). Plan stays within budget.
+No Razor VETO. Lint-test main function remains on watch per prior passes; implementer must decompose into `_check_banned_phrases`, `_check_abort_markers_interactive`, `_check_abort_markers_autonomous`, `_check_autonomous_purity`, `_check_tone_aware_sections`.
 
-## Pass 5: Dependency Audit -- **PASS** (tomli_w cleared; PyYAML justified)
+## Pass 5: Dependency Audit -- PASS
 
-| Package | Justification | <10 Lines Vanilla? | Verdict |
-|---------|---------------|---------------------|---------|
-| `jsonschema>=4` | pre-existing; gate schema validation | NO | PASS |
-| `PyYAML>=6` (NEW) | Skill frontmatter uses folded block scalars (`description: >-`), nested mappings, multi-line continuations. Example confirmed in `qor/skills/sdlc/qor-plan/SKILL.md`. A compliant YAML 1.x parser is thousands of lines. | NO | PASS |
-| `tomli_w` (proposed and rejected) | -- | YES (covered by `render_gemini_command` + `_toml_basic`, est. <40 lines total with full escape table) | NOT ADDED |
-
-The plan locks the declared dependency list at exactly `["jsonschema>=4", "PyYAML>=6"]` via the **Dependency shape test** (line 119), preventing silent dep creep. SG-Phase24-C countermeasure satisfied.
+No new packages. Seed uses stdlib + `qor.resources`. Tone uses stdlib + existing `PyYAML` (Phase 24). Runtime deps locked at `["jsonschema>=4", "PyYAML>=6"]` with dependency-shape tests preserving the lock.
 
 ## Pass 6: Macro-Level Architecture -- PASS
 
-- Module boundaries preserved: `cli.py` (argparse), `install.py` (transport), `hosts.py` (resolution), `scripts/dist_compile.py` (variant compilation). YAML parsing is confined to `dist_compile.py` alone -- single ingress point. Cross-cutting parser policy lives in one module, enforced by the discipline test.
-- No cyclic deps introduced.
-- `render_gemini_command` is a **pure** function (no I/O, no globals) -- testable in isolation, composable.
-- Frontmatter schema drift prevented by explicit allow-list for extras (`trigger`, `phase`, `persona`).
-- Layering preserved: cli -> install / hosts / dist_compile. No reverse imports.
+- **Phase orthogonality**: seed (Phase 1), resilience doctrine (Phase 2), resilience application (Phase 3), tone tiers (Phase 4) are four independent concerns with independent enforcement tests. Each phase has exactly one doctrine file, one lint test, one SSoT reference where applicable. No complecting.
+- **Autonomy vs Tone**: two parallel frontmatter keys (`autonomy`, `tone_aware`), two parallel lint tests, no cross-coupling. A `tone_aware: true` autonomous skill is legal (e.g., `qor-deep-audit-recon` prose-summary renders tone-aware output without user prompts).
+- **Evidentiary boundary intact**: `tone_aware: false` required for ledger/shadow-genome/gate-artifact writers. Heuristic check + declarative freeze list (belt + suspenders per plan line 321).
+- **Slash-command layering clean**: `/qor-tone` handled by agent host, `qorlogic init --tone` handled by Python CLI, `qor.tone.resolve_tone` provides Python callers the effective tier. Three surfaces, three responsibilities, no cross-boundary coupling.
+- **Caveman attribution**: plan cites MIT-licensed source for tier concept (line 17). Compliance + transparency preserved.
 
 ## Pass 7: Orphan Detection -- PASS
 
+Every new or edited file connects:
+
 | Proposed File | Entry Point Connection | Status |
-|----------------|------------------------|--------|
-| `tests/test_hosts_scope.py` | pytest discovery (`testpaths = ["tests"]`) | Connected |
-| `tests/test_cli_install_source.py` | pytest discovery | Connected |
-| `tests/test_hosts_gemini.py` | pytest discovery | Connected |
-| `tests/test_dist_compile_gemini.py` | pytest discovery | Connected |
-| `tests/test_cli_install_gemini.py` | pytest discovery | Connected |
-| `tests/test_cli_init_scope.py` | pytest discovery | Connected |
-| `tests/test_yaml_safe_load_discipline.py` | pytest discovery | Connected |
-| `_gemini_target` in `qor/hosts.py` | registered in `_HOSTS` at import | Connected |
-| `variants/gemini/commands/*.toml` | manifest + install dispatch | Connected |
+|---------------|------------------------|--------|
+| `qor/seed.py` | CLI dispatch | Connected |
+| `qor/tone.py` | `do_init` + documented skill runtime callers | Connected |
+| `qor/templates/*.md` | `qor/seed.py` via `qor.resources` | Connected |
+| `qor/references/doctrine-prompt-resilience.md` | Lint cross-check | Connected |
+| `qor/references/doctrine-communication-tiers.md` | `test_tone_resolution.py` presence assertion | Connected |
+| `qor/references/skill-recovery-pattern.md` | Lint SSoT | Connected |
+| `tests/fixtures/skill_*.md` (4) | Lint positive controls | Connected |
+| `tests/fixtures/skill_tone_aware_*.md` (2) | `test_tone_evidentiary_exclusion.py` | Connected |
+| `tests/fixtures/bad_unsafe_call.py` (plant) | Widened discipline test | Connected |
+| `tests/test_seed_scaffold.py` | Pytest discovery | Connected |
+| `tests/test_cli_seed.py` | Pytest discovery | Connected |
+| `tests/test_prompt_resilience_lint.py` | Pytest discovery | Connected |
+| `tests/test_skill_prerequisite_coverage.py` | Pytest discovery | Connected |
+| `tests/test_tone_resolution.py` | Pytest discovery | Connected |
+| `tests/test_tone_config_persistence.py` | Pytest discovery | Connected |
+| `tests/test_tone_evidentiary_exclusion.py` | Pytest discovery | Connected |
+| `tests/test_tone_skill_frontmatter.py` | Pytest discovery | Connected |
+| `tests/test_tone_rendering_example.py` | Pytest discovery; pins `qor/skills/memory/qor-status/SKILL.md` (verified present) | Connected |
+| Edited skill files (12 under `qor/skills/`) | Existing variant-compile pipeline | Connected |
 
 ---
 
 ## Summary
 
-| Ground | Entry #70 | Entry #72 | This Pass |
-|--------|-----------|-----------|-----------|
-| 1. A08 / safe_load | VETO | VETO | **PASS** |
-| 2. Razor | VETO | PASS | PASS |
-| 3. Dependency / tomli_w | VETO | VETO | **PASS** |
-| 4. New dep (PyYAML) | -- | -- | PASS (justified) |
+| Ground | #76 | #77 | **#78 (this pass)** |
+|--------|-----|-----|---------------------|
+| A08 / test-scope | VETO | PASS (cleared) | PASS |
+| Ghost feature / `tone_aware` | -- | VETO | **PASS** (cleared) |
 
-Plan cleared for implementation.
+Plan cleared for implementation. No further VETO grounds identified under this pass.
 
-## Chain Integrity Side-Note (advisory, unchanged)
+## Advisory / Monitor (not binding)
 
-Phase 23 commit still not recorded in `META_LEDGER.md`. Operator should reconcile before sealing Phase 24 to avoid compounding the gap. Not a VETO ground.
-
----
+1. **Razor-lint function length**: implementer must decompose the lint test's main walker into per-check helpers to stay under 40 lines (flagged every pass; implementation responsibility).
+2. **Shared preamble drift**: the "pasted from doctrine" preamble in each tone-aware skill is enforced for presence (markers + tier content) but not for wording equality with the doctrine source. Long-term, this may drift. Not a Phase 25 blocker; candidate for a future lint tightening.
+3. **Chain drift carried forward**: Phase 23 commit `8081422` still lacks a ledger entry; Phase 25 seal will bridge directly from `68772fd3...` (Phase 24) after substantiation. Operator should decide whether to backfill Phase 23 before sealing Phase 25.
 
 ## Next Action
 
-`/qor-implement` -- per `qor/gates/delegation-table.md`, PASS verdict hands off to implementation. Test-first per CLAUDE.md test discipline. TDD order per plan: Phase 1 tests -> Phase 1 code -> Phase 2 tests -> Phase 2 code -> Phase 3 tests -> Phase 3 code.
+`/qor-implement` -- per delegation table, PASS hands off to implementation. TDD order per plan:
+
+- Phase 1 tests first -> Phase 1 code
+- Phase 2 tests first -> Phase 2 code
+- Phase 3 tests first -> Phase 3 skill edits
+- Phase 4 tests first -> Phase 4 code + doctrine + skill edits
+
+Change class on seal: `feature` -> 0.15.0 -> 0.16.0.

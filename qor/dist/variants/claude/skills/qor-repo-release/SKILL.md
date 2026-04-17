@@ -9,6 +9,8 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/meta/qor-repo-release
 phase: deliver
+tone_aware: false
+autonomy: interactive
 gate_reads: validate
 gate_writes: deliver
 ---
@@ -121,6 +123,7 @@ Invoke `/qor-document` in RELEASE_METADATA mode with the target version:
 
 ### Step 6: Documentation Gate (HARD STOP)
 
+<!-- qor:fail-fast-only reason="release gate; version markers require operator authoring, not scaffold" -->
 **INTERDICTION**: Documentation versioning MUST be verified complete before any commit or tag. This gate cannot be bypassed.
 
 Execute `release-gate.cjs --preflight`:
@@ -129,6 +132,7 @@ Execute `release-gate.cjs --preflight`:
 node scripts/release-gate.cjs --preflight
 ```
 
+<!-- qor:fail-fast-only reason="version-marker FAILs require operator correction per-file; no scaffold recovery" -->
 **INTERDICTION**: If ANY check shows [FAIL], ABORT. List failing checks and return to Step 5. All version markers (CHANGELOG, README, COMPONENT_HELP, PROCESS_GUIDE, BACKLOG) must show vA.B.C before proceeding.
 
 ### Step 7: Stage and Commit

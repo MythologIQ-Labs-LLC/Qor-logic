@@ -9,6 +9,7 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/meta/qor-help
 phase: help
+tone_aware: false
 gate_reads: ""
 gate_writes: ""
 ---
@@ -50,6 +51,7 @@ If the user asks about a specific command, direct them to invoke it. If unsure, 
 | Command | Purpose | Typical When |
 |---|---|---|
 | `/qor-status` | Diagnose lifecycle stage + next action. | Any time you need current state. |
+| `/qor-tone` | Set communication tier for the session (technical / standard / plain). | When rendering audience changes mid-session. |
 | `/qor-document` | Author / update governance docs. | Before delivery; doc rot detected. |
 | `/qor-organize` | Project-level structure (directory topology). | When audit flags Orphan/Macro; reorganization needed. |
 | `/qor-bootstrap` | Initialize QorLogic DNA for a **new workspace**. | First-time setup. NOT for new features. |

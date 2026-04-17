@@ -9,6 +9,8 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/governance/qor-audit
 phase: audit
+tone_aware: false
+autonomy: interactive
 gate_reads: plan
 gate_writes: audit
 ---
@@ -80,10 +82,11 @@ Read: docs/CONCEPT.md
 
 **INTERDICTION**: If `docs/ARCHITECTURE_PLAN.md` does not exist:
 
-```
-ABORT
-Report: "No blueprint found. Governor must complete ENCODE phase first."
-```
+<!-- qor:recovery-prompt -->
+Ask the user: "docs/ARCHITECTURE_PLAN.md not found. Should I correct it by running 'qorlogic seed' or pause? [Y/n]"
+
+- On Y or empty: run `qorlogic seed` (idempotent), then continue.
+- On N: abort with "No blueprint found. Governor must complete ENCODE phase first. Run `qorlogic seed` to scaffold ARCHITECTURE_PLAN.md."
 
 ### Step 3: Adversarial Audit
 

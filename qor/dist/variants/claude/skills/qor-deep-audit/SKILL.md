@@ -3,6 +3,8 @@ name: qor-deep-audit
 type: workflow-bundle
 description: >-
   Full-cycle production gap audit. Decomposes into qor-deep-audit-recon (Phases 1-3, ends at RESEARCH_BRIEF.md) and qor-deep-audit-remediate (Phases 4-6, consumes the brief). Use when: (1) Preparing for GA/release, (2) Absorbing external codebases, (3) Investigating incomplete or hallucinated features, (4) Comprehensive tech debt inventory.
+autonomy: autonomous
+tone_aware: false
 phases: [recon, synthesis, verification, plan, implement, validate]
 checkpoints:
   - after-recon

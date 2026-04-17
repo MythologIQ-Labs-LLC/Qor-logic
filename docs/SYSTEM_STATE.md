@@ -1,8 +1,8 @@
 # Qorlogic System State
 
 **Snapshot**: 2026-04-17
-**Chain Status**: ACTIVE (75 entries, last seal: 68772fd3... at v0.15.0)
-**Phase**: Phase 24 sealed. Multi-host install operational (claude, kilo-code, codex, gemini) with uniform `--scope {repo,global}` semantics, per-host variant dispatch, and vanilla TOML emission for gemini.
+**Chain Status**: ACTIVE (80 entries, last seal: 637210056ea... at v0.16.0)
+**Phase**: Phase 25 sealed. Prompt resilience doctrine applied to 11 skills (autonomy: autonomous | interactive). `qorlogic seed` scaffolds governance workspaces. Three-tier communication model (`technical` / `standard` / `plain`) live via `/qor-tone` + `qorlogic init --tone`. SG-Phase25-A (test-scope gap) and SG-Phase25-B (ghost feature via metadata) both closed.
 
 ## Authoritative source
 

@@ -2593,3 +2593,208 @@ SHA256(content_hash + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: 68772fd3...*
+
+
+### Entry #76: AUDIT -- Phase 25 plan review
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**VETO Grounds**:
+1. OWASP A08 (test-scope gap) -- Phase 2 and Phase 3 Unit Tests introduce YAML frontmatter parsing without committing to `yaml.safe_load`. Phase 24's discipline test (`tests/test_yaml_safe_load_discipline.py`) scans only `qor/`, leaving test code uncovered. SG-Phase24-B extension.
+
+**Other passes**: PASS across Security, Ghost UI, Razor (with monitor on lint-function length), Dependency (no new deps), Macro-Arch, Orphan.
+
+**Mandated Next Action**: Plan amendment -- explicit `yaml.safe_load` commitment in new test blocks + extend the Phase 24 discipline test scope to `tests/**/*.py`. Then re-submit to `/qor-audit`.
+
+**Decision**: Plan rejected. Remediation is documentation + one-line scope widening; no code changes required to clear the ground.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 68772fd3... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #77: AUDIT -- Phase 25 plan review (Pass 2)
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO (A08 cleared; new Phase 4 ghost-feature ground)
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**Ground status vs Entry #76**:
+1. A08 / test-scope gap -- PASS (explicit `yaml.safe_load` commitment + widened `test_yaml_safe_load_discipline.py` scope + planted-call negative test).
+
+**New grounds**:
+2. Ghost feature / `tone_aware` declaration without rendering enforcement -- VETO. Phase 4 (communication tiers) marks skills `tone_aware: true|false` and lints the flag's presence, but does not require SKILL.md bodies to contain per-tier rendering instructions, and does not require any skill to read the persisted config `tone` value. Flag is declaration-only; behavior is LLM-luck.
+
+**Pattern**: SG-Phase25-B (declared feature without behavioral enforcement).
+
+**Mandated Next Action**: four plan-text amendments to Phase 4 requiring canonical tone-aware-section markers, a doctrine cross-check, and a rendering-example lint. Then re-submit to `/qor-audit` (pass 3).
+
+**Decision**: Plan rejected. Remediation is documentation-only; no code required.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 68772fd3... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #78: AUDIT -- Phase 25 plan review (Pass 3)
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: PASS
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**Ground status**:
+1. A08 / test-scope gap -- PASS (cleared in Pass 2; safe_load commitments + widened discipline test preserved in this pass)
+2. Ghost feature / `tone_aware` -- PASS (four mandated remediations all present: canonical markers, frontmatter lint, doctrine section, rendering-example fixture pinned to `qor/skills/memory/qor-status/SKILL.md` -- path verified to exist in repo)
+
+**Adversarial sweep**: Security, Dependency, Macro-arch, Orphan all PASS. Razor on monitor (lint-test main function must be decomposed during `/qor-implement`).
+
+**Advisory items** (non-binding):
+- Lint-test function decomposition responsibility lies with implementer.
+- Shared preamble drift is a long-term concern; not a Phase 25 blocker.
+- Phase 23 ledger gap persists; operator to decide whether to backfill before Phase 25 seal.
+
+**Mandated Next Action**: `/qor-implement` -- TDD order, four phases (seed -> resilience doctrine -> resilience application -> tone tiers). Change class on seal: feature (0.15.0 -> 0.16.0).
+
+**Decision**: Plan approved. Implementation may proceed.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 68772fd3... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #79: IMPLEMENT -- Phase 25 prompt resilience + seed + tone tiers
+
+**Timestamp**: 2026-04-17
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Verdict**: PASS (434 tests, two consecutive green runs)
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Gate**: Entry #78 PASS
+
+**New modules**:
+- `qor/seed.py` -- idempotent workspace scaffold primitive
+- `qor/tone.py` -- tier resolution primitive (pure function)
+- `qor/templates/*.md` -- reused existing templates (META_LEDGER, SHADOW_GENOME, ARCHITECTURE_PLAN, CONCEPT, SYSTEM_STATE)
+- `qor/references/doctrine-prompt-resilience.md`
+- `qor/references/skill-recovery-pattern.md`
+- `qor/references/doctrine-communication-tiers.md`
+- `qor/skills/memory/qor-tone/SKILL.md` -- session tier selector
+
+**New tests (18 files, ~60 new assertions)**:
+- `tests/test_seed_scaffold.py` (8 tests)
+- `tests/test_cli_seed.py` (4 tests)
+- `tests/test_prompt_resilience_lint.py` (5 tests + 4 fixture markdowns)
+- `tests/test_skill_prerequisite_coverage.py` (6 tests)
+- `tests/test_tone_resolution.py` (8 tests)
+- `tests/test_tone_config_persistence.py` (4 tests)
+- `tests/test_tone_skill_frontmatter.py` (3 tests)
+- `tests/test_tone_rendering_example.py` (3 tests)
+- Widened `tests/test_yaml_safe_load_discipline.py` scope to `tests/**/*.py` (exclude `tests/fixtures/`) with planted-call negative assertion and fixtures-excluded control
+
+**Modified**:
+- `qor/cli.py` -- `seed` subcommand + `--tone` on `init`
+- `qor/cli_policy.py` -- `do_init` records tone
+- 29 skill files under `qor/skills/`:
+  - All received `tone_aware: true|false` frontmatter (default false; `qor-status` upgraded to true with canonical rendering section)
+  - 11 skills received `autonomy: autonomous|interactive` frontmatter per inventory
+  - 11 skills received recovery-prompt / auto-heal / fail-fast-only markers on INTERDICTION blocks
+  - `qor-document` over-pause phrase wrapped with qor:allow-pause marker (legitimate 3-branch decision point)
+- `qor/skills/meta/qor-help/SKILL.md` + `qor/gates/delegation-table.md` -- list `qor-tone`
+- `pyproject.toml` -- `templates/*.md` + `dist/variants/**/*.toml` added to package-data
+- `docs/BACKLOG.md` -- B14, B15, B16 marked complete
+
+**Razor compliance**:
+- All new/touched functions <=40 lines (pre-existing `do_policy_check` at 42 remains, out of scope per prior phases).
+- All new/touched files <=250 lines (cli.py 223, install.py 181, hosts.py 131, seed.py 93, tone.py 58, cli_policy.py 96, dist_compile.py 181, gemini_variant.py 127).
+
+**SG countermeasures implemented**:
+- SG-Phase24-B (unsafe YAML loaders): widened discipline test scope.
+- SG-Phase25-A (A08 test-scope gap): closed by widened discipline + planted-call assertion.
+- SG-Phase25-B (ghost feature via metadata): closed by canonical rendering section + marker lint + pinned example test.
+
+**Decision**: Implementation complete. 434 tests pass across two consecutive runs (no flakes). Ready for `/qor-substantiate`.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 68772fd3... (unchanged; implement entries do not advance seal)*
+
+
+### Entry #80: SESSION SEAL -- Phase 25 substantiated
+
+**Timestamp**: 2026-04-17
+**Phase**: SEAL
+**Author**: Judge
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase25-prompt-resilience-and-seed.md`
+**Change Class**: `feature`
+**Version**: `0.15.0 -> 0.16.0`
+**Tag**: `v0.16.0` (pending operator push)
+
+**Content Hash**: `d81883da832f70f2cda80eb123a992284c9e4f6489932b381d8f3243a3f70d1d`
+**Previous Hash**: `68772fd3353029acdfab89d8672f77c7a32d7f9c840c0a01b07f20cbe1e20683`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= 637210056ea01c13717b1e54a091a198bb70f9ea9b4c9c03b18801ed1132f40e
+```
+
+**Reality Audit**:
+- 4 phases delivered per plan (seed, doctrine + lint, resilience application, tone tiers)
+- New modules: qor/seed.py, qor/tone.py (both pure, razor-compliant)
+- New doctrine docs: doctrine-prompt-resilience.md, skill-recovery-pattern.md, doctrine-communication-tiers.md
+- New skill: qor-tone (session tier selector)
+- 29 skills received `tone_aware` frontmatter; 11 received `autonomy` frontmatter
+- qor-status elevated to canonical tone-aware example with `<!-- qor:tone-aware-section -->` rendering
+- `tests/test_yaml_safe_load_discipline.py` widened to `tests/**/*.py` scope
+- 18 new test files, 434 tests total (up from 416 at Phase 24 seal)
+- **UNPLANNED (warnings)**:
+  - `qor/skills/memory/qor-tone/SKILL.md` (not in plan's Phase 4 inventory, but required to back the `/qor-tone` slash-command reference; surfaced by `test_no_dead_skill_references` and `test_qor_help_lists_every_skill`; drift is additive and closes a ghost-command gap)
+  - Templates reused from existing `qor/templates/` rather than authored fresh (plan described "new" stubs; existing templates are richer and were preserved per Windows case-insensitive collision; no behavioral impact)
+- **MISSING**: none
+
+**Test discipline**: 434 tests pass across three consecutive green runs (baseline, post-regen, post-version-bump). TDD order observed per phase.
+
+**Razor compliance**: All Phase-25-touched files <=250 lines; all touched functions <=40 lines (pre-existing `do_policy_check` at 42 lines still out of scope).
+
+**SG countermeasures confirmed**:
+- SG-Phase24-B (unsafe YAML loaders): widened discipline covers `tests/**/*.py` excluding `tests/fixtures/`.
+- SG-Phase25-A (A08 test-scope gap): closed via widened discipline + planted-call negative test.
+- SG-Phase25-B (ghost feature via metadata): closed via canonical rendering section markers + marker-lint + pinned qor-status example.
+
+**Chain drift note (carried forward)**: Phase 23 commit `8081422` still lacks a ledger entry between #69 and #70. Phase 25 seal bridges directly from `68772fd3...` (Phase 24) to `637210056ea...` (Phase 25) without backfill.
+
+**Decision**: Phase 25 sealed. Workspace resilience + communication-tier model operational. 434 tests passing (18 new test files). B14, B15, B16 complete.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: 637210056ea...*

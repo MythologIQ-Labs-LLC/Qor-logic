@@ -4,6 +4,7 @@ description: Record major engineering decisions into the QorLogic meta-ledger wi
 creator: MythologIQ Labs, LLC
 license: Proprietary (FailSafe Project)
 phase: meta
+tone_aware: false
 gate_reads: ""
 gate_writes: ""
 ---

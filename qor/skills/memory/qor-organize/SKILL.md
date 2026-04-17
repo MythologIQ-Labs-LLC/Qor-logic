@@ -9,6 +9,8 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/memory/qor-organize
 phase: memory
+tone_aware: false
+autonomy: interactive
 gate_reads: ""
 gate_writes: ""
 ---

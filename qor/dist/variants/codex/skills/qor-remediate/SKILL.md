@@ -12,6 +12,7 @@ gate_reads:
   - docs/PROCESS_SHADOW_GENOME.md
 gate_writes: .qor/gates/<session_id>/remediate.json
 phase: remediate
+tone_aware: false
 ---
 # /qor-remediate — Process Remediation
 

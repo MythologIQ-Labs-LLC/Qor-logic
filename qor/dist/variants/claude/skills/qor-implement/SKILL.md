@@ -9,6 +9,8 @@ metadata:
     repository: https://github.com/MythologIQ/QorLogic
     path: qor/skills/sdlc/qor-implement
 phase: implement
+tone_aware: false
+autonomy: interactive
 gate_reads: audit
 gate_writes: implement
 ---
@@ -96,17 +98,13 @@ Read: .agent/staging/AUDIT_REPORT.md
 
 **INTERDICTION**: If verdict is NOT "PASS":
 
-```
-ABORT
-Report: "Gate locked. Tribunal audit required. Run /qor-audit first."
-```
+<!-- qor:fail-fast-only reason="audit verdict is /qor-audit's output, not scaffold; cannot auto-heal" -->
+Abort with "Gate locked. Tribunal audit required. Run /qor-audit first."
 
 **INTERDICTION**: If AUDIT_REPORT.md does not exist:
 
-```
-ABORT
-Report: "No audit record found. Run /qor-audit to unlock implementation."
-```
+<!-- qor:fail-fast-only reason="AUDIT_REPORT.md is /qor-audit's output, not scaffold; cannot auto-heal" -->
+Abort with "No audit record found. Run /qor-audit to unlock implementation."
 
 ### Step 3: Blueprint Alignment
 

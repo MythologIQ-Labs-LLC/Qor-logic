@@ -30,6 +30,7 @@ def do_init(args: argparse.Namespace) -> int:
     profile = getattr(args, "profile", "sdlc")
     scope = getattr(args, "scope", "repo")
     target = getattr(args, "target", None)
+    tone = getattr(args, "tone", None) or "technical"
 
     base = _init_config_base(host, scope, target)
     config_dir = base / ".qorlogic"
@@ -40,13 +41,14 @@ def do_init(args: argparse.Namespace) -> int:
         "host": host,
         "scope": scope,
         "profile": profile,
+        "tone": tone,
         "target": str(target) if target else None,
         "governance_scope": "git_root" if profile == "sdlc" else "cwd",
     }
     config_path.write_text(
         json.dumps(config, indent=2) + "\n", encoding="utf-8",
     )
-    print(f"Initialized {config_path} (host={host}, scope={scope}, profile={profile})")
+    print(f"Initialized {config_path} (host={host}, scope={scope}, tone={tone}, profile={profile})")
     return 0
 
 

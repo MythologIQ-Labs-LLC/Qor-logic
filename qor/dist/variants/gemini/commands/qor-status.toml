@@ -3,6 +3,24 @@ phase = "memory"
 prompt = """
 # /qor-status - Quick Lifecycle Check
 
+<!-- qor:tone-aware-section -->
+## Output rendering by tone
+
+This skill reads `.qorlogic/config.json` for the `tone` field at runtime (or honors an active `/qor-tone` session override). Resolution order is session override > config > `technical` default (canonical lookup described in `qor/references/doctrine-communication-tiers.md` under "How skills read the tone value").
+
+### technical
+
+Render with full jargon. Include SG IDs where load-bearing (e.g., "SG-038: plan self-consistency violated at entry #54"), OWASP tags where applicable, explicit `file:line` citations, Merkle chain hashes, and exact verdict labels. Include the short Merkle seal prefix (e.g., `Merkle seal: 68772fd3...`). Tables acceptable.
+
+### standard
+
+Complete sentences, no SG IDs unless the operator asked for one. Use governance terms (verdict, gate, chain) with a one-line inline gloss on first use. Keep file paths and command names but drop hash values from the body. Tables acceptable when they aid clarity.
+
+### plain
+
+No technical jargon. No governance tags or pattern IDs. No long identifier strings in the body. Short declarative sentences: "Your workspace is set up. Everything looks ready." Explicit next-step commands only. Tables discouraged; use bullet points. If a long identifier is essential, include it as a footnote.
+<!-- /qor:tone-aware-section -->
+
 <skill>
   <trigger>/qor-status</trigger>
   <phase>ANY</phase>
