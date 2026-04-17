@@ -52,9 +52,56 @@
 | --- | -------- | ----------- | -------------- |
 | V1  | [type]   | [file/line] | [what's wrong] |
 
-### Required Remediation (if VETO)
+### Per-ground directives (if VETO)
 
-1. [Specific action required]
+Each VETO ground carries exactly one `**Required next action:**` line. See
+`qor/references/doctrine-audit-report-language.md` for the canonical
+ground-class -> skill mapping. The five ground classes MUST use the exact
+headers below when a ground applies.
+
+#### Section 4 Razor
+
+[Specific findings]
+
+**Required next action:** `/qor-refactor`
+
+#### Orphan file / Macro-arch breach
+
+[Specific findings]
+
+**Required next action:** `/qor-organize`
+
+#### Plan-text
+
+[Specific findings (A08 safe_load, dependency, missing tests, ghost feature, wording)]
+
+**Required next action:** Governor: amend plan text, re-run `/qor-audit`
+
+#### Process-level
+
+[Specific findings (repeated VETO, SG threshold, capability shortfall)]
+
+**Required next action:** `/qor-remediate`
+
+#### Code-logic defect
+
+[Specific findings (regression, hallucination, behavioral break)]
+
+**Required next action:** `/qor-debug`
+
+## Process Pattern Advisory
+
+<!-- qor:veto-pattern-advisory -->
+
+Populated from `qor/scripts/veto_pattern.py check()` at Step 7 of the audit
+protocol. When the detector returns `PatternResult(detected=True, ...)`,
+this section names the two sealed phases involved and recommends
+`/qor-remediate`. When `detected=False`, the section reads:
+
+> No repeated-VETO pattern detected in the last 2 sealed phases.
+
+The advisory is non-blocking. It never itself constitutes a new VETO
+ground; current-audit VETOs stand on their own merits.
 
 ### Verdict Hash
 

@@ -64,19 +64,9 @@ Raised by user during Phase 24 substantiation (2026-04-17). Drives Phase 25 plan
 
 - [x] [B16] **Tiered communication complexity** -- folded into Phase 25 Phase 4 during audit-VETO amendment (2026-04-17 user direction: "proceed with all suggestions and add that direction to this plan"). See `docs/plan-qor-phase25-prompt-resilience-and-seed.md` Phase 4.
 
-- [ ] [B17] **Audit-report language clarity (skill-selection affordance)**: the `AUDIT_REPORT.md` template currently uses a generic "Mandated Remediation" header for every VETO. This creates a skill-selection ambiguity: operators read "Mandated Remediation" and reach for `/qor-remediate`, but that skill is for process-level failures (repeated gate overrides, SG threshold breach, systemic regression), not plan-text fixes. Phase 26 should:
-  1. Replace the generic header with a per-ground skill directive. Each VETO ground in an AUDIT_REPORT names exactly which skill (if any) is the correct next action:
-     - Code-shape ground -> "Invoke `/qor-refactor`"
-     - Project-topology ground -> "Invoke `/qor-organize`"
-     - Plan-text ground -> "Governor: amend plan text (no skill required); re-run `/qor-audit`"
-     - Process-level / systemic -> "Invoke `/qor-remediate`"
-  2. Update `qor/skills/governance/qor-audit/references/qor-audit-templates.md` accordingly so every future audit report inherits the clearer directive.
-  3. Audit existing AUDIT_REPORT.md history for the generic phrase and note in `doctrine-governance-enforcement.md` that legacy reports use the ambiguous wording.
+- [x] [B17] (v0.17.0 - Complete) **Audit-report language clarity**: delivered in Phase 26 Phase 2. Doctrine at `qor/references/doctrine-audit-report-language.md`, template updated, qor-audit SKILL.md passes each carry `**Required next action:**` directives.
 
-- [ ] [B18] **Repeated-VETO auto-trigger for `/qor-remediate`**: Phases 24 and 25 each required multiple audit passes (Phase 24: three, Phase 25: ongoing). Repeated VETOs on plans authored by the same Governor within a session may fit the "regression pattern across multiple implement/substantiate cycles" criterion from `qor-remediate`'s purpose statement. Phase 26 should:
-  1. Define a concrete threshold (e.g., >= 3 plan-text VETOs on the same plan file, OR >= 2 consecutive phases requiring > 1 audit pass).
-  2. Emit a Shadow Genome event when the threshold crosses, with `event_type: repeated_veto_pattern`.
-  3. Auto-suggest `/qor-remediate` in the next AUDIT_REPORT when the threshold is crossed (surfacing as a "Pattern detected" note, not a VETO).
+- [x] [B18] (v0.17.0 - Complete) **Repeated-VETO auto-suggest**: delivered in Phase 26 Phase 1. Detector `qor/scripts/veto_pattern.py`, threshold = ">= 2 consecutive sealed phases where audit required >1 pass", emits severity-3 `repeated_veto_pattern` Shadow Genome event, surfaces advisory in AUDIT_REPORT.
 
 Raised by user during Phase 25 audit-pass-2 remediation (2026-04-17).
 

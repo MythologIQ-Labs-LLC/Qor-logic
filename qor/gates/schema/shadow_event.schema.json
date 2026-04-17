@@ -48,7 +48,8 @@
         "hallucination",
         "degradation",
         "capability_shortfall",
-        "aged_high_severity_unremediated"
+        "aged_high_severity_unremediated",
+        "repeated_veto_pattern"
       ]
     },
     "severity": {
