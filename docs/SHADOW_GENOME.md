@@ -391,3 +391,90 @@ This is small (~50 lines), catches the pattern mechanically, and can run in CI.
 ---
 
 *Shadow integrity: ACTIVE*
+
+
+## Entry SG-Phase24-A: Razor Creep via Cumulative Plan Additions
+
+**Date**: 2026-04-17
+**Phase Target**: 24 (multi-host install)
+**Judge Verdict**: VETO
+
+### Pattern
+`qor/cli.py` crossed the 250-line razor during Phase 22's CLI expansion (init, policy, compliance). Subsequent plans have continued to grow it without mandating a split. Phase 24 would have pushed it to ~320 lines. `_do_install` is likewise already 54 lines (54 > 40) and every install-related plan extends it without decomposition.
+
+### Why It Matters
+Razor violations are binary per `/qor-audit`. "Already over the limit" is not an exception -- each new plan that adds to the file is a fresh violation. Without a refactor gate, growth compounds until readability collapses.
+
+### Countermeasure
+Any plan that touches `qor/cli.py` or `_do_install` must either:
+1. Keep net line-delta <= 0 (substitution, not addition), or
+2. Include a Phase 0 refactor that extracts logic to restore compliance, or
+3. Delegate explicitly to `/qor-refactor` before implementation.
+
+### Pattern ID
+SG-Phase24-A (cumulative razor creep in CLI harness)
+
+---
+
+## Entry SG-Phase24-B: YAML Parser Introduction Without Safe-Load Commitment
+
+**Date**: 2026-04-17
+**Phase Target**: 24 (multi-host install)
+**Judge Verdict**: VETO (contributing ground)
+
+### Pattern
+Phase 24 Plan line 118: "parse skill/agent frontmatter". The codebase currently has zero YAML usage in `qor/scripts/`. Plans that introduce a new parser class (YAML, pickle, shelve, plistlib) without naming the specific safe API invite A08 deserialization vulnerabilities. Implementers reach for the import autocomplete (`yaml.load`, `pickle.loads`) rather than the safe sibling.
+
+### Countermeasure
+When a plan introduces a deserializer for a new format, it must name the exact safe API: `yaml.safe_load`, `json.loads` (no custom hooks), `pickle` is BANNED, `tomllib.loads`, `plistlib.loads(fmt=FMT_XML)`. Audit VETOes plans that say "parse X" without naming the safe entry point.
+
+### Pattern ID
+SG-Phase24-B (unsafe deserializer defaults)
+
+---
+
+## Entry SG-Phase24-C: Third-Party Dependency Preferred Over Trivial Vanilla
+
+**Date**: 2026-04-17
+**Phase Target**: 24 (multi-host install)
+**Judge Verdict**: VETO (contributing ground)
+
+### Pattern
+Plan line 121 proposed `tomli_w` for TOML writing when the output schema is five scalar keys + one triple-quoted prompt. A vanilla writer fits in <15 lines. The dependency was proposed reflexively ("there's a library for this") rather than by necessity. Pre-existing project discipline (`pyproject.toml` has exactly one runtime dep, `jsonschema>=4`) should resist this drift.
+
+### Countermeasure
+Dependency audit asks "<10 lines vanilla?" -- the answer governs. For narrow output formats (fixed schema, bounded key set), the vanilla answer is almost always yes. Plans adding a dependency for serialization must justify by pointing to either schema breadth or edge-case correctness that vanilla cannot address.
+
+### Pattern ID
+SG-Phase24-C (reflexive dependency introduction for trivial serializers)
+
+---
+
+*Shadow integrity: ACTIVE*
+
+
+## Entry SG-Phase24-D: Remediation Target Mismatch
+
+**Date**: 2026-04-17
+**Phase Target**: 24 (multi-host install)
+**Judge Verdict**: VETO (Pass 2)
+
+### Pattern
+After Entry #70 VETO listed three grounds (A08 safe_load, Razor, tomli_w dependency), the Governor ran `/qor-refactor` -- which is the correct skill for Razor but cannot by design address the other two grounds, which live in plan text (Phase 2 Changes block). The subsequent audit (Entry #72) found Grounds 1 and 3 unchanged and re-VETOed.
+
+### Why It Matters
+`/qor-refactor` mutates code. Plan-text violations (unsafe-parser commitments, unjustified dependencies) can only be cleared by editing the plan. Running the code-shape skill and then re-auditing without touching the plan is a loop: the code-shape ground clears, but the plan-text grounds persist forever.
+
+### Countermeasure
+When an audit VETO lists multiple grounds, the Governor must classify each ground:
+- **Code-shape ground** (Razor, Ghost UI in implementation, Orphan) -> `/qor-refactor` or `/qor-organize`
+- **Plan-text ground** (Dependency choice, A08 safe-parser commitment, missing tests for violations) -> edit `docs/plan-qor-phase*.md` directly, no skill required
+
+Then re-audit only after BOTH classes of remediation have been applied.
+
+### Pattern ID
+SG-Phase24-D (remediation target mismatch: running code skill when plan-text edits are required)
+
+---
+
+*Shadow integrity: ACTIVE*

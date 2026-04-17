@@ -2378,3 +2378,218 @@ SHA256(content_hash + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: 964b8fc4...*
+
+
+### Entry #70: AUDIT -- Phase 24 plan review
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Tracks**: Multi-host install (codex source-variant fix, Gemini CLI host, repo/global scope)
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**VETO Grounds**:
+1. OWASP A08 -- Phase 2 introduces YAML frontmatter parsing without committing to `yaml.safe_load`. SG-004.
+2. Section 4 Razor -- `qor/cli.py` 295 lines (>250), `_do_install` 54 lines (>40); plan deepens violation without refactor phase.
+3. Dependency Audit -- `tomli_w` introduced without justification; vanilla TOML renderer fits in <15 lines for our narrow schema.
+
+**Mandated Next Action**: `/qor-refactor` (extract `qor/install.py` module), amend Phase 2 for safe_load + vanilla TOML renderer, then re-submit to `/qor-audit`.
+
+**Decision**: Plan rejected. All SG countermeasures consulted. Three binding violations require plan amendment before implementation may proceed.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #71: REFACTOR -- Extract qor/install.py (razor remediation for Phase 24 VETO)
+
+**Timestamp**: 2026-04-17
+**Phase**: REFACTOR
+**Author**: Specialist
+**Verdict**: PASS (Section 4 Razor restored)
+
+**Target**: `qor/cli.py`, new `qor/install.py`
+**Mandate**: Phase 24 audit (Entry #70) VETO ground #2 (Razor)
+
+**Before**:
+- `qor/cli.py`: 295 lines (>250 limit)
+- `_do_install`: 54 lines (>40 limit)
+
+**After**:
+- `qor/cli.py`: 192 lines
+- `qor/install.py` (new): 162 lines
+- `_do_install`: 38 lines (decomposed via `_load_manifest`, `_resolve_dest`, `_copy_entry`, `_write_install_record`)
+- `_do_uninstall` decomposed via `_remove_file_and_empty_parents`
+- `_do_list` decomposed via `_list_available`, `_list_installed`
+
+**Behavior**: Unchanged. 355 tests pass (355 = 354 + 1 previously-failing `test_plans_declare_change_class`, resolved by correcting plan-qor-phase24 `change_class` to `feature`). Two consecutive green runs confirm determinism.
+
+**Decision**: Razor VETO ground cleared. Remaining Phase 24 VETO grounds (A08 safe_load commitment, tomli_w dependency) require plan amendment, not code changes. Ready to hand back for plan edit + re-audit.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; refactor entries do not advance seal)*
+
+
+### Entry #72: AUDIT -- Phase 24 plan review (Pass 2)
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO (2 of 3 prior grounds persist; razor cleared)
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**Ground status vs Entry #70**:
+1. A08 / yaml.safe_load -- STILL OPEN (plan line 118 unchanged)
+2. Razor -- CLEARED by Entry #71 refactor (cli.py 192, install.py 162, _do_install 38)
+3. Dependency / tomli_w -- STILL OPEN (plan line 121 unchanged)
+
+**Pattern**: Governor ran `/qor-refactor` (addressed code-level Ground 2) but did not amend plan text for Grounds 1 and 3 (plan-level). Dispatch mismatch. SG-Phase24-D logged.
+
+**Mandated Next Action**: Plan-text amendments (safe_load commitment + vanilla TOML renderer + supporting tests), then re-submit to `/qor-audit`.
+
+**Decision**: Plan rejected. Remediation is documentation-only at this step; no further code changes required to clear the remaining two grounds.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #73: AUDIT -- Phase 24 plan review (Pass 3)
+
+**Timestamp**: 2026-04-17
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: PASS
+**Risk Grade**: L1
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Mode**: Solo (codex-plugin capability shortfall logged)
+
+**Ground status**:
+1. A08 / `yaml.safe_load` -- PASS (explicit commitment, unsafe-API ban test, `!!python/*` rejection fixtures)
+2. Razor -- PASS (cleared in Entry #71 refactor)
+3. Dependency / `tomli_w` -- PASS (dropped; vanilla `render_gemini_command` + `_toml_basic` documented with full escape rules)
+4. New dependency `PyYAML>=6` -- PASS (justified: skill frontmatter uses folded scalars + nested mappings; vanilla parser infeasible)
+
+**Plan amendments applied**:
+- Added "Dependency declaration (new)" section with PyYAML justification and `yaml.safe_load`-only policy.
+- Phase 2 Changes: explicit import `from yaml import safe_load`; vanilla TOML renderer with `\`/`"`/`\n`/`\r`/`\t` escapes plus `"""` body escape.
+- Phase 2 Unit Tests: safe-loader rejection, TOML round-trip, dependency shape, unsafe-YAML-API ban.
+
+**Mandated Next Action**: `/qor-implement` (test-first, phases 1 -> 2 -> 3).
+
+**Decision**: Plan approved. Implementation may proceed.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; audit entries do not advance seal)*
+
+
+### Entry #74: IMPLEMENT -- Phase 24 multi-host install
+
+**Timestamp**: 2026-04-17
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Verdict**: PASS (391 tests, two consecutive green runs)
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Gate**: Entry #73 PASS
+
+**New files**:
+- `qor/scripts/gemini_variant.py` -- vanilla TOML renderer + YAML safe_load frontmatter parser
+- `tests/test_hosts_scope.py` (10 tests)
+- `tests/test_cli_install_source.py` (4 tests)
+- `tests/test_hosts_gemini.py` (4 tests)
+- `tests/test_dist_compile_gemini.py` (9 tests; includes safe-loader rejection + TOML round-trip + dependency shape)
+- `tests/test_cli_install_gemini.py` (4 tests)
+- `tests/test_yaml_safe_load_discipline.py` (1 test; grep-ban across qor/)
+- `tests/test_cli_init_scope.py` (4 tests)
+
+**Modified**:
+- `qor/hosts.py` -- HostTarget now carries `base` + `install_map` (skills_dir/agents_dir kept as properties for claude/codex/kilo compat); `resolve(scope=, target_override=)`; `_gemini_target`; `QORLOGIC_PROJECT_DIR` replaces `CLAUDE_PROJECT_DIR`.
+- `qor/install.py` -- source is now per-host (`variants/<host>/`); per-variant manifest; install dispatcher uses `HostTarget.install_map` prefix routing; `_do_install` decomposed via `_resolve_install_source` + `_copy_manifest_entries` (38 -> 35 orchestrator lines).
+- `qor/cli.py` -- `--scope {repo,global}` on install/uninstall/list/init (default repo); `gemini` added to host choices; argparse split into `_register_install_family`/`_register_misc`/`_register_compliance_policy` to keep functions <=40 lines.
+- `qor/scripts/dist_compile.py` -- emits per-variant manifests and top-level cross-variant index; `gemini` added to `TARGETS`.
+- `qor/cli_policy.py` -- `do_init` honors `--scope` (repo: repo-root; global: `resolve(host, "global").base`); records `scope` in config.
+- `pyproject.toml` -- `PyYAML>=6` declared (justified: skill frontmatter uses folded scalars + nested mappings).
+- `tests/test_phase21_harness.py`, `tests/test_phase22_hosts.py` -- updated to new HostTarget/resolve contract (scope-explicit calls; `QORLOGIC_PROJECT_DIR` replaces `CLAUDE_PROJECT_DIR`).
+- `README.md` -- gemini added to supported hosts table; `--scope` examples added.
+- `docs/BACKLOG.md` -- added B14 (seed workspace scaffolding) and B15 (prompt resilience) for next branch per user request.
+
+**Razor compliance**:
+- All touched functions <=40 lines (only `do_policy_check` remains at 42, pre-existing and out of scope).
+- All touched files <=250 lines (cli.py 210, install.py 181, hosts.py 140, dist_compile.py 181, gemini_variant.py 127, cli_policy.py 103).
+
+**Dependency shape**: locked at `["jsonschema>=4", "PyYAML>=6"]` by `test_dependency_shape`.
+**A08 discipline**: `yaml.safe_load` only; unsafe APIs banned codebase-wide by `test_yaml_safe_load_discipline.py`.
+
+**Decision**: Implementation complete. 391 tests pass across two consecutive runs. Ready for `/qor-substantiate`.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN*
+*Merkle seal: 964b8fc4... (unchanged; implement entries do not advance seal)*
+
+
+### Entry #75: SESSION SEAL -- Phase 24 substantiated
+
+**Timestamp**: 2026-04-17
+**Phase**: SEAL
+**Author**: Judge
+**Verdict**: PASS (Reality = Promise)
+
+**Target**: `docs/plan-qor-phase24-multi-host-install.md`
+**Change Class**: `feature`
+**Version**: `0.14.0 -> 0.15.0`
+**Tag**: `v0.15.0` (pending operator push)
+
+**Content Hash**: `6dd6f521ab8f4f9486e2e770ab3ea3852cb314d43d328052c141d75733c565fa`
+**Previous Hash**: `964b8fc4264e8a71fbd274b15760fcb89b175690c6e77ea8eb1f82c8f74b8a3f`
+
+**Chain Hash** (Merkle seal):
+```
+SHA256(content_hash + previous_hash)
+= 68772fd3353029acdfab89d8672f77c7a32d7f9c840c0a01b07f20cbe1e20683
+```
+
+**Reality Audit**:
+- 7 planned test files created; all present
+- 4 planned source files modified; all present
+- 1 planned dep added (`PyYAML>=6`)
+- **UNPLANNED (warnings)**:
+  - `qor/scripts/gemini_variant.py` (extracted from `dist_compile.py` to preserve 250-line razor; plan had placed the logic inside `dist_compile.py` but the module extraction is a cleaner boundary and prevented a razor violation)
+  - `tests/test_phase21_harness.py` + `tests/test_phase22_hosts.py` edited to match new HostTarget/resolve contract (downstream effect of dropping `CLAUDE_PROJECT_DIR` and refactoring `HostTarget`; plan implied these through its "drop" directive but did not list them in affected files)
+  - `docs/BACKLOG.md` updated with B14/B15 for next branch (user-requested queue item)
+- **MISSING**: none
+
+**Test discipline**: 391 tests pass across three consecutive green runs (baseline, post-Phase-3, post-version-bump). No flakes. TDD order observed (tests-before-code for every phase).
+
+**Razor compliance**: All Phase-24-touched files <=250 lines; all touched functions <=40 lines (pre-existing `do_policy_check` at 42 lines left untouched; out of scope).
+
+**Chain drift note (carried forward)**: git tag `v0.14.0` (Phase 23 feat commit `8081422`) has no ledger entry between #69 and #70. This entry #75 bridges the gap at the current seal (from `964b8fc4...` directly to `68772fd3...`). Operator should decide whether to backfill a Phase 23 entry or leave the gap annotated.
+
+**Decision**: Phase 24 sealed. Multi-host install operational across claude, kilo-code, codex, and gemini with uniform `--scope {repo,global}` semantics (default repo). Gemini variant emits TOML commands via vanilla renderer. PyYAML declared for safe frontmatter parsing. 391 tests passing (28 new).
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: 68772fd3...*

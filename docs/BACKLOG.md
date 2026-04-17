@@ -55,6 +55,13 @@ Inventory maintained live in the repo tree; see `qor/skills/`, `qor/references/`
 
 All backlog items complete. Repository fully operational.
 
+## Queued for Next Branch (Phase 25 candidate)
+
+- [ ] [B14] **Seed workspace scaffolding on install**: after `qorlogic install`, optionally seed the minimum repo file structure the installed skills/prompts require to operate (e.g., `docs/META_LEDGER.md`, `docs/SHADOW_GENOME.md`, `.agent/staging/`, `.qor/gates/`). Gate behind a flag such as `--seed` so existing workspaces are not overwritten.
+- [ ] [B15] **Prompt resilience**: harden skill prompts against missing-file / first-run conditions. Skills currently assume governance artifacts exist; when they do not (fresh install, partial workspace), the skill should either self-heal the missing scaffold or emit a clear prerequisite error naming the missing path(s). Audit all `/qor-*` skills for hard assumptions on file existence.
+
+Raised by user during Phase 24 implementation (2026-04-17). Drives Phase 25 plan.
+
 ---
 
 _Updated by /qor-* commands automatically_

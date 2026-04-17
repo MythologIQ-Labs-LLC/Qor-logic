@@ -1,0 +1,324 @@
+description = "S.H.I.E.L.D. Substantiation and Session Seal that verifies implementation against blueprint and cryptographically seals the session. Use when: (1) Implementation is complete, (2) Ready to verify Reali"
+phase = "substantiate"
+prompt = """
+# /qor-substantiate - Session Seal
+
+<skill>
+  <trigger>/qor-substantiate</trigger>
+  <phase>SUBSTANTIATE</phase>
+  <persona>Judge</persona>
+  <output>Updated META_LEDGER.md with final seal, SYSTEM_STATE.md snapshot</output>
+</skill>
+
+## Purpose
+
+The final phase of the S.H.I.E.L.D. lifecycle. Verify that implementation matches the encoded blueprint (Reality = Promise), then cryptographically seal the session.
+
+## Execution Protocol
+
+### Step 0: Gate Check (advisory — Phase 8 wiring)
+
+Verify prior-phase artifact exists and is well-formed before proceeding.
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+import gate_chain, session
+
+sid = session.get_or_create()
+result = gate_chain.check_prior_artifact("substantiate", session_id=sid)
+if not result.found:
+    # Prompt user to override; on confirm:
+    gate_chain.emit_gate_override(
+        current_phase="substantiate",
+        prior_phase_name="implement",
+        reason="user override: implement.json not found",
+        session_id=sid,
+    )
+elif not result.valid:
+    gate_chain.emit_gate_override(
+        current_phase="substantiate",
+        prior_phase_name="implement",
+        reason=f"user override: {result.errors}",
+        session_id=sid,
+    )
+```
+
+Override is permitted (advisory gate) but logged as severity-1 `gate_override` event in the Process Shadow Genome.
+
+### Step 1: Identity Activation
+You are now operating as **The QorLogic Judge** in substantiation mode.
+
+Your role is to prove, not to improve. Verify what was built matches what was promised.
+
+### Step 2: State Verification
+
+```
+Read: docs/META_LEDGER.md
+Read: docs/ARCHITECTURE_PLAN.md
+Read: .failsafe/governance/AUDIT_REPORT.md
+```
+
+**INTERDICTION**: If no PASS verdict exists:
+```
+ABORT
+Report: "Cannot substantiate without PASS verdict. Run /qor-audit first."
+```
+
+**INTERDICTION**: If no implementation exists:
+```
+ABORT
+Report: "No implementation found. Run /qor-implement first."
+```
+
+### Step 2.5: Version Validation (MANDATORY)
+
+**Verify version consistency** between plan and current state:
+
+```bash
+git tag --sort=-v:refname | head -1
+```
+
+```
+Read: Plan file (docs/Planning/plan-*.md or docs/ARCHITECTURE_PLAN.md)
+Extract: Target Version from plan header
+```
+
+**INTERDICTION**: If Target Version ≤ Current Tag → ABORT (version already shipped).
+**INTERDICTION**: If governance files reference wrong version → PAUSE (fix before sealing).
+
+Log: "Version validated: v[current] → v[target] (change type: [hotfix|feature|breaking])"
+
+### Step 3: Reality Audit
+
+Compare implementation against blueprint:
+
+```
+Read: All files in src/
+Compare: Against docs/ARCHITECTURE_PLAN.md file tree
+```
+
+Template: `references/qor-substantiate-templates.md`.
+
+**Findings**:
+- **MISSING**: Planned but not created -> FAIL
+- **UNPLANNED**: Created but not in blueprint -> WARNING (document in ledger)
+- **EXISTS**: Matches -> PASS
+
+### Step 3.5: Blocker Verification
+
+Read `docs/BACKLOG.md`. Warn if open Security Blockers or related Development Blockers exist.
+
+### Step 4: Functional Verification
+
+#### Test Audit
+```
+Glob: tests/**/*.test.{ts,tsx,js}
+Read: Test files
+```
+
+Template: `references/qor-substantiate-templates.md`.
+
+#### Visual Silence Verification (if frontend)
+```
+Grep: "color:" in src/**/*.{css,tsx}
+Grep: "background:" in src/**/*.{css,tsx}
+```
+
+Check for violations:
+Template: `references/qor-substantiate-templates.md`.
+
+#### Console.log Artifacts
+```
+Grep: "console.log" in src/**/*
+```
+
+Template: `references/qor-substantiate-templates.md`.
+
+### Step 4.5: Skill File Integrity Check
+
+If any skill files (`.claude/commands/qor-*.md`) were modified during this session:
+
+1. List modified skill files from git diff
+2. For each modified skill:
+   - Verify it still has required sections: `<skill>` block, `## Execution Protocol`, `### Step Z: Write Gate Artifact (Phase 11D wiring)
+
+Persist the structured gate artifact at `.qor/gates/<session_id>/substantiate.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+import gate_chain, shadow_process
+
+# Build payload conforming to qor/gates/schema/substantiate.schema.json
+payload = {
+    "ts": shadow_process.now_iso(),
+    # ... phase-specific required fields (see schema)
+}
+gate_chain.write_gate_artifact(phase="substantiate", payload=payload, session_id=sid)
+```
+
+Schema lives at `qor/gates/schema/substantiate.schema.json`; the helper validates before write.
+
+## Constraints`, `## Next Step`
+   - Verify the `## Next Step` section references valid successor skills
+   - Log in ledger: "Skill file [name] modified — structure verified"
+
+If any skill is missing required sections after modification:
+
+```
+PAUSE
+Report: "Skill [name] missing required section: [section]. Fix before sealing."
+```
+
+### Step 4.6: Reliability Sweep (Phase 17 wiring)
+
+Three reliability enforcement gates run sequentially. Each is an interdiction: non-zero exit aborts substantiation.
+
+```bash
+SESSION_ID=$(cat .qor/session/current 2>/dev/null || echo default)
+
+# Re-verify the intent lock captured at /qor-implement Step 5.5.
+# Fails if plan, audit, or HEAD commit drifted since capture.
+python qor/reliability/intent-lock.py verify --session "$SESSION_ID" || ABORT
+
+# Verify current skill is registered and frontmatter is well-formed.
+python qor/reliability/skill-admission.py qor-substantiate || ABORT
+
+# Verify all /qor-* handoff references across skills resolve to real skills.
+python qor/reliability/gate-skill-matrix.py || ABORT
+```
+
+Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit, re-admit, or fix broken handoff) and re-run substantiation.
+
+### Step 5: Section 4 Razor Final Check
+
+Template: `references/qor-substantiate-templates.md`.
+
+### Step 6: Sync System State
+
+Map the final physical tree:
+
+```
+Glob: src/**/*
+Glob: tests/**/*
+Glob: docs/**/*
+```
+
+Create/Update `docs/SYSTEM_STATE.md`:
+
+Template: `references/qor-substantiate-templates.md`.
+
+### Step 7: Final Merkle Seal
+
+Calculate session seal:
+
+Reference implementation: `.claude/commands/scripts/calculate-session-seal.py`.
+
+Update `docs/META_LEDGER.md`:
+
+Template: `references/qor-substantiate-templates.md`.
+
+### Step 7.5: Version bump + annotated tag (Phase 13 wiring)
+
+```python
+# Phase 13 wiring: bump version + tag (W-3 fix: phase_num derived explicitly)
+import sys; sys.path.insert(0, 'qor/scripts')
+import governance_helpers as gh
+
+plan_path = gh.current_phase_plan_path()              # V-5: lexicographic suffix
+phase_num, slug = gh.derive_phase_metadata(plan_path) # W-3: derive before use
+change_class = gh.parse_change_class(plan_path)       # V-2: bold-form enforced
+new_version = gh.bump_version(change_class)           # V-6 + W-4: tag-collision + downgrade interdiction
+tag = gh.create_seal_tag(
+    new_version, merkle_seal, ledger_entry_num, phase_num, change_class,
+)
+```
+
+### Step 8: Cleanup Staging
+
+Clear: .failsafe/governance/
+
+Preserve only the final AUDIT_REPORT.md (or archive it).
+
+### Step 9: Final Report
+
+Template: `references/qor-substantiate-templates.md`.
+
+### Step 9.5: Stage Artifacts (for user commit)
+
+  **Stage All Artifacts**:
+  ```bash
+  git add docs/CONCEPT.md
+  git add docs/ARCHITECTURE_PLAN.md
+  git add docs/META_LEDGER.md
+  git add docs/SYSTEM_STATE.md
+  git add docs/BACKLOG.md
+  git add src/
+  ```
+
+  **Next Steps**: Review the staged files and then commit and push when ready.
+
+  Example commit message:
+  ```
+  seal: [plan-slug] - Session substantiated
+  Merkle seal: [chain-hash]
+  Verdict: PASS
+  Files: [file-count]
+  ```
+
+REPORT: "Session committed and pushed to [current-branch]"
+
+### Step 9.6: Push/Merge Options (Phase 13 — 4-option menu)
+
+Prompt user with four options (never offer continuation menus when work is sealable; the next decision is push/merge, not "what next phase"):
+
+1. **Push only** — `git push origin <branch>`.
+2. **Push + open PR** — `gh pr create` (description must cite plan file, ledger entry `#<n>`, and Merkle seal hash per `doctrine-governance-enforcement.md` §6).
+3. **Merge to main locally (dry-run first)** — `git merge --no-commit --no-ff <branch>`; on conflict, abort and prompt operator.
+4. **Hold local** — no push/merge this session.
+
+Annotated tag was already created in Step 7.5; do not re-offer.
+
+Template: `references/qor-substantiate-templates.md`.
+
+## Failure Scenarios
+
+### If Reality != Promise:
+
+Template: `references/qor-substantiate-templates.md`.
+
+## Constraints
+
+- **NEVER** seal a session with Reality != Promise
+- **NEVER** skip any verification step
+- **NEVER** seal with Section 4 violations present
+- **NEVER** seal with version mismatch (Target ≤ Current Tag)
+- **ALWAYS** validate version before sealing
+- **ALWAYS** update SYSTEM_STATE.md before sealing
+- **ALWAYS** calculate proper chain hash
+- **ALWAYS** document any unplanned files in ledger
+- **ALWAYS** verify chain integrity before sealing
+
+## Success Criteria
+
+Substantiation succeeds when:
+
+- [ ] PASS verdict exists in AUDIT_REPORT.md
+- [ ] Version validated (Target > Current Tag)
+- [ ] Reality matches Promise (all planned files exist, no missing)
+- [ ] Open security blockers reviewed
+- [ ] Test audit completed
+- [ ] Section 4 Razor final check passed
+- [ ] SYSTEM_STATE.md synced with actual file tree
+- [ ] Merkle seal calculated and recorded in META_LEDGER
+- [ ] Session committed and pushed
+- [ ] Merge/PR/tag options presented to user
+
+## Integration with S.H.I.E.L.D.
+
+This skill implements:
+
+- **Session Seal**: Cryptographic proof that Reality matches Promise
+- **Version Gate**: Prevents sealing with stale or mismatched versions
+- **Reality Audit**: File-by-file comparison against blueprint
+- **Hash Chain Finalization**: Calculates session seal for META_LEDGER
+"""

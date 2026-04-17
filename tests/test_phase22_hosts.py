@@ -10,7 +10,7 @@ import pytest
 def test_codex_host_resolves():
     """Codex no longer raises NotImplementedError."""
     from qor.hosts import resolve
-    target = resolve("codex")
+    target = resolve("codex", scope="global")
     assert target.name == "codex"
     assert "codex" in str(target.skills_dir)
 
@@ -18,14 +18,15 @@ def test_codex_host_resolves():
 def test_register_host_custom():
     """register_host adds a new host factory."""
     from qor.hosts import HostTarget, register_host, resolve
-    def _custom() -> HostTarget:
+    def _custom(scope: str = "repo") -> HostTarget:
+        base = Path("/tmp/cursor")
         return HostTarget(
             name="cursor",
-            skills_dir=Path("/tmp/cursor/skills"),
-            agents_dir=Path("/tmp/cursor/agents"),
+            base=base,
+            install_map={"skills/": base / "skills", "agents/": base / "agents"},
         )
     register_host("cursor", _custom)
-    target = resolve("cursor")
+    target = resolve("cursor", scope="global")
     assert target.name == "cursor"
     assert target.skills_dir == Path("/tmp/cursor/skills")
 
@@ -33,15 +34,16 @@ def test_register_host_custom():
 def test_register_host_overrides_builtin():
     """register_host can override a built-in host."""
     from qor.hosts import HostTarget, register_host, resolve
-    original = resolve("codex")
-    def _custom_codex() -> HostTarget:
+    original = resolve("codex", scope="global")
+    def _custom_codex(scope: str = "repo") -> HostTarget:
+        base = Path("/tmp/codex-custom")
         return HostTarget(
             name="codex-custom",
-            skills_dir=Path("/tmp/codex-custom/skills"),
-            agents_dir=Path("/tmp/codex-custom/agents"),
+            base=base,
+            install_map={"skills/": base / "skills", "agents/": base / "agents"},
         )
     register_host("codex", _custom_codex)
-    overridden = resolve("codex")
+    overridden = resolve("codex", scope="global")
     assert overridden.name == "codex-custom"
     # Restore original
     from qor.hosts import _codex_target

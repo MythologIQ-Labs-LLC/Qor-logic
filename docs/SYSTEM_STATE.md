@@ -1,8 +1,8 @@
 # Qorlogic System State
 
-**Snapshot**: 2026-04-15
-**Chain Status**: ACTIVE (18 entries)
-**Phase**: SSoT migration complete; tooling (compile, gates, shadow automation, platform detect, test suite) deferred per `docs/plan-qor-tooling-deferred.md`
+**Snapshot**: 2026-04-17
+**Chain Status**: ACTIVE (75 entries, last seal: 68772fd3... at v0.15.0)
+**Phase**: Phase 24 sealed. Multi-host install operational (claude, kilo-code, codex, gemini) with uniform `--scope {repo,global}` semantics, per-host variant dispatch, and vanilla TOML emission for gemini.
 
 ## Authoritative source
 
