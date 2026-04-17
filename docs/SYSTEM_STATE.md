@@ -1,8 +1,8 @@
 # Qorlogic System State
 
 **Snapshot**: 2026-04-17
-**Chain Status**: ACTIVE (80 entries, last seal: 637210056ea... at v0.16.0)
-**Phase**: Phase 25 sealed. Prompt resilience doctrine applied to 11 skills (autonomy: autonomous | interactive). `qorlogic seed` scaffolds governance workspaces. Three-tier communication model (`technical` / `standard` / `plain`) live via `/qor-tone` + `qorlogic init --tone`. SG-Phase25-A (test-scope gap) and SG-Phase25-B (ghost feature via metadata) both closed.
+**Chain Status**: ACTIVE (83 entries, last seal: 047f2f79f6... at v0.17.0)
+**Phase**: Phase 26 sealed. Audit-report language reformed with per-ground `**Required next action:**` directives (B17). Repeated-VETO pattern detector (B18) in `qor/scripts/veto_pattern.py` fires when two consecutive sealed phases each required >1 audit pass; emits severity-3 `repeated_veto_pattern` Shadow Genome event; surfaces non-blocking advisory in `## Process Pattern Advisory` section of AUDIT_REPORT. Doctrine codified in `qor/references/doctrine-audit-report-language.md`.
 
 ## Authoritative source
 

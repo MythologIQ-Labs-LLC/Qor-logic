@@ -10,7 +10,7 @@ from qor.install import (
     _do_uninstall,
 )
 
-__version__ = "0.16.0"
+__version__ = "0.17.0"
 
 
 def _default_dist_root() -> Path:

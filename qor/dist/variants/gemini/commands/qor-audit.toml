@@ -95,6 +95,8 @@ Scan for critical security issues:
 
 **Any violation -> VETO with L3 flag**
 
+**Required next action:** `/qor-debug` (treat as code-logic defect per `qor/references/doctrine-audit-report-language.md`). If the violation is a plan-text gap rather than a runtime defect, the directive becomes: Governor: amend plan text, re-run `/qor-audit`.
+
 #### OWASP Top 10 Pass
 
 Evaluate proposed changes against applicable OWASP Top 10 (2021) categories:
@@ -107,6 +109,8 @@ Reference: docs/security-audit-2026-04-16.md for baseline findings.
 Reference: qor/references/doctrine-shadow-genome-countermeasures.md for SG patterns.
 
 **Any violation -> VETO with OWASP category tag**
+
+**Required next action:** per `qor/references/doctrine-audit-report-language.md` -- A08 (unsafe deserialization, safe-load commitment gaps) classifies as **Plan-text** -> Governor: amend plan text, re-run `/qor-audit`. A03 (runtime injection), A04 (insecure design defect at runtime) classify as **Code-logic defect** -> `/qor-debug`.
 
 #### Ghost UI Pass
 
@@ -123,6 +127,8 @@ Scan for UI elements without backend handlers:
 
 **Any ghost path -> VETO**
 
+**Required next action:** per `qor/references/doctrine-audit-report-language.md` -- frontend handler gap classifies as **Code-logic defect** -> `/qor-debug`; metadata-only declaration without backing behavior (SG-Phase25-B pattern) classifies as **Plan-text** -> Governor: amend plan text, re-run `/qor-audit`.
+
 #### Section 4 Razor Pass
 
 Verify KISS compliance in proposed design:
@@ -138,7 +144,7 @@ Verify KISS compliance in proposed design:
 | Nested ternaries   | 0     | [count]            | [OK/FAIL] |
 ```
 
-**Any violation -> VETO**. **Mandated next action**: `/qor-refactor` (file-internal logic shape is its domain). Per `qor/gates/delegation-table.md`, never inline a refactor process inside an audit report — name the skill.
+**Any violation -> VETO**. **Required next action:** `/qor-refactor` (file-internal logic shape is its domain). Per `qor/gates/delegation-table.md`, never inline a refactor process inside an audit report — name the skill.
 
 #### Dependency Audit
 
@@ -153,6 +159,8 @@ Check for hallucinated or unnecessary dependencies:
 ```
 
 **Unjustified dependency -> VETO**
+
+**Required next action:** Governor: amend plan text (drop the dependency or justify it), re-run `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md`, dependency audit is a **Plan-text** ground.
 
 #### Macro-Level Architecture Pass
 
@@ -170,7 +178,7 @@ Verify system-level coherence and module organization:
 - [ ] Build path is intentional (entry points are explicit)
 ```
 
-**Any violation -> VETO**. **Mandated next action**: `/qor-organize` (project-level structure is its domain). Per `qor/gates/delegation-table.md`.
+**Any violation -> VETO**. **Required next action:** `/qor-organize` (project-level structure is its domain). Per `qor/gates/delegation-table.md`.
 
 #### Orphan Detection
 
@@ -184,7 +192,7 @@ Verify all proposed files connect to build path:
 | [file]        | [traced import chain]  | [Connected/ORPHAN] |
 ```
 
-**Any orphan -> VETO**. **Mandated next action**: `/qor-organize`.
+**Any orphan -> VETO**. **Required next action:** `/qor-organize`.
 
 **On PASS verdict overall**: next phase is `/qor-implement`. Per `qor/gates/chain.md`.
 
@@ -203,6 +211,22 @@ Template: `references/qor-audit-templates.md`.
 If verdict is VETO, document in `docs/SHADOW_GENOME.md` using template from `references/qor-audit-templates.md`. Note: narrative entries in `SHADOW_GENOME.md` are out of scope for the collector and attribution classification (see `qor/references/doctrine-shadow-attribution.md` §6).
 
 ### Step 7: Final Report
+
+Invoke the repeated-VETO pattern detector and populate the Process Pattern Advisory section of the report:
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+from qor.scripts.veto_pattern import check, render_advisory_text
+
+result = check(ledger_path=None, session_id=sid)  # reads docs/META_LEDGER.md
+advisory_body = render_advisory_text(result)
+# Paste `advisory_body` under the `<!-- qor:veto-pattern-advisory -->` marker
+# in .agent/staging/AUDIT_REPORT.md's `## Process Pattern Advisory` section.
+# If result.detected, the advisory recommends `/qor-remediate`; otherwise it
+# reads "No repeated-VETO pattern detected in the last 2 sealed phases."
+```
+
+When `result.detected` is True, the pattern has also been appended to the Process Shadow Genome as a severity-3 `repeated_veto_pattern` event (via `maybe_emit_pattern_event` inside `check()` when `session_id` is passed). The advisory is non-blocking; the current-audit verdict stands on its own merits.
 
 Report verdict, risk grade, and next action. Template: `references/qor-audit-templates.md`.
 
