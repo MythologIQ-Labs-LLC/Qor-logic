@@ -2933,3 +2933,55 @@ Detector applied to current `docs/META_LEDGER.md` would return `detected=True` f
 *Chain integrity: VALID*
 *Session: SEALED*
 *Merkle seal: 047f2f79f6...*
+
+
+### Entry #84: BACKFILL -- Phase 23 historical annotation
+
+**Timestamp**: 2026-04-17
+**Phase**: BACKFILL (retroactive documentation; not a seal)
+**Author**: Judge
+**Verdict**: DOCUMENTED (not re-sealed)
+
+**Target**: Phase 23 (OWASP governance + security remediation + NIST evidence)
+**Git commit**: `8081422e0a3ca451e08bebc06b3d5a5596af9747`
+**Git timestamp**: 2026-04-16
+**Git author**: QoreLogic Governor
+**Git tag**: `v0.14.0`
+**Plan artifact**: `docs/plan-qor-phase23-owasp-nist-security.md` (present in repo)
+
+**What shipped (per commit message)**:
+- Track A: 9 security findings closed (MEDIUM-1..6, LOW-1..6): repo path validation, JSONL warning, file locking, chain_hash separator, session_id/event_id validation, verdict regex, timezone-aware datetime, skipped entry reporting, backward-compatible verify for legacy chain hashes.
+- Track B: OWASP Top 10 wired into governance lifecycle -- OWASP pass in `qor-audit` SKILL.md, Cedar enforcement policies (`qor/policies/owasp_enforcement.cedar`), OWASP governance doctrine (`qor/references/doctrine-owasp-governance.md`).
+- Track C: NIST SSDF automated evidence generation -- SSDF practice tags in ledger entries, compliance report CLI (`qorlogic compliance report`), doctrine evidence collection section (`qor/references/doctrine-nist-ssdf-alignment.md`).
+
+**Scope**: 22 files changed, 801 insertions across source + tests + docs + policies + reliability scripts. 352 tests passing (29 new) at the time of shipment.
+
+**Chain impact (explicit)**:
+
+This entry is **not a seal and does not advance the Merkle chain**. No content hash, no chain hash, no previous-hash field. The chain continues to run:
+
+```
+#69 (Phase 22 SEAL: 964b8fc4...)
+  -> #75 (Phase 24 SEAL: 68772fd3...)   [chained from #69, skipping Phase 23]
+  -> #80 (Phase 25 SEAL: 637210056ea...)
+  -> #83 (Phase 26 SEAL: 047f2f79f6...)
+```
+
+Phase 23's outputs are present in the repository and were released under tag `v0.14.0`, but the `/qor-substantiate` ceremony that would have produced a ledger SEAL entry was not executed. This entry documents the gap rather than retroactively correcting it. Rewriting the chain to include a synthetic Phase 23 SEAL would require recomputing every subsequent chain hash -- a cure worse than the disease for a historical gap whose artifacts are intact and independently verifiable via the git commit.
+
+**Rationale for BACKFILL (not re-seal)**:
+
+1. Phase 23 shipped artifacts exist in the repo at tag `v0.14.0`; they are cryptographically anchored by git SHA even without a ledger entry.
+2. Every phase after Phase 23 (24, 25, 26) has a SEAL entry that chains from its immediate ledger predecessor. The chain is internally consistent from `#70` forward.
+3. `qorlogic verify-ledger` on the current ledger passes (chain integrity VALID from #1 through #83); the gap is a missing node, not a broken link.
+4. The Phase 25 repeated-VETO detector explicitly counts sealed phases; Phase 23's absence from the ledger means it cannot false-inflate the pattern detector either.
+
+**Decision**: Phase 23 historically documented. Chain state unchanged. Future audits and substantiations should treat `#69 -> #75` as the canonical predecessor relationship when walking the chain. Operators inspecting git history will find Phase 23's commit and tag intact; operators inspecting the ledger will find this entry naming the gap.
+
+**Advisory retired**: the "Phase 23 ledger gap" advisory carried forward in Entries #75, #80, and #83 is now resolved (documented, not closed by re-seal). Future seal entries should no longer carry the advisory.
+
+---
+
+*Chain integrity: VALID (from #1 to #83, continuous)*
+*Session: SEALED (Phase 26)*
+*Merkle seal: 047f2f79f6... (unchanged; backfill entries do not advance seal)*
