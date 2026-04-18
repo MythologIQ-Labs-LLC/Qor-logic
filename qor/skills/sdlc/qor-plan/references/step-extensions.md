@@ -24,6 +24,42 @@ subprocess.run(["git", "checkout", "-b", f"phase/{phase_num:02d}-{slug}"], check
 
 Plan header MUST declare `**change_class**: hotfix | feature | breaking` (bold — V-2). Doctrine test `test_plans_declare_change_class` enforces.
 
+## Step 1b — Documentation-integrity dialogue (Phase 28 wiring)
+
+Before authoring the plan body, elicit doc-integrity declarations per `qor/references/doctrine-documentation-integrity.md`. Dialogue script (one question at a time):
+
+1. **Tier**: "What `doc_tier` applies to this plan?"
+   - `minimal` -- README only
+   - `standard` -- README + glossary
+   - `system` -- full topology (architecture + lifecycle + operations + policies)
+   - `legacy` -- bypass, requires rationale
+
+2. **Default + warnings**:
+   - If operator skips the question: default to `standard` and warn.
+   - If operator picks `system` without any terms_introduced: warn ("system tier typically introduces concepts; continue?").
+
+3. **Terms** (only for standard/system): "Does this plan introduce any new terms (domain concepts, acronyms, canonical names)? If yes, list them with their canonical home file."
+
+4. **Boundaries** (only for standard/system):
+   - "What are this feature's limitations?" (things it cannot do)
+   - "What are its non-goals?" (things it chooses not to do)
+   - "Any exclusions?" (unsupported scenarios)
+
+5. **Legacy rationale** (only for legacy): "Declare rationale for bypass; will be logged to shadow genome as severity-2 `degradation` event (kind=`doc_tier_legacy_declared`)."
+
+6. **Emission**: when tier is `legacy`, call the helper before Step Z:
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+import doc_integrity
+doc_integrity.emit_legacy_tier_event(
+    session_id=sid,
+    rationale=operator_rationale,
+)
+```
+
+7. **Schema enforcement**: plans declaring `doc_tier: legacy` without `doc_tier_rationale` fail schema validation at Step Z (`plan.schema.json` carries an `if-then` rule). No runtime bypass path exists.
+
 ## Step 1.a — Capability check (agent-teams parallel mode, Phase 8 wiring)
 
 ```python

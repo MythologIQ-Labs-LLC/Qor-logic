@@ -11,6 +11,33 @@
     "session_id": { "type": "string", "minLength": 3 },
     "plan_path": { "type": "string", "minLength": 1 },
     "phases": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
-    "open_questions": { "type": "array", "items": { "type": "string" } }
-  }
+    "open_questions": { "type": "array", "items": { "type": "string" } },
+    "doc_tier": { "enum": ["minimal", "standard", "system", "legacy"] },
+    "doc_tier_rationale": { "type": "string", "minLength": 1 },
+    "terms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "home"],
+        "properties": {
+          "term": { "type": "string", "minLength": 1 },
+          "home": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "properties": {
+        "limitations": { "type": "array", "items": { "type": "string" } },
+        "non_goals":   { "type": "array", "items": { "type": "string" } },
+        "exclusions":  { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "doc_tier": { "const": "legacy" } }, "required": ["doc_tier"] },
+      "then": { "required": ["doc_tier_rationale"] }
+    }
+  ]
 }

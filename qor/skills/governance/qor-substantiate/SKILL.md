@@ -201,6 +201,22 @@ python qor/reliability/gate-skill-matrix.py || ABORT
 
 Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit, re-admit, or fix broken handoff) and re-run substantiation.
 
+### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
+
+Read the plan artifact and run doc-integrity checks against the declared tier. ABORTs on any `ValueError` per `qor/references/doctrine-documentation-integrity.md` (no silent override; `legacy` tier bypasses all checks).
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+import doc_integrity, gate_chain
+
+plan_artifact = gate_chain.read_phase_artifact("plan", session_id=sid)
+# plan_slug derived from plan_path filename stem (e.g., plan-qor-phase28-<slug>.md)
+plan_artifact["plan_slug"] = derive_slug_from_plan_path(plan_artifact["plan_path"])
+doc_integrity.run_all_checks_from_plan(plan_artifact, repo_root=".")
+```
+
+Any raised `ValueError` ABORTs substantiation. Operator fixes (update glossary / adjust declared terms / raise tier) and re-runs. No retry-with-waiver path.
+
 ### Step 5: Section 4 Razor Final Check
 
 Template: `references/qor-substantiate-templates.md`.

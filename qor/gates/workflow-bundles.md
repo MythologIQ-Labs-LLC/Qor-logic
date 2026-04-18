@@ -20,7 +20,7 @@ YAML frontmatter every bundle SKILL.md must carry:
 ---
 name: qor-<bundle-name>
 type: workflow-bundle           # marks this as a bundle, not a single skill
-phases: [research, plan, audit, implement, substantiate]    # the chain
+phases: [research, plan, audit, implement, substantiate, validate, remediate]    # canonical full chain per qor/gates/chain.md; individual bundles may declare a truncated subset
 checkpoints:                    # named breakpoints; bundle halts at each
   - after-research
   - after-audit

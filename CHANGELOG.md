@@ -10,6 +10,22 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-04-18
+
+### Added
+- Documentation-integrity doctrine (`qor/references/doctrine-documentation-integrity.md`) with four tiers (`minimal` / `standard` / `system` / `legacy`) enforced at `/qor-substantiate` time via the new `qor/scripts/doc_integrity.py` module.
+- Canonical glossary at `qor/references/glossary.md` with 13 entries covering Phase 28 doctrine terms plus Qor-logic canonical terms (Phase SDLC, Gate, Shadow Genome, Substantiate, Workflow Bundle, change_class, Delegation Table, Complecting). Glossary entries serve simultaneously as concept-map entries (`home:` + `referenced_by:` fields).
+- `/qor-plan` Step 1b: dialogue for `doc_tier`, `terms_introduced`, and `boundaries` declarations; Plan Structure top-matter extension.
+- `/qor-substantiate` Step 4.7: hard-blocks seal on documentation-integrity violations via `doc_integrity.run_all_checks_from_plan` (topology presence + glossary hygiene + orphan scan). `legacy` tier is the sole documented escape.
+- `/qor-audit` Documentation Drift advisory: non-VETO `## Documentation Drift` section in AUDIT_REPORT.md when plan declarations diverge from glossary/topology.
+
+### Changed
+- `qor/gates/schema/plan.schema.json` gains optional `doc_tier`, `doc_tier_rationale`, `terms`, and `boundaries` fields. An `if-then` rule enforces that `doc_tier: legacy` requires `doc_tier_rationale`.
+- `qor/gates/workflow-bundles.md` example phases list expanded to the canonical seven-phase chain (previously omitted `validate` and `remediate`).
+
+### Security
+- New `doc_integrity.parse_glossary` uses `yaml.safe_load` exclusively and rejects documents containing custom tags (SG-Phase24-B countermeasure). Covered by existing `tests/test_yaml_safe_load_discipline.py` scanner.
+
 ## [0.18.0] - 2026-04-17
 
 ### Added

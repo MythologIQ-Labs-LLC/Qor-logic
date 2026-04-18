@@ -1,8 +1,8 @@
 # Qorlogic System State
 
-**Snapshot**: 2026-04-17
-**Chain Status**: ACTIVE (88 entries, last seal: cdb77df120... at v0.18.0)
-**Phase**: Phase 27 sealed. `CHANGELOG.md` authored (Keep-a-Changelog 1.1.0, v0.3.0-v0.17.0 backfill + Phase 27 entry). `/qor-substantiate` Step 7.6 stamps `## [Unreleased]` -> `## [X.Y.Z] - YYYY-MM-DD` on seal via `qor/scripts/changelog_stamp.py`; Step 9.5 auto-stage includes `CHANGELOG.md`. Format + tag-bijection + stamp + integration lint tests in `tests/test_changelog_*.py`. Doctrine at `qor/references/doctrine-changelog.md`.
+**Snapshot**: 2026-04-18
+**Chain Status**: ACTIVE (Phase 28 seal in progress at v0.19.0)
+**Phase**: Phase 28 sealing. Documentation-integrity doctrine (`qor/references/doctrine-documentation-integrity.md`) + canonical glossary (`qor/references/glossary.md`, 13 entries) + `qor/scripts/doc_integrity.py` (244 lines) wire doc-integrity enforcement. `/qor-plan` Step 1b elicits `doc_tier` + `terms_introduced` + `boundaries`; `/qor-substantiate` Step 4.7 hard-blocks seal on tier violations; `/qor-audit` emits non-VETO Documentation Drift advisory. Plan schema gains `doc_tier` enum + `terms` + `boundaries` + `doc_tier_rationale` with if-then rule (legacy requires rationale). Phase 28 self-substantiates at `doc_tier: standard` (amended from `system` when Step 4.7 correctly flagged missing `docs/{architecture,lifecycle,operations,policies}.md` -- evidence the doctrine is working).
 
 ## Authoritative source
 

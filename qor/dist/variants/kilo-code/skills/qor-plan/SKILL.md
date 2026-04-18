@@ -108,6 +108,17 @@ Only proceed to write the plan file after the user has validated the design dire
 
 See `qor/skills/sdlc/qor-plan/references/step-extensions.md` for the full protocol.
 
+### Step 1b: Documentation-integrity dialogue (Phase 28 wiring)
+
+Before writing the plan, elicit `doc_tier`, `terms_introduced`, and `boundaries` from the operator per `qor/references/doctrine-documentation-integrity.md`. Full dialogue protocol: `qor/skills/sdlc/qor-plan/references/step-extensions.md` §Step 1b. Summary:
+
+1. Ask tier: `minimal | standard | system | legacy` (multiple choice).
+2. For standard/system: ask for newly introduced terms with `home:` paths.
+3. For standard/system: ask for `limitations`, `non_goals`, `exclusions`.
+4. For legacy: require a `doc_tier_rationale` (schema enforces; emit severity-2 `degradation` shadow event via `doc_integrity.emit_legacy_tier_event`).
+
+Warn (do not block) if `doc_tier` is omitted (default `standard`) or if `system` is declared with no `terms_introduced`.
+
 ### Step 2: Research Existing Code
 
 Use existing code as foundation for plan. Identify existing abstractions, naming conventions, test structure, and integration points.
@@ -124,6 +135,24 @@ Create plan markdown file with specific requirements:
 
 ```markdown
 # Plan: [feature/component name]
+
+**change_class**: hotfix | feature | breaking
+
+**doc_tier**: minimal | standard | system | legacy
+
+[if doc_tier is standard/system and the plan introduces terms]
+**terms_introduced**:
+- term: TermName
+  home: path/to/home.md
+
+[if doc_tier is standard/system]
+**boundaries**:
+- limitations: [...]
+- non_goals: [...]
+- exclusions: [...]
+
+[if doc_tier is legacy]
+**doc_tier_rationale**: one-line justification (logged to shadow genome)
 
 ## Open Questions
 
@@ -203,7 +232,7 @@ payload = {
 gate_chain.write_gate_artifact(phase="plan", payload=payload, session_id=sid)
 ```
 
-Schema lives at `qor/gates/schema/plan.schema.json`; the helper validates before write.
+Schema lives at `qor/gates/schema/plan.schema.json`; the helper validates before write. Plans declaring `doc_tier: legacy` without `doc_tier_rationale` fail schema validation (enforced by the `if-then` rule added in Phase 28); operator must either add rationale or raise the tier.
 
 ## Delegation
 
@@ -224,6 +253,8 @@ Per `qor/gates/delegation-table.md`:
 - **ALWAYS** list unit test files FIRST in each phase, before implementation files (TDD enforcement)
 - **ALWAYS** prioritize SIMPLE over EASY
 - **ALWAYS** note CI commands needed to validate the plan (clippy/lint/test flags matching CI)
+- **ALWAYS** declare `doc_tier` in plan top-matter (warn and default to `standard` if omitted; per `doctrine-documentation-integrity.md`)
+- **ALWAYS** list terms introduced by the plan under `terms_introduced` when tier is standard or system
 
 ## Integration with QorLogic
 

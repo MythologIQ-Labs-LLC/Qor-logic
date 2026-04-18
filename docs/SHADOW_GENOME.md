@@ -531,4 +531,52 @@ SG-Phase25-B (metadata-only feature declaration without enforced behavior)
 
 ---
 
+### Entry #18: VETO -- plan-qor-phase28-documentation-integrity pass 1
+
+**Timestamp**: 2026-04-17
+**Target**: `docs/plan-qor-phase28-documentation-integrity.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Ledger Entry**: #89
+**Session**: `2026-04-17T2335-f284b9`
+
+### Pattern
+
+Four plan-text violations on first audit pass of a doctrine-introduction plan. No implementation risk; all corrections are editorial. The spread of grounds reveals a recurring authoring risk when a plan both (a) creates a new rule and (b) must satisfy that rule itself.
+
+1. **SG-Phase24-B recurrence** -- YAML parsing proposed for glossary frontmatter without naming `yaml.safe_load`. The mitigation test (`tests/test_yaml_safe_load_discipline.py`) already exists; the recurrence is authorial, not systemic. Still, the failure to cite the safe loader at plan-authoring time is exactly what SG-Phase24-B documents.
+
+2. **SG-038 recurrence** -- prose-code mismatch between the schema prose (declaring a `concepts` alias of `terms`) and the adjacent JSON code block (which omits `concepts`). The alias was a leftover from the pre-dialogue draft; the Q3 decision (fold concept-map into glossary) removed the need for it. Prose updated, code did not.
+
+3. **SG-036 new manifestation: doctrine self-application failure.** The plan codifies the rule "every plan declares `doc_tier`, `terms_introduced`, `boundaries`" but does not apply those fields to itself. SG-036 names this as "newly codified doctrine does not become automatically load-bearing in phase N+1 unless the author treats it as active" -- this plan compressed the grace-period into a single-plan failure by creating the doctrine and immediately failing to dogfood it.
+
+4. **Rule 4 gap (Rule = Test).** Plan declared "legacy tier must include rationale" but wired only an event-emission test, not a rationale-presence enforcement test. Operator can declare `doc_tier: legacy` with no rationale; event fires; rule is unenforced.
+
+### Why It Matters
+
+Doctrine-introduction plans carry elevated authoring risk: the plan both introduces a standard and is the first artifact audited against it. Plans like these need a self-dogfood checklist before submission:
+
+- Do I satisfy every rule this plan creates?
+- Is every rule paired with an enforcement test?
+- Are prose and code blocks cross-checked for enumeration drift?
+- Am I citing safe-loaders / hardening defaults by name?
+
+When the author skips this checklist, all four SG categories can light up at once -- as they did here.
+
+### Countermeasure
+
+For plans that introduce new doctrines (not just features), add a `Self-Dogfood` section at the plan's end (above `Delegation`) that explicitly asserts:
+
+- The plan satisfies every rule it introduces (one bullet per rule, pointing at the plan text that applies it).
+- Every new rule has a corresponding test in the Unit Tests list (one bullet per rule-test pair).
+- No bare-word "YAML / TOML / JSON" appears without naming the safe loader.
+- Every enumeration referenced in prose also appears in any adjacent code block (one cross-check bullet per enumeration).
+
+A doctrine-introduction plan that lacks this section should be VETOed on sight.
+
+### Pattern ID
+
+SG-Phase28-A (doctrine-introduction plan without self-dogfood checklist)
+
+---
+
 *Shadow integrity: ACTIVE*
