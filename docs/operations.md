@@ -23,6 +23,7 @@ The `qorlogic` CLI is the primary install/operation surface. Subcommands:
 | Command | Purpose |
 |---|---|
 | `python -m qor.scripts.doc_integrity_drift_report` | Phase 31 wiring. Runs Check Surface D + E in lenient mode against the live repo; writes a Markdown drift report to stdout grouped by term. Operator triage tool; not wired into the seal flow. |
+| `python -m qor.scripts.install_drift_check --host claude --scope repo` | Phase 32 wiring. SHA256-compares source `qor/skills/**/SKILL.md` against the installed copies at `.claude/skills/**/SKILL.md`. Exit 0 = clean; exit 1 = drift detected (stdout names mismatches + `qorlogic install` hint). Invoked by `/qor-plan` Step 0.2 as a pre-phase nudge. |
 
 All subcommands accept `--scope {repo,global}` (default `repo`); this determines whether the install/uninstall/init writes to the project directory or to the user's home directory.
 
@@ -34,6 +35,8 @@ All subcommands accept `--scope {repo,global}` (default `repo`); this determines
 4. Step 5 runs Section 4 Razor final check.
 5. Step 6 syncs `docs/SYSTEM_STATE.md`.
 6. **Step 6.5 (Phase 31 wiring)** runs `doc_integrity_strict.check_documentation_currency` against the implement gate artifact. WARNS when doc-affecting files (SKILL.md / doctrine-*.md / schema / script) were touched without a corresponding update to a system-tier doc (architecture/lifecycle/operations/policies). Operator judges: amend docs and re-seal, or continue with the warning acknowledged.
+
+   **Step 4.7 note (Phase 32 live-strict)**: Check Surface D and E now run with `strict=True` at `/qor-substantiate` Step 4.7. Any term-drift or cross-doc conflict at seal time raises `ValueError` and ABORTs substantiation. Operator fixes (adopt consumer into glossary `referenced_by:` or amend the drifting doc) and re-runs. `legacy` doc_tier still bypasses the entire check.
 7. Step 7 calculates the Merkle seal (SHA256 chain of session artifacts).
 8. Step 7.5 calls `bump_version(change_class)` FIRST, then `create_seal_tag(...)` (order matters per Phase 30 constraint; inverted order interdicts on tag-already-exists).
 9. Step 7.6 stamps `CHANGELOG.md`: `## [Unreleased]` -> `## [X.Y.Z] - YYYY-MM-DD`.

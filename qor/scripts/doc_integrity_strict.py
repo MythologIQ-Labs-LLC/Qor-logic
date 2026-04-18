@@ -75,23 +75,38 @@ def check_term_drift(
     return findings
 
 
+_DOCS_LIVING = frozenset({
+    "docs/architecture.md",
+    "docs/lifecycle.md",
+    "docs/operations.md",
+    "docs/policies.md",
+})
+
+
 def _excluded_by_scope_fence(entry, rel: str, glossary_rel: str) -> bool:
-    """Phase 31 scope-fence tuning. True if `rel` should NOT be scanned for
-    the given glossary entry's term. Applies six exclusion rules in order."""
-    # Standard exclusions (pre-Phase 31 baseline).
+    """Phase 31 + 32 scope-fence tuning. True if `rel` should NOT be scanned for
+    the given glossary entry's term."""
     if rel in entry.referenced_by or rel == entry.home or rel == glossary_rel:
         return True
-    # Per-entry opt-out.
     scope_exclude = getattr(entry, "scope_exclude", None) or []
     if rel in scope_exclude:
         return True
-    # Doctrine-peer: home is a doctrine; usage in any other doctrine is normal cross-reference.
     if "qor/references/doctrine-" in entry.home and "qor/references/doctrine-" in rel:
         return True
-    # Home-directory-peer: same directory as home (but home != repo root).
     home_dir = entry.home.rsplit("/", 1)[0] if "/" in entry.home else ""
     rel_dir = rel.rsplit("/", 1)[0] if "/" in rel else ""
     if home_dir and home_dir == rel_dir:
+        return True
+    # Phase 32: docs/*.md is archive-by-default except the 4 system-tier docs.
+    # Living docs (architecture/lifecycle/operations/policies) are legitimate
+    # consumers and must be adopted into term's referenced_by when used.
+    # All other docs/ content is historical (plans, ledger, archives, research
+    # briefs, self-audits, snapshots) and doesn't need adoption.
+    if rel.startswith("docs/") and rel not in _DOCS_LIVING:
+        return True
+    # README + CHANGELOG are narrative entry points that mention every major
+    # term; they are not glossary consumers in the referenced_by sense.
+    if rel in ("README.md", "CHANGELOG.md"):
         return True
     return False
 
@@ -152,6 +167,7 @@ def check_cross_doc_conflicts(
     entries = parse_glossary(glossary_path)
     findings: list[str] = []
     repo = Path(repo_root)
+    glossary_rel = Path(glossary_path).relative_to(repo).as_posix() if Path(glossary_path).is_absolute() else "qor/references/glossary.md"
     for entry in entries:
         pattern = re.compile(
             _DEF_PATTERN_TMPL.format(term=re.escape(entry.term)),
@@ -159,7 +175,8 @@ def check_cross_doc_conflicts(
         )
         for f in _iter_scan_files(repo_root):
             rel = f.relative_to(repo).as_posix()
-            if rel == entry.home or rel == "qor/references/glossary.md":
+            # Phase 32: E shares D's scope fence (archives + home/peer exclusions)
+            if _excluded_by_scope_fence(entry, rel, glossary_rel):
                 continue
             text = f.read_text(encoding="utf-8", errors="replace")
             for match in pattern.finditer(text):

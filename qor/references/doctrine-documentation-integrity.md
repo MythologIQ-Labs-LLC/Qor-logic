@@ -171,4 +171,4 @@ Scope fences (Phase 31 wiring):
 - Home-directory-peer exclusion: if term's `home:` sits in directory X, usage in X's other files is not drift.
 - Per-entry `scope_exclude: []` list in glossary frontmatter.
 
-Strict-mode wiring into `/qor-substantiate` Step 4.7 is deferred until a future phase that verifies the repo's lenient-mode findings are below an acceptable threshold.
+**Strict mode is live at `/qor-substantiate` Step 4.7 as of Phase 32** via `run_all_checks_from_plan(..., strict=True)`. Lenient mode (default) remains the mode for the ad-hoc drift report CLI and any future skill that wants advisory output. Phase 32 delivered the zero-finding baseline that made live wiring viable: docs/*.md archive-by-default (except the 4 system-tier docs), README + CHANGELOG excluded as narrative entry points, targeted `referenced_by:` adoption for high-usage terms.

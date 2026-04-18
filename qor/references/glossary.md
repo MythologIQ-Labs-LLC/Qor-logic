@@ -22,6 +22,11 @@ referenced_by:
   - CLAUDE.md
   - qor/gates/delegation-table.md
   - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/sdlc/qor-plan/references/step-extensions.md
+  - qor/skills/memory/log-decision.md
+  - qor/skills/memory/track-shadow-genome.md
+  - qor/skills/meta/qor-meta-log-decision/SKILL.md
+  - qor/skills/meta/qor-meta-track-shadow/SKILL.md
   - CONTRIBUTING.md
   - docs/architecture.md
   - docs/lifecycle.md
@@ -110,9 +115,15 @@ referenced_by:
   - qor/skills/meta/qor-repo-audit/SKILL.md
   - qor/skills/meta/qor-repo-release/SKILL.md
   - qor/skills/meta/qor-repo-scaffold/SKILL.md
+  - qor/skills/memory/qor-document/SKILL.md
+  - qor/skills/governance/qor-audit/references/qor-audit-templates.md
   - qor/references/doctrine-nist-ssdf-alignment.md
   - qor/references/patterns-devops.md
   - qor/references/ql-audit-templates.md
+  - docs/architecture.md
+  - docs/lifecycle.md
+  - docs/operations.md
+  - docs/policies.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -134,8 +145,17 @@ referenced_by:
   - qor/skills/sdlc/qor-remediate/SKILL.md
   - qor/skills/governance/qor-audit/SKILL.md
   - qor/skills/governance/qor-shadow-process/SKILL.md
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-validate/SKILL.md
+  - qor/skills/governance/qor-process-review-cycle/SKILL.md
+  - qor/skills/governance/qor-audit/references/qor-audit-templates.md
   - qor/skills/meta/qor-help/SKILL.md
+  - qor/skills/meta/qor-meta-track-shadow/SKILL.md
   - qor/skills/memory/track-shadow-genome.md
+  - docs/architecture.md
+  - docs/lifecycle.md
+  - docs/operations.md
+  - docs/policies.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -148,7 +168,9 @@ aliases:
 referenced_by:
   - qor/gates/chain.md
   - qor/references/doctrine-governance-enforcement.md
-  - docs/META_LEDGER.md
+  - qor/references/ql-substantiate-templates.md
+  - qor/skills/governance/qor-substantiate/references/qor-substantiate-templates.md
+  - docs/lifecycle.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -159,6 +181,9 @@ home: qor/gates/workflow-bundles.md
 referenced_by:
   - CLAUDE.md
   - qor/skills/meta/qor-deep-audit/SKILL.md
+  - qor/skills/meta/qor-onboard-codebase/SKILL.md
+  - qor/skills/governance/qor-process-review-cycle/SKILL.md
+  - docs/lifecycle.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -169,7 +194,11 @@ home: qor/references/doctrine-governance-enforcement.md
 referenced_by:
   - CLAUDE.md
   - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/sdlc/qor-plan/references/step-extensions.md
   - qor/skills/governance/qor-substantiate/SKILL.md
+  - docs/lifecycle.md
+  - docs/operations.md
+  - docs/policies.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -200,6 +229,27 @@ referenced_by:
   - qor/scripts/session.py
   - qor/skills/governance/qor-substantiate/SKILL.md
 introduced_in_plan: phase30-system-tier-hardening
+```
+
+```yaml
+term: Install Drift
+definition: Divergence between qor/skills/**/SKILL.md source and the operator's installed copies (e.g., under .claude/skills/). Detected by SHA256 byte-match in qor/scripts/install_drift_check.py. Non-blocking WARN semantics; fix via `qorlogic install --host <host>`.
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/scripts/install_drift_check.py
+  - qor/skills/sdlc/qor-plan/SKILL.md
+introduced_in_plan: phase32-strict-enforcement
+```
+
+```yaml
+term: Strict Mode
+definition: The hard-blocking variant of Check Surface D and E invoked by /qor-substantiate Step 4.7 via run_all_checks_from_plan(..., strict=True). Any term-drift or cross-doc conflict raises ValueError and aborts seal. Lenient mode (default) returns finding list without raising and is used by the ad-hoc drift report CLI.
+home: qor/references/doctrine-documentation-integrity.md
+referenced_by:
+  - qor/scripts/doc_integrity.py
+  - qor/scripts/doc_integrity_strict.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase32-strict-enforcement
 ```
 
 ```yaml
@@ -253,6 +303,8 @@ definition: "Term-drift grep: scans markdown files in qor/references, qor/gates,
 home: qor/references/doctrine-documentation-integrity.md
 referenced_by:
   - qor/scripts/doc_integrity_strict.py
+  - docs/architecture.md
+  - docs/operations.md
 introduced_in_plan: phase30-system-tier-hardening
 ```
 

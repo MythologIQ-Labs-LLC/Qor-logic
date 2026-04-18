@@ -94,3 +94,35 @@ permitted outside the seal flow but SHOULD be rare.
 plan-time would invalidate downstream gate checks within a single phase if
 the plan needs to be re-authored after audit VETO. Rotation belongs strictly
 at end-of-phase seal.
+
+## 8. Install Currency
+
+Source truth lives under `qor/skills/` in the repo. The operator runs
+`qorlogic install --host <host>` to copy skills into the host's install
+directory (`.claude/skills/`, `.kilo-code/skills/`, `.codex/skills/`, or
+`.gemini/commands/`). When source changes (e.g., after pulling a new
+release), the installed copy lags and the operator may unknowingly run
+stale governance instructions.
+
+**Install drift check**: `qor/scripts/install_drift_check.py` compares
+byte-identical SHA256 of every `qor/skills/**/SKILL.md` against its
+installed counterpart at `<skills_dir>/<skill-name>/SKILL.md`. Returns a
+drift list (empty = clean). Non-blocking; WARN semantics.
+
+**Invocation sites**:
+
+- Ad-hoc: `python -m qor.scripts.install_drift_check --host claude --scope repo`
+- Pre-phase nudge: `/qor-plan` Step 0.2 runs the check and emits a WARNING
+  if drift detected. Does not abort; operator decides whether to run
+  `qorlogic install` before proceeding.
+
+**Why**: Qor-logic is a prompt system; the operator runs the INSTALLED
+skills, not the repo source. Drift between installed and source means the
+operator is executing older governance, which can diverge from the current
+audit/enforcement layer. Detection is cheap (SHA256 scan); the fix is one
+CLI invocation. Silent drift is the failure mode to prevent.
+
+**Scope**: the check covers the SKILL.md catalog only. Reference docs,
+patterns, ql-templates, and the glossary are not verified because they
+are not currently installed by `qorlogic install` into the host's
+runtime surface.

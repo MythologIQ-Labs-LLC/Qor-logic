@@ -75,6 +75,17 @@ elif not result.valid:
 
 Override is permitted (advisory gate) but logged as severity-1 `gate_override` event in the Process Shadow Genome.
 
+### Step 0.2: Install drift check (Phase 32 wiring)
+
+Detect whether the operator's locally installed skills differ from the repo source. Non-blocking WARN; operator decides whether to reinstall before proceeding.
+
+```bash
+python -m qor.scripts.install_drift_check --host claude --scope repo || \\
+  echo "WARNING: Local skill install differs from repo source. Consider: qorlogic install --host claude --scope repo"
+```
+
+Fix on drift: `qorlogic install --host <host> --scope <scope>` regenerates the installed copy from source. See `qor/references/doctrine-governance-enforcement.md` §8 Install Currency for the full contract.
+
 ### Step 0.5: Phase branch creation (Phase 13 wiring)
 
 See `qor/skills/sdlc/qor-plan/references/step-extensions.md` for the full protocol.
