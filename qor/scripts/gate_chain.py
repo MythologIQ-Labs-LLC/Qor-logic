@@ -98,6 +98,20 @@ def emit_gate_override(
     return shadow_process.append_event(event, attribution="UPSTREAM")
 
 
+def read_phase_artifact(phase: str, session_id: str | None = None) -> dict:
+    """Load a previously-written gate artifact as a dict.
+
+    Used by downstream phases that need the full payload, not just a
+    validity check (see /qor-substantiate Step 4.7 doc-integrity wiring).
+    """
+    import json as _json
+    sid = session_id or session.get_or_create()
+    path = vga.GATES_DIR / sid / f"{phase}.json"
+    if not path.exists():
+        raise FileNotFoundError(f"Gate artifact not found: {path}")
+    return _json.loads(path.read_text(encoding="utf-8"))
+
+
 def write_gate_artifact(
     phase: str,
     payload: dict,
