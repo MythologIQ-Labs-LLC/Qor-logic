@@ -10,6 +10,18 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-04-18
+
+### Added
+- **Install drift detection** via `qor/scripts/install_drift_check.py`: SHA256-compares source `qor/skills/**/SKILL.md` against the installed copies. Invoked as CLI (`python -m qor.scripts.install_drift_check --host claude --scope repo`) or automatically at `/qor-plan` Step 0.2 as a pre-phase WARN. Fix via `qorlogic install --host <host>`.
+- **`/qor-plan` Step 0.2 Install drift nudge** (pre-phase): non-blocking warning when local installed skills lag repo source.
+- **Doctrine governance-enforcement §8 Install Currency**: full contract for the drift check, invocation sites, scope boundaries.
+- **Check Surface D + E strict-mode is LIVE** at `/qor-substantiate` Step 4.7. `run_all_checks_from_plan(..., strict=True)` is now the default seal-time call; any term-drift or cross-doc conflict raises `ValueError` and aborts substantiation. `legacy` tier still bypasses.
+
+### Changed
+- **Check Surface D/E scope fence rewired**: `docs/*.md` is archive-by-default except the 4 system-tier docs (`architecture`, `lifecycle`, `operations`, `policies`); README and CHANGELOG excluded as narrative entry points; archive path patterns replaced by the simpler living-docs allowlist. `check_cross_doc_conflicts` now shares the `_excluded_by_scope_fence` helper with `check_term_drift` (was silently bypassing the fence before Phase 32).
+- Glossary receives broad `referenced_by:` adoption across Gate, Shadow Genome, Doctrine, change_class, Substantiate, Check Surface D, and Workflow Bundle to cover all legitimate in-repo consumers.
+
 ## [0.22.0] - 2026-04-18
 
 ### Added

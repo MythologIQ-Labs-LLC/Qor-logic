@@ -36,6 +36,7 @@ The seal sequence under `/qor-substantiate` is:
 | Step | Purpose |
 |---|---|
 | 0 | Gate check -- implement.json present and valid |
+| 0.2 | (`/qor-plan` only, Phase 32 wiring) Install drift check: `install_drift_check.py` WARNs if local SKILL.md install lags repo source |
 | 1 | Identity activation (Judge mode) |
 | 2-2.5 | State verification + version validation (target > current tag) |
 | 3 | Reality audit (Reality = Promise on file tree) |
@@ -43,7 +44,7 @@ The seal sequence under `/qor-substantiate` is:
 | 4 | Functional verification (tests) |
 | 4.5 | Skill file integrity (structural lint on modified SKILL.md files) |
 | 4.6 | Reliability sweep (intent-lock verify + skill-admission + gate-skill-matrix) |
-| 4.7 | Documentation integrity check (topology + glossary hygiene + orphan scan; Phase 28 wiring) |
+| 4.7 | Documentation integrity check (topology + glossary hygiene + orphan scan; Phase 28 wiring + **Phase 32 strict-mode**: Check Surface D/E now raise at seal time; `legacy` tier bypasses) |
 | 5 | Section 4 Razor final check |
 | 6 | Sync `docs/SYSTEM_STATE.md` |
 | **6.5** | **Documentation Currency Check (Phase 31 wiring): WARNs when doc-affecting files touched without a corresponding system-tier doc update** |

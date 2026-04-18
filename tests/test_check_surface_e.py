@@ -43,11 +43,11 @@ def test_conflict_detects_divergent_definition(tmp_path):
         _WIDGET_ENTRY,
         {
             "docs/architecture.md": "# arch\nWidget is the canonical primitive.\n",
-            "docs/bad.md": "# bad\nWidget refers to an entirely unrelated user-interface element.\n",
+            "qor/gates/bad.md": "# bad\nWidget refers to an entirely unrelated user-interface element.\n",
         },
     )
     findings = dis.check_cross_doc_conflicts(glossary, root, strict=False)
-    assert any("docs/bad.md" in f for f in findings), (
+    assert any("qor/gates/bad.md" in f for f in findings), (
         f"Expected divergent-definition drift, got {findings}"
     )
 
@@ -74,7 +74,7 @@ def test_conflict_lenient_mode_does_not_raise(tmp_path):
         _WIDGET_ENTRY,
         {
             "docs/architecture.md": "# arch\nWidget is the canonical primitive.\n",
-            "docs/bad.md": "# bad\nWidget refers to an entirely unrelated UI element.\n",
+            "qor/gates/bad.md": "# bad\nWidget refers to an entirely unrelated UI element.\n",
         },
     )
     findings = dis.check_cross_doc_conflicts(glossary, root, strict=False)
@@ -87,7 +87,7 @@ def test_conflict_strict_mode_raises(tmp_path):
         _WIDGET_ENTRY,
         {
             "docs/architecture.md": "# arch\nWidget is the canonical primitive.\n",
-            "docs/bad.md": "# bad\nWidget refers to an entirely unrelated UI element.\n",
+            "qor/gates/bad.md": "# bad\nWidget refers to an entirely unrelated UI element.\n",
         },
     )
     with pytest.raises(ValueError, match="Widget"):

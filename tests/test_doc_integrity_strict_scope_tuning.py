@@ -103,7 +103,8 @@ def test_scope_exclude_opt_out(tmp_path):
 
 
 def test_unrelated_directory_still_flagged(tmp_path):
-    """Regression: scope-fence tuning must not over-exclude. Home in qor/references/; usage in docs/ IS flagged."""
+    """Regression: scope-fence tuning must not over-exclude. Home in qor/references/;
+    usage in qor/gates/ (non-peer, non-archive) IS flagged."""
     body = (
         "# Glossary\n\n"
         "```yaml\n"
@@ -118,10 +119,10 @@ def test_unrelated_directory_still_flagged(tmp_path):
         tmp_path, body,
         {
             "qor/references/doctrine-alpha.md": "Alpha is defined.\n",
-            "docs/unrelated.md": "Alpha is used in an unrelated directory.\n",
+            "qor/gates/unrelated.md": "Alpha is used in an unrelated directory.\n",
         },
     )
     findings = dis.check_term_drift(glossary, root, strict=False)
-    assert any("docs/unrelated.md" in f for f in findings), (
-        f"Unrelated dir usage must still flag: {findings}"
+    assert any("qor/gates/unrelated.md" in f for f in findings), (
+        f"Non-archive non-peer usage must still flag: {findings}"
     )
