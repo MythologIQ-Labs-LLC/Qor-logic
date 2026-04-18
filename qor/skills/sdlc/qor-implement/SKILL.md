@@ -18,7 +18,7 @@ gate_writes: implement
 
 <skill>
   <trigger>/qor-implement</trigger>
-  <phase>IMPLEMENT</phase>
+  <phase>implement</phase>
   <persona>Specialist</persona>
   <output>Source code in src/, tests in tests/</output>
 </skill>

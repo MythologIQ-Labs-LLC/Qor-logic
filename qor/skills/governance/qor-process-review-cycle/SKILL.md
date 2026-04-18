@@ -25,7 +25,7 @@ gate_writes: ""
 
 <skill>
   <trigger>/qor-process-review-cycle</trigger>
-  <phase>META (workflow bundle, governance)</phase>
+  <phase>meta (workflow bundle, governance)</phase>
   <persona>Governor</persona>
   <output>process review summary + addressed events + audit verdict on remediation plan</output>
 </skill>

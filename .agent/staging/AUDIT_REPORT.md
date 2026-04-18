@@ -1,12 +1,12 @@
-# AUDIT REPORT: Phase 29 -- /qor-audit Step Z + CONTRIBUTING.md (Pass 2)
+# AUDIT REPORT: Phase 30 -- System-tier + Hardening + Check-surfaces D/E (Pass 2)
 
 **Tribunal Date**: 2026-04-18
-**Target**: `docs/plan-qor-phase29-audit-stepZ-and-contributing.md`
+**Target**: `docs/plan-qor-phase30-system-tier-hardening.md` (amended)
 **Risk Grade**: L2
 **Auditor**: The QorLogic Judge
 **Mode**: Solo (codex-plugin capability shortfall logged)
 **Session**: `2026-04-17T2335-f284b9`
-**Prior Audit**: Entry #93 (VETO on 2 plan-text grounds)
+**Prior Audit**: Entry #97 (VETO on 2 plan-text grounds)
 
 ---
 
@@ -18,31 +18,35 @@ Both prior VETO grounds verified resolved. No new violations introduced.
 
 ## VETO Ground Resolution
 
-### Ground 1 (Orphan adoption gap) -- RESOLVED
+### Ground 1 (Razor anticipation gap) -- RESOLVED
 
-Plan now carries an explicit **Glossary orphan adoption table** (Phase 2 Changes, starting line 89). All six Phase-28-introduced orphan entries -- `Doc Tier`, `Glossary Entry`, `Concept Home`, `Orphan Concept`, `Doc Integrity Check Surface`, `Complecting` -- each receive at least one legitimate `referenced_by:` consumer. The `Doctrine` entry's prior-planned CONTRIBUTING.md addition is carried forward, bringing the total adopted entries to **seven**.
+Plan Phase 4 now introduces a sibling module instead of adding lines to `doc_integrity.py`:
 
-Consumers cited are pre-existing files that factually reference the concept (per plan line 102-ish "no synthetic citation is invented"):
+- **New**: `qor/scripts/doc_integrity_strict.py` (single file, not a package) hosting `check_term_drift`, `check_cross_doc_conflicts`, and the `_STRICT_SCAN_ROOTS` / `_STRICT_EXCLUDE_SUFFIXES` scope-fence constants.
+- **Minimal change**: `qor/scripts/doc_integrity.py` gains only a 3-line routing extension inside `run_all_checks_from_plan` (imports the strict module on-demand when `strict=True`). Existing 244-line budget preserved.
+- **New test file**: `tests/test_doc_integrity_razor_compliance.py` with `test_doc_integrity_core_under_250`, `test_doc_integrity_strict_under_250`, and `test_strict_module_import_surface`. Enforces the 250-line cap on BOTH modules as a forward-regression guard.
 
-| Term                          | New `referenced_by:`                                                               |
-|-------------------------------|-------------------------------------------------------------------------------------|
-| `Doctrine`                    | `CONTRIBUTING.md`                                                                   |
-| `Doc Tier`                    | `qor/skills/sdlc/qor-plan/SKILL.md`, `qor/gates/schema/plan.schema.json`            |
-| `Glossary Entry`              | `qor/scripts/doc_integrity.py`                                                      |
-| `Concept Home`                | `qor/references/glossary.md` (legitimate self-reference: the file IS the registry)  |
-| `Orphan Concept`              | `qor/scripts/doc_integrity.py`                                                      |
-| `Doc Integrity Check Surface` | `qor/references/doctrine-documentation-integrity.md`                                |
-| `Complecting`                 | `qor/skills/sdlc/qor-plan/SKILL.md`                                                 |
+Razor compliance re-evaluated post-amendment:
 
-New regression test `test_no_phase28_orphan_terms_remain` added to Phase 2 test list (plan line 127): asserts every entry with `introduced_in_plan: phase28-documentation-integrity` has non-empty `referenced_by:`. Forward-looking guard against future plans accidentally stripping consumers.
+| Module                              | Projected lines | Under 250? |
+| ----------------------------------- | --------------- | ---------- |
+| `qor/scripts/doc_integrity.py`      | ~247 (+3)       | YES        |
+| `qor/scripts/doc_integrity_strict.py` | ~80-100 (new) | YES        |
 
-Self-Dogfood section updated to declare the new rule -> test pairing (line 155): *"Rule 'no Phase-28-introduced glossary entry remains orphan once its grace period expires' -> `test_no_phase28_orphan_terms_remain`."*
+Choice rationale: the plan selected the simpler sibling-file option over the full package split proposed in the pass-1 report. Blast radius is smaller (no re-exports, no import path changes for existing consumers); separation of concerns is preserved (core checks vs strict-mode checks); Razor is satisfied for both files with headroom.
 
-### Ground 2 (SG-038 count drift in Self-Dogfood) -- RESOLVED
+### Ground 2 (Session Rotation authoring unassigned) -- RESOLVED
 
-Self-Dogfood enumeration cross-check (plan line 156) now reads: *"the **six** reading-order items in CONTRIBUTING.md (CLAUDE.md, chain.md, delegation-table.md, workflow-bundles.md, doctrine-*, glossary.md) match the Phase 2 Changes section description ('~6 items'). No drift."*
+Plan Phase 1 Affected Files now includes both missing edits:
 
-Full-file grep for `five`: **zero occurrences**. Count is consistent across prose ("six"), enumeration (6 items), and Phase 2 Changes header ("~6 items"). SG-038 cleared.
+- `qor/references/doctrine-governance-enforcement.md` - MODIFY; add §7 (Session Rotation) defining the rotate-on-seal contract (when: Step Z post-write; how: `session.rotate()` writes new session_id; why: per-phase artifact archaeology).
+- `qor/references/glossary.md` - MODIFY; add `Session Rotation` entry with `home: qor/references/doctrine-governance-enforcement.md` and `referenced_by: [qor/scripts/session.py, qor/skills/governance/qor-substantiate/SKILL.md]`.
+
+New test file `tests/test_session_rotation_glossary_entry_exists.py` with two tests:
+- `test_session_rotation_entry_in_glossary` - parses glossary, asserts entry with expected home and non-empty referenced_by.
+- `test_governance_enforcement_doctrine_has_session_rotation_section` - greps doctrine file for §7 header and non-empty body.
+
+Self-Dogfood section now carries a `terms_introduced` cross-check (SG-Phase30-B countermeasure) that walks each of the 7 declared terms and names the authoring phase. All 7 resolve to a home-file edit + a glossary edit; no metadata-only declarations remain.
 
 ---
 
@@ -50,38 +54,46 @@ Full-file grep for `five`: **zero occurrences**. Count is consistent across pros
 
 ### Security Audit (L3)
 
-Unchanged from pass 1. **PASS**
+Unchanged. **PASS**
 
 ### OWASP Top 10 Pass
 
-- A03, A04, A05, A08: unchanged from pass 1. **PASS**
+Unchanged. **PASS** (new `doc_integrity_strict.py` scanning is markdown-only with stdlib `re`; no new deserialization or subprocess surface).
 
 ### Ghost UI Audit
 
-N/A (no UI in scope).
+N/A.
 
 ### Simplicity Razor Audit
 
-| Check              | Limit | Amended Plan                                                                                                                          | Status           |
-| ------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| Max function lines | 40    | No new functions; reuses `gate_chain.write_gate_artifact`                                                                              | OK               |
-| Max file lines     | 250   | CONTRIBUTING.md capped at 80 lines (test-enforced); glossary.md grows by 7 consumer-line additions (small); plan file 174 lines total | OK (provisional) |
-| Max nesting depth  | 3     | No new code paths                                                                                                                     | OK               |
-| Nested ternaries   | 0     | None                                                                                                                                  | OK               |
+| Check              | Limit | Amended Plan                                                                                           | Status |
+| ------------------ | ----- | ------------------------------------------------------------------------------------------------------ | ------ |
+| Max function lines | 40    | 2 new functions in strict.py, ~25-35 lines each                                                        | OK     |
+| Max file lines     | 250   | `doc_integrity.py` ~247; `doc_integrity_strict.py` ~80-100 (both new-test-enforced via `test_doc_integrity_razor_compliance`) | OK     |
+| Max nesting depth  | 3     | Linear scans                                                                                           | OK     |
+| Nested ternaries   | 0     | None                                                                                                   | OK     |
 
-**Result: PASS**
+**Result: PASS** (anticipation resolved)
 
 ### Dependency Audit
 
-Unchanged from pass 1. **PASS** (no new dependencies)
+Unchanged. **PASS** (no new dependencies; stdlib + existing PyYAML)
 
 ### Macro-Level Architecture Audit
 
-Unchanged from pass 1. Glossary updates do not change layering or introduce cross-domain mixing; each `referenced_by:` entry cites an existing file. **PASS**
+- [x] Module boundary clarified: `doc_integrity.py` = core (topology/glossary/orphans/drift advisory); `doc_integrity_strict.py` = strict-mode extensions (D, E). Single responsibility per module.
+- [x] No cyclic dependencies (strict imports core, not reverse).
+- [x] Layering preserved.
+- [x] SoT preserved.
+- [x] No duplicated logic.
+
+**Result: PASS**
 
 ### Orphan Detection
 
-Same three new files as pass 1 (two test files + CONTRIBUTING.md); all connected. **PASS**
+New proposed files: `doc_integrity_strict.py` (consumed by `doc_integrity.run_all_checks_from_plan` when `strict=True`), `test_doc_integrity_razor_compliance.py` (pytest collection), `test_session_rotation_glossary_entry_exists.py` (pytest collection). All connected.
+
+**Result: PASS**
 
 ---
 
@@ -91,16 +103,16 @@ None.
 
 ### Defensive check -- amendment surface
 
-- **Adoption-table enumeration**: plan declares "seven entries" in prose (line 86) and enumerates seven rows in the table (Doctrine + six orphans). Counts match.
-- **`Concept Home` self-reference to `qor/references/glossary.md`**: legitimate per doctrine -- the glossary file IS the registry, so each entry's `home:` pointer and `referenced_by:` consumer coexist without circularity concern. Confirmed: `check_orphans` passes so long as `referenced_by:` is non-empty; the specific consumer value is not constrained to exclude the registry itself.
-- **Rule 4 coverage**: the new rule ("no orphans remain") has its paired test `test_no_phase28_orphan_terms_remain`. ✓
-- **No prose-code drift reintroduced**: grepped plan body for `five` -- zero matches. Ground 2 cleanly resolved.
+- **Sibling module split (Ground 1 fix) preserves public API**: `run_all_checks_from_plan` remains the single entry point; the `strict=False` default keeps existing callers backward-compatible.
+- **Session Rotation authoring (Ground 2 fix) covers both home file and glossary**: test pair verifies both at CI time.
+- **Self-Dogfood terms_introduced enumeration** now explicitly walks all 7 declared terms and names the authoring phase -- the very check that caught Ground 2 is now codified in-plan as a forward safeguard.
+- **No prose-code drift** introduced: grep of the amended plan for inconsistent counts / enumeration drift returns clean (10 items cross-check, 4 phases, 7 terms all consistent).
 
 ---
 
 ## Documentation Drift
 
-Advisory helper output against the Phase 29 plan artifact still reports orphans because the glossary file has not yet been implemented with the adoption-table edits -- that is Phase 2 implementation work. The plan's Ground 1 remediation is the correct fix; drift closes when Phase 2 lands. No action required from this audit.
+Helper output against the amended plan still reports the expected drifts (missing `docs/architecture.md` and missing `Check Surface D` glossary entry) because Phase 3 and Phase 4 respectively deliver them at implementation time. Ground 2's Session Rotation drift would no longer surface because Phase 1 now authors the entry. Amendment is sufficient for seal-time compliance.
 
 ---
 
@@ -115,9 +127,11 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 Pass 2 confirms both prior VETO grounds are resolved:
 
-1. **Orphan adoption gap** -- explicit adoption table covering all seven affected entries + forward-regression test `test_no_phase28_orphan_terms_remain`.
-2. **SG-038 count drift** -- Self-Dogfood enumeration now says "six", matching Phase 2 Changes and the actual item count.
+1. **Razor anticipation** -- sibling-file split (`doc_integrity_strict.py`) keeps the core module within budget; forward-regression test guards both files.
+2. **Session Rotation authoring** -- Phase 1 Affected Files now edits both the doctrine home and the glossary; paired test validates.
 
-No new violations. All other passes (Security L3, OWASP, Ghost-UI N/A, Razor, Dependency, Macro-Arch, Orphan) clean. Phase 29 plan is implementation-ready.
+The `terms_introduced` enumeration cross-check in Self-Dogfood is a direct application of the SG-Phase30-B countermeasure codified in Entry #20 of SHADOW_GENOME.md, written in the same session -- evidence the countermeasure is actionable, not just narrative.
 
-**Required next action:** `/qor-implement` -- proceed to Phase 1 of the plan. Per `qor/gates/chain.md`.
+All other passes (Security L3, OWASP, Ghost-UI N/A, Dependency, Macro-Arch, Orphan) remain clean.
+
+**Required next action**: `/qor-implement` -- proceed to Phase 1 of the plan. Per `qor/gates/chain.md`.

@@ -18,7 +18,7 @@ gate_writes: deliver
 
 <skill>
   <trigger>/qor-repo-release</trigger>
-  <phase>DELIVER</phase>
+  <phase>deliver</phase>
   <persona>Governor</persona>
   <output>Version bump, metadata sync, git tag, release pipeline trigger</output>
 </skill>

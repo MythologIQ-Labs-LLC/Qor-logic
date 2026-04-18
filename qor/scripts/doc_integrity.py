@@ -192,12 +192,13 @@ def render_drift_section(plan: dict, repo_root: str) -> str:
     )
 
 
-def run_all_checks_from_plan(plan: dict, repo_root: str) -> None:
+def run_all_checks_from_plan(plan: dict, repo_root: str, strict: bool = False) -> None:
     """Run topology + glossary + orphans against the declared plan state.
 
     Called by /qor-substantiate Step 4.7. Raises ValueError on first violation
     (changelog_stamp idiom; no return codes, no silent retry). Legacy tier
-    bypasses all checks.
+    bypasses all checks. `strict=True` additionally invokes Check Surface D + E
+    from doc_integrity_strict (Phase 30 wiring; lenient by default).
     """
     tier = plan.get("doc_tier", "legacy")
     if tier == "legacy":
@@ -212,6 +213,10 @@ def run_all_checks_from_plan(plan: dict, repo_root: str) -> None:
         current_session_plan_tag=plan_slug,
         repo_root=repo_root,
     )
+    if strict:
+        import doc_integrity_strict as dis
+        dis.check_term_drift(glossary_path, repo_root, strict=True)
+        dis.check_cross_doc_conflicts(glossary_path, repo_root, strict=True)
 
 
 def emit_legacy_tier_event(

@@ -17,7 +17,7 @@ gate_writes: research
 
 <skill>
   <trigger>/qor-research</trigger>
-  <phase>RESEARCH</phase>
+  <phase>research</phase>
   <persona>Analyst</persona>
   <output>.failsafe/governance/RESEARCH_BRIEF.md with findings + META_LEDGER entry</output>
 </skill>

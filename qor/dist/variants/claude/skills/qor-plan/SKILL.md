@@ -17,7 +17,7 @@ gate_writes: plan
 
 <skill>
   <trigger>/qor-plan</trigger>
-  <phase>PLAN</phase>
+  <phase>plan</phase>
   <persona>Governor</persona>
   <output>plan-*.md file with incremental phases and unit test descriptions</output>
 </skill>

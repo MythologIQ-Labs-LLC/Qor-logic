@@ -10,6 +10,27 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-04-18
+
+### Added
+- **System-tier documentation topology** at `docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, and `docs/policies.md`. Authored from the existing repo state (chain.md, skills catalog, policies, doctrines). Qor-logic itself can now declare `doc_tier: system` on plans and the check passes. Phase 30 is the first plan to self-substantiate at this tier.
+- **`/qor-audit` Step Z** wires audit.json gate artifact writes via `gate_chain.write_gate_artifact` (Phase 29 delivered the SKILL edit; Phase 30 doctrine + live dogfood). Downstream phases can now read structured audit verdicts.
+- **Session rotation** via `qor/scripts/session.py::rotate()`. `/qor-substantiate` Step Z calls it after writing `substantiate.json`, so the next `/qor-plan` starts with a clean `.qor/gates/<new_sid>/` directory. Prior session dirs preserved for archaeology. New doctrine section: `doctrine-governance-enforcement.md` §7.
+- **Dist recompile on seal**: `/qor-substantiate` Step 8.5 invokes `python -m qor.scripts.dist_compile` automatically so variant outputs (claude / kilo-code / codex / gemini) stay in sync with source skills.
+- **Check Surface D (term-drift grep)** and **Check Surface E (cross-doc conflict detection)** in new `qor/scripts/doc_integrity_strict.py`. Lenient-by-default; `strict=True` kwarg routes through `run_all_checks_from_plan`. Both scope-fenced to markdown files; code files excluded.
+- **CONTRIBUTING.md**: Phase 29 landed pointer + quickstart; Phase 30 adds full doctrine inventory link from README.
+- **Razor compliance forward-regression guards**: `tests/test_doc_integrity_razor_compliance.py` enforces <=250 lines on both `doc_integrity.py` and `doc_integrity_strict.py` (SG-Phase30-A countermeasure).
+
+### Changed
+- `/qor-substantiate` Constraints now require `bump_version` to run BEFORE `create_seal_tag` in Step 7.5. Inverted order (bug observed in Phase 29) interdicts on tag-already-exists and forces manual pyproject editing. Paired test locks the contract.
+- CLAUDE.md: bare-backtick doctrine paths replaced with markdown links.
+- README.md: complete doctrine inventory section added (14 doctrines + patterns + templates + glossary linked).
+- 15 `qor/skills/**/SKILL.md` files: XML `<phase>X</phase>` tags lowercased to match YAML frontmatter case (GAP-REPO-06 resolution).
+- `.github/workflows/ci.yml` and `.github/workflows/release.yml`: `actions/checkout@v4` gains `fetch-depth: 0, fetch-tags: true` so `test_every_changelog_section_has_tag` finds tags in CI.
+
+### Security
+- Check-surface scanners use stdlib `re` only; no new deserialization or subprocess surface. Scope fence explicitly excludes `*.py`, `*.json`, `*.toml`, `*.cedar` and `vendor/` / `fixtures/` / `dist/` directories.
+
 ## [0.20.0] - 2026-04-18
 
 ### Added

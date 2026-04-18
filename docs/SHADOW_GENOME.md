@@ -619,4 +619,44 @@ SG-Phase29-A (newly-enforced-doctrine grace gap: plans authored soon after a new
 
 ---
 
+### Entry #20: VETO -- plan-qor-phase30-system-tier-hardening pass 1
+
+**Timestamp**: 2026-04-18
+**Target**: `docs/plan-qor-phase30-system-tier-hardening.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Ledger Entry**: #97
+**Session**: `2026-04-17T2335-f284b9`
+
+### Pattern
+
+Two VETO grounds. The interesting one is Ground 1: **projected Razor violation from additive edits to an already-near-cap module.** `qor/scripts/doc_integrity.py` sat at 244 lines post-Phase-28 trim. Phase 30's plan proposed adding 2 functions + scope fences (~50-70 lines) to the same module, projecting ~294-314 lines -- clearly over the 250 limit.
+
+Phase 28 tripped this exact limit once already (originally 258 lines; trimmed to 244 under seal-time pressure by stripping section-divider comments). The Phase 30 plan did not acknowledge that recurrence risk, nor propose a split or companion module.
+
+Ground 2 is a classic assignment gap: a term declared in plan top-matter (`Session Rotation`) with `home: doctrine-governance-enforcement.md` but no phase actually modifies either the doctrine body or the glossary file to author the entry. The declaration was a metadata-only claim -- the SG-Phase25-B pattern at doctrine scope rather than skill-frontmatter scope.
+
+### Why It Matters
+
+**Cumulative razor creep at module scope** (adjacent to SG-Phase24-A at CLI-harness scope): monotonically additive edits to a single file across phases eventually trip the 250-line cap. The cap is a *speed bump*, not a floor -- once a module is within ~10-15 lines of it, any future additive phase must budget for a split in its own plan. The alternative (trim-under-pressure each seal) sacrifices readability incrementally and obscures the structural signal that the module needs to bifurcate.
+
+**Metadata-only declarations at doctrine scope**: a plan's top-matter `terms_introduced:` block is a promise. If no phase's Affected Files section fulfills the promise (authoring the glossary entry + editing the declared home), the promise becomes exactly the kind of ghost feature SG-Phase25-B warned about at skill-frontmatter scope, just one layer up.
+
+### Countermeasure
+
+For Governor authoring:
+
+1. **When a plan adds lines to any existing module, include the module's current line count in the plan (or the Basis section) and sum the projected delta.** If the projected total is within 20 lines of the Razor limit, propose the split or trim *in the same plan* -- do not defer.
+2. **Every term in `terms_introduced:` must appear in exactly one phase's Affected Files section, covering both the glossary entry and the declared home.** Add a dogfood bullet explicitly cross-checking this: "Enumeration cross-check: every `terms_introduced:` entry resolves to one or more edits in Phase N's Affected Files."
+
+For Judge auditing:
+
+1. When a plan proposes additive edits to a file, `wc -l` the file and add the plan's projected delta. Flag projections within 10 lines of the 250 cap as Razor-anticipation VETO grounds. Refactor is the *mechanism*; the fix must live in the *plan* before implementation, not be deferred.
+2. Walk the `terms_introduced:` list against each phase's Affected Files; flag any term not assigned to a phase as a metadata-only claim.
+
+### Pattern ID
+
+SG-Phase30-A (projected Razor violation from additive edits to near-cap module) + SG-Phase30-B (metadata-only term declaration at doctrine scope: term in `terms_introduced:` with no phase authoring the glossary entry + home)
+
+---
+
 *Shadow integrity: ACTIVE*

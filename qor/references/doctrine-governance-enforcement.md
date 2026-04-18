@@ -64,3 +64,30 @@ Phase lifecycle indexed by GitHub-native machinery, not a parallel doc.
   (b) ledger entry number `#<n>`, (c) Merkle seal hash.
 - **Tag annotation**: annotated tag created at substantiation per §4; the tag's
   annotation message links back to the PR number or commit SHA.
+
+## 7. Session Rotation
+
+`/qor-substantiate` Step Z calls `session.rotate()` after writing the
+substantiate gate artifact. The rotate writes a fresh session_id (format
+`<YYYY-MM-DDTHHMM>-<6hex>`) to the session marker, so the next `/qor-plan`
+starts with a clean `.qor/gates/<session_id>/` directory.
+
+**Why**: Phase 28 and Phase 29 sealed on the same session_id
+(`2026-04-17T2335-f284b9`), and each phase's plan/audit/implement/substantiate
+artifacts overwrote the prior phase's in the shared session directory. The
+ledger preserves the chain, but per-phase gate-artifact archaeology is lost
+when directories collide.
+
+**How**: `qor/scripts/session.py::rotate()` calls `generate_id()` and
+atomically writes the result to `MARKER_PATH`. No deletion of the prior
+session's directory -- operators choose when to prune `.qor/gates/<old_sid>/`
+archives.
+
+**Enforcement**: Phase 30 substantiate Step Z is the canonical call site.
+Manual session rotation (e.g., via `python qor/scripts/session.py new`) is
+permitted outside the seal flow but SHOULD be rare.
+
+**Anti-pattern**: do NOT rotate at `/qor-plan` entry (Step 0.5). Rotation at
+plan-time would invalidate downstream gate checks within a single phase if
+the plan needs to be re-authored after audit VETO. Rotation belongs strictly
+at end-of-phase seal.

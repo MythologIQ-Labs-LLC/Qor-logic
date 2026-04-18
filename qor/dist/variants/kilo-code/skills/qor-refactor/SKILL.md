@@ -17,7 +17,7 @@ gate_writes: implement
 
 <skill>
   <trigger>/qor-refactor</trigger>
-  <phase>IMPLEMENT (maintenance)</phase>
+  <phase>implement (maintenance)</phase>
   <persona>Specialist</persona>
   <output>Refactored code, updated SYSTEM_STATE.md, ledger entry</output>
 </skill>

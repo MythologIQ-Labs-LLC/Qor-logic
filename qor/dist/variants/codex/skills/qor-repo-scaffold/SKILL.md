@@ -17,7 +17,7 @@ gate_writes: implement
 
 <skill>
   <trigger>/qor-repo-scaffold</trigger>
-  <phase>IMPLEMENT</phase>
+  <phase>implement</phase>
   <persona>Specialist</persona>
   <output>Created community files from templates</output>
 </skill>

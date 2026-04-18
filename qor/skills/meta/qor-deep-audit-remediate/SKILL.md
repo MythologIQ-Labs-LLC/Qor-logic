@@ -26,7 +26,7 @@ gate_writes: ""
 
 <skill>
   <trigger>/qor-deep-audit-remediate</trigger>
-  <phase>META (workflow bundle, remediate half)</phase>
+  <phase>meta (workflow bundle, remediate half)</phase>
   <persona>Governor</persona>
   <output>plan-remediation-*.md + per-sprint commits + validated gap closure</output>
 </skill>

@@ -17,7 +17,7 @@ gate_writes: audit
 
 <skill>
   <trigger>/qor-repo-audit</trigger>
-  <phase>AUDIT</phase>
+  <phase>audit</phase>
   <persona>Judge</persona>
   <output>Gap report with compliance score and GitHub API metrics</output>
 </skill>

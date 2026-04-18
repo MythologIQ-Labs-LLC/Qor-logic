@@ -18,7 +18,7 @@ gate_writes: substantiate
 
 <skill>
   <trigger>/qor-substantiate</trigger>
-  <phase>SUBSTANTIATE</phase>
+  <phase>substantiate</phase>
   <persona>Judge</persona>
   <output>Updated META_LEDGER.md with final seal, SYSTEM_STATE.md snapshot</output>
 </skill>
@@ -170,6 +170,14 @@ gate_chain.write_gate_artifact(phase="substantiate", payload=payload, session_id
 
 Schema lives at `qor/gates/schema/substantiate.schema.json`; the helper validates before write.
 
+After writing, rotate the session so the next `/qor-plan` starts with a clean gate directory (Phase 30 wiring; closes the session-carry-over gap that let Phase 28/29 share a single session dir):
+
+```python
+import session
+new_sid = session.rotate()
+print(f"Session sealed. New session: {new_sid}. Prior artifacts preserved at .qor/gates/{sid}/")
+```
+
 ## Constraints`, `## Next Step`
    - Verify the `## Next Step` section references valid successor skills
    - Log in ledger: "Skill file [name] modified — structure verified"
@@ -285,6 +293,16 @@ Clear: .failsafe/governance/
 
 Preserve only the final AUDIT_REPORT.md (or archive it).
 
+### Step 8.5: Dist Recompile (Phase 30 wiring)
+
+Rebuild variant outputs so seal cannot complete with dist drift against source skills. Closes the gap where Phase 28/29 operators manually ran `python -m qor.scripts.dist_compile` between implementation and seal.
+
+```bash
+python -m qor.scripts.dist_compile
+```
+
+On non-zero exit, ABORT substantiation; operator must resolve compile errors and re-run seal.
+
 ### Step 9: Final Report
 
 Template: `references/qor-substantiate-templates.md`.
@@ -344,6 +362,9 @@ Template: `references/qor-substantiate-templates.md`.
 - **ALWAYS** calculate proper chain hash
 - **ALWAYS** document any unplanned files in ledger
 - **ALWAYS** verify chain integrity before sealing
+- **ALWAYS** call `governance_helpers.bump_version` BEFORE `governance_helpers.create_seal_tag` in Step 7.5; never author tags manually. Inverted order interdicts on tag-already-exists and forces pyproject hand-editing (SG-Phase30 wiring; Phase 29 incident).
+- **ALWAYS** run `python -m qor.scripts.dist_compile` at Step 8.5 so variant outputs are rebuilt on seal; prevents dist drift.
+- **ALWAYS** call `session.rotate()` at Step Z after writing `substantiate.json`; prior session directory preserved for archaeology.
 
 ## Success Criteria
 

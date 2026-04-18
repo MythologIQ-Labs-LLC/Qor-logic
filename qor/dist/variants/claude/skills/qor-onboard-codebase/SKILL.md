@@ -25,7 +25,7 @@ gate_writes: ""
 
 <skill>
   <trigger>/qor-onboard-codebase</trigger>
-  <phase>META (workflow bundle)</phase>
+  <phase>meta (workflow bundle)</phase>
   <persona>Governor</persona>
   <output>RESEARCH_BRIEF.md + reorganization proposal + audit report + integration plan</output>
 </skill>

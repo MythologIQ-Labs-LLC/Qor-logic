@@ -16,7 +16,7 @@ tone_aware: false
 
 <skill>
   <trigger>/qor-shadow-process</trigger>
-  <phase>GOVERNANCE (cross-cutting; invoked by other skills and auto-triggers)</phase>
+  <phase>governance (cross-cutting; invoked by other skills and auto-triggers)</phase>
   <persona>Judge</persona>
   <output>Appended event in docs/PROCESS_SHADOW_GENOME.md or docs/PROCESS_SHADOW_GENOME_UPSTREAM.md (JSONL)</output>
 </skill>

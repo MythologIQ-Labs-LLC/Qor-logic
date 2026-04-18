@@ -18,7 +18,7 @@ tone_aware: false
 
 <skill>
   <trigger>/qor-remediate</trigger>
-  <phase>REMEDIATE (post-substantiate or threshold-auto-triggered)</phase>
+  <phase>remediate (post-substantiate or threshold-auto-triggered)</phase>
   <persona>Governor</persona>
   <output>Remediation proposal + shadow-process events addressed</output>
 </skill>

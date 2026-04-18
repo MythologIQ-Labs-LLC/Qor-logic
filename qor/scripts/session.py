@@ -81,6 +81,19 @@ def end_session(marker: Path | None = None) -> None:
         marker.unlink()
 
 
+def rotate(now: datetime | None = None) -> str:
+    """Write a fresh session_id to MARKER_PATH and return it.
+
+    Used by /qor-substantiate Step Z to close the session-carry-over gap
+    that let prior phases' gate artifacts overwrite each other. The previous
+    session's .qor/gates/<old_sid>/ directory is preserved; operators prune
+    manually.
+    """
+    new_id = generate_id(now)
+    _atomic_write(MARKER_PATH, new_id + "\n")
+    return new_id
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)

@@ -280,6 +280,34 @@ python qor/scripts/check_variant_drift.py                  # SSoT vs dist consis
 | [`qor/gates/workflow-bundles.md`](qor/gates/workflow-bundles.md) | Bundle checkpoint and budget protocol |
 | [`CLAUDE.md`](CLAUDE.md) | Drop-in token-efficiency defaults for any project |
 
+### Doctrines (complete inventory)
+
+Each doctrine under `qor/references/` carries a single rule or convention cited by one or more skills.
+
+| Doctrine | Purpose |
+|---|---|
+| [audit-report-language](qor/references/doctrine-audit-report-language.md) | VETO ground-class to skill directive mapping |
+| [changelog](qor/references/doctrine-changelog.md) | Keep-a-Changelog discipline + seal-time stamp |
+| [ci-budget](qor/references/doctrine-ci-budget.md) | CI compute and latency budget |
+| [code-quality](qor/references/doctrine-code-quality.md) | Section 4 Simplicity Razor + anti-slop rules |
+| [communication-tiers](qor/references/doctrine-communication-tiers.md) | Technical / standard / plain output tiers |
+| [documentation-integrity](qor/references/doctrine-documentation-integrity.md) | Tiered doc topology + glossary + check surface |
+| [governance-enforcement](qor/references/doctrine-governance-enforcement.md) | Branch / version / tag / push / session-rotation protocol |
+| [nist-ssdf-alignment](qor/references/doctrine-nist-ssdf-alignment.md) | NIST SP 800-218A practice-tag mapping |
+| [owasp-governance](qor/references/doctrine-owasp-governance.md) | OWASP Top 10 governance integration |
+| [prompt-resilience](qor/references/doctrine-prompt-resilience.md) | Autonomy classification + pause-smell detection |
+| [shadow-attribution](qor/references/doctrine-shadow-attribution.md) | Shadow skill attribution rules |
+| [shadow-genome-countermeasures](qor/references/doctrine-shadow-genome-countermeasures.md) | SG-016 through SG-038 failure-pattern countermeasures |
+| [test-discipline](qor/references/doctrine-test-discipline.md) | TDD, definition of done, reliability rules |
+| [token-efficiency](qor/references/doctrine-token-efficiency.md) | Terse-by-default output + read/write discipline |
+
+Patterns and templates (non-binding references):
+
+- [patterns-agent-design](qor/references/patterns-agent-design.md), [patterns-architecture](qor/references/patterns-architecture.md), [patterns-devops](qor/references/patterns-devops.md), [patterns-project-planning](qor/references/patterns-project-planning.md), [patterns-skill-lifecycle](qor/references/patterns-skill-lifecycle.md), [patterns-ui-diagnosis](qor/references/patterns-ui-diagnosis.md), [patterns-voice-integration](qor/references/patterns-voice-integration.md)
+- [ql-audit-templates](qor/references/ql-audit-templates.md), [ql-bootstrap-templates](qor/references/ql-bootstrap-templates.md), [ql-implement-patterns](qor/references/ql-implement-patterns.md), [ql-organize-templates](qor/references/ql-organize-templates.md), [ql-refactor-examples](qor/references/ql-refactor-examples.md), [ql-substantiate-templates](qor/references/ql-substantiate-templates.md), [ql-validate-reports](qor/references/ql-validate-reports.md)
+- [skill-recovery-pattern](qor/references/skill-recovery-pattern.md)
+- [glossary](qor/references/glossary.md) -- canonical term registry introduced in Phase 28
+
 ## Shadow Genome
 
 The Shadow Genome is QorLogic's institutional memory for failure patterns. Every governance failure (plan VETOes, import breakage, arithmetic drift, silent data loss) is recorded, classified, and codified as a countermeasure.

@@ -34,7 +34,7 @@ gate_writes: ""
 
 <skill>
   <trigger>/qor-deep-audit</trigger>
-  <phase>META (workflow bundle)</phase>
+  <phase>meta (workflow bundle)</phase>
   <persona>Governor</persona>
   <output>RESEARCH_BRIEF.md + remediation plan + implementation + validation</output>
 </skill>

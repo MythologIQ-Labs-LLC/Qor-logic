@@ -23,6 +23,10 @@ referenced_by:
   - qor/gates/delegation-table.md
   - qor/skills/sdlc/qor-plan/SKILL.md
   - CONTRIBUTING.md
+  - docs/architecture.md
+  - docs/lifecycle.md
+  - docs/operations.md
+  - docs/policies.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -166,5 +170,78 @@ home: qor/skills/sdlc/qor-plan/SKILL.md
 referenced_by:
   - qor/skills/sdlc/qor-plan/SKILL.md
 introduced_in_plan: phase28-documentation-integrity
+```
+
+```yaml
+term: Session Rotation
+definition: Writing a fresh session_id to the session marker after /qor-substantiate Step Z completes, so the next /qor-plan starts with a clean .qor/gates/<session_id>/ directory. Prior session directories are preserved (not pruned) so per-phase gate-artifact archaeology survives across seals.
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/scripts/session.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase30-system-tier-hardening
+```
+
+```yaml
+term: Architecture Doc
+definition: docs/architecture.md -- system-tier required document describing the layer stack (entry points, references, gates, skills, scripts, policies, artifacts) and layering rules. One of four docs a plan must cite at doc_tier=system.
+home: docs/architecture.md
+referenced_by:
+  - CLAUDE.md
+  - docs/lifecycle.md
+  - docs/operations.md
+  - docs/policies.md
+introduced_in_plan: phase30-system-tier-hardening
+```
+
+```yaml
+term: Lifecycle Doc
+definition: docs/lifecycle.md -- system-tier required document describing the phase sequence, per-phase contracts, session model, branch model, version model, and gate-artifact chain.
+home: docs/lifecycle.md
+referenced_by:
+  - CLAUDE.md
+  - docs/architecture.md
+  - docs/operations.md
+introduced_in_plan: phase30-system-tier-hardening
+```
+
+```yaml
+term: Operations Doc
+definition: "docs/operations.md -- system-tier required document. Operator runbook covering CLI usage, seal ceremony, push/merge decisions, failure recovery, CI considerations, dist-variant management, and troubleshooting."
+home: docs/operations.md
+referenced_by:
+  - CLAUDE.md
+  - docs/architecture.md
+  - docs/lifecycle.md
+introduced_in_plan: phase30-system-tier-hardening
+```
+
+```yaml
+term: Policies Doc
+definition: "docs/policies.md -- system-tier required document. Enumerates qor/policies/*.cedar files, OWASP/NIST mappings, change_class contract, shadow-genome rubric, exception and escape paths."
+home: docs/policies.md
+referenced_by:
+  - CLAUDE.md
+  - docs/architecture.md
+  - docs/lifecycle.md
+introduced_in_plan: phase30-system-tier-hardening
+```
+
+```yaml
+term: Check Surface D
+definition: "Term-drift grep: scans markdown files in qor/references, qor/gates, qor/skills, docs, and root-level CLAUDE/CONTRIBUTING/README/CHANGELOG for canonical glossary terms used outside their declared referenced_by. Implemented by doc_integrity_strict.check_term_drift."
+home: qor/references/doctrine-documentation-integrity.md
+referenced_by:
+  - qor/scripts/doc_integrity_strict.py
+introduced_in_plan: phase30-system-tier-hardening
+```
+
+```yaml
+term: Check Surface E
+definition: "Cross-doc conflict detection: scans in-scope markdown for sentences defining a glossary term (patterns like 'Term is X', 'Term means X') and flags bodies whose exact text diverges from the canonical glossary definition. Implemented by doc_integrity_strict.check_cross_doc_conflicts."
+home: qor/references/doctrine-documentation-integrity.md
+referenced_by:
+  - qor/scripts/doc_integrity_strict.py
+introduced_in_plan: phase30-system-tier-hardening
 ```
 

@@ -6,7 +6,7 @@ prompt = """
 
 <skill>
   <trigger>/qor-deep-audit-recon</trigger>
-  <phase>META (workflow bundle, recon half)</phase>
+  <phase>meta (workflow bundle, recon half)</phase>
   <persona>Governor</persona>
   <output>RESEARCH_BRIEF.md (verified gap inventory, ready for remediation)</output>
 </skill>
