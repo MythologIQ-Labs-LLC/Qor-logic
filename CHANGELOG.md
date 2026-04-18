@@ -10,6 +10,22 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-04-18
+
+### Added
+- **`/qor-substantiate` Step 6.5 Documentation Currency Check**: WARNs at seal time when a phase's `files_touched` includes doc-affecting changes (SKILL.md / doctrine / schema / script) but the 4 system-tier docs (`docs/{architecture,lifecycle,operations,policies}.md`) weren't updated. Operator decides whether to amend docs or continue. Lives in `qor/scripts/doc_integrity_strict.py::check_documentation_currency`. Doctrine §5 of `doctrine-documentation-integrity.md` documents the heuristic.
+- **Check Surface D + E scope-fence tuning** (`qor/scripts/doc_integrity_strict.py`): three new exclusion layers -- doctrine-peer (cross-doctrine references not drift), home-directory-peer (siblings discussing shared concepts), and per-entry `scope_exclude: []` glossary frontmatter opt-out.
+- **`qor/scripts/doc_integrity_drift_report.py`**: operator CLI producing a Markdown drift report grouped by term. Ad-hoc triage tool.
+- **`qor/scripts/pr_citation_lint.py` + `.github/workflows/pr-lint.yml`**: CI lint enforcing `doctrine-governance-enforcement.md` §6 (PR descriptions must cite plan file + ledger entry + Merkle seal).
+- **`tests/test_install_sync_with_source.py`**: SHA256-level sync between source SKILL.md files and dist variants (claude / codex / kilo-code). Catches dist drift at CI time.
+- **`docs/phase31-drift-triage-report.md`**: 187-line artifact summarizing Phase 2 live drift triage decisions and deferred strict-mode wiring rationale.
+
+### Changed
+- `qor/scripts/session.py`: `MARKER_PATH` renamed from `.qor/current_session` to `.qor/session/current` to match bash references in substantiate Step 4.6 and implement Step 5.5. Migration was lossy -- the old marker file carries the rotated Phase 30 session id, the new marker needed manual migration at first Phase 31 substantiate attempt.
+- `qor/references/glossary.md`: `Gate` and `Shadow Genome` entries gain 20+ additional `referenced_by:` consumers from the live drift triage.
+- `/qor-audit` SKILL.md Documentation Drift section gains an explicit Python block invoking `doc_integrity.render_drift_section` (replacing prose-only narrative).
+- `qor-audit-templates.md` gains `<!-- qor:drift-section -->` canonical insertion marker.
+
 ## [0.21.0] - 2026-04-18
 
 ### Added

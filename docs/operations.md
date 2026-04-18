@@ -18,6 +18,12 @@ The `qorlogic` CLI is the primary install/operation surface. Subcommands:
 | `policy check <request.json>` | Evaluate a request against `qor/policies/*.cedar` |
 | `compliance report` | Emit a NIST SP 800-218A practice-tag report |
 
+### Ad-hoc tooling (invoked directly, not through `qorlogic`)
+
+| Command | Purpose |
+|---|---|
+| `python -m qor.scripts.doc_integrity_drift_report` | Phase 31 wiring. Runs Check Surface D + E in lenient mode against the live repo; writes a Markdown drift report to stdout grouped by term. Operator triage tool; not wired into the seal flow. |
+
 All subcommands accept `--scope {repo,global}` (default `repo`); this determines whether the install/uninstall/init writes to the project directory or to the user's home directory.
 
 ## Seal ceremony (operator's view of `/qor-substantiate`)
@@ -27,14 +33,15 @@ All subcommands accept `--scope {repo,global}` (default `repo`); this determines
 3. On any abort in Steps 0-4.7, the session stays unsealed. Operator resolves the drift (re-audit, fix missing glossary entry, unwire broken handoff, etc.) and re-runs.
 4. Step 5 runs Section 4 Razor final check.
 5. Step 6 syncs `docs/SYSTEM_STATE.md`.
-6. Step 7 calculates the Merkle seal (SHA256 chain of session artifacts).
-7. Step 7.5 calls `bump_version(change_class)` FIRST, then `create_seal_tag(...)` (order matters per Phase 30 constraint; inverted order interdicts on tag-already-exists).
-8. Step 7.6 stamps `CHANGELOG.md`: `## [Unreleased]` -> `## [X.Y.Z] - YYYY-MM-DD`.
-9. Step 8 clears `.failsafe/governance/` staging.
-10. Step 8.5 runs `python -m qor.scripts.dist_compile` (Phase 30 wiring) so variant outputs stay in sync.
-11. Step 9 writes the final report. Step 9.5 auto-stages CHANGELOG + META_LEDGER + SYSTEM_STATE + plan + BACKLOG + src/.
-12. Step 9.6 prompts the operator with four push/merge options.
-13. Step Z writes `substantiate.json` gate artifact and calls `session.rotate()` to issue a fresh session_id for the next phase.
+6. **Step 6.5 (Phase 31 wiring)** runs `doc_integrity_strict.check_documentation_currency` against the implement gate artifact. WARNS when doc-affecting files (SKILL.md / doctrine-*.md / schema / script) were touched without a corresponding update to a system-tier doc (architecture/lifecycle/operations/policies). Operator judges: amend docs and re-seal, or continue with the warning acknowledged.
+7. Step 7 calculates the Merkle seal (SHA256 chain of session artifacts).
+8. Step 7.5 calls `bump_version(change_class)` FIRST, then `create_seal_tag(...)` (order matters per Phase 30 constraint; inverted order interdicts on tag-already-exists).
+9. Step 7.6 stamps `CHANGELOG.md`: `## [Unreleased]` -> `## [X.Y.Z] - YYYY-MM-DD`.
+10. Step 8 clears `.failsafe/governance/` staging.
+11. Step 8.5 runs `python -m qor.scripts.dist_compile` (Phase 30 wiring) so variant outputs stay in sync.
+12. Step 9 writes the final report. Step 9.5 auto-stages CHANGELOG + META_LEDGER + SYSTEM_STATE + plan + BACKLOG + src/.
+13. Step 9.6 prompts the operator with four push/merge options.
+14. Step Z writes `substantiate.json` gate artifact and calls `session.rotate()` to issue a fresh session_id for the next phase.
 
 ## Push/merge decision (Step 9.6)
 
@@ -79,8 +86,9 @@ The `.github/workflows/` files configure GitHub Actions:
 
 - `ci.yml`: runs the full test suite + variant drift check + ledger hash verify on every push / PR.
 - `release.yml`: publishes to PyPI on tag push.
+- **`pr-lint.yml` (Phase 31 wiring)**: runs on `pull_request` events (opened / reopened / synchronize / edited). Pipes the PR body through `qor/scripts/pr_citation_lint.py`; fails the PR if any of plan file path, ledger entry `#<n>`, or 64-char Merkle seal hex is missing per `doctrine-governance-enforcement.md` §6.
 
-Both workflows use `actions/checkout@v4` with `fetch-depth: 0, fetch-tags: true` (Phase 30 wiring) so `git tag` is populated for `tests/test_changelog_tag_coverage.py::test_every_changelog_section_has_tag`. Prior absence of tag fetch produced CI failures with "CHANGELOG sections without git tags".
+All workflows use `actions/checkout@v4` with `fetch-depth: 0, fetch-tags: true` (Phase 30 wiring) so `git tag` is populated for `tests/test_changelog_tag_coverage.py::test_every_changelog_section_has_tag`. Prior absence of tag fetch produced CI failures with "CHANGELOG sections without git tags". All workflows also declare `paths-ignore:` + `concurrency:` + `setup-python` cache per `tests/test_workflow_budget.py` doctrine.
 
 ## Dist variant management
 

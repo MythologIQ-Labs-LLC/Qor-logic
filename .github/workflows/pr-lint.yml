@@ -1,0 +1,32 @@
+name: PR Citation Lint
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "CHANGELOG.md"
+
+concurrency:
+  group: pr-lint-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e .
+      - name: Lint PR description per doctrine-governance-enforcement §6
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          printf '%s' "$PR_BODY" | python qor/scripts/pr_citation_lint.py

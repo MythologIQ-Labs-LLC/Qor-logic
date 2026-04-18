@@ -143,3 +143,32 @@ gaps). Author's caveat captured in CLAUDE.md: physical-drive enforcement
 - Companion doctrines: `doctrine-test-discipline.md` (Rule 4: every rule has
   a test), `doctrine-shadow-genome-countermeasures.md` (SG-Phase24-B safe
   loader, SG-038 prose-code mismatch, SG-036 doctrine self-application).
+
+## 5. Documentation Currency (Phase 31 wiring)
+
+`/qor-substantiate` Step 6.5 invokes `doc_integrity_strict.check_documentation_currency` against the implement gate artifact. The heuristic fires when:
+
+- `files_touched` contains at least one file matching `qor/skills/**/SKILL.md`, `qor/references/doctrine-*.md`, `qor/gates/schema/*.json`, or `qor/scripts/*.py`
+- AND none of `docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md` are in `files_touched`.
+
+The helper returns a warning list (non-empty iff fired). Phase 31 wires WARN semantics: the operator sees the warnings, decides whether they're spurious (trivial code change; no doc update warranted) or legitimate (new concept; doc must reflect), and either continues seal or pauses to amend the system-tier docs.
+
+Strict-mode upgrade (BLOCK instead of WARN) is deferred to a future phase when the heuristic's false-positive rate is known from production use.
+
+**Rationale**: Phase 30 authored the four system-tier docs, but without a seal-time check the docs drift silently as future phases modify skills/doctrines/scripts. Step 6.5 prevents silent drift by raising a prompt whenever a phase's delta plausibly affects the documented story.
+
+**Anti-pattern**: do NOT add every file-type to the trigger list. The heuristic's signal degrades if it fires on test edits, dist variants, or ledger updates. Keep the trigger set scoped to source-of-truth locations.
+
+## 6. Check-surface extensions: strict-mode (Phase 31)
+
+`doc_integrity.run_all_checks_from_plan` accepts a `strict: bool = False` kwarg. When `True`, the composite additionally invokes `doc_integrity_strict.check_term_drift` (Check Surface D) and `doc_integrity_strict.check_cross_doc_conflicts` (Check Surface E). Both raise `ValueError` on the first finding when strict.
+
+Scope fences (Phase 31 wiring):
+
+- `.py`, `.json`, `.toml`, `.cedar` files excluded.
+- `vendor/`, `fixtures/`, `dist/` directories excluded.
+- Doctrine-peer exclusion: if a term's `home:` is a `doctrine-*.md` file, usage in OTHER `doctrine-*.md` files is not drift (cross-doctrine references are normal prose).
+- Home-directory-peer exclusion: if term's `home:` sits in directory X, usage in X's other files is not drift.
+- Per-entry `scope_exclude: []` list in glossary frontmatter.
+
+Strict-mode wiring into `/qor-substantiate` Step 4.7 is deferred until a future phase that verifies the repo's lenient-mode findings are below an acceptable threshold.

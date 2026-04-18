@@ -62,6 +62,9 @@ Phase lifecycle indexed by GitHub-native machinery, not a parallel doc.
 - **Branch name**: `phase/<NN>-<slug>` (enforced by §2).
 - **PR description template**: must cite (a) plan file path `docs/plan-qor-phase<NN>*.md`,
   (b) ledger entry number `#<n>`, (c) Merkle seal hash.
+  Mechanically enforced by `.github/workflows/pr-lint.yml` (Phase 31 wiring):
+  the `pr-lint` CI job pipes the PR body through `qor/scripts/pr_citation_lint.py`
+  and fails the PR if any of the three citations is absent.
 - **Tag annotation**: annotated tag created at substantiation per §4; the tag's
   annotation message links back to the PR number or commit SHA.
 

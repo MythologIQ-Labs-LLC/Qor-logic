@@ -46,6 +46,7 @@ class Entry:
     aliases: list[str] = field(default_factory=list)
     referenced_by: list[str] = field(default_factory=list)
     introduced_in_plan: str | None = None
+    scope_exclude: list[str] = field(default_factory=list)
 
 
 def check_topology(tier: str, repo_root: str) -> None:
@@ -146,10 +147,10 @@ def parse_glossary(glossary_path: str) -> list[Entry]:
                 aliases=list(data.get("aliases") or []),
                 referenced_by=list(data.get("referenced_by") or []),
                 introduced_in_plan=data.get("introduced_in_plan"),
+                scope_exclude=list(data.get("scope_exclude") or []),
             )
         )
     return entries
-
 
 def render_drift_section(plan: dict, repo_root: str) -> str:
     """Return a '## Documentation Drift' markdown section, or '' if clean.

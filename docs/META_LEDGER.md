@@ -3694,6 +3694,199 @@ Phase 4 -- Check surfaces D + E (items 5, 6; Ground 1 remediation):
 *Merkle seal: 7306967586...*
 
 
+### Entry #101: GATE TRIBUNAL -- Phase 31 audit pass 1
+
+**Timestamp**: 2026-04-18
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO
+**Risk Grade**: L2
+**Mode**: Solo (codex-plugin capability shortfall logged)
+**Session**: `2026-04-18T1007-301fa2` (first audit of newly-rotated session)
+
+**Target**: `docs/plan-qor-phase31-operationalization.md`
+**Change Class**: `feature`
+**Prior Phase Artifact**: `.qor/gates/2026-04-18T1007-301fa2/plan.json` (found, valid)
+
+**Content Hash**: `b194093cc7c2b61085c49e2056671c62f2a19fd47581bf7e3cd329bd0307244e`
+**Previous Hash**: `7306967586522124cf16c700308b65e9692060f9d64f1baa3ede8db449d1bad9`
+**Chain Hash**: `c44d05fd09578d7f77c4b7b689014c779bb4f29879d8b799dc3496fdd694838a` (SHA256(content + "|" + prev))
+
+**Passes clean**: Security (L3), OWASP A03/A04/A05/A08, Ghost-UI (N/A), Dependency, Macro-Arch, Orphan Detection. Razor clean subject to Ground 1 fix. Drift advisory (clean).
+
+**VETO grounds (both plan-text)**:
+
+1. **SG-038 prose-code mismatch** -- Phase 1 Affected Files places `check_documentation_currency` in `doc_integrity.py` (would push that module to ~264 lines, over 250 cap). Plan's own Self-Dogfood correction subsection contradicts this, relocating the function to `doc_integrity_strict.py`. An implementer following Affected Files produces a Razor violation; following the correction produces a compliant module. Two disk outcomes from one plan. Fix: rewrite Phase 1 Affected Files to place the function in `doc_integrity_strict.py`; remove or shorten the Self-Dogfood "correction" since the correction should be reflected upstream.
+2. **Plan self-modification post-audit** -- Phase 2 Affected Files declares the plan file itself will gain a triage-commentary section during implementation. Breaks audit -> seal immutability: plan-as-audited differs from plan-as-sealed. Fix: extract triage commentary to `docs/phase31-drift-triage-report.md` (new artifact); plan file stays immutable post-audit.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected.
+
+**Required next action**: Governor: amend plan text per the two grounds above, re-run `/qor-audit`. Both are plan-text; no implementation has started; no `/qor-debug`, `/qor-refactor`, or `/qor-organize` indicated.
+
+**Decision**: Phase 31 plan VETOed at pass 1 on two plan-text grounds. Notably, pass-1 caught a SELF-DETECTED Razor risk that the plan tried to correct inline rather than upstream -- the correction is right; its placement is wrong.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN* (awaiting plan amendment)
+*Merkle seal: 7306967586...* (unchanged; audit entries do not advance seal)
+
+
+### Entry #102: GATE TRIBUNAL -- Phase 31 audit pass 2
+
+**Timestamp**: 2026-04-18
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: PASS
+**Risk Grade**: L2
+**Mode**: Solo (codex-plugin capability shortfall logged)
+**Session**: `2026-04-18T1007-301fa2`
+
+**Target**: `docs/plan-qor-phase31-operationalization.md` (amended)
+**Change Class**: `feature`
+**Prior Audit**: Entry #101 (VETO on 2 plan-text grounds)
+
+**Content Hash**: `6f1c0ac02604835fcf3185e3cbaf1ffce973639c2710743372fb8578ce0ab49a`
+**Previous Hash**: `c44d05fd09578d7f77c4b7b689014c779bb4f29879d8b799dc3496fdd694838a`
+**Chain Hash**: `c34d60369112903ef23a8d8239e564f8b4cdd85a78523f674712d030c471291b` (SHA256(content + "|" + prev))
+
+**VETO ground resolutions**:
+
+1. **SG-038 / SG-Phase31-A (in-plan correction instead of upstream fix)** RESOLVED -- Phase 1 Affected Files now directly names `qor/scripts/doc_integrity_strict.py` as the module gaining `check_documentation_currency`. The contradictory "correction paragraph" removed from Self-Dogfood; replaced by a single positive SG-Phase30-A + SG-Phase31-A citation. Primary source of truth is unambiguous.
+2. **SG-Phase31-B (plan self-modification post-audit)** RESOLVED -- triage commentary extracted to new artifact `docs/phase31-drift-triage-report.md`. Phase 2 Affected Files no longer lists the plan file as self-modifying. Grep for "updates itself" returns zero matches.
+
+**No new violations** introduced by amendment. All other passes (Security L3, OWASP, Ghost-UI N/A, Razor, Dependency, Macro-Arch, Orphan) remain clean. Drift advisory clean.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected.
+
+**Required next action**: `/qor-implement` -- proceed to Phase 1 of the plan. Per `qor/gates/chain.md`.
+
+**Decision**: Phase 31 plan cleared for implementation at pass 2. Both SG-Phase31-A and SG-Phase31-B countermeasures (codified at pass 1 in SHADOW_GENOME.md Entry #21) were applied mechanically during the amendment -- the Affected Files became the source of truth (no parallel correction) and mutable content moved out of the audit target.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN* (plan approved, implementation pending)
+*Merkle seal: 7306967586...* (unchanged; audit entries do not advance seal)
+
+
+### Entry #103: IMPLEMENTATION -- Phase 31 three-phase implementation
+
+**Timestamp**: 2026-04-18
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Session**: `2026-04-18T1007-301fa2`
+
+**Target**: `docs/plan-qor-phase31-operationalization.md` (PASS pass 2, Entry #102)
+**Change Class**: `feature`
+**Doc Tier**: `system`
+
+**Content Hash**: `065ee2b418b373f332b22915bf4847898dbbafc4684a5126e8bbf9bc7fc6d2b6`
+**Previous Hash**: `c34d60369112903ef23a8d8239e564f8b4cdd85a78523f674712d030c471291b`
+**Chain Hash**: `a1a7c9a7eb8fc696f9f28caf1c77a6ea348be116036eb933f9ee7ca0db533b07` (SHA256(content + "|" + prev))
+
+**Files delivered (8 items closed across 3 phases)**:
+
+Phase 1 -- Connective tissue (items 1, 2, 4, 13 + doc-currency):
+- `qor/scripts/session.py` MODIFY -- `MARKER_PATH` renamed from `.qor/current_session` to `.qor/session/current` matching existing bash refs.
+- `qor/scripts/doc_integrity.py` MODIFY -- `Entry` dataclass gains `scope_exclude: list[str]`; parser forwards the field. 250 lines total (under Razor cap).
+- `qor/scripts/doc_integrity_strict.py` MODIFY -- adds `check_documentation_currency`; adds `_excluded_by_scope_fence` with doctrine-peer + home-dir-peer + per-entry opt-out.
+- `qor/skills/governance/qor-substantiate/SKILL.md` MODIFY -- Step 6.5 (Documentation Currency Check) wired between Step 6 and Step 7.
+- `qor/skills/governance/qor-audit/references/qor-audit-templates.md` MODIFY -- adds `<!-- qor:drift-section -->` insertion marker.
+- `qor/references/doctrine-documentation-integrity.md` MODIFY -- §5 Documentation Currency + §6 Check-surface strict-mode wiring documented.
+- 4 new test files: `test_install_sync_with_source.py` (4 tests), `test_session_marker_path_unified.py` (3), `test_audit_drift_auto_invoked.py` (2), `test_documentation_currency_check.py` (7).
+
+Phase 2 -- D/E triage + scope-fence tuning + drift report CLI (items 3, 11):
+- `qor/scripts/doc_integrity_drift_report.py` NEW -- CLI producing human-readable Markdown drift report grouped by term.
+- `qor/references/glossary.md` MODIFY -- `Gate` entry gains 10 additional `referenced_by:` consumers; `Shadow Genome` entry gains 10.
+- `docs/phase31-drift-triage-report.md` NEW (187 lines) -- artifact produced by the CLI + operator triage decisions. Documents: tuned-scope delivered (3 new exclusion layers), top-term adoption applied, strict-mode wiring deferred pending further scope-fence refinement (docs/plan-qor-phase*.md + historical ledger artifacts need exclusion for viable signal).
+- 2 new test files: `test_doc_integrity_strict_scope_tuning.py` (4 tests), `test_doc_integrity_drift_report_cli.py` (2 tests).
+- Regression fixes in `tests/test_check_surface_d.py`: 2 pre-existing tests moved their synthetic drift files out of the home directory to avoid the new home-dir-peer exclusion.
+
+Phase 3 -- PR citation CI lint (item 8):
+- `qor/scripts/pr_citation_lint.py` NEW -- parses PR body for plan path + ledger entry + Merkle seal references; exit 1 with specific missing-citation messages if any absent.
+- `.github/workflows/pr-lint.yml` NEW -- pull_request event trigger + paths-ignore + concurrency + setup-python cache per test_workflow_budget doctrine.
+- `qor/references/doctrine-governance-enforcement.md` MODIFY -- §6 PR template cite notes the new CI mechanism.
+- 1 new test file: `test_pr_citation_lint.py` (7 tests).
+
+**Test discipline**:
+- All new tests written RED before implementation (TDD per `doctrine-test-discipline.md` Rule 1).
+- Full suite: **602 passed on two consecutive runs** (delta +29 from Phase 30's 573).
+- Live drift report generated (`python -m qor.scripts.doc_integrity_drift_report > docs/phase31-drift-triage-report.md`). Post-tuning + adoption leaves 92 Gate findings, 63 Shadow Genome findings, etc -- documented as known state.
+
+**Razor compliance**:
+- `doc_integrity.py`: 250 lines (at cap; `test_doc_integrity_razor_compliance` passing).
+- `doc_integrity_strict.py`: 148 lines (scope-fence helper + currency function + existing D/E).
+- `doc_integrity_drift_report.py`: 76 lines.
+- `pr_citation_lint.py`: 59 lines.
+- Tests: each <=110 lines.
+
+**SG demonstrations**:
+- SG-Phase31-A + SG-Phase31-B countermeasures (codified pass 1; applied pass 2) continued in Phase 2 (no plan self-modification; triage lives in `docs/phase31-drift-triage-report.md`).
+- Documentation Currency Check (user-surfaced requirement between pass 1 and pass 2 dialogue) is live as Step 6.5; lenient-by-default per Open Question 2.
+- Existing `tests/test_workflow_budget.py` caught 3 workflow hygiene issues in pr-lint.yml at first commit; fixed inline (paths-ignore + concurrency + cache added to match doctrine).
+
+**Decision**: Phase 31 implementation complete. 8 open items closed. Build-vs-deploy gap narrowed: install-sync enforced by CI test, session path unified, audit drift auto-invoked via explicit Python block in skill prompt, documentation currency checked at seal time, D/E scope-fence tuned with triage artifact, PR citations CI-enforced. Ready for `/qor-substantiate`.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN* (implementation sealed pending substantiation)
+*Merkle seal: 7306967586...* (unchanged; implement entries do not advance seal)
+
+
+### Entry #104: SESSION SEAL -- Phase 31 substantiated
+
+**Timestamp**: 2026-04-18
+**Phase**: SEAL
+**Author**: Judge
+**Verdict**: PASS (Reality = Promise; Step 6.5 WARNs addressed by in-seal amendment)
+**Session**: `2026-04-18T1007-301fa2` (final seal before rotation)
+
+**Target**: `docs/plan-qor-phase31-operationalization.md`
+**Change Class**: `feature`
+**Version**: `0.21.0 -> 0.22.0`
+**Tag**: `v0.22.0`
+
+**Content Hash**: `67d7c17e62fdfe4c08bd08601aac6ec08a7ee8d31ed46db38fae47bcc5e1d83f`
+**Previous Hash**: `a1a7c9a7eb8fc696f9f28caf1c77a6ea348be116036eb933f9ee7ca0db533b07`
+**Chain Hash**: `beb5c81d2118225b873c48b04bcdcbd54fa496d7b5225679539bc051996a5719` (SHA256(content + "|" + prev))
+
+**Reality Audit**: 19 files from implement.json delivered. 602 tests passing twice consecutively.
+
+**Session-marker migration incident**: at first substantiate attempt, `session.get_or_create()` returned the OLD Phase 28-30 session id `2026-04-17T2335-f284b9` because the new `.qor/session/current` marker (post-rename MARKER_PATH) held stale content while the Phase 30 rotation had written the current session id to the OLD path (`.qor/current_session`). Gate check initially appeared to succeed but was reading Phase 28's implement.json. Fixed by manually migrating the marker content; substantiate re-verified. This is why the CHANGELOG entry notes the "migration was lossy" item -- Phase 31 closes the gap for future phases but Phase 31 itself needed the manual hand-off.
+
+**Step 6.5 first-time live exercise**: produced 9 WARNINGS against Phase 31's own implement.json. Phase 31 touched `qor/scripts/session.py`, 4 doc-integrity scripts, 2 SKILL.md files, 2 doctrines, and 1 workflow -- none of the 4 system-tier docs. Per user's seal-time reminder ("Documentation needs to be updated with each substantiation too"), the 4 system-tier docs were amended mid-substantiate: `docs/operations.md` gains the Step 6.5 seal-ceremony note + new ad-hoc CLI + pr-lint workflow entry; `docs/lifecycle.md` gains the full substantiate-step expansion table (Steps 0-Z); `docs/architecture.md` lists the new script-layer modules. Step 6.5 re-run clean post-amendment.
+
+**Step 7.5 ordering**: bump_version called FIRST (0.21.0 -> 0.22.0 pyproject.toml), then create_seal_tag. Clean; no manual pyproject edit.
+
+**Step 8.5 dist recompile**: all 4 variants rebuilt automatically post-cleanup.
+
+**Step Z session rotation**: `session.rotate()` called after writing substantiate.json. New session id issued; `.qor/gates/2026-04-18T1007-301fa2/` preserved.
+
+**Reliability sweep**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix 28 skills / 105 handoffs / 0 broken.
+
+**Razor compliance**: `doc_integrity.py` 250 (at cap; test_doc_integrity_core_under_250 guards); `doc_integrity_strict.py` 148; new CLIs within limits.
+
+**SG countermeasures demonstrated**:
+- SG-Phase31-A (in-plan correction parallel to primary source) -- applied at pass-1 VETO remediation; validated pass-2 PASS.
+- SG-Phase31-B (plan self-modification post-audit) -- triage extracted to `docs/phase31-drift-triage-report.md`; plan immutable post-audit.
+- SG-Phase30-A (Razor anticipation) -- `check_documentation_currency` authored in `doc_integrity_strict.py` (sibling) to preserve core module's 250-line budget.
+- SG-Phase29-A (newly-enforced-doctrine grace gap) -- pre-plan doctrine check at plan-authoring time confirmed clean; Step 6.5's own 9-warning output during this seal is the next-cycle application (will inform Phase 32 heuristic tuning if warranted).
+
+**Decision**: Phase 31 sealed. Eight open items closed. The operationalization bundle converts Phase 28-30's dormant capabilities (drift check, doc currency, PR lint, install sync, session rotation, seal ordering) into active enforcement. Build-vs-deploy gap narrowed substantially. User-surfaced doc-currency contract (raised mid-Phase-31 dialogue) now wired into substantiate flow and applied at its own seal. First-time live exercise of Step 6.5 caught real drift and drove real doc amendments.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (rotation pending at Step Z)
+*Merkle seal: beb5c81d21...*
+
+
+
+
+
+
 
 
 

@@ -7,21 +7,25 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-462%20passing-brightgreen" alt="Tests: 462 passing">
+  <img src="https://img.shields.io/badge/Tests-602%20passing-brightgreen" alt="Tests: 602 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20aligned-004488" alt="NIST SP 800-218A aligned">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20audited-004488" alt="OWASP Top 10 audited">
-  <img src="https://img.shields.io/badge/Skills-27-blue" alt="Skills: 27">
+  <img src="https://img.shields.io/badge/Skills-28-blue" alt="Skills: 28">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Ledger-84%20entries%20sealed-green" alt="Ledger: 84 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-14-blue" alt="Doctrines: 14">
+  <img src="https://img.shields.io/badge/Ledger-104%20entries%20sealed-green" alt="Ledger: 104 entries sealed">
+  <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
 <p align="center">
+  <a href="#whats-new-in-v0220">What's New</a> |
   <a href="#quick-start">Quick Start</a> |
   <a href="#lifecycle">Lifecycle</a> |
   <a href="#policy-engine">Policy Engine</a> |
   <a href="#skill-catalog">Skills</a> |
   <a href="#governance-model">Governance</a> |
-  <a href="#contributing">Contributing</a>
+  <a href="#key-documentation">Docs</a> |
+  <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
 ---
@@ -33,6 +37,16 @@ QorLogic is a governance framework that ships curated skills, doctrines, and run
 Supported hosts: **Claude Code**, **Kilo Code**, **Codex** (provisional), **Gemini CLI**.
 
 Built around **S.H.I.E.L.D.**: Single-purpose, Hash-chained, Idempotent, Explicit, Layered, Delegating.
+
+## What's new in v0.22.0
+
+- **Documentation-integrity machinery is now enforced at seal time.** A four-tier doctrine (`minimal` / `standard` / `system` / `legacy`) governs which docs must exist; `/qor-substantiate` hard-blocks on tier violations; WARNS when phase changes ship without updating the 4 system-tier docs. Qor-logic itself now runs at `doc_tier: system`.
+- **PR description citations are CI-enforced.** Every PR must cite plan file + ledger entry + Merkle seal per `doctrine-governance-enforcement.md` §6. Enforced by `.github/workflows/pr-lint.yml`.
+- **Dist variants rebuild automatically on seal** (Step 8.5). Install-sync is CI-tested via SHA256 match of source SKILL.md files vs per-host variants.
+- **Session rotation on seal.** `session.rotate()` issues a fresh session_id after each `/qor-substantiate`; prior session directories preserved for archaeology.
+- **Check Surface D + E scope-fence tuning.** Lenient-by-default; ad-hoc `python -m qor.scripts.doc_integrity_drift_report` CLI surfaces term-drift + cross-doc conflicts for operator triage.
+
+See [CHANGELOG.md](CHANGELOG.md) for the full release history (v0.19.0 through v0.22.0 introduced the documentation-integrity system in four phases).
 
 ## Quick Start
 
@@ -149,7 +163,7 @@ QorLogic maps its lifecycle to the Secure Software Development Framework practic
 
 | SSDF Practice Group | QorLogic Implementation |
 |---|---|
-| **PO** Prepare the Organization | `/qor-bootstrap`, 8 doctrine files, `CLAUDE.md` drop-in |
+| **PO** Prepare the Organization | `/qor-bootstrap`, 14 doctrine files, `CLAUDE.md` drop-in, [CONTRIBUTING.md](CONTRIBUTING.md) |
 | **PS** Protect the Software | `/qor-audit` tribunal, reliability scripts, Shadow Genome |
 | **PW** Produce Well-Secured Software | `/qor-plan` > `/qor-audit` > `/qor-implement` > `/qor-substantiate` |
 | **RV** Respond to Vulnerabilities | `/qor-remediate`, `/qor-debug`, threshold-triggered issue creation |
@@ -225,21 +239,30 @@ The codebase has been [audited against OWASP Top 10 (2021)](docs/security-audit-
 ```
 qor-logic/
   qor/
-    skills/           27 skills + 5 bundles (governance, sdlc, memory, meta)
+    skills/           28 skills + 5 bundles (governance, sdlc, memory, meta)
     agents/           13 agent personas
     policy/           Cedar-inspired permit/forbid evaluator (pure Python)
-    policies/         .cedar policy files (gate enforcement, skill admission)
-    scripts/          Runtime: ledger, gates, shadow, platform, compiler, remediate
+    policies/         .cedar policy files (gate enforcement, skill admission, OWASP)
+    scripts/          Runtime: ledger, gates, shadow, platform, compiler, remediate, doc-integrity (core + strict), drift-report, pr-citation-lint, changelog-stamp
     reliability/      Intent Lock, Skill Admission, Gate-to-Skill Matrix
-    references/       8 doctrines (token efficiency, test discipline, NIST SSDF, ...)
+    references/       14 doctrines + 7 patterns + 7 ql-templates + glossary + skill-recovery-pattern
     gates/            Phase chain, delegation table, workflow bundles, 9 JSON schemas
     resources.py      importlib.resources wrapper for packaged assets
     workdir.py        $QOR_ROOT / CWD anchor for consumer-state paths
     hosts.py          Host-to-install-path resolver (claude, kilo, codex, gemini)
     cli.py            qorlogic CLI entry point
     dist/variants/    Pre-compiled per-host outputs (claude, kilo-code, codex, gemini)
-  tests/              462 tests (unit, integration, e2e, doctrine, bundle contract)
-  .github/workflows/  CI (6-job matrix) + PyPI release (OIDC trusted publisher)
+  docs/
+    architecture.md   System-tier doc: layer stack + responsibilities
+    lifecycle.md      System-tier doc: phase sequence + substantiate steps
+    operations.md     System-tier doc: operator runbook + CLI + runbook
+    policies.md       System-tier doc: policy files + standards alignment
+    META_LEDGER.md    SHA256-chained decision log (104 entries sealed)
+    SHADOW_GENOME.md  Narrative failure-pattern catalog (21 entries)
+    SYSTEM_STATE.md   Current repo state snapshot
+    BACKLOG.md        Work queue
+  tests/              602 tests (unit, integration, e2e, doctrine, bundle contract, install-sync, workflow-budget)
+  .github/workflows/  ci.yml + release.yml + pr-lint.yml (PR citation enforcement)
 ```
 
 ## CLI Reference
@@ -260,7 +283,7 @@ qorlogic --version
 
 ```bash
 pip install -e ".[dev]"
-python -m pytest tests/                                    # 462 tests
+python -m pytest tests/                                    # 602 tests
 python -m pytest tests/ -m integration                     # +4 install-smoke tests
 qorlogic verify-ledger                                     # Merkle chain integrity
 BUILD_REGEN=1 python qor/scripts/dist_compile.py           # regenerate variants
@@ -269,16 +292,43 @@ python qor/scripts/check_variant_drift.py                  # SSoT vs dist consis
 
 ## Key Documentation
 
+### System-tier docs (the four pillars)
+
 | Document | Purpose |
 |---|---|
-| [`docs/META_LEDGER.md`](docs/META_LEDGER.md) | SHA256-chained governance log (69 entries sealed) |
-| [`docs/RESEARCH_BRIEF.md`](docs/RESEARCH_BRIEF.md) | PyPI packaging gap audit (18/18 gaps closed) |
-| [`docs/security-audit-2026-04-16.md`](docs/security-audit-2026-04-16.md) | OWASP Top 10 + stability audit |
-| [`qor/references/doctrine-nist-ssdf-alignment.md`](qor/references/doctrine-nist-ssdf-alignment.md) | NIST SP 800-218A lifecycle mapping |
-| [`qor/references/doctrine-shadow-genome-countermeasures.md`](qor/references/doctrine-shadow-genome-countermeasures.md) | 12 codified failure patterns (SG-016 through SG-038) |
+| [`docs/architecture.md`](docs/architecture.md) | Layer stack: entry points -> references -> gates -> skills -> scripts -> policies -> artifacts |
+| [`docs/lifecycle.md`](docs/lifecycle.md) | Phase sequence + per-phase contracts + substantiate step expansion (Steps 0-Z) + session/branch/version models |
+| [`docs/operations.md`](docs/operations.md) | Operator runbook: CLI, seal ceremony, push/merge, failure recovery, CI, dist variants, troubleshooting |
+| [`docs/policies.md`](docs/policies.md) | Policy files, OWASP/NIST alignment, change_class contract, shadow-genome rubric, escape paths |
+
+### Entry points + governance
+
+| Document | Purpose |
+|---|---|
+| [`CLAUDE.md`](CLAUDE.md) | Drop-in token-efficiency + test-discipline + governance-flow defaults |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Reading order + quickstart + what-not-to-do for contributors |
+| [`CHANGELOG.md`](CHANGELOG.md) | User-facing release narrative (Keep-a-Changelog 1.1.0) |
+| [`docs/META_LEDGER.md`](docs/META_LEDGER.md) | SHA256-chained governance log (104 entries sealed) |
+| [`docs/SHADOW_GENOME.md`](docs/SHADOW_GENOME.md) | Narrative failure-pattern catalog (21 entries) |
+| [`docs/SYSTEM_STATE.md`](docs/SYSTEM_STATE.md) | Current repo state snapshot (updated per seal) |
+| [`docs/phase31-drift-triage-report.md`](docs/phase31-drift-triage-report.md) | Live drift triage artifact (Check Surface D/E) |
+
+### Gates + routing
+
+| Document | Purpose |
+|---|---|
+| [`qor/gates/chain.md`](qor/gates/chain.md) | Canonical phase sequence (research -> plan -> audit -> implement -> substantiate -> validate -> remediate) |
 | [`qor/gates/delegation-table.md`](qor/gates/delegation-table.md) | Skill-to-skill handoff matrix |
 | [`qor/gates/workflow-bundles.md`](qor/gates/workflow-bundles.md) | Bundle checkpoint and budget protocol |
-| [`CLAUDE.md`](CLAUDE.md) | Drop-in token-efficiency defaults for any project |
+
+### Audits + standards
+
+| Document | Purpose |
+|---|---|
+| [`docs/RESEARCH_BRIEF.md`](docs/RESEARCH_BRIEF.md) | Phase 28 recon: documentation-integrity gap audit (18 gaps identified, all closed by Phase 31) |
+| [`docs/security-audit-2026-04-16.md`](docs/security-audit-2026-04-16.md) | OWASP Top 10 + stability audit |
+| [`qor/references/doctrine-nist-ssdf-alignment.md`](qor/references/doctrine-nist-ssdf-alignment.md) | NIST SP 800-218A lifecycle mapping |
+| [`qor/references/doctrine-shadow-genome-countermeasures.md`](qor/references/doctrine-shadow-genome-countermeasures.md) | Codified failure patterns (SG-016 through SG-Phase31-B) |
 
 ### Doctrines (complete inventory)
 
@@ -291,8 +341,8 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 | [ci-budget](qor/references/doctrine-ci-budget.md) | CI compute and latency budget |
 | [code-quality](qor/references/doctrine-code-quality.md) | Section 4 Simplicity Razor + anti-slop rules |
 | [communication-tiers](qor/references/doctrine-communication-tiers.md) | Technical / standard / plain output tiers |
-| [documentation-integrity](qor/references/doctrine-documentation-integrity.md) | Tiered doc topology + glossary + check surface |
-| [governance-enforcement](qor/references/doctrine-governance-enforcement.md) | Branch / version / tag / push / session-rotation protocol |
+| [documentation-integrity](qor/references/doctrine-documentation-integrity.md) | Tiered doc topology + glossary + check surface + documentation currency |
+| [governance-enforcement](qor/references/doctrine-governance-enforcement.md) | Branch / version / tag / push / session-rotation / PR-citation protocol |
 | [nist-ssdf-alignment](qor/references/doctrine-nist-ssdf-alignment.md) | NIST SP 800-218A practice-tag mapping |
 | [owasp-governance](qor/references/doctrine-owasp-governance.md) | OWASP Top 10 governance integration |
 | [prompt-resilience](qor/references/doctrine-prompt-resilience.md) | Autonomy classification + pause-smell detection |

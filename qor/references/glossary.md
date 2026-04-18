@@ -101,8 +101,18 @@ aliases:
   - Gate Artifact
 referenced_by:
   - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/sdlc/qor-implement/SKILL.md
+  - qor/skills/sdlc/qor-refactor/SKILL.md
+  - qor/skills/sdlc/qor-remediate/SKILL.md
   - qor/skills/governance/qor-audit/SKILL.md
   - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-validate/SKILL.md
+  - qor/skills/meta/qor-repo-audit/SKILL.md
+  - qor/skills/meta/qor-repo-release/SKILL.md
+  - qor/skills/meta/qor-repo-scaffold/SKILL.md
+  - qor/references/doctrine-nist-ssdf-alignment.md
+  - qor/references/patterns-devops.md
+  - qor/references/ql-audit-templates.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -115,7 +125,17 @@ aliases:
 referenced_by:
   - docs/SHADOW_GENOME.md
   - qor/scripts/shadow_process.py
+  - qor/gates/chain.md
+  - qor/gates/delegation-table.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/sdlc/qor-implement/SKILL.md
+  - qor/skills/sdlc/qor-research/SKILL.md
+  - qor/skills/sdlc/qor-refactor/SKILL.md
+  - qor/skills/sdlc/qor-remediate/SKILL.md
   - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/governance/qor-shadow-process/SKILL.md
+  - qor/skills/meta/qor-help/SKILL.md
+  - qor/skills/memory/track-shadow-genome.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 

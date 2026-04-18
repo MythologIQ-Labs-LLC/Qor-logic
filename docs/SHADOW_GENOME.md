@@ -659,4 +659,42 @@ SG-Phase30-A (projected Razor violation from additive edits to near-cap module) 
 
 ---
 
+### Entry #21: VETO -- plan-qor-phase31-operationalization pass 1
+
+**Timestamp**: 2026-04-18
+**Target**: `docs/plan-qor-phase31-operationalization.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Ledger Entry**: #101
+**Session**: `2026-04-18T1007-301fa2`
+
+### Pattern
+
+Two VETO grounds. The first is a new manifestation: **an in-plan "correction" that contradicts the plan's primary source of truth instead of fixing it upstream.** Phase 31's Self-Dogfood section caught a Razor risk (adding `check_documentation_currency` to `doc_integrity.py` would cross the 250 cap) and wrote a correction paragraph saying "the function goes in `doc_integrity_strict.py` instead." But the primary Affected Files section was left unchanged -- still saying the function goes in `doc_integrity.py`. The correction is right; the corrective action (editing Affected Files) was not performed.
+
+The second ground is plan self-modification at implementation time. Phase 31 declared it would modify itself during Phase 2 execution to append triage commentary. Plans modifying themselves post-audit breaks the audit -> seal contract: content-hash at seal differs from content-hash at audit.
+
+### Why It Matters
+
+**SG-Phase31-A (in-plan correction instead of upstream fix)**: the Self-Dogfood pattern codified in SG-Phase28-A was meant to catch the plan applying its own doctrine. Phase 31 honored that spirit -- the Self-Dogfood section DID catch the Razor risk early. But the execution failed: instead of editing the Affected Files section (upstream fix), the plan added a parallel "correction" section (downstream patch). An implementer reading the plan top-to-bottom sees the wrong instruction first, then a correction -- race condition on who wins. Worse, automated tools (IDEs, PR reviewers) typically parse the Affected Files section as the source of truth and miss free-prose corrections elsewhere.
+
+**SG-Phase31-B (plan self-modification risk)**: plans are the audit target. If implementation modifies the plan, the audit's content-hash no longer describes what gets sealed. The ledger chain remains cryptographically valid (each hash links), but the semantic claim "Judge approved this plan" becomes false for any text added after audit.
+
+### Countermeasure
+
+For plan authoring:
+
+1. **When Self-Dogfood catches a design change, FIX IT UPSTREAM in the same edit session.** Don't write a "correction" paragraph; rewrite the Affected Files / Changes section that caused the flag. The Self-Dogfood section is a CHECKLIST, not a PATCH MECHANISM -- if it catches something, go back and fix the source of truth before saving the plan.
+2. **Plans do not modify themselves at implementation time.** If a phase produces information that belongs in a plan (triage commentary, benchmark results, incident notes), extract to a separate artifact with a dated filename. The plan stays frozen post-audit.
+
+For Judge auditing:
+
+1. When a plan contains a "correction" paragraph that contradicts an earlier section, flag both: the contradiction AND the failure to apply the correction upstream. The correction's presence is evidence the author caught the issue; its non-application is the VETO-grade failure.
+2. Walk every phase's Affected Files for self-references (the plan file listing itself as modified). Flag any self-reference as presumptive VETO unless the plan-in-question is the Phase 1 scaffold of a wholly new doctrine that legitimately iterates.
+
+### Pattern ID
+
+SG-Phase31-A (in-plan correction parallel to primary source of truth instead of upstream fix) + SG-Phase31-B (plan self-modification post-audit breaks audit -> seal content-hash immutability)
+
+---
+
 *Shadow integrity: ACTIVE*

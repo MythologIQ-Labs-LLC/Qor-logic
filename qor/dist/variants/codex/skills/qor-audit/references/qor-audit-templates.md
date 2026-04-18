@@ -185,3 +185,13 @@ Required fields (per schema `required`): `phase` (always `"audit"`, injected by 
 Optional fields: `violations` (array of objects, reserved for future structured per-ground capture), `risk_grade` (enum `"L1"` / `"L2"` / `"L3"`), `report_path` (path to the corresponding AUDIT_REPORT.md).
 
 No schema change was introduced in Phase 29; the shape was pre-existing and the skill simply began writing it.
+
+## Documentation Drift insertion marker (Phase 31 wiring)
+
+Every AUDIT_REPORT.md produced by `/qor-audit` MUST carry the canonical marker `<!-- qor:drift-section -->` at the point where `doc_integrity.render_drift_section` output is spliced in. If the helper returns the empty string (clean), the marker stays in place and the section header "## Documentation Drift" is rendered with `(clean)` as body. If the helper returns drift markdown, the section replaces the marker line with the returned text.
+
+```markdown
+<!-- qor:drift-section -->
+```
+
+Lint: `tests/test_audit_drift_auto_invoked.py::test_audit_template_has_drift_marker` asserts the marker is present in this template.

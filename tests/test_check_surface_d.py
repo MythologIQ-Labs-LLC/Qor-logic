@@ -38,14 +38,16 @@ _FOO_ENTRY = (
 
 
 def test_term_drift_flags_undeclared_usage(tmp_path):
+    """Usage in a directory unrelated to home is flagged (avoids the
+    home-directory-peer exclusion introduced in Phase 31)."""
     glossary, root = _mk_repo(
         tmp_path,
         _FOO_ENTRY,
         {"docs/architecture.md": "# arch\nFoo lives here.\n",
-         "docs/other.md": "# other\nFoo is used here too.\n"},
+         "qor/gates/other.md": "# other\nFoo is used here too.\n"},
     )
     findings = dis.check_term_drift(glossary, root, strict=False)
-    assert any("docs/other.md" in f for f in findings), f"Expected drift, got {findings}"
+    assert any("qor/gates/other.md" in f for f in findings), f"Expected drift, got {findings}"
 
 
 def test_term_drift_respects_scope_fence(tmp_path):
@@ -67,7 +69,7 @@ def test_term_drift_lenient_mode_does_not_raise(tmp_path):
         tmp_path,
         _FOO_ENTRY,
         {"docs/architecture.md": "# arch\nFoo lives here.\n",
-         "docs/drift.md": "# drift\nFoo is used here.\n"},
+         "qor/references/drift.md": "# drift\nFoo is used here.\n"},
     )
     # No exception raised even though drift is found
     findings = dis.check_term_drift(glossary, root, strict=False)
@@ -75,11 +77,13 @@ def test_term_drift_lenient_mode_does_not_raise(tmp_path):
 
 
 def test_term_drift_strict_mode_raises(tmp_path):
+    """Drift file placed in a directory unrelated to home to avoid the
+    home-directory-peer exclusion introduced in Phase 31."""
     glossary, root = _mk_repo(
         tmp_path,
         _FOO_ENTRY,
         {"docs/architecture.md": "# arch\nFoo lives here.\n",
-         "docs/drift.md": "# drift\nFoo is used here.\n"},
+         "qor/skills/drift/SKILL.md": "# drift\nFoo is used here.\n"},
     )
     with pytest.raises(ValueError, match="Foo"):
         dis.check_term_drift(glossary, root, strict=True)

@@ -1,5 +1,13 @@
 # Architecture Plan
 
+> **Note**: This file is the legacy risk-graded plan template referenced by
+> `/qor-audit` Step 2 and `/qor-substantiate` Step 2. For system architecture
+> (layer stack, component relationships, extension points), see
+> **[docs/architecture.md](architecture.md)** (the Phase 30 system-tier doc).
+>
+> ARCHITECTURE_PLAN.md remains as a pre-phase risk template; architecture.md
+> is the canonical architecture reference.
+
 ## Risk Grade: L2
 
 ### Risk Assessment

@@ -29,6 +29,34 @@ Defined in [qor/gates/chain.md](../qor/gates/chain.md). Each phase has:
 
 See [delegation-table](../qor/gates/delegation-table.md) for the full handoff matrix and [qor/skills/](../qor/skills/) for skill directory layout.
 
+## Substantiate steps (Phase 31 expansion)
+
+The seal sequence under `/qor-substantiate` is:
+
+| Step | Purpose |
+|---|---|
+| 0 | Gate check -- implement.json present and valid |
+| 1 | Identity activation (Judge mode) |
+| 2-2.5 | State verification + version validation (target > current tag) |
+| 3 | Reality audit (Reality = Promise on file tree) |
+| 3.5 | Backlog blocker scan |
+| 4 | Functional verification (tests) |
+| 4.5 | Skill file integrity (structural lint on modified SKILL.md files) |
+| 4.6 | Reliability sweep (intent-lock verify + skill-admission + gate-skill-matrix) |
+| 4.7 | Documentation integrity check (topology + glossary hygiene + orphan scan; Phase 28 wiring) |
+| 5 | Section 4 Razor final check |
+| 6 | Sync `docs/SYSTEM_STATE.md` |
+| **6.5** | **Documentation Currency Check (Phase 31 wiring): WARNs when doc-affecting files touched without a corresponding system-tier doc update** |
+| 7 | Compute Merkle seal |
+| 7.5 | `bump_version(change_class)` THEN `create_seal_tag(...)` (order enforced by test_seal_flow_ordering) |
+| 7.6 | Stamp `CHANGELOG.md` |
+| 8 | Cleanup `.failsafe/governance/` staging |
+| 8.5 | Dist recompile (`python -m qor.scripts.dist_compile`; Phase 30 wiring) |
+| 9 | Final report |
+| 9.5 | Auto-stage for commit |
+| 9.6 | Operator push/merge decision (4-option menu) |
+| Z | Write `substantiate.json`; call `session.rotate()` so next phase starts clean |
+
 ## Session model
 
 A **session** is the unit of a single phase invocation. Format: `<YYYY-MM-DDTHHMM>-<6hex>` (e.g., `2026-04-18T1200-a3f9c2`), stored in `.qor/session/current`.

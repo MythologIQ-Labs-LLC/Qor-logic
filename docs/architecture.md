@@ -48,7 +48,9 @@ Qor-logic is a prompt system for governance-driven software development. The rep
 |  governance_helpers  -- version bump, tag, plan metadata      |
 |  changelog_stamp.py  -- seal-time CHANGELOG rename            |
 |  doc_integrity.py    -- doctrine-documentation-integrity core |
-|  doc_integrity_strict -- Check Surface D + E extensions       |
+|  doc_integrity_strict -- Check Surface D + E + currency check |
+|  doc_integrity_drift_report -- ad-hoc triage CLI              |
+|  pr_citation_lint.py -- PR body citation validator            |
 |  ... and ~15 more helpers                                     |
 +---------------------------------------------------------------+
                          |

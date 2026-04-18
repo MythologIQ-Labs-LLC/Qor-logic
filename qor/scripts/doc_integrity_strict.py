@@ -64,7 +64,7 @@ def check_term_drift(
         pattern = re.compile(r"\b" + re.escape(entry.term) + r"\b")
         for f in _iter_scan_files(repo_root):
             rel = f.relative_to(repo).as_posix()
-            if rel in entry.referenced_by or rel == entry.home or rel == glossary_rel:
+            if _excluded_by_scope_fence(entry, rel, glossary_rel):
                 continue
             text = f.read_text(encoding="utf-8", errors="replace")
             if pattern.search(text):
@@ -75,7 +75,68 @@ def check_term_drift(
     return findings
 
 
+def _excluded_by_scope_fence(entry, rel: str, glossary_rel: str) -> bool:
+    """Phase 31 scope-fence tuning. True if `rel` should NOT be scanned for
+    the given glossary entry's term. Applies six exclusion rules in order."""
+    # Standard exclusions (pre-Phase 31 baseline).
+    if rel in entry.referenced_by or rel == entry.home or rel == glossary_rel:
+        return True
+    # Per-entry opt-out.
+    scope_exclude = getattr(entry, "scope_exclude", None) or []
+    if rel in scope_exclude:
+        return True
+    # Doctrine-peer: home is a doctrine; usage in any other doctrine is normal cross-reference.
+    if "qor/references/doctrine-" in entry.home and "qor/references/doctrine-" in rel:
+        return True
+    # Home-directory-peer: same directory as home (but home != repo root).
+    home_dir = entry.home.rsplit("/", 1)[0] if "/" in entry.home else ""
+    rel_dir = rel.rsplit("/", 1)[0] if "/" in rel else ""
+    if home_dir and home_dir == rel_dir:
+        return True
+    return False
+
+
 _DEF_PATTERN_TMPL = r"\b{term}\s+(?:is|means|refers to)\s+([^.\n]{{10,200}})"
+
+
+_CURRENCY_TRIGGER_PATTERNS = (
+    "qor/skills/",  # SKILL.md edits
+    "qor/references/doctrine-",
+    "qor/gates/schema/",
+    "qor/scripts/",
+)
+_SYSTEM_TIER_DOCS = (
+    "docs/architecture.md",
+    "docs/lifecycle.md",
+    "docs/operations.md",
+    "docs/policies.md",
+)
+
+
+def check_documentation_currency(implement_payload: dict, repo_root: str) -> list[str]:
+    """Check whether doc-affecting phase changes updated system-tier docs.
+
+    Heuristic: if files_touched contains any SKILL.md / doctrine / schema /
+    script AND no system-tier doc is in files_touched, return a warning
+    list. Else return empty list. Phase 31 wiring uses WARN semantics
+    (operator decides) rather than BLOCK.
+    """
+    files_touched = implement_payload.get("files_touched", [])
+    normalized = [f.replace("\\", "/") for f in files_touched]
+    trigger_files = [
+        f for f in normalized
+        if any(p in f for p in _CURRENCY_TRIGGER_PATTERNS)
+    ]
+    if not trigger_files:
+        return []
+    system_doc_touched = any(d in normalized for d in _SYSTEM_TIER_DOCS)
+    if system_doc_touched:
+        return []
+    return [
+        f"Doc-affecting change to {f} without updating any system-tier doc "
+        f"({', '.join(_SYSTEM_TIER_DOCS)})"
+        for f in trigger_files
+    ]
 
 
 def check_cross_doc_conflicts(

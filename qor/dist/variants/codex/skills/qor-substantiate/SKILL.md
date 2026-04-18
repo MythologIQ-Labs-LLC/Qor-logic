@@ -243,6 +243,25 @@ Create/Update `docs/SYSTEM_STATE.md`:
 
 Template: `references/qor-substantiate-templates.md`.
 
+### Step 6.5: Documentation Currency Check (Phase 31 wiring)
+
+Verify that doc-affecting phase changes also updated the system-tier docs (`docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md`). Heuristic lives in `doc_integrity_strict.check_documentation_currency` and returns a warning list.
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+import gate_chain
+from doc_integrity_strict import check_documentation_currency
+
+implement = gate_chain.read_phase_artifact("implement", session_id=sid)
+warnings = check_documentation_currency(implement, repo_root=".")
+if warnings:
+    print("WARNING: Documentation currency check:")
+    for w in warnings: print(f"  {w}")
+    # Phase 31 semantics: WARN + continue. Future phase may upgrade to BLOCK.
+```
+
+Operator judgment applies: if warnings are spurious (e.g., touched file genuinely doesn't affect doc-worthy concepts), continue seal. If legitimate (e.g., new doctrine added without updating lifecycle.md), PAUSE, amend the system-tier docs, re-run seal.
+
 ### Step 7: Final Merkle Seal
 
 Calculate session seal:
