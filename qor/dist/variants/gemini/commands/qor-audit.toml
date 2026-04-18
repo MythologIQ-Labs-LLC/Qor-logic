@@ -245,6 +245,26 @@ When `result.detected` is True, the pattern has also been appended to the Proces
 
 Report verdict, risk grade, and next action. Template: `references/qor-audit-templates.md`.
 
+### Step Z: Write Gate Artifact (Phase 29 wiring)
+
+Persist the structured gate artifact at `.qor/gates/<session_id>/audit.json` so `/qor-implement` (and any other downstream phase) can read it via `gate_chain.check_prior_artifact`. Previously missing; Phase 29 closes the chain link.
+
+```python
+import sys; sys.path.insert(0, 'qor/scripts')
+import gate_chain, shadow_process
+
+payload = {
+    "ts": shadow_process.now_iso(),
+    "target": plan_path,          # plan file audited (from Step 2 state verification)
+    "verdict": verdict,           # "PASS" or "VETO" (per qor/gates/schema/audit.schema.json enum)
+    "report_path": ".agent/staging/AUDIT_REPORT.md",
+    "risk_grade": risk_grade,     # "L1" | "L2" | "L3"
+}
+gate_chain.write_gate_artifact(phase="audit", payload=payload, session_id=sid)
+```
+
+Schema at `qor/gates/schema/audit.schema.json` validates before write. A schema violation raises `ValueError` the operator must resolve before proceeding; no silent fallback.
+
 ## Constraints
 
 - **NEVER** approve with warnings (binary PASS/VETO only)

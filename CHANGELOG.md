@@ -10,6 +10,16 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-04-18
+
+### Added
+- `/qor-audit` now writes a schema-valid `audit.json` gate artifact at `.qor/gates/<session>/audit.json` (Step Z wiring). Previously missing; downstream phases (`/qor-implement`) had to fall back to gate overrides or hand-written artifacts. Payload carries `target`, `verdict`, `report_path`, and `risk_grade` per `qor/gates/schema/audit.schema.json`.
+- `CONTRIBUTING.md` at the repo root (40 lines) -- canonical contributor entry point pointing to CLAUDE.md, gates/chain, delegation-table, workflow-bundles, doctrines, and the glossary in reading order. Quickstart recipe names the `/qor-research -> /qor-plan -> /qor-audit -> /qor-implement -> /qor-substantiate` chain. PR contract delegates to `doctrine-governance-enforcement.md` Section 6 (single source of truth; no duplication).
+
+### Changed
+- Glossary orphan adoption: seven `qor/references/glossary.md` entries (`Doctrine`, `Doc Tier`, `Glossary Entry`, `Concept Home`, `Orphan Concept`, `Doc Integrity Check Surface`, `Complecting`) now carry legitimate `referenced_by:` consumers. Closes the Phase 28 doctrine's newly-enforced-doctrine grace gap (SG-Phase29-A) caught during Phase 29 audit pass 1 and resolved before implementation.
+- `README.md` gains a one-line link to CONTRIBUTING.md in the quickstart region.
+
 ## [0.19.0] - 2026-04-18
 
 ### Added

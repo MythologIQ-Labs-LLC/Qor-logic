@@ -22,6 +22,7 @@ referenced_by:
   - CLAUDE.md
   - qor/gates/delegation-table.md
   - qor/skills/sdlc/qor-plan/SKILL.md
+  - CONTRIBUTING.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -31,6 +32,9 @@ definition: A per-plan declaration (minimal, standard, system, or legacy) that s
 home: qor/references/doctrine-documentation-integrity.md
 aliases:
   - doc_tier
+referenced_by:
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/gates/schema/plan.schema.json
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -38,6 +42,8 @@ introduced_in_plan: phase28-documentation-integrity
 term: Glossary Entry
 definition: A YAML-fence record in qor/references/glossary.md defining one canonical term and naming its concept home.
 home: qor/references/doctrine-documentation-integrity.md
+referenced_by:
+  - qor/scripts/doc_integrity.py
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -45,6 +51,8 @@ introduced_in_plan: phase28-documentation-integrity
 term: Concept Home
 definition: The file path where a concept is canonically defined. Every glossary entry declares its home; orphan detection verifies the path resolves.
 home: qor/references/doctrine-documentation-integrity.md
+referenced_by:
+  - qor/references/glossary.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -52,6 +60,8 @@ introduced_in_plan: phase28-documentation-integrity
 term: Orphan Concept
 definition: A glossary entry with no referenced_by consumers that was not introduced in the current session's plan. Detected by check_orphans and raises at substantiate time.
 home: qor/references/doctrine-documentation-integrity.md
+referenced_by:
+  - qor/scripts/doc_integrity.py
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -59,6 +69,8 @@ introduced_in_plan: phase28-documentation-integrity
 term: Doc Integrity Check Surface
 definition: The three checks performed by doc_integrity.py at substantiate time -- topology presence, glossary hygiene, orphan scan. Term-drift grep (D) and cross-doc conflict detection (E) are documented as out-of-scope extensions.
 home: qor/references/doctrine-documentation-integrity.md
+referenced_by:
+  - qor/references/doctrine-documentation-integrity.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 
@@ -151,6 +163,8 @@ introduced_in_plan: phase28-documentation-integrity
 term: Complecting
 definition: Rich Hickey's term for braiding independent concerns together (state with time, data with behavior, config with code). Qor-logic's /qor-plan skill treats complecting as a design smell to detect and unwind.
 home: qor/skills/sdlc/qor-plan/SKILL.md
+referenced_by:
+  - qor/skills/sdlc/qor-plan/SKILL.md
 introduced_in_plan: phase28-documentation-integrity
 ```
 

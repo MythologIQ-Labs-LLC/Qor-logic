@@ -87,6 +87,8 @@ qorlogic install --host claude --target /path/to/custom/dir/
 /qor-substantiate  # seal with Merkle hash evidence
 ```
 
+Contributors: see [CONTRIBUTING.md](CONTRIBUTING.md) for the canonical chain and the "what not to do" list.
+
 ## Lifecycle
 
 QorLogic enforces a phased governance lifecycle. Each phase gates the next. Every decision is SHA256-chained in the Meta Ledger.

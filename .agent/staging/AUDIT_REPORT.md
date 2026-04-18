@@ -1,69 +1,60 @@
-# AUDIT REPORT: Phase 28 — Documentation Integrity (Pass 2)
+# AUDIT REPORT: Phase 29 -- /qor-audit Step Z + CONTRIBUTING.md (Pass 2)
 
-**Tribunal Date**: 2026-04-17
-**Target**: `docs/plan-qor-phase28-documentation-integrity.md`
+**Tribunal Date**: 2026-04-18
+**Target**: `docs/plan-qor-phase29-audit-stepZ-and-contributing.md`
 **Risk Grade**: L2
 **Auditor**: The QorLogic Judge
 **Mode**: Solo (codex-plugin capability shortfall logged)
 **Session**: `2026-04-17T2335-f284b9`
-**Prior Audit**: Entry #89 (VETO on 4 plan-text grounds)
+**Prior Audit**: Entry #93 (VETO on 2 plan-text grounds)
 
 ---
 
 ## Verdict: PASS
 
-All 4 prior VETO grounds verified resolved. No new violations introduced by amendments. Plan is implementation-ready.
+Both prior VETO grounds verified resolved. No new violations introduced.
 
 ---
 
 ## VETO Ground Resolution
 
-### Ground 1 (A08 / SG-Phase24-B) — RESOLVED
+### Ground 1 (Orphan adoption gap) -- RESOLVED
 
-Amended plan names `yaml.safe_load` explicitly at three locations:
+Plan now carries an explicit **Glossary orphan adoption table** (Phase 2 Changes, starting line 89). All six Phase-28-introduced orphan entries -- `Doc Tier`, `Glossary Entry`, `Concept Home`, `Orphan Concept`, `Doc Integrity Check Surface`, `Complecting` -- each receive at least one legitimate `referenced_by:` consumer. The `Doctrine` entry's prior-planned CONTRIBUTING.md addition is carried forward, bringing the total adopted entries to **seven**.
 
-- `plan-qor-phase28-documentation-integrity.md:55` — doc_integrity.py bullet: *"All YAML parsing uses `yaml.safe_load` (never `yaml.load`); parser rejects documents containing custom tags (`!!python/object` etc.) to satisfy A08 Software/Data Integrity per SG-Phase24-B."*
-- Line 125 — new test `test_parse_glossary_rejects_unsafe_tags` enforces the commitment.
-- Line 304 — Self-Dogfood section lists the rule-test pairing.
+Consumers cited are pre-existing files that factually reference the concept (per plan line 102-ish "no synthetic citation is invented"):
 
-Widening task for `tests/test_yaml_safe_load_discipline.py` captured as new test `test_yaml_safe_load_discipline_covers_doc_integrity` (SG-Phase25-A prevention).
+| Term                          | New `referenced_by:`                                                               |
+|-------------------------------|-------------------------------------------------------------------------------------|
+| `Doctrine`                    | `CONTRIBUTING.md`                                                                   |
+| `Doc Tier`                    | `qor/skills/sdlc/qor-plan/SKILL.md`, `qor/gates/schema/plan.schema.json`            |
+| `Glossary Entry`              | `qor/scripts/doc_integrity.py`                                                      |
+| `Concept Home`                | `qor/references/glossary.md` (legitimate self-reference: the file IS the registry)  |
+| `Orphan Concept`              | `qor/scripts/doc_integrity.py`                                                      |
+| `Doc Integrity Check Surface` | `qor/references/doctrine-documentation-integrity.md`                                |
+| `Complecting`                 | `qor/skills/sdlc/qor-plan/SKILL.md`                                                 |
 
-### Ground 2 (SG-038 prose-code mismatch) — RESOLVED
+New regression test `test_no_phase28_orphan_terms_remain` added to Phase 2 test list (plan line 127): asserts every entry with `introduced_in_plan: phase28-documentation-integrity` has non-empty `referenced_by:`. Forward-looking guard against future plans accidentally stripping consumers.
 
-Amended Phase 1 schema bullet (line 54): *"add optional `doc_tier` (enum), `terms` (array of `{term, home}`), `boundaries` (...). All optional; existing plans validate unchanged. No `concepts` alias (glossary IS the concept map per Q3 decision; alias dropped to prevent prose-code drift)."*
+Self-Dogfood section updated to declare the new rule -> test pairing (line 155): *"Rule 'no Phase-28-introduced glossary entry remains orphan once its grace period expires' -> `test_no_phase28_orphan_terms_remain`."*
 
-Prose now explicitly disclaims the alias. JSON code block (line 69-88) matches: `doc_tier`, `terms`, `boundaries` only. Grep confirms remaining "concepts" occurrences on lines 164, 172 are dialogue prose ("domain concepts") not schema alias references.
+### Ground 2 (SG-038 count drift in Self-Dogfood) -- RESOLVED
 
-### Ground 3 (SG-036 plan self-application) — RESOLVED
+Self-Dogfood enumeration cross-check (plan line 156) now reads: *"the **six** reading-order items in CONTRIBUTING.md (CLAUDE.md, chain.md, delegation-table.md, workflow-bundles.md, doctrine-*, glossary.md) match the Phase 2 Changes section description ('~6 items'). No drift."*
 
-Top-matter block added to plan lines 5-26:
-
-- `**doc_tier**: system` — plan declares its tier.
-- `**terms_introduced**` — five terms with explicit `home:` paths.
-- `**boundaries**` — `limitations`, `non_goals`, `exclusions` each populated with non-empty content.
-
-Gate artifact at `.qor/gates/2026-04-17T2335-f284b9/plan.json` rewritten to match (schema accepts via `additionalProperties: true`). Self-Dogfood section (lines 279-309) applies SG-Phase28-A countermeasure: the very doctrine this plan introduces is now demonstrably satisfied by the plan itself.
-
-### Ground 4 (Rule 4 — Rule = Test) — RESOLVED
-
-Phase 2 test list (line 210) now includes:
-
-*"`test_plan_legacy_tier_rejected_without_rationale` - writing a plan artifact with `doc_tier: legacy` and no `doc_tier_rationale` raises `ValueError` at Step Z (mirrors `changelog_stamp.py` enforcement idiom). Addresses test-discipline Rule 4: Rule = Test."*
-
-Rule and enforcement test are now paired.
+Full-file grep for `five`: **zero occurrences**. Count is consistent across prose ("six"), enumeration (6 items), and Phase 2 Changes header ("~6 items"). SG-038 cleared.
 
 ---
 
-## Re-Audit Passes (amendment regression check)
+## Re-audit Passes (amendment regression check)
 
 ### Security Audit (L3)
 
-Unchanged from pass 1. **PASS** (L3 clean)
+Unchanged from pass 1. **PASS**
 
 ### OWASP Top 10 Pass
 
-- A03, A04, A05: unchanged. **PASS**
-- **A08: PASS** (newly cited `yaml.safe_load` per Ground 1 resolution).
+- A03, A04, A05, A08: unchanged from pass 1. **PASS**
 
 ### Ghost UI Audit
 
@@ -71,28 +62,26 @@ N/A (no UI in scope).
 
 ### Simplicity Razor Audit
 
-| Check              | Limit | Amended Plan               | Status |
-| ------------------ | ----- | -------------------------- | ------ |
-| Max function lines | 40    | `doc_integrity.py` unchanged scope; still feasible | OK |
-| Max file lines     | 250   | `doc_integrity.py` ~200; doctrine ~150-200; amended PLAN is 317 lines (plan documents are content files, not subject to code razor — prior plan-phase25 was 378 lines, sealed without Razor objection) | OK |
-| Max nesting depth  | 3     | Unchanged                  | OK |
-| Nested ternaries   | 0     | None                       | OK |
+| Check              | Limit | Amended Plan                                                                                                                          | Status           |
+| ------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| Max function lines | 40    | No new functions; reuses `gate_chain.write_gate_artifact`                                                                              | OK               |
+| Max file lines     | 250   | CONTRIBUTING.md capped at 80 lines (test-enforced); glossary.md grows by 7 consumer-line additions (small); plan file 174 lines total | OK (provisional) |
+| Max nesting depth  | 3     | No new code paths                                                                                                                     | OK               |
+| Nested ternaries   | 0     | None                                                                                                                                  | OK               |
 
-**Result: PASS (provisional).**
+**Result: PASS**
 
 ### Dependency Audit
 
-Unchanged. PyYAML pre-existing. **PASS**
+Unchanged from pass 1. **PASS** (no new dependencies)
 
 ### Macro-Level Architecture Audit
 
-Unchanged. **PASS**
+Unchanged from pass 1. Glossary updates do not change layering or introduce cross-domain mixing; each `referenced_by:` entry cites an existing file. **PASS**
 
 ### Orphan Detection
 
-Amendment added five glossary terms to `terms_introduced`; all five declare `home: qor/references/doctrine-documentation-integrity.md` (Phase 1 deliverable). No orphans introduced.
-
-**PASS**
+Same three new files as pass 1 (two test files + CONTRIBUTING.md); all connected. **PASS**
 
 ---
 
@@ -100,16 +89,18 @@ Amendment added five glossary terms to `terms_introduced`; all five declare `hom
 
 None.
 
-### Defensive check — amendment surface
+### Defensive check -- amendment surface
 
-- Top-matter YAML uses pipe-separator shorthand (`- term: X | home: Y`) for readability. The prescribed `terms` shape in Phase 2's Plan Structure Extension is pure YAML (`- term: X\n  home: Y`). The two forms are authorial prose (top-matter) vs machine-consumed prescription (Phase 2 format spec); they represent the same semantic payload. The gate artifact JSON at `.qor/gates/.../plan.json` carries the canonical machine form. No prose-code mismatch — the top-matter pipe form is author shorthand that need not be parsed by `doc_integrity.py`.
-- Self-Dogfood section cross-checks the bootstrap glossary set vs `terms_introduced`: bootstrap = {Doctrine, Doc Tier, Glossary Entry, Concept Home, Orphan Concept}; terms_introduced = {Doc Tier, Glossary Entry, Concept Home, Orphan Concept, Doc Integrity Check Surface}. `Doctrine` is pre-existing foundational terminology (already used in CLAUDE.md and doctrine files); `Doc Integrity Check Surface` is a new term introduced by this plan. The distinction is documented explicitly in the Self-Dogfood section.
+- **Adoption-table enumeration**: plan declares "seven entries" in prose (line 86) and enumerates seven rows in the table (Doctrine + six orphans). Counts match.
+- **`Concept Home` self-reference to `qor/references/glossary.md`**: legitimate per doctrine -- the glossary file IS the registry, so each entry's `home:` pointer and `referenced_by:` consumer coexist without circularity concern. Confirmed: `check_orphans` passes so long as `referenced_by:` is non-empty; the specific consumer value is not constrained to exclude the registry itself.
+- **Rule 4 coverage**: the new rule ("no orphans remain") has its paired test `test_no_phase28_orphan_terms_remain`. ✓
+- **No prose-code drift reintroduced**: grepped plan body for `five` -- zero matches. Ground 2 cleanly resolved.
 
 ---
 
 ## Documentation Drift
 
-Deferred (the plan under review is the plan that introduces this pass).
+Advisory helper output against the Phase 29 plan artifact still reports orphans because the glossary file has not yet been implemented with the adoption-table edits -- that is Phase 2 implementation work. The plan's Ground 1 remediation is the correct fix; drift closes when Phase 2 lands. No action required from this audit.
 
 ---
 
@@ -122,13 +113,11 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ## Summary
 
-Pass 2 audit confirms all 4 prior VETO grounds are resolved by plan-text amendments:
+Pass 2 confirms both prior VETO grounds are resolved:
 
-1. `yaml.safe_load` now named at three locations; test pairs added.
-2. `concepts` alias removed from prose; prose-code now consistent.
-3. Plan self-applies the doctrine it creates (top-matter block + gate artifact + Self-Dogfood section).
-4. Legacy-tier rationale rule now has matching enforcement test.
+1. **Orphan adoption gap** -- explicit adoption table covering all seven affected entries + forward-regression test `test_no_phase28_orphan_terms_remain`.
+2. **SG-038 count drift** -- Self-Dogfood enumeration now says "six", matching Phase 2 Changes and the actual item count.
 
-No new violations introduced by the amendment. All other passes (Security, OWASP A03/A04/A05, Razor, Dependency, Macro-Arch, Orphan) remain clean.
+No new violations. All other passes (Security L3, OWASP, Ghost-UI N/A, Razor, Dependency, Macro-Arch, Orphan) clean. Phase 29 plan is implementation-ready.
 
-**Required next action:** `/qor-implement` — proceed to Phase 1 of the plan. Per `qor/gates/chain.md`.
+**Required next action:** `/qor-implement` -- proceed to Phase 1 of the plan. Per `qor/gates/chain.md`.

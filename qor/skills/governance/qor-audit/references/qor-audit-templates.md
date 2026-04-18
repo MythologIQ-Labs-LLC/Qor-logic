@@ -175,3 +175,13 @@ Failure mode recorded in SHADOW_GENOME.md.
 ---
 _Gate [OPEN / LOCKED]. Proceed accordingly._
 ```
+
+## Step Z payload shape (Phase 29 wiring)
+
+`/qor-audit` Step Z writes the audit gate artifact at `.qor/gates/<session>/audit.json` via `gate_chain.write_gate_artifact`. Schema: `qor/gates/schema/audit.schema.json`.
+
+Required fields (per schema `required`): `phase` (always `"audit"`, injected by helper), `ts` (ISO-8601 UTC with seconds), `session_id`, `target` (plan file path audited), `verdict` (enum `"PASS"` / `"VETO"`).
+
+Optional fields: `violations` (array of objects, reserved for future structured per-ground capture), `risk_grade` (enum `"L1"` / `"L2"` / `"L3"`), `report_path` (path to the corresponding AUDIT_REPORT.md).
+
+No schema change was introduced in Phase 29; the shape was pre-existing and the skill simply began writing it.

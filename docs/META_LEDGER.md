@@ -3323,5 +3323,179 @@ Phase 3 (Substantiate enforcement + audit drift + dogfood):
 *Merkle seal: a229b44e54...*
 
 
+### Entry #93: GATE TRIBUNAL -- Phase 29 audit pass 1
+
+**Timestamp**: 2026-04-18
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO
+**Risk Grade**: L2
+**Mode**: Solo (codex-plugin capability shortfall logged)
+**Session**: `2026-04-17T2335-f284b9`
+
+**Target**: `docs/plan-qor-phase29-audit-stepZ-and-contributing.md`
+**Change Class**: `feature`
+**Prior Phase Artifact**: `.qor/gates/2026-04-17T2335-f284b9/plan.json` (found, valid)
+
+**Content Hash**: `fc80d378bd8a7c1bb0c6b0945dab86107be46e29d412bacc021ce00c15aae154`
+**Previous Hash**: `a229b44e5477666b10ca010c67871e87be38209d94e6166b58f625c41ac0e30e`
+**Chain Hash**: `bdf2950454e60f614bf77519c99aa85391b1fb72c5e7af24a63a71e5470d9cd8` (SHA256(content + "|" + prev))
+
+**Passes clean**: Security (L3), OWASP A03/A04/A05, Ghost-UI (N/A), Razor, Dependency, Macro-Arch, Orphan Detection.
+
+**VETO grounds (both plan-text)**:
+1. **Orphan adoption gap (Phase 28 Documentation Drift pass, substantively binding)** -- Phase 29's own /qor-substantiate Step 4.7 will ABORT on seal because six Phase-28-introduced glossary entries have empty `referenced_by:` and their grace-period plan tag (`phase28-documentation-integrity`) no longer matches the current plan's slug. Orphans: `Doc Tier`, `Glossary Entry`, `Concept Home`, `Orphan Concept`, `Doc Integrity Check Surface`, `Complecting`. Fix: extend Phase 2 Changes to update `referenced_by:` on all six; add `test_no_phase28_orphan_terms_remain`. Plan currently addresses only the `Doctrine` entry.
+2. **SG-038 recurrence in Self-Dogfood section** -- prose says "the five reading-order items" but enumerates six, and Phase 2 Changes says "~6 items". Three-way count drift in the very section meant to prevent it (SG-Phase28-A countermeasure application flaw). One-word fix.
+
+**Note on doctrine demonstration**: Ground 1 is the Phase 28 doctrine catching itself one phase later. A plan that inherits unresolved orphans from a prior phase is forced to adopt them before seal. The enforcement works exactly as designed.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected in the last 2 sealed phases.
+
+**Required next action**: Governor: amend plan text per the two grounds above, re-run `/qor-audit`. No implementation; no `/qor-debug`, `/qor-refactor`, or `/qor-organize` indicated. Scope stays within "standalone prompt system" charter -- Ground 1 Option A is the minimum viable expansion; doctrine amendment was the rejected alternative.
+
+**Decision**: Phase 29 plan VETOed at pass 1 on two plan-text grounds. Both fixable by editing the plan; no code or tests need to change.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN* (awaiting plan amendment)
+*Merkle seal: a229b44e54...* (unchanged; audit entries do not advance seal)
+
+
+### Entry #94: GATE TRIBUNAL -- Phase 29 audit pass 2
+
+**Timestamp**: 2026-04-18
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: PASS
+**Risk Grade**: L2
+**Mode**: Solo (codex-plugin capability shortfall logged)
+**Session**: `2026-04-17T2335-f284b9`
+
+**Target**: `docs/plan-qor-phase29-audit-stepZ-and-contributing.md` (amended)
+**Change Class**: `feature`
+**Prior Audit**: Entry #93 (VETO on 2 plan-text grounds)
+
+**Content Hash**: `7097a48ca7c302a486966a7b4d7b7a3b6fed167e0a67732041691142bd294840`
+**Previous Hash**: `bdf2950454e60f614bf77519c99aa85391b1fb72c5e7af24a63a71e5470d9cd8`
+**Chain Hash**: `b4bf7993cd2b410d25759b6cae9a527ad5ecd7051cf148653f4086e1565b8954` (SHA256(content + "|" + prev))
+
+**VETO ground resolutions**:
+1. **Orphan adoption gap** RESOLVED -- Phase 2 Changes now carries a seven-entry adoption table naming a legitimate `referenced_by:` consumer for each Phase-28-introduced entry. New regression test `test_no_phase28_orphan_terms_remain` added to Phase 2 test list. Self-Dogfood rule -> test pairing recorded.
+2. **SG-038 count drift in Self-Dogfood** RESOLVED -- prose reads "six" (matches enumeration, matches Phase 2 Changes "~6 items"). Grep for "five" returns zero matches.
+
+**No new violations** introduced by amendment. All other passes (Security L3, OWASP, Ghost-UI N/A, Razor, Dependency, Macro-Arch, Orphan) clean.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected.
+
+**Required next action**: `/qor-implement` -- proceed to Phase 1. Per `qor/gates/chain.md`.
+
+**Decision**: Phase 29 plan cleared for implementation at pass 2. The amendment demonstrates SG-Phase29-A's countermeasure working: the newly-enforced doctrine's grace gap was caught during audit and resolved in the plan before implementation, not deferred.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN* (plan approved, implementation pending)
+*Merkle seal: a229b44e54...* (unchanged; audit entries do not advance seal)
+
+
+### Entry #95: IMPLEMENTATION -- Phase 29 two-phase implementation
+
+**Timestamp**: 2026-04-18
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Session**: `2026-04-17T2335-f284b9`
+
+**Target**: `docs/plan-qor-phase29-audit-stepZ-and-contributing.md` (PASS pass 2, Entry #94)
+**Change Class**: `feature`
+**Doc Tier**: `standard`
+
+**Content Hash**: `394c7f4a23b1c6266acd226979aef3fe34753d9a1a79364a359e2f61e18c4885`
+**Previous Hash**: `b4bf7993cd2b410d25759b6cae9a527ad5ecd7051cf148653f4086e1565b8954`
+**Chain Hash**: `ab2f3e441f942452adca429c5c991f33aa640f025f1903f2a8fa07d22c2865fa` (SHA256(content + "|" + prev))
+
+**Files delivered**:
+
+Phase 1 (/qor-audit Step Z wiring):
+- `qor/skills/governance/qor-audit/SKILL.md` MODIFY -- Step Z block added after Step 7 (Final Report). Writes audit.json via `gate_chain.write_gate_artifact` with fields `target`, `verdict`, `report_path`, `risk_grade`. Closes the missing-link gap that forced Phase 28 substantiate to hand-write audit.json.
+- `qor/skills/governance/qor-audit/references/qor-audit-templates.md` MODIFY -- appended "Step Z payload shape" subsection documenting required and optional fields per schema.
+- 1 new test file: `tests/test_audit_gate_artifact.py` (5 tests covering PASS/VETO write, round-trip schema validation, missing-field rejection, bogus-verdict rejection, downstream readability).
+
+Phase 2 (CONTRIBUTING.md + orphan adoption):
+- `CONTRIBUTING.md` NEW (root, 40 lines; under 80-line option-B cap) -- pointer + quickstart + "what not to do" list; delegates PR contract to `doctrine-governance-enforcement.md` Section 6.
+- `qor/references/glossary.md` MODIFY -- seven entries gain `referenced_by:` adoption per the plan's adoption table. `Doctrine` adds CONTRIBUTING.md; `Doc Tier`, `Glossary Entry`, `Concept Home`, `Orphan Concept`, `Doc Integrity Check Surface`, `Complecting` each gain at least one legitimate pre-existing consumer. Closes audit pass-1 Ground 1.
+- `README.md` MODIFY (one line; Getting Started region) -- link to `CONTRIBUTING.md`.
+- 1 new test file: `tests/test_contributing_quickstart.py` (6 tests including `test_no_phase28_orphan_terms_remain` as forward-regression guard).
+
+**Test discipline**:
+- TDD: all new tests written RED before implementation.
+- Full suite: **542 passed on two consecutive runs** (delta +11 from Phase 28 baseline of 531).
+- Dogfood simulation: `doc_integrity.run_all_checks_from_plan(plan, repo_root='.')` against live repo with `plan_slug='phase29-audit-stepZ-and-contributing'` returns clean. The very check that would ABORT Phase 29's own seal passes post-adoption.
+
+**Razor compliance**:
+- `CONTRIBUTING.md`: 40 lines (<=80 cap, option-B fence).
+- `tests/test_audit_gate_artifact.py`: 105 lines.
+- `tests/test_contributing_quickstart.py`: 67 lines.
+- `/qor-audit` SKILL.md: ~294 + 20 = ~314 lines (content file; Phase 28 precedent accepts > 250 for SKILL.md).
+- No new functions; reuses `gate_chain.write_gate_artifact`.
+
+**SG-Phase29-A demonstrated**: Phase 29's VETO-then-amend cycle (Entries #93 -> #94) captured the newly-enforced-doctrine grace gap (Phase 28's `check_orphans` rule catching prior-phase entries at Phase 29 seal time). The countermeasure codified in SHADOW_GENOME.md Entry #19 was applied in real-time: plan amendment added the adoption table + forward-regression test rather than deferring.
+
+**No dependencies added**. No schema changes. No code in the script layer. Phase 29 stayed within the "standalone prompt system" charter.
+
+**Decision**: Phase 29 implementation complete. The missing `/qor-audit` -> `audit.json` chain link is closed; CONTRIBUTING.md exists as canonical contributor entry point; Phase 28's orphan-adoption gap is resolved via the adoption table. Ready for `/qor-substantiate`.
+
+---
+
+*Chain integrity: VALID*
+*Session: OPEN* (implementation sealed pending substantiation)
+*Merkle seal: a229b44e54...* (unchanged; implement entries do not advance seal)
+
+
+### Entry #96: SESSION SEAL -- Phase 29 substantiated
+
+**Timestamp**: 2026-04-18
+**Phase**: SEAL
+**Author**: Judge
+**Verdict**: PASS (Reality = Promise)
+**Session**: `2026-04-17T2335-f284b9`
+
+**Target**: `docs/plan-qor-phase29-audit-stepZ-and-contributing.md`
+**Change Class**: `feature`
+**Version**: `0.19.0 -> 0.20.0`
+**Tag**: `v0.20.0` (annotated, created via governance_helpers.create_seal_tag)
+
+**Content Hash**: `53a32938746cb25b38e7350677e2169c8e5881a09d5e9e72645820488f3cd1fe`
+**Previous Hash**: `ab2f3e441f942452adca429c5c991f33aa640f025f1903f2a8fa07d22c2865fa`
+**Chain Hash**: `89144a863bf30c4a94c6643f2816a35ce051de84d42cdf9c530722153a4b3e03` (SHA256(content + "|" + prev))
+
+**Reality Audit**: all 7 planned files delivered per Entry #95 implementation list. No MISSING, no UNPLANNED. Tests: **542 passing on two consecutive runs** (determinism confirmed per `doctrine-test-discipline.md` Rule 2).
+
+**Self-substantiation clean**: Phase 29's Step 4.7 passed on the first attempt. Unlike Phase 28 (which ABORTed on `doc_tier: system` topology violation and required a tier downgrade), Phase 29's remediation at audit pass 1 (Ground 1 adoption table) pre-empted the orphan ABORT. The doctrine's catch-then-fix cycle ran entirely in plan-layer, not at seal time.
+
+**Reliability sweep (Step 4.6)**: intent-lock VERIFIED; skill-admission ADMITTED qor-substantiate; gate-skill-matrix shows 28 skills / 104 handoffs / 0 broken.
+
+**Razor compliance**: `CONTRIBUTING.md` 40 lines (<=80 option-B fence). `qor-audit/SKILL.md` ~314 lines (SKILL content file; Phase 28 precedent). All other modifications within limits.
+
+**SG demonstrations**:
+- SG-Phase29-A (new, codified at SHADOW_GENOME.md Entry #19): caught during Phase 29 audit pass 1, resolved in plan amendment before implementation. First application of its own countermeasure.
+- SG-038 (prose-code mismatch): caught and fixed in audit pass 1 Ground 2 (one-word "five" -> "six" correction in Self-Dogfood section).
+- Rule 4 (Rule = Test): every new rule paired with an enforcement test; `test_no_phase28_orphan_terms_remain` added as forward-regression guard.
+
+**CHANGELOG**: populated during implementation with user-facing bullets across Added / Changed subsections; stamped at seal time to `[0.20.0] - 2026-04-18`; fresh empty `Unreleased` above.
+
+**Decision**: Phase 29 sealed. The missing `/qor-audit` -> `audit.json` chain link is now closed (no more hand-writing at downstream gate checks). CONTRIBUTING.md exists as the canonical contributor entry point. The Phase 28 doctrine's first forward-enforcement cycle completed without reaching seal-time ABORT -- the grace-gap pattern is now a documented countermeasure rather than an open exposure.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED*
+*Merkle seal: 89144a863b...*
+
+
+
+
+
+
 
 

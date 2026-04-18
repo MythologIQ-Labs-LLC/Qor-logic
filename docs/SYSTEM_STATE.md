@@ -1,8 +1,8 @@
 # Qorlogic System State
 
 **Snapshot**: 2026-04-18
-**Chain Status**: ACTIVE (Phase 28 seal in progress at v0.19.0)
-**Phase**: Phase 28 sealing. Documentation-integrity doctrine (`qor/references/doctrine-documentation-integrity.md`) + canonical glossary (`qor/references/glossary.md`, 13 entries) + `qor/scripts/doc_integrity.py` (244 lines) wire doc-integrity enforcement. `/qor-plan` Step 1b elicits `doc_tier` + `terms_introduced` + `boundaries`; `/qor-substantiate` Step 4.7 hard-blocks seal on tier violations; `/qor-audit` emits non-VETO Documentation Drift advisory. Plan schema gains `doc_tier` enum + `terms` + `boundaries` + `doc_tier_rationale` with if-then rule (legacy requires rationale). Phase 28 self-substantiates at `doc_tier: standard` (amended from `system` when Step 4.7 correctly flagged missing `docs/{architecture,lifecycle,operations,policies}.md` -- evidence the doctrine is working).
+**Chain Status**: ACTIVE (Phase 29 seal in progress at v0.20.0)
+**Phase**: Phase 29 sealing. `/qor-audit` Step Z wired (writes `audit.json` via `gate_chain.write_gate_artifact`; closes the missing chain link that forced Phase 28 to hand-write the artifact). `CONTRIBUTING.md` (40 lines) now anchors the contributor reading order at repo root, delegating PR contract to `doctrine-governance-enforcement.md` Section 6. Phase 28's `check_orphans` rule caught its first real post-authoring violation during Phase 29 audit pass 1 (six Phase-28-introduced glossary entries had empty `referenced_by:` and their grace-period plan tag no longer matched); remediation added a seven-entry adoption table and `test_no_phase28_orphan_terms_remain` as a forward-regression guard. 542 tests passing on two consecutive runs. SG-Phase29-A codified: newly-enforced-doctrine grace gap (plans authored soon after a new doctrine lands fail to scan for pre-existing exposures).
 
 ## Authoritative source
 

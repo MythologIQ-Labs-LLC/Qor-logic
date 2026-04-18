@@ -579,4 +579,44 @@ SG-Phase28-A (doctrine-introduction plan without self-dogfood checklist)
 
 ---
 
+### Entry #19: VETO -- plan-qor-phase29-audit-stepZ-and-contributing pass 1
+
+**Timestamp**: 2026-04-18
+**Target**: `docs/plan-qor-phase29-audit-stepZ-and-contributing.md`
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Ledger Entry**: #93
+**Session**: `2026-04-17T2335-f284b9`
+
+### Pattern
+
+Two VETO grounds. The first is the important one: **a newly enforced doctrine catches its first real post-authoring violation one phase later.** Phase 28 introduced the `check_orphans` rule (every glossary entry must have a `referenced_by:` consumer OR be newly introduced in the current plan). Phase 28's own seal passed because all its entries' `introduced_in_plan:` matched the then-current plan slug. Phase 29's plan had no terms to register and no expectation that it would inherit enforcement against prior-phase entries -- but when `check_orphans` runs at Phase 29's seal, the grace-period clause no longer applies, and six Phase-28-introduced entries become expired orphans requiring adoption.
+
+This is the doctrine working as designed, but the post-authoring effect was not anticipated by the Phase 29 plan. The plan addressed one glossary entry (`Doctrine` gains `CONTRIBUTING.md` as a consumer) without noticing that five siblings had the same exposure.
+
+The second ground is a SG-038 recurrence in the very section Phase 28 introduced to prevent SG-038 (Self-Dogfood). Count-enumeration drift: "five" declared, six enumerated.
+
+### Why It Matters
+
+Newly codified enforcement doctrines create a pattern: **the first few plans authored after the doctrine lands are the ones most likely to trip it in unexpected ways.** Authors have not yet internalized the forward-propagating implications. Phase 28's authors (the same session as the doctrine's creation) satisfied every rule by intentional construction; Phase 29's authors saw the doctrine as "done" and did not scan the repo for still-exposed prior-phase artifacts.
+
+The second ground compounds the first: even the self-dogfood checklist (itself a Phase 28 invention) carried forward a prose-enumeration inconsistency that the checklist was meant to detect.
+
+### Countermeasure
+
+For any plan authored in the first three phases after a new enforcement doctrine lands, add an explicit step:
+
+1. Run the new doctrine's check helper(s) against the repo state once, BEFORE writing the plan.
+2. Record the helper's output in the plan's "Basis" section.
+3. If the helper reports violations, resolve them IN THE CURRENT PLAN -- do not defer.
+
+This closes the "newly-enforced-doctrine grace gap" surfaced by Phase 29's VETO.
+
+Concretely for Phase 29: amend Phase 2 to extend `referenced_by:` on the six orphan entries, add a test that forbids empty `referenced_by:` on any entry older than the current plan's session.
+
+### Pattern ID
+
+SG-Phase29-A (newly-enforced-doctrine grace gap: plans authored soon after a new enforcement doctrine fail to scan for pre-existing exposures)
+
+---
+
 *Shadow integrity: ACTIVE*
