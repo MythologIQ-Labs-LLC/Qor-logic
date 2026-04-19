@@ -126,7 +126,7 @@ def bump_version(change_class: str, pyproject_path: Path | None = None) -> str:
 
 
 def create_seal_tag(
-    version: str, seal: str, entry: int, phase: int, klass: str,
+    version: str, seal: str, entry: int, phase: int, klass: str, commit: str,
 ) -> str:
     tag = f"v{version}"
     message = (
@@ -136,7 +136,9 @@ def create_seal_tag(
         f"Phase: {phase}\n"
         f"Class: {klass}\n"
     )
-    subprocess.run(["git", "tag", "-a", tag, "-m", message], check=True)
+    subprocess.run(
+        ["git", "tag", "-a", tag, commit, "-m", message], check=True,
+    )
     return tag
 
 

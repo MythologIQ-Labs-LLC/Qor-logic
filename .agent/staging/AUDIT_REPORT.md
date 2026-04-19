@@ -1,100 +1,89 @@
-# AUDIT REPORT: Phase 32 -- Strict Enforcement (Pass 2)
+# Gate Tribunal Audit Report — Phase 33 (Pass 2)
 
+**Plan**: `docs/plan-qor-phase33-seal-tag-timing.md` (amended)
+**change_class**: feature
+**target_version**: v0.24.0
+**Verdict**: **PASS**
+**Mode**: solo
 **Tribunal Date**: 2026-04-18
-**Target**: `docs/plan-qor-phase32-strict-enforcement.md` (amended)
 **Risk Grade**: L2
-**Auditor**: The QorLogic Judge
-**Mode**: Solo
-**Session**: `2026-04-18T1704-b25f14`
-**Prior Audit**: Entry #105 (VETO on 1 Rule 4 ground)
 
----
+## Pass-1 Violations — Remediation Verified
 
-## Verdict: PASS
+| ID | Violation | Remediation | Status |
+|----|-----------|-------------|--------|
+| V-1 | `create_seal_tag` backwards-compat default | `commit` is now required positional parameter; no HEAD-fallback; test swapped to `raises_without_commit` | RESOLVED |
+| V-2 | Release-doc rule wouldn't fire on self-dogfood | Trigger moved from `pyproject.toml in files_touched` to `plan_payload.change_class ∈ {feature, breaking}`; Step 6.5 wiring passes plan_payload; 6 tests cover feature/breaking/hotfix/both-covered/no-plan-payload cases | RESOLVED |
+| V-3 | Missing positive structural test for Step 9.5.5 | Added `test_skill_step_9_5_5_captures_commit_and_tags` asserting presence of `git rev-parse HEAD` + `create_seal_tag(` with `commit=` kwarg at Step 9.5.5 | RESOLVED |
 
-Prior VETO ground resolved. No new violations introduced.
+## Audit Passes
 
----
+### Security Pass — PASS
 
-## VETO Ground Resolution
+No auth logic, secrets, or mock security. subprocess calls in proposed code use list-form argv (A03 compliant).
 
-### Ground 1 (Rule 4: Rule = Test -- structural changes lacked paired lint tests) -- RESOLVED
+### OWASP Top 10 Pass — PASS
 
-Phase 1 Affected Files (plan line ~50) now names a second test file:
+- A03 Injection: list-form argv throughout; no shell=True.
+- A04 Insecure Design: no insecure-by-default (commit is required, fail-closed on missing).
+- A05 Misconfiguration: no hardcoded secrets.
+- A08 Integrity: no unsafe deserialization.
 
-> `tests/test_install_drift_wiring.py` - NEW; **structural** tests asserting the Phase 1 SKILL/doctrine/glossary edits landed (pattern mirrors Phase 30's `test_session_rotation_glossary_entry_exists.py`).
+### Ghost UI Pass — N/A
 
-Phase 1 Unit Tests list (plan line ~95) adds three structural tests:
+No UI surface.
 
-- `test_plan_skill_has_install_drift_step_0_2` -- SKILL.md parse asserts Step 0.2 block present + invokes install_drift_check
-- `test_governance_enforcement_doctrine_has_install_currency_section` -- doctrine parse asserts §8 header + body > 80 chars
-- `test_install_drift_glossary_entry_exists` -- glossary parse asserts `Install Drift` entry with expected `home:` + `referenced_by:`
+### Section 4 Razor Pass — PASS
 
-Phase 3 Affected Files adds `tests/test_strict_mode_wiring.py` covering:
+- `create_seal_tag`: 13 → 14 lines. OK.
+- `check_documentation_currency`: 23 → ~32 lines. Under 40.
+- `doc_integrity_strict.py`: 194 → ~215 lines. Under 250.
+- `governance_helpers.py`: 151 → ~153 lines. Under 250.
+- Nesting depth ≤ 2 throughout. No nested ternaries.
 
-- `test_strict_mode_glossary_entry_exists` -- `Strict Mode` entry with expected home + referenced_by
-- `test_doc_integrity_doctrine_declares_strict_live` -- doctrine body names strict-mode live-wire
+### Dependency Pass — PASS
 
-Self-Dogfood section updated to list the functional + structural test pairs with audit-pass-1 remediation annotation.
+No new dependencies.
 
-CI commands target updated: `>= 622 passed` (was 617; +5 structural tests).
+### Macro-Level Architecture Pass — PASS
 
-All four structural changes now have paired lint tests matching Phase 30/31 precedents.
+- Tagging concerns stay in `governance_helpers`.
+- Currency concerns stay in `doc_integrity_strict`.
+- Signature change (`plan_payload=None`) is additive; no reverse imports.
+- Cross-cutting wiring change confined to `/qor-substantiate` Steps 6.5 + 9.5.5.
 
----
+### Orphan Detection — PASS
 
-## Re-audit Passes (amendment regression check)
+| Proposed File | Connection | Status |
+|---|---|---|
+| `tests/test_seal_tag_timing.py` | pytest collection | Connected |
+| `tests/test_substantiate_tag_timing_wired.py` | pytest collection | Connected |
+| `tests/test_release_doc_currency.py` | pytest collection | Connected |
+| `tests/test_sg_phase33_entries.py` | pytest collection | Connected |
+| `qor/scripts/governance_helpers.py` | imported by `/qor-substantiate` SKILL.md | Connected |
+| `qor/scripts/doc_integrity_strict.py` | imported by `doc_integrity` + SKILL.md Step 6.5 | Connected |
+| `qor/skills/governance/qor-substantiate/SKILL.md` | Claude harness | Connected |
+| `qor/references/doctrine-documentation-integrity.md` | cited by doc_integrity module + glossary | Connected |
+| `qor/references/glossary.md` | canonical term home | Connected |
+| `docs/SHADOW_GENOME.md` | referenced by skills + structural tests | Connected |
+| `docs/META_LEDGER.md` | canonical ledger | Connected |
 
-### Security / OWASP / Ghost UI / Razor / Dependency / Macro-Arch / Orphan
+## Self-Dogfood Verification
 
-Unchanged from pass 1 (amendment was test-list-only, no code surface changes). **All PASS.**
+Phase 33's implement will touch: governance_helpers.py, doc_integrity_strict.py, SKILL.md (substantiate), doctrine files, glossary, SG, META_LEDGER, test files. It will NOT touch README.md or CHANGELOG.md.
 
-### Razor — amendment-specific check
+At Phase 33's own substantiate:
+- Step 6.5 runs `check_documentation_currency(implement, ".", plan_payload=<Phase 33 plan>)`.
+- plan_payload.change_class == "feature" ∈ _RELEASE_CLASSES.
+- README.md and CHANGELOG.md are NOT in files_touched.
+- Check emits 2 warnings (missing release-path updates for each).
 
-New test files are small (~40-60 lines each based on pattern from Phase 30 `test_session_rotation_glossary_entry_exists.py` which was 40 lines). Well under 250. **PASS**
+This proves the new rule works (self-dogfood). Since Step 6.5 is WARN semantics (not blocker), substantiate still seals. Implementer is expected to author README + CHANGELOG updates during implement OR at substantiate doc stage — the warning is the prompt.
 
----
+## Verdict
 
-## New Violations Introduced By Amendment
+**PASS — all 3 Pass-1 violations resolved; no new violations surfaced.**
 
-None.
+## Next Action
 
-### Defensive check — amendment surface
-
-- Amendment consists purely of test-list additions in Phase 1 and Phase 3 sections + Self-Dogfood annotation. No code surface changes; no new files beyond tests; no change to affected file paths other than adding two new test files.
-- CI commands line correctly updated from `>= 617 passed` to `>= 622 passed` (5 new structural tests). Prose-code consistency clean.
-- Self-Dogfood "Every new rule has a test" section now lists 5 test files (was 3); counts match the CI target delta.
-
----
-
-## Documentation Drift
-
-```
-## Documentation Drift
-
-Non-VETO advisory. These issues would hard-block at /qor-substantiate per `qor/references/doctrine-documentation-integrity.md`. Governor can fix in a follow-on amendment or accept the block at seal time.
-
-- Glossary: Declared term 'Install Drift' has no entry in qor/references/glossary.md.
-```
-
-Unchanged from pass 1; Phase 1 authors the entry. Not a VETO.
-
----
-
-## Process Pattern Advisory
-
-<!-- qor:veto-pattern-advisory -->
-No repeated-VETO pattern detected in the last 2 sealed phases.
-
----
-
-## Summary
-
-Pass 2 confirms Ground 1 resolved. Amendment is test-list-only:
-- Phase 1 gets `tests/test_install_drift_wiring.py` with 3 structural tests (SKILL Step 0.2, doctrine §8, Install Drift glossary)
-- Phase 3 gets `tests/test_strict_mode_wiring.py` with 2 structural tests (Strict Mode glossary, doctrine strict-live declaration)
-- Total new tests: 20 (was 15); CI target `>= 622 passed`
-
-No new violations. All other passes clean. Rule 4 discipline applied: every structural rule now has its paired test, matching Phase 30/31 precedents.
-
-**Required next action**: `/qor-implement` -- proceed to Phase 1. Per `qor/gates/chain.md`. Per user's `/qor-audit` arguments: **"proceed to /qor-implement on pass"** -- continuing autonomously.
+Proceed to `/qor-implement`.

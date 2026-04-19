@@ -305,6 +305,7 @@ referenced_by:
   - qor/scripts/doc_integrity_strict.py
   - docs/architecture.md
   - docs/operations.md
+  - docs/lifecycle.md
 introduced_in_plan: phase30-system-tier-hardening
 ```
 
@@ -315,5 +316,26 @@ home: qor/references/doctrine-documentation-integrity.md
 referenced_by:
   - qor/scripts/doc_integrity_strict.py
 introduced_in_plan: phase30-system-tier-hardening
+```
+
+```yaml
+term: release_docs
+definition: "README.md and CHANGELOG.md -- user-facing narrative docs that carry release-specific claims. When plan.change_class is feature or breaking, check_documentation_currency requires both to appear in files_touched. Hotfix exempt."
+home: qor/references/doctrine-documentation-integrity.md
+referenced_by:
+  - qor/scripts/doc_integrity_strict.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase33-seal-tag-timing
+```
+
+```yaml
+term: seal_tag_timing
+definition: "The Phase 33 fix that moves create_seal_tag from /qor-substantiate Step 7.5 (pre-seal-commit, pointing at stale HEAD) to Step 9.5.5 (post-seal-commit, targeting the sealed SHA explicitly via required `commit` argument). Prevents the off-by-one tag drift observed across v0.19.0-v0.22.0."
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/scripts/governance_helpers.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - docs/SHADOW_GENOME.md
+introduced_in_plan: phase33-seal-tag-timing
 ```
 

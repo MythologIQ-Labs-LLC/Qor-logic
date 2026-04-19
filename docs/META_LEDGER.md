@@ -4057,6 +4057,148 @@ Phase 32 Self-substantiation: Step 4.7 with strict=True will run against Phase 3
 *Merkle seal: 1cc74e892f...*
 
 
+### Entry #109: GATE TRIBUNAL -- Phase 33 audit pass 1
+
+**Timestamp**: 2026-04-18
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: VETO (3 violations)
+**Session**: `2026-04-18T1824-bbe3de`
+
+**Target**: `docs/plan-qor-phase33-seal-tag-timing.md`
+
+**Violations**:
+- V-1 (OWASP A04 / no-backwards-compat): `create_seal_tag` proposed `commit: str | None = None` with HEAD-default fallback. No non-governance caller exists; the fallback preserves the broken behavior being fixed. `CLAUDE.md` forbids backwards-compat hacks.
+- V-2 (SG-Phase28-A self-dogfood gap): rule triggered on `"pyproject.toml" in files_touched`, which is written at Step 7.5 AFTER the Step 6.5 check. Phase 33's own substantiate would not fire the new rule.
+- V-3 (SG-Phase32-A Rule 4 pairing missing): no positive structural test for Step 9.5.5 wiring (must assert `git rev-parse HEAD` + `create_seal_tag(..., commit=sha)`).
+
+**Previous Hash**: `1cc74e892f2cab70e161cfbad195579d874d7a94bad20cb322f3d21cb876169e`
+**Non-chain-advancing**: narrative audit entry; content hash captured in seal entry.
+
+---
+
+### Entry #110: GATE TRIBUNAL -- Phase 33 audit pass 2
+
+**Timestamp**: 2026-04-18
+**Phase**: AUDIT
+**Author**: Judge
+**Verdict**: PASS
+**Session**: `2026-04-18T1824-bbe3de`
+
+**Target**: `docs/plan-qor-phase33-seal-tag-timing.md` (amended)
+
+**Pass-2 remediation confirmed**:
+- V-1: `commit: str` is required positional; test asserts `TypeError` when omitted.
+- V-2: trigger changed to `plan_payload["change_class"] in {feature, breaking}`; fires during Phase 33's own substantiate.
+- V-3: `test_skill_step_9_5_5_captures_commit_and_tags` added.
+
+---
+
+### Entry #111: IMPLEMENTATION -- Phase 33 three-phase implementation
+
+**Timestamp**: 2026-04-18
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Session**: `2026-04-18T1824-bbe3de`
+
+**Files modified**:
+- `qor/scripts/governance_helpers.py` — `create_seal_tag` gains required positional `commit: str`; argv now `["git", "tag", "-a", tag, commit, "-m", message]`.
+- `qor/scripts/doc_integrity_strict.py` — `_RELEASE_DOCS`, `_RELEASE_CLASSES`; `check_documentation_currency` signature extended with `plan_payload: dict | None = None`; release-path branch gated on `plan_payload.change_class`.
+- `qor/skills/governance/qor-substantiate/SKILL.md` — Step 7.5 reduced to `bump_version` only; Step 6.5 passes `plan_artifact` to `check_documentation_currency`; new Step 9.5.5 wires `git rev-parse HEAD` + `create_seal_tag(..., commit=sha)`; Constraints updated; Step 9.6 annotated-tag note corrected.
+- `qor/references/doctrine-documentation-integrity.md` — §5a release-doc coverage subsection added.
+- `qor/references/doctrine-governance-enforcement.md` — §4 Tag section names `seal_tag_timing` with Phase 33 wiring rationale.
+- `qor/references/glossary.md` — `release_docs` + `seal_tag_timing` entries.
+- `docs/SHADOW_GENOME.md` — Entry #23 SG-Phase33-A (seal-tag timing off-by-one; cites v0.19.0–v0.22.0).
+- `tests/test_seal_flow_ordering.py` — updated for new Step 7.5 / 9.5.5 split.
+- `tests/test_seal_tag_timing.py` (NEW) — behavior contract for required `commit` kwarg.
+- `tests/test_substantiate_tag_timing_wired.py` (NEW) — Rule 4 structural lint for skill prose.
+- `tests/test_release_doc_currency.py` (NEW) — 6 tests covering feature/breaking/hotfix/both-covered/no-plan-payload.
+- `tests/test_sg_phase33_entries.py` (NEW) — asserts SG-Phase33-A present and names affected tags.
+
+**Test count**: 636 passing on two consecutive runs (delta +14 new tests vs Phase 32's 622).
+
+**Previous Hash**: `1cc74e892f2cab70e161cfbad195579d874d7a94bad20cb322f3d21cb876169e`
+**Non-chain-advancing**: seal entry will advance the chain hash.
+
+---
+
+### Entry #112: BACKFILL -- historical seal-tag timing bug (v0.19.0-v0.22.0)
+
+**Timestamp**: 2026-04-18
+**Phase**: BACKFILL (annotational; non-chain-advancing)
+**Author**: Judge
+**Session**: `2026-04-18T1824-bbe3de`
+
+**Purpose**: document the off-by-one seal-tag drift across the 4 pre-Phase-33 release tags so future operators can inspect historical release content without repeating the forensic.
+
+**Affected tags** (each tag points at a commit whose `pyproject.toml` carries the previous version):
+
+| Tag | Commit | `pyproject.toml` version at that commit |
+|-----|--------|-----------------------------------------|
+| v0.19.0 | `83418ff21c73f14b6c610e1b160066358875fa1d` | `0.18.0` |
+| v0.20.0 | `c26709eabd6fc87ac15e1437cb62ed494dea1020` | `0.19.0` |
+| v0.21.0 | `8a29fd03f4937e34e60d751bfe946df088b933b1` | `0.20.0` |
+| v0.22.0 | `4b275f0acb711a37ec4256a4c9c449d6f58533d0` | `0.21.0` |
+
+**Root cause**: `governance_helpers.create_seal_tag` was called at `/qor-substantiate` Step 7.5 which runs BEFORE the seal commit at Step 9.5. `git tag -a` therefore attached the tag to the pre-seal HEAD every time.
+
+**Why not retagged**: retagging a published remote rewrites history for any downstream consumer (git clients cache tags; `git fetch --tags` does not refresh by default). Since no PyPI publishing workflow consumes these tags, the cost/benefit doesn't favor retag. The actual sealed content for v0.19.0–v0.22.0 is one commit forward of each tag on its originating phase branch.
+
+**v0.23.0 status**: the bug accidentally escaped here due to the Phase 32 PR #4 amend+force-push race that caused a manual retag. v0.23.0 → `d2e87ee4870ae0869a66afbf27fd99c6c6979440` carries `pyproject.toml version = "0.23.0"` correctly, though not on `main` (see Phase 33 branch base merge `f5277273`).
+
+**Countermeasure**: Phase 33's Step 9.5.5 wiring. From v0.24.0 forward, tags target the seal commit.
+
+**Non-chain-advancing**: this entry is annotational record-keeping; no content hash consumed.
+
+---
+
+### Entry #113: SESSION SEAL -- Phase 33 substantiated
+
+**Timestamp**: 2026-04-18
+**Phase**: SEAL
+**Author**: Judge
+**Verdict**: PASS (Reality = Promise; 636 tests green on 2 consecutive runs; Step 4.7 strict-mode zero findings; Step 6.5 release-doc rule fired once -- README.md warning acknowledged as spurious per Phase 32 version-agnostic design)
+**Session**: `2026-04-18T1824-bbe3de`
+
+**Target**: `docs/plan-qor-phase33-seal-tag-timing.md`
+**Change Class**: `feature`
+**Version**: `0.23.0 -> 0.24.0`
+**Tag**: `v0.24.0` (will be created at Step 9.5.5 post-commit -- Phase 33 wiring)
+
+**Content Hash**: `b7139620068080d2d9f357f446a5e0b184205e27513923843a9a3e21dea10632`
+**Previous Hash**: `1cc74e892f2cab70e161cfbad195579d874d7a94bad20cb322f3d21cb876169e`
+**Chain Hash**: `48039bb420c440b63de0291401e3611dbc9ef7ec21235cad5129a6ad6f327e3a`
+
+**Reality Audit**: all 15 planned source + test files delivered. `governance_helpers.create_seal_tag` now takes required `commit: str`. `check_documentation_currency` accepts optional `plan_payload` and fires release-doc rule on feature/breaking classes. `/qor-substantiate` Step 7.5 reduced to `bump_version` only; new Step 9.5.5 wires post-commit tagging. Doctrine (`doctrine-documentation-integrity.md` §5a, `doctrine-governance-enforcement.md` §4) + glossary (`release_docs`, `seal_tag_timing`) updated. SG Entry #23 (SG-Phase33-A) records the historical timing bug; Entry #112 backfills the 4 affected-tag inventory.
+
+**Step 4.7 strict-mode**: PASS. Zero findings after adding `docs/lifecycle.md` to `Check Surface D`'s `referenced_by` (pre-seal drift surfaced by the live D/E enforcement and corrected in-session; this is Check Surface D doing exactly what Phase 32 promised).
+
+**Step 6.5 currency check**:
+- After lifecycle.md update: 1 warning remaining.
+- `Release-path change (change_class=feature) without updating README.md`.
+- Acknowledged spurious: README was rewritten to be version-agnostic in Phase 32 per the SG-Phase32-B fix. There is no version-specific content in README that requires authoring on this release. CHANGELOG.md WAS updated. Per doctrine §5a operator-judgment clause, continuing seal. Self-dogfood of the new Phase 33 rule confirmed: it fired on the expected path.
+
+**Step 4.6 reliability sweep**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix 28 skills / 105 handoffs / 0 broken.
+
+**Step 7.5 split wiring (first live exercise)**: `bump_version('feature')` wrote `pyproject.toml` from `0.23.0 -> 0.24.0`. `create_seal_tag` NOT called at this step — deferred to 9.5.5. First phase to exercise the Phase 33 timing-fix wiring.
+
+**Branch base**: `phase/33-seal-tag-timing` was cut from `main` and then merged with `v0.23.0` (commit `d2e87ee`) as its first commit (`f527727`). This reconciles `main` with the amended Phase 32 content that the PR #4 auto-merge race left stranded only on the tag. Phase 33's merge to main via PR will carry both the Phase 32 amendment and the Phase 33 work in one commit history.
+
+**SG demonstrations**:
+- SG-Phase33-A (new): seal-tag timing off-by-one across v0.19.0-v0.22.0. Mechanism identified, countermeasure shipped, 4 historical tags documented in backfill Entry #112.
+- SG-Phase28-A self-dogfood: V-2 remediation proven — new release-doc rule fires during Phase 33's own substantiate (spurious in this instance, but fires correctly).
+- SG-Phase32-A Rule 4 pairing: V-3 remediation ships `test_skill_step_9_5_5_captures_commit_and_tags`.
+- SG-Phase32-B drift pattern: README's version-agnostic rewrite holds across this phase (no stale-version-text regression).
+
+**Decision**: Phase 33 sealed. Seal-tag timing bug resolved; release-doc currency rule live; historical tags documented. Consumer-impact: from v0.24.0 forward, `git show v{X}:pyproject.toml` and the annotated tag SHA will reference the same sealed content; PyPI publish workflows (if/when wired) will read correct version metadata from tag commits.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (rotation pending at Step Z)
+*Merkle seal: 48039bb420...*
+
+
 
 
 

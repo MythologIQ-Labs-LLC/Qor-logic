@@ -728,4 +728,43 @@ SG-Phase32-B (narrative-doc version drift: README / CHANGELOG excluded from curr
 
 ---
 
+## Entry #23: seal-tag timing off-by-one — historical release tags point at pre-seal HEAD
+
+**Timestamp**: 2026-04-18
+**Target**: `governance_helpers.create_seal_tag` (Phase 13 wiring in `/qor-substantiate` SKILL.md)
+**Context**: surfaced during post-Phase-32 forensics after the PR #4 amend race exposed tag/pyproject inconsistency. Traced backwards across the 4 prior release tags.
+
+### Pattern
+
+`governance_helpers.create_seal_tag` was called at `/qor-substantiate` Step 7.5 with no explicit commit argument, so `git tag -a` attached the tag to whatever HEAD pointed at when Step 7.5 ran. But the seal commit is not produced until Step 9.5 (several steps later). The tag therefore always pointed at the pre-seal HEAD — one commit behind the sealed content.
+
+Confirmed for every release tag prior to Phase 33:
+
+- v0.19.0 → 83418ff21c73f14b6c610e1b160066358875fa1d: pyproject `version = "0.18.0"`
+- v0.20.0 → c26709eabd6fc87ac15e1437cb62ed494dea1020: pyproject `version = "0.19.0"`
+- v0.21.0 → 8a29fd03f4937e34e60d751bfe946df088b933b1: pyproject `version = "0.20.0"`
+- v0.22.0 → 4b275f0acb711a37ec4256a4c9c449d6f58533d0: pyproject `version = "0.21.0"`
+
+v0.23.0 accidentally escaped the bug via the Phase 32 amend+retag during the PR #4 race.
+
+### Why It Matters
+
+Any release-automation workflow (PyPI publish on tag, GitHub release notes extraction, `pip install git+...@v{X}`) that reads the tag commit sees pyproject one version behind the tag name. The drift is invisible until someone runs `git show v{X}:pyproject.toml` or installs from the tag. Because PyPI publishing wasn't yet wired in this project, no user-visible breakage occurred — but the integrity guarantee the annotated tag exists to provide (this tag points at the sealed content) was never actually true.
+
+### Countermeasure (Phase 33)
+
+1. **Split the wiring**: Step 7.5 bumps `pyproject.toml` only (writes the version, no tag). Step 9.5.5 (new, post-seal-commit) captures `git rev-parse HEAD` and passes the SHA as a required `commit` positional argument to `create_seal_tag`. The tag is placed directly on the seal commit.
+
+2. **Required parameter, no default**: `create_seal_tag(version, seal, entry, phase, klass, commit)` — `commit` has no default. Omitting it raises `TypeError`. Prevents future regression where a careless edit restores the HEAD-default behavior (doctrine: no backwards-compat hacks that preserve footguns).
+
+3. **Rule-4 structural lint**: `tests/test_substantiate_tag_timing_wired.py` asserts (a) Step 7.5 contains `bump_version(` but NOT `create_seal_tag(`, (b) Step 9.5.5 exists and contains `git rev-parse HEAD` + `create_seal_tag(` with `commit=` kwarg. The structural test makes the skill-prose change mechanically enforceable.
+
+4. **Historical tags left in place**: v0.19.0–v0.22.0 are not retagged. Retagging a published remote rewrites history for any downstream consumer; not worth the fix given no PyPI workflow depends on them yet. Forensic recovery: `git show v{X}:pyproject.toml` shows the pre-seal state; the seal commit itself is reachable one step forward via `git log v{X}..` on the originating phase branch.
+
+### Pattern ID
+
+SG-Phase33-A (seal_tag_timing: tagging before the seal commit targets the pre-seal HEAD, producing off-by-one release tags across v0.19.0–v0.22.0)
+
+---
+
 *Shadow integrity: ACTIVE*

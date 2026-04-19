@@ -126,32 +126,47 @@ _SYSTEM_TIER_DOCS = (
     "docs/operations.md",
     "docs/policies.md",
 )
+_RELEASE_DOCS = ("README.md", "CHANGELOG.md")
+_RELEASE_CLASSES = frozenset({"feature", "breaking"})
 
 
-def check_documentation_currency(implement_payload: dict, repo_root: str) -> list[str]:
-    """Check whether doc-affecting phase changes updated system-tier docs.
+def check_documentation_currency(
+    implement_payload: dict,
+    repo_root: str,
+    plan_payload: dict | None = None,
+) -> list[str]:
+    """Check whether doc-affecting phase changes updated system-tier docs
+    and release docs.
 
-    Heuristic: if files_touched contains any SKILL.md / doctrine / schema /
-    script AND no system-tier doc is in files_touched, return a warning
-    list. Else return empty list. Phase 31 wiring uses WARN semantics
-    (operator decides) rather than BLOCK.
+    Phase 31: if files_touched contains any SKILL.md / doctrine / schema /
+    script AND no system-tier doc is in files_touched, emit a warning.
+    Phase 33: if plan_payload.change_class is in the release set
+    ({feature, breaking}), README.md and CHANGELOG.md must also appear in
+    files_touched. WARN semantics (operator decides) rather than BLOCK.
     """
     files_touched = implement_payload.get("files_touched", [])
     normalized = [f.replace("\\", "/") for f in files_touched]
+    warnings: list[str] = []
+
     trigger_files = [
         f for f in normalized
         if any(p in f for p in _CURRENCY_TRIGGER_PATTERNS)
     ]
-    if not trigger_files:
-        return []
-    system_doc_touched = any(d in normalized for d in _SYSTEM_TIER_DOCS)
-    if system_doc_touched:
-        return []
-    return [
-        f"Doc-affecting change to {f} without updating any system-tier doc "
-        f"({', '.join(_SYSTEM_TIER_DOCS)})"
-        for f in trigger_files
-    ]
+    if trigger_files and not any(d in normalized for d in _SYSTEM_TIER_DOCS):
+        warnings.extend(
+            f"Doc-affecting change to {f} without updating any system-tier doc "
+            f"({', '.join(_SYSTEM_TIER_DOCS)})"
+            for f in trigger_files
+        )
+
+    if plan_payload and plan_payload.get("change_class") in _RELEASE_CLASSES:
+        missing = [d for d in _RELEASE_DOCS if d not in normalized]
+        warnings.extend(
+            f"Release-path change (change_class={plan_payload['change_class']}) "
+            f"without updating {d}"
+            for d in missing
+        )
+    return warnings
 
 
 def check_cross_doc_conflicts(

@@ -159,6 +159,16 @@ Strict-mode upgrade (BLOCK instead of WARN) is deferred to a future phase when t
 
 **Anti-pattern**: do NOT add every file-type to the trigger list. The heuristic's signal degrades if it fires on test edits, dist variants, or ledger updates. Keep the trigger set scoped to source-of-truth locations.
 
+### 5a. Release-doc coverage (Phase 33 wiring)
+
+The term **release_docs** names README.md and CHANGELOG.md — the user-facing narrative docs whose content carries release-specific claims (feature highlights, version badges, changelog sections) that go stale when a release ships without updating them.
+
+`check_documentation_currency` takes an optional third argument `plan_payload: dict | None = None`. When `plan_payload["change_class"]` is `"feature"` or `"breaking"` (the release-class set), the check additionally requires both `README.md` and `CHANGELOG.md` to appear in `files_touched`. Missing either emits a `Release-path change (change_class=...) without updating <doc>` warning. `change_class="hotfix"` is exempt (hotfixes can skip release-notes authoring; a separate rule TBD if hotfix README drift becomes a pattern).
+
+Trigger lives on the plan artifact's declared `change_class` rather than the implement artifact's `files_touched`. This matters because the only file whose presence would reliably signal "this is a release" — `pyproject.toml` — is bumped by `/qor-substantiate` Step 7.5 AFTER the currency check runs at Step 6.5, so it would never appear in `implement.files_touched`. Gating on `plan_payload.change_class` makes the rule fire during the phase that introduces it (self-dogfood — see SG-Phase28-A) and on every subsequent release phase.
+
+**Countermeasure history**: SG-Phase32-B (README's static `## What's new in v0.22.0` heading survived Phase 32's seal at v0.23.0). Two-layer fix: (a) README rewritten to be version-agnostic at Phase 32 close; (b) this Phase 33 rule catches forgotten README/CHANGELOG updates during release authoring.
+
 ## 6. Check-surface extensions: strict-mode (Phase 31)
 
 `doc_integrity.run_all_checks_from_plan` accepts a `strict: bool = False` kwarg. When `True`, the composite additionally invokes `doc_integrity_strict.check_term_drift` (Check Surface D) and `doc_integrity_strict.check_cross_doc_conflicts` (Check Surface E). Both raise `ValueError` on the first finding when strict.
