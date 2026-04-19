@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from importlib import metadata
 from pathlib import Path
 
 from qor.install import (
@@ -10,7 +11,10 @@ from qor.install import (
     _do_uninstall,
 )
 
-__version__ = "0.18.0"
+try:
+    __version__ = metadata.version("qor-logic")
+except metadata.PackageNotFoundError:
+    __version__ = "0+unknown"
 
 
 def _default_dist_root() -> Path:

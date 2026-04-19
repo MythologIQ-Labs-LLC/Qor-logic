@@ -4199,6 +4199,39 @@ Phase 32 Self-substantiation: Step 4.7 with strict=True will run against Phase 3
 *Merkle seal: 48039bb420...*
 
 
+### Entry #114: SESSION SEAL -- Phase 34 hotfix substantiated
+
+**Timestamp**: 2026-04-19
+**Phase**: SEAL (hotfix)
+**Author**: Judge
+**Verdict**: PASS (638 tests green on 2 consecutive runs; Phase 33 seal-tag timing fix exercised cleanly)
+
+**Target**: `docs/plan-qor-phase34-cli-version-hotfix.md`
+**Change Class**: `hotfix`
+**Version**: `0.24.0 -> 0.24.1`
+**Tag**: `v0.24.1` (will be created at Step 9.5.5 post-commit)
+
+**Content Hash**: `e96c520bc4a175759ad61f77855191f950a764e2f38bf8f90c754908d26fc22f`
+**Previous Hash**: `48039bb420c440b63de0291401e3611dbc9ef7ec21235cad5129a6ad6f327e3a`
+**Chain Hash**: `a840c3b5eb03e69096e52ce898bb9988c67311f0bd046feaea102bd0681e8d3a`
+
+**Scope**: single CLI hotfix. `qor/cli.py` `__version__` now reads from `importlib.metadata.version("qor-logic")` at import time; hardcoded string `"0.18.0"` (stale since v0.18.0 — six releases) removed. Regression guard `tests/test_cli_version_from_metadata.py` with 2 tests: runtime-lookup parity + Rule-4 structural lint forbidding SemVer string literals on the `__version__` line.
+
+**SG entry**: Entry #24 SG-Phase34-A (hardcoded version drift — third recurrence of the "state duplicated away from source of truth" pattern, after SG-Phase32-B README drift and SG-Phase33-A seal-tag timing).
+
+**Step 6.5 currency check**: hotfix class is exempt from the Phase 33 release-doc rule (change_class=hotfix); no release-doc warnings expected.
+
+**Hotfix justification**: `pip install qor-logic` on v0.24.0 yields `qorlogic --version` → `0.18.0`. User-visible incorrect behavior on the installed artifact. Small surface (one file + one test), unblocks users immediately.
+
+**Decision**: Phase 34 sealed. Phase 35 candidate: extend Rule-4 structural lint to ALL source files — grep for SemVer-shaped string literals outside pyproject.toml / CHANGELOG.md / META_LEDGER.md / SHADOW_GENOME.md. Catches any future hardcoded-version creep in one sweep.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (rotation pending)
+*Merkle seal: a840c3b5eb...*
+
+
 
 
 

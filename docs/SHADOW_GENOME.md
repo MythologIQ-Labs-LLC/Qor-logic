@@ -767,4 +767,49 @@ SG-Phase33-A (seal_tag_timing: tagging before the seal commit targets the pre-se
 
 ---
 
+## Entry #24: hardcoded CLI __version__ drift across six releases
+
+**Timestamp**: 2026-04-19
+**Target**: `qor/cli.py` `__version__ = "0.18.0"`
+**Context**: surfaced during Phase 33 post-seal smoke test. `qorlogic --version` reported `0.18.0` after installing v0.24.0 from PyPI.
+
+### Pattern
+
+`qor/cli.py:13` held a hardcoded string `__version__ = "0.18.0"`. Between v0.18.0 and v0.24.0, the version bump happened six times in `pyproject.toml` (authored by `governance_helpers.bump_version` at `/qor-substantiate` Step 7.5) but the CLI constant was never touched because nothing mechanically linked the two. `pip show qor-logic` reported the correct version (reads pyproject metadata); `qorlogic --version` reported the stale string.
+
+### Why It Matters
+
+Third recurrence of the same root pattern:
+- SG-Phase32-B: README's `## What's new in v0.22.0` heading survived into v0.23.0.
+- SG-Phase33-A: annotated tag placed on pre-seal HEAD targeted stale `pyproject.toml`.
+- SG-Phase34-A (this): CLI `__version__` string literal drifted from pyproject for six releases.
+
+Common mechanism: **state duplicated away from its single source of truth drifts silently because nothing mechanically updates the duplicate at version-bump time.** Whenever governance owns the canonical version (pyproject.toml), any other place that names a version must either be mechanically regenerated from that canonical OR read it at runtime.
+
+### Countermeasure
+
+Two-layer fix:
+
+1. **Immediate (this hotfix)**: replace the hardcoded literal with runtime lookup:
+   ```python
+   from importlib import metadata
+   try:
+       __version__ = metadata.version("qor-logic")
+   except metadata.PackageNotFoundError:
+       __version__ = "0+unknown"
+   ```
+   Once-and-done; future bumps never need a cli.py edit.
+
+2. **Regression guard (this hotfix)**: `tests/test_cli_version_from_metadata.py` carries two tests:
+   - `test_cli_version_matches_package_metadata`: asserts module-level `__version__` agrees with `importlib.metadata.version("qor-logic")`.
+   - `test_cli_version_not_hardcoded_literal`: Rule-4 structural lint — `cli.py` source must not carry a SemVer-shaped string literal on any `__version__ = ...` line. Prevents regression to hardcoding.
+
+3. **Future Phase 35 candidate**: extend the Rule-4 structural lint to ALL source files — grep for SemVer-shaped string literals outside `pyproject.toml`, `CHANGELOG.md`, `META_LEDGER.md`, and `SHADOW_GENOME.md` (the legitimate holders of historical version strings). Any match in `qor/**/*.py` that's not fetching from metadata becomes a seal-time failure. Catches any future hardcoded-version creep across the codebase in one sweep.
+
+### Pattern ID
+
+SG-Phase34-A (hardcoded version drift: module-level constant duplicating pyproject version drifted across six releases because nothing mechanically coupled the two)
+
+---
+
 *Shadow integrity: ACTIVE*

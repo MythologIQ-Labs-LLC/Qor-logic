@@ -10,6 +10,11 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.24.1] - 2026-04-19
+
+### Fixed
+- **CLI `__version__` drift (SG-Phase34-A)**: `qor/cli.py` hardcoded `__version__ = "0.18.0"` and never got updated across six releases (v0.18.0 → v0.24.0). `qorlogic --version` printed `0.18.0` even on v0.24.0 installs. `__version__` now reads from `importlib.metadata.version("qor-logic")` at import time; fallback `"0+unknown"` for uninstalled source checkouts. Regression guard `tests/test_cli_version_from_metadata.py` asserts runtime lookup and forbids reintroduction of a SemVer-shaped string literal on the `__version__` line.
+
 ## [0.24.0] - 2026-04-19
 
 ### Fixed
