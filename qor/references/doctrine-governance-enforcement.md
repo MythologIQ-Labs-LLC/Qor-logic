@@ -44,6 +44,8 @@ Phase: {phase_number}
 Class: {change_class}
 ```
 
+**seal_tag_timing** (Phase 33 wiring): the tag is created at `/qor-substantiate` Step 9.5.5, AFTER the seal commit is made at Step 9.5 — not at Step 7.5. `governance_helpers.create_seal_tag` takes a required `commit: str` parameter; the caller captures the seal SHA via `git rev-parse HEAD` between the commit and the tag call. The pre-Phase-33 flow (tagging at Step 7.5) placed the tag on the pre-seal HEAD, producing off-by-one tags across v0.19.0–v0.22.0 where `git show <tag>:pyproject.toml` showed the version one behind the tag name. See SG-Phase33-A for the historical record.
+
 ## 5. Push/Merge
 
 Four operator options (V-9 safety):

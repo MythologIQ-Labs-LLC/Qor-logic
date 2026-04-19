@@ -47,14 +47,15 @@ The seal sequence under `/qor-substantiate` is:
 | 4.7 | Documentation integrity check (topology + glossary hygiene + orphan scan; Phase 28 wiring + **Phase 32 strict-mode**: Check Surface D/E now raise at seal time; `legacy` tier bypasses) |
 | 5 | Section 4 Razor final check |
 | 6 | Sync `docs/SYSTEM_STATE.md` |
-| **6.5** | **Documentation Currency Check (Phase 31 wiring): WARNs when doc-affecting files touched without a corresponding system-tier doc update** |
+| **6.5** | **Documentation Currency Check (Phase 31 + Phase 33 wiring): WARNs when doc-affecting files touched without a corresponding system-tier doc update. Phase 33 addition: when `plan_payload.change_class ∈ {feature, breaking}`, README.md and CHANGELOG.md are also required in `files_touched` (release-doc coverage). Hotfix exempt.** |
 | 7 | Compute Merkle seal |
-| 7.5 | `bump_version(change_class)` THEN `create_seal_tag(...)` (order enforced by test_seal_flow_ordering) |
+| 7.5 | `bump_version(change_class)` — writes `pyproject.toml` only. Tag creation moved to Step 9.5.5 (Phase 33 wiring; prevents pre-seal-HEAD tagging) |
 | 7.6 | Stamp `CHANGELOG.md` |
 | 8 | Cleanup `.failsafe/governance/` staging |
 | 8.5 | Dist recompile (`python -m qor.scripts.dist_compile`; Phase 30 wiring) |
 | 9 | Final report |
 | 9.5 | Auto-stage for commit |
+| **9.5.5** | **Annotated seal-tag creation (Phase 33 wiring): capture post-commit SHA via `git rev-parse HEAD`, pass as required `commit` arg to `create_seal_tag`. Ensures tag targets the sealed content, not the pre-seal HEAD.** |
 | 9.6 | Operator push/merge decision (4-option menu) |
 | Z | Write `substantiate.json`; call `session.rotate()` so next phase starts clean |
 

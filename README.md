@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="#whats-new-in-v0220">What's New</a> |
+  <a href="#latest-release">Latest Release</a> |
   <a href="#quick-start">Quick Start</a> |
   <a href="#lifecycle">Lifecycle</a> |
   <a href="#policy-engine">Policy Engine</a> |
@@ -38,15 +38,19 @@ Supported hosts: **Claude Code**, **Kilo Code**, **Codex** (provisional), **Gemi
 
 Built around **S.H.I.E.L.D.**: Single-purpose, Hash-chained, Idempotent, Explicit, Layered, Delegating.
 
-## What's new in v0.22.0
+## Latest release
 
-- **Documentation-integrity machinery is now enforced at seal time.** A four-tier doctrine (`minimal` / `standard` / `system` / `legacy`) governs which docs must exist; `/qor-substantiate` hard-blocks on tier violations; WARNS when phase changes ship without updating the 4 system-tier docs. Qor-logic itself now runs at `doc_tier: system`.
-- **PR description citations are CI-enforced.** Every PR must cite plan file + ledger entry + Merkle seal per `doctrine-governance-enforcement.md` §6. Enforced by `.github/workflows/pr-lint.yml`.
-- **Dist variants rebuild automatically on seal** (Step 8.5). Install-sync is CI-tested via SHA256 match of source SKILL.md files vs per-host variants.
-- **Session rotation on seal.** `session.rotate()` issues a fresh session_id after each `/qor-substantiate`; prior session directories preserved for archaeology.
-- **Check Surface D + E scope-fence tuning.** Lenient-by-default; ad-hoc `python -m qor.scripts.doc_integrity_drift_report` CLI surfaces term-drift + cross-doc conflicts for operator triage.
+See **[CHANGELOG.md](CHANGELOG.md)** for what shipped in the current release and every prior version. The CHANGELOG is the single source of truth; this section intentionally avoids version-specific content to prevent README drift.
 
-See [CHANGELOG.md](CHANGELOG.md) for the full release history (v0.19.0 through v0.22.0 introduced the documentation-integrity system in four phases).
+Highlights of the v0.19+ documentation-integrity arc:
+
+- **Tiered documentation doctrine** (`minimal` / `standard` / `system` / `legacy`) hard-enforced at seal time.
+- **Install drift detection** — operators nudged when local skill install lags repo source.
+- **Check Surface D/E live strict-mode** at `/qor-substantiate` Step 4.7 — any term-drift or cross-doc conflict aborts seal.
+- **PR citation CI lint** — PRs must cite plan file + ledger entry + Merkle seal per `doctrine-governance-enforcement.md` §6.
+- **Session rotation + dist-recompile + documentation-currency** machinery in the substantiate flow.
+
+Full details: [CHANGELOG.md](CHANGELOG.md).
 
 ## Quick Start
 

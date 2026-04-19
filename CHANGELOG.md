@@ -10,6 +10,20 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-04-19
+
+### Fixed
+- **Seal-tag timing bug** affecting v0.19.0–v0.22.0: release tags were placed on the pre-seal HEAD (one commit behind the sealed content) because `create_seal_tag` ran at `/qor-substantiate` Step 7.5, before the seal commit at Step 9.5. Tag creation moved to a new Step 9.5.5 that captures the post-commit SHA via `git rev-parse HEAD` and passes it as a required `commit` argument. See SG-Phase33-A and META_LEDGER Entry #112 for forensic details and affected-tag inventory. Historical tags are not retagged.
+
+### Added
+- **Release-doc currency rule** at `/qor-substantiate` Step 6.5. When a plan declares `change_class: feature` or `change_class: breaking`, `check_documentation_currency` now also requires README.md and CHANGELOG.md in `implement.files_touched`. Hotfix is exempt. Catches the pattern where a release ships with stale narrative-doc version claims (SG-Phase32-B).
+- **Glossary terms**: `release_docs`, `seal_tag_timing`.
+- **Doctrine**: `doctrine-documentation-integrity.md` §5a (release-doc coverage) and `doctrine-governance-enforcement.md` §4 (seal_tag_timing wiring).
+
+### Changed
+- `governance_helpers.create_seal_tag` now takes a required `commit: str` positional argument. No HEAD-default fallback. Calling without `commit` raises `TypeError`.
+- `check_documentation_currency` signature extended with optional `plan_payload: dict | None = None`. Legacy call sites without the kwarg preserve pre-Phase-33 behavior.
+
 ## [0.23.0] - 2026-04-18
 
 ### Added

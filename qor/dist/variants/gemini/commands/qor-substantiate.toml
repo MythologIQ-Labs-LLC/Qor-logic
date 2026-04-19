@@ -240,14 +240,17 @@ import gate_chain
 from doc_integrity_strict import check_documentation_currency
 
 implement = gate_chain.read_phase_artifact("implement", session_id=sid)
-warnings = check_documentation_currency(implement, repo_root=".")
+plan_artifact = gate_chain.read_phase_artifact("plan", session_id=sid)
+warnings = check_documentation_currency(
+    implement, repo_root=".", plan_payload=plan_artifact,  # Phase 33 wiring: release-doc rule
+)
 if warnings:
     print("WARNING: Documentation currency check:")
     for w in warnings: print(f"  {w}")
     # Phase 31 semantics: WARN + continue. Future phase may upgrade to BLOCK.
 ```
 
-Operator judgment applies: if warnings are spurious (e.g., touched file genuinely doesn't affect doc-worthy concepts), continue seal. If legitimate (e.g., new doctrine added without updating lifecycle.md), PAUSE, amend the system-tier docs, re-run seal.
+Phase 33 addition: when `plan_artifact.change_class` is `feature` or `breaking`, the check also requires README.md and CHANGELOG.md in `files_touched`. Hotfix is exempt. Operator judgment applies: if warnings are spurious (e.g., touched file genuinely doesn't affect doc-worthy concepts), continue seal. If legitimate (e.g., new doctrine added without updating lifecycle.md, or feature shipped without release-doc authoring), PAUSE, amend, re-run seal.
 
 ### Step 7: Final Merkle Seal
 
@@ -259,10 +262,12 @@ Update `docs/META_LEDGER.md`:
 
 Template: `references/qor-substantiate-templates.md`.
 
-### Step 7.5: Version bump + annotated tag (Phase 13 wiring)
+### Step 7.5: Version bump (Phase 13 wiring; Phase 33 split)
+
+Bump `pyproject.toml` only. Tag creation was moved to Step 9.5.5 after the seal commit (Phase 33 — prevents the historical off-by-one seal-tag timing bug where tags pointed at the pre-seal HEAD).
 
 ```python
-# Phase 13 wiring: bump version + tag (W-3 fix: phase_num derived explicitly)
+# Phase 13 wiring: version bump. Tag creation deferred to Step 9.5.5 (Phase 33).
 import sys; sys.path.insert(0, 'qor/scripts')
 import governance_helpers as gh
 
@@ -270,9 +275,6 @@ plan_path = gh.current_phase_plan_path()              # V-5: lexicographic suffi
 phase_num, slug = gh.derive_phase_metadata(plan_path) # W-3: derive before use
 change_class = gh.parse_change_class(plan_path)       # V-2: bold-form enforced
 new_version = gh.bump_version(change_class)           # V-6 + W-4: tag-collision + downgrade interdiction
-tag = gh.create_seal_tag(
-    new_version, merkle_seal, ledger_entry_num, phase_num, change_class,
-)
 ```
 
 ### Step 7.6: Stamp CHANGELOG (Phase 27 wiring)
@@ -338,6 +340,28 @@ Template: `references/qor-substantiate-templates.md`.
 
 REPORT: "Session committed and pushed to [current-branch]"
 
+### Step 9.5.5: Annotated seal-tag creation (Phase 33 wiring)
+
+The seal commit now exists (created in Step 9.5). Capture its SHA via `git rev-parse HEAD` and tag it. Moving tag creation to this step closes the historical timing bug where `create_seal_tag` ran at Step 7.5 with HEAD still pointing at the pre-seal commit, producing off-by-one tags across v0.19.0–v0.22.0.
+
+```python
+import subprocess
+import sys; sys.path.insert(0, 'qor/scripts')
+import governance_helpers as gh
+
+commit_sha = subprocess.run(
+    ["git", "rev-parse", "HEAD"],
+    capture_output=True, text=True, check=True,
+).stdout.strip()
+
+tag = gh.create_seal_tag(
+    new_version, merkle_seal, ledger_entry_num, phase_num, change_class,
+    commit=commit_sha,
+)
+```
+
+`commit` is a required argument — there is no HEAD-default fallback. Calling `create_seal_tag` without it raises `TypeError`. Verified by `tests/test_seal_tag_timing.py::test_create_seal_tag_raises_without_commit`.
+
 ### Step 9.6: Push/Merge Options (Phase 13 — 4-option menu)
 
 Prompt user with four options (never offer continuation menus when work is sealable; the next decision is push/merge, not "what next phase"):
@@ -347,7 +371,7 @@ Prompt user with four options (never offer continuation menus when work is seala
 3. **Merge to main locally (dry-run first)** — `git merge --no-commit --no-ff <branch>`; on conflict, abort and prompt operator.
 4. **Hold local** — no push/merge this session.
 
-Annotated tag was already created in Step 7.5; do not re-offer.
+Annotated tag was already created in Step 9.5.5; do not re-offer. Push `--tags` alongside the branch push.
 
 Template: `references/qor-substantiate-templates.md`.
 
@@ -368,7 +392,7 @@ Template: `references/qor-substantiate-templates.md`.
 - **ALWAYS** calculate proper chain hash
 - **ALWAYS** document any unplanned files in ledger
 - **ALWAYS** verify chain integrity before sealing
-- **ALWAYS** call `governance_helpers.bump_version` BEFORE `governance_helpers.create_seal_tag` in Step 7.5; never author tags manually. Inverted order interdicts on tag-already-exists and forces pyproject hand-editing (SG-Phase30 wiring; Phase 29 incident).
+- **ALWAYS** call `governance_helpers.bump_version` at Step 7.5 and `governance_helpers.create_seal_tag` at Step 9.5.5 (after the seal commit); never author tags manually and never tag at Step 7.5 (SG-Phase33-A: tagging before commit targets the pre-seal HEAD, producing off-by-one tags).
 - **ALWAYS** run `python -m qor.scripts.dist_compile` at Step 8.5 so variant outputs are rebuilt on seal; prevents dist drift.
 - **ALWAYS** call `session.rotate()` at Step Z after writing `substantiate.json`; prior session directory preserved for archaeology.
 
