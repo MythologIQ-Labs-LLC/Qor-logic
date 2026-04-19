@@ -18,9 +18,9 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 RELIABILITY_DIR = REPO_ROOT / "qor" / "reliability"
-INTENT_LOCK = RELIABILITY_DIR / "intent-lock.py"
-SKILL_ADMISSION = RELIABILITY_DIR / "skill-admission.py"
-GATE_SKILL_MATRIX = RELIABILITY_DIR / "gate-skill-matrix.py"
+INTENT_LOCK = RELIABILITY_DIR / "intent_lock.py"
+SKILL_ADMISSION = RELIABILITY_DIR / "skill_admission.py"
+GATE_SKILL_MATRIX = RELIABILITY_DIR / "gate_skill_matrix.py"
 
 
 def _run(cmd: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess:
@@ -257,27 +257,27 @@ def test_reliability_unwired_in_skills() -> None:
 
     # Proximity-anchored (SG-035): step header within 500 chars of invocation path.
     impl_pattern = re.compile(
-        r"Step 5\.5.{0,1500}qor/reliability/intent-lock\.py", re.DOTALL,
+        r"Step 5\.5.{0,1500}qor\.reliability\.intent_lock", re.DOTALL,
     )
     assert impl_pattern.search(implement), (
-        "qor-implement must invoke intent-lock.py near Step 5.5"
+        "qor-implement must invoke qor.reliability.intent_lock near Step 5.5"
     )
 
     sub_pattern_lock = re.compile(
-        r"Step 4\.6.{0,2000}qor/reliability/intent-lock\.py", re.DOTALL,
+        r"Step 4\.6.{0,2000}qor\.reliability\.intent_lock", re.DOTALL,
     )
     sub_pattern_admit = re.compile(
-        r"Step 4\.6.{0,2000}qor/reliability/skill-admission\.py", re.DOTALL,
+        r"Step 4\.6.{0,2000}qor\.reliability\.skill_admission", re.DOTALL,
     )
     sub_pattern_matrix = re.compile(
-        r"Step 4\.6.{0,2000}qor/reliability/gate-skill-matrix\.py", re.DOTALL,
+        r"Step 4\.6.{0,2000}qor\.reliability\.gate_skill_matrix", re.DOTALL,
     )
     assert sub_pattern_lock.search(substantiate), (
-        "qor-substantiate must invoke intent-lock.py near Step 4.6"
+        "qor-substantiate must invoke qor.reliability.intent_lock near Step 4.6"
     )
     assert sub_pattern_admit.search(substantiate), (
-        "qor-substantiate must invoke skill-admission.py near Step 4.6"
+        "qor-substantiate must invoke qor.reliability.skill_admission near Step 4.6"
     )
     assert sub_pattern_matrix.search(substantiate), (
-        "qor-substantiate must invoke gate-skill-matrix.py near Step 4.6"
+        "qor-substantiate must invoke qor.reliability.gate_skill_matrix near Step 4.6"
     )

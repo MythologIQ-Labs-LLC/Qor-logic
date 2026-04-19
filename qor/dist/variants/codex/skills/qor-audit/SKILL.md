@@ -34,8 +34,7 @@ Adversarial audit of the Governor's blueprint to generate a binding PASS/VETO ve
 Before activating identity, verify the prior-phase artifact (plan) exists and is well-formed.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import qor_audit_runtime as runtime
+from qor.scripts import qor_audit_runtime as runtime
 
 sid = runtime.session_id()
 result = runtime.check_prior_artifact(session_id=sid)
@@ -214,8 +213,7 @@ Verify all proposed files connect to build path:
 Non-VETO advisory. After orphan detection, render a `## Documentation Drift` section into the audit report when the plan's declared `doc_tier` / `terms` / `boundaries` diverge from the repo's glossary and topology. Per `qor/references/doctrine-documentation-integrity.md`, these same divergences hard-block at `/qor-substantiate`; the audit advisory lets the Governor fix drift in a single pass before seal.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import doc_integrity, gate_chain
+from qor.scripts import doc_integrity, gate_chain
 plan_artifact = gate_chain.read_phase_artifact("plan", session_id=sid)
 drift_md = doc_integrity.render_drift_section(plan_artifact, repo_root=".")
 # Append drift_md under the Orphan Detection section of AUDIT_REPORT.md
@@ -243,7 +241,6 @@ If verdict is VETO, document in `docs/SHADOW_GENOME.md` using template from `ref
 Invoke the repeated-VETO pattern detector and populate the Process Pattern Advisory section of the report:
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
 from qor.scripts.veto_pattern import check, render_advisory_text
 
 result = check(ledger_path=None, session_id=sid)  # reads docs/META_LEDGER.md
@@ -263,8 +260,7 @@ Report verdict, risk grade, and next action. Template: `references/qor-audit-tem
 Persist the structured gate artifact at `.qor/gates/<session_id>/audit.json` so `/qor-implement` (and any other downstream phase) can read it via `gate_chain.check_prior_artifact`. Previously missing; Phase 29 closes the chain link.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import gate_chain, shadow_process
+from qor.scripts import gate_chain, shadow_process
 
 payload = {
     "ts": shadow_process.now_iso(),

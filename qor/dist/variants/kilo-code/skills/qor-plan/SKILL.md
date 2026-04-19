@@ -63,8 +63,7 @@ Tests, static checks, and refactors are valuable, but cannot compensate for comp
 Verify prior-phase artifact exists and is well-formed before proceeding.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import gate_chain, session
+from qor.scripts import gate_chain, session
 
 sid = session.get_or_create()
 result = gate_chain.check_prior_artifact("plan", session_id=sid)
@@ -232,8 +231,7 @@ A reader unfamiliar with code should be able to:
 Persist the structured gate artifact at `.qor/gates/<session_id>/plan.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import gate_chain, shadow_process
+from qor.scripts import gate_chain, shadow_process
 
 # Build payload conforming to qor/gates/schema/plan.schema.json
 payload = {

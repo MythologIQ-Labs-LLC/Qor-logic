@@ -8,9 +8,8 @@ Before authoring a plan, cut a per-phase branch. Dirty tree blocks checkout; ope
 
 ```python
 # Phase 13 wiring: dirty-tree check + per-phase branch
-import subprocess, sys
-sys.path.insert(0, 'qor/scripts')
-import governance_helpers as gh
+import subprocess
+from qor.scripts import governance_helpers as gh
 
 result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
 if result.stdout.strip():
@@ -50,8 +49,7 @@ Before authoring the plan body, elicit doc-integrity declarations per `qor/refer
 6. **Emission**: when tier is `legacy`, call the helper before Step Z:
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import doc_integrity
+from qor.scripts import doc_integrity
 doc_integrity.emit_legacy_tier_event(
     session_id=sid,
     rationale=operator_rationale,

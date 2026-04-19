@@ -14,7 +14,7 @@ from typing import Iterable
 
 import yaml
 
-import shadow_process
+from qor.scripts import shadow_process
 
 _TIERS = ("minimal", "standard", "system", "legacy")
 

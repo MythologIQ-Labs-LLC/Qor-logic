@@ -170,7 +170,7 @@ def test_low4_verdict_regex_matches_correctly():
 
     spec = importlib.util.spec_from_file_location(
         "intent_lock",
-        REPO_ROOT / "qor" / "reliability" / "intent-lock.py",
+        REPO_ROOT / "qor" / "reliability" / "intent_lock.py",
     )
     intent_lock = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(intent_lock)
@@ -196,7 +196,7 @@ def test_low4_verdict_regex_matches_correctly():
 def test_low5_uses_timezone_aware_datetime():
     """intent-lock capture uses timezone-aware datetime, not utcnow()."""
     import ast
-    src = (REPO_ROOT / "qor" / "reliability" / "intent-lock.py").read_text(encoding="utf-8")
+    src = (REPO_ROOT / "qor" / "reliability" / "intent_lock.py").read_text(encoding="utf-8")
     assert "utcnow()" not in src
     assert "datetime.now(timezone.utc)" in src or "dt.datetime.now(dt.timezone.utc)" in src
 

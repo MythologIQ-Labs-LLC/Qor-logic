@@ -128,3 +128,17 @@ CLI invocation. Silent drift is the failure mode to prevent.
 patterns, ql-templates, and the glossary are not verified because they
 are not currently installed by `qorlogic install` into the host's
 runtime surface.
+
+## 9. Installed-Mode Invariants (Phase 35 wiring)
+
+Qor-logic is `pip install`-able. Every governance skill must run successfully from any CWD, not only from the Qor-logic repo root. Three binding rules:
+
+1. **Qualified imports in skill prose**. Python blocks in `qor/skills/**/SKILL.md` must use `from qor.scripts import X` (or `from qor.scripts.<module> import Y`) — never `import sys; sys.path.insert(0, 'qor/scripts'); import X`. The `sys.path` hack only resolves when CWD is the Qor-logic repo root; in installed mode the relative path points at a non-existent directory and every downstream import raises `ModuleNotFoundError`. Locked by `tests/test_installed_import_paths.py::test_no_sys_path_hack_in_skills` and `::test_qor_scripts_modules_importable`.
+
+2. **Snake_case reliability modules, `python -m` invocation**. Scripts under `qor/reliability/` must be snake_case (`intent_lock.py`, not `intent-lock.py`) so they are valid Python module names. Skills invoke them via `python -m qor.reliability.<name>` — never via filesystem path (`python qor/reliability/<name>.py`). Each module exposes a `main()` entry point and an `if __name__ == "__main__":` guard. Locked by `tests/test_installed_import_paths.py::test_no_hyphen_named_reliability_invocations` and `::test_qor_reliability_modules_importable`.
+
+3. **No bare intra-package imports**. Inside `qor/scripts/*.py`, sibling modules must be imported as `from qor.scripts import sibling` — never as bare `import sibling`. Bare imports only resolve when some caller earlier in the same process has prepended `qor/scripts/` to `sys.path`; removing the hack breaks them. Enforced implicitly by `test_qor_scripts_modules_importable` (modules that re-introduce bare imports fail to load in installed mode and the test raises).
+
+**Why**: these three rules collectively close the installed-mode breakage family (SG-Phase35-A). Before Phase 35, every `pip install qor-logic` user received a package whose skills silently failed at every governance-helper import. The repo's own CI always ran from repo root, so the assumption held and no test caught it. The Phase 35 structural + runtime test pair is the mechanical guarantee that future skill authoring cannot reintroduce the family.
+
+**Anti-pattern**: do not paper over the invariant with try/except `ImportError` ladders that fall back to `sys.path.insert`. The invariant is that the skill is invocable from any CWD; silent fallback masks the breakage instead of preventing it.

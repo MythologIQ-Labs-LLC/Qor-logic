@@ -10,6 +10,17 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-04-19
+
+### Fixed
+- **Installed-mode breakage (SG-Phase35-A)**: package shipped since v0.18.0 was non-functional for `pip install` users. 49 skill-prose Python blocks used `import sys; sys.path.insert(0, 'qor/scripts'); import X` — only works from repo root. Rewritten to `from qor.scripts import X`. `qor/reliability/{intent-lock,skill-admission,gate-skill-matrix}.py` renamed to snake_case; skill subprocess invocations now `python -m qor.reliability.<name>` (path-independent). Two bare intra-`qor/scripts` imports (`doc_integrity.py`, `doc_integrity_strict.py`) qualified. Regression guards in `tests/test_installed_import_paths.py` lock both structural (no hack pattern remains) and runtime (imports resolve) contracts.
+
+### Added
+- **Doctrine `doctrine-governance-enforcement.md` §9 Installed-Mode Invariants**: three binding rules — qualified `qor.scripts.*` / `qor.reliability.*` imports in skill prose, snake_case reliability module names, `python -m` invocation pattern.
+
+### Changed
+- `qor/reliability/` scripts renamed: `intent-lock.py` → `intent_lock.py`, `skill-admission.py` → `skill_admission.py`, `gate-skill-matrix.py` → `gate_skill_matrix.py`. Git history preserved via `git mv`. Only consumer is skill prose (`/qor-implement` Step 5.5, `/qor-substantiate` Step 4.6); both updated. Tests updated accordingly.
+
 ## [0.24.1] - 2026-04-19
 
 ### Fixed

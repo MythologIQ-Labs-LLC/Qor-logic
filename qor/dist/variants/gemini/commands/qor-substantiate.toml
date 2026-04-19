@@ -21,8 +21,7 @@ The final phase of the S.H.I.E.L.D. lifecycle. Verify that implementation matche
 Verify prior-phase artifact exists and is well-formed before proceeding.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import gate_chain, session
+from qor.scripts import gate_chain, session
 
 sid = session.get_or_create()
 result = gate_chain.check_prior_artifact("substantiate", session_id=sid)
@@ -144,8 +143,7 @@ If any skill files (`.claude/commands/qor-*.md`) were modified during this sessi
 Persist the structured gate artifact at `.qor/gates/<session_id>/substantiate.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import gate_chain, shadow_process
+from qor.scripts import gate_chain, shadow_process
 
 # Build payload conforming to qor/gates/schema/substantiate.schema.json
 payload = {
@@ -185,13 +183,13 @@ SESSION_ID=$(cat .qor/session/current 2>/dev/null || echo default)
 
 # Re-verify the intent lock captured at /qor-implement Step 5.5.
 # Fails if plan, audit, or HEAD commit drifted since capture.
-python qor/reliability/intent-lock.py verify --session "$SESSION_ID" || ABORT
+python -m qor.reliability.intent_lock verify --session "$SESSION_ID" || ABORT
 
 # Verify current skill is registered and frontmatter is well-formed.
-python qor/reliability/skill-admission.py qor-substantiate || ABORT
+python -m qor.reliability.skill_admission qor-substantiate || ABORT
 
 # Verify all /qor-* handoff references across skills resolve to real skills.
-python qor/reliability/gate-skill-matrix.py || ABORT
+python -m qor.reliability.gate_skill_matrix || ABORT
 ```
 
 Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit, re-admit, or fix broken handoff) and re-run substantiation.
@@ -201,8 +199,7 @@ Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit
 Read the plan artifact and run doc-integrity checks against the declared tier. ABORTs on any `ValueError` per `qor/references/doctrine-documentation-integrity.md` (no silent override; `legacy` tier bypasses all checks).
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import doc_integrity, gate_chain
+from qor.scripts import doc_integrity, gate_chain
 
 plan_artifact = gate_chain.read_phase_artifact("plan", session_id=sid)
 # plan_slug derived from plan_path filename stem (e.g., plan-qor-phase28-<slug>.md)
@@ -235,9 +232,8 @@ Template: `references/qor-substantiate-templates.md`.
 Verify that doc-affecting phase changes also updated the system-tier docs (`docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md`). Heuristic lives in `doc_integrity_strict.check_documentation_currency` and returns a warning list.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import gate_chain
-from doc_integrity_strict import check_documentation_currency
+from qor.scripts import gate_chain
+from qor.scripts.doc_integrity_strict import check_documentation_currency
 
 implement = gate_chain.read_phase_artifact("implement", session_id=sid)
 plan_artifact = gate_chain.read_phase_artifact("plan", session_id=sid)
@@ -268,8 +264,7 @@ Bump `pyproject.toml` only. Tag creation was moved to Step 9.5.5 after the seal 
 
 ```python
 # Phase 13 wiring: version bump. Tag creation deferred to Step 9.5.5 (Phase 33).
-import sys; sys.path.insert(0, 'qor/scripts')
-import governance_helpers as gh
+from qor.scripts import governance_helpers as gh
 
 plan_path = gh.current_phase_plan_path()              # V-5: lexicographic suffix
 phase_num, slug = gh.derive_phase_metadata(plan_path) # W-3: derive before use
@@ -282,7 +277,6 @@ new_version = gh.bump_version(change_class)           # V-6 + W-4: tag-collision
 After the version bump in Step 7.5 produces `new_version` and the seal date is known, stamp `CHANGELOG.md` in place:
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
 from qor.scripts.changelog_stamp import apply_stamp
 from datetime import datetime, timezone
 
@@ -346,8 +340,7 @@ The seal commit now exists (created in Step 9.5). Capture its SHA via `git rev-p
 
 ```python
 import subprocess
-import sys; sys.path.insert(0, 'qor/scripts')
-import governance_helpers as gh
+from qor.scripts import governance_helpers as gh
 
 commit_sha = subprocess.run(
     ["git", "rev-parse", "HEAD"],

@@ -4232,6 +4232,45 @@ Phase 32 Self-substantiation: Step 4.7 with strict=True will run against Phase 3
 *Merkle seal: a840c3b5eb...*
 
 
+### Entry #115: SESSION SEAL -- Phase 35 substantiated
+
+**Timestamp**: 2026-04-19
+**Phase**: SEAL
+**Author**: Judge
+**Verdict**: PASS (642 tests green on 2 consecutive runs pre-seal; 4 new installed-mode regression guards all green)
+
+**Target**: `docs/plan-qor-phase35-installed-import-fix.md`
+**Change Class**: `feature`
+**Version**: `0.24.1 -> 0.25.0`
+**Tag**: `v0.25.0` (created at Step 9.5.5 post-commit — Phase 33 wiring; third live exercise)
+
+**Content Hash**: `a77969a69cf9e81a0587445b4d9dab9926e7c74bf8ed6577d5e51d7e71a938a4`
+**Previous Hash**: `a840c3b5eb03e69096e52ce898bb9988c67311f0bd046feaea102bd0681e8d3a`
+**Chain Hash**: `85dd865c3dd683467986003e1e0a076f11684ed1c0283b0dbe154fad6c8c1e0b`
+
+**Scope**: operational-breakage fix across seven releases (v0.18.0–v0.24.1). Every `pip install qor-logic` user received a package whose governance skills could not run — 49 skill-prose Python blocks embedded a `sys.path.insert(0, 'qor/scripts')` hack that only worked from the Qor-logic repo root. `qor/reliability/` shipped hyphen-named Python files (`intent-lock.py` etc.) that are not valid module names and only ran via CWD-dependent path invocation. Two intra-`qor/scripts` bare imports (`doc_integrity.py`, `doc_integrity_strict.py`) piggybacked on the hack and broke the same way.
+
+**Fix**: all 49 skill occurrences rewritten to `from qor.scripts import X`. Reliability scripts renamed (`git mv`) to snake_case; skill subprocess invocations rewritten to `python -m qor.reliability.<name>`. Bare imports qualified. Four new regression tests in `tests/test_installed_import_paths.py` lock both structural (no hack pattern remains) and runtime (imports resolve via the module system) contracts. Doctrine-governance-enforcement §9 "Installed-Mode Invariants" codifies the three binding rules.
+
+**Files modified**: 12 skill `.md` files (49 rewrites), 3 reliability files renamed, 2 `qor/scripts/*.py` imports qualified, 2 test files updated for new snake_case paths, 1 new test module (`test_installed_import_paths.py`, 4 tests), 1 doctrine section added, SG Entry #25 written, CHANGELOG 0.25.0 authored, lifecycle.md Step 4.6 annotation, SYSTEM_STATE refreshed.
+
+**Branch base**: phase/35 cut from phase/34 (not main) so the Phase 34 `__version__` fix and the Phase 35 import fix stack in one history. PR #6 (v0.24.1) must merge first; then PR for Phase 35 carries the combined delta to main.
+
+**SG family closure progress**:
+- SG-Phase32-B (README version): closed at Phase 32 seal + Phase 33 release-doc rule.
+- SG-Phase33-A (seal-tag timing): closed at Phase 33 seal. Fix holding on third live exercise (v0.24.0 → v0.24.1 → v0.25.0 all target their own seal commits correctly).
+- SG-Phase34-A (CLI `__version__`): closed at Phase 34 seal.
+- SG-Phase35-A (installed-mode breakage): closed here. Fourth and most operationally-severe recurrence of the "state-duplicated-from-source-of-truth" family.
+
+**Decision**: Phase 35 sealed. PyPI v0.25.0 (when release workflow completes) will be the first truly installable qor-logic release — skills will actually execute post-install. Phase 36 candidate: extend structural lint to all Python source files (sweep for any remaining repo-layout assumptions in the package).
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (rotation pending)
+*Merkle seal: 85dd865c3d...*
+
+
 
 
 

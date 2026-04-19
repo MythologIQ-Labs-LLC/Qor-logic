@@ -61,8 +61,7 @@ Events flow into a threshold-gated GitHub issue pipeline (see `qor/scripts/check
 Invoke `qor/scripts/shadow_process.py` via its library interface:
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import shadow_process
+from qor.scripts import shadow_process
 event = {
     "ts": shadow_process.now_iso(),
     "skill": "qor-audit",

@@ -118,8 +118,7 @@ Run `/qor-repo-scaffold` to auto-generate missing files.
 Persist the structured gate artifact at `.qor/gates/<session_id>/audit.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import gate_chain, shadow_process
+from qor.scripts import gate_chain, shadow_process
 
 # Build payload conforming to qor/gates/schema/audit.schema.json
 payload = {

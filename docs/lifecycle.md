@@ -43,7 +43,7 @@ The seal sequence under `/qor-substantiate` is:
 | 3.5 | Backlog blocker scan |
 | 4 | Functional verification (tests) |
 | 4.5 | Skill file integrity (structural lint on modified SKILL.md files) |
-| 4.6 | Reliability sweep (intent-lock verify + skill-admission + gate-skill-matrix) |
+| 4.6 | Reliability sweep via `python -m qor.reliability.{intent_lock,skill_admission,gate_skill_matrix}` (Phase 35 wiring: was path-invocation of hyphen-named files, CWD-dependent) |
 | 4.7 | Documentation integrity check (topology + glossary hygiene + orphan scan; Phase 28 wiring + **Phase 32 strict-mode**: Check Surface D/E now raise at seal time; `legacy` tier bypasses) |
 | 5 | Section 4 Razor final check |
 | 6 | Sync `docs/SYSTEM_STATE.md` |

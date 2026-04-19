@@ -21,8 +21,7 @@ Translate the gated blueprint into maintainable reality using strict Section 4 S
 Verify prior-phase artifact exists and is well-formed before proceeding.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import gate_chain, session
+from qor.scripts import gate_chain, session
 
 sid = session.get_or_create()
 result = gate_chain.check_prior_artifact("implement", session_id=sid)
@@ -136,9 +135,9 @@ Template: `references/qor-implement-patterns.md`.
 Capture a fingerprint of the implementer's intent (plan + PASS audit + HEAD commit) before writing any implementation code. Interdicts drift during implementation.
 
 ```bash
-PLAN_PATH=$(python -c "import sys; sys.path.insert(0,'qor/scripts'); from governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
+PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
 SESSION_ID=$(cat .qor/session/current 2>/dev/null || echo default)
-python qor/reliability/intent-lock.py capture \\
+python -m qor.reliability.intent_lock capture \\
   --session "$SESSION_ID" \\
   --plan "$PLAN_PATH" \\
   --audit .agent/staging/AUDIT_REPORT.md
@@ -244,8 +243,7 @@ REPORT: "Implementation verified. X files staged. Ready for commit."
 Persist the structured gate artifact at `.qor/gates/<session_id>/implement.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import gate_chain, shadow_process
+from qor.scripts import gate_chain, shadow_process
 
 # Build payload conforming to qor/gates/schema/implement.schema.json
 payload = {

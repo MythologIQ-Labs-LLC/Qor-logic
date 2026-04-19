@@ -812,4 +812,38 @@ SG-Phase34-A (hardcoded version drift: module-level constant duplicating pyproje
 
 ---
 
+## Entry #25: installed-mode breakage across seven releases
+
+**Timestamp**: 2026-04-19
+**Target**: `qor/skills/**/SKILL.md` Python blocks + `qor/reliability/*.py` subprocess invocations + 2 bare intra-`qor/scripts` imports
+**Context**: surfaced when user reported `pip install qor-logic` produces a package whose skills cannot actually execute because every governance-helper import fails with `ModuleNotFoundError`.
+
+### Pattern
+
+Skill prose (SKILL.md Python blocks) embedded the CWD-dependent hack `import sys; sys.path.insert(0, 'qor/scripts'); import gate_chain`. Works if CWD happens to be the Qor-logic repo root; fails on every `pip install` user because the operator's CWD is their own project root, not the Qor-logic repo, and `qor/scripts/` does not exist there. 49 occurrences across 12 skill files shipped this broken pattern from v0.18.0 onward.
+
+Compound breakage: `qor/reliability/` shipped hyphen-named files (`intent-lock.py`, `skill-admission.py`, `gate-skill-matrix.py`) — invalid Python module names. Skill prose invoked them as `python qor/reliability/intent-lock.py ARGS`, CWD-dependent and non-importable. Intra-`qor/scripts` bare imports (`doc_integrity.py: import shadow_process`; `doc_integrity_strict.py: from doc_integrity import parse_glossary`) piggybacked on the hack — only worked when some earlier skill code had prepended `qor/scripts/` to `sys.path`.
+
+### Why It Matters
+
+Fourth recurrence of the broader "**installed artifact diverges from dev-environment artifact**" family, after SG-Phase32-B (README version), SG-Phase33-A (seal-tag timing), SG-Phase34-A (CLI `__version__`). The three earlier drifts were cosmetic/metadata. This one is operational: the package's headline feature (runnable governance skills) was non-functional for every user who ran `pip install qor-logic` from outside the repo clone. The Release workflow published a broken package to PyPI for six sequential releases (v0.18.0–v0.24.1) without any regression guard catching it, because the repo's own tests always ran from repo root where the CWD assumption happens to hold.
+
+### Countermeasure
+
+Phase 35 ships:
+
+1. **Runtime fix**: all 49 skill-prose occurrences rewritten to `from qor.scripts import X`. Reliability scripts renamed to snake_case; skill invocations rewritten to `python -m qor.reliability.<name>`. Two bare imports qualified.
+
+2. **Regression guards** (`tests/test_installed_import_paths.py`): four tests locking structural (no hack patterns) + runtime (imports resolve) contracts.
+
+3. **Doctrine**: `doctrine-governance-enforcement.md` §9 "Installed-Mode Invariants" codifies the three rules so future skill authoring cannot re-introduce the pattern.
+
+4. **Phase 36 candidate**: extend the structural lint to any Python source file embedding repo-layout assumptions (`sys.path.insert.*qor/`, bare in-tree imports, `Path("qor/...")` literals). Sweep for where else the same family might hide.
+
+### Pattern ID
+
+SG-Phase35-A (installed-mode breakage: skill Python blocks + subprocess invocations + bare intra-package imports assumed repo-root CWD; package was non-functional for pip-installed users across v0.18.0–v0.24.1)
+
+---
+
 *Shadow integrity: ACTIVE*

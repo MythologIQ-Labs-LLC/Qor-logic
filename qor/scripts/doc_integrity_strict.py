@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from doc_integrity import parse_glossary
+from qor.scripts.doc_integrity import parse_glossary
 
 
 _STRICT_SCAN_ROOTS = (

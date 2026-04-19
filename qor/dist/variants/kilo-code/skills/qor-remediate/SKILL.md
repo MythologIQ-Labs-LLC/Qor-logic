@@ -45,8 +45,7 @@ This skill is **cross-cutting** — invoked when the Process Shadow Genome thres
 Invoke `qor/scripts/remediate_read_context.py` via its library interface:
 
 ```python
-import sys; sys.path.insert(0, 'qor/scripts')
-import remediate_read_context as rrc
+from qor.scripts import remediate_read_context as rrc
 groups = rrc.load_unaddressed_groups()
 ```
 

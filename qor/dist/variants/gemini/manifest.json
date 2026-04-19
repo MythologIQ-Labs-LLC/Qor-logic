@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-04-19T00:36:53Z",
+  "generated_ts": "2026-04-19T01:37:48Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -90,7 +90,7 @@
       "id": "qor-audit.toml",
       "source_path": "commands/qor-audit.toml",
       "install_rel_path": "commands/qor-audit.toml",
-      "sha256": "d42a4fdbdcbba8b3285fddfcef36db1559ec9f5fb9f132b42da06aa70fb7fc86"
+      "sha256": "b052ef1b40319c2d8fe0750d1e9da8cd05637fa640ca63494d02395cba1cb27a"
     },
     {
       "id": "qor-bootstrap.toml",
@@ -150,7 +150,7 @@
       "id": "qor-implement.toml",
       "source_path": "commands/qor-implement.toml",
       "install_rel_path": "commands/qor-implement.toml",
-      "sha256": "c953189ddd6aeb3ebac3f00ad6c9d7d686ac1177d6f0f917e229229d27b6e1fd"
+      "sha256": "cfbbb9daad4ab71a6e046fc86fb1d30c8533b5eb4d556f0cbb62294b4916ceec"
     },
     {
       "id": "qor-meta-log-decision.toml",
@@ -180,7 +180,7 @@
       "id": "qor-plan.toml",
       "source_path": "commands/qor-plan.toml",
       "install_rel_path": "commands/qor-plan.toml",
-      "sha256": "48e25035476060632ee1e1640b8b978dbf0550567c1e6fc885dd373c61ae6161"
+      "sha256": "9c7097899d8767fc572a50931c3b5d1bf199e5ca03dd00586a0b8d890d567c54"
     },
     {
       "id": "qor-process-review-cycle.toml",
@@ -192,31 +192,31 @@
       "id": "qor-refactor.toml",
       "source_path": "commands/qor-refactor.toml",
       "install_rel_path": "commands/qor-refactor.toml",
-      "sha256": "657202204efff483e8d19fd73148d6dfbd33a45a900f319a4a48ce0b5b24c7c3"
+      "sha256": "24d83a45c590a0fbe4b8af9189820daa3b67ecabd96c1b6a3122f46e9c07d514"
     },
     {
       "id": "qor-remediate.toml",
       "source_path": "commands/qor-remediate.toml",
       "install_rel_path": "commands/qor-remediate.toml",
-      "sha256": "f70afbdd16dd61d2b25fa6008bfbf5342729db41c2c1ad2409f06af24046854b"
+      "sha256": "aafc4d756bf735e2d2ad57acd1589b7ecdb06f40d70a5ccf314364423a748a25"
     },
     {
       "id": "qor-repo-audit.toml",
       "source_path": "commands/qor-repo-audit.toml",
       "install_rel_path": "commands/qor-repo-audit.toml",
-      "sha256": "5125152988dca5fdbac6edebb11fb04a5443532c7c08cecd5bc705765a9e045d"
+      "sha256": "11ccc0cf86fc19dc1f6632f65a5071e52a174cf835c4346ac81ffe6b56f0e59e"
     },
     {
       "id": "qor-repo-release.toml",
       "source_path": "commands/qor-repo-release.toml",
       "install_rel_path": "commands/qor-repo-release.toml",
-      "sha256": "a7e58e3250a8a2ae102609b2f875c468604257ffeff2fab7238fb9e67523bc9d"
+      "sha256": "c7266e4ddee4d4ac71aff228d52d5656fb04e7ab579c2c6ecd374738634d8d68"
     },
     {
       "id": "qor-repo-scaffold.toml",
       "source_path": "commands/qor-repo-scaffold.toml",
       "install_rel_path": "commands/qor-repo-scaffold.toml",
-      "sha256": "7a97c1765cf09e95923e9f7937755ef6fe03387aff657ea47547da118a52b74b"
+      "sha256": "22a46dce0447c7586ca87165c7d4dc3ab79dc93ba3fa35572aacc1ce1ea0fa5d"
     },
     {
       "id": "qor-research.toml",
@@ -228,7 +228,7 @@
       "id": "qor-shadow-process.toml",
       "source_path": "commands/qor-shadow-process.toml",
       "install_rel_path": "commands/qor-shadow-process.toml",
-      "sha256": "50f4deecff379a4cf96cba1cf065632a2059470f76e89d6dbcbbd33119bf8066"
+      "sha256": "0d2c93813190324581c46e48bfc653f773ab7b74b58f4a251567c19be78cd5d3"
     },
     {
       "id": "qor-status.toml",
@@ -240,7 +240,7 @@
       "id": "qor-substantiate.toml",
       "source_path": "commands/qor-substantiate.toml",
       "install_rel_path": "commands/qor-substantiate.toml",
-      "sha256": "a2aa5a06523543ae7b3fb7dd50f4e39137833dd046149277296f56962a4d1ee8"
+      "sha256": "92a5a3b08fcf7fe7d01efcbc7138dcef8c04580862cf8a168877498b05408f0b"
     },
     {
       "id": "qor-tone.toml",
@@ -252,7 +252,7 @@
       "id": "qor-validate.toml",
       "source_path": "commands/qor-validate.toml",
       "install_rel_path": "commands/qor-validate.toml",
-      "sha256": "a4e733f799eea56b5e1b7adedf86691fb9735430571633668e1d8fbfa049c166"
+      "sha256": "29f8ff6db0f93efeb52cb936a427e89262c5b3a5ae7b14aa56d05f26471c0934"
     },
     {
       "id": "track-shadow-genome.toml",
