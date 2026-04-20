@@ -3,9 +3,9 @@
 **change_class**: feature
 **target_version**: v0.29.0
 **doc_tier**: system
-**pass**: 1
+**pass**: 2 (amended from Pass 1 VETO per `.agent/staging/AUDIT_REPORT.md` — V1 resolution (a): Anthropic SDK invocation)
 
-**Scope**: Codify the "personas = context-prioritization scaffolds for edge-case determinations" doctrine (operator direction registered 2026-04-19 in META_LEDGER #116 research brief). Ship a seeded-defect A/B harness that measures detection rate under persona-named vs stance-directive-only Identity Activation phrasing across `/qor-audit` AND `/qor-substantiate`. Apply A/B findings to the ~30 skills carrying `<persona>` frontmatter: decorative tags removed, load-bearing tags justified, Identity Activation blocks rewritten stance-directive-first where evidence supports.
+**Scope**: Codify the "personas = context-prioritization scaffolds for edge-case determinations" doctrine (operator direction registered 2026-04-19 in META_LEDGER #116 research brief). Ship a seeded-defect A/B harness that measures detection rate under persona-named vs stance-directive-only Identity Activation phrasing across `/qor-audit` AND `/qor-substantiate`, using direct Anthropic SDK invocation (V1 resolution). Apply A/B findings to the 24 skills carrying `<persona>` frontmatter: decorative tags removed, load-bearing tags justified, Identity Activation blocks rewritten stance-directive-first where evidence supports.
 
 **terms_introduced**:
 - `context-prioritization scaffold` — persona framing used to prioritize the context a skill loads for edge-case determinations within its domain. Metric is performance/accuracy/results, not aesthetic flavor. Home: `qor/references/doctrine-context-discipline.md`.
@@ -20,7 +20,7 @@
 
 ## Open Questions
 
-None. Both target skills (`/qor-audit`, `/qor-substantiate`) and corpus size (20 defects) are locked.
+None. Target skills (`/qor-audit`, `/qor-substantiate`), corpus size (20 defects), and invocation mechanism (Anthropic SDK direct, V1 resolution (a)) are locked.
 
 ## Non-goals
 
@@ -58,15 +58,17 @@ Sections:
 - `tests/test_doctrine_context_discipline.py::test_doctrine_has_five_sections` — NEW. All five section headers present verbatim.
 - `tests/test_doctrine_context_discipline.py::test_doctrine_governance_xref` — NEW. `doctrine-governance-enforcement.md` §11 references the new file.
 
-## Phase 2 — A/B harness infrastructure
+## Phase 2 — A/B harness infrastructure (Anthropic SDK invocation)
 
 ### Affected Files
 
-- `tests/fixtures/ab_corpus/` — NEW directory. 20 seeded defects across 10 category-typed fixture files (2 defects per category on average; categories mapped to the 12-value `findings_categories` enum; 2 categories omitted: `coverage-gap` + `dependency-unjustified` — tested live, harder to synthesize).
-- `tests/fixtures/ab_corpus/MANIFEST.json` — NEW. Declares every seeded defect: `{file, line, category, description}` — ground-truth reference for scoring.
-- `qor/scripts/ab_harness.py` — NEW (~120 LOC across 4 functions). Corpus loader, variant runner, detection-rate scorer, comparison reporter.
-- `qor/scripts/ab_variants.py` — NEW (~40 LOC). Generates persona-named vs stance-directive-only Identity Activation variants from a skill markdown source.
-- `tests/test_ab_harness.py` — NEW. Unit tests for corpus load, scorer arithmetic, variant generation.
+- `pyproject.toml` — add `anthropic>=0.40,<1.0` to a new `[project.optional-dependencies].ab-harness = [...]` extra. Kept out of the main install set so pip users who don't run the harness don't pull the dependency.
+- `tests/fixtures/ab_corpus/` — NEW directory. 20 seeded defects across 10 category-typed fixture files (2 defects per category on average; categories mapped to the 12-value `findings_categories` enum; 2 categories omitted: `coverage-gap` + `dependency-unjustified` — harder to synthesize, tested live elsewhere). Every fixture file begins with the header comment `# SEEDED TEST DEFECT — NOT EXECUTABLE — Phase 39 A/B corpus (F2 resolution).`
+- `tests/fixtures/ab_corpus/MANIFEST.json` — NEW. Declares every seeded defect: `{id, file, line_start, line_end, category, description}` — ground-truth reference for scoring (F5 resolution).
+- `tests/fixtures/ab_corpus/variants/` — NEW directory. Pre-authored stance-directive-only rewrites of each target skill's Identity Activation block, one file per `(skill, variant)` pair: `qor-audit.persona.md`, `qor-audit.stance.md`, `qor-substantiate.persona.md`, `qor-substantiate.stance.md` (F4 resolution: hand-crafted, not programmatically string-replaced).
+- `qor/scripts/ab_harness.py` — NEW (~140 LOC across 5 functions). Corpus loader, variant loader, LLM invocation, detection-rate scorer, comparison reporter. Uses `anthropic` SDK; reads `ANTHROPIC_API_KEY` from env.
+- `qor/scripts/ab_live_run.py` — NEW (~60 LOC). Operator-invoked CLI that runs the full A/B cycle live (hits API, produces results artifact). Separated from `ab_harness.py` so the library remains unit-testable without API access.
+- `tests/test_ab_harness.py` — NEW. Unit tests for corpus load, manifest validation, scorer arithmetic, variant loading. All tests mock the Anthropic client (no live API calls in CI).
 
 ### Changes
 
@@ -117,30 +119,52 @@ ab_corpus/
 }
 ```
 
-`ab_harness.run(variant: "persona" | "stance", skill: str, corpus_path: Path) -> dict`:
-- Loads manifest, iterates 20 defects
-- Invokes target skill with the specified Identity Activation variant against each defect fixture
-- Scores: for each defect, was the `findings_categories` emitted by the skill's gate artifact a superset of the planted category?
-- Returns `{variant, skill, detections: int, total: 20, detection_rate: float, per_defect: [...]}`
+`ab_harness.run(variant: "persona" | "stance", skill: str, corpus_path: Path, client=None, model: str = "claude-opus-4-7") -> dict`:
+- Loads manifest, iterates 20 defects.
+- For each defect, constructs a prompt: system prompt = the skill's SKILL.md body with the `variant` Identity Activation block swapped in (loaded from `tests/fixtures/ab_corpus/variants/<skill>.<variant>.md`); user prompt = the fixture file content + instruction to produce a JSON object `{"findings_categories": [...]}`.
+- Invokes `client.messages.create(model=model, max_tokens=800, system=system_prompt, messages=[{"role": "user", "content": user_prompt}])`. `client` defaults to a fresh `anthropic.Anthropic()` which reads `ANTHROPIC_API_KEY` from env. Tests pass a mock client.
+- Parses the response: extracts the first JSON object matching `{"findings_categories": [...]}`. If parse fails, the defect counts as a miss (not an error).
+- Scores: defect is a detection iff the planted category is in the emitted `findings_categories` list.
+- Returns `{variant, skill, model, detections: int, total: 20, detection_rate: float, per_defect: [...]}`.
 
 `ab_harness.compare(persona_result, stance_result) -> dict`:
-- Returns `{persona_rate, stance_rate, delta, winner, confidence_pp}` where `delta = stance_rate - persona_rate`, `winner` is `"persona" | "stance" | "tie"` (tie = |delta| < 5pp).
+- Returns `{persona_rate, stance_rate, delta, winner}` where `delta = stance_rate - persona_rate`, `winner` is `"persona" | "stance" | "tie"` (tie = |delta| < 5pp).
 
-`ab_variants.generate(skill_path: Path) -> tuple[str, str]`:
-- Reads the skill's Identity Activation block (Step 1 prose).
-- Returns two prose variants: the existing persona-named text AND a stance-directive-only rewrite (persona name stripped, stance modifier retained verbatim).
+`ab_harness.aggregate_runs(results: list[dict]) -> dict`:
+- Takes N per-run results for a single `(skill, variant)` combination.
+- Returns `{mean_detection_rate, stddev_pp, n}`.
 
-### Unit Tests (TDD — written first)
+`ab_variants.load(skill: str, variant: "persona" | "stance") -> str`:
+- Reads `tests/fixtures/ab_corpus/variants/<skill>.<variant>.md`.
+- Returns the Identity Activation block text as a string (to be spliced into the skill system prompt).
+- Hand-authored files (F4 resolution). No programmatic rewriting — the stance variant is operator-crafted once, checked into the fixture directory, reviewed alongside this plan.
 
-- `tests/test_ab_harness.py::test_corpus_manifest_declares_20_defects` — NEW. `len(manifest["defects"]) == 20`.
+**Non-determinism**: LLM responses vary across runs even at temperature 0 (Opus 4.7 cannot guarantee identical outputs). N=5 runs per `(skill, variant)` combination samples this variance. Mean + stddev quantify the noise floor; detection-rate delta must exceed noise floor to count as a real effect. **Concretely**: if stddev across 5 runs is 7pp per variant, a 5pp delta is indistinguishable from noise regardless of tie-threshold. Phase 3's results artifact reports both mean and stddev.
+
+**Cost**: 2 skills × 2 variants × 5 runs × 20 defects = 400 API calls per full cycle. At Opus 4.7 pricing (~$15/M input, ~$75/M output tokens) and ~500 input + ~100 output tokens per call: ~$4 per full A/B cycle. Declared here for operator budget awareness.
+
+**Rate limiting**: harness runs serially (no concurrency). Anthropic's default tier rate limits (~50 RPM on Opus) accommodate serial 400 calls in ~10-15 minutes.
+
+**Credential handling**: `ANTHROPIC_API_KEY` read from env by the SDK. Never logged. No keys in test fixtures, code, or results artifacts. If env var is absent, `ab_live_run.py` exits with a clear error before any work; `ab_harness.py` library functions accept a mock client and never read env directly.
+
+### Unit Tests (TDD — written first; all mock the Anthropic client)
+
+- `tests/test_ab_harness.py::test_corpus_manifest_declares_20_defects` — NEW.
 - `tests/test_ab_harness.py::test_corpus_categories_are_all_valid_enum_values` — NEW. Every defect category is in the `findings_categories` 12-value enum.
-- `tests/test_ab_harness.py::test_corpus_files_exist` — NEW. Every declared fixture file is present on disk.
-- `tests/test_ab_harness.py::test_scorer_counts_category_supersets_as_detections` — NEW. Synthetic audit gate carrying `["razor-overage"]` counts as detection for a `razor-overage` seeded defect.
-- `tests/test_ab_harness.py::test_scorer_counts_missing_category_as_miss` — NEW. Synthetic audit gate carrying `["specification-drift"]` is a miss for `razor-overage`.
-- `tests/test_ab_harness.py::test_compare_reports_winner_stance_above_5pp` — NEW. Delta ≥ 5pp → `winner: "stance"`.
-- `tests/test_ab_harness.py::test_compare_reports_tie_below_5pp` — NEW. |Delta| < 5pp → `winner: "tie"`.
-- `tests/test_ab_harness.py::test_variants_strip_persona_name` — NEW. Stance variant does not contain `"Judge"`, `"Specialist"`, `"Analyst"`, `"Governor"`, `"Technical Writer"` (case-sensitive, standalone).
-- `tests/test_ab_harness.py::test_variants_preserve_stance_modifier` — NEW. Stance variant contains the same modifier keyword (e.g., "adversarial") as persona variant.
+- `tests/test_ab_harness.py::test_corpus_files_exist` — NEW.
+- `tests/test_ab_harness.py::test_corpus_files_carry_seeded_defect_marker` — NEW (F2). Every fixture file starts with `# SEEDED TEST DEFECT — NOT EXECUTABLE`.
+- `tests/test_ab_harness.py::test_manifest_line_range_fields_present` — NEW (F5). Every defect has `line_start` and `line_end`.
+- `tests/test_ab_harness.py::test_scorer_counts_category_superset_as_detection` — NEW. Synthetic model response `{"findings_categories": ["razor-overage"]}` counts as detection for a `razor-overage` seeded defect.
+- `tests/test_ab_harness.py::test_scorer_counts_missing_category_as_miss` — NEW.
+- `tests/test_ab_harness.py::test_scorer_counts_json_parse_failure_as_miss` — NEW. Malformed model response counts as miss, does not raise.
+- `tests/test_ab_harness.py::test_compare_reports_winner_stance_above_5pp` — NEW.
+- `tests/test_ab_harness.py::test_compare_reports_tie_below_5pp` — NEW.
+- `tests/test_ab_harness.py::test_run_uses_injected_client_not_env` — NEW. When `client=` is passed, `ab_harness.run` does not read `ANTHROPIC_API_KEY` from env.
+- `tests/test_ab_harness.py::test_run_submits_variant_system_prompt` — NEW. Mock client records the system prompt; test asserts the variant's Identity Activation block is present.
+- `tests/test_ab_harness.py::test_aggregate_runs_reports_mean_and_stddev` — NEW. Given 5 mock runs with detection rates `[0.5, 0.6, 0.55, 0.52, 0.58]`, returns `{mean: 0.55, stddev_pp, n: 5}`.
+- `tests/test_ab_harness.py::test_variants_load_strips_persona_names` — NEW (F4). Stance variant files do not contain persona name tokens (`Judge`, `Specialist`, `Analyst`, `Governor`, `Technical Writer`).
+- `tests/test_ab_harness.py::test_variants_load_preserves_stance_modifier` — NEW (F4). Stance variant files contain the same stance modifier keyword as the persona variant.
+- `tests/test_ab_harness.py::test_ab_live_run_exits_clearly_without_api_key` — NEW. Setting `ANTHROPIC_API_KEY=""` and invoking `ab_live_run.py` exits non-zero with the env-var name in stderr.
 
 ## Phase 3 — Run A/B on `/qor-audit` AND `/qor-substantiate`
 
@@ -153,14 +177,14 @@ ab_corpus/
 
 ### Changes
 
-Run `ab_harness.run` 5 times per `(skill, variant)` combination to smooth stochasticity. Targets:
+Operator runs `python qor/scripts/ab_live_run.py` once, which hits the Anthropic API for all 400 calls serially. Requires `ANTHROPIC_API_KEY` env var set; script exits clearly if absent.
 
-- `/qor-audit` × `persona` × 5 runs
-- `/qor-audit` × `stance` × 5 runs
-- `/qor-substantiate` × `persona` × 5 runs
-- `/qor-substantiate` × `stance` × 5 runs
-
-Total: 20 harness invocations × 20 defects = 400 data points. Results aggregated to per-(skill, variant) detection rate (mean of 5 runs).
+Script behavior:
+- 5 runs per `(skill, variant)` combination: `/qor-audit × persona × 5`, `/qor-audit × stance × 5`, `/qor-substantiate × persona × 5`, `/qor-substantiate × stance × 5`.
+- Total: 20 harness invocations × 20 defects = 400 API calls, ~$4 cost, ~10-15 min wall-time.
+- Aggregates per-(skill, variant) into mean detection rate + stddev via `aggregate_runs`.
+- Produces `docs/phase39-ab-results.md` with the structure below.
+- Writes `.qor/gates/<session>/ab-run.json` with raw per-run data for audit trail (inside gitignored `.qor/` — not pushed, operator can share if needed).
 
 Results artifact `docs/phase39-ab-results.md` structure:
 
@@ -248,14 +272,33 @@ After:
 ## CI Commands
 
 - `pytest tests/test_doctrine_context_discipline.py` — Phase 1 targeted.
-- `pytest tests/test_ab_harness.py` — Phase 2 targeted.
-- `pytest tests/test_phase39_ab_results.py` — Phase 3 targeted.
+- `pytest tests/test_ab_harness.py` — Phase 2 targeted (mocked; no API calls).
+- `pytest tests/test_phase39_ab_results.py` — Phase 3 targeted (validates results artifact once operator-produced).
 - `pytest tests/test_persona_sweep.py` — Phase 4 targeted.
-- `pytest` — full suite at seal.
+- `pytest` — full suite at seal (no live API calls).
+- `pip install -e .[ab-harness]` — install the optional harness dependency when operator is running the live cycle (not required for CI).
+- `ANTHROPIC_API_KEY=... python qor/scripts/ab_live_run.py` — operator-only; produces `docs/phase39-ab-results.md`. NOT a CI command.
 - `python -m qor.reliability.skill_admission qor-audit qor-substantiate qor-debug qor-document` — admission on skills with prose changes.
-- `python -m qor.reliability.gate_skill_matrix` — handoff integrity; persona frontmatter removal must not break any handoff reference.
+- `python -m qor.reliability.gate_skill_matrix` — handoff integrity.
 - `python qor/scripts/doc_integrity_strict.py` — terms_introduced have canonical homes.
 
 ## Phase ordering rationale
 
-Phases 1-3 must land in order (doctrine → harness → evidence). Phase 4 depends on Phase 3 evidence for conditional rewrites (R3 fires or skips per winner). Phase 2's harness is test-only infrastructure — it ships as part of the repo but runs only when explicitly invoked; it does not modify skill behavior.
+Phases 1-3 must land in order (doctrine → harness → evidence). Phase 4 depends on Phase 3 evidence for conditional rewrites (R3 fires or skips per winner). Phase 2's harness is test-only infrastructure — it ships as part of the repo but runs only when explicitly invoked via `ab_live_run.py`; it does not modify skill behavior. Phase 3's live run happens once at operator direction (not in CI) and commits the results artifact as evidence for Phase 4.
+
+## V1 resolution summary (Pass 2 amendment)
+
+Pass 1 VETO V1: harness had no mechanism to invoke slash-command skills. Pass 2 adopts resolution (a): direct Anthropic SDK invocation.
+
+- New optional dependency `anthropic>=0.40,<1.0` under `[project.optional-dependencies].ab-harness`. Not pulled by default installs.
+- `ab_harness.run` accepts an injected client; production uses `anthropic.Anthropic()` reading `ANTHROPIC_API_KEY` from env; tests inject mocks.
+- Clear separation: `ab_harness.py` is pure library (mockable, CI-testable); `ab_live_run.py` is the operator CLI that actually hits the API.
+- Cost (~$4 per cycle) and rate limits (serial calls, ~10-15 min) disclosed in the harness module docstring.
+- Non-determinism quantified via stddev across n=5 runs; results artifact reports both mean and stddev so readers can distinguish real effects from noise.
+
+Other Pass 1 findings resolved:
+- F1: "~30 skills" → "24 skills" (grep-verified).
+- F2: `# SEEDED TEST DEFECT — NOT EXECUTABLE` header required on all corpus fixtures; enforced by test.
+- F3: n=5 justified against LLM non-determinism; stddev tracked; results report both.
+- F4: Variants are hand-authored markdown files under `tests/fixtures/ab_corpus/variants/`, not programmatic.
+- F5: MANIFEST defect shape uses `line_start` + `line_end` to handle multi-line defects.
