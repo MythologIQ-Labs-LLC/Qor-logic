@@ -4894,6 +4894,42 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Session: SEALED* (Phase 38 substantiated — **FREEZE LINE**)
 *Merkle seal: b7c8ed67...* (Phase 38 seal on top of Phase 37's 401a37cd; Entries #116-#132 chained)
 
+---
+
+### Entry #133: SESSION SEAL -- Phase 40 hotfix substantiated
+
+**Timestamp**: 2026-04-20
+**Phase**: SEAL (hotfix)
+**Author**: Judge
+**Verdict**: PASS (713 tests green on 2 consecutive runs)
+
+**Target**: `docs/plan-qor-phase40-release-workflow-guard.md`
+**Change Class**: `hotfix`
+**Version**: `0.28.0 -> 0.28.1`
+**Tag**: `v0.28.1` (created at Step 9.5.5 post-commit, LOCAL ONLY pending PR merge)
+
+**Content Hash**: `fbdfe2ceb06e017be18a6bc190be8459962380091ee97fd34b1b56e3830b482b`
+**Previous Hash**: `b7c8ed6798f760560e9e747c17a69919ae7e248e018cddfbd7042dcb84401737`
+**Chain Hash (Merkle seal)**: `dea2e42906182f44ec084fe44b81111ae6d428006aa1d4018da608a20f104311`
+
+**Scope**: Closes the pre-merge-publish defect in `.github/workflows/release.yml`. Adds a main-reachability guard step between checkout and build; blocks publish when `$GITHUB_SHA` is not an ancestor of `origin/main`. Historical incidents (v0.24.1, v0.25.0, v0.28.0 all published from open PR branches) cannot recur under the new guard.
+
+**Bootstrap note**: v0.28.1's own tag push will fire the workflow with the new guard active. If pushed pre-merge, the guard will correctly block publish — self-enforcing. Operator must merge PR first, then push (or re-tag onto) the merge commit for PyPI publish to proceed.
+
+**Deploy protocol (post-merge)**:
+1. Push `phase/40-release-workflow-guard` branch to origin.
+2. Open PR #9 targeting main.
+3. Merge PR.
+4. After merge, push `v0.28.1` tag (or re-tag onto merge commit) — workflow fires, guard passes (tag now on main), PyPI publishes.
+
+**Decision**: Phase 40 hotfix sealed at v0.28.1. Tag LOCAL ONLY until PR merge per the new doctrine this hotfix is establishing.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 40 hotfix substantiated)
+*Merkle seal: dea2e429...* (Phase 40 seal on top of Phase 38's b7c8ed67; Entries #116-#133 chained)
+
 
 
 
