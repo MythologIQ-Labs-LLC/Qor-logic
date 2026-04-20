@@ -89,9 +89,13 @@ Source: `docs/SHADOW_GENOME.md` Entry #26. Raised by operator postmortem 2026-04
 ### Phase 39 — context-discipline doctrine + persona reshape
 
 - [x] **Phase 39 Phase 1 (v0.29.0 — Complete)** `qor/references/doctrine-context-discipline.md` authored with 5 sections (three mechanisms, persona-as-scaffold, stance directive discipline, subagent invocation rule, verification protocol). `doctrine-governance-enforcement.md` §11 cross-references.
-- [x] **Phase 39 Phase 2 (v0.29.0 — Complete)** A/B harness infrastructure (Anthropic SDK). `qor/scripts/ab_harness.py` (pure library, mockable, 5 functions), `qor/scripts/ab_live_run.py` (operator CLI). 20-defect corpus across 10 findings_categories under `tests/fixtures/ab_corpus/` + MANIFEST.json + 4 hand-authored variant files. `anthropic>=0.40,<1.0` under `[project.optional-dependencies].ab-harness`. 16 CI tests all mocked; no live API calls in CI.
-- [ ] **Phase 39 Phase 3 — operator-driven live A/B run**. Requires `ANTHROPIC_API_KEY` set and `pip install -e .[ab-harness]`. Command: `python qor/scripts/ab_live_run.py`. Produces `docs/phase39-ab-results.md`. Cost ~$32, ~10-15 min wall-time.
-- [ ] **Phase 39 Phase 4 — persona sweep + conditional Identity Activation rewrites**. Depends on Phase 3 results. Conditional R3 rewrite per `docs/phase39-ab-results.md` winner declaration. R4 (qor-debug → doctrine cross-ref) + R5 (qor-document disambiguation) + S3 sweep (24 skills). Tests at `tests/test_persona_sweep.py`.
+- [x] **Phase 39 Phase 2 (v0.29.0 — Complete, scope narrowed)** A/B corpus fixtures retained: 20 defects across 10 categories + MANIFEST + 4 hand-authored variant files under `tests/fixtures/ab_corpus/`. Anthropic-SDK harness withdrawn (required API key + $32/cycle external cost). Agent Team orchestration moves to Phase 39b.
+
+### Phase 39b — Agent Team A/B + persona sweep (deferred)
+
+- [ ] **Phase 39b Phase 1**: `/qor-ab-run` skill NEW at `qor/skills/meta/qor-ab-run/SKILL.md`. Orchestrates A/B via parallel Task-tool subagent dispatch within Claude Code. Zero external dep, zero marginal cost, aligned with doctrine's "controlled context via subagents" principle. Aggregation helpers in `qor/scripts/ab_aggregator.py` (pure Python, no LLM).
+- [ ] **Phase 39b Phase 2**: operator invokes `/qor-ab-run` → produces `docs/phase39-ab-results.md`.
+- [ ] **Phase 39b Phase 3**: persona sweep + conditional Identity Activation rewrites. R3 rewrite per winner. R4 (qor-debug → doctrine cross-ref) + R5 (qor-document disambiguation) + S3 sweep (24 skills). Tests at `tests/test_persona_sweep.py`.
 
 ---
 

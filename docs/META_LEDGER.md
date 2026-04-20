@@ -4990,6 +4990,43 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Session: SEALED* (Phase 39 Phases 1+2 substantiated)
 *Merkle seal: 27674365...* (Phase 39 seal on top of Phase 40's dea2e429; Entries #116-#135 chained)
 
+---
+
+### Entry #136: SCOPE AMENDMENT — Phase 39 v0.29.0 narrowed to doctrine + corpus only
+
+**Timestamp**: 2026-04-20
+**Phase**: SEAL-AMENDMENT (pre-merge; PR #10 branch rewritten)
+**Author**: Governor
+
+**Trigger**: Operator challenged the anthropic-SDK harness requirement post-PR. The requirement originated in Phase 39 Pass 1 audit V1 resolution (a), which anchored on automation as the value. The cheaper + doctrine-aligned path is Agent Team orchestration via Task-tool parallel dispatch within Claude Code itself — zero external dependency, zero marginal cost, dogfoods the "controlled context via subagents" principle the doctrine codifies.
+
+**Withdrawn from v0.29.0**:
+- `qor/scripts/ab_harness.py` (pure library)
+- `qor/scripts/ab_live_run.py` (operator CLI)
+- `tests/test_ab_harness.py` (16 mocked tests)
+- `[project.optional-dependencies].ab-harness` entry in `pyproject.toml`
+
+**Retained in v0.29.0**:
+- `qor/references/doctrine-context-discipline.md` (Phase 1 complete)
+- `qor/references/doctrine-governance-enforcement.md` §11 cross-reference
+- `tests/test_doctrine_context_discipline.py` (3 tests)
+- `tests/fixtures/ab_corpus/` — 20 seeded defects + MANIFEST + 4 variant files. Useful for Phase 39b's Agent Team skill; no LLM coupling at the fixture-data layer.
+
+**Pre-merge branch rewrite**: phase/39-context-discipline force-pushed with harness files removed. PR #10 description updated to reflect narrower scope. v0.29.0 tag moved to the rewritten seal commit.
+
+**Phase 39b scope** (new, superseding original Phases 3 + 4):
+1. `/qor-ab-run` skill — orchestrates A/B via parallel Task dispatch.
+2. Live A/B run produces `docs/phase39-ab-results.md`.
+3. Persona sweep + conditional Identity Activation rewrites.
+
+**Decision**: v0.29.0 ships doctrine + corpus only. Phase 39b handles A/B + sweep via Agent Team approach. Legacy anthropic-SDK approach NOT retained (doctrine-aligned approach supersedes it cleanly; no reason to carry the legacy path).
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED (narrowed scope)*
+*Merkle seal unchanged pre-rewrite → will be recomputed on retag*
+
 
 
 
