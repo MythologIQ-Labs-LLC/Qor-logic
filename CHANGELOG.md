@@ -10,6 +10,19 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.29.0] - 2026-04-20
+
+Partial Phase 39 seal: doctrine + A/B harness infrastructure. Phases 3 (live A/B run) and 4 (persona sweep) deferred to operator-driven cycle.
+
+### Added
+- **`doctrine-context-discipline.md`** (Phase 39 Phase 1): codifies personas as context-prioritization scaffolds for edge-case determinations, evaluated by performance/accuracy/results. Five sections cover the three-mechanism distinction (frontmatter tag vs Identity Activation prose vs subagent invocation), persona evaluation protocol, stance directive discipline, subagent invocation rule (`general` by default; persona-typed requires evidence), and verification protocol requiring `<persona-evidence>` pointers for retained tags. `doctrine-governance-enforcement.md` §11 cross-references.
+- **A/B harness infrastructure** (Phase 39 Phase 2): `qor/scripts/ab_harness.py` (pure mockable library, 5 public functions + helpers) + `qor/scripts/ab_live_run.py` (operator CLI reading `ANTHROPIC_API_KEY`). 20-defect seeded corpus at `tests/fixtures/ab_corpus/` spanning 10 `findings_categories` (2 per category), each fixture carrying the `# SEEDED TEST DEFECT — NOT EXECUTABLE` header. 4 hand-authored variant files under `tests/fixtures/ab_corpus/variants/`. MANIFEST.json uses `line_start`/`line_end` for multi-line defect ranges.
+- **Optional dependency `anthropic>=0.40,<1.0`** under `[project.optional-dependencies].ab-harness`. Default `pip install qor-logic` does not pull it; only operators running the live A/B cycle install the extra.
+- **Tests**: `tests/test_doctrine_context_discipline.py` (3) + `tests/test_ab_harness.py` (16 CI tests, all Anthropic calls mocked).
+
+### Notes
+- **Phase 3 operator action**: `ANTHROPIC_API_KEY=... python qor/scripts/ab_live_run.py` produces `docs/phase39-ab-results.md`. Cost ~$32 per full cycle at Opus 4.7 pricing (~4,300 input tokens per call × 400 calls). ~10-15 min wall-time.
+
 ## [0.28.1] - 2026-04-20
 
 ### Fixed

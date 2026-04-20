@@ -4960,6 +4960,36 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 
 **Next action**: `/qor-substantiate` to seal at v0.29.0 (Phases 1+2 only). Phase 3+4 become a follow-on phase (39b) when operator runs live cycle.
 
+---
+
+### Entry #135: SESSION SEAL -- Phase 39 Phases 1+2 substantiated
+
+**Timestamp**: 2026-04-20
+**Phase**: SEAL
+**Author**: Judge
+**Verdict**: PASS (733 tests green on 2 consecutive runs; 20 targeted Phase 39 tests green)
+
+**Target**: `docs/plan-qor-phase39-context-discipline.md` (Pass 2 PASS)
+**Change Class**: `feature`
+**Version**: `0.28.1 -> 0.29.0`
+**Tag**: `v0.29.0` (created at Step 9.5.5 post-commit, LOCAL ONLY pending PR merge per Phase 40 doctrine)
+
+**Content Hash**: `698dcbe4c961c455b21ea2da30eb4847abc53cc7b80f2022c719c7d12487c1db`
+**Previous Hash**: `dea2e42906182f44ec084fe44b81111ae6d428006aa1d4018da608a20f104311`
+**Chain Hash (Merkle seal)**: `2767436531428255a85e28007628ebd2ce5e2ea03e7c85855702b44a32e2d804`
+
+**Scope sealed**: Phase 39 Phases 1 (doctrine) + 2 (harness infrastructure). Phases 3 (operator-driven live A/B) + 4 (persona sweep conditional on Phase 3 evidence) explicitly deferred. Partial-phase seal is intentional: the plan's ordering rationale supports independent shipment ("Phase 2's harness is test-only infrastructure — ships as part of repo but runs only when explicitly invoked").
+
+**Reality = Promise verification**: all 6 planned Phase 1+2 files exist (doctrine, ab_harness.py, ab_live_run.py, MANIFEST.json, 2 test files), plus 20 corpus fixtures + 4 variant files as planned. Phase 3 deliverable (`docs/phase39-ab-results.md`) and Phase 4 deliverables (persona sweep diff) are not in scope for this seal.
+
+**Deploy protocol** (per Phase 40 hotfix doctrine): `v0.29.0` tag is LOCAL ONLY. Operator pushes branch to open PR; merges PR; then pushes tag (or retags onto merge commit) for PyPI publish via the guarded release workflow.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 39 Phases 1+2 substantiated)
+*Merkle seal: 27674365...* (Phase 39 seal on top of Phase 40's dea2e429; Entries #116-#135 chained)
+
 
 
 
