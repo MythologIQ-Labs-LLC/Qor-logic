@@ -1,0 +1,164 @@
+{
+  "defects": [
+    {
+      "id": 1,
+      "file": "razor-overage/function_too_long.py",
+      "line_start": 2,
+      "line_end": 44,
+      "category": "razor-overage",
+      "description": "function body exceeds 40 lines"
+    },
+    {
+      "id": 2,
+      "file": "razor-overage/file_too_long.py",
+      "line_start": 2,
+      "line_end": 261,
+      "category": "razor-overage",
+      "description": "file length exceeds 250 lines"
+    },
+    {
+      "id": 3,
+      "file": "ghost-ui/placeholder_button.tsx",
+      "line_start": 2,
+      "line_end": 2,
+      "category": "ghost-ui",
+      "description": "button element with no onClick handler"
+    },
+    {
+      "id": 4,
+      "file": "ghost-ui/coming_soon.tsx",
+      "line_start": 2,
+      "line_end": 2,
+      "category": "ghost-ui",
+      "description": "'Coming soon' placeholder UI"
+    },
+    {
+      "id": 5,
+      "file": "security-l3/hardcoded_secret.py",
+      "line_start": 2,
+      "line_end": 2,
+      "category": "security-l3",
+      "description": "hardcoded credential literal"
+    },
+    {
+      "id": 6,
+      "file": "security-l3/disabled_auth.py",
+      "line_start": 2,
+      "line_end": 4,
+      "category": "security-l3",
+      "description": "placeholder auth that returns True unconditionally"
+    },
+    {
+      "id": 7,
+      "file": "owasp-violation/shell_true.py",
+      "line_start": 2,
+      "line_end": 3,
+      "category": "owasp-violation",
+      "description": "subprocess shell=True with user input (A03 Injection)"
+    },
+    {
+      "id": 8,
+      "file": "owasp-violation/pickle_load.py",
+      "line_start": 2,
+      "line_end": 3,
+      "category": "owasp-violation",
+      "description": "unsafe deserialization (A08 Data Integrity)"
+    },
+    {
+      "id": 9,
+      "file": "orphan-file/unreachable.py",
+      "line_start": 2,
+      "line_end": 3,
+      "category": "orphan-file",
+      "description": "module never imported by any build-path entry"
+    },
+    {
+      "id": 10,
+      "file": "orphan-file/isolated_module.py",
+      "line_start": 2,
+      "line_end": 3,
+      "category": "orphan-file",
+      "description": "orphan module; not in build path"
+    },
+    {
+      "id": 11,
+      "file": "macro-architecture/cyclic_deps_a.py",
+      "line_start": 2,
+      "line_end": 3,
+      "category": "macro-architecture",
+      "description": "cyclic dependency with cyclic_deps_b.py"
+    },
+    {
+      "id": 12,
+      "file": "macro-architecture/cyclic_deps_b.py",
+      "line_start": 2,
+      "line_end": 3,
+      "category": "macro-architecture",
+      "description": "cyclic dependency with cyclic_deps_a.py"
+    },
+    {
+      "id": 13,
+      "file": "schema-migration-missing/breaking_required_field.json",
+      "line_start": 2,
+      "line_end": 2,
+      "category": "schema-migration-missing",
+      "description": "breaking required-field addition without migration"
+    },
+    {
+      "id": 14,
+      "file": "schema-migration-missing/enum_value_removed.json",
+      "line_start": 2,
+      "line_end": 2,
+      "category": "schema-migration-missing",
+      "description": "breaking enum reduction without migration"
+    },
+    {
+      "id": 15,
+      "file": "specification-drift/prose_code_mismatch.md",
+      "line_start": 4,
+      "line_end": 6,
+      "category": "specification-drift",
+      "description": "prose count (3) mismatches code block count (5)"
+    },
+    {
+      "id": 16,
+      "file": "specification-drift/undeclared_referent.md",
+      "line_start": 4,
+      "line_end": 4,
+      "category": "specification-drift",
+      "description": "references helper not declared in Affected Files"
+    },
+    {
+      "id": 17,
+      "file": "test-failure/broken_assertion.py",
+      "line_start": 2,
+      "line_end": 3,
+      "category": "test-failure",
+      "description": "failing assertion"
+    },
+    {
+      "id": 18,
+      "file": "test-failure/skipped_test.py",
+      "line_start": 4,
+      "line_end": 6,
+      "category": "test-failure",
+      "description": "@pytest.mark.skip without reason; skips coverage"
+    },
+    {
+      "id": 19,
+      "file": "infrastructure-mismatch/wrong_glob_pattern.md",
+      "line_start": 4,
+      "line_end": 4,
+      "category": "infrastructure-mismatch",
+      "description": "plan claims multi-audit accumulation; reality is singleton overwrite"
+    },
+    {
+      "id": 20,
+      "file": "infrastructure-mismatch/undeclared_module.md",
+      "line_start": 4,
+      "line_end": 4,
+      "category": "infrastructure-mismatch",
+      "description": "plan references module not present in repo"
+    }
+  ]
+}

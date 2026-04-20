@@ -10,6 +10,11 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.28.1] - 2026-04-20
+
+### Fixed
+- **Release workflow main-reachability guard** (Phase 40 hotfix): `.github/workflows/release.yml` now runs `git merge-base --is-ancestor $GITHUB_SHA origin/main` between checkout and build. Tags pushed from commits not reachable from `main` fail the guard step and never reach PyPI. Closes a pre-existing defect that published v0.24.1, v0.25.0, and v0.28.0 from open-PR branches before their PRs merged. `tests/test_release_workflow_guard.py` (2 structural-lint tests) asserts the guard exists and precedes the publish step.
+
 ## [0.28.0] - 2026-04-20
 
 Procedural surface freeze line. Consolidates phases 36-38 work into a single release: full SG-PlanAuditLoop-A countermeasure set (C1-C4) plus `ci_commands` plan-schema slot. Phase 39 (context-discipline + persona reshape) explicitly deferred pending upstream consumer lockdown.

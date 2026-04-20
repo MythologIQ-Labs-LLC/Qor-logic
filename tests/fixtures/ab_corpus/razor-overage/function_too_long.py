@@ -1,0 +1,45 @@
+# SEEDED TEST DEFECT -- NOT EXECUTABLE -- Phase 39 A/B corpus (F2 resolution).
+def do_everything(x):
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    x = x + 1
+    return x

@@ -86,9 +86,12 @@ Source: `docs/SHADOW_GENOME.md` Entry #26. Raised by operator postmortem 2026-04
 
 - [x] **[B22] (v0.28.0 — Complete)** `ci_commands` required field added to `qor/gates/schema/plan.schema.json` (minItems 1, item minLength 1). `/qor-plan` SKILL.md §Plan Structure template carries `## CI Commands` section. Grandfathering at test layer (phase < 38 skipped). 9 test fixtures updated to include `ci_commands` in plan payloads. `tests/test_plan_schema_ci_commands.py` NEW (6 tests). 711 tests green x2.
 
-### Phase 39 — context-discipline doctrine (formerly queued as Phase 37)
+### Phase 39 — context-discipline doctrine + persona reshape
 
-See `.agent/staging/RESEARCH_BRIEF.md` and META_LEDGER Entry #116. M4 seeded-defect A/B harness + S3 full justification sweep across ~30 skills.
+- [x] **Phase 39 Phase 1 (v0.29.0 — Complete)** `qor/references/doctrine-context-discipline.md` authored with 5 sections (three mechanisms, persona-as-scaffold, stance directive discipline, subagent invocation rule, verification protocol). `doctrine-governance-enforcement.md` §11 cross-references.
+- [x] **Phase 39 Phase 2 (v0.29.0 — Complete)** A/B harness infrastructure (Anthropic SDK). `qor/scripts/ab_harness.py` (pure library, mockable, 5 functions), `qor/scripts/ab_live_run.py` (operator CLI). 20-defect corpus across 10 findings_categories under `tests/fixtures/ab_corpus/` + MANIFEST.json + 4 hand-authored variant files. `anthropic>=0.40,<1.0` under `[project.optional-dependencies].ab-harness`. 16 CI tests all mocked; no live API calls in CI.
+- [ ] **Phase 39 Phase 3 — operator-driven live A/B run**. Requires `ANTHROPIC_API_KEY` set and `pip install -e .[ab-harness]`. Command: `python qor/scripts/ab_live_run.py`. Produces `docs/phase39-ab-results.md`. Cost ~$32, ~10-15 min wall-time.
+- [ ] **Phase 39 Phase 4 — persona sweep + conditional Identity Activation rewrites**. Depends on Phase 3 results. Conditional R3 rewrite per `docs/phase39-ab-results.md` winner declaration. R4 (qor-debug → doctrine cross-ref) + R5 (qor-document disambiguation) + S3 sweep (24 skills). Tests at `tests/test_persona_sweep.py`.
 
 ---
 

@@ -26,6 +26,7 @@ dependencies = ["jsonschema>=4", "PyYAML>=6"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+ab-harness = ["anthropic>=0.40,<1.0"]
 
 [project.scripts]
 qorlogic = "qor.cli:main"

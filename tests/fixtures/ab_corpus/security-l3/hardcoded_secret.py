@@ -1,0 +1,2 @@
+# SEEDED TEST DEFECT -- NOT EXECUTABLE -- Phase 39 A/B corpus (F2 resolution).
+API_KEY = "sk-1234567890abcdef-FAKE-SEEDED-DEFECT"

@@ -213,3 +213,7 @@ When an operator declines a cycle-count escalation, `orchestration_override.reco
 2. Writes `.qor/session/<sid>/escalation_suppressed` with the current timestamp. `cycle_count_escalator._suppression_active` checks this marker against `first_match_ts` of the run; if the marker is newer, the escalation is suppressed for the remainder of the session.
 
 Session-scoped only. A new session resets the suppression. Longer-term suppression (e.g., "known issue, do not nag for the week") is deliberately out of scope — the shadow-event path IS the long-term signal; the marker file is only re-prompt hygiene.
+
+## 11. Context Discipline (Phase 39)
+
+Personas in Qor-logic skills are context-prioritization scaffolds for edge-case determinations, evaluated by performance/accuracy/results — not aesthetic flavor. See `qor/references/doctrine-context-discipline.md` for the full doctrine: three-mechanism distinction, persona evaluation protocol, stance-directive discipline, subagent invocation rule, and verification protocol requiring `<persona-evidence>` pointers for retained tags.

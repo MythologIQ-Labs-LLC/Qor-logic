@@ -1,0 +1,2 @@
+# SEEDED TEST DEFECT -- NOT EXECUTABLE -- Phase 39 A/B corpus (F2 resolution).
+{"schema_change": "removed role=admin from enum; consumers carrying that value now fail validation"}

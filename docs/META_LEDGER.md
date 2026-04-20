@@ -4930,6 +4930,36 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Session: SEALED* (Phase 40 hotfix substantiated)
 *Merkle seal: dea2e429...* (Phase 40 seal on top of Phase 38's b7c8ed67; Entries #116-#133 chained)
 
+---
+
+### Entry #134: IMPLEMENTATION — Phase 39 Phases 1+2 (doctrine + A/B harness infrastructure)
+
+**Timestamp**: 2026-04-20
+**Phase**: IMPLEMENT (partial — Phases 1 and 2 of 4)
+**Author**: Specialist
+**Target**: `docs/plan-qor-phase39-context-discipline.md` (Pass 2 PASS)
+
+**Content Hash**: `c7c612132d563ce8bbef472fe3360e64a9a08016bafe3a788132ef10adae5c55`
+**Previous Hash**: `dea2e42906182f44ec084fe44b81111ae6d428006aa1d4018da608a20f104311`
+
+**Phases shipped this commit**:
+- **Phase 1 (complete)**: `qor/references/doctrine-context-discipline.md` + `doctrine-governance-enforcement.md` §11 cross-reference + 3 structural tests.
+- **Phase 2 (complete)**: A/B harness infrastructure. `qor/scripts/ab_harness.py` (~180 LOC, 5 functions + 3 private helpers, mockable library, never reads env directly). `qor/scripts/ab_live_run.py` (~75 LOC operator CLI, reads `ANTHROPIC_API_KEY`, builds real client, writes results + raw data). 20-defect corpus at `tests/fixtures/ab_corpus/` spanning 10 `findings_categories` (2 defects per category except the 2 omitted per plan). MANIFEST.json with `{id, file, line_start, line_end, category, description}` shape. 4 hand-authored variant files under `tests/fixtures/ab_corpus/variants/`. `anthropic>=0.40,<1.0` added as `[project.optional-dependencies].ab-harness`. 16 unit tests all mocked; no CI API calls.
+
+**Phases DEFERRED to a separate operator-driven cycle**:
+- **Phase 3 (operator action required)**: `ANTHROPIC_API_KEY=... python qor/scripts/ab_live_run.py` produces `docs/phase39-ab-results.md`. Cost ~$32 per full cycle at Opus 4.7 pricing (corrected from plan's original ~$4 estimate per Pass 2 audit O1). ~10-15 min wall-time serial.
+- **Phase 4 (conditional on Phase 3 results)**: S3 persona sweep across 24 skills; R3 Identity Activation rewrites (fire only if Phase 3 winner = "stance"); R4 qor-debug doctrine cross-reference; R5 qor-document persona-vs-agent disambiguation.
+
+**Test results**: 733 pytest tests green on 2 consecutive runs. 20 targeted Phase 39 Phase 1+2 tests green. Gate-skill matrix: 28 skills, 108 handoffs, 0 broken. Doc integrity: clean.
+
+**CHANGELOG update**: v0.28.1 section added (Phase 40 debt; now current). v0.29.0 section to be added at Phase 39 seal.
+
+**Scope decision**: seal Phase 39 Phases 1+2 as v0.29.0 with Phases 3+4 explicitly deferred. Alternative (hold until all 4 phases done) would block the doctrine + infrastructure from shipping while operator waits to run the live cycle. The plan's phase ordering rationale supports independent shipment ("Phase 2's harness is test-only infrastructure — ships as part of repo but runs only when explicitly invoked").
+
+**Intent lock**: `2026-04-20T0208-cf2c2c` captured pre-implement.
+
+**Next action**: `/qor-substantiate` to seal at v0.29.0 (Phases 1+2 only). Phase 3+4 become a follow-on phase (39b) when operator runs live cycle.
+
 
 
 
