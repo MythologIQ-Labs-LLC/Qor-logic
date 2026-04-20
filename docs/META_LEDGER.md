@@ -5027,6 +5027,48 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Session: SEALED (narrowed scope)*
 *Merkle seal unchanged pre-rewrite → will be recomputed on retag*
 
+---
+
+### Entry #137: IMPLEMENTATION — Phase 39b Phases 1+2 (Agent Team A/B + persona sweep)
+
+**Timestamp**: 2026-04-20
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Target**: `docs/plan-qor-phase39b-agent-team-ab-run.md` (Pass 1 PASS)
+
+**Content Hash**: `1c076cf97453b70470f2c4e69abe6d6c4d6239ce5a68c12d6b5ebc85c8f47da4`
+
+**Files touched**:
+- `qor/skills/meta/qor-ab-run/SKILL.md` NEW — orchestrates A/B via Task-tool parallel dispatch; 20 subagents in a single message for concurrent execution. Records session model identity per O5.
+- `qor/skills/meta/qor-ab-run/references/ab-subagent-prompt.md` NEW — prompt template with `{VARIANT_IDENTITY_ACTIVATION_BLOCK}` + `{FIXTURES_CONCATENATED}` placeholders.
+- `qor/scripts/ab_aggregator.py` NEW (~120 LOC, 4 functions + helper) — pure Python: `parse_trial` (brace-balanced JSON extraction, malformed → empty), `aggregate`, `_compare`, `render_markdown`. Zero LLM coupling.
+- `qor/gates/delegation-table.md` — `/qor-ab-run` row added.
+- `qor/skills/meta/qor-help/SKILL.md` — catalog entry for `/qor-ab-run`.
+- **S3 decorative sweep** (5 tags removed): `qor-status`, `qor-help`, `qor-repo-scaffold`, `qor-bootstrap`, `qor-document`.
+- **R4**: `qor/skills/sdlc/qor-debug/SKILL.md` line 108 now cross-references `doctrine-context-discipline.md` §4.
+- **R5**: `qor/skills/memory/qor-document/SKILL.md` splits Identity Activation stance from subagent pairing; cites doctrine §1.2 + §1.3.
+- **R3 pending evidence**: `test_identity_activation_matches_ab_winner_if_results_exist` enforces conditional rewrite once `docs/phase39-ab-results.md` lands.
+- `tests/test_qor_ab_run_skill.py` NEW (12 structural tests including O1/O5 disclosures).
+- `tests/test_ab_aggregator.py` NEW (10 unit tests including brace-balanced JSON parse, malformed-response tolerance, tie threshold).
+- `tests/test_persona_sweep.py` NEW (5 tests; `LOAD_BEARING_PENDING_EVIDENCE` registry documents 19 skills awaiting A/B).
+- `docs/BACKLOG.md` — Phase 39b entries marked complete for shipped scope.
+
+**Pass 1 audit O1-O6 addressed inline**:
+- O1 (measurement scope): skill prose §"Measurement scope" discloses subagent receives variant block only, not full skill body.
+- O2 (`<persona-pending>` term): persona sweep test uses `LOAD_BEARING_PENDING_EVIDENCE` registry instead of a placeholder marker; cleaner.
+- O3 (gate artifact write mechanism): skill Step 6 explicitly uses pathlib direct-write, not `gate_chain.write_gate_artifact`.
+- O4 (stddev expectations): skill §"Stddev expectations" discloses deterministic-sampling case.
+- O5 (subagent model inheritance): skill always records model in results; aggregator `render_markdown` accepts `model=` parameter.
+- O6 (frontmatter terminology): persona sweep uses precise "persona tag" / "persona element" terms.
+
+**Test results**: 743 pytest tests green on 2 consecutive runs (+27 from v0.29.0's 716). 27 targeted Phase 39b tests green. Admission: `qor-ab-run` admitted. Gate-skill matrix: **29 skills, 112 handoffs, 0 broken** (+1 skill, +4 handoffs).
+
+**R3 status**: PENDING. Fires automatically via test assertion once operator runs `/qor-ab-run` and `docs/phase39-ab-results.md` declares winner = "stance" for a stance-critical skill. Currently no evidence file → test trivially passes (scoped to "if results exist").
+
+**Intent lock**: `2026-04-20T0208-cf2c2c` captured pre-implement.
+
+**Next action**: `/qor-substantiate` to seal at v0.30.0. Phase 39b Phase 3 (operator-driven `/qor-ab-run` invocation) ships evidence when operator is ready; R3 Identity Activation rewrite auto-applies against the evidence file via the pending test assertion.
+
 
 
 

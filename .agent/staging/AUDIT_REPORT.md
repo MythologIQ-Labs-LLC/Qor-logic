@@ -1,8 +1,8 @@
-# Gate Tribunal Audit Report — Phase 39 Pass 2
+# Gate Tribunal Audit Report — Phase 39b Pass 1
 
-**Plan**: `docs/plan-qor-phase39-context-discipline.md` (amended for V1 + F1-F5)
+**Plan**: `docs/plan-qor-phase39b-agent-team-ab-run.md`
 **change_class**: feature
-**target_version**: v0.29.0
+**target_version**: v0.30.0
 **Verdict**: **PASS**
 **Mode**: solo (codex-plugin unavailable; capability_shortfall logged)
 **Tribunal Date**: 2026-04-20
@@ -12,29 +12,19 @@
 
 ## Executive summary
 
-Pass 1 V1 (HIGH) resolved cleanly via resolution (a): Anthropic SDK invocation with the clean library/CLI separation (`ab_harness.py` mockable + `ab_live_run.py` operator-only). F1-F5 all addressed. Two LOW observations remain around API-call operational details — neither blocks implement.
-
-## Pass 1 resolution verification
-
-| ID | Pass 1 finding | Pass 2 resolution | Verified |
-|---|---|---|---|
-| V1 | harness cannot invoke slash-command skills | Anthropic SDK direct invocation; `anthropic>=0.40,<1.0` under `[project.optional-dependencies].ab-harness`; `ab_harness.run` accepts injected client; CI uses mocks | ✓ |
-| F1 | "~30 skills" overstates | plan now cites 24 (grep-verified) | ✓ |
-| F2 | fixture SEEDED marker | header convention declared + `test_corpus_files_carry_seeded_defect_marker` enforces | ✓ |
-| F3 | n=5 justification | non-determinism quantified via stddev; results artifact reports mean AND stddev | ✓ |
-| F4 | variant generation unspecified | hand-authored variant files at `tests/fixtures/ab_corpus/variants/<skill>.<variant>.md` — declared non-programmatic | ✓ |
-| F5 | MANIFEST line range | `line_start` + `line_end` fields required by `test_manifest_line_range_fields_present` | ✓ |
+Tight plan. 2 sub-phases, pure Python aggregator, skill-prose orchestration via Task tool. No external dependencies. Infrastructure Alignment checks all clean: `qor/skills/meta/` exists as placement target; `tests/fixtures/ab_corpus/` shipped in v0.29.0 with 20 defects and 4 variant files verified present; `qor/references/doctrine-context-discipline.md` §4 mandates `subagent_type: "general"` (plan complies); no `ab-run` schema in `qor/gates/schema/` (plan correctly treats the gate artifact as direct-write, not schema-validated). Six LOW observations on scope disclosure and terminology — none gate.
 
 ## Audit passes
 
 ### Security Pass (L3) — PASS
 
-`ANTHROPIC_API_KEY` via env var (SDK convention); never logged; `ab_live_run.py` exits clearly on absence per `test_ab_live_run_exits_clearly_without_api_key`. No keys in fixtures, code, or results.
+Skill reads fixtures (seeded-defect marked), constructs subagent prompts, aggregator parses JSON responses. No auth, no credentials, no bypass patterns. `json.loads` throughout (safe); no `pickle` or `eval`.
 
 ### OWASP Top 10 Pass — PASS
 
-- A05 Security Misconfiguration: credential handling correct (env var, not code).
-- A08 Software/Data Integrity: fixture files are test data with `# SEEDED TEST DEFECT — NOT EXECUTABLE` header; no scanner conflict.
+- **A03 Injection**: no subprocess, no shell. Subagent prompts contain fixture content but fixtures are inert test data with `NOT EXECUTABLE` markers.
+- **A04 Insecure Design**: aggregator's malformed-response handler is fail-closed — treats unparseable responses as empty findings (counted as miss). This does NOT artificially inflate detection rates; a broken subagent appears as low performance, not high. Correct design stance.
+- **A08 Data Integrity**: no unsafe deserialization; `json.loads` only.
 
 ### Ghost UI Pass — N/A
 
@@ -42,61 +32,69 @@ Pass 1 V1 (HIGH) resolved cleanly via resolution (a): Anthropic SDK invocation w
 
 | Check | Plan | Status |
 |---|---|---|
-| Max function lines | `ab_harness.py` 140 LOC / 5 functions = 28 avg | OK |
-| Max file lines | ab_harness.py ~140, ab_live_run.py ~60 | OK |
-| Nesting depth | flat per pseudocode | OK |
+| Max function lines | `ab_aggregator.py` ~90 LOC / 3 functions = 30 avg | OK |
+| Max file lines | aggregator ~90, skill prose not Razor-subject | OK |
+| Nesting depth | flat per declared signatures | OK |
 
 ### Dependency Audit — PASS
 
-| Package | Justification | <10 lines vanilla? | Verdict |
-|---|---|---|---|
-| `anthropic>=0.40,<1.0` | V1 resolution (a) requires programmatic Claude invocation for A/B harness; no equivalent in stdlib | No — LLM API requires SDK for streaming, retries, error handling | PASS |
-
-**Scoped correctly**: dependency is under `[project.optional-dependencies].ab-harness`, not main install set. Default `pip install qor-logic` users do not pull it. Only operators running `ab_live_run.py` install the extra.
+Zero new packages. Stdlib only. Subagent dispatch uses Claude Code's existing Task tool (infrastructure, not a dependency).
 
 ### Macro-Level Architecture Pass — PASS
 
-- Library/CLI separation is clean: `ab_harness.py` is pure (mockable, no env reads); `ab_live_run.py` is the side-effectful wrapper.
-- Tests mock the Anthropic client — no CI dependency on API access or credentials.
-- Raw per-run data lands in gitignored `.qor/gates/<sid>/ab-run.json` — correct gate-artifact convention.
-- No cyclic dependencies: `ab_harness` ← imports `ab_variants`; `ab_live_run` ← imports `ab_harness`. One-way DAG.
+- `/qor-ab-run` in `qor/skills/meta/` alongside other cross-cutting utilities — correct placement.
+- `ab_aggregator.py` is pure Python with zero LLM coupling — good separation. The skill orchestrates (LLM-side); the aggregator reduces (pure data).
+- No cyclic dependencies.
+- Delegation-table addition consistent with existing cross-cutting-skills convention (no fixed handoff).
 
 ### Infrastructure Alignment Pass — PASS
 
-- `anthropic` SDK exists on PyPI with the requested version range.
-- `claude-opus-4-7` is a valid model ID per the current Anthropic model family (verified against system's knowledge cutoff).
-- All 4 target skill files exist; `qor-debug` constraint line verified; `qor-document` persona-vs-agent conflation point verified.
-- Doctrine `doctrine-governance-enforcement.md` at §10.5; Phase 39 adds §11 cross-reference (legal next section).
-- `[project.optional-dependencies]` TOML structure is valid per PEP 621.
+Verified against current repo:
+- `qor/skills/meta/` directory exists ✓
+- `tests/fixtures/ab_corpus/MANIFEST.json` carries 20 defects ✓
+- `tests/fixtures/ab_corpus/variants/` has 4 variant files ✓
+- `qor/references/doctrine-context-discipline.md` §4 mandates `general` subagent (plan complies) ✓
+- No `ab-run` schema in `qor/gates/schema/` — plan correctly treats the ab-run gate artifact as a direct-write JSON (no schema validation), distinct from phase-gate artifacts ✓
+- Task tool exists in Claude Code (established infrastructure)
+- Parallel Task-tool dispatches are a supported pattern (multiple tool calls in one message execute concurrently)
 
 ### Orphan Detection — PASS
 
-All proposed files trace to consumers or are explicitly new. Variant fixture files consumed by `ab_variants.load`. No orphans.
+All proposed files have clear consumers. No orphans.
 
 ## Observations (non-VETO)
 
 | ID | Severity | Observation |
 |---|---|---|
-| O1 | LOW | **Cost estimate is ~5-8x low.** Plan states "~500 input + ~100 output tokens per call" → ~$4 per cycle. Verified: actual skill bodies are `/qor-audit` 18,050 chars (~4,512 tokens), `/qor-substantiate` 16,047 chars (~4,011 tokens). Since the system prompt = full SKILL.md body + variant + instructions, real input is ~4,000-5,000 tokens/call, not 500. Recalculated at Opus 4.7 pricing: 400 calls × ~4,300 input tokens × $15/M = ~$26 input + 400 × ~200 output × $75/M = ~$6 output = **~$32 per full cycle**, not ~$4. Not VETO-level (plan is still implementable; operator just needs accurate budget). Plan module docstring should carry the corrected number. |
-| O2 | LOW | **No retry/timeout specified.** `client.messages.create(...)` call has no explicit timeout or retry. Default SDK behavior applies (generally reasonable) but transient API failures in the middle of a 400-call serial run could lose partial results. Consider: `timeout=60` per call; on rate-limit or transient error, sleep-and-retry once before counting as miss. Minor operational robustness; defer to implement judgment. |
+| O1 | LOW | **Measurement-scope disclosure**: subagent prompt includes only the variant Identity Activation block + fixtures + instructions — NOT the full skill body. This isolates the variant variable cleanly (methodologically correct for isolating the IA prose effect) BUT means the measured detection rates are NOT directly comparable to real-skill performance (where full skill body provides Razor/OWASP/etc rubrics). Plan should disclose this in `boundaries.limitations` so operators don't misinterpret results. |
+| O2 | LOW | **`<persona-pending>` placeholder**: introduced in Phase 2 test `test_every_persona_tag_has_evidence_or_pending` without appearing in `terms_introduced`. Minor terms-list gap. |
+| O3 | LOW | **Gate artifact write mechanism unspecified**: plan declares `.qor/gates/<sid>/ab-run.json` but doesn't state HOW it's written. No schema exists for `ab-run` in `qor/gates/schema/` (correctly — it's advisory/raw data, not a phase gate). Skill prose should explicitly direct pathlib-write rather than `gate_chain.write_gate_artifact` (which requires schema). |
+| O4 | LOW | **Stddev expectations not disclosed**: if the model is highly deterministic at the Task-tool's default temperature, stddev may approach zero and the "non-determinism quantification" premise (N=5 runs) provides less signal than assumed. Plan should note this. |
+| O5 | LOW | **Subagent model inheritance**: Task subagents use whatever model the main Claude Code session runs. Running the A/B on Sonnet vs Opus produces different numbers. Plan should require the model identity be recorded in `docs/phase39-ab-results.md` so readers know which model the evidence describes. |
+| O6 | LOW | **Terminology — "frontmatter"**: `<persona>` is a body-level XML element inside `<skill>` blocks, not YAML frontmatter proper. Plan uses "frontmatter" loosely throughout. Practically fine; technically imprecise. |
 
 ## Signature / cycle
 
-- Pass 1: `[infrastructure-mismatch, specification-drift]` (V1, F1-F5)
-- Pass 2: `[]` (PASS, no findings)
-- Pass 1 → Pass 2 delta: signature shifted (V1 class resolved; no new infrastructure issues)
-- Cycle count: 2. PASS on Pass 2.
+- Pass 1 signature: `[]` (PASS, no findings)
+- Cycle count for Phase 39b: 1 — PASS on first pass.
+
+## Meta-observation
+
+Cleanest authoring-pass-1 PASS yet in the session. Contributing factors:
+- Phase 37 Infrastructure Alignment discipline applied during Pass 2 of the parent Phase 39 caught the anthropic-SDK mismatch; the rewrite dogfoods the doctrine the plan codifies.
+- Scope is genuinely narrow: 1 skill + 1 pure-Python module + test file + persona sweep with documented decorative targets.
+- No new infrastructure assumptions (Task tool is established; corpus exists; aggregator has no LLM coupling).
 
 ## Required next action
 
-**`/qor-implement`** — dependency-ordered Phase 1 → 2 → 3 → 4.
+**`/qor-implement`** — Phase 1 (skill + aggregator), then Phase 2 (persona sweep; R3 gated on A/B results file existence).
 
-Note for implement: address O1 (corrected cost estimate in harness docstring) inline; O2 (retry/timeout) is defensible either way.
+Note for implement: address O1-O6 inline in skill prose / plan references. None require plan amendment; they are documentation completeness items.
 
 ---
 
 *Verdict: PASS (L1)*
 *Mode: solo*
-*Pass 1 V1 + F1-F5 all resolved. Two LOW cost/retry observations do not gate.*
+*Six LOW observations; none gate.*
 *Signature: [] (PASS)*
 *Next: /qor-implement*

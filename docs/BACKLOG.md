@@ -91,11 +91,11 @@ Source: `docs/SHADOW_GENOME.md` Entry #26. Raised by operator postmortem 2026-04
 - [x] **Phase 39 Phase 1 (v0.29.0 — Complete)** `qor/references/doctrine-context-discipline.md` authored with 5 sections (three mechanisms, persona-as-scaffold, stance directive discipline, subagent invocation rule, verification protocol). `doctrine-governance-enforcement.md` §11 cross-references.
 - [x] **Phase 39 Phase 2 (v0.29.0 — Complete, scope narrowed)** A/B corpus fixtures retained: 20 defects across 10 categories + MANIFEST + 4 hand-authored variant files under `tests/fixtures/ab_corpus/`. Anthropic-SDK harness withdrawn (required API key + $32/cycle external cost). Agent Team orchestration moves to Phase 39b.
 
-### Phase 39b — Agent Team A/B + persona sweep (deferred)
+### Phase 39b — Agent Team A/B + persona sweep
 
-- [ ] **Phase 39b Phase 1**: `/qor-ab-run` skill NEW at `qor/skills/meta/qor-ab-run/SKILL.md`. Orchestrates A/B via parallel Task-tool subagent dispatch within Claude Code. Zero external dep, zero marginal cost, aligned with doctrine's "controlled context via subagents" principle. Aggregation helpers in `qor/scripts/ab_aggregator.py` (pure Python, no LLM).
-- [ ] **Phase 39b Phase 2**: operator invokes `/qor-ab-run` → produces `docs/phase39-ab-results.md`.
-- [ ] **Phase 39b Phase 3**: persona sweep + conditional Identity Activation rewrites. R3 rewrite per winner. R4 (qor-debug → doctrine cross-ref) + R5 (qor-document disambiguation) + S3 sweep (24 skills). Tests at `tests/test_persona_sweep.py`.
+- [x] **Phase 39b Phase 1 (v0.30.0 — Complete)** `/qor-ab-run` skill at `qor/skills/meta/qor-ab-run/SKILL.md` orchestrates A/B via parallel Task-tool subagent dispatch. `qor/scripts/ab_aggregator.py` provides pure-Python reduction (parse, group, mean/stddev, winner declaration, markdown rendering). Subagent prompt template at `qor/skills/meta/qor-ab-run/references/ab-subagent-prompt.md`. Delegation-table row added. `qor-help` catalog updated. 22 tests across `test_qor_ab_run_skill.py` and `test_ab_aggregator.py`.
+- [x] **Phase 39b Phase 2 partial (v0.30.0 — doctrine-judgment sweep complete; A/B-gated R3 pending evidence)** S3 decorative sweep: 5 tags removed (`qor-status`, `qor-help`, `qor-repo-scaffold`, `qor-bootstrap`, `qor-document`). R4: `qor-debug` line 108 constraint cross-references `doctrine-context-discipline.md` §4. R5: `qor-document` splits Identity Activation stance from subagent pairing (cites doctrine §1.2/§1.3). `LOAD_BEARING_PENDING_EVIDENCE` registry in `tests/test_persona_sweep.py` documents 19 skills awaiting A/B evidence. 5 sweep tests enforce.
+- [ ] **Phase 39b Phase 3 (operator action)**: invoke `/qor-ab-run` → produces `docs/phase39-ab-results.md`. R3 Identity Activation rewrite (conditional) fires automatically via `test_identity_activation_matches_ab_winner_if_results_exist` once results land and declare `winner: "stance"` for a skill.
 
 ---
 

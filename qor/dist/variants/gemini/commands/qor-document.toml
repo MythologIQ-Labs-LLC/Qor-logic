@@ -6,7 +6,6 @@ prompt = """
 <skill>
   <trigger>/qor-document</trigger>
   <phase>DELIVER / IMPLEMENT</phase>
-  <persona>Technical Writer</persona>
   <modes>RELEASE_METADATA, SESSION_DOCS, COMPONENT_DOCS</modes>
   <dispatch>
     <agent>qor-technical-writer — Parallel authoring of CHANGELOG + README + component docs</agent>
@@ -236,7 +235,8 @@ This skill implements:
 - **Documentation Gate**: Required by `/qor-repo-release` before commit/tag
 - **User Review Protocol**: All documentation goes through approval gate
 - **Version Consistency**: Ensures markers match across CHANGELOG, README, docs
-- **Technical Writer Persona**: Pairs with qor-technical-writer agent for quality
+- **Identity Activation stance (main thread)**: Technical Writer — precision-focused authoring, glossary-consistent, reader-over-writer. This is Step 1 skill-body prose; it runs in the main context window and sets cognitive stance.
+- **Subagent pairing (distinct mechanism)**: Substantial rewrites delegate to the `qor-technical-writer` subagent via `Task(subagent_type="qor-technical-writer")` for parallel research + draft. This spawns a separate context window; it is NOT the same mechanism as the Identity Activation above. See `qor/references/doctrine-context-discipline.md` §1.2 and §1.3 for the distinction.
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-04-20T19:00:57Z",
+  "generated_ts": "2026-04-20T19:23:47Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -87,6 +87,12 @@
       "sha256": "73a6e31b4ada983a7d34700032ec1fdbb79e9f9baf8f82858a3d3701601f1a33"
     },
     {
+      "id": "qor-ab-run.toml",
+      "source_path": "commands/qor-ab-run.toml",
+      "install_rel_path": "commands/qor-ab-run.toml",
+      "sha256": "76c8c93de7c504a3c4a54bb71ac3fcf211ea0f43e355c5397bf52449faef79ea"
+    },
+    {
       "id": "qor-audit.toml",
       "source_path": "commands/qor-audit.toml",
       "install_rel_path": "commands/qor-audit.toml",
@@ -96,13 +102,13 @@
       "id": "qor-bootstrap.toml",
       "source_path": "commands/qor-bootstrap.toml",
       "install_rel_path": "commands/qor-bootstrap.toml",
-      "sha256": "5ae38d8027bac30cdb154df8622d8bda8abe389c70626692eb60a3066aae112d"
+      "sha256": "02160bc6a7a28143a969da99489c8a96263c6631a1586bc7bbfac7cfa7abe0df"
     },
     {
       "id": "qor-debug.toml",
       "source_path": "commands/qor-debug.toml",
       "install_rel_path": "commands/qor-debug.toml",
-      "sha256": "b4b59a541effb23435ee0f5d975e8ea98b8419ab0d197b86bc7ce7c0a923896d"
+      "sha256": "c3cafefa20f296d32e57874da57108f32390d752b36b51de77e53b472464aac1"
     },
     {
       "id": "qor-deep-audit-recon.toml",
@@ -132,7 +138,7 @@
       "id": "qor-document.toml",
       "source_path": "commands/qor-document.toml",
       "install_rel_path": "commands/qor-document.toml",
-      "sha256": "eef5be4a84368825da99872f403a608b2445e8d5f6e560ac1797b72382da4a1b"
+      "sha256": "32f4b7e2b920291e12fac3696e815317262ee1d8a0f86257b06e782c32833a1b"
     },
     {
       "id": "qor-governance-compliance.toml",
@@ -144,7 +150,7 @@
       "id": "qor-help.toml",
       "source_path": "commands/qor-help.toml",
       "install_rel_path": "commands/qor-help.toml",
-      "sha256": "6b7d35fd05b5f1df74e4e3e4dbbcec791dfb6283bdd27f1f14302b8722532f2e"
+      "sha256": "d7394ea59e2e3f657a37e81696318c99e950d3daad9acd6c7a7e625a7e33d95a"
     },
     {
       "id": "qor-implement.toml",
@@ -216,7 +222,7 @@
       "id": "qor-repo-scaffold.toml",
       "source_path": "commands/qor-repo-scaffold.toml",
       "install_rel_path": "commands/qor-repo-scaffold.toml",
-      "sha256": "22a46dce0447c7586ca87165c7d4dc3ab79dc93ba3fa35572aacc1ce1ea0fa5d"
+      "sha256": "1c972dff8eb9021c07b5c30bde8ec85eaca277d4dff9b0bcc3601e1bbfaca138"
     },
     {
       "id": "qor-research.toml",
@@ -234,7 +240,7 @@
       "id": "qor-status.toml",
       "source_path": "commands/qor-status.toml",
       "install_rel_path": "commands/qor-status.toml",
-      "sha256": "d29d8b99c8be54853ff3388f05d5339e85042f0c50a986529f087c74182a9c86"
+      "sha256": "5e35107b678db3465f43fb89e80923773eec39c3d68f86dacf86d9d796df149e"
     },
     {
       "id": "qor-substantiate.toml",

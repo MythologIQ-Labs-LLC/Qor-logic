@@ -105,7 +105,7 @@ The Fixer produces a final diagnosis with:
 - **ALWAYS** distinguish symptom from root cause
 - **ALWAYS** check for similar patterns elsewhere in the codebase
 - **ALWAYS** document findings with line numbers and evidence
-- **ALWAYS** use `subagent_type: "general"` (not `ultimate-debugger`)
+- **ALWAYS** use `subagent_type: "general"` (not `ultimate-debugger`). See `qor/references/doctrine-context-discipline.md` §4 (Subagent invocation rule) for the general doctrine — `general` is the default; persona-typed subagents require evidence that the persona prompt measurably alters tool selection or output shape.
 - **ALWAYS** write a failing test before applying any fix
 - **ALWAYS** run local CI mirror (lint + test with CI flags) before pushing fixes
 

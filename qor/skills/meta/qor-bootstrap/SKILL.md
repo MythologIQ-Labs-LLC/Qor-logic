@@ -19,7 +19,6 @@ gate_writes: ""
 <skill>
   <trigger>/qor-bootstrap</trigger>
   <phase>ALIGN + ENCODE</phase>
-  <persona>Governor</persona>
   <output>docs/CONCEPT.md, docs/ARCHITECTURE_PLAN.md, docs/META_LEDGER.md, docs/BACKLOG.md</output>
 </skill>
 

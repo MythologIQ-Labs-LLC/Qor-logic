@@ -24,7 +24,6 @@ No technical jargon. No governance tags or pattern IDs. No long identifier strin
 <skill>
   <trigger>/qor-status</trigger>
   <phase>ANY</phase>
-  <persona>Governor</persona>
   <output>Compact status with stage and next action</output>
 </skill>
 

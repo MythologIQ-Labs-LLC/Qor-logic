@@ -18,7 +18,6 @@ gate_writes: ""
 <skill>
   <trigger>/qor-help</trigger>
   <phase>ANY</phase>
-  <persona>Governor</persona>
   <output>Concise summary of available QorLogic commands</output>
 </skill>
 
@@ -59,6 +58,7 @@ If the user asks about a specific command, direct them to invoke it. If unsure, 
 | `/qor-repo-audit` | Repo-level audit (separate from per-feature audits). | Before release; audit rotation. |
 | `/qor-repo-release` | Release ceremony + tagging. | After validate PASS; when shipping. |
 | `/qor-repo-scaffold` | Create new repo from template. | First-time repo creation. |
+| `/qor-ab-run` | Run persona-vs-stance A/B measurement via parallel Task subagents. | Before Phase 39b persona sweep; when empirical evidence is needed for Identity Activation rewrites on stance-critical skills. |
 
 ## Governance
 
