@@ -10,6 +10,9 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+### Added
+- **`gate_written` hook channel** (upstream contribution from FailSafe-Pro B24): consumers can observe every successful `write_gate_artifact` call via two pure-Python dispatch sources — Python entry-points under group `qor_logic.events.gate_written`, and project-local `<root>/.qor/hooks.yaml`. Hooks receive a frozen `GateWrittenEvent(phase, session_id, artifact_path, payload_sha256, ts)`. Exceptions are swallow-logged to `<root>/.qor/hooks/hooks.log` as JSONL; never propagate. Hooks are non-authoritative observers — the gate artifact is already persisted before any hook fires. Subprocess hooks use list-form argv and are bounded by a 30-second timeout. See `qor/references/hook-contract.md` for the full contract including trust model. Zero new runtime dependencies (reuses existing `PyYAML`).
+
 ## [0.28.0] - 2026-04-20
 
 Procedural surface freeze line. Consolidates phases 36-38 work into a single release: full SG-PlanAuditLoop-A countermeasure set (C1-C4) plus `ci_commands` plan-schema slot. Phase 39 (context-discipline + persona reshape) explicitly deferred pending upstream consumer lockdown.

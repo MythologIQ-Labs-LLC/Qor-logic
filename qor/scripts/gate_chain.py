@@ -128,10 +128,38 @@ def write_gate_artifact(
     Phase 37 Phase 1: for audit artifacts, also append to the session's
     `audit_history.jsonl` after the singleton write succeeds. Singleton remains
     authoritative for chain gating; history log is advisory for stall detection.
+
+    B24: after the authoritative write succeeds, fires the `gate_written`
+    hook chain (entry-points + .qor/hooks.yaml). Hook exceptions are
+    swallow-logged; never propagated. See `qor/scripts/gate_hooks.py`.
     """
+    import hashlib
     sid = session_id or session.get_or_create()
     path = vga.write_artifact(phase, payload, session_id=sid)
     if phase == "audit":
         from qor.scripts import audit_history
         audit_history.append(payload, session_id=sid)
+    _fire_gate_written_hook(phase, sid, path)
     return path
+
+
+def _fire_gate_written_hook(phase: str, session_id: str, path: "Path") -> None:
+    """Invoke the hook dispatcher after a successful gate-artifact write.
+
+    Isolated so the authoritative write path never fails on hook errors:
+    any exception surfacing from dispatch is swallowed here too.
+    """
+    import hashlib
+    from qor.scripts import gate_hooks
+    try:
+        payload_bytes = path.read_bytes()
+        event = gate_hooks.GateWrittenEvent(
+            phase=phase,
+            session_id=session_id,
+            artifact_path=path,
+            payload_sha256=hashlib.sha256(payload_bytes).hexdigest(),
+            ts=shadow_process.now_iso(),
+        )
+        gate_hooks.dispatch_gate_written(event)
+    except BaseException:  # noqa: BLE001 — hooks must never break writes
+        pass
