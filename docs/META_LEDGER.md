@@ -4952,6 +4952,25 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 
 **Decision**: Plan rejected. Amend Phase 1 to also edit `CHANGELOG.md` — backfill `## [0.28.1]` (Phase 40 retrospective) and add `## [0.28.2]` (this hotfix). One small CHANGELOG edit clears the latent-broken state and preserves both tests' semantic strength. Re-run `/qor-audit`.
 
+---
+
+### Entry #135: GATE TRIBUNAL — Phase 42 Pass 2 — **PASS** (L2)
+
+**Timestamp**: 2026-04-24T21:05:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase42-changelog-tag-coverage-fix.md` (Pass 2)
+**Session**: `2026-04-24T1948-2cfc13`
+
+**Content Hash**: `ec2b6a3f16aa883f5d6b394c0a85a804281413df70af6b4c758621603f40cfdd`
+**Previous Hash**: `f74807e5d32a7b78d5b9c6a6fe7ebfbbac412c99c3ae6897cbaf2801ef13c520`
+**Chain Hash**: `53e61e6070557dbedac238f5ef6affaaf8a20fe53e9b5100570325c233ab8551`
+
+**Decision**: Pass 2 amendment resolves V1 (coverage-gap). `CHANGELOG.md` added to Phase 1 with explicit backfill content for v0.28.1 and v0.28.2 sections. Both symmetric tests will pass after the edit lands; post-merge CI traces cleanly for rebased PRs #10/#11. All six audit passes clear. No new violations. Gate OPEN for `/qor-implement`.
+
 
 
 
