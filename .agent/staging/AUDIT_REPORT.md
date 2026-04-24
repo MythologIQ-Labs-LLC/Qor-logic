@@ -1,8 +1,8 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-04-24T22:50:00Z
-**Target**: `docs/plan-qor-phase41-ledger-regex-robustness.md` (Pass 3 — feature/v0.31.0)
-**Risk Grade**: L2
+**Tribunal Date**: 2026-04-24T23:10:00Z
+**Target**: `docs/plan-qor-phase44-regex-parenthetical-suffix.md` (Pass 1)
+**Risk Grade**: L1
 **Auditor**: The QorLogic Judge
 **Mode**: solo (codex-plugin not available; capability_shortfall logged)
 **Session**: 2026-04-24T1948-2cfc13
@@ -15,19 +15,19 @@
 
 ### Executive Summary
 
-Pass 3 reclassifies Phase 41 from `hotfix`/v0.30.1 to `feature`/v0.31.0. Three-axis scope rationale (fenced-form parsing as new capability, bounded-span as systemic robustness, SKILL canonical refs as correctness-restoration) is substantive. Phase 33 doctrine's feature-class release-doc requirement is satisfied: `CHANGELOG.md` carries a new `## [0.31.0]` section and `README.md` has refreshed Test/Ledger badges, both in Phase 1 Affected Files. Branch rebased on post-Phase-39b main (pyproject at v0.30.0); `bump_version('feature')` will compute v0.31.0 cleanly. All six audit passes clear.
-
-This consolidated rebased-history report carries the substance of Pass 1 / Pass 2 / Pass 3 cycles. Original pre-rebase commits preserved the trail (Pass 1 hotfix scope VETOed for coverage-gap; Pass 2 amended; Pass 3 reclassified to feature with operator guidance "warrants more than 0.0.1").
+Phase 44 patches a real regression introduced by Phase 41: the strict `\*\*Field\*\*` anchor does not match the standard SESSION SEAL convention `\*\*Chain Hash (Merkle seal)\*\*` / `\*\*Content Hash (session seal)\*\*` used since Phase 23. Eight ledger entries silently skip rather than verify against the current verifier. Plan proposes a minimal three-regex relaxation that adds an optional parenthetical suffix `(?:\s*\([^)]+\))?` inside the bold markers, preserving Phase 41's bold-anchor protection, bounded-span discipline, and inline/fenced value acceptance. Tests are TDD-first and include the anti-vacuous-green guard that would have caught the original Phase 41 regression. All six audit passes clear.
 
 ### Audit Results
 
 #### Security Pass
 **Result**: PASS
-No auth/credentials/secrets. Regex parsing is pure in-memory operation.
+Pure regex change; no auth, credentials, or secrets. No subprocess. No external input.
 
 #### OWASP Top 10 Pass
 **Result**: PASS
-- A03/A04/A05/A08: N/A or PASS.
+- A03 Injection: N/A — pure in-memory regex.
+- A04 Insecure Design: deterministic — non-matching markup routes to skip; matching routes to verify; no fail-open path.
+- A05/A08: N/A.
 
 #### Ghost UI Pass
 **Result**: PASS
@@ -36,33 +36,42 @@ N/A.
 #### Section 4 Razor Pass
 **Result**: PASS
 
-| Check              | Limit | Plan Proposes                                                              | Status |
-| ------------------ | ----- | -------------------------------------------------------------------------- | ------ |
-| Max function lines | 40    | `verify()` 40 lines (at limit but compliant)                               | OK     |
-| Max file lines     | 250   | `ledger_hash.py` 196 lines                                                 | OK     |
-| Max nesting depth  | 3     | Unchanged                                                                  | OK     |
-| Nested ternaries   | 0     | Zero                                                                       | OK     |
+| Check              | Limit | Plan Proposes                                                                | Status |
+| ------------------ | ----- | ---------------------------------------------------------------------------- | ------ |
+| Max function lines | 40    | `verify()` unchanged at 40 lines                                             | OK     |
+| Max file lines     | 250   | `qor/scripts/ledger_hash.py` 196 lines (no growth — 3 regex constants edit)  | OK     |
+| Max nesting depth  | 3     | Unchanged                                                                    | OK     |
+| Nested ternaries   | 0     | Zero                                                                         | OK     |
 
 #### Dependency Pass
 **Result**: PASS
-No new packages. Uses stdlib `re` and pytest's stock `capsys`.
+No new dependencies.
 
 #### Orphan Pass
 **Result**: PASS
-`tests/test_qor_validate_skill_references.py` via pytest auto-discovery. CHANGELOG and README are root-level narrative.
+No new files. Tests added to existing `tests/test_ledger_hash.py`.
 
 #### Macro-Level Architecture Pass
 **Result**: PASS
-Changes confined to `qor/scripts/ledger_hash.py`, `qor/skills/governance/qor-validate/SKILL.md` (+ regenerated dist variants), two test files, plus narrative doc updates per Phase 33 doctrine.
+Change confined to one module's three regex constants.
 
-### Phase 33 doctrine compliance (release-doc currency)
+### Regex Correctness Audit
 
-`change_class: feature` requires `README.md` and `CHANGELOG.md` in `implement.files_touched`:
+The proposed pattern `\*\*Field(?:\s*\([^)]+\))?\*\*`:
 
-- **`CHANGELOG.md`**: new `## [0.31.0] - 2026-04-24` section — Added: fenced-form Content/Previous Hash parsing; Changed: bounded-span discipline + bold anchor on `**Chain Hash**` + SKILL canonical refs; Fixed: existing test fixtures updated to bold-anchored form with capsys assertions.
-- **`README.md`**: Test badge `602 passing` → `752 passing`; Ledger badge `104 entries sealed` → `140 entries sealed`. Version-agnostic prose preserved per existing "Latest release" section convention.
+- Matches plain `**Field**` (current behavior preserved). ✓
+- Matches `**Field (Merkle seal)**` (target SESSION SEAL convention). ✓
+- Bounded-span lookahead `(?!\n\s*\*\*[A-Z])` still detects next-field markers — the relaxed bold segment still starts with `\*\*[A-Z]`, so the lookahead trigger is unchanged. ✓
+- Cannot match nested-parens markup like `**Field (nested (text))**` — `[^)]+` stops at first `)`, regex fails. Acceptable: real ledgers don't use nested parens.
+- Cannot match prose mention `the Chain Hash field` — no surrounding `\*\*`, bold anchor still rejects. Phase 41's anti-prose protection preserved. ✓
 
-Both files staged in `implement.files_touched`. Currency check passes.
+### Anti-vacuous-green guard
+
+The plan adds three real-ledger tests asserting that every entry numbered ≥ 116 with hash markup verifies (not just `rc == 0`). This directly addresses the gap that allowed Phase 41's regression to land undetected. Whitelist for legitimate exceptions is left to the implementer (sound TDD: run, see what fails, justify each non-failing skip).
+
+### Sequencing
+
+Branch base `phase/44-regex-parenthetical-suffix` cut from main at v0.31.0 (post-Phase-41 merge). Pyproject reads 0.31.0; `bump_version('hotfix')` will compute v0.31.1 cleanly. Highest tag is v0.31.0; downgrade guard clears.
 
 ### Violations Found
 
@@ -72,7 +81,7 @@ None.
 
 <!-- qor:veto-pattern-advisory -->
 
-No repeated-VETO pattern detected in the last 2 sealed phases. SG-AdjacentState-A (provisional, `docs/SHADOW_GENOME.md` Entry #31) — three Pass 1 plan-blind-spots in sequence (Phase 41/42/43); all resolved on first re-audit.
+No repeated-VETO pattern detected in the last 2 sealed phases. SG-AdjacentState-A relevance: this regression is itself another instance of the family pattern (Phase 41 plan focused on the markup forms reported in issue #13 and didn't enumerate ALL field-label conventions present in the real ledger). The Phase 44 plan's anti-vacuous-green guard is a structural countermeasure that prevents recurrence beyond this fix's specific case — fourth-instance evidence supporting promotion of SG-AdjacentState-A from provisional to formal SG family.
 
 ## Documentation Drift
 
@@ -81,7 +90,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases. SG-AdjacentState-
 
 ### Verdict Hash
 
-SHA256(plan under audit) = (refreshed at substantiate after final content fixed)
+SHA256(plan under audit) = 9296b8e46f4c82f91a6cc29f692536542039a5cb0e7b7b14f1402e80ada1d284
 
 ---
 _This verdict is binding._

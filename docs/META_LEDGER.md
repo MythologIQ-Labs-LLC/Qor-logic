@@ -5210,6 +5210,25 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Session: SEALED* (Phase 41 feature substantiated)
 *Merkle seal: c8cbb19e...* (Phase 41 seal on top of Phase 43's cc60be96; Entries #141-#143 chained)
 
+---
+
+### Entry #144: GATE TRIBUNAL — Phase 44 Pass 1 — **PASS** (L1)
+
+**Timestamp**: 2026-04-24T23:10:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase44-regex-parenthetical-suffix.md`
+**Session**: `2026-04-24T1948-2cfc13`
+
+**Content Hash**: `dc8495c2caf3fd46a2a8f022f11c063842cb28ef0ccbc4c07bb33d297c25d48d`
+**Previous Hash**: `c8cbb19e1746e743c5faca910821c81ac53f395bddbc4b879b9abcbf67a19255`
+**Chain Hash**: `06801c29fa62661f40ce51226cba0db403d91be285388aaae6c84b77faad44e9`
+
+**Decision**: Phase 44 plan addresses real Phase 41 regression (8 SESSION SEAL / REMEDIATE PROPOSAL entries silently skipped by the strict `\*\*Field\*\*` anchor against the standard `\*\*Field (suffix)\*\*` markup convention). Three-regex relaxation adds optional parenthetical suffix `(?:\s*\([^)]+\))?` inside bold markers; preserves Phase 41's bold-anchor + bounded-span + two-form value protections. TDD coverage includes anti-vacuous-green guard against real ledger that would have caught the original regression. Branch base v0.31.0; bump('hotfix') → v0.31.1 cleanly. All six audit passes clear. SG-AdjacentState-A advisory: this regression is a fourth-instance member of the family (Phase 41 plan didn't enumerate all real-ledger field-label conventions); Phase 44's anti-vacuous-green guard provides structural countermeasure. Gate OPEN for `/qor-implement`.
+
 
 
 
