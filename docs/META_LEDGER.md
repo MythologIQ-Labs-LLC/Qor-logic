@@ -5089,6 +5089,40 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 
 **Decision**: Intent-lock now allows legitimate forward HEAD progress between capture and verify, eliminating the re-capture-as-SOP anti-pattern observed in Phase 41 and Phase 42 substantiate. Real anti-drift threats (history rewrites, resets, branch switches) still detected. Ready for `/qor-substantiate`.
 
+---
+
+### Entry #140: SESSION SEAL -- Phase 43 hotfix substantiated
+
+**Timestamp**: 2026-04-24T22:40:00Z
+**Phase**: SEAL (hotfix)
+**Author**: Judge
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase43-intent-lock-ancestry-verify.md`
+**Change Class**: `hotfix`
+**Version**: `0.28.2 -> 0.28.3`
+**Tag**: `v0.28.3` (created at Step 9.5.5 post-commit; LOCAL ONLY pending PR merge per Phase 40 doctrine)
+
+**Content Hash (session seal)**: `13d86e1bede58866c9d8a176890a42425632ae853f661543736a219fddb725fa`
+**Previous Hash**: `bb1f872fb1b839b5928ce83f906347716f6e3b254271c4e6a295f4a27578f793`
+**Chain Hash (Merkle seal)**: `cc60be96df5eb276537570cb6903d1b1a0a6bc9f0293093fe4263da201dec2f2`
+
+**Scope**: Replaces strict HEAD-equality check in `qor/reliability/intent_lock.py` `verify()` with `git merge-base --is-ancestor` ancestry check. Eliminates the re-capture-as-SOP anti-pattern observed in Phase 41 and Phase 42 substantiate where the implement commit between Step 5.5 capture and Step 4.6 verify always tripped `DRIFT: head`. Real anti-drift threats (history rewrites, hard resets, branch switches to divergent histories) still caught. 6 new TDD tests added: forward-progress allowance, history-rewrite detection, branch-switch detection, plan/audit drift ordering, list-form-argv structural lint.
+
+**Reliability sweep**: intent-lock VERIFIED (the new ancestry semantics work as designed — first phase to pass the sweep without re-capture-as-workaround), skill-admission ADMITTED, gate-skill-matrix clean (28 skills, 108 handoffs, 0 broken).
+
+**Razor**: `verify()` 30 → 37 lines (within 40-limit); `intent_lock.py` 149 → 156 lines; nesting depth ≤ 2; no nested ternaries.
+
+**Intent lock**: captured at post-rebase HEAD; verified post-implement-commit (the very mechanism this phase fixes — first session to demonstrate the ancestry check working live). One re-capture was needed for unrelated CRLF normalization in AUDIT_REPORT.md after git commit — separate latent issue (line-ending-drift), out of scope for Phase 43.
+
+**Decision**: Phase 43 hotfix sealed at v0.28.3. Tag LOCAL ONLY until PR merge per Phase 40 doctrine. After merge to main, v0.28.3 tag pushes and the ancestry-fix is shipped.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 43 hotfix substantiated)
+*Merkle seal: cc60be96...* (Phase 43 seal on top of Phase 42's d94cc0d4; Entries #138-#140 chained)
+
 
 
 
