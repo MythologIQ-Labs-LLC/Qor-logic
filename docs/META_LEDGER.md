@@ -4971,6 +4971,38 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 
 **Decision**: Pass 2 amendment resolves V1 (coverage-gap). `CHANGELOG.md` added to Phase 1 with explicit backfill content for v0.28.1 and v0.28.2 sections. Both symmetric tests will pass after the edit lands; post-merge CI traces cleanly for rebased PRs #10/#11. All six audit passes clear. No new violations. Gate OPEN for `/qor-implement`.
 
+---
+
+### Entry #136: IMPLEMENTATION — Phase 42 (changelog-tag-coverage test fix)
+
+**Timestamp**: 2026-04-24T21:15:00Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+
+**Session**: `2026-04-24T1948-2cfc13`
+**Plan**: `docs/plan-qor-phase42-changelog-tag-coverage-fix.md` (Pass 2)
+**Audit**: entry #135 (PASS)
+
+**Files Modified**:
+- `tests/test_changelog_tag_coverage.py` — extracted pure `_parse_semver` and `_released_orphans(versions, tags)` helpers; narrowed `test_every_changelog_section_has_tag` assertion to use `_released_orphans` (pre-release sections above the highest existing tag are exempt); added three direct-call TDD tests for the helper covering above/below/no-tags cases.
+- `CHANGELOG.md` — backfilled `## [0.28.2] - 2026-04-24` (this hotfix) and `## [0.28.1] - 2026-04-20` (Phase 40 retrospective) between the `## [Unreleased]` block and `## [0.28.0]`. Each section references its corresponding META_LEDGER seal entry.
+
+**Orphan tag cleanup** (plan's substantiate preflight executed at implement time to verify green tests):
+- `git tag -d v0.29.0 v0.30.0` — deleted local orphan tags from unmerged phase 39/39b seals. Tags were never on origin. They will be recreated on the respective merge commits when those PRs land per Phase 40 deploy doctrine.
+
+**Content Hash**: `fef74ea2c7dcbaf015a4086dfca23cea0203785dd8d89a4ef827282999409a49`
+**Previous Hash**: `53e61e6070557dbedac238f5ef6affaaf8a20fe53e9b5100570325c233ab8551`
+**Chain Hash**: `6486c68c98cef31af1bd29d64f10bc637cfeec2b11f3e09f82878721481e0cc5`
+
+**Tests**: 716 passed on 2 consecutive runs (5 tests in `test_changelog_tag_coverage.py` — original 2 plus 3 new helper tests).
+
+**Razor compliance**: `_released_orphans` 4 lines body; `_parse_semver` 2 lines body; new tests 4-10 lines each; test file 55 → 110 lines; no nested ternaries; nesting depth ≤ 2.
+
+**Intent lock**: captured.
+
+**Decision**: Phase 42 fix in place. `test_every_changelog_section_has_tag` now exempts pre-release CHANGELOG sections above the highest existing tag; `test_every_tag_has_changelog_section` passes against the backfilled CHANGELOG. PRs #10 and #11 can rebase on merged Phase 42 and pass CI cleanly. Ready for `/qor-substantiate`.
+
 
 
 
