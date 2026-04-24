@@ -4930,6 +4930,115 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Session: SEALED* (Phase 40 hotfix substantiated)
 *Merkle seal: dea2e429...* (Phase 40 seal on top of Phase 38's b7c8ed67; Entries #116-#133 chained)
 
+---
+
+### Entry #134: GATE TRIBUNAL — Phase 42 Pass 1 — **VETO** (L2)
+
+**Timestamp**: 2026-04-24T20:55:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: VETO
+
+**Target**: `docs/plan-qor-phase42-changelog-tag-coverage-fix.md`
+**Session**: `2026-04-24T1948-2cfc13`
+
+**Content Hash**: `977a6ad963c70148a683fdaf5a7ae9210f4fae47ad26516689afc5d81655049b`
+**Previous Hash**: `dea2e42906182f44ec084fe44b81111ae6d428006aa1d4018da608a20f104311`
+**Chain Hash**: `f74807e5d32a7b78d5b9c6a6fe7ebfbbac412c99c3ae6897cbaf2801ef13c520`
+
+**Violations**:
+- V1 (plan-text / coverage-gap): Phase 1 scope addresses only `test_every_changelog_section_has_tag`; the symmetric `test_every_tag_has_changelog_section` is already broken on main (CHANGELOG lacks v0.28.1 section; tag is on origin). Phase 42's own merge will surface this latent failure because v0.28.2 tag will push without a CHANGELOG section.
+
+**Decision**: Plan rejected. Amend Phase 1 to also edit `CHANGELOG.md` — backfill `## [0.28.1]` (Phase 40 retrospective) and add `## [0.28.2]` (this hotfix). One small CHANGELOG edit clears the latent-broken state and preserves both tests' semantic strength. Re-run `/qor-audit`.
+
+---
+
+### Entry #135: GATE TRIBUNAL — Phase 42 Pass 2 — **PASS** (L2)
+
+**Timestamp**: 2026-04-24T21:05:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase42-changelog-tag-coverage-fix.md` (Pass 2)
+**Session**: `2026-04-24T1948-2cfc13`
+
+**Content Hash**: `ec2b6a3f16aa883f5d6b394c0a85a804281413df70af6b4c758621603f40cfdd`
+**Previous Hash**: `f74807e5d32a7b78d5b9c6a6fe7ebfbbac412c99c3ae6897cbaf2801ef13c520`
+**Chain Hash**: `53e61e6070557dbedac238f5ef6affaaf8a20fe53e9b5100570325c233ab8551`
+
+**Decision**: Pass 2 amendment resolves V1 (coverage-gap). `CHANGELOG.md` added to Phase 1 with explicit backfill content for v0.28.1 and v0.28.2 sections. Both symmetric tests will pass after the edit lands; post-merge CI traces cleanly for rebased PRs #10/#11. All six audit passes clear. No new violations. Gate OPEN for `/qor-implement`.
+
+---
+
+### Entry #136: IMPLEMENTATION — Phase 42 (changelog-tag-coverage test fix)
+
+**Timestamp**: 2026-04-24T21:15:00Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+
+**Session**: `2026-04-24T1948-2cfc13`
+**Plan**: `docs/plan-qor-phase42-changelog-tag-coverage-fix.md` (Pass 2)
+**Audit**: entry #135 (PASS)
+
+**Files Modified**:
+- `tests/test_changelog_tag_coverage.py` — extracted pure `_parse_semver` and `_released_orphans(versions, tags)` helpers; narrowed `test_every_changelog_section_has_tag` assertion to use `_released_orphans` (pre-release sections above the highest existing tag are exempt); added three direct-call TDD tests for the helper covering above/below/no-tags cases.
+- `CHANGELOG.md` — backfilled `## [0.28.2] - 2026-04-24` (this hotfix) and `## [0.28.1] - 2026-04-20` (Phase 40 retrospective) between the `## [Unreleased]` block and `## [0.28.0]`. Each section references its corresponding META_LEDGER seal entry.
+
+**Orphan tag cleanup** (plan's substantiate preflight executed at implement time to verify green tests):
+- `git tag -d v0.29.0 v0.30.0` — deleted local orphan tags from unmerged phase 39/39b seals. Tags were never on origin. They will be recreated on the respective merge commits when those PRs land per Phase 40 deploy doctrine.
+
+**Content Hash**: `fef74ea2c7dcbaf015a4086dfca23cea0203785dd8d89a4ef827282999409a49`
+**Previous Hash**: `53e61e6070557dbedac238f5ef6affaaf8a20fe53e9b5100570325c233ab8551`
+**Chain Hash**: `6486c68c98cef31af1bd29d64f10bc637cfeec2b11f3e09f82878721481e0cc5`
+
+**Tests**: 716 passed on 2 consecutive runs (5 tests in `test_changelog_tag_coverage.py` — original 2 plus 3 new helper tests).
+
+**Razor compliance**: `_released_orphans` 4 lines body; `_parse_semver` 2 lines body; new tests 4-10 lines each; test file 55 → 110 lines; no nested ternaries; nesting depth ≤ 2.
+
+**Intent lock**: captured.
+
+**Decision**: Phase 42 fix in place. `test_every_changelog_section_has_tag` now exempts pre-release CHANGELOG sections above the highest existing tag; `test_every_tag_has_changelog_section` passes against the backfilled CHANGELOG. PRs #10 and #11 can rebase on merged Phase 42 and pass CI cleanly. Ready for `/qor-substantiate`.
+
+---
+
+### Entry #137: SESSION SEAL -- Phase 42 hotfix substantiated
+
+**Timestamp**: 2026-04-24T21:25:00Z
+**Phase**: SEAL (hotfix)
+**Author**: Judge
+**Verdict**: PASS (716 tests green on 2 consecutive runs)
+
+**Target**: `docs/plan-qor-phase42-changelog-tag-coverage-fix.md`
+**Change Class**: `hotfix`
+**Version**: `0.28.1 -> 0.28.2`
+**Tag**: `v0.28.2` (created at Step 9.5.5 post-commit; LOCAL ONLY pending PR merge per Phase 40 doctrine)
+
+**Content Hash (session seal)**: `f95a3449cca01155130588c8311d4cae153d39a99896a1d0463ce6a543ce436b`
+**Previous Hash**: `6486c68c98cef31af1bd29d64f10bc637cfeec2b11f3e09f82878721481e0cc5`
+**Chain Hash (Merkle seal)**: `d94cc0d4fdc90d1aa9364b6677cf20121482930a0261fb779168c9c6d938fc53`
+
+**Scope**: Unblocks PRs #10 and #11 by breaking the chicken-and-egg CI failure in `test_every_changelog_section_has_tag`. Pre-release CHANGELOG sections (versions above the highest existing git tag) are now exempt from the match-a-tag rule, resolving the collision with Phase 40's LOCAL-ONLY tag doctrine. CHANGELOG.md backfilled with v0.28.1 (Phase 40 retrospective) and v0.28.2 (this hotfix) so the symmetric `test_every_tag_has_changelog_section` is satisfied against origin tags.
+
+**Reliability sweep**: intent-lock VERIFIED, skill-admission ADMITTED, gate-skill-matrix clean (28 skills, 108 handoffs, 0 broken).
+
+**Razor**: `_released_orphans` 4 body lines; `_parse_semver` 2 body lines; test file 55 → 114 lines; nesting depth ≤ 2; no nested ternaries.
+
+**Orphan tag cleanup**: `v0.29.0` and `v0.30.0` deleted locally (never on origin; artifacts of unmerged phase 39/39b seals). Will be recreated on respective merge commits per Phase 40 deploy doctrine.
+
+**Intent lock**: captured pre-implement; re-captured post-implement commit and VERIFIED at seal time. Plan and audit content hashes unchanged between captures.
+
+**Decision**: Phase 42 hotfix sealed at v0.28.2. Tag LOCAL ONLY until PR merge per Phase 40 doctrine. After merge to main, v0.28.2 tag pushes and unblocks PRs #10/#11 rebases.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 42 hotfix substantiated)
+*Merkle seal: d94cc0d4...* (Phase 42 seal on top of Phase 40's dea2e429; Entries #134-#137 chained)
+
 
 
 

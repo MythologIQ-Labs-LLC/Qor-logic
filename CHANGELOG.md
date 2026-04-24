@@ -10,6 +10,16 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.28.2] - 2026-04-24
+
+### Fixed
+- `test_every_changelog_section_has_tag` no longer blocks phase-seal PRs whose CHANGELOG sections are above the highest existing tag. Pre-release sections are now exempt from the match-a-tag rule, resolving the chicken-and-egg collision with Phase 40's LOCAL-ONLY tag doctrine. See `docs/META_LEDGER.md` Entry #137 (Phase 42 seal).
+
+## [0.28.1] - 2026-04-20
+
+### Fixed
+- `.github/workflows/release.yml` now verifies the tag's commit is reachable from `origin/main` before publishing to PyPI; refuses publish otherwise. Closes the pre-merge-publish defect that shipped v0.24.1, v0.25.0, and v0.28.0 from unmerged PR branches. See `docs/META_LEDGER.md` Entry #133 (Phase 40 seal).
+
 ## [0.28.0] - 2026-04-20
 
 Procedural surface freeze line. Consolidates phases 36-38 work into a single release: full SG-PlanAuditLoop-A countermeasure set (C1-C4) plus `ci_commands` plan-schema slot. Phase 39 (context-discipline + persona reshape) explicitly deferred pending upstream consumer lockdown.

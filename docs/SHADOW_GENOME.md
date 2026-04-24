@@ -1053,4 +1053,40 @@ No new SG pattern ID. V1 is a standard wiring-clarity finding, not a member of a
 
 ---
 
+## Entry #31: VETO — plan-qor-phase42-changelog-tag-coverage-fix v1
+
+**Timestamp**: 2026-04-24T20:55:00Z
+**Target**: `docs/plan-qor-phase42-changelog-tag-coverage-fix.md` (Pass 1)
+**Audit Report**: `.agent/staging/AUDIT_REPORT.md`
+**Ledger Entry**: #134
+**Pass**: 1
+
+### Failure Mode
+
+COVERAGE_GAP (plan-text ground)
+
+### What Failed
+
+Plan addresses only one of two symmetric tests in `tests/test_changelog_tag_coverage.py`. The unaddressed test (`test_every_tag_has_changelog_section`) is already latently broken on main and will surface at Phase 42's own CI run after its v0.28.2 tag pushes to origin without a matching CHANGELOG section.
+
+### Why It Failed
+
+Author anchored on the PR-CI symptom (PRs #10/#11 failing on the orphan-section direction) and scoped the plan to that symptom. The reverse-direction test was already failing in a dormant state because main CI last ran before v0.28.1 tag was pushed — the failure was invisible until the next CI trigger. Scoping to "the visible failure the PRs hit" missed "the latent failure the fix itself will trigger."
+
+### Pattern to Avoid
+
+When fixing a CI test that's part of a symmetric pair, run BOTH tests locally against the current main state before scoping the plan. If the complementary test is already failing (or will fail under the fix's own state change), fold the adjacent fix into the same phase rather than shipping a partial resolution that lands broken main state.
+
+General heuristic: "tests come in pairs" is itself a flag. When the test file defines two tests that enforce bidirectional equality, any fix that relaxes one direction should be accompanied by a current-state check on the other.
+
+### Remediation Attempted
+
+Pending Governor amendment. Audit directs: add CHANGELOG.md edit to Phase 1's Affected Files — backfill `## [0.28.1]` (Phase 40 retrospective summary) and add `## [0.28.2]` (this hotfix summary). No new tests needed; existing tests will enforce correctness once sections are present.
+
+### Pattern ID
+
+No new SG family ID. This is a coverage-gap finding similar in structure to Phase 41 Pass 1's V1 (both missed adjacent-test state that the fix itself would affect). Two occurrences is suggestive but not yet a sealed pattern; watch for third occurrence.
+
+---
+
 *Shadow integrity: ACTIVE*
