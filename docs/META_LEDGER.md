@@ -4930,6 +4930,28 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Session: SEALED* (Phase 40 hotfix substantiated)
 *Merkle seal: dea2e429...* (Phase 40 seal on top of Phase 38's b7c8ed67; Entries #116-#133 chained)
 
+---
+
+### Entry #134: GATE TRIBUNAL — Phase 42 Pass 1 — **VETO** (L2)
+
+**Timestamp**: 2026-04-24T20:55:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: VETO
+
+**Target**: `docs/plan-qor-phase42-changelog-tag-coverage-fix.md`
+**Session**: `2026-04-24T1948-2cfc13`
+
+**Content Hash**: `977a6ad963c70148a683fdaf5a7ae9210f4fae47ad26516689afc5d81655049b`
+**Previous Hash**: `dea2e42906182f44ec084fe44b81111ae6d428006aa1d4018da608a20f104311`
+**Chain Hash**: `f74807e5d32a7b78d5b9c6a6fe7ebfbbac412c99c3ae6897cbaf2801ef13c520`
+
+**Violations**:
+- V1 (plan-text / coverage-gap): Phase 1 scope addresses only `test_every_changelog_section_has_tag`; the symmetric `test_every_tag_has_changelog_section` is already broken on main (CHANGELOG lacks v0.28.1 section; tag is on origin). Phase 42's own merge will surface this latent failure because v0.28.2 tag will push without a CHANGELOG section.
+
+**Decision**: Plan rejected. Amend Phase 1 to also edit `CHANGELOG.md` — backfill `## [0.28.1]` (Phase 40 retrospective) and add `## [0.28.2]` (this hotfix). One small CHANGELOG edit clears the latent-broken state and preserves both tests' semantic strength. Re-run `/qor-audit`.
+
 
 
 
