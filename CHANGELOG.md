@@ -10,6 +10,17 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.32.0] - 2026-04-28
+
+Phase 45: attribution trailer convention. Implements GitHub issue #18.
+
+### Added
+- **`qor/scripts/attribution.py`**: pure-function helper exposing three string-returning functions — `commit_trailer(model=...)`, `pr_footer(model=..., defects_list=..., comparison_doc_path=...)`, and `changelog_attribution_line()`. Module-level constants (`_SDK_NAME`, `_SDK_URL`, `_QOR_URL`, `_MODEL_EMAIL`) are the single source of truth; every default surface accepts a kwarg override so a fork rebranding the SDK or pointing at a different canonical URL needs no code changes outside the call site. Functions are pure: no I/O, no env reads, no time/random/network coupling.
+- **`qor/references/doctrine-attribution.md`**: full doctrine — purpose, when-to-apply scope (only commits/PRs/releases produced under `/qor-bootstrap → /qor-plan → /qor-audit → /qor-implement → /qor-substantiate`), three canonical strings captioned with the helper function names that produce them, helper API contract, narrowly-scoped emoji exception (the leading robot emoji on bot-attribution trailer text is the single carve-out from CLAUDE.md's no-non-ASCII-in-data rule), worked example citing issue #18 + BicameralAI MCP #59.
+- **`ATTRIBUTION.md`** (root): one-screen quick-ref with copy-pasteable canonical strings; pointers to the doctrine for rationale and to the helper for the canonical source.
+- **CLAUDE.md Authority line**: now references `[attribution](qor/references/doctrine-attribution.md)` alongside the existing `token-efficiency`, `test-discipline`, and `governance-enforcement` doctrines.
+- **15 new tests** (`tests/test_attribution.py` + `tests/test_attribution_docs_consistency.py`): 9 unit tests pinning canonical output and override semantics, 1 functional test piping the rendered trailer through `git interpret-trailers --parse` to confirm `Co-Authored-By:` is recognized as a valid git trailer (catches spacing/bracket/separator drift that pure presence-tests would miss), and 5 drift-guard tests asserting the helper's output appears verbatim in `ATTRIBUTION.md` and the doctrine and that `CLAUDE.md` Authority line links the doctrine.
+
 ## [0.31.1] - 2026-04-24
 
 ### Fixed

@@ -42,4 +42,4 @@ Drop-in instructions for Claude Code (and similar harnesses). Keep responses ter
 
 ## Authority
 
-User instructions override this file. Full doctrines: [token-efficiency](qor/references/doctrine-token-efficiency.md), [test-discipline](qor/references/doctrine-test-discipline.md), [governance-enforcement](qor/references/doctrine-governance-enforcement.md). Bundle protocol: [workflow-bundles](qor/gates/workflow-bundles.md). Skill handoff matrix: [delegation-table](qor/gates/delegation-table.md).
+User instructions override this file. Full doctrines: [token-efficiency](qor/references/doctrine-token-efficiency.md), [test-discipline](qor/references/doctrine-test-discipline.md), [governance-enforcement](qor/references/doctrine-governance-enforcement.md), [attribution](qor/references/doctrine-attribution.md). Bundle protocol: [workflow-bundles](qor/gates/workflow-bundles.md). Skill handoff matrix: [delegation-table](qor/gates/delegation-table.md).
