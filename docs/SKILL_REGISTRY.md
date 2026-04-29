@@ -1,4 +1,4 @@
-# Qorlogic Skill Registry
+# Qor-logic Skill Registry
 
 **Snapshot**: 2026-04-29
 **Authoritative location**: `qor/skills/<category>/<skill>/`

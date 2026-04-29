@@ -8,7 +8,7 @@ Software development is inherently iterative. Features change, requirements evol
 
 ### Linear Chain (Not Branching)
 
-The QorLogic Merkle chain is **strictly linear**. Each entry builds on the previous one, regardless of iteration:
+The Qor-logic Merkle chain is **strictly linear**. Each entry builds on the previous one, regardless of iteration:
 
 ```
 GENESIS -> ENCODE -> AUDIT -> IMPLEMENT -> SEAL -> ENCODE_v2 -> AUDIT_v2 -> IMPLEMENT_v2 -> SEAL_v2
