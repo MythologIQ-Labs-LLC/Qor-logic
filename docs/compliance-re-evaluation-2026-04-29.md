@@ -10,7 +10,7 @@
 |---|---|---|
 | NIST SSDF (alignment) | PASS — doctrine + tests + skills present | **G-1**: zero `**SSDF Practices**:` tags in 160-entry ledger; evidence-collection contract from Phase 23 doctrine §"Evidence Collection" never operationalized in any seal |
 | OWASP Top 10 (applicable) | PASS — A03/A04/A05/A08 surfaces clean; 142/142 security tests green | **G-2**: doctrine doesn't yet acknowledge Phase 48's new attack surface (`/qor-help --stuck` filesystem read of operator-controlled session_id path) |
-| Attribution-trailer signal/noise | DRIFTING — canonical form already inconsistent across recent phases | **G-3**: Phase 48 commits dropped the `🤖 Authored via QorLogic SDLC` line; Phase 47 kept it; CHANGELOG attribution line (`_Built via [QorLogic SDLC]._`) used 0 times despite being canonical. No tiered policy distinguishes high-signal seal commits from low-signal plan/audit/implement commits, so de-facto compaction happens silently |
+| Attribution-trailer signal/noise | DRIFTING — canonical form already inconsistent across recent phases | **G-3**: Phase 48 commits dropped the `🤖 Authored via Qor-logic SDLC` line; Phase 47 kept it; CHANGELOG attribution line (`_Built via [Qor-logic SDLC]._`) used 0 times despite being canonical. No tiered policy distinguishes high-signal seal commits from low-signal plan/audit/implement commits, so de-facto compaction happens silently |
 | README badge currency | DRIFTED — multiple phases skipped Phase 33 release-doc-currency rule | **G-4**: README badges showed `Tests: 817 passing` (was 838) and `Ledger: 157 entries sealed` (was 160) at audit time — three phases stale. Phase 33 doctrine §"release-doc currency" requires `feature` and `breaking` phases to update README.md badges. Phases 45/46/48 each shipped without the README update; only Phase 47 followed it. PyPI badge is dynamic (queries shields.io live; 3-hour CDN cache); literal-count badges drift silently |
 | Cedar policy enforcement | PASS — 4 forbid rules active (A03/A04/A05/A08) | None |
 | Static grep | CLEAN — no `shell=True`, no `pickle.load`, no `eval`/`exec`, no unsafe `yaml.load`, no hardcoded secrets | None |
@@ -131,7 +131,7 @@ Estimated effort: 1 phase, change_class=feature.
 
 ### Non-applicable categories
 
-A01/A02/A06/A07/A09/A10 remain non-applicable per `qor/references/doctrine-owasp-governance.md` §"Non-Applicable Categories". QorLogic is a prompt-logic library, not a web application; no auth surface, no encrypted storage, no inbound HTTP, no session management, no SSRF surface.
+A01/A02/A06/A07/A09/A10 remain non-applicable per `qor/references/doctrine-owasp-governance.md` §"Non-Applicable Categories". Qor-logic is a prompt-logic library, not a web application; no auth surface, no encrypted storage, no inbound HTTP, no session management, no SSRF surface.
 
 ### Gap G-2: Phase 48 attack surface not yet doctrine-acknowledged
 
@@ -176,7 +176,7 @@ No deselected test pertains to security/compliance.
 **Finding**: Phase 45 shipped the canonical attribution surface (`qor/scripts/attribution.py` + `ATTRIBUTION.md` + `qor/references/doctrine-attribution.md`). The canonical commit-trailer form is two lines + leading emoji:
 
 ```
-🤖 Authored via [QorLogic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+🤖 Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ```
@@ -188,7 +188,7 @@ Measured against last 10 commits on main:
 | 47 | 2/2 (seal + docs polish) | — | doctrine-compliant |
 | 48 | 0/4 | 4/4 (plan/audit/implement/seal) | drifted to compact form |
 
-CHANGELOG attribution line (`_Built via [QorLogic SDLC](url)._`) declared canonical in `ATTRIBUTION.md`; **used in zero CHANGELOG version sections**. PR-body footer canonical form (~10 lines including the audit-findings template) was used in the Phase 48 PR body but is unenforced — no test asserts PR bodies match.
+CHANGELOG attribution line (`_Built via [Qor-logic SDLC](url)._`) declared canonical in `ATTRIBUTION.md`; **used in zero CHANGELOG version sections**. PR-body footer canonical form (~10 lines including the audit-findings template) was used in the Phase 48 PR body but is unenforced — no test asserts PR bodies match.
 
 **Impact**: Two failure modes risk if no policy lands:
 
@@ -201,7 +201,7 @@ CHANGELOG attribution line (`_Built via [QorLogic SDLC](url)._`) declared canoni
 
 | Surface | Required form | Rationale |
 |---|---|---|
-| **Seal commit** (`seal: phase NN ...`) | Full canonical (emoji + QorLogic line + Co-Authored-By) | One per phase — high signal, marks the substantiated artifact |
+| **Seal commit** (`seal: phase NN ...`) | Full canonical (emoji + Qor-logic line + Co-Authored-By) | One per phase — high signal, marks the substantiated artifact |
 | **Plan/audit/implement commits** | `Co-Authored-By:` only (single line) | Low signal-per-commit; the SDLC bilineage is established by the seal commit they chain into |
 | **Merge commit** (auto-generated by GitHub) | Untouched | Outside the operator's authoring surface |
 | **PR description footer** | Full canonical PR-body footer | One per phase — visible to reviewers, is the contextually-rich surface |

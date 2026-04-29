@@ -139,5 +139,5 @@ Based on current state:
 
 ---
 
-*State snapshot updated by QorLogic A.E.G.I.S.*
+*State snapshot updated by Qor-logic A.E.G.I.S.*
 *Run `/qor-status` for live diagnostic.*

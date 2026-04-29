@@ -1,4 +1,4 @@
-// Skill admission policy for QorLogic governance.
+// Skill admission policy for Qor-logic governance.
 // A skill may be invoked only if it is registered and has frontmatter.
 
 permit (

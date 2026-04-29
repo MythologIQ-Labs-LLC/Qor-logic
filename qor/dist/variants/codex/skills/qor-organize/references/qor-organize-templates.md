@@ -1,4 +1,4 @@
-# QorLogic Organize Templates and Archetype Definitions
+# Qor-logic Organize Templates and Archetype Definitions
 
 ## Workspace Isolation Rules
 
@@ -107,7 +107,7 @@ project/
 ├── docs/         # CONCEPT.md, ARCHITECTURE_PLAN.md, META_LEDGER.md
 ├── .agent/staging/
 ├── .claude/      # Claude Code config
-├── .qor/   # QorLogic config
+├── .qor/   # Qor-logic config
 ├── src/          # Implementation
 └── README.md
 ```

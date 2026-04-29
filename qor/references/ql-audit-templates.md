@@ -8,7 +8,7 @@
 **Tribunal Date**: [ISO 8601]
 **Target**: [project/component name]
 **Risk Grade**: [L1 / L2 / L3]
-**Auditor**: The QorLogic Judge
+**Auditor**: The Qor-logic Judge
 
 ---
 

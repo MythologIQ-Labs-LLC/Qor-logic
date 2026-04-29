@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ledger hash and manifest utilities for QorLogic migration.
+"""Ledger hash and manifest utilities for Qor-logic migration.
 
 Provides:
 - content_hash(path): SHA256 of file bytes

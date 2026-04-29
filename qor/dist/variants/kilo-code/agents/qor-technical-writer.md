@@ -8,7 +8,7 @@ model: inherit
 
 ---
 name: qor-technical-writer
-description: QorLogic Technical Writer Agent - Documentation quality specialist
+description: Qor-logic Technical Writer Agent - Documentation quality specialist
 ---
 
 # qor-technical-writer - Documentation Agent

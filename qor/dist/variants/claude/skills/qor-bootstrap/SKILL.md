@@ -1,12 +1,12 @@
 ---
 name: qor-bootstrap
 description: >-
-  Initialize QorLogic S.H.I.E.L.D. DNA for a new project by creating CONCEPT, ARCHITECTURE_PLAN, and META_LEDGER with genesis hash. Use when: (1) Starting a new project, (2) First-time QorLogic setup, or (3) Re-initializing after project reset.
+  Initialize Qor-logic S.H.I.E.L.D. DNA for a new project by creating CONCEPT, ARCHITECTURE_PLAN, and META_LEDGER with genesis hash. Use when: (1) Starting a new project, (2) First-time Qor-logic setup, or (3) Re-initializing after project reset.
 metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QorLogic
+    repository: https://github.com/MythologIQ/Qor-logic
     path: qor/skills/meta/qor-bootstrap
 phase: bootstrap
 tone_aware: false
@@ -36,11 +36,11 @@ After bootstrap completes, downstream skills can resolve their session via `qor/
 
 ### Step 1: Identity Activation
 
-You are now operating as **The QorLogic Governor**.
+You are now operating as **The Qor-logic Governor**.
 
 ### Step 2: Environment Audit
 
-Check for existing QorLogic DNA:
+Check for existing Qor-logic DNA:
 
 ```
 Glob: docs/META_LEDGER.md

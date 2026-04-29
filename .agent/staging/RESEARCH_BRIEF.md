@@ -1,7 +1,7 @@
 # Research Brief — Persona framing vs. context control in Qor-logic subagent usage
 
 **Date**: 2026-04-19
-**Analyst**: The QorLogic Analyst
+**Analyst**: The Qor-logic Analyst
 **Target**: Internal doctrine + skill prose — not an external codebase
 **Scope**: Evaluate the claim "anthropomorphising subagents is a trap; the real value of subagents is controlled context" against Qor-logic's persona language, skill handoffs, and actual subagent invocations.
 
@@ -9,7 +9,7 @@
 
 ## Executive summary
 
-The claim is correct, and the codebase already contains its own half-learned proof. Real subagent usage in Qor-logic (`qor-deep-audit-recon`, `qor-debug`) is explicitly justified in terms of context preservation — that justification is in the prose. In parallel, the `<persona>…</persona>` frontmatter and "Identity Activation" Step 1 blocks ("You are now operating as **The QorLogic Judge**…") are main-thread prompt phrasing that runs in the same context window as the rest of the skill. They are not subagents. Labeling both mechanisms with the same persona vocabulary conflates three distinct levers (context isolation, cognitive stance, handoff target) into one metaphor, which invites exactly the confusion the claim warns about.
+The claim is correct, and the codebase already contains its own half-learned proof. Real subagent usage in Qor-logic (`qor-deep-audit-recon`, `qor-debug`) is explicitly justified in terms of context preservation — that justification is in the prose. In parallel, the `<persona>…</persona>` frontmatter and "Identity Activation" Step 1 blocks ("You are now operating as **The Qor-logic Judge**…") are main-thread prompt phrasing that runs in the same context window as the rest of the skill. They are not subagents. Labeling both mechanisms with the same persona vocabulary conflates three distinct levers (context isolation, cognitive stance, handoff target) into one metaphor, which invites exactly the confusion the claim warns about.
 
 Primary drift: the persona metaphor is load-bearing in ~2 skills (audit, substantiate), decorative in most others, and actively *already corrected* in one (`qor-debug` mandates `subagent_type: "general"`, explicitly rejecting `ultimate-debugger`). The fix is not "strip personas"; it is to name the three mechanisms separately.
 
@@ -22,7 +22,7 @@ Current prose uses the word "persona" (and the persona names Governor/Analyst/Ju
 | Mechanism | What it actually is | Where | Context-control value |
 |---|---|---|---|
 | **Frontmatter tag** `<persona>Governor</persona>` | Metadata label. Read by nothing mechanical. | Every `qor/skills/**/SKILL.md` (30+ files) | None |
-| **Identity Activation** "You are now operating as **The QorLogic Judge** in adversarial mode." | Main-thread prompt phrasing that nudges model stance. | `qor/skills/governance/qor-audit/SKILL.md:54`, `qor-substantiate/SKILL.md:61`, `qor-validate/SKILL.md:61`, `qor-research/SKILL.md:37`, `qor-implement/SKILL.md:62`, `qor-refactor/SKILL.md:60`, `qor-bootstrap/SKILL.md:40`, `qor-document/SKILL.md:38` | Zero — same context window |
+| **Identity Activation** "You are now operating as **The Qor-logic Judge** in adversarial mode." | Main-thread prompt phrasing that nudges model stance. | `qor/skills/governance/qor-audit/SKILL.md:54`, `qor-substantiate/SKILL.md:61`, `qor-validate/SKILL.md:61`, `qor-research/SKILL.md:37`, `qor-implement/SKILL.md:62`, `qor-refactor/SKILL.md:60`, `qor-bootstrap/SKILL.md:40`, `qor-document/SKILL.md:38` | Zero — same context window |
 | **Actual subagent invocation** via Task/Agent tool | New context window spawned with isolated prompt; result synthesized back. | `qor/skills/sdlc/qor-debug/SKILL.md:66`, `qor/skills/meta/qor-deep-audit-recon/SKILL.md:48` | The actual thing |
 
 The word "persona" floats across all three.
@@ -110,7 +110,7 @@ Priority: MEDIUM. Low-risk cleanup; makes the remaining uses meaningful.
 
 **R3 — Refactor Identity Activation blocks.** In skills that genuinely shift stance (`qor-audit`, `qor-substantiate`, `qor-validate`), rewrite Step 1 to lead with the directive, not the persona:
 
-    Before: "You are now operating as **The QorLogic Judge** in adversarial mode."
+    Before: "You are now operating as **The Qor-logic Judge** in adversarial mode."
     After:  "**Stance**: adversarial. Any ambiguity defaults to VETO. Role is to prove the work is unsealable, not to make it sealable."
 
 Persona name optional in parenthesis if ergonomics demand.

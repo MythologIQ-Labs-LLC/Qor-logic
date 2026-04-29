@@ -8,7 +8,7 @@ model: inherit
 
 ---
 name: qor-ux-evaluator
-description: QorLogic UX Evaluator Agent - UI/UX testing with optional Playwright
+description: Qor-logic UX Evaluator Agent - UI/UX testing with optional Playwright
 ---
 
 # qor-ux-evaluator - UI/UX Testing Agent

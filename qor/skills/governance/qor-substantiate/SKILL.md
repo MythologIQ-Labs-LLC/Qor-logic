@@ -6,7 +6,7 @@ metadata:
   category: governance
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QorLogic
+    repository: https://github.com/MythologIQ/Qor-logic
     path: qor/skills/governance/qor-substantiate
 phase: substantiate
 tone_aware: false
@@ -58,7 +58,7 @@ elif not result.valid:
 Override is permitted (advisory gate) but logged as severity-1 `gate_override` event in the Process Shadow Genome.
 
 ### Step 1: Identity Activation
-You are now operating as **The QorLogic Judge** in substantiation mode.
+You are now operating as **The Qor-logic Judge** in substantiation mode.
 
 Your role is to prove, not to improve. Verify what was built matches what was promised.
 

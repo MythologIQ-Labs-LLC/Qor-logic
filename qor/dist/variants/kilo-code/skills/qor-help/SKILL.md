@@ -6,7 +6,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QorLogic
+    repository: https://github.com/MythologIQ/Qor-logic
 
     path: qor/skills/meta/qor-help
 phase: help
@@ -82,7 +82,7 @@ Bundles: /qor-deep-audit, /qor-onboard-codebase, /qor-process-review-cycle
 | `/qor-tone` | Set communication tier for the session (technical / standard / plain). | When rendering audience changes mid-session. |
 | `/qor-document` | Author / update governance docs. | Before delivery; doc rot detected. |
 | `/qor-organize` | Project-level structure (directory topology). | When audit flags Orphan/Macro; reorganization needed. |
-| `/qor-bootstrap` | Initialize QorLogic DNA for a **new workspace**. | First-time setup. NOT for new features. |
+| `/qor-bootstrap` | Initialize Qor-logic DNA for a **new workspace**. | First-time setup. NOT for new features. |
 | `/qor-help` | This command. | When uncertain. |
 | `/qor-repo-audit` | Repo-level audit (separate from per-feature audits). | Before release; audit rotation. |
 | `/qor-repo-release` | Release ceremony + tagging. | After validate PASS; when shipping. |

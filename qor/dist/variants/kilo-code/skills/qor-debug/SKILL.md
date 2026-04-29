@@ -8,7 +8,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QorLogic
+    repository: https://github.com/MythologIQ/Qor-logic
     path: qor/skills/sdlc/qor-debug
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Edit, Write, Bash
@@ -109,7 +109,7 @@ The Fixer produces a final diagnosis with:
 - **ALWAYS** write a failing test before applying any fix
 - **ALWAYS** run local CI mirror (lint + test with CI flags) before pushing fixes
 
-## Integration with QorLogic
+## Integration with Qor-logic
 
 This skill implements:
 

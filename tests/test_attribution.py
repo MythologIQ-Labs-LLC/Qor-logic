@@ -9,7 +9,7 @@ from qor.scripts import attribution
 def test_commit_trailer_default_emits_canonical_string():
     out = attribution.commit_trailer(model="Claude Opus 4.7 (1M context)")
     expected = (
-        "\U0001F916 Authored via [QorLogic SDLC]"
+        "\U0001F916 Authored via [Qor-logic SDLC]"
         "(https://github.com/MythologIQ-Labs-LLC/qor-logic) on "
         "[Claude Code](https://claude.com/claude-code)\n"
         "\n"
@@ -37,7 +37,7 @@ def test_commit_trailer_kwargs_override_constants():
         model_email="custom@example.org",
     )
     assert "[Custom SDK](https://custom.example/sdk)" in out
-    assert "[QorLogic SDLC](https://custom.example/qor)" in out
+    assert "[Qor-logic SDLC](https://custom.example/qor)" in out
     assert "<custom@example.org>" in out
     assert "Claude Code" not in out
     assert "MythologIQ-Labs-LLC" not in out
@@ -47,7 +47,7 @@ def test_commit_trailer_kwargs_override_constants():
 def test_pr_footer_substitutes_defects_list():
     out = attribution.pr_footer(model="M", defects_list="1. foo\n2. bar")
     assert "1. foo\n2. bar" in out
-    assert "[QorLogic]" in out
+    assert "[Qor-logic]" in out
     assert "[Claude Code]" in out
 
 
@@ -71,7 +71,7 @@ def test_pr_footer_uses_canonical_qor_url():
 def test_changelog_attribution_line_is_locked_format():
     out = attribution.changelog_attribution_line()
     assert out == (
-        "_Built via [QorLogic SDLC]"
+        "_Built via [Qor-logic SDLC]"
         "(https://github.com/MythologIQ-Labs-LLC/qor-logic)._"
     )
 

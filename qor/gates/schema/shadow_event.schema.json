@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://qor-logic.mythologiq/schemas/shadow_event.schema.json",
-  "title": "QorLogic Process Shadow Event",
+  "title": "Qor-logic Process Shadow Event",
   "description": "One event in docs/PROCESS_SHADOW_GENOME.md (append-only JSONL).",
   "type": "object",
   "additionalProperties": false,

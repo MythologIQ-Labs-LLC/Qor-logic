@@ -1,12 +1,12 @@
 # Doctrine: NIST SP 800-218A (SSDF) Alignment
 
-Reference mapping between QorLogic governance lifecycle phases and NIST Secure Software Development Framework practices. This is an alignment mapping, not a compliance certification claim.
+Reference mapping between Qor-logic governance lifecycle phases and NIST Secure Software Development Framework practices. This is an alignment mapping, not a compliance certification claim.
 
 AI-specific augmentations from SP 800-218A (the AI-focused addendum) are noted where applicable.
 
 ## PO -- Prepare the Organization
 
-| SSDF Practice | QorLogic Equivalent | Path |
+| SSDF Practice | Qor-logic Equivalent | Path |
 |---|---|---|
 | PO.1.1 -- Define security requirements | `/qor-bootstrap` project initialization | `qor/skills/meta/qor-bootstrap/SKILL.md` |
 | PO.1.2 -- Implement roles and responsibilities | Delegation table + skill handoff matrix | `qor/gates/delegation-table.md` |
@@ -17,7 +17,7 @@ AI augmentation (SP 800-218A): `/qor-bootstrap` detects host LLM and configures 
 
 ## PS -- Protect the Software
 
-| SSDF Practice | QorLogic Equivalent | Path |
+| SSDF Practice | Qor-logic Equivalent | Path |
 |---|---|---|
 | PS.1.1 -- Protect all forms of code | Shadow genome integrity monitoring | `qor/references/doctrine-shadow-genome-countermeasures.md` |
 | PS.2.1 -- Archive and protect each release | `/qor-substantiate` Merkle seal + META_LEDGER | `docs/META_LEDGER.md` |
@@ -28,7 +28,7 @@ AI augmentation (SP 800-218A): Process shadow genome (`docs/PROCESS_SHADOW_GENOM
 
 ## PW -- Produce Well-Secured Software
 
-| SSDF Practice | QorLogic Equivalent | Path |
+| SSDF Practice | Qor-logic Equivalent | Path |
 |---|---|---|
 | PW.1.1 -- Design software to meet security requirements | `/qor-plan` structured planning with grounding protocol | `qor/skills/sdlc/qor-plan/SKILL.md` |
 | PW.4.1 -- Review and analyze human-readable code | `/qor-audit` adversarial code review | `qor/skills/governance/qor-audit/` |
@@ -40,7 +40,7 @@ AI augmentation (SP 800-218A): The `/qor-plan` -> `/qor-audit` -> `/qor-implemen
 
 ## RV -- Respond to Vulnerabilities
 
-| SSDF Practice | QorLogic Equivalent | Path |
+| SSDF Practice | Qor-logic Equivalent | Path |
 |---|---|---|
 | RV.1.1 -- Identify and confirm vulnerabilities | `/qor-debug` root cause analysis | `qor/skills/sdlc/qor-debug/` |
 | RV.1.2 -- Assess vulnerability severity | Process shadow genome threshold monitoring | `docs/PROCESS_SHADOW_GENOME.md` |

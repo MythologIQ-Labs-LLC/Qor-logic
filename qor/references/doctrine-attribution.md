@@ -2,13 +2,13 @@
 
 ## Purpose
 
-When a commit, pull request, or release was shaped by the QorLogic SDLC gates, attribution should name the framework alongside the model. The audit gate, Section 4 razor, and Merkle-chained ledger are what produce the quality differential — that deserves visible attribution next to the model that pressed the keys.
+When a commit, pull request, or release was shaped by the Qor-logic SDLC gates, attribution should name the framework alongside the model. The audit gate, Section 4 razor, and Merkle-chained ledger are what produce the quality differential — that deserves visible attribution next to the model that pressed the keys.
 
 This doctrine defines the canonical strings, when to apply them, and the helper that emits them.
 
 ## When to apply
 
-Apply this attribution **only** to commits and PRs produced under a QorLogic gate sequence:
+Apply this attribution **only** to commits and PRs produced under a Qor-logic gate sequence:
 
 ```
 /qor-bootstrap → /qor-plan → /qor-audit → /qor-implement → /qor-substantiate
@@ -23,19 +23,19 @@ The single source of truth is [qor/scripts/attribution.py](../scripts/attributio
 ### Commit trailer (`commit_trailer(model=...)`)
 
 ```
-🤖 Authored via [QorLogic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+🤖 Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ```
 
-QorLogic gets first billing; the `Co-Authored-By:` line stays so GitHub's contributor-stats machinery still records the model. The model name is the only required argument; SDK name, SDK URL, QorLogic URL, and model email all default to module constants and accept kwargs to override.
+Qor-logic gets first billing; the `Co-Authored-By:` line stays so GitHub's contributor-stats machinery still records the model. The model name is the only required argument; SDK name, SDK URL, Qor-logic URL, and model email all default to module constants and accept kwargs to override.
 
 ### PR-body footer (`pr_footer(model=..., defects_list=..., comparison_doc_path=...)`)
 
 ```
-🤖 Authored using the [QorLogic](https://github.com/MythologIQ-Labs-LLC/qor-logic) SDLC workflow on [Claude Code](https://claude.com/claude-code).
+🤖 Authored using the [Qor-logic](https://github.com/MythologIQ-Labs-LLC/qor-logic) SDLC workflow on [Claude Code](https://claude.com/claude-code).
 
-The QorLogic adversarial audit gate caught these defects before review:
+The Qor-logic adversarial audit gate caught these defects before review:
 
 {defects_list}
 
@@ -47,7 +47,7 @@ See `{comparison_doc_path}` for the side-by-side.
 ### CHANGELOG attribution line (`changelog_attribution_line()`)
 
 ```
-_Built via [QorLogic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 ```
 
 Sits on the line immediately below an existing version header (`## [X.Y.Z] - YYYY-MM-DD`), preserving the parser contract in [qor/scripts/changelog_stamp.py](../scripts/changelog_stamp.py). Insertion is the responsibility of the release skill; this doctrine only defines the line itself. Wiring is out of scope for the doctrine's first landing.
@@ -66,7 +66,7 @@ Properties:
 
 - **Pure**: no I/O, no env reads, no time/random/network coupling.
 - **Single source of truth**: changing `_QOR_URL` or `_SDK_NAME` in the helper updates every emitted string consistently.
-- **Override-friendly**: every default surface (SDK name, SDK URL, QorLogic URL, model email) accepts a kwarg, so a fork rebranding the SDK or pointing at a different canonical URL needs no code changes outside the call site.
+- **Override-friendly**: every default surface (SDK name, SDK URL, Qor-logic URL, model email) accepts a kwarg, so a fork rebranding the SDK or pointing at a different canonical URL needs no code changes outside the call site.
 
 ## Emoji exception (narrow)
 
@@ -84,4 +84,4 @@ Scope of the exception:
 
 ## Worked example
 
-Issue [#18](https://github.com/MythologIQ-Labs-LLC/Qor-logic/issues/18) was filed during a live submission of a worked example: BicameralAI MCP [#59](https://github.com/BicameralAI/bicameral-mcp/issues/59) (CodeGenome Phase 1+2). Three defects were caught before code review by the QorLogic audit gate that an ad-hoc Claude Code pass missed (architectural-pattern break, scope creep, Section 4 razor violation). The PR-body footer above is the shape that submission used to surface those defects to maintainers.
+Issue [#18](https://github.com/MythologIQ-Labs-LLC/Qor-logic/issues/18) was filed during a live submission of a worked example: BicameralAI MCP [#59](https://github.com/BicameralAI/bicameral-mcp/issues/59) (CodeGenome Phase 1+2). Three defects were caught before code review by the Qor-logic audit gate that an ad-hoc Claude Code pass missed (architectural-pattern break, scope creep, Section 4 razor violation). The PR-body footer above is the shape that submission used to surface those defects to maintainers.

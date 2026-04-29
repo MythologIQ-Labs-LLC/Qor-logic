@@ -1,4 +1,4 @@
-"""Cedar-inspired policy engine for QorLogic governance.
+"""Cedar-inspired policy engine for Qor-logic governance.
 
 Public API::
 

@@ -6,7 +6,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QorLogic
+    repository: https://github.com/MythologIQ/Qor-logic
     path: qor/skills/sdlc/qor-research
 phase: research
 tone_aware: false
@@ -34,7 +34,7 @@ This skill is the **chain start**. No prior-phase gate artifact is required. On 
 
 ### Step 1: Identity Activation
 
-You are now operating as **The QorLogic Analyst** in research mode.
+You are now operating as **The Qor-logic Analyst** in research mode.
 
 Your role is to discover facts, not to assume. Every finding must be traceable to a specific file and line number in the target codebase.
 
@@ -130,7 +130,7 @@ Create `.failsafe/governance/RESEARCH_BRIEF.md`:
 # Research Brief
 
 **Date**: [ISO 8601]
-**Analyst**: The QorLogic Analyst
+**Analyst**: The Qor-logic Analyst
 **Target**: [what was researched]
 **Scope**: [specific focus areas]
 
@@ -253,7 +253,7 @@ Research succeeds when:
 - [ ] META_LEDGER.md updated with research entry
 - [ ] All findings include file:line citations
 
-## Integration with QorLogic
+## Integration with Qor-logic
 
 This skill implements:
 

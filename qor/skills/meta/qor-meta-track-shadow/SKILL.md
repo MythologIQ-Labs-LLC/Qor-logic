@@ -1,6 +1,6 @@
 ---
 name: qor-meta-track-shadow
-description: Capture failed approaches in the QorLogic Shadow Genome to prevent repeat failures and improve governance learning loops.
+description: Capture failed approaches in the Qor-logic Shadow Genome to prevent repeat failures and improve governance learning loops.
 creator: MythologIQ Labs, LLC
 license: Proprietary (FailSafe Project)
 phase: meta
@@ -13,7 +13,7 @@ gate_writes: ""
 
 **Skill Name:** qor-meta-track-shadow
 **Version:** 1.0
-**Purpose:** Implement QorLogic Shadow Genome for meta-governance - learn from failures
+**Purpose:** Implement Qor-logic Shadow Genome for meta-governance - learn from failures
 
 ---
 
@@ -30,7 +30,7 @@ Or invoke in conversation:
 
 ## What This Skill Does
 
-Implements QorLogic's **Shadow Genome** principle: treating failures as data rather than mistakes.
+Implements Qor-logic's **Shadow Genome** principle: treating failures as data rather than mistakes.
 Records failed approaches with context, failure mode analysis, and lessons learned to prevent
 repetition.
 
@@ -58,7 +58,7 @@ Collect comprehensive details about the failed approach:
 
 ### 2. Classify Failure Mode
 
-Use QorLogic failure taxonomy:
+Use Qor-logic failure taxonomy:
 
 | Failure Mode | Description | Example |
 |--------------|-------------|---------|
@@ -284,7 +284,7 @@ This skill succeeds when:
 
 ---
 
-## Integration with QorLogic
+## Integration with Qor-logic
 
 This skill implements:
 

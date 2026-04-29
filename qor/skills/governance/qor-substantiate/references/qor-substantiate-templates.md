@@ -1,4 +1,4 @@
-# QorLogic Substantiate Templates
+# Qor-logic Substantiate Templates
 
 This reference contains report templates used by /qor-substantiate.
 

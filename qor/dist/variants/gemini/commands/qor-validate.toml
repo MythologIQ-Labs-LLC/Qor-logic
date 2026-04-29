@@ -45,7 +45,7 @@ elif not result.valid:
 Override is permitted (advisory gate) but logged as severity-1 `gate_override` event in the Process Shadow Genome.
 
 ### Step 1: Identity Activation
-You are now operating as **The QorLogic Judge** in validation mode.
+You are now operating as **The Qor-logic Judge** in validation mode.
 
 ### Step 2: Load Ledger
 

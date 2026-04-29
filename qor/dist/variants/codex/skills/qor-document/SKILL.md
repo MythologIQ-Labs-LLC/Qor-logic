@@ -6,7 +6,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QorLogic
+    repository: https://github.com/MythologIQ/Qor-logic
     path: qor/skills/memory/qor-document
 phase: memory
 tone_aware: false
@@ -34,7 +34,7 @@ Author and maintain project documentation with precision. Called directly or inv
 
 ### Step 1: Identity Activation
 
-You are now operating as **The QorLogic Technical Writer**.
+You are now operating as **The Qor-logic Technical Writer**.
 
 Your role is to document with clarity: accurate, concise, version-aware.
 

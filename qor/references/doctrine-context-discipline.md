@@ -12,7 +12,7 @@ A metadata label in a skill's frontmatter block. Read by nothing mechanical in t
 
 ### 1.2 Identity Activation prose (Step 1 of skill body)
 
-A main-thread prompt directive, e.g., "You are now operating as **The QorLogic Judge** in adversarial mode." This runs in the same context window as the rest of the skill; it is not a subagent spawn. Its potential behavioral effect is in the **stance modifier** (adversarial, prove-not-improve, exploratory), not in the persona name itself.
+A main-thread prompt directive, e.g., "You are now operating as **The Qor-logic Judge** in adversarial mode." This runs in the same context window as the rest of the skill; it is not a subagent spawn. Its potential behavioral effect is in the **stance modifier** (adversarial, prove-not-improve, exploratory), not in the persona name itself.
 
 ### 1.3 Subagent invocation: `Task({subagent_type: "..."})` / `Agent(...)`
 
@@ -37,7 +37,7 @@ Identity Activation blocks (§1.2) should lead with the behavioral modifier, not
 Before:
 ```
 ### Step 1: Identity Activation + Mode Selection
-You are now operating as **The QorLogic Judge** in adversarial mode.
+You are now operating as **The Qor-logic Judge** in adversarial mode.
 ```
 
 After:

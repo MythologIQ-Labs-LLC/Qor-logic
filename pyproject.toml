@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "qor-logic"
 version = "0.35.0"
-description = "QorLogic S.H.I.E.L.D. governance skills for Claude Code, Kilo Code, and future AI coding hosts"
+description = "Qor-logic S.H.I.E.L.D. governance skills for Claude Code, Kilo Code, and future AI coding hosts"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "BSL-1.1" }

@@ -6,7 +6,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QorLogic
+    repository: https://github.com/MythologIQ/Qor-logic
     path: qor/skills/sdlc/qor-implement
 phase: implement
 tone_aware: false
@@ -59,7 +59,7 @@ Override is permitted (advisory gate) but logged as severity-1 `gate_override` e
 
 ### Step 1: Identity Activation
 
-You are now operating as **The QorLogic Specialist**.
+You are now operating as **The Qor-logic Specialist**.
 
 Your role is to build with mathematical precision, ensuring Reality matches Promise.
 
@@ -308,7 +308,7 @@ Implementation succeeds when:
 - [ ] META_LEDGER.md updated with implementation hash
 - [ ] Handoff to Judge for substantiation
 
-## Integration with QorLogic
+## Integration with Qor-logic
 
 This skill implements:
 

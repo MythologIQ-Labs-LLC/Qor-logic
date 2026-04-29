@@ -1,6 +1,6 @@
 # Doctrine: OWASP Top 10 Governance Integration
 
-Maps applicable OWASP Top 10 (2021) categories to QorLogic governance decisions. Each category includes the governance check, the enforcement mechanism, and a worked example from the Phase 23 security audit.
+Maps applicable OWASP Top 10 (2021) categories to Qor-logic governance decisions. Each category includes the governance check, the enforcement mechanism, and a worked example from the Phase 23 security audit.
 
 ## Applicable Categories
 
@@ -38,7 +38,7 @@ Maps applicable OWASP Top 10 (2021) categories to QorLogic governance decisions.
 
 ## Non-Applicable Categories
 
-The following OWASP categories are not directly applicable to QorLogic (a prompt-logic library, not a web application):
+The following OWASP categories are not directly applicable to Qor-logic (a prompt-logic library, not a web application):
 
 - A01 Broken Access Control -- no user-facing access control
 - A02 Cryptographic Failures -- hashes are integrity checks, not encryption

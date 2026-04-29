@@ -1,4 +1,4 @@
-"""QorLogic CLI -- agent-agnostic skill distribution harness."""
+"""Qor-logic CLI -- agent-agnostic skill distribution harness."""
 from __future__ import annotations
 
 import argparse

@@ -6,7 +6,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QorLogic
+    repository: https://github.com/MythologIQ/Qor-logic
     path: qor/skills/sdlc/qor-plan
 phase: plan
 tone_aware: false
@@ -303,7 +303,7 @@ Per `qor/gates/delegation-table.md`:
 - **ALWAYS** declare `doc_tier` in plan top-matter (warn and default to `standard` if omitted; per `doctrine-documentation-integrity.md`)
 - **ALWAYS** list terms introduced by the plan under `terms_introduced` when tier is standard or system
 
-## Integration with QorLogic
+## Integration with Qor-logic
 
 This skill implements:
 

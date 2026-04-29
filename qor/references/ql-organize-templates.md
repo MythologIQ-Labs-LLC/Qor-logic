@@ -107,7 +107,7 @@ project/
 ├── docs/         # CONCEPT.md, ARCHITECTURE_PLAN.md, META_LEDGER.md
 ├── .agent/staging/
 ├── .claude/      # Claude Code config
-├── .qorelogic/   # QorLogic config
+├── .qorelogic/   # Qor-logic config
 ├── src/          # Implementation
 └── README.md
 ```

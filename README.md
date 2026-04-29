@@ -1,5 +1,5 @@
 <p align="center">
-  <strong>QorLogic</strong><br>
+  <strong>Qor-logic</strong><br>
   Standards-Aligned Governance for AI Coding Agents
 </p>
 
@@ -30,9 +30,9 @@
 
 ---
 
-## What QorLogic Does
+## What Qor-logic Does
 
-QorLogic is a governance framework that ships curated skills, doctrines, and runtime enforcement to AI coding agents. It covers the full software development lifecycle with hash-chained evidence, machine-enforceable policies, and a process-failure feedback loop.
+Qor-logic is a governance framework that ships curated skills, doctrines, and runtime enforcement to AI coding agents. It covers the full software development lifecycle with hash-chained evidence, machine-enforceable policies, and a process-failure feedback loop.
 
 Supported hosts: **Claude Code**, **Kilo Code**, **Codex** (provisional), **Gemini CLI**.
 
@@ -62,7 +62,7 @@ pip install qor-logic
 
 ### Deploy skills to your AI coding host
 
-By default QorLogic installs into the **current workspace** (`./.<host>/`). Use `--scope global` for user-wide install under `~/.<host>/`.
+By default Qor-logic installs into the **current workspace** (`./.<host>/`). Use `--scope global` for user-wide install under `~/.<host>/`.
 
 ```bash
 # Initialize with host + scope (scope defaults to repo)
@@ -109,7 +109,7 @@ Contributors: see [CONTRIBUTING.md](CONTRIBUTING.md) for the canonical chain and
 
 ## Lifecycle
 
-QorLogic enforces a phased governance lifecycle. Each phase gates the next. Every decision is SHA256-chained in the Meta Ledger.
+Qor-logic enforces a phased governance lifecycle. Each phase gates the next. Every decision is SHA256-chained in the Meta Ledger.
 
 ```mermaid
 graph LR
@@ -134,7 +134,7 @@ Each transition produces a ledger entry. VETO loops back to planning. Process fa
 
 ## Policy Engine
 
-QorLogic includes a Cedar-inspired policy evaluator written in pure Python. Policies are data files, not hardcoded logic.
+Qor-logic includes a Cedar-inspired policy evaluator written in pure Python. Policies are data files, not hardcoded logic.
 
 ```cedar
 // qor/policies/gate_enforcement.cedar
@@ -163,9 +163,9 @@ The evaluator supports `permit`/`forbid` effects, `==` and `in` constraints, `wh
 
 ### NIST SP 800-218A (SSDF for AI)
 
-QorLogic maps its lifecycle to the Secure Software Development Framework practices defined in [NIST SP 800-218A](https://doi.org/10.6028/NIST.SP.800-218A):
+Qor-logic maps its lifecycle to the Secure Software Development Framework practices defined in [NIST SP 800-218A](https://doi.org/10.6028/NIST.SP.800-218A):
 
-| SSDF Practice Group | QorLogic Implementation |
+| SSDF Practice Group | Qor-logic Implementation |
 |---|---|
 | **PO** Prepare the Organization | `/qor-bootstrap`, 14 doctrine files, `CLAUDE.md` drop-in, [CONTRIBUTING.md](CONTRIBUTING.md) |
 | **PS** Protect the Software | `/qor-audit` tribunal, reliability scripts, Shadow Genome |
@@ -340,7 +340,7 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 
 | Doctrine | Purpose |
 |---|---|
-| [attribution](qor/references/doctrine-attribution.md) | Canonical commit-trailer / PR-footer / CHANGELOG attribution for QorLogic-SDLC-authored work; helper at `qor/scripts/attribution.py` |
+| [attribution](qor/references/doctrine-attribution.md) | Canonical commit-trailer / PR-footer / CHANGELOG attribution for Qor-logic-SDLC-authored work; helper at `qor/scripts/attribution.py` |
 | [audit-report-language](qor/references/doctrine-audit-report-language.md) | VETO ground-class to skill directive mapping |
 | [changelog](qor/references/doctrine-changelog.md) | Keep-a-Changelog discipline + seal-time stamp |
 | [ci-budget](qor/references/doctrine-ci-budget.md) | CI compute and latency budget |
@@ -367,7 +367,7 @@ Patterns and templates (non-binding references):
 
 ## Shadow Genome
 
-The Shadow Genome is QorLogic's institutional memory for failure patterns. Every governance failure (plan VETOes, import breakage, arithmetic drift, silent data loss) is recorded, classified, and codified as a countermeasure.
+The Shadow Genome is Qor-logic's institutional memory for failure patterns. Every governance failure (plan VETOes, import breakage, arithmetic drift, silent data loss) is recorded, classified, and codified as a countermeasure.
 
 12 patterns codified so far:
 

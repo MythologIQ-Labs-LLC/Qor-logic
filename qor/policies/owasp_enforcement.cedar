@@ -1,4 +1,4 @@
-// OWASP Top 10 enforcement policies for QorLogic governance.
+// OWASP Top 10 enforcement policies for Qor-logic governance.
 // Phase 23: wired into /qor-audit tribunal OWASP pass.
 
 // A03 Injection: forbid shell=True in subprocess calls

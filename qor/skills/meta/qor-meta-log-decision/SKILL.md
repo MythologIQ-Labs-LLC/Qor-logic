@@ -1,6 +1,6 @@
 ---
 name: qor-meta-log-decision
-description: Record major engineering decisions into the QorLogic meta-ledger with rationale, risk grading, and auditable evidence.
+description: Record major engineering decisions into the Qor-logic meta-ledger with rationale, risk grading, and auditable evidence.
 creator: MythologIQ Labs, LLC
 license: Proprietary (FailSafe Project)
 phase: meta
@@ -13,7 +13,7 @@ gate_writes: ""
 
 **Skill Name:** qor-meta-log-decision
 **Version:** 1.0
-**Purpose:** Implement QorLogic SOA Ledger for development decisions
+**Purpose:** Implement Qor-logic SOA Ledger for development decisions
 
 ---
 
@@ -30,7 +30,7 @@ Or invoke in conversation:
 
 ## What This Skill Does
 
-Implements QorLogic's **SOA Ledger** principle for meta-governance: maintaining a Merkle-chained,
+Implements Qor-logic's **SOA Ledger** principle for meta-governance: maintaining a Merkle-chained,
 cryptographically signed audit trail of all major development decisions. Enables traceability,
 accountability, and rollback capability.
 
@@ -465,7 +465,7 @@ This skill succeeds when:
 
 ---
 
-## Integration with QorLogic
+## Integration with Qor-logic
 
 This skill implements:
 

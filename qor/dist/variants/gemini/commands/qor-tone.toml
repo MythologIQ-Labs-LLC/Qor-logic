@@ -57,7 +57,7 @@ These artifacts have evidentiary weight and stay technical-only for integrity.
 - **NEVER** persist the tier to `.qorlogic/config.json` from this skill; that requires explicit `qor-logic init --tone <tier>` invocation.
 - **ALWAYS** treat invalid tier arguments as user errors that leave the current tier unchanged.
 
-## Integration with QorLogic
+## Integration with Qor-logic
 
 - Session-level tier selector complementary to the CLI-level `qor-logic init --tone` persistence.
 - Tone-aware skills read the active tier via `qor.tone.resolve_tone()` in Python, or by checking session state in their own rendering preambles.

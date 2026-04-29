@@ -1,4 +1,4 @@
-// Gate enforcement policies for QorLogic governance.
+// Gate enforcement policies for Qor-logic governance.
 // Modelled after Cedar policy language (subset).
 
 permit (

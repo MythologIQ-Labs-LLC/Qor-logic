@@ -1,7 +1,7 @@
 # Plan: Qor SSoT Migration — MINIMAL
 
 **Status**: Active (override-accepted; advisory gate VETO carried as sev-1 in PROCESS_SHADOW_GENOME)
-**Author**: QorLogic Governor
+**Author**: Qor-logic Governor
 **Date**: 2026-04-15
 **Supersedes**: All prior `plan-qor-migration*.md` iterations (retained in `docs/` for ledger continuity; do not implement from them)
 **Scope**: Phases 0, 1, 1.5, 7 only. Tooling phases (2, 3, 4, 5, 6, 8) deferred to `plan-qor-tooling-deferred.md`.

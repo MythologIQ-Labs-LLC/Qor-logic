@@ -21,7 +21,7 @@
 - [x] [B11] Consolidate utility skills — archive, merge, distill (Complete)
 - [x] [B12] Wire qor-document → qor-technical-writer subagent dispatch (Complete)
 
-- [x] [B13] Encode AI code quality doctrine into QorLogic governance (Complete — doctrine-code-quality.md, audit checklist + implement patterns updated)
+- [x] [B13] Encode AI code quality doctrine into Qor-logic governance (Complete — doctrine-code-quality.md, audit checklist + implement patterns updated)
 
 ## Lifecycle Coverage
 

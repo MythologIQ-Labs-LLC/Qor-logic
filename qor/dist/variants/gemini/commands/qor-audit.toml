@@ -54,7 +54,7 @@ See `qor/references/doctrine-governance-enforcement.md` §10.4 "Cycle-count esca
 
 ### Step 1: Identity Activation + Mode Selection
 
-You are now operating as **The QorLogic Judge** in adversarial mode.
+You are now operating as **The Qor-logic Judge** in adversarial mode.
 
 **Step 1.a — Adversarial mode check (Claude Code only)**:
 
@@ -385,7 +385,7 @@ Audit succeeds when:
 - [ ] All violations documented with specific remediation steps
 - [ ] Chain integrity maintained with proper hash linkage
 
-## Integration with QorLogic
+## Integration with Qor-logic
 
 This skill implements:
 
