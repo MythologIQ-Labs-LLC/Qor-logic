@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qor-logic"
-version = "0.36.0"
+version = "0.37.0"
 description = "Qor-logic S.H.I.E.L.D. governance skills for Claude Code, Kilo Code, and future AI coding hosts"
 readme = "README.md"
 requires-python = ">=3.11"

@@ -10,6 +10,15 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.37.0] - 2026-04-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+Phase 50: skill-prose filesystem validation contract. Closes G-2 from `docs/compliance-re-evaluation-2026-04-29.md`.
+
+### Added
+- **Skill-prose filesystem validation contract** (Phase 50): skill prose performing filesystem operations on operator-controlled identifiers (e.g., `.qor/session/current`) MUST cite the canonical validator helper. `qor/references/doctrine-owasp-governance.md` §A03 gains a "Skill-prose worked example" paragraph naming the contract. `/qor-help --stuck` Mode protocol step 1 routes through `qor.scripts.session.current()` (which reads + validates against `SESSION_ID_PATTERN`) instead of naive marker reads. `qor/skills/sdlc/qor-implement/SKILL.md` and `qor/skills/governance/qor-substantiate/SKILL.md` Step 5.5 / Step 4.6 bash one-liners updated: `cat .qor/session/current` → `python -c "from qor.scripts.session import current; print(current() or 'default')"`. New lint `tests/test_skill_prose_filesystem_validation.py` (5 tests with proximity-anchor + strip-and-fail per Phase 46 doctrine) prevents regression.
+
 ## [0.36.0] - 2026-04-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

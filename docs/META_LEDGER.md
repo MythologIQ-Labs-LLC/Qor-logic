@@ -5798,6 +5798,71 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Session: SEALED* (Phase 49 feature substantiated)
 *Merkle seal: 2d7fc8e5...* (Phase 49 seal on top of Phase 48's 5fb66d73; Entries #161-#163 chained)
 
+---
+
+### Entry #164: GATE TRIBUNAL — Phase 50 Pass 1 — **PASS** (L1)
+
+**Timestamp**: 2026-04-29T23:30:00Z
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase50-skill-prose-filesystem-validation.md`
+
+**Content Hash**: `71c0cf02e59e975b15517b401ed41d5a03f00df5b000e242183f99b664fed2b0`
+**Previous Hash**: `2d7fc8e5249c20c22141e63ec01d615e670637c5f280aa585ad2e3916945910a`
+**Chain Hash**: `e1a050711cd9f96b4a6134761d6af44b39bd26b4cbeac799ac3be814201a8f92`
+
+**Decision**: Phase 50 closes G-2 — skill prose performing filesystem operations on operator-controlled identifiers must cite the canonical validator (`qor.scripts.session.current()`). Doctrine A03 gains a Skill-prose worked example; `/qor-help` Mode: --stuck and the bash one-liners in `qor-implement` Step 5.5 / `qor-substantiate` Step 4.6 are routed through `session.current()` instead of naive `cat`. New 5-test lint with proximity-anchor + strip-and-fail. All audit passes clear. Gate OPEN for `/qor-implement`.
+
+---
+
+### Entry #165: IMPLEMENTATION — Phase 50 (skill-prose filesystem validation)
+
+**Timestamp**: 2026-04-29T23:45:00Z
+**Plan**: `docs/plan-qor-phase50-skill-prose-filesystem-validation.md` (Pass 1)
+**Audit**: entry #164 (PASS)
+
+**Files Created**:
+- `tests/test_skill_prose_filesystem_validation.py` — 5 tests. Lint scans skill bodies for `cat .qor/session/current` (and other read patterns) without `qor.scripts.session` citation; doctrine + skill-prose proximity-anchor + strip-and-fail.
+
+**Files Modified**:
+- `qor/skills/meta/qor-help/SKILL.md` — Mode: --stuck step 1 routes through `qor.scripts.session.current()`; cites the validator and warns against bypassing it.
+- `qor/skills/sdlc/qor-implement/SKILL.md` Step 5.5 — bash `SESSION_ID=$(cat .qor/session/current ...)` → `python -c "from qor.scripts.session import current; print(current() or 'default')"`. Comment retains the `.qor/session/current` literal for the path-unification doctrine.
+- `qor/skills/governance/qor-substantiate/SKILL.md` Step 4.6 — same bash update.
+- `qor/references/doctrine-owasp-governance.md` §A03 — Skill-prose worked example paragraph appended.
+- `qor/dist/variants/{claude,codex,gemini,kilo-code}/` — variants regenerated (236 files, no drift).
+
+**Content Hash**: `849eb2957e437909c9170a507fe4037f3d6ef76783dd4e2727d4c9825ce6b901`
+**Previous Hash**: `e1a050711cd9f96b4a6134761d6af44b39bd26b4cbeac799ac3be814201a8f92`
+**Chain Hash**: `fb50c853a173f0035a2b1b721e8c2f5e8e40ddd810fd6bbd8cb3fd45a4caaa39`
+
+**Test results**: 5/5 phase-50 tests green twice; full suite 866 passed twice (delta +5 from Phase 49's 861 baseline).
+
+---
+
+### Entry #166: SESSION SEAL -- Phase 50 feature substantiated
+
+**Timestamp**: 2026-04-29T23:55:00Z
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase50-skill-prose-filesystem-validation.md`
+**Change Class**: `feature`
+**Version**: `0.36.0 -> 0.37.0`
+**Tag**: `v0.37.0` (LOCAL ONLY pending PR merge per Phase 40 doctrine)
+
+**Content Hash (session seal)**: `c0ab88a203553ea40183b970a220270887a547500fbbd69cc74be6b28866430c`
+**Previous Hash**: `fb50c853a173f0035a2b1b721e8c2f5e8e40ddd810fd6bbd8cb3fd45a4caaa39`
+**Chain Hash (Merkle seal)**: `c4a13570a901e26d5b971fff28e39f6b193b2915726b0565d2110b3285841b64`
+
+**Scope**: G-2 closed. Skill-prose validation contract documented and enforced. Two cat-based session reads in qor-implement / qor-substantiate routed through the canonical helper. /qor-help --stuck Mode protocol step 1 explicit on the validator path. Phase 49 badge currency check passes (self-application). Phase 47 seal-entry-check verifies Entry #166.
+
+**Decision**: Phase 50 sealed at v0.37.0. Tag LOCAL ONLY until PR merge.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 50 feature substantiated)
+*Merkle seal: c4a13570...* (Phase 50 seal on top of Phase 49's 2d7fc8e5; Entries #164-#166 chained)
+
 
 
 
