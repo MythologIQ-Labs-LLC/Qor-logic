@@ -10,6 +10,17 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.35.0] - 2026-04-29
+
+Phase 48: install-time UX/discoverability + canonical CLI rename + `/qor-help` conversational evolution.
+
+### Added
+- **`qor-logic` canonical CLI** (Phase 48): `pyproject.toml` `[project.scripts]` declares both `qor-logic` (canonical) and `qorlogic` (backwards-compat alias) mapping to `qor.cli:main`. `argparse` `prog="qor-logic"`; `--version` emits `qor-logic <semver>`. All operator-facing prose, skill prompts, references, README, and system-tier docs (`docs/operations.md`, `docs/policies.md`) updated. Filesystem state paths (`.qorlogic/config.json`, `.qorlogic-installed.json`) preserved for operator data integrity. New tests `tests/test_cli_rename.py` lock both entry points and the program-name output.
+- **Conversational `/qor-help`** (Phase 48): `/qor-help` evolves from static catalog into a three-mode skill. Bare invocation shows the catalog plus a new ASCII SDLC flow chart and a "How to use /qor-help" intro. `/qor-help --stuck` reads `.qor/session/current` and `.qor/gates/<sid>/*.json` to infer SDLC position and recommend the next skill with rationale. `/qor-help -- "<free-form question>"` routes the question against the catalog plus current state. All modes are read-only; recommendation only. Locked by `tests/test_qor_help_conversational.py` with proximity-anchored assertions paired with strip-and-fail negative-path tests; the ASCII chart is verified plain-ASCII (round-trips through `body.encode('ascii')`) and the SDLC phases appear in left-to-right order.
+
+### Changed
+- **Script discoverability post-install** (Phase 48): the three remaining path-form `python qor/scripts/<name>.py` invocations in skill prose are now `python -m qor.scripts.<name>`, resolving against the installed package from any CWD. `doctrine-governance-enforcement.md` §138 rewritten to make the `python -m` rule symmetric across both `qor/scripts/` and `qor/reliability/` (previously covered only `reliability/`). Doctrine §92 prose example also updated (`python qor/scripts/session.py new` → `python -m qor.scripts.session new`). New lints `tests/test_installed_import_paths.py::test_no_path_form_qor_scripts_invocations` and `::test_no_path_form_qor_reliability_invocations` prevent regression. Closes the gap left by Phase 35 (which fixed only `qor/reliability/`).
+
 ## [0.34.0] - 2026-04-29
 
 Phase 47: seal entry check — structural countermeasure for SG-AdjacentState-A (the bookkeeping-gap class that allowed Phase 46's first substantiate to seal at v0.33.0 without writing META_LEDGER entries).
