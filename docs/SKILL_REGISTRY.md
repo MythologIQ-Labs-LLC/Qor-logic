@@ -1,6 +1,6 @@
 # Qorlogic Skill Registry
 
-**Snapshot**: 2026-04-17
+**Snapshot**: 2026-04-29
 **Authoritative location**: `qor/skills/<category>/<skill>/`
 
 Skills organized by functional category. Path-shown relative to repo root.

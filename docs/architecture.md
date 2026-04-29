@@ -13,7 +13,7 @@ Qor-logic is a prompt system for governance-driven software development. The rep
                          v
 +---------------------------------------------------------------+
 |  REFERENCE LAYER (qor/references/)                            |
-|  14 doctrines + 7 patterns + 7 ql-templates + glossary        |
+|  17 doctrines + 7 patterns + 7 ql-templates + glossary        |
 |  = binding rules + non-binding references                     |
 +---------------------------------------------------------------+
                          |
