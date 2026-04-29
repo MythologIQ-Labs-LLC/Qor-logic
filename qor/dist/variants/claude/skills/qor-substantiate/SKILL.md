@@ -304,6 +304,18 @@ apply_stamp(
 
 `apply_stamp` raises `ValueError` on missing `## [Unreleased]`, empty Unreleased (no bullets), or collision with an existing `[new_version]` section. On any raise, PAUSE with the operator message; do NOT silently ship an unstamped CHANGELOG. Per `qor/references/doctrine-changelog.md`, every release gets a dated section; the Unreleased convention is populated during `/qor-implement` and mechanically renamed on seal.
 
+### Step 7.7: Post-seal verification (Phase 47 wiring)
+
+Closes SG-AdjacentState-A (Phase 46's sixth instance: substantiate sealed at v0.33.0 without writing META_LEDGER entries; intent-lock and the Step 4.6 reliability gates did not catch it because they run before the seal entry is written). Runs *after* Step 7 (Final Merkle Seal) has appended the SESSION SEAL entry to `docs/META_LEDGER.md`. Verifies the entry exists for this phase and the latest chain hash is internally consistent.
+
+```bash
+PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
+
+python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan "$PLAN_PATH" || ABORT
+```
+
+The `python -c` source is hardcoded — no shell variable is interpolated into the Python literal — so the OWASP A03 injection vector is closed by construction. `current_phase_plan_path()` (`qor/scripts/governance_helpers.py:57-67`) reads the git branch name and globs `docs/plan-qor-phase{NN}*.md`. The helper resolves phase number from the plan path internally and reads the latest entry's chain hash directly from the ledger; no caller-supplied Merkle seal expectation. Argv-form invocation throughout. ABORT on non-zero exit leaves the session unsealed; operator amends the ledger (or re-runs Step 7) and re-runs `/qor-substantiate`.
+
 ### Step 8: Cleanup Staging
 
 Clear: .failsafe/governance/

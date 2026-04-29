@@ -7,13 +7,13 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-782%20passing-brightgreen" alt="Tests: 782 passing">
+  <img src="https://img.shields.io/badge/Tests-817%20passing-brightgreen" alt="Tests: 817 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20aligned-004488" alt="NIST SP 800-218A aligned">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20audited-004488" alt="OWASP Top 10 audited">
-  <img src="https://img.shields.io/badge/Skills-28-blue" alt="Skills: 28">
+  <img src="https://img.shields.io/badge/Skills-29-blue" alt="Skills: 29">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-15-blue" alt="Doctrines: 15">
-  <img src="https://img.shields.io/badge/Ledger-149%20entries%20sealed-green" alt="Ledger: 149 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-17-blue" alt="Doctrines: 17">
+  <img src="https://img.shields.io/badge/Ledger-157%20entries%20sealed-green" alt="Ledger: 157 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -248,8 +248,8 @@ qor-logic/
     policy/           Cedar-inspired permit/forbid evaluator (pure Python)
     policies/         .cedar policy files (gate enforcement, skill admission, OWASP)
     scripts/          Runtime: ledger, gates, shadow, platform, compiler, remediate, doc-integrity (core + strict), drift-report, pr-citation-lint, changelog-stamp
-    reliability/      Intent Lock, Skill Admission, Gate-to-Skill Matrix
-    references/       14 doctrines + 7 patterns + 7 ql-templates + glossary + skill-recovery-pattern
+    reliability/      Intent Lock, Skill Admission, Gate-to-Skill Matrix, Seal Entry Check
+    references/       17 doctrines + 7 patterns + 7 ql-templates + glossary + skill-recovery-pattern
     gates/            Phase chain, delegation table, workflow bundles, 9 JSON schemas
     resources.py      importlib.resources wrapper for packaged assets
     workdir.py        $QOR_ROOT / CWD anchor for consumer-state paths
@@ -340,11 +340,13 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 
 | Doctrine | Purpose |
 |---|---|
+| [attribution](qor/references/doctrine-attribution.md) | Canonical commit-trailer / PR-footer / CHANGELOG attribution for QorLogic-SDLC-authored work; helper at `qor/scripts/attribution.py` |
 | [audit-report-language](qor/references/doctrine-audit-report-language.md) | VETO ground-class to skill directive mapping |
 | [changelog](qor/references/doctrine-changelog.md) | Keep-a-Changelog discipline + seal-time stamp |
 | [ci-budget](qor/references/doctrine-ci-budget.md) | CI compute and latency budget |
 | [code-quality](qor/references/doctrine-code-quality.md) | Section 4 Simplicity Razor + anti-slop rules |
 | [communication-tiers](qor/references/doctrine-communication-tiers.md) | Technical / standard / plain output tiers |
+| [context-discipline](qor/references/doctrine-context-discipline.md) | Persona scaffolding + measurable-effect contract for SDLC personas |
 | [documentation-integrity](qor/references/doctrine-documentation-integrity.md) | Tiered doc topology + glossary + check surface + documentation currency |
 | [governance-enforcement](qor/references/doctrine-governance-enforcement.md) | Branch / version / tag / push / session-rotation / PR-citation protocol |
 | [nist-ssdf-alignment](qor/references/doctrine-nist-ssdf-alignment.md) | NIST SP 800-218A practice-tag mapping |
@@ -353,6 +355,7 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 | [shadow-attribution](qor/references/doctrine-shadow-attribution.md) | Shadow skill attribution rules |
 | [shadow-genome-countermeasures](qor/references/doctrine-shadow-genome-countermeasures.md) | SG-016 through SG-038 failure-pattern countermeasures |
 | [test-discipline](qor/references/doctrine-test-discipline.md) | TDD, definition of done, reliability rules |
+| [test-functionality](qor/references/doctrine-test-functionality.md) | Tests must invoke the unit and assert on output, not just verify artifact presence |
 | [token-efficiency](qor/references/doctrine-token-efficiency.md) | Terse-by-default output + read/write discipline |
 
 Patterns and templates (non-binding references):

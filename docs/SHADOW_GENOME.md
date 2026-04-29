@@ -1089,4 +1089,64 @@ No new SG family ID. This is a coverage-gap finding similar in structure to Phas
 
 ---
 
+## Phase 47 Pass 1 — VETO
+
+**Date**: 2026-04-28
+**Verdict**: VETO (L2)
+**Categories**: `infrastructure-mismatch`, `prose-code-mismatch`, `injection-risk`
+
+### Findings
+
+V-1: New gate `seal_entry_check` wired into `/qor-substantiate` Step 4.6 (Reliability Sweep). Step 4.6 runs at [SKILL.md:192](qor/skills/governance/qor-substantiate/SKILL.md), *before* Step 7 (Final Merkle Seal, [SKILL.md:266](qor/skills/governance/qor-substantiate/SKILL.md)) writes the SESSION SEAL ledger entry the check is supposed to verify. Check would always fail because its precondition (latest entry is SESSION SEAL for current phase) is structurally false at Step 4.6 time.
+
+V-2: `$MERKLE_SEAL` referenced in wiring but never defined. Computed at Step 7; undefined at Step 4.6.
+
+V-3: `python -c "...derive_phase_metadata('$PLAN_PATH')[0]"` — shell-injection vector. Single-quoted Python literal with unescaped shell-variable interpolation (OWASP A03).
+
+### Root Cause Analysis
+
+Plan's prose acknowledges the dependency ("runs LAST because it requires the seal entry to be written by Step 7") but the implementation block places it in Step 4.6 anyway. SG-038 direct hit (prose-code mismatch in plans). The plan author inferred placement from the existing pattern (other reliability gates live in Step 4.6) without verifying the new gate's precondition is satisfied at that step. Pattern: borrowing the location of structurally-similar gates without re-validating the structural constraint that justified each one's location.
+
+### Pattern to Avoid
+
+When adding a new reliability gate to an existing skill's step-numbered protocol, the plan must trace each precondition the gate depends on back to the skill step that establishes it. "Place it next to the other gates" is location-by-association, not location-by-precondition. Each gate's location is determined by its dependency graph, not by its taxonomic siblings.
+
+### Remediation Attempted
+
+Pending Governor amendment. Audit directs: restructure Phase 2 to place `seal_entry_check` in a new step *after* Step 7 (Final Merkle Seal), define how `$MERKLE_SEAL` is acquired (Step 7 export, or helper reads ledger directly), and replace shell-interpolation `python -c "...('$VAR')..."` with argv-form invocation.
+
+### Pattern ID
+
+Reinforces SG-AdjacentState-A family (seventh instance — first to surface during `/qor-audit` on its own remediation phase, ironically). The countermeasure Phase 47 itself proposes (post-seal verification) would, if generalized to "verify substantiate-step preconditions at audit time", catch this exact wiring defect. Recursive scope worth tracking for a later phase: an audit pass that simulates the plan's wiring against the substantiate skill's actual step ordering and aborts on precondition mismatch.
+
+---
+
+## Phase 47 Pass 2 — VETO
+
+**Date**: 2026-04-28
+**Verdict**: VETO (L1)
+**Categories**: `infrastructure-mismatch`, `prose-code-mismatch`
+
+### Findings
+
+V-1 (Pass 2): Bash plan-path derivation `PLAN_PATH=$(cat .qor/session/current 2>/dev/null | xargs -I{} ls docs/plan-qor-phase{}*.md 2>/dev/null | head -1)` is structurally broken. The session file format is `2026-04-28T0247-92f578` (date-time-hex); plan filenames match `plan-qor-phaseNN-slug.md` where NN is the phase number derived from the git branch via `governance_helpers.current_phase_plan_path()`. The `xargs -I{}` glob substitutes the session ID into a pattern that matches nothing; `$PLAN_PATH` expands empty, the helper receives `--plan ""`, substantiate aborts with a confusing error.
+
+### Root Cause Analysis
+
+Pass 1 directive specified "argv-form CLI invocation" as remediation for V-3 (shell injection). Pass 2 followed the directive — CLI uses argparse, no shell interpolation into Python literals. **But the directive did not specify how the bash should populate the argv.** Pass 2 author improvised a session-id-based glob, did not verify it against the actual plan-filename convention, and labeled the alternative path "Or equivalent: derive PLAN_PATH from the phase branch name. Whatever the operator's preferred resolution, the helper reads it via argv." The hand-waving leaves the implementer to pick a derivation at implement time — exactly the SG-AdjacentState-A pattern Phase 47 was designed to prevent.
+
+### Pattern to Avoid
+
+Audit directives that specify "use X" without specifying "how to obtain X" leave a wiring slip surface. When a Pass-N audit redirects a plan toward a different wiring shape, the Pass-(N+1) plan must demonstrate the new shape with verified-working code, not an example-and-equivalent stub. The grounded mechanism (`current_phase_plan_path()`) was already in the codebase; the plan should have called it directly.
+
+### Remediation Attempted
+
+Pending Governor amendment. Audit directs two acceptable single-line fixes (Option A: replace bash with `PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")` — no shell-variable interpolation, calls grounded helper. Option B: drop `--plan` from CLI; helper calls `current_phase_plan_path()` internally; smallest API).
+
+### Pattern ID
+
+SG-AdjacentState-A eighth instance. Two consecutive VETOs on the same plan, both citing wiring defects in `/qor-substantiate` step integration. Phase 47 plan literally proposes a runtime check for "skill prose vs runtime mismatch" — and its second pass exhibits the very pattern in its own bash. Worth flagging for a future SG family promotion: every reliability-gate plan needs explicit bash-tested derivation paths, not hand-waved equivalents. Recursive: the structural countermeasure Phase 47 proposes would, if generalized to audit-time enforcement, catch this exact slip on Pass 1 (and the Pass 1 slip too).
+
+---
+
 *Shadow integrity: ACTIVE*

@@ -5483,6 +5483,137 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Session: SEALED* (Phase 46 feature substantiated post-remediation)
 *Merkle seal: d9db2f5c...* (Phase 46 seal on top of Phase 45's 99a2b470; Entries #150-#152 chained)
 
+---
+
+### Entry #153: GATE TRIBUNAL — Phase 47 Pass 1 — **VETO** (L2)
+
+**Timestamp**: 2026-04-28T21:00:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: VETO
+
+**Target**: `docs/plan-qor-phase47-seal-entry-check.md`
+**Session**: phase-47
+
+**Content Hash**: `6746f94aa25e36895b84b585bbf034a955c921fe9cac675843cd6460195c9fca`
+**Previous Hash**: `d9db2f5cacd01fb55eea7165bbc0f0d8f2294420e89ef2c4eedc8f0bd7328b2d`
+**Chain Hash**: `fdd1ee523a888341bb47626a197c0857f376deddb971476f5c9a3ad46207b4a2`
+
+**Findings Categories**: `infrastructure-mismatch`, `prose-code-mismatch`, `injection-risk`
+
+**Decision**: Phase 47 plan's pure-function helper design (Phase 1) is sound — TDD-first, behaviorally exhaustive, meta-test replaying the Phase 46 historical gap as the structural countermeasure. **Phase 2 wiring is structurally broken on three counts**: (V-1) `seal_entry_check` placed in Step 4.6 (Reliability Sweep) which runs at SKILL.md:192, *before* Step 7 (Final Merkle Seal) at SKILL.md:266 writes the entry the check is supposed to verify — the check would always fail because its precondition (latest entry is a SESSION SEAL for current phase) is structurally false at Step 4.6 time. (V-2) `$MERKLE_SEAL` referenced in the wiring but never defined — the value is computed in Step 7, undefined at Step 4.6, would expand to empty string. (V-3) `python -c "...derive_phase_metadata('$PLAN_PATH')[0]"` is a shell-injection vector (OWASP A03) — single-quoted Python literal with unescaped shell-variable interpolation. SG-038 direct hit (prose-code mismatch — plan's prose claims "runs LAST after Step 7" while wiring places it in Step 4.6). SG-InfrastructureMismatch direct hit (plan claims Step 4.6 has access to Merkle seal value the substantiate flow doesn't provide at that point). Remediation classified as Plan-text grounds per `doctrine-audit-report-language.md`: Governor amends plan to restructure Phase 2 wiring (post-Step-7 placement, defined Merkle-seal acquisition path, argv-form CLI invocation eliminating shell interpolation), re-runs `/qor-audit`. Gate CLOSED until Pass 2 PASS. Phase 1 (helper module + tests) is unaffected — Pass 2 amendment scope is bounded to Phase 2 wiring section and CI Commands list.
+
+---
+
+### Entry #154: GATE TRIBUNAL — Phase 47 Pass 2 — **VETO** (L1)
+
+**Timestamp**: 2026-04-28T22:00:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: VETO
+
+**Target**: `docs/plan-qor-phase47-seal-entry-check.md`
+**Session**: phase-47
+
+**Content Hash**: `6e744ad6e78213b14a4f2f3e547eba54c716c93bc899564adc32c636c27eb868`
+**Previous Hash**: `fdd1ee523a888341bb47626a197c0857f376deddb971476f5c9a3ad46207b4a2`
+**Chain Hash**: `9b0fbdc0745c4d37e89bccd769f4c2a70b69c606ba9b2f528119c157a5329c78`
+
+**Findings Categories**: `infrastructure-mismatch`, `prose-code-mismatch`
+
+**Decision**: Pass 2 correctly resolves all three Pass 1 VETO grounds (V-1 step placement → Step 7.7 after Step 7 line 266; V-2 undefined `$MERKLE_SEAL` → helper drops `expected_merkle_seal` arg, reads chain hash from ledger directly; V-3 shell-injection → argparse `--plan` argv form, defensive test for adversarial paths). Helper API simplification is excellent — single source of truth (the ledger holds the seal value), one fewer kwarg, ~22 lines for `check()`. Defensive tests `test_step_7_7_runs_after_step_7_seal_write`, `test_step_7_7_does_not_use_python_c_shell_interpolation`, `test_step_7_7_does_not_reference_undefined_merkle_seal_variable` lock the resolutions against future drift. **Pass 2 introduces a single new mechanical defect (V-1 Pass 2)**: the example bash `PLAN_PATH=$(cat .qor/session/current ... | xargs -I{} ls docs/plan-qor-phase{}*.md ...)` is structurally broken — the session file contains a session ID like `2026-04-28T0247-92f578`, not a phase number; plan filenames match `plan-qor-phaseNN-slug.md` where NN comes from the git branch name (`phase/NN-slug`) via [`governance_helpers.current_phase_plan_path()`](qor/scripts/governance_helpers.py:57-67). The glob would match nothing, `$PLAN_PATH` would expand empty, the helper would receive `--plan ""` and abort with a confusing error. SG-InfrastructureMismatch + SG-038 (prose-code mismatch — plan's "Or equivalent: derive PLAN_PATH from the phase branch name" hand-waves the actual mechanism). Remediation: single-line fix, two acceptable paths — Option A: replace bash with `PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")` (no shell-variable interpolation, calls the grounded helper); Option B: drop `--plan` from CLI entirely, have helper call `current_phase_plan_path()` internally (smallest API surface; one Phase 1 test rename). Phase 1 helper + Phase 1 tests + Phase 2 defensive tests + Step 7.7 numbering all unaffected. SG-AdjacentState-A eighth instance: recursive — this VETO is the same family Phase 47 itself was designed to fix; Pass 1 was the seventh, Pass 2 is the eighth. Plan literally proposes a runtime check for "skill prose vs runtime mismatch" while exhibiting the pattern in its own bash. Gate CLOSED until Pass 3 PASS.
+
+---
+
+### Entry #155: GATE TRIBUNAL — Phase 47 Pass 3 — **PASS** (L1)
+
+**Timestamp**: 2026-04-28T22:45:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase47-seal-entry-check.md`
+**Session**: phase-47
+
+**Content Hash**: `e6097e04e484f6b020314ea2d50f91b05ddea90401aec0350317bed2cef9d15a`
+**Previous Hash**: `9b0fbdc0745c4d37e89bccd769f4c2a70b69c606ba9b2f528119c157a5329c78`
+**Chain Hash**: `15fcefe1ac69a4155cce680ac56b7020c62c0300d167e6b383e1e811cd551f12`
+
+**Decision**: Pass 3 closes the single Pass 2 ground (V-1 Pass 2 — broken bash plan-path derivation) with the audit-recommended Option A: a hardcoded `python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())"` one-liner that calls the grounded helper at [qor/scripts/governance_helpers.py:57-67](qor/scripts/governance_helpers.py:57). The Python source contains no shell-variable interpolation; the resulting path is captured into `$PLAN_PATH` and passed to the helper as a double-quoted argv element via `--plan "$PLAN_PATH"`. Both V-3's injection vector and V-2's undefined-variable defect remain closed; the defensive tests `test_step_7_7_does_not_use_python_c_shell_interpolation`, `test_step_7_7_does_not_reference_undefined_merkle_seal_variable`, and `test_step_7_7_runs_after_step_7_seal_write` continue to pass. All eight audit passes clear (Security, OWASP, Ghost UI, Section 4 Razor, Test Functionality self-application, Dependency, Macro, Infrastructure Alignment, Orphan). Pass 3 amendment scope was bounded to a single bash block; Phase 1 helper, Phase 1 tests (9), Phase 2 step-numbering placement (Step 7.7 between line 290 Step 7.6 and line 307 Step 8), and Phase 2 defensive countermeasure tests (6) all unchanged. Branch base: `phase/47-seal-entry-check` cut from `phase/46-test-functionality-doctrine`; highest tag v0.33.0; bump('feature') → v0.34.0 cleanly. SG-pattern advisory: Phase 47 took three audit passes to reach PASS — the plan's pure-function helper design was sound on first attempt; Phase 2 wiring (bash glue between helper and skill step) was the recurring failure point across all three passes. Pattern signal for future audits: directives that specify "use X" without specifying "how to obtain X" leave a wiring slip surface; future audits should direct toward grounded helpers explicitly when the wiring crosses skill/runtime boundaries. Gate OPEN for `/qor-implement`.
+
+---
+
+### Entry #156: IMPLEMENTATION — Phase 47 (seal entry check)
+
+**Timestamp**: 2026-04-28T23:15:00Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L1
+
+**Session**: `2026-04-28T0247-92f578`
+**Plan**: `docs/plan-qor-phase47-seal-entry-check.md` (Pass 3)
+**Audit**: entry #155 (PASS)
+
+**Files Created**:
+- `qor/reliability/seal_entry_check.py` — 128 lines. Pure-function helper exposing `check(ledger_path, phase_num)` returning `SealEntryResult(ok, errors)`. Two internal helpers: `_parse_latest_entry()` (regex-based ledger entry parser, 18 lines) and `_main()` (CLI wrapper using argparse; resolves phase via `derive_phase_metadata`, 19 lines). `check()` itself is 36 lines: parse → assert kind == SESSION SEAL → assert phase matches → verify chain_hash internal consistency via `ledger_hash.chain_hash(content, prev)` → on success, run full chain verification via `ledger_hash.verify()`.
+- `tests/test_seal_entry_check.py` — 9 behavioral tests; all invoke the unit (`check()` direct calls + `subprocess.run` for CLI tests) and assert on returned `SealEntryResult` (per Phase 46 doctrine). Includes `test_check_replays_phase_46_original_gap` (meta-test replaying Phase 46's pre-remediation state — fixture ledger ends at #146 Phase 44 seal; check with phase_num=46 must report ok=False, proving the structural countermeasure catches the historical gap) and `test_cli_rejects_path_with_shell_metacharacters_safely` (passes a path with single quote and dollar sign through argparse, asserts no injection-sentinel file is created).
+- `tests/test_substantiate_seal_entry_wiring.py` — 6 defensive tests with proximity-anchor + strip-and-fail pattern from Phase 46's doctrine. Direct countermeasures: `test_step_7_7_runs_after_step_7_seal_write` (locks V-1 Pass 1 — fails if gate moves before Step 7), `test_step_7_7_does_not_use_python_c_shell_interpolation` (locks V-3 — fails if a future edit reintroduces `python -c "...'$VAR'..."`), `test_step_7_7_does_not_reference_undefined_merkle_seal_variable` (locks V-2 — fails if `$MERKLE_SEAL` or `--merkle` reappear).
+
+**Files Modified**:
+- `qor/skills/governance/qor-substantiate/SKILL.md` — inserted Step 7.7 (Post-seal verification, Phase 47 wiring) between Step 7.6 (Stamp CHANGELOG, line 290) and Step 8 (Cleanup Staging). Bash one-liner: `PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")` then `python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan "$PLAN_PATH" || ABORT`. Hardcoded Python source; no shell-variable interpolation; argv-form `--plan` invocation.
+- `qor/dist/variants/{claude,codex,gemini,kilo-code}/` — variant artifacts regenerated via `BUILD_REGEN=1 python qor/scripts/dist_compile.py`. 211 files, no drift.
+
+**Content Hash**: `cc7bcc17424f8f7f043482a64d1d62f2e9cf64924049a7417a5b516d7f864980`
+**Previous Hash**: `15fcefe1ac69a4155cce680ac56b7020c62c0300d167e6b383e1e811cd551f12`
+**Chain Hash**: `1d9381034475935396a4daa8fc4b56dd15704291769fa63e4b663431b6625ca0`
+
+**Test results**: 15/15 phase-47 tests green across two consecutive runs (determinism confirmed). Full suite: 817 passed, 1 skipped, 0 failed (+15 from Phase 46's 802 baseline).
+
+**Razor compliance**: `seal_entry_check.py` 128 lines (≤250); `check()` 36 lines, `_parse_latest_entry()` 18 lines, `_main()` 19 lines (all ≤40); max nesting depth 2 (one if-chain inside `check()`); zero nested ternaries. PASS.
+
+**Intent lock**: captured at Step 5.5 against Pass 3 plan + PASS audit + HEAD; verified immediately. Single-pass clean (Phase 43 ancestry fix continues to work).
+
+**Decision**: Phase 47 reality matches Phase 47 promise (Pass 3). The structural countermeasure for SG-AdjacentState-A is now in code, in tests, in skill prose. The defensive test suite for the wiring locks all four prior VETO grounds (V-1/V-2/V-3 from Pass 1, V-1 from Pass 2) against future drift. Ready for `/qor-substantiate`.
+
+---
+
+### Entry #157: SESSION SEAL -- Phase 47 feature substantiated
+
+**Timestamp**: 2026-04-29T00:00:00Z
+**Phase**: SEAL (feature)
+**Author**: Judge
+**Verdict**: PASS (817 tests green, 1 skipped)
+
+**Target**: `docs/plan-qor-phase47-seal-entry-check.md`
+**Change Class**: `feature`
+**Version**: `0.33.0 -> 0.34.0`
+**Tag**: `v0.34.0` (created at Step 9.5.5 post-commit; LOCAL ONLY pending PR merge per Phase 40 doctrine)
+
+**Content Hash (session seal)**: `73028145d5540049546e5cb1d1863737e49daeee9ea620bab251e665e9615bfd`
+**Previous Hash**: `1d9381034475935396a4daa8fc4b56dd15704291769fa63e4b663431b6625ca0`
+**Chain Hash (Merkle seal)**: `1eb7bb315beadd6c453ca635b22ddb7578c329603ca6c94e913b6d7c629d9d5b`
+
+**Scope**: Closes the SG-AdjacentState-A bookkeeping-gap class identified in Entry #152's advisory. New `qor/reliability/seal_entry_check.py` (128 lines, 3 functions max 36 lines, depth 2, zero ternaries) is the structural countermeasure: a fourth reliability gate that verifies the latest META_LEDGER entry is a SESSION SEAL for the current phase with internally-consistent chain hash, then runs full chain verification. Wired into `/qor-substantiate` as new Step 7.7 (Post-seal verification) between Step 7.6 (Stamp CHANGELOG) and Step 8 (Cleanup Staging). Bash uses hardcoded `python -c` calling `governance_helpers.current_phase_plan_path()` — no shell-variable interpolation into Python literals. Helper resolves phase from plan path internally; reads chain hash from the ledger directly (single source of truth, no caller-supplied Merkle expectation). 15 phase-47 tests added: 9 behavioral (`tests/test_seal_entry_check.py`) including the meta-test `test_check_replays_phase_46_original_gap` (proves the new gate would have caught Phase 46's historical sixth-instance gap) and `test_cli_rejects_path_with_shell_metacharacters_safely` (confirms argv-form eliminates the OWASP A03 vector flagged in Pass 1 V-3); 6 defensive wiring tests (`tests/test_substantiate_seal_entry_wiring.py`) using proximity-anchor + strip-and-fail pattern from Phase 46 doctrine, with three direct countermeasures locking V-1 (post-Step-7 placement), V-2 (no `$MERKLE_SEAL` reference), V-3 (no `python -c` shell-interpolation) against future drift. Phase 33 release-doc currency satisfied: CHANGELOG.md `## [0.34.0]` section added; pyproject.toml at 0.34.0; README.md badges refreshed (Tests 782→817, Doctrines 15→16, Ledger 149→157).
+
+**Reliability sweep**: intent-lock VERIFIED (single-pass; Phase 43 ancestry fix continues to work); skill-admission ADMITTED; gate-skill-matrix clean (29 skills, 112 handoffs, 0 broken). **Step 7.7 dogfooding**: this seal entry IS the entry Step 7.7 will verify on the next substantiate cycle. Phase 47's structural countermeasure is now self-applicable.
+
+**Razor**: `seal_entry_check.py` 128 lines (≤250); `check()` 36 lines, `_parse_latest_entry()` 18, `_main()` 19 (all ≤40); max nesting depth 2; zero nested ternaries.
+
+**Test metric**: pre-phase 802 (Phase 46 baseline); post-phase 817 (delta +15: 9 behavioral + 6 defensive wiring tests).
+
+**Pass-cycle history**: Phase 47 took **three audit passes** to reach PASS — Pass 1 VETO (V-1 step placement, V-2 undefined `$MERKLE_SEAL`, V-3 shell injection); Pass 2 VETO (V-1 broken bash plan-path glob); Pass 3 PASS. Phase 1 (helper + tests) was sound on first attempt; Phase 2 wiring (bash glue between helper and skill step) was the recurring failure point across all three passes. SG-AdjacentState-A pattern signal logged in Entry #155: future audits should direct toward grounded helpers explicitly when the wiring crosses skill/runtime boundaries; "use X" without "how to obtain X" leaves a wiring slip surface. The eighth instance of SG-AdjacentState-A (Pass 2 VETO) was recursive — Phase 47 was *designed* to fix this exact family pattern and exhibited it in its own bash. Pass 3 closed both the technical defect and the meta-irony.
+
+**Decision**: Phase 47 sealed at v0.34.0 (Pass 3). Tag LOCAL ONLY until PR merge per Phase 40 doctrine. SG-AdjacentState-A's bookkeeping-gap subclass now has a runtime structural countermeasure — substantiate cycles cannot complete without writing the SESSION SEAL entry.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 47 feature substantiated)
+*Merkle seal: 1eb7bb31...* (Phase 47 seal on top of Phase 46's d9db2f5c; Entries #155-#157 chained)
+
 
 
 

@@ -30,7 +30,7 @@ All subcommands accept `--scope {repo,global}` (default `repo`); this determines
 ## Seal ceremony (operator's view of `/qor-substantiate`)
 
 1. Operator invokes `/qor-substantiate` after successful `/qor-implement`.
-2. Skill runs Steps 0-4.7: gate check, identity activation, state verification, version validation, Reality Audit, blocker check, functional verification (tests), Skill File Integrity Check, Reliability Sweep (intent-lock verify + skill-admission + gate-skill-matrix), Documentation Integrity Check.
+2. Skill runs Steps 0-4.7: gate check, identity activation, state verification, version validation, Reality Audit, blocker check, functional verification (tests), Skill File Integrity Check, Reliability Sweep (intent-lock verify + skill-admission + gate-skill-matrix; the fourth gate, seal-entry-check, runs at Step 7.7 after the seal entry has been written), Documentation Integrity Check.
 3. On any abort in Steps 0-4.7, the session stays unsealed. Operator resolves the drift (re-audit, fix missing glossary entry, unwire broken handoff, etc.) and re-runs.
 4. Step 5 runs Section 4 Razor final check.
 5. Step 6 syncs `docs/SYSTEM_STATE.md`.
@@ -40,7 +40,8 @@ All subcommands accept `--scope {repo,global}` (default `repo`); this determines
 7. Step 7 calculates the Merkle seal (SHA256 chain of session artifacts).
 8. Step 7.5 calls `bump_version(change_class)` FIRST, then `create_seal_tag(...)` (order matters per Phase 30 constraint; inverted order interdicts on tag-already-exists).
 9. Step 7.6 stamps `CHANGELOG.md`: `## [Unreleased]` -> `## [X.Y.Z] - YYYY-MM-DD`.
-10. Step 8 clears `.failsafe/governance/` staging.
+10. **Step 7.7 (Phase 47 wiring)** runs `python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan "$PLAN_PATH"` against the just-written seal entry. Verifies the latest META_LEDGER entry is a SESSION SEAL for the current phase with internally-consistent chain hash and that full chain verification passes. ABORT on non-zero exit leaves the session unsealed; operator amends the ledger (or re-runs Step 7) and re-runs `/qor-substantiate`. Closes SG-AdjacentState-A's bookkeeping-gap subclass — substantiate cycles cannot complete without writing the SESSION SEAL entry.
+11. Step 8 clears `.failsafe/governance/` staging.
 11. Step 8.5 runs `python -m qor.scripts.dist_compile` (Phase 30 wiring) so variant outputs stay in sync.
 12. Step 9 writes the final report. Step 9.5 auto-stages CHANGELOG + META_LEDGER + SYSTEM_STATE + plan + BACKLOG + src/.
 13. Step 9.6 prompts the operator with four push/merge options.
@@ -78,6 +79,10 @@ Typically means either topology missing (tier-required file absent) or glossary 
 ### Reliability sweep ABORT at Step 4.6
 
 One of three sub-gates fired: intent-lock drift, skill-admission failure, or gate-skill-matrix broken handoff. Each produces a distinct error message naming the specific failure. Resolution depends on the specific gate.
+
+### Post-seal verification ABORT at Step 7.7
+
+The `seal_entry_check` gate fired after Step 7 wrote the seal entry. Three reasons: (a) latest ledger entry is not a SESSION SEAL (Step 7's seal-entry-write was skipped or wrote the wrong kind); (b) latest entry's phase number does not match the current branch's phase (wrong plan resolved or wrong entry appended); (c) latest entry's chain hash is not internally consistent (`chain_hash != chain_hash(content_hash, previous_hash)`) or full chain verification failed. Resolution: read the error message, amend the ledger by appending or correcting the seal entry, re-run `/qor-substantiate`. Phase 46's first substantiate hit case (a); the gate exists to prevent recurrence.
 
 ### Ledger chain integrity broken
 

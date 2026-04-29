@@ -10,6 +10,15 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.34.0] - 2026-04-29
+
+Phase 47: seal entry check — structural countermeasure for SG-AdjacentState-A (the bookkeeping-gap class that allowed Phase 46's first substantiate to seal at v0.33.0 without writing META_LEDGER entries).
+
+### Added
+- **`qor/reliability/seal_entry_check.py`**: pure-function reliability gate. Exposes `check(ledger_path, phase_num) -> SealEntryResult` and a CLI `python -m qor.reliability.seal_entry_check --ledger <path> --plan <path>`. The helper reads the ledger, asserts the latest entry is a SESSION SEAL for the given phase, verifies the chain hash is internally consistent (`chain_hash == chain_hash(content_hash, previous_hash)`), then runs full chain verification via `ledger_hash.verify()`. Single source of truth = the ledger; no caller-supplied Merkle seal expectation.
+- **`/qor-substantiate` Step 7.7 (Post-seal verification)**: new step inserted between Step 7.6 (Stamp CHANGELOG) and Step 8 (Cleanup Staging). Runs `seal_entry_check` after Step 7 (Final Merkle Seal) writes the entry. Bash one-liner uses hardcoded `python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())"` to derive the plan path — no shell-variable interpolation into Python literals — then invokes the helper via argv-form `--plan "$PLAN_PATH"`. ABORT on non-zero exit leaves the session unsealed.
+- **15 new tests**: 9 behavioral tests in `tests/test_seal_entry_check.py` (covering happy path, missing-seal, phase mismatch, internal chain inconsistency, full chain failure, the meta-test `test_check_replays_phase_46_original_gap` proving the new gate would have caught the historical Phase 46 substantiate gap, and `test_cli_rejects_path_with_shell_metacharacters_safely` confirming argv-form eliminates the OWASP A03 vector); 6 defensive wiring tests in `tests/test_substantiate_seal_entry_wiring.py` using proximity-anchor + strip-and-fail pattern from Phase 46 doctrine, with three direct countermeasures locking V-1 (post-Step-7 placement), V-2 (no `$MERKLE_SEAL` reference), V-3 (no `python -c` shell-interpolation) against future drift.
+
 ## [0.33.0] - 2026-04-28
 
 ### Added

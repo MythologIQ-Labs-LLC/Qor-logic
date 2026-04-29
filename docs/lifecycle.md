@@ -51,6 +51,7 @@ The seal sequence under `/qor-substantiate` is:
 | 7 | Compute Merkle seal |
 | 7.5 | `bump_version(change_class)` — writes `pyproject.toml` only. Tag creation moved to Step 9.5.5 (Phase 33 wiring; prevents pre-seal-HEAD tagging) |
 | 7.6 | Stamp `CHANGELOG.md` |
+| **7.7** | **Post-seal verification (Phase 47 wiring): `python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan "$PLAN_PATH"`. Verifies the latest META_LEDGER entry is a SESSION SEAL for the current phase with internally-consistent chain hash. Closes SG-AdjacentState-A's bookkeeping-gap subclass (Phase 46's first substantiate sealed without writing ledger entries). ABORT on non-zero exit.** |
 | 8 | Cleanup `.failsafe/governance/` staging |
 | 8.5 | Dist recompile (`python -m qor.scripts.dist_compile`; Phase 30 wiring) |
 | 9 | Final report |
