@@ -1,12 +1,16 @@
 name: PR Citation Lint
 
+# Always runs on PR events. The doc-only detection step makes the citation
+# lint step conditional, so doc-only PRs report success without the citation
+# check (their content has no ledger entries to cite). This avoids the
+# branch-protection deadlock where `paths-ignore` skipped the workflow but
+# branch protection kept waiting for a `lint` status that would never arrive.
+
 on:
   pull_request:
     types: [opened, reopened, synchronize, edited]
     paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "CHANGELOG.md"
+      - "docs/archive/**"
 
 concurrency:
   group: pr-lint-${{ github.event.pull_request.number }}
@@ -20,13 +24,45 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+
+      - name: Detect doc-only PR
+        id: docs_only
+        run: |
+          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+          git fetch --no-tags --depth=50 origin "$BASE_BRANCH"
+          CHANGED=$(git diff --name-only "origin/$BASE_BRANCH"...HEAD)
+          printf "Changed files:\n%s\n\n" "$CHANGED"
+          if [[ -z "$CHANGED" ]]; then
+            echo "No changed files detected; treating as non-doc-only (lint will run)."
+            echo "result=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if echo "$CHANGED" | grep -qvE '(^|.*/)(.*\.md|docs/.*|CHANGELOG\.md|\.github/.*\.md)$'; then
+            echo "Non-doc files present; citation lint will run."
+            echo "result=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Doc-only PR; citation lint will be skipped (workflow still reports success)."
+            echo "result=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-python@v5
+        if: steps.docs_only.outputs.result == 'false'
         with:
           python-version: "3.12"
           cache: pip
+
       - run: pip install -e .
+        if: steps.docs_only.outputs.result == 'false'
+
       - name: Lint PR description per doctrine-governance-enforcement §6
+        if: steps.docs_only.outputs.result == 'false'
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           printf '%s' "$PR_BODY" | python qor/scripts/pr_citation_lint.py
+
+      - name: Doc-only PR — citation lint skipped
+        if: steps.docs_only.outputs.result == 'true'
+        run: |
+          echo "Doc-only PR detected. Citation lint skipped per workflow paths policy."
+          echo "Reporting success so branch protection can clear the required check."
