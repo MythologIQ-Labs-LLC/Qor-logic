@@ -138,7 +138,9 @@ Capture a fingerprint of the implementer's intent (plan + PASS audit + HEAD comm
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
-SESSION_ID=$(cat .qor/session/current 2>/dev/null || echo default)
+# Resolve session_id via the canonical helper (reads .qor/session/current AND
+# validates against SESSION_ID_PATTERN per Phase 23 LOW-2 / Phase 50 doctrine)
+SESSION_ID=$(python -c "from qor.scripts.session import current; print(current() or 'default')")
 python -m qor.reliability.intent_lock capture \\
   --session "$SESSION_ID" \\
   --plan "$PLAN_PATH" \\

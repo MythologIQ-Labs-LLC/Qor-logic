@@ -111,7 +111,7 @@ State-aware recommendation. Read-only.
 
 Protocol:
 
-1. Resolve session_id from `.qor/session/current` (read the file). If absent, recommend `/qor-status` and stop.
+1. Resolve session_id via `qor.scripts.session.current()` — the canonical helper that reads `.qor/session/current` AND validates the content against `SESSION_ID_PATTERN` (Phase 23 LOW-2 fix). If `current()` returns `None` (no marker, stale beyond TTL, or invalid format), recommend `/qor-status` and stop. Do NOT bypass the validator with naive `Path('.qor/session/current').read_text()` — naive reads fail open on corrupted markers and pass unsanitized text to the glob in step 2 (OWASP A03; per `qor/references/doctrine-owasp-governance.md` §A03 skill-prose worked example).
 2. Glob `.qor/gates/<session_id>/*.json` and read each artifact.
 3. Determine the highest-rank artifact present. Rank order: `research` < `plan` < `audit` < `implement` < `substantiate`.
 4. If `audit.json` present, read its `verdict` field (PASS or VETO) and `findings_categories`.

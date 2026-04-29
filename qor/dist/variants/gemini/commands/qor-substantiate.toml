@@ -181,7 +181,9 @@ Report: "Skill [name] missing required section: [section]. Fix before sealing."
 Three reliability enforcement gates run sequentially. Each is an interdiction: non-zero exit aborts substantiation.
 
 ```bash
-SESSION_ID=$(cat .qor/session/current 2>/dev/null || echo default)
+# Resolve session_id via the canonical helper (reads .qor/session/current AND
+# validates against SESSION_ID_PATTERN per Phase 23 LOW-2 / Phase 50 doctrine)
+SESSION_ID=$(python -c "from qor.scripts.session import current; print(current() or 'default')")
 
 # Re-verify the intent lock captured at /qor-implement Step 5.5.
 # Fails if plan, audit, or HEAD commit drifted since capture.

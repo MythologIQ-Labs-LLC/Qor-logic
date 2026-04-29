@@ -12,6 +12,8 @@ Maps applicable OWASP Top 10 (2021) categories to Qor-logic governance decisions
 
 **Worked example**: LOW-2 (session_id) and LOW-3 (event_id) -- unvalidated strings used in path construction and `gh` argv. Fixed by adding regex validation before use.
 
+**Skill-prose worked example (Phase 50)**: `/qor-help --stuck` reads `.qor/gates/<session_id>/*.json` where `session_id` is the operator-controlled marker file `.qor/session/current`. The runtime validator `qor.scripts.session.SESSION_ID_PATTERN` exists (Phase 23 LOW-2 fix) but is enforced only when `qor.scripts.session.current()` is invoked. Skill prose that bypasses the helper and reads the marker directly fails open on corrupted markers — operator-controlled paths reach `glob()` without sanitization. **Mitigation**: skill prose MUST cite `qor.scripts.session.current()` (or the equivalent canonical helper) before any filesystem operation on operator-controlled identifiers. The runtime validator alone is insufficient; the skill prose layer must route the LLM through the helper. Locked by `tests/test_skill_prose_filesystem_validation.py::test_skills_referencing_qor_gates_cite_session_validator`.
+
 ### A04 -- Insecure Design
 
 **Governance check**: No fail-open on error; no silent drops of security events. All error paths must log or raise, never silently continue.
