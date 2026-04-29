@@ -9,6 +9,8 @@ name: PR Citation Lint
 on:
   pull_request:
     types: [opened, reopened, synchronize, edited]
+    paths-ignore:
+      - "docs/archive/**"
 
 concurrency:
   group: pr-lint-${{ github.event.pull_request.number }}
