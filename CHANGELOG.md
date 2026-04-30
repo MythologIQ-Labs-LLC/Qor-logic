@@ -10,6 +10,24 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.38.0] - 2026-04-30
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+Phase 52: structural enforcement + retroactive remediation. First phase in repo history to land via proper /qor-plan + /qor-audit + /qor-implement + /qor-substantiate skill invocations with all four `.qor/gates/<sid>/*.json` gate artifacts written. Closes G-1 (SSDF tag evidence in ledger), G-3 root cause (skill-protocol bypass), and the retroactive Phase 46/48/49 VETOes from the three-skill audit corpus.
+
+### Added
+- **Gate-chain completeness enforcement** (Phase 52, keystone): new `qor/reliability/gate_chain_completeness.py` (103 lines, pure functions, CLI entrypoint via `python -m`). Walks SESSION SEAL ledger entries with phase >= 52; asserts `.qor/gates/<sid>/{plan,audit,implement,substantiate}.json` all exist for each. Wired into `/qor-substantiate` Step 7.8 + new `gate-chain-completeness` job in `.github/workflows/ci.yml` (blocks PR merges to main).
+- **Skill-active provenance binding** (Phase 52): `qor/scripts/gate_chain.py` `write_gate_artifact()` reads `QOR_SKILL_ACTIVE` env var and refuses (raises `ProvenanceError`) on absence/mismatch. Closes the surface where any caller could write gate artifacts without skill provenance. `QOR_GATE_PROVENANCE_OPTIONAL=1` autouse fixture in `tests/conftest.py` bypasses for test compatibility.
+- **NIST SSDF tag emission** (Phase 52, closes G-1): new `qor/scripts/ssdf_tagger.py` (99 lines) maps `change_class` + `files_touched` to SSDF practice IDs. `/qor-substantiate` Step 7.4 emits `**SSDF Practices**:` line into SESSION SEAL entry body before content_hash. Forward-only (Phase 52+); historical entries grandfathered. `qor.cli compliance report` now shows non-zero coverage starting from this seal.
+- **3 structured SG countermeasures** (Phase 52): SG-SkillProtocolBypass (skill markdown executed without runtime provenance), SG-VacuousLint (self-exempting cutoff in commit-walking lints), SG-RecursiveBashInjection (plan that forbids shell-interpolation reintroduces it). Promoted from narrative ledger commentary to structured `qor/references/doctrine-shadow-genome-countermeasures.md` entries with detection + countermeasure + verification hint.
+
+### Changed
+- **Phase 46 razor-overage remediation** (closes retroactive VETO): `tests/test_doctrine_test_functionality.py` (was 285 lines) split via new `tests/_helpers.py` (45 lines, shared `proximity` + `strip_section` + `fenced_block_after`) and companion `tests/test_doctrine_test_functionality_negative_paths.py`. Both files now ≤250 lines (158 + 145). 20 tests still GREEN.
+- **Phase 48 presence-only test remediation** (closes retroactive VETO): old `test_install_drift_check_emits_qor_logic_fix_string` (read source bytes + asserted substring without invoking unit) DELETED. Replaced by `tests/test_install_drift_check_subprocess.py` which subprocess-invokes `install_drift_check.main()` and asserts on captured output per Phase 46 doctrine.
+- **Phase 49 self-exempting cutoff remediation** (closes retroactive VETO): new `tests/test_attribution_tiered_negative_paths.py` adds 6 fixture-based synthetic-violator tests. Closes the SG-VacuousLint anti-pattern at first run.
+- **Doctrine update**: `qor/gates/chain.md` lines 34, 74 — "for future wiring" / "future work" prose updated to "Phase 52 wiring". `qor/references/doctrine-nist-ssdf-alignment.md` gains `### Phase 52 wiring (forward-only emission)` subsection. `qor/references/doctrine-governance-enforcement.md` § Skill Integration cited.
+
 ## [0.37.0] - 2026-04-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
