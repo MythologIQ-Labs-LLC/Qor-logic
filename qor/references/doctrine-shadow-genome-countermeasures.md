@@ -114,3 +114,33 @@ The following pattern IDs were surfaced as narrative Shadow Genome entries durin
 - **SG-Phase25-B**: ghost feature via metadata-only declaration (frontmatter flag without backing behavior). Mitigation shipped: canonical section markers + lint (`test_tone_skill_frontmatter.py`) + pinned example (`test_tone_rendering_example.py`).
 
 No narrative SG entries surfaced during Phase 26 audit tribunals; pattern `repeated_veto_pattern` is a Shadow Genome *event* (structured, in `PROCESS_SHADOW_GENOME.md`), not a narrative failure pattern.
+
+## SG-SkillProtocolBypass: skill markdown executed without runtime provenance
+
+Skills are markdown documents under `qor/skills/**/SKILL.md`. Helper functions (`gate_chain.write_gate_artifact`, `intent_lock.capture`, etc.) accept payloads from any caller. Pre-Phase-52 there was no runtime check that a skill protocol was actually executed vs a hand-written audit/seal pasted into the ledger.
+
+**Source incidents**: Phases 46, 48, 49, 50 (one operator session). All sealed without writing `.qor/gates/<sid>/*.json` artifacts. `git log --diff-filter=A --name-only --all -- ".qor/gates/"` returned 0 hits across the entire repo history pre-Phase-52.
+
+**Countermeasure** (codified Phase 52): `gate_chain.write_gate_artifact` requires `QOR_SKILL_ACTIVE=<phase>` env var matching the `phase` argument. `qor.reliability.gate_chain_completeness.check()` walks ledger SESSION SEAL entries and asserts all four gate artifacts exist for sealed phases ≥ 52. Wired into `/qor-substantiate` Step 7.8 + `.github/workflows/ci.yml` `gate-chain-completeness` job (blocks PR merges to main).
+
+**Verification hint**: `git log --diff-filter=A --name-only --all -- ".qor/gates/"` should be non-empty for any sealed phase ≥ 52. CI job `gate-chain-completeness` blocks merge on violation. Bypass via `QOR_GATE_PROVENANCE_OPTIONAL=1` is for tests only (autouse fixture in `tests/conftest.py`).
+
+## SG-VacuousLint: self-exempting cutoff in commit-walking lints
+
+A lint that walks `git log` and applies a "phase >= N: continue # grandfathered" cutoff at the same N where the lint was introduced is structurally vacuous on first run — there are no inputs that could fail. The lint passes by definition until a violator commits *after* the cutoff in some future phase.
+
+**Source incident**: Phase 49's `tests/test_attribution_tiered_usage.py` lines 128, 147 (`if phase_num < 49: continue`). Authored at Phase 49 itself; only Phase 49 commits in scope at write time, all of which the same author wrote to comply.
+
+**Countermeasure** (codified Phase 52): every cutoff lint MUST be paired with a fixture-based negative-path test that fabricates a synthetic violating input and asserts the lint catches it. The negative-path test does NOT walk real git history — it constructs a synthetic input and exercises the lint regex/parser directly. See `tests/test_attribution_tiered_negative_paths.py` for canonical pattern.
+
+**Verification hint**: for any test using `if phase_num < N: continue # grandfathered`, search the same test file (or its companion `_negative_paths.py`) for a sibling test with a fabricated synthetic input (no `git log` invocation). If absent, the lint is presence-only on its own subject.
+
+## SG-RecursiveBashInjection: plan that forbids shell-interpolation reintroduces it
+
+A plan whose `non_goals` or doctrine citation forbids `python -c "..."${VAR}"` patterns (per SG-Phase47-A) but whose `## Changes` section specifies bash that interpolates shell variables into a `python -c` literal. The pattern is recursive: the plan's text correctly identifies the anti-pattern and then commits it.
+
+**Source incident**: Phase 51 WIP (`docs/plan-qor-phase51-ssdf-tag-emission.md`) §"Source surfaces" §2 specified `python -c " ... json.loads('''${FILES_TOUCHED_JSON}''') ... "`. Plan was VETO'd retroactively by /qor-audit before merge.
+
+**Countermeasure** (codified Phase 52): `/qor-audit` Step 3 Infrastructure Alignment Pass adds an explicit grep against the plan body: `python -c "[^"]*\$\{` patterns; any hit is an automatic VETO with `infrastructure-mismatch` category citing SG-RecursiveBashInjection. Implemented as a wiring test (`tests/test_substantiate_step_7_4_ssdf_emission.py::test_step_7_4_does_not_use_python_c_shell_interpolation`).
+
+**Verification hint**: `grep -E 'python -c "[^"]*\$\{' docs/plan-qor-phase*.md` should be empty for any post-Phase-52 plan. If any hit, the plan recursively reintroduces SG-Phase47-A and must be amended.

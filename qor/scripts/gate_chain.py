@@ -7,6 +7,7 @@ the prompt to the user.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -20,6 +21,16 @@ GATES_DIR = _workdir.gate_dir()
 
 # Phase sequence (remediate is out-of-band, not listed here)
 CHAIN = ["research", "plan", "audit", "implement", "substantiate", "validate"]
+
+
+class ProvenanceError(Exception):
+    """Raised when write_gate_artifact is called without QOR_SKILL_ACTIVE provenance.
+
+    Phase 52 wiring: closes the skill-protocol bypass surface where any caller
+    could write gate artifacts without proof that a skill protocol invoked them.
+    Set QOR_SKILL_ACTIVE=<phase> to authorize the call. Set
+    QOR_GATE_PROVENANCE_OPTIONAL=1 only for tests + grandfathered fixtures.
+    """
 
 
 @dataclass
@@ -128,7 +139,26 @@ def write_gate_artifact(
     Phase 37 Phase 1: for audit artifacts, also append to the session's
     `audit_history.jsonl` after the singleton write succeeds. Singleton remains
     authoritative for chain gating; history log is advisory for stall detection.
+
+    Phase 52: provenance binding. Refuses writes from contexts that have not
+    declared QOR_SKILL_ACTIVE=<phase> (matching the `phase` argument). The
+    QOR_GATE_PROVENANCE_OPTIONAL=1 env bypasses the check (test-only;
+    autouse fixture in tests/conftest.py sets it). Closes the bypass surface
+    where any caller could write gate artifacts without skill provenance.
     """
+    if not os.environ.get("QOR_GATE_PROVENANCE_OPTIONAL"):
+        active = os.environ.get("QOR_SKILL_ACTIVE")
+        if active is None:
+            raise ProvenanceError(
+                f"write_gate_artifact called without QOR_SKILL_ACTIVE env. "
+                f"Set QOR_SKILL_ACTIVE={phase!r} when invoking the skill, or "
+                f"QOR_GATE_PROVENANCE_OPTIONAL=1 to bypass (tests only)."
+            )
+        if active != phase:
+            raise ProvenanceError(
+                f"QOR_SKILL_ACTIVE={active!r} but write_gate_artifact called "
+                f"with phase={phase!r}; skill-phase mismatch."
+            )
     sid = session_id or session.get_or_create()
     path = vga.write_artifact(phase, payload, session_id=sid)
     if phase == "audit":

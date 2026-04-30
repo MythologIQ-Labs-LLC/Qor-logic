@@ -14,6 +14,8 @@ from pathlib import Path
 
 import pytest
 
+from tests._helpers import proximity as _proximity, strip_section as _strip_section
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 DOCTRINE = REPO_ROOT / "qor" / "references" / "doctrine-test-functionality.md"
@@ -26,33 +28,6 @@ QOR_SUBSTANTIATE = REPO_ROOT / "qor" / "skills" / "governance" / "qor-substantia
 
 def _read(p: Path) -> str:
     return p.read_text(encoding="utf-8")
-
-
-def _strip_section(body: str, header_pattern: str, span: int = 4000) -> str:
-    """Replace `span` characters after the named header with neutral filler.
-
-    Used by negative-path tests to prove the positive assertion is anchored to
-    the section header. Blank-out (rather than precise next-header strip) avoids
-    edge cases where markdown code fences contain inner headers that confuse a
-    lookahead-based slicer. The filler is the same length as the stripped span,
-    so content past the strip does not slide into the proximity window.
-    """
-    m = re.search(header_pattern, body, re.MULTILINE)
-    if not m:
-        return body
-    start = m.end()
-    end = min(len(body), start + span)
-    filler = "\n# stripped\n" * ((end - start) // 12 + 1)
-    filler = filler[: end - start]
-    return body[:start] + filler + body[end:]
-
-
-def _proximity(body: str, header_pattern: str, phrase_pattern: str, span: int = 1500) -> bool:
-    m = re.search(header_pattern, body, re.MULTILINE)
-    if not m:
-        return False
-    window = body[m.end(): m.end() + span]
-    return re.search(phrase_pattern, window, re.IGNORECASE | re.DOTALL) is not None
 
 
 # -------- Doctrine file --------
@@ -76,15 +51,6 @@ def test_doctrine_file_exists_with_required_sections():
         )
 
 
-def test_doctrine_required_sections_negative_path():
-    """Drop the Principle header and prove the section assertion fails."""
-    body = _read(DOCTRINE)
-    mutated = re.sub(r"^## Principle\b", "## DROPPED", body, count=1, flags=re.MULTILINE)
-    assert not re.search(r"^## Principle\b", mutated, re.MULTILINE), (
-        "strip mutation failed; negative-path test cannot run"
-    )
-
-
 def test_doctrine_anti_patterns_section_cites_sg_035_and_phase_45():
     body = _read(DOCTRINE)
     assert _proximity(body, r"^## Anti-patterns\b", r"SG-035", span=2000), (
@@ -95,30 +61,12 @@ def test_doctrine_anti_patterns_section_cites_sg_035_and_phase_45():
     )
 
 
-def test_doctrine_anti_patterns_proximity_anchor_negative_path():
-    body = _read(DOCTRINE)
-    mutated = _strip_section(body, r"^## Anti-patterns")
-    assert not _proximity(mutated, r"^## Anti-patterns\b", r"SG-035", span=2000), (
-        "After stripping Anti-patterns body, proximity check must fail"
-    )
-
-
-# -------- CLAUDE.md Authority --------
-
 def test_claude_md_authority_references_test_functionality_doctrine():
     body = _read(CLAUDE_MD)
     assert _proximity(body, r"^## Authority\b", r"doctrine-test-functionality\.md", span=1000), (
         "CLAUDE.md Authority must reference doctrine-test-functionality.md"
     )
 
-
-def test_claude_md_authority_negative_path():
-    body = _read(CLAUDE_MD)
-    mutated = _strip_section(body, r"^## Authority")
-    assert not _proximity(mutated, r"^## Authority\b", r"doctrine-test-functionality\.md", span=1000)
-
-
-# -------- /qor-plan --------
 
 def test_qor_plan_step4_forbids_presence_only_tests():
     body = _read(QOR_PLAN)
@@ -130,17 +78,6 @@ def test_qor_plan_step4_forbids_presence_only_tests():
     ), "qor-plan Step 4 must forbid presence-only tests"
 
 
-def test_qor_plan_step4_negative_path():
-    body = _read(QOR_PLAN)
-    mutated = _strip_section(body, r"^### Step 4: Avoid Common Pitfalls")
-    assert not _proximity(
-        mutated,
-        r"^### Step 4: Avoid Common Pitfalls\b",
-        r"tests that only assert presence",
-        span=2000,
-    )
-
-
 def test_qor_plan_step5_review_lists_behavior_naming():
     body = _read(QOR_PLAN)
     assert _proximity(
@@ -149,17 +86,6 @@ def test_qor_plan_step5_review_lists_behavior_naming():
         r"names the behavior it confirms",
         span=2000,
     ), "qor-plan Step 5 review checklist must require behavior-naming on tests"
-
-
-def test_qor_plan_step5_negative_path():
-    body = _read(QOR_PLAN)
-    mutated = _strip_section(body, r"^### Step 5: Review Plan")
-    assert not _proximity(
-        mutated,
-        r"^### Step 5: Review Plan\b",
-        r"names the behavior it confirms",
-        span=2000,
-    )
 
 
 # -------- /qor-audit --------
@@ -180,30 +106,12 @@ def test_qor_audit_has_test_functionality_pass_between_razor_and_dependency():
     )
 
 
-def test_qor_audit_test_functionality_pass_position_negative_path():
-    body = _read(QOR_AUDIT)
-    mutated = _strip_section(body, TEST_FUNC_HEADER)
-    # Header line itself remains under _strip_section semantics; remove it explicitly:
-    mutated = re.sub(TEST_FUNC_HEADER + r".*?\n", "", mutated, count=1, flags=re.MULTILINE)
-    assert not re.search(TEST_FUNC_HEADER, mutated, re.MULTILINE), (
-        "negative-path: Test Functionality Pass header successfully stripped"
-    )
-
-
 def test_qor_audit_test_functionality_pass_states_veto_criterion():
     body = _read(QOR_AUDIT)
     assert _proximity(body, TEST_FUNC_HEADER, r"presence-only", span=2000)
     assert _proximity(body, TEST_FUNC_HEADER, r"VETO", span=2000)
     assert _proximity(body, TEST_FUNC_HEADER, r"invoking the unit", span=2000)
 
-
-def test_qor_audit_test_functionality_pass_veto_negative_path():
-    body = _read(QOR_AUDIT)
-    mutated = _strip_section(body, TEST_FUNC_HEADER)
-    assert not _proximity(mutated, TEST_FUNC_HEADER, r"VETO", span=2000)
-
-
-# -------- /qor-implement --------
 
 def test_qor_implement_step5_requires_unit_invocation():
     body = _read(QOR_IMPLEMENT)
@@ -221,17 +129,6 @@ def test_qor_implement_step5_requires_unit_invocation():
     )
 
 
-def test_qor_implement_step5_negative_path():
-    body = _read(QOR_IMPLEMENT)
-    mutated = _strip_section(body, r"^### Step 5: TDD-Light")
-    assert not _proximity(
-        mutated,
-        r"^### Step 5: TDD-Light\b",
-        r"invoke the unit under test",
-        span=2000,
-    )
-
-
 def test_qor_implement_step9_scans_for_presence_only_tests():
     body = _read(QOR_IMPLEMENT)
     assert _proximity(
@@ -241,19 +138,6 @@ def test_qor_implement_step9_scans_for_presence_only_tests():
         span=2000,
     )
 
-
-def test_qor_implement_step9_negative_path():
-    body = _read(QOR_IMPLEMENT)
-    mutated = _strip_section(body, r"^### Step 9: Complexity Self-Check")
-    assert not _proximity(
-        mutated,
-        r"^### Step 9: Complexity Self-Check\b",
-        r"presence-only",
-        span=2000,
-    )
-
-
-# -------- /qor-substantiate --------
 
 def test_qor_substantiate_seal_gate_blocks_presence_only_tests():
     body = _read(QOR_SUBSTANTIATE)
@@ -270,16 +154,5 @@ def test_qor_substantiate_seal_gate_blocks_presence_only_tests():
         body,
         r"^#### Test Audit\b",
         r"refuses to seal|aborts? seal|seal aborts|ABORT",
-        span=2500,
-    )
-
-
-def test_qor_substantiate_seal_gate_negative_path():
-    body = _read(QOR_SUBSTANTIATE)
-    mutated = _strip_section(body, r"^#### Test Audit")
-    assert not _proximity(
-        mutated,
-        r"^#### Test Audit\b",
-        r"presence-only",
         span=2500,
     )

@@ -74,3 +74,13 @@ Coverage: 4 practice groups, 4 individual practices, 22 total tags
 ### Practice tag format
 
 Tags use the SSDF practice ID format: `{GROUP}.{TASK}.{SUBTASK}` (e.g., `PW.1.1`, `PS.2.1`). Multiple practices per entry are comma-separated.
+
+### Phase 52 wiring (forward-only emission)
+
+Starting with Phase 52's SESSION SEAL entry, every SEAL entry carries `**SSDF Practices**: <tags>`. The tagger (`qor/scripts/ssdf_tagger.py`) computes practices from `change_class` + `files_touched` (derived via `git diff --name-only origin/main...HEAD`).
+
+**Grandfathering**: entries before Phase 52's seal do not carry tags. The Merkle chain is content-addressed and append-only; retroactive edits would invalidate the chain (Phase 47's `seal_entry_check` would reject the rebuild). `qor.cli compliance report` shows coverage starting from Phase 52's seal — this is forward-only by design.
+
+**Operator workflow**: at `/qor-substantiate` Step 7.4, the skill runs `python -m qor.scripts.ssdf_tagger --change-class <c>` (no `python -c "...${VAR}..."` interpolation; SG-Phase47-A compliant) and pastes the printed tag line into the SESSION SEAL entry body before content_hash is computed in Step 7.
+
+**Verification**: `qor.scripts.ledger_hash.extract_ssdf_practices(ledger_path)` parses any entry with the `**SSDF Practices**:` block and returns `{entry_num: [practices]}`. Round-trip integrity tested by `tests/test_ssdf_tagger.py::test_extract_ssdf_practices_round_trips_emitted_block`.

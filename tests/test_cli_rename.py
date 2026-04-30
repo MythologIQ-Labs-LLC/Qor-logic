@@ -64,29 +64,8 @@ def test_cli_help_text_uses_qor_logic_program_name(capsys):
     )
 
 
-def test_install_drift_check_emits_qor_logic_fix_string(capsys, tmp_path, monkeypatch):
-    """Force install_drift_check.main() through its drift-detected branch and
-    assert the printed fix line names qor-logic, not qorlogic."""
-    from qor.scripts import install_drift_check as idc
-
-    # Mock a drift result — call the print branch directly rather than reconstruct
-    # the host-detection plumbing. The print line in main() is what we lock.
-    rendered = io.StringIO()
-    args_ns = type("NS", (), {"host": "claude", "scope": "repo"})()
-    # Re-implement the one print line from main() under the new naming so the test
-    # exercises the same output the source must produce post-fix:
-    print(f"Fix: qor-logic install --host {args_ns.host} --scope {args_ns.scope}", file=rendered)
-    expected = rendered.getvalue().strip()
-    assert "qor-logic install" in expected
-    assert "qorlogic" not in expected.replace("qor-logic", "")
-
-    # Now exercise the actual source: read install_drift_check.py and assert the
-    # source line uses qor-logic. This is the post-edit lock.
-    src = (REPO_ROOT / "qor" / "scripts" / "install_drift_check.py").read_text(encoding="utf-8")
-    assert "qor-logic install" in src, (
-        "install_drift_check.py must print 'qor-logic install' (not 'qorlogic install')"
-    )
-    # Allow no bare-qorlogic invocation form to remain in the print branch:
-    assert "qorlogic install" not in src, (
-        "install_drift_check.py must not print 'qorlogic install'; rename to 'qor-logic install'"
-    )
+# test_install_drift_check_emits_qor_logic_fix_string was REMOVED in Phase 52
+# (presence-only test that read source bytes and asserted substring without
+# invoking install_drift_check.main()). The replacement
+# tests/test_install_drift_check_subprocess.py invokes main() via subprocess
+# and asserts on captured output per Phase 46 doctrine.

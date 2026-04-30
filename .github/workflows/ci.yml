@@ -52,3 +52,23 @@ jobs:
           cache: pip
       - run: pip install -e ".[dev]"
       - run: python -m pytest tests/test_packaging_install.py -v -m integration
+
+  gate-chain-completeness:
+    # Phase 52 wiring: refuses merge if any sealed phase >= 52 lacks
+    # plan/audit/implement/substantiate.json gate artifacts. Closes the
+    # skill-protocol bypass surface that allowed Phases 46/48/49/50 to
+    # seal without writing gate artifacts (now-eighth instance of
+    # SG-AdjacentState-A; structural countermeasure shipped Phase 52).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e .
+      - name: Verify gate-chain completeness for sealed phases >= 52
+        run: python -m qor.reliability.gate_chain_completeness --phase-min 52

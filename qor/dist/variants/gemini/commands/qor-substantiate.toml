@@ -275,6 +275,20 @@ Update `docs/META_LEDGER.md`:
 
 Template: `references/qor-substantiate-templates.md`.
 
+### Step 7.4: SSDF tag emission (Phase 52 wiring)
+
+Closes G-1 from `docs/compliance-re-evaluation-2026-04-29.md`. Computes NIST SSDF practice tags for the SESSION SEAL entry body BEFORE the content_hash is computed in Step 7. Forward-only: Phase 52+ entries get tags; Phase ≤ 51 entries grandfathered (immutable Merkle chain forbids retroactive edit).
+
+```bash
+# Compute SSDF tag line via pure-Python module (no python -c shell-variable
+# interpolation; SG-Phase47-A countermeasure). $CHANGE_CLASS is consumed only
+# as an argv argument and argparse-validated against {feature, breaking, hotfix}.
+CHANGE_CLASS=$(python -c "from qor.scripts.governance_helpers import parse_change_class, current_phase_plan_path; print(parse_change_class(current_phase_plan_path()))")
+SSDF_LINE=$(python -m qor.scripts.ssdf_tagger --change-class "$CHANGE_CLASS" --base-ref origin/main --repo-root .)
+```
+
+Operator pastes `$SSDF_LINE` into the SESSION SEAL entry body before Step 7 computes content_hash. Per `qor/references/doctrine-nist-ssdf-alignment.md` §"Phase 52 wiring (forward-only emission)".
+
 ### Step 7.5: Version bump (Phase 13 wiring; Phase 33 split)
 
 Bump `pyproject.toml` only. Tag creation was moved to Step 9.5.5 after the seal commit (Phase 33 — prevents the historical off-by-one seal-tag timing bug where tags pointed at the pre-seal HEAD).
@@ -317,6 +331,19 @@ python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan "
 ```
 
 The `python -c` source is hardcoded — no shell variable is interpolated into the Python literal — so the OWASP A03 injection vector is closed by construction. `current_phase_plan_path()` (`qor/scripts/governance_helpers.py:57-67`) reads the git branch name and globs `docs/plan-qor-phase{NN}*.md`. The helper resolves phase number from the plan path internally and reads the latest entry's chain hash directly from the ledger; no caller-supplied Merkle seal expectation. Argv-form invocation throughout. ABORT on non-zero exit leaves the session unsealed; operator amends the ledger (or re-runs Step 7) and re-runs `/qor-substantiate`.
+
+### Step 7.8: Gate-chain completeness check (Phase 52 wiring)
+
+Closes the skill-protocol bypass surface. Walks SESSION SEAL entries with phase >= 52 in `docs/META_LEDGER.md`; for each, asserts `.qor/gates/<sid>/{plan,audit,implement,substantiate}.json` all exist. ABORTs seal on any gap. Phase ≤ 51 entries grandfathered.
+
+```bash
+QOR_SKILL_ACTIVE=substantiate python -m qor.reliability.gate_chain_completeness \\
+  --repo-root . \\
+  --phase-min 52 \\
+  || { echo "ABORT: gate-chain completeness violated; bypass would be invisible to ledger math"; exit 1; }
+```
+
+Argv-form invocation; no shell-variable interpolation into `python -c` literals (SG-Phase47-A countermeasure). The check runs after Step 7.7's seal-entry-check confirms ledger integrity, ensuring this phase's own session has all four gate artifacts before the seal commit lands.
 
 ### Step 8: Cleanup Staging
 
