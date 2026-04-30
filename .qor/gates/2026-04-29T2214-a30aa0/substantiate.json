@@ -1,0 +1,11 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-04-29T2214-a30aa0",
+  "ts": "2026-04-30T02:05:01Z",
+  "verdict": "PASS",
+  "version_from": "0.37.0",
+  "version_to": "0.38.0",
+  "merkle_seal": "a0560f9da96087c6c27d6191deec739686df463de331f7d5324053c2935952db",
+  "ledger_entry": 169,
+  "tag": "v0.38.0"
+}

@@ -1,0 +1,33 @@
+{
+  "phase": "implement",
+  "session_id": "2026-04-29T2214-a30aa0",
+  "ts": "2026-04-30T01:56:54Z",
+  "files_touched": [
+    "qor/reliability/gate_chain_completeness.py",
+    "qor/scripts/ssdf_tagger.py",
+    "qor/scripts/gate_chain.py",
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "qor/references/doctrine-nist-ssdf-alignment.md",
+    "qor/references/doctrine-shadow-genome-countermeasures.md",
+    "qor/gates/chain.md",
+    ".github/workflows/ci.yml",
+    "tests/_helpers.py",
+    "tests/conftest.py",
+    "tests/test_gate_chain_provenance.py",
+    "tests/test_gate_chain_completeness.py",
+    "tests/test_ssdf_tagger.py",
+    "tests/test_substantiate_step_7_4_ssdf_emission.py",
+    "tests/test_compliance_report_post_phase52.py",
+    "tests/test_ci_workflow_gate_chain_completeness.py",
+    "tests/test_attribution_tiered_negative_paths.py",
+    "tests/test_install_drift_check_subprocess.py",
+    "tests/test_doctrine_test_functionality.py",
+    "tests/test_doctrine_test_functionality_negative_paths.py",
+    "tests/test_cli_rename.py",
+    "README.md",
+    "qor/dist/variants/claude/skills/qor-substantiate/SKILL.md",
+    "qor/dist/manifest.json"
+  ],
+  "tests_passed": 910,
+  "tests_skipped": 1
+}

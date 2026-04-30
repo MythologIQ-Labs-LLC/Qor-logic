@@ -1,0 +1,20 @@
+{
+  "phase": "plan",
+  "session_id": "2026-04-29T2214-a30aa0",
+  "ts": "2026-04-30T01:15:20Z",
+  "plan_path": "docs/plan-qor-phase52-structural-enforcement-and-remediation.md",
+  "phases": [
+    "Phase 1: Structural enforcement (gate_chain_completeness + QOR_SKILL_ACTIVE provenance)",
+    "Phase 2: SSDF tag emission + CI gate-chain-completeness check (closes G-1)",
+    "Phase 3: Retroactive remediation + SG promotion (closes Phase 46/48/49 VETO mandates)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_gate_chain_provenance.py tests/test_gate_chain_completeness.py tests/test_ssdf_tagger.py tests/test_substantiate_step_7_4_ssdf_emission.py tests/test_compliance_report_post_phase52.py tests/test_ci_workflow_gate_chain_completeness.py tests/test_attribution_tiered_negative_paths.py tests/test_install_drift_check_subprocess.py -v",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52 --repo-root .",
+    "python -m qor.scripts.ssdf_tagger --change-class feature",
+    "python -m qor.scripts.dist_compile && python -m qor.scripts.check_variant_drift",
+    "python -m qor.scripts.badge_currency --repo-root . --ledger docs/META_LEDGER.md",
+    "python -m pytest tests/ -v",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan docs/plan-qor-phase52-structural-enforcement-and-remediation.md"
+  ]
+}

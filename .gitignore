@@ -9,9 +9,15 @@ compiled/
 .DS_Store
 Thumbs.db
 
-# Governance state (local only)
+# Governance state — .qor/session/ marker is local-only;
+# .qor/gates/<sid>/*.json artifacts are EVIDENCE of skill invocation
+# and MUST be committed (Phase 52 wiring; CI gate-chain-completeness
+# check verifies them on every PR).
 .failsafe/
-.qor/
+.qor/session/
+.qor/intent_lock/
+.qor/remediate-pending
+.qor/gates/sess-12345/
 
 # Python
 __pycache__/
