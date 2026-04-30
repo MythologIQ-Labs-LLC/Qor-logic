@@ -31,7 +31,7 @@ Check for existing Qor-logic DNA:
 
 ```
 Glob: docs/META_LEDGER.md
-Glob: .failsafe/governance/
+Glob: .qor/gates/
 ```
 
 <!-- qor:fail-fast-only reason="inverse interdiction (ledger already present); bootstrap must not overwrite" -->
@@ -48,7 +48,7 @@ Abort with "Integrity Violation: Genesis already exists. Use /qor-status to resu
 
 ### Step 3: Create Directory Structure
 
-Ensure required directories exist: `.agent/`, `.failsafe/governance/`, `docs/`
+Ensure required directories exist: `.agent/`, `.qor/gates/`, `docs/`
 
 ### Step 3.5: Privacy Configuration
 
@@ -144,7 +144,7 @@ Bootstrap succeeds when:
 - [ ] BACKLOG.md exists with template structure
 - [ ] Genesis hash calculated and recorded
 - [ ] Risk grade properly assigned (L1/L2/L3)
-- [ ] Required directories created (.failsafe/governance/, docs/)
+- [ ] Required directories created (.qor/gates/, docs/)
 - [ ] Routing decision provided based on risk grade
 
 ## Integration with S.H.I.E.L.D.

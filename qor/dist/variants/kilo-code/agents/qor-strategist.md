@@ -78,7 +78,7 @@ Use tools aggressively:
 
 ### Step 4: Produce the Brief
 
-Write a research brief to `.failsafe/governance/RESEARCH_BRIEF.md`:
+Write a research brief to `docs/research-brief-<slug>-<YYYY-MM-DD>.md`:
 
 ```markdown
 # Research Brief
@@ -185,7 +185,7 @@ After delivering the brief:
 [Direction for the Governor]
 
 ### Brief Location
-`.failsafe/governance/RESEARCH_BRIEF.md`
+`docs/research-brief-<slug>-<YYYY-MM-DD>.md`
 ```
 
 ## Constraints

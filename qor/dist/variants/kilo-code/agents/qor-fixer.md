@@ -131,7 +131,7 @@ Proven root trigger: ...
 ## Pre-Debug Gate Check
 
 ```
-Read: .failsafe/governance/AUDIT_REPORT.md (if exists)
+Read: .agent/staging/AUDIT_REPORT.md (if exists)
 Note: Debug sessions do NOT require PASS verdict — debugging is permitted regardless of gate state
 Log: "Debug session initiated. Layer 1 beginning."
 ```

@@ -67,7 +67,7 @@ Your role is to prove, not to improve. Verify what was built matches what was pr
 ```
 Read: docs/META_LEDGER.md
 Read: docs/ARCHITECTURE_PLAN.md
-Read: .failsafe/governance/AUDIT_REPORT.md
+Read: .agent/staging/AUDIT_REPORT.md
 ```
 
 **INTERDICTION**: If no PASS verdict exists:
@@ -360,7 +360,7 @@ Argv-form invocation; no shell-variable interpolation into `python -c` literals 
 
 ### Step 8: Cleanup Staging
 
-Clear: .failsafe/governance/
+Clear: `.agent/staging/` (transient working directory).
 
 Preserve only the final AUDIT_REPORT.md (or archive it).
 

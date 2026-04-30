@@ -13,7 +13,7 @@
 - AI instruction files (`CLAUDE.md`, `GEMINI.md`, `COPILOT.md`, `CURSOR.md`)
 - Planning documents (`plan-*.md`, `docs/`, `Planning/`)
 - IDE local settings (`.vscode/`, `.idea/`, `.cursor/`, `.windsurf/`)
-- Session state (`.failsafe/governance/`)
+- Session state (`.qor/gates/<session_id>/`)
 
 ### Included in Repository:
 - Source code (`src/`, `extension/`)

@@ -10,6 +10,26 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.39.0] - 2026-04-30
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+Phase 53: prompt-injection defense + path canonicalization + intent-lock anchored regex. Closes OWASP LLM Top 10 (2025) **LLM01 Prompt Injection** (HIGH) at the audit-prose layer for operator-authored governance markdown. Aligns with NIST AI 600-1 §2.7 and EU AI Act Art. 15. Closes OWASP (2021) LOW-4 (intent-lock substring-PASS regex) — zero residual OWASP (2021) MEDIUM/LOW findings open. First phase of a five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`.
+
+### Added
+- **OWASP LLM01 prompt-injection defense** (Phase 53): canary catalog at `qor/scripts/prompt_injection_canaries.py` (six pattern classes: instruction-redirect, role-redefinition, pass-coercion, meta-override, unicode-directionality, hidden-html), with frozen `CANARIES` tuple, `scan(content)` API, and argv-form CLI (`python -m qor.scripts.prompt_injection_canaries --files ...` plus `--mask-code-blocks` for documentation scanning). Integrated into `/qor-audit` Step 3 as new Prompt Injection Pass that runs before the Security Pass; any canary hit forces VETO with `findings_categories: ["prompt-injection", ...]` plus a severity-3 `prompt_injection_detected` shadow event.
+- **Cedar `forbid` rule for governance markdown**: `qor/policies/owasp_enforcement.cedar` carries a fifth rule on `Code::"governance"` resources whose `has_prompt_injection_canary` attribute is True. Commit-time complement to the audit-time pass; two enforcement points, single source of truth (`CANARIES`).
+- **Per-resource-kind attribute helper**: new `qor/policy/resource_attributes.py` exposes `compute_governance_attributes(path, content)` and `is_governance_path(path)`. Localizes governance-classification logic without bloating the generic evaluator. Path filter is a literal allowlist for `.md` files under `docs/` or `qor/references/`.
+- **Doctrine**: `qor/references/doctrine-prompt-injection.md` (threat model, canary catalog, refusal protocol, out-of-scope limits). Cross-linked from `doctrine-shadow-genome-countermeasures.md` SG-PromptInjection-A.
+- **`prompt-injection` finding category**: added to `qor/gates/schema/audit.schema.json` `findings_categories` enum and `qor/scripts/findings_signature.py` `_VALID_CATEGORIES` frozenset.
+
+### Changed
+- **Intent-lock anchored PASS regex** (closes Apr-16 OWASP LOW-4): `qor/reliability/intent_lock.py:_audit_has_pass` was `re.search("VERDICT.*PASS", body, re.IGNORECASE)`, which admitted substring "PASS" mentions in narrative prose. Now anchors to a multiline-anchored canonical verdict line (`^Verdict:\s*PASS$` with markdown-bold tolerance and `:`/`-` separator support). After Phase 53: zero residual OWASP (2021) MEDIUM/LOW findings open.
+- **Path canonicalization** (DRIFT-1, DRIFT-2): `qor/skills/sdlc/qor-research/SKILL.md`, `qor/skills/governance/qor-substantiate/SKILL.md`, `qor/skills/meta/qor-bootstrap/SKILL.md`, and the five agent files under `qor/agents/` no longer reference legacy `.failsafe/governance/` directory or `memory/failsafe-bridge.md`. Replaced with current canonical paths (`docs/`, `.agent/staging/`, `.qor/gates/<session_id>/`).
+
+### Security
+- Closes OWASP LLM Top 10 (2025) **LLM01 Prompt Injection** at the audit-prose layer for the operator-authored governance markdown surface. Aligns with NIST AI 600-1 §2.7 (Information integrity / prompt injection) and EU AI Act Art. 15 (cybersecurity dimension). Sprint context: Phase 53 of a five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`; subsequent phases planned for AI provenance metadata (54), subagent least-privilege + model-pinning (55), secret-scanning gate (56), override-friction escalator (57).
+
 ## [0.38.0] - 2026-04-30
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

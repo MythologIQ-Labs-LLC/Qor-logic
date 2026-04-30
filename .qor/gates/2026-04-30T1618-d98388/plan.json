@@ -1,0 +1,61 @@
+{
+  "phase": "plan",
+  "session_id": "2026-04-30T1618-d98388",
+  "ts": "2026-04-30T16:48:37Z",
+  "plan_path": "docs/plan-qor-phase53-prompt-injection-defense.md",
+  "phases": [
+    "Phase 1: Prompt-injection canary doctrine + audit pass",
+    "Phase 2: Cedar policy + audit gate artifact wiring",
+    "Phase 3: Path canonicalization (DRIFT-1, DRIFT-2) + intent-lock regex tightening (LOW-4)",
+    "Phase 4: Self-application \u2014 run new audit pass against this plan"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_prompt_injection_canary.py tests/test_doctrine_prompt_injection_anchored.py tests/test_audit_findings_categories_enum.py -v",
+    "python -m pytest tests/test_owasp_governance.py -v",
+    "python -m pytest tests/test_skill_path_canonicalization.py tests/test_intent_lock_anchored_pass_check.py -v",
+    "python -m pytest tests/test_phase53_self_application.py -v",
+    "python -m pytest -x",
+    "python -m qor.scripts.prompt_injection_canaries --files docs/plan-qor-phase53-prompt-injection-defense.md docs/META_LEDGER.md docs/research-brief-prompt-logic-frameworks-2026-04-30.md qor/references/doctrine-prompt-injection.md",
+    "python -m qor.reliability.skill_admission qor-audit",
+    "python -m qor.reliability.gate_skill_matrix",
+    "python -m qor.scripts.check_variant_drift"
+  ],
+  "open_questions": [
+    "Canary catalog source-of-truth: doctrine-only / Python module / YAML data file",
+    "Audit-pass positioning: before OWASP / Step 0.6 / parallel in Step 2",
+    "DRIFT-2 scope: known sites only / full skill-tree sweep"
+  ],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "prompt-injection canary",
+      "home": "qor/references/doctrine-prompt-injection.md"
+    },
+    {
+      "term": "untrusted-data quarantine",
+      "home": "qor/references/doctrine-prompt-injection.md"
+    },
+    {
+      "term": "instruction-anchor regex",
+      "home": "qor/references/doctrine-prompt-injection.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "Canary is regex-pattern-based, not semantic; sophisticated obfuscation will not be caught.",
+      "Defense at audit layer; operator override of /qor-audit bypasses the canary.",
+      "LOW-4 regex tightening local to intent_lock.py:51 only."
+    ],
+    "non_goals": [
+      "LLM02/05/06/07/08 mitigations (each scheduled own sprint phase)",
+      "EU AI Act Art 13/50 machine-readable provenance metadata (Phase 54)",
+      "AI Act + AI RMF doctrine files (Phase 54)",
+      "Override-friction escalator (Phase 57)"
+    ],
+    "exclusions": [
+      "Dynamic prompt-injection red-team test execution",
+      "Retroactive scan of historical plan/audit/ledger content"
+    ]
+  },
+  "change_class": "feature"
+}

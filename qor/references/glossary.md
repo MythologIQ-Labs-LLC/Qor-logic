@@ -116,6 +116,7 @@ referenced_by:
   - qor/skills/meta/qor-repo-release/SKILL.md
   - qor/skills/meta/qor-repo-scaffold/SKILL.md
   - qor/skills/memory/qor-document/SKILL.md
+  - qor/skills/meta/qor-ab-run/SKILL.md
   - qor/skills/governance/qor-audit/references/qor-audit-templates.md
   - qor/references/doctrine-nist-ssdf-alignment.md
   - qor/references/patterns-devops.md
@@ -339,3 +340,36 @@ referenced_by:
 introduced_in_plan: phase33-seal-tag-timing
 ```
 
+
+
+```yaml
+term: prompt-injection canary
+definition: "A regex pattern (six classes: instruction-redirect, role-redefinition, pass-coercion, meta-override, unicode-directionality, hidden-html) that detects attempts to embed LLM-subverting instructions inside operator-authored governance markdown. Frozen catalog at qor/scripts/prompt_injection_canaries.py CANARIES. Production audit scans without code-block masking; documentation scanning uses --mask-code-blocks. Closes OWASP LLM Top 10 (2025) LLM01 at the audit-prose layer."
+home: qor/references/doctrine-prompt-injection.md
+referenced_by:
+  - qor/scripts/prompt_injection_canaries.py
+  - qor/policies/owasp_enforcement.cedar
+  - qor/policy/resource_attributes.py
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase53-prompt-injection-defense
+```
+
+```yaml
+term: untrusted-data quarantine
+definition: "The discipline of treating operator-authored governance markdown (plan files, ledger, concept) as untrusted data when the trust boundary spans multiple authors. Realized at runtime via the canary scan invoked from /qor-audit Step 3 Prompt Injection Pass. The quarantine boundary is the canary scanner; content that passes the scan is admitted into LLM context."
+home: qor/references/doctrine-prompt-injection.md
+referenced_by:
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/scripts/prompt_injection_canaries.py
+introduced_in_plan: phase53-prompt-injection-defense
+```
+
+```yaml
+term: instruction-anchor regex
+definition: 'A multiline-anchored regex form (caret-Verdict-colon-whitespace-PASS-dollar with markdown-bold + colon/dash separator tolerance) used by qor.reliability.intent_lock._audit_has_pass to recognize a canonical PASS verdict line in an audit report. Replaces the pre-Phase-53 substring match (re.search VERDICT.*PASS) which admitted any audit body containing both substrings on the same line, including narrative prose. Closes OWASP (2021) LOW-4.'
+home: qor/references/doctrine-prompt-injection.md
+referenced_by:
+  - qor/reliability/intent_lock.py
+introduced_in_plan: phase53-prompt-injection-defense
+```

@@ -35,7 +35,8 @@
           "specification-drift",
           "test-failure",
           "coverage-gap",
-          "infrastructure-mismatch"
+          "infrastructure-mismatch",
+          "prompt-injection"
         ]
       }
     }

@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-04-30T02:06:58Z",
+  "generated_ts": "2026-04-30T17:56:31Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -36,31 +36,31 @@
       "id": "qor-fixer.md",
       "source_path": "agents/qor-fixer.md",
       "install_rel_path": "agents/qor-fixer.md",
-      "sha256": "8af0499a2c5c53c53a8360243b2b745d9da76e055e76eb8e2eeee186549ed7c8"
+      "sha256": "86256eaba9c153d9512c187aa4b71c27e4f182becd34d48c8bc520493d62a4bb"
     },
     {
       "id": "qor-governor.md",
       "source_path": "agents/qor-governor.md",
       "install_rel_path": "agents/qor-governor.md",
-      "sha256": "cc8f1f9b062023bae71f2261c7907d4437b3de59034cf8f9b48cc5cbf3e9d0fc"
+      "sha256": "d196b8d1c29fe92224f3315db566e252d1aceb92eb19dc7b936f29a452a9206d"
     },
     {
       "id": "qor-judge.md",
       "source_path": "agents/qor-judge.md",
       "install_rel_path": "agents/qor-judge.md",
-      "sha256": "74fa905295e1304515ca59ad8507956f0e881d16086e57395054d93222e551b1"
+      "sha256": "af9915ab3580b7fbb1fa34436940a6058554fbc3b8ad332c9638493c926cb9ef"
     },
     {
       "id": "qor-specialist.md",
       "source_path": "agents/qor-specialist.md",
       "install_rel_path": "agents/qor-specialist.md",
-      "sha256": "b3ef6b5e1fca091584ce15f2da5dda399167ec7c6aa5dc828f126510dbb94414"
+      "sha256": "79de4279661ee5a0c54358f96f4a4895455af2a390e6964f0cc7077d458a3e6b"
     },
     {
       "id": "qor-strategist.md",
       "source_path": "agents/qor-strategist.md",
       "install_rel_path": "agents/qor-strategist.md",
-      "sha256": "8d5cb40bc00946dc3788ba9a3145a778dce36e443ca3e3c80cdf7fc84c828cea"
+      "sha256": "6fa306bd484be6a57fae3c8d43f0c613794ddf21d0a04bb29d806106ff5b882c"
     },
     {
       "id": "qor-technical-writer.md",
@@ -114,19 +114,19 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "0af1aaaaf285aeb8449b1c06a4aa7d7a25a4baafa1a54b0c6ed36a995694b44c"
+      "sha256": "5c09dba490820f2a11565d44baf24c3e48ef5ff532188a78cf2331e620cb6d41"
     },
     {
       "id": "qor-bootstrap",
       "source_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
       "install_rel_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
-      "sha256": "7db61c3894682d21f95a916e40071ef3262cfa9c868160c8aa5f9b6c2a579ee3"
+      "sha256": "d4e9770aa207600f0d27c6c6fc3cf13c3b14ec6e7af4e333e3a5501eb3d409bd"
     },
     {
       "id": "qor-bootstrap",
       "source_path": "skills/qor-bootstrap/SKILL.md",
       "install_rel_path": "skills/qor-bootstrap/SKILL.md",
-      "sha256": "1fcb310dbc0354aa1ab1217e555ea2c4c333750bcc40979d933c4d52bb1c58bc"
+      "sha256": "4a237f6edc8388d5102c27cb9509461f0dac703c16f8370d83b9c4a311235915"
     },
     {
       "id": "qor-debug",
@@ -336,7 +336,7 @@
       "id": "qor-research",
       "source_path": "skills/qor-research/SKILL.md",
       "install_rel_path": "skills/qor-research/SKILL.md",
-      "sha256": "d227ff439c57144b6d1031a7ca2efa43cb12e87d9a720a1c2a4627d97a0463ae"
+      "sha256": "feea51910f426ec0646bef6907d465c1f09c875ffbd0afd1d98f4444576802a0"
     },
     {
       "id": "qor-shadow-process",
@@ -360,7 +360,7 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "b2bdcbe4577a7f1f87b4b37b99f6880573af857f87bd0e3e36893a1d20d782b2"
+      "sha256": "4c2c642db56fed836b416cde38a38f0ca53d3fa64a2db53c8f7960e2bcc53081"
     },
     {
       "id": "qor-tone",

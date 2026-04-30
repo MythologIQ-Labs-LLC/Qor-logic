@@ -91,7 +91,7 @@ For paths matching `*/security/*` or `*/auth/*`:
 ```
 Read: docs/ARCHITECTURE_PLAN.md
 Read: docs/META_LEDGER.md
-Read: .failsafe/governance/AUDIT_REPORT.md (if exists)
+Read: .agent/staging/AUDIT_REPORT.md (if exists)
 ```
 
 ### Step 2: Adversarial Scan
@@ -125,7 +125,7 @@ For each proposed component:
 ```
 
 ### Step 4: Seal the Gate
-- Write verdict to `.failsafe/governance/AUDIT_REPORT.md`
+- Write verdict to `.agent/staging/AUDIT_REPORT.md`
 - Update `docs/META_LEDGER.md` with audit hash
 - If VETO: Record failure mode in `docs/SHADOW_GENOME.md`
 

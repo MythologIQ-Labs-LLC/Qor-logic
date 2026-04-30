@@ -1,0 +1,59 @@
+{
+  "phase": "research",
+  "session_id": "2026-04-30T1618-d98388",
+  "ts": "2026-04-30T16:22:21Z",
+  "questions": [
+    "How does Qor-logic prompt logic and gate enforcement map to OWASP LLM Top 10 (2025)?",
+    "How does it map to NIST AI RMF 1.0 + AI 600-1 GenAI profile?",
+    "How does it map to EU AI Act Articles 9, 12, 13, 14, 15, 50?",
+    "What gaps and remediation phases follow?"
+  ],
+  "findings": [
+    {
+      "category": "OWASP LLM Top 10",
+      "highest_severity": "HIGH",
+      "gap": "LLM01 prompt-injection surface undefended over operator-authored governance markdown"
+    },
+    {
+      "category": "OWASP LLM Top 10",
+      "highest_severity": "MEDIUM",
+      "gap": "LLM02/06/07 partial; LLM05 lacks model-pinning + SBOM"
+    },
+    {
+      "category": "NIST AI RMF",
+      "highest_severity": "MEDIUM",
+      "gap": "MAP function weak; no AI-specific risk register; AI 600-1 prompt-injection unmitigated"
+    },
+    {
+      "category": "EU AI Act",
+      "highest_severity": "MEDIUM",
+      "gap": "Art. 13/50 lack machine-readable AI-provenance signal; Art. 12 exemplary; Art. 14 strong"
+    },
+    {
+      "category": "Drift",
+      "highest_severity": "MEDIUM",
+      "gap": "qor-research and qor-substantiate skill bodies cite stale .failsafe/governance/ paths"
+    }
+  ],
+  "sources": [
+    "qor/skills/governance/qor-audit/SKILL.md",
+    "qor/skills/sdlc/qor-plan/SKILL.md",
+    "qor/skills/sdlc/qor-implement/SKILL.md",
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "qor/skills/governance/qor-validate/SKILL.md",
+    "qor/skills/sdlc/qor-research/SKILL.md",
+    "qor/gates/chain.md",
+    "qor/gates/workflow-bundles.md",
+    "qor/policies/owasp_enforcement.cedar",
+    "qor/policies/skill_admission.cedar",
+    "qor/policies/gate_enforcement.cedar",
+    "qor/references/doctrine-owasp-governance.md",
+    "qor/references/doctrine-nist-ssdf-alignment.md",
+    "qor/references/doctrine-prompt-resilience.md",
+    "qor/references/doctrine-shadow-genome-countermeasures.md",
+    "docs/security-audit-2026-04-16.md",
+    "docs/compliance-re-evaluation-2026-04-29.md"
+  ],
+  "brief_path": "docs/research-brief-prompt-logic-frameworks-2026-04-30.md",
+  "content_hash": "676e0eb37bb3abb2012fed97197b33ce31e4d3a17f9994fcc995d41644781aa7"
+}

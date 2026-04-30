@@ -78,3 +78,14 @@ def test_qor_audit_template_has_findings_categories_slot():
     prose = _QOR_AUDIT_TEMPLATES.read_text(encoding="utf-8")
     assert "findings_categories" in prose, \
         "audit template must declare a findings_categories slot"
+
+
+def test_schema_accepts_prompt_injection_category():
+    """Phase 53: prompt-injection is a valid VETO category."""
+    errs = vga._validate_data(
+        "audit", _veto_payload(findings_categories=["prompt-injection"])
+    )
+    assert errs == [], (
+        f"prompt-injection must be in audit.schema.json findings_categories enum; "
+        f"got errors: {errs}"
+    )

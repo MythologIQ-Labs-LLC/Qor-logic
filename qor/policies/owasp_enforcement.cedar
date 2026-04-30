@@ -28,3 +28,10 @@ forbid (
   action == Action::"commit",
   resource == Code::"production"
 ) when { resource.has_hardcoded_secrets == true };
+
+// LLM01 Prompt Injection (Phase 53): forbid governance markdown containing canary patterns
+forbid (
+  principal,
+  action == Action::"commit",
+  resource == Code::"governance"
+) when { resource.has_prompt_injection_canary == true };

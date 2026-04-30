@@ -30,7 +30,7 @@ Before any code is written, document the "Why" and "Vibe" in `docs/CONCEPT.md`:
 - **Vibe**: Three keywords capturing the design philosophy
 - If the feature cannot be explained in one concise sentence, **REJECT** the task
 
-**Upstream Input**: For non-trivial features, the Strategist (`/qor-research`) delivers a research brief (`.failsafe/governance/RESEARCH_BRIEF.md`) that defines *what* and *why*. The Governor translates this into *how* — the architectural blueprint. If no brief exists for a complex feature, recommend `/qor-research` first.
+**Upstream Input**: For non-trivial features, the Strategist (`/qor-research`) delivers a research brief (`docs/research-brief-<slug>-<YYYY-MM-DD>.md`) that defines *what* and *why*. The Governor translates this into *how* — the architectural blueprint. If no brief exists for a complex feature, recommend `/qor-research` first.
 
 ### ENCODE (The Contract)
 Translate strategic alignment into a technical blueprint in `docs/ARCHITECTURE_PLAN.md`:

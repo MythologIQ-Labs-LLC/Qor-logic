@@ -19,7 +19,7 @@ gate_writes: research
   <trigger>/qor-research</trigger>
   <phase>research</phase>
   <persona>Analyst</persona>
-  <output>.failsafe/governance/RESEARCH_BRIEF.md with findings + META_LEDGER entry</output>
+  <output>docs/research-brief-<slug>.md with findings + META_LEDGER entry</output>
 </skill>
 
 ## Purpose
@@ -110,7 +110,7 @@ Map actual runtime dependencies:
 
 ### Step 5: Cross-Reference with Blueprint
 
-Compare every finding against `.failsafe/governance/ARCHITECTURE_PLAN.md`:
+Compare every finding against `docs/ARCHITECTURE_PLAN.md`:
 
 ```markdown
 ## Blueprint Alignment Check
@@ -124,7 +124,7 @@ Compare every finding against `.failsafe/governance/ARCHITECTURE_PLAN.md`:
 
 ### Step 6: Generate Research Brief
 
-Create `.failsafe/governance/RESEARCH_BRIEF.md`:
+Create `docs/research-brief-<slug>-<YYYY-MM-DD>.md` (canonical naming per existing convention; see `docs/research-brief-*` examples):
 
 ```markdown
 # Research Brief
@@ -161,7 +161,7 @@ Create `.failsafe/governance/RESEARCH_BRIEF.md`:
 
 ## Updated Knowledge
 
-[New information that should be added to memory/failsafe-bridge.md]
+[New information that should be added to docs/SHADOW_GENOME.md or the relevant doctrine under qor/references/]
 
 ---
 
@@ -170,11 +170,11 @@ _Research complete. Findings are advisory — implementation decisions remain wi
 
 ### Step 7: Update Memory
 
-Update `memory/failsafe-bridge.md` with any new or corrected information discovered during research.
+Update `docs/SHADOW_GENOME.md` (narrative archaeology) or the relevant doctrine under `qor/references/` with any new or corrected information discovered during research.
 
 ### Step 8: Update Ledger
 
-Edit: `.failsafe/governance/META_LEDGER.md`
+Edit: `docs/META_LEDGER.md`
 
 Add new entry:
 
@@ -212,13 +212,13 @@ SHA256(content_hash + previous_hash)
 
 **Target**: [what was researched]
 **Findings**: [count] verified, [count] drifts detected
-**Brief Location**: .failsafe/governance/RESEARCH_BRIEF.md
+**Brief Location**: docs/research-brief-<slug>-<YYYY-MM-DD>.md
 
 ### Critical Findings
 [List any DRIFT items or breaking changes]
 
 ### Memory Updated
-[What was added/changed in failsafe-bridge.md]
+[What was added/changed in docs/SHADOW_GENOME.md or qor/references/]
 
 ---
 
@@ -249,7 +249,7 @@ Research succeeds when:
 - [ ] Recent changes audited for bridge impact
 - [ ] Blueprint cross-referenced for drift
 - [ ] RESEARCH_BRIEF.md created with all findings
-- [ ] memory/failsafe-bridge.md updated
+- [ ] docs/SHADOW_GENOME.md or relevant doctrine under qor/references/ updated
 - [ ] META_LEDGER.md updated with research entry
 - [ ] All findings include file:line citations
 

@@ -5971,3 +5971,254 @@ User direction on prior turn was implement. V10 blocks implement. Judge does not
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 52 feature substantiated)
 *Merkle seal: a0560f9d...* (Phase 52 seal on top of Phase 50's c4a13570; Entries #167-#169 chained; first seal with full gate-chain artifacts)
+
+---
+
+### Entry #170: RESEARCH BRIEF — Prompt logic & gate compliance vs OWASP LLM Top 10, NIST AI RMF, EU AI Act
+
+**Timestamp**: 2026-04-30T16:18:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+
+**Target**: Qor-logic prompt logic (`qor/skills/**/SKILL.md`) and governance gates (`qor/gates/**`, `qor/policies/*.cedar`, `qor/references/doctrine-*.md`)
+**Brief**: `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`
+**Session**: `2026-04-30T1618-d98388`
+**Gate Artifact**: `.qor/gates/2026-04-30T1618-d98388/research.json`
+
+**Content Hash**:
+```
+SHA256(docs/research-brief-prompt-logic-frameworks-2026-04-30.md)
+= 676e0eb37bb3abb2012fed97197b33ce31e4d3a17f9994fcc995d41644781aa7
+```
+
+**Previous Hash**: `a0560f9da96087c6c27d6191deec739686df463de331f7d5324053c2935952db`
+
+**Chain Hash**:
+```
+SHA256(content_hash + "|" + previous_hash)
+= baef8ff65ec7002713b067eb2d2d9383725e20e4668b92c0e5651f2af2eebf63
+```
+
+**Scope**: Mapped current controls against (1) OWASP LLM Applications Top 10 (2025), (2) NIST AI RMF 1.0 + AI 600-1 GenAI profile, (3) EU AI Act (Reg. 2024/1689) Articles 9, 12, 13, 14, 15, 50. Audit was static, single-pass; no dynamic prompt-injection red-team executed.
+
+**Findings (severity-ranked)**:
+- **HIGH** — LLM01 prompt-injection surface: operator-authored governance markdown (plan files, ledger, concept) is read verbatim into LLM context with no canary, no untrusted-data quarantine, no content-origin classification. Maps to NIST AI 600-1 §2.7 and EU AI Act Art. 15 cybersecurity dimension.
+- **MEDIUM** — LLM02/06/07 partial mitigations; LLM05 missing model-pinning + SBOM; LLM08 override friction does not escalate.
+- **MEDIUM** — NIST AI RMF MAP function weak: no AI-specific risk register, no formal AI Impact Assessment, no model-pinning policy (GV-6.1/MG-3.1).
+- **MEDIUM** — EU AI Act Art. 13/50 transparency lacks machine-readable AI-provenance signal in gate artifact JSON; commit-trailer attribution alone is operator-facing only.
+- **MEDIUM** — Doctrinal drift: `qor/skills/sdlc/qor-research/SKILL.md` and `qor/skills/governance/qor-substantiate/SKILL.md` reference legacy `.failsafe/governance/` paths that no longer exist.
+
+**Strengths preserved**:
+- EU AI Act Art. 12 logging — Merkle-chained META_LEDGER is exemplary.
+- EU AI Act Art. 14 oversight — override-with-event + binary PASS/VETO + 4-option push/merge + bundle checkpoints + two-stage remediation flip.
+- NIST AI RMF MEASURE-3.1 risk tracking via shadow genome.
+- LLM09 mitigation via mandatory TDD + test functionality doctrine.
+
+**Roadmap proposed (priority order)**:
+1. Phase 53 candidate: prompt-injection defense doctrine + audit pass (closes LLM01, AI 600-1 §2.7, Art. 15).
+2. Phase 54 candidate: AI Act + AI RMF doctrine files + machine-readable AI provenance in gate artifacts (closes Art. 13/50, GV-1.1/4.2/MAP-3.1/5.1).
+3. Phase 55 candidate: subagent least-privilege + model-pinning policy (closes LLM05/07, GV-6.1/MG-3.1, Art. 14 strengthening).
+4. Phase 56 candidate: path-currency hotfix (closes DRIFT-1/2).
+5. Phase 57 candidate (optional): override-friction escalator (closes LLM08 strengthening).
+
+**Decision**: Findings advisory. Implementation decisions remain with the Governor. GitHub roadmap issues to be filed by operator after review (auto-creation blocked by permission policy due to public-disclosure sensitivity of LLM01 finding).
+
+---
+
+### Entry #171: GATE TRIBUNAL — Phase 53 Pass 1 — **VETO** (L2)
+
+**Timestamp**: 2026-04-30T16:45:00Z
+**Phase**: GATE
+**Author**: Judge (solo mode; codex-plugin shortfall)
+**Risk Grade**: L2
+**Verdict**: VETO
+
+**Target**: `docs/plan-qor-phase53-prompt-injection-defense.md`
+**Report**: `.agent/staging/AUDIT_REPORT.md`
+**Session**: `2026-04-30T1618-d98388`
+**Gate Artifact**: `.qor/gates/2026-04-30T1618-d98388/audit.json`
+
+**Content Hash**:
+```
+SHA256(.agent/staging/AUDIT_REPORT.md)
+= a865283e7169c67170380e9a32bb51fd8a8515a81271460f7348f34537ec59b1
+```
+
+**Previous Hash**: `baef8ff65ec7002713b067eb2d2d9383725e20e4668b92c0e5651f2af2eebf63`
+
+**Chain Hash**:
+```
+SHA256(content_hash + "|" + previous_hash)
+= 71c3cc79709fe9cf013e586629f55c70b5c2df1b2cd1af363ffd6ab36e4e78a3
+```
+
+**Findings Categories**: `test-failure`, `infrastructure-mismatch`
+
+**Scope**: Adversarial review of Phase 53 plan against 8 audit passes (Security, OWASP Top 10, Ghost UI, Section 4 Razor, Test Functionality, Dependency, Macro-Architecture, Infrastructure Alignment, Orphan Detection). Architectural posture sound; two classes of plan-text defect block PASS.
+
+**Findings**:
+- `test-failure` — five presence-only tests violate Phase 46 doctrine: `test_audit_skill_prose_cites_canary_module` (substring grep), `test_doctrine_file_exists` (file existence), `test_doctrine_lists_{threat_model,canary_catalog,refusal_protocol}_section` (substring presence). Reform: delete `test_doctrine_file_exists`; collapse three section-presence tests into one round-trip integrity test against `CANARIES`; replace skill-prose-citation test with co-occurrence behavior invariant per Phase 50 pattern.
+- `infrastructure-mismatch` — three plan claims drift from HEAD: (a) `tests/test_audit_findings_categories_enum.py` cited as existing — actual is `tests/test_audit_gate_emits_findings_categories.py`; (b) "extend resource attribute computation in `qor/policy/evaluator.py`" — no such per-resource-kind method exists; resource attributes are caller-supplied via `entities` dict to `_resolve_attr`; (c) "existing `qor.policy.evaluator` fixture in `tests/test_owasp_governance.py`" — that file uses static-grep only; evaluator fixture lives in `tests/test_policy.py`.
+
+**Strengths preserved**: doctrine + module + cedar three-layer split; argv-form invocations; SG-Phase47-A countermeasure honored; `frozen=True` + `tuple` catalog; behavior-invariant path-canonicalization lint; LOW-4 anchored multiline regex; self-application Phase 4 meta-coherence test; round-trip `test_doctrine_lists_each_canary_class` is the correct template.
+
+**Required next action**: Governor: amend plan-text per VETO findings; re-run `/qor-audit`. Plan-text grounds per `qor/references/doctrine-audit-report-language.md`; no `/qor-debug` invocation.
+
+**Decision**: VETO. First audit on session 2026-04-30T1618-d98388. No repeated-VETO pattern; no `/qor-remediate` recommendation.
+
+---
+
+### Entry #172: GATE TRIBUNAL — Phase 53 Pass 2 — **PASS** (L2)
+
+**Timestamp**: 2026-04-30T17:05:00Z
+**Phase**: GATE
+**Author**: Judge (solo mode)
+**Risk Grade**: L2
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase53-prompt-injection-defense.md` (amended per Entry #171 VETO findings)
+**Report**: `.agent/staging/AUDIT_REPORT.md`
+**Session**: `2026-04-30T1618-d98388`
+**Gate Artifact**: `.qor/gates/2026-04-30T1618-d98388/audit.json` (overwritten with PASS payload)
+
+**Content Hash**:
+```
+SHA256(.agent/staging/AUDIT_REPORT.md)
+= d586aabdb68c4e22aba725f7e466661a43ea94c43451163901accea35336653c
+```
+
+**Previous Hash**: `71c3cc79709fe9cf013e586629f55c70b5c2df1b2cd1af363ffd6ab36e4e78a3`
+
+**Chain Hash**:
+```
+SHA256(content_hash + "|" + previous_hash)
+= 3fee302b6c9febc53957a9da8addccd9809cddfa02d41c1e020522ed1174d120
+```
+
+**Findings Categories**: (none)
+
+**Pass-1 remediations verified**:
+- *`test-failure` cleared*: five presence-only tests reformed — `test_audit_skill_prose_cites_canary_module` replaced by `test_audit_skill_invokes_canary_scan_on_governance_reads` (Phase 50 co-occurrence behavior invariant); four doctrine section-presence tests + file-existence test collapsed into single `test_doctrine_round_trip_against_canary_catalog` (per-canary content + heading-tree integrity).
+- *`infrastructure-mismatch` cleared*: (a) cited test path corrected to `tests/test_audit_gate_emits_findings_categories.py`; (b) evaluator extension surface replaced with NEW `qor/policy/resource_attributes.py` helper that composes scan() output into evaluator-attribute shape; evaluator itself unchanged; (c) `test_cedar_forbids_prompt_injection_canary` relocated from `tests/test_owasp_governance.py` to `tests/test_policy.py` adjacent to existing evaluator fixtures at lines 110-195.
+
+**Eight passes clear**: Security · OWASP Top 10 · Ghost UI (N/A) · Section 4 Razor · Test Functionality · Dependency · Macro-Architecture · Infrastructure Alignment · Orphan Detection.
+
+**Strengths preserved**: doctrine + module + cedar three-layer split; argv-form invocations; SG-Phase47-A countermeasure honored; `frozen=True` + `tuple` catalog; behavior-invariant lints; LOW-4 anchored multiline regex; self-application Phase 4 meta-coherence test.
+
+**Required next action**: `/qor-implement`. Per `qor/gates/chain.md`. Intent-lock to be captured at implement Step 5.5.
+
+**Process pattern advisory**: 1 VETO + 1 PASS in this session; no consecutive-same-signature threshold reached; no `/qor-remediate` recommendation.
+
+**Decision**: PASS. Plan unblocked for implementation.
+
+---
+
+### Entry #173: IMPLEMENTATION — Phase 53 (prompt-injection defense + path canonicalization + intent-lock anchored regex)
+
+**Timestamp**: 2026-04-30T17:35:00Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+
+**Plan**: `docs/plan-qor-phase53-prompt-injection-defense.md`
+**Audit**: `.agent/staging/AUDIT_REPORT.md` (Pass 2 PASS verdict; Entry #172)
+**Session**: `2026-04-30T1618-d98388`
+**Gate Artifact**: `.qor/gates/2026-04-30T1618-d98388/implement.json`
+
+**Content Hash**:
+```
+SHA256(.qor/gates/2026-04-30T1618-d98388/implement.json)
+= 4f3d204a3d0b7b6f185e9a5bf61c5151110993a0675d797c5afb3d4ef6f71280
+```
+
+**Previous Hash**: `3fee302b6c9febc53957a9da8addccd9809cddfa02d41c1e020522ed1174d120`
+
+**Chain Hash**:
+```
+SHA256(content_hash + "|" + previous_hash)
+= 8be0d4ba7e0b0d69112f29526c3805d8d1fbf7bb831d5c92935243b230aefca3
+```
+
+**Test Summary**: 947 passed, 1 skipped, 4 deselected (twice in a row, full suite, deterministic). +37 from pre-Phase-53 baseline (910 → 947).
+
+**Files Touched (source)** — 30 files:
+- New: `qor/scripts/prompt_injection_canaries.py`, `qor/policy/resource_attributes.py`, `qor/references/doctrine-prompt-injection.md`, `tests/test_prompt_injection_canary.py`, `tests/test_doctrine_prompt_injection_anchored.py`, `tests/test_resource_attributes.py`, `tests/test_skill_path_canonicalization.py`, `tests/test_intent_lock_anchored_pass_check.py`, `tests/test_phase53_self_application.py`.
+- Modified (governance + skills): `qor/policies/owasp_enforcement.cedar`, `qor/gates/schema/audit.schema.json`, `qor/scripts/findings_signature.py`, `qor/reliability/intent_lock.py`, `qor/skills/governance/qor-audit/SKILL.md`, `qor/skills/governance/qor-substantiate/SKILL.md`, `qor/skills/sdlc/qor-research/SKILL.md`, `qor/skills/meta/qor-bootstrap/SKILL.md`, `qor/skills/meta/qor-bootstrap/references/qor-bootstrap-templates.md`, `qor/references/doctrine-shadow-genome-countermeasures.md`, `qor/agents/governance/qor-governor.md`, `qor/agents/governance/qor-judge.md`, `qor/agents/sdlc/qor-fixer.md`, `qor/agents/sdlc/qor-specialist.md`, `qor/agents/sdlc/qor-strategist.md`.
+- Modified (existing tests): `tests/test_audit_gate_emits_findings_categories.py`, `tests/test_policy.py`.
+- Modified (release docs per Phase 33 currency rule): `README.md` badges (Tests: 911 → 948 [collected], Doctrines: 17 → 18, Ledger: 169 → 172), `CHANGELOG.md` Unreleased section.
+- Modified (governance ledger): `docs/META_LEDGER.md` (this entry + #170/#171/#172), `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`, `docs/plan-qor-phase53-prompt-injection-defense.md`.
+
+**Phase 1 — canary doctrine + module + audit-pass**: implemented `qor.scripts.prompt_injection_canaries` (~155 LOC including CLI + masking helper) with six canary classes (`instruction-redirect`, `role-redefinition`, `pass-coercion`, `meta-override`, `unicode-directionality`, `hidden-html`); frozen `CANARIES` tuple + `frozen=True` dataclasses; argv-form CLI with `--files` allowlist and `--mask-code-blocks` flag for documentation scanning. Doctrine at `qor/references/doctrine-prompt-injection.md` (four canonical sections). SG-PromptInjection-A appended to countermeasures catalog. `/qor-audit` Step 3 inserts new Prompt Injection Pass before Security Pass; argv-form invocation honors SG-Phase47-A. 14 + 1 + 1 = 16 tests in Phase 1.
+
+**Phase 2 — cedar policy + resource_attributes helper**: appended fifth `forbid` rule to `qor/policies/owasp_enforcement.cedar` for `Code::"governance"` resources; new helper module `qor/policy/resource_attributes.py` (~45 LOC) with `compute_governance_attributes` + `is_governance_path`; evaluator unchanged (already reads attributes via caller-supplied `entities` dict). Added `prompt-injection` to `findings_categories` enum (`audit.schema.json`) and `_VALID_CATEGORIES` frozenset (`findings_signature.py`); audit skill prose mapping table appended. `test_cedar_forbids_prompt_injection_canary` placed in `tests/test_policy.py` adjacent to existing evaluator fixtures. 5 + 1 = 6 tests in Phase 2.
+
+**Phase 3 — path canonicalization + LOW-4 regex**: full skill-tree + agent-tree sweep cleared all `.failsafe/governance/` and `memory/failsafe-bridge.md` references (skills: 4 files; agents: 5 files). `qor/reliability/intent_lock.py:_audit_has_pass` regex tightened from substring match to multiline-anchored `^Verdict:\s*PASS$` with markdown-bold + `:`/`-` separator tolerance. Lint walks both `qor/skills/` and `qor/agents/`. 3 + 8 = 11 tests in Phase 3.
+
+**Phase 4 — self-application meta-coherence**: 3 tests verify the plan, research brief, and doctrine pass canary scan with code-block masking (the system that defends against prompt injection does not itself contain a prompt injection in narrative prose).
+
+**Reliability sweep**:
+- `python -m qor.reliability.skill_admission qor-audit` → ADMITTED (frontmatter well-formed post-edit)
+- `python -m qor.reliability.gate_skill_matrix` → 29 skills, 112 handoffs, 0 broken
+- `python -m qor.scripts.dist_compile` → 29 skill dirs + 2 loose skills + 13 agents emitted across 4 variants
+- `python -m qor.scripts.check_variant_drift` → OK: 236 files, no drift
+- `python -m qor.scripts.badge_currency --repo-root . --ledger docs/META_LEDGER.md` → OK: README badges current
+- `python -m qor.scripts.prompt_injection_canaries --mask-code-blocks --files docs/plan-qor-phase53-prompt-injection-defense.md docs/META_LEDGER.md docs/research-brief-prompt-logic-frameworks-2026-04-30.md qor/references/doctrine-prompt-injection.md` → exit 0 (self-application clean)
+
+**Razor compliance**: `prompt_injection_canaries.py` 155 LOC (≤250); `resource_attributes.py` 47 LOC; longest function `main()` at 33 LOC (≤40); `scan()` at 13 LOC; `compute_governance_attributes()` at 6 LOC. Max nesting depth 2. Zero nested ternaries. Six new test files all ≤165 LOC.
+
+**Residual OWASP (2021) status**: All MEDIUM/LOW findings from `docs/security-audit-2026-04-16.md` are now CLOSED at HEAD. Phase 23 closed MEDIUM-1/2/3 + LOW-1/2/3/5/6; Phase 53 closes LOW-4. Zero open OWASP (2021) classical findings.
+
+**Sprint context**: Phase 53 of a five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`. Phases 54/55/56/57 remain queued for subsequent sprints (AI provenance metadata; subagent least-privilege + model-pinning; secret-scanning gate; override-friction escalator).
+
+**Decision**: Implementation complete. All four plan phases landed. 947 tests passing twice in a row. Reality matches Promise. Handoff to `/qor-substantiate`.
+
+---
+
+### Entry #174: SESSION SEAL -- Phase 53 feature substantiated
+
+**Timestamp**: 2026-04-30T17:55:00Z
+**Phase**: SEAL (feature)
+**Author**: Judge
+**Verdict**: PASS (947 tests green, 1 skipped, twice in a row)
+
+**Target**: `docs/plan-qor-phase53-prompt-injection-defense.md`
+**Change Class**: `feature`
+**Version**: `0.38.0 -> 0.39.0`
+**Tag**: `v0.39.0` (created at Step 9.5.5 post-commit; LOCAL ONLY pending PR merge per Phase 40 doctrine)
+**Session**: `2026-04-30T1618-d98388`
+
+**Content Hash (session seal)**: `555ec5b9068627a137b1a0635d2383c46bc11b57677cfd8dd9c056c0d22e3459`
+**Previous Hash**: `8be0d4ba7e0b0d69112f29526c3805d8d1fbf7bb831d5c92935243b230aefca3`
+**Chain Hash (Merkle seal)**: `4050f3aef6695e2e18fb7625dc8a8a88cca36fc4c015d79b4b77b61934bab57e`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Scope**: Phase 53 closes OWASP LLM Top 10 (2025) **LLM01 Prompt Injection** (HIGH) at the audit-prose layer for operator-authored governance markdown surface; aligns with NIST AI 600-1 §2.7 (Information integrity / prompt injection) and EU AI Act Art. 15 (cybersecurity dimension). First phase of a five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`. Subsequent phases queued: 54 (AI provenance + AI Act doctrine), 55 (subagent least-privilege + model-pinning), 56 (secret-scanning gate), 57 (override-friction escalator).
+
+**Phase 1 deliverables**: new `qor/scripts/prompt_injection_canaries.py` (~155 LOC) with frozen `CANARIES` tuple of six classes (`instruction-redirect`, `role-redefinition`, `pass-coercion`, `meta-override`, `unicode-directionality`, `hidden-html`); `frozen=True` dataclasses; `scan(content)` API; argv-form CLI with `--files` allowlist + `--mask-code-blocks` flag for documentation scanning. New doctrine `qor/references/doctrine-prompt-injection.md` (threat model + canary catalog + refusal protocol + out-of-scope). SG-PromptInjection-A appended to `doctrine-shadow-genome-countermeasures.md`. `/qor-audit` Step 3 inserts new Prompt Injection Pass before Security Pass. `prompt-injection` added to `audit.schema.json` `findings_categories` enum + `findings_signature.py` `_VALID_CATEGORIES`. 16 phase-1 tests.
+
+**Phase 2 deliverables**: fifth `forbid` rule in `qor/policies/owasp_enforcement.cedar` for `Code::"governance"` resources; new `qor/policy/resource_attributes.py` (~47 LOC) with `compute_governance_attributes` + `is_governance_path` (path-allowlist filter for `.md` files under `docs/` or `qor/references/`). Evaluator unchanged -- already reads attributes from caller-supplied `entities` dict. `test_cedar_forbids_prompt_injection_canary` placed in `tests/test_policy.py` adjacent to existing evaluator fixtures. 6 phase-2 tests.
+
+**Phase 3 deliverables**: full skill+agent tree sweep cleared `.failsafe/governance/` and `memory/failsafe-bridge.md` legacy references (4 skill files + 5 agent files). `qor/reliability/intent_lock.py:_audit_has_pass` regex tightened from substring `re.search VERDICT.*PASS` to multiline-anchored `^Verdict:\s*PASS$` with markdown-bold + `:`/`-` separator tolerance. **Closes OWASP (2021) LOW-4 fully**. After Phase 53: zero residual OWASP (2021) MEDIUM/LOW findings open across the entire repo. Lint walks `qor/skills/` + `qor/agents/`. 11 phase-3 tests.
+
+**Phase 4 deliverables**: 3 self-application tests verify the plan, research brief, and doctrine all scan clean once code-block masking is applied (the system that defends against prompt injection does not itself contain a prompt injection in narrative prose).
+
+**Reliability sweep**:
+- `python -m qor.reliability.intent_lock verify --session 2026-04-30T1618-d98388` -> VERIFIED (post-recapture; CI-Command-line clarification mid-implement triggered legitimate drift detection, recaptured).
+- `python -m qor.reliability.skill_admission qor-substantiate` -> ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` -> 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.dist_compile` -> 4 variants emitted.
+- `python -m qor.scripts.check_variant_drift` -> OK 236 files, no drift.
+- `python -m qor.scripts.badge_currency --repo-root . --ledger docs/META_LEDGER.md` -> OK README badges current.
+- `doc_integrity.run_all_checks_from_plan` strict mode -> OK after three new glossary terms appended (prompt-injection canary, untrusted-data quarantine, instruction-anchor regex) and Gate term referenced_by extension.
+
+**Razor compliance**: `prompt_injection_canaries.py` 155 LOC; `resource_attributes.py` 47 LOC; longest function `main()` at 33 LOC (<=40); `scan()` at 13 LOC; `compute_governance_attributes()` at 6 LOC. Max nesting depth 2; zero nested ternaries. Six new test files all <=165 LOC.
+
+**Decision**: Phase 53 sealed at v0.39.0. OWASP LLM01 prompt-injection surface closed at the audit-prose layer. Zero residual OWASP (2021) MEDIUM/LOW findings open. Sprint Phase 1 of 5 complete; Phase 54 queued for AI provenance + AI Act doctrine.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 53 feature substantiated)
+*Merkle seal: 4050f3ae...* (Phase 53 seal on top of Phase 52's a0560f9d; Entries #170-#174 chained; first seal closing OWASP LLM Top 10 LLM01)

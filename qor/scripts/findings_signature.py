@@ -39,6 +39,7 @@ _VALID_CATEGORIES = frozenset({
     "test-failure",
     "coverage-gap",
     "infrastructure-mismatch",
+    "prompt-injection",
 })
 
 

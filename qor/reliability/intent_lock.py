@@ -46,9 +46,21 @@ def _head_commit(repo: Path) -> str:
 
 
 def _audit_has_pass(audit_path: Path) -> bool:
-    """Return True if the audit file contains a VERDICT...PASS line."""
+    """Return True if the audit file declares a canonical PASS verdict line.
+
+    Phase 53 (LOW-4): anchored multiline regex. Accepts ``Verdict: PASS`` or
+    ``VERDICT: PASS`` (or ``-`` separator) on its own line. Rejects substring
+    occurrences of "PASS" inside narrative prose ("If the test does not PASS,
+    then ...") that the prior loose regex incorrectly admitted.
+    """
     body = audit_path.read_text(encoding="utf-8", errors="replace")
-    return bool(re.search(r"VERDICT.*PASS", body, re.IGNORECASE))
+    return bool(
+        re.search(
+            r"^\**(?:Verdict|VERDICT)\**\s*[:\-]\s*\**PASS\**\s*$",
+            body,
+            re.MULTILINE,
+        )
+    )
 
 
 def _fingerprint_path(repo: Path, session: str) -> Path:

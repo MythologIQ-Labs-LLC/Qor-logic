@@ -194,3 +194,47 @@ def test_evaluator_condition_evaluation():
     )
     result = evaluate(req, [policy], entities=entities)
     assert result.decision == Decision.ALLOW
+
+
+def test_cedar_forbids_prompt_injection_canary():
+    """Phase 53: forbid rule for governance markdown with canary patterns.
+
+    Loads `qor/policies/owasp_enforcement.cedar`, locates the prompt-injection
+    forbid rule, and exercises it via the evaluator with a synthetic
+    Code::"governance" resource entity.
+    """
+    from pathlib import Path
+
+    cedar_path = (
+        Path(__file__).resolve().parent.parent
+        / "qor" / "policies" / "owasp_enforcement.cedar"
+    )
+    policies = parse_policies(cedar_path.read_text(encoding="utf-8"))
+
+    assert any(
+        p.effect == "forbid"
+        and p.resource.entity is not None
+        and p.resource.entity.type == "Code"
+        and p.resource.entity.id == "governance"
+        for p in policies
+    ), 'owasp_enforcement.cedar must contain a Code::"governance" forbid rule'
+
+    req = Request(
+        principal=EntityUID("Author", "any"),
+        action=EntityUID("Action", "commit"),
+        resource=EntityUID("Code", "governance"),
+    )
+
+    entities_hit = {'Code::"governance"': {"has_prompt_injection_canary": True}}
+    result_hit = evaluate(req, policies, entities=entities_hit)
+    assert result_hit.decision == Decision.DENY
+
+    entities_clean = {'Code::"governance"': {"has_prompt_injection_canary": False}}
+    result_clean = evaluate(req, policies, entities=entities_clean)
+    governance_forbid_matched = any(
+        "governance" in pid.lower() or "prompt" in pid.lower()
+        for pid in result_clean.matching_policies
+    )
+    assert not governance_forbid_matched, (
+        "governance forbid must not match when has_prompt_injection_canary is False"
+    )
