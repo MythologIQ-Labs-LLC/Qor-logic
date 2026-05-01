@@ -15,6 +15,8 @@ gate_reads: plan
 gate_writes: audit
 permitted_tools: [Read, Grep, Glob, Bash]
 permitted_subagents: []
+model_compatibility: [claude-opus-4-7]
+min_model_capability: opus
 ---
 # /qor-audit - Gate Tribunal
 
@@ -68,6 +70,18 @@ if rec:
 ```
 
 See `qor/references/doctrine-governance-enforcement.md` §10.4 "Cycle-count escalation."
+
+### Step 0.6: Pre-audit lints (Phase 55 wiring)
+
+Run two pre-audit lints against the plan being audited; surface presence-only test descriptions and infrastructure-mismatch citations BEFORE Step 3 evaluates passes. Both are WARN-only (the existing Test Functionality Pass and Infrastructure Alignment Pass at Step 3 issue binding VETOs); the lints catch these classes earlier so the Governor can remediate without consuming an audit cycle.
+
+```bash
+PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
+python -m qor.scripts.plan_test_lint --plan "$PLAN_PATH" || true
+python -m qor.scripts.plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
+```
+
+`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
 
 ### Step 1: Identity Activation + Mode Selection
 

@@ -15,6 +15,8 @@ gate_reads: substantiate
 gate_writes: validate
 permitted_tools: [Read, Grep, Glob, Bash]
 permitted_subagents: []
+model_compatibility: [claude-opus-4-7, claude-sonnet-4-6]
+min_model_capability: sonnet
 ---
 # /qor-validate - Merkle Chain Validator
 

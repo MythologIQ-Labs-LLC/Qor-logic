@@ -1,14 +1,14 @@
-# AUDIT REPORT — Phase 54: AI provenance metadata + EU AI Act/AI RMF doctrine + subagent scaffolding + override-friction escalator (Pass 2)
+# AUDIT REPORT — Phase 55: Cedar-enforced subagent admission + model-pinning + CycloneDX SBOM + pre-audit lints (Pass 2)
 
-**Plan**: `docs/plan-qor-phase54-ai-provenance-and-act-alignment.md`
-**Session**: `2026-04-30T1758-48db18`
+**Plan**: `docs/plan-qor-phase55-subagent-admission-and-supply-chain.md`
+**Session**: `2026-05-01T0616-0b8d09`
 **Mode**: Solo (Codex plugin not declared)
-**Date**: 2026-04-30T18:35:00Z
+**Date**: 2026-05-01T17:42:00Z
 **Verdict**: **PASS**
 **Risk Grade**: L2
 **Findings Categories**: (none)
 
-Prior pass: VETO at Entry #175 with `test-failure`, `infrastructure-mismatch`, `razor-overage` categories. Plan amended per Pass-1 findings; re-audit follows.
+Prior pass: VETO at Entry #179 with `test-failure` + `infrastructure-mismatch` categories. Plan amended per Pass-1 findings; re-audit follows.
 
 ---
 
@@ -20,10 +20,10 @@ Unchanged from Pass 1: no placeholder auth, no hardcoded credentials, no bypasse
 
 ### OWASP Top 10 Pass — PASS
 
-- A03 Injection: argv-form invocations preserved; new `cli_handlers/compliance.py` follows the same pattern as `qor.cli`. Plan free of canary triggers in narrative prose.
-- A04 Insecure Design: `OverrideFrictionRequired` exception path is not fail-open.
-- A05 Security Misconfig: no new secrets.
-- A08 Software/Data Integrity: stdlib only (`tomllib`, `json`, `argparse`, `dataclasses`, `pathlib`); no pickle/eval/exec/unsafe yaml.
+- A03 Injection: argv-form throughout; SG-Phase47-A countermeasure honored.
+- A04 Insecure Design: `OverrideFrictionRequired`-style explicit exception paths; pre-audit lints WARN-only (advisory) at audit Step 0.5; substantiate Step 4.6 ABORTs as before.
+- A05 Security Misconfiguration: no new secrets.
+- A08 Software/Data Integrity: stdlib only; CycloneDX emitter is pure JSON serialization.
 
 ### Ghost UI Pass — N/A
 
@@ -33,91 +33,73 @@ CLI/library only.
 
 | Check | Limit | Plan Proposes | Status |
 |---|---|---|---|
-| Max function lines | 40 | helpers ~6-30 LOC; declared explicitly across `ai_provenance.build_manifest`, `override_friction.check`, `compute_governance_attributes` etc. | OK |
-| Max file lines | 250 | `ai_provenance.py` ~80 LOC; `override_friction.py` no explicit estimate (inferred small from API surface); `sprint_progress.py` no explicit estimate; `cli_handlers/compliance.py` ~110 LOC; `cli_handlers/__init__.py` ~3 LOC | OK |
-| **`qor/cli.py` post-edit** | 250 | 227 LOC -> ~190 LOC after extraction of compliance handlers to `cli_handlers/compliance.py`; thin parser/dispatch retained | **OK** (Pass-1 razor-overage CLOSED) |
-| Max nesting depth | 3 | not declared per-function, but module shapes (single-loop `scan`, single-conditional helpers) imply depth ≤ 2 | OK |
+| Max function lines | 40 | helpers explicitly sized: `compute_skill_admission_attributes` ~30; `model_pinning_lint.check` ~25; `sbom_emit.emit` ~30 LOC | OK |
+| Max file lines | 250 | `model_pinning_lint.py` ~75; `sbom_emit.py` ~80; `cli_handlers/release.py` ~30; `plan_test_lint.py` ~60; `plan_grep_lint.py` ~70; `qor/policy/resource_attributes.py` 47 → ~80; `qor/cli.py` 186 → ~200; new `deliver.schema.json` ~25 LOC | OK |
+| Max nesting depth | 3 | declared shapes single-loop / single-conditional | OK |
 | Nested ternaries | 0 | zero declared | OK |
-
-**Pass-1 razor-overage finding closed**: Phase 1 Affected Files now declares the CLI subcommand-handler split. New `qor/cli_handlers/__init__.py` (empty package marker, ~3 LOC) and `qor/cli_handlers/compliance.py` (~110 LOC) host all three compliance handlers (`do_report` extracted; `do_ai_provenance` and `do_sprint_progress` new) plus `register(sub)`. `qor/cli.py` reduces to ~190 LOC after the extraction, leaving headroom for Phase 55+ subcommand additions.
 
 ### Test Functionality Pass — PASS
 
-Pass-1 VETO findings remediated. Re-evaluating each amended/reformed test against the acceptance question *"If the unit's behavior were silently broken but the artifact still existed, would this test fail?"*:
+Pass-1 VETO findings remediated. Re-evaluating each amended test against the acceptance question *"If the unit's behavior were silently broken but the artifact still existed, would this test fail?"*:
 
 | Test description (post-amendment) | Invokes unit? | Asserts on output? | Verdict |
 |---|---|---|---|
-| `test_schema_validates_full_manifest` | yes | yes | PASS |
-| `test_schema_rejects_unknown_human_oversight_value` | yes | yes | PASS |
-| `test_schema_optional_in_phase_schemas` | yes | yes | PASS |
-| `test_schema_required_fields` | yes | yes | PASS |
-| `test_build_manifest_returns_schema_valid_dict` | yes | yes | PASS |
-| `test_build_manifest_reads_system_version_from_pyproject` | yes | yes (round-trip) | PASS |
-| `test_build_manifest_rejects_invalid_human_oversight_for_phase` | yes | yes (ValueError) | PASS |
-| `test_build_manifest_warns_once_on_missing_host` | yes | yes (stderr count + suppressible via `QOR_PROVENANCE_QUIET=1`) | PASS |
-| **`test_skills_writing_gate_artifacts_invoke_build_manifest`** (replaces Pass-1 VETO test) | **yes** (walks SKILL.md tree, conditionally enumerates skills calling `gate_chain.write_gate_artifact(`, asserts each also calls `ai_provenance.build_manifest(`) | **yes** (per-skill assertion under conditional) | **PASS** |
-| `test_cli_aggregates_session_provenance` | yes (subprocess) | yes (JSON output) | PASS |
-| `test_cli_handles_missing_provenance_field` | yes | yes | PASS |
-| `test_doctrine_round_trip_against_articles` | yes (heading-tree parse) | yes (per-article body integrity) | PASS |
-| **`test_doctrine_classifies_qor_logic_under_applicability_section_with_non_empty_body`** (replaces Pass-1 borderline test) | **yes** (heading-tree integrity per Phase 53 template; reads `## Applicability classification` section; body-non-empty + substantive-length + canonical-substring round-trip on `Annex III` and `not high-risk`) | **yes** (multi-axis assertion) | **PASS** |
-| `test_doctrine_round_trip_against_functions` | yes | yes | PASS |
-| `test_doctrine_round_trip_against_genai_profile_sections` | yes | yes | PASS |
-| `test_schema_accepts_plan_with_impact_assessment` | yes | yes | PASS |
-| `test_schema_accepts_plan_without_impact_assessment` | yes | yes | PASS |
-| `test_schema_rejects_high_risk_target_without_impact_assessment` | yes | yes | PASS |
-| **`test_plan_skill_step_1c_round_trips_impact_assessment_subfields`** (replaces Pass-1 VETO test) | **yes** (reads `plan.schema.json`, extracts `impact_assessment` sub-field names, walks SKILL.md, asserts every sub-field name appears in Step 1c body AND body is non-empty after whitespace trim) | **yes** (schema-anchored round-trip + body-emptiness check) | **PASS** |
-| `test_six_gate_skills_declare_permitted_tools` | yes (YAML parse + shape check) | yes | PASS |
-| `test_permitted_tools_lint_warns_on_absent_skill` | yes | yes | PASS |
-| `test_check_returns_false_below_threshold` | yes | yes | PASS |
-| `test_check_returns_true_at_threshold` | yes | yes | PASS |
-| `test_record_with_justification_validates_length` | yes | yes (ValueError) | PASS |
-| `test_emit_gate_override_raises_on_third_without_justification` | yes | yes (exception) | PASS |
-| `test_emit_gate_override_succeeds_with_justification` | yes | yes (event payload) | PASS |
-| **`test_skills_emitting_gate_overrides_handle_friction_exception`** (replaces Pass-1 VETO test) | **yes** (walks SKILL.md tree, conditionally enumerates skills calling `gate_chain.emit_gate_override(`, asserts each also references `OverrideFrictionRequired` AND describes re-call with `justification=`) | **yes** (per-skill assertion under conditional) | **PASS** |
-| `test_phase54_substantiate_gate_carries_ai_provenance` | yes | yes | PASS |
-| `test_phase54_provenance_manifest_aggregator_emits_5_phases` | yes | yes | PASS |
-| `test_phase54_self_scan_no_canary_triggers` | yes | yes | PASS |
-| `test_cli_emits_priority_status_table` | yes | yes | PASS |
-| `test_cli_handles_missing_brief` | yes | yes | PASS |
+| `test_admit_*` (5 admission tests) | yes | yes | PASS |
+| `test_canonical_tools_set_matches_documented_tool_names` | yes (round-trip) | yes | PASS |
+| `test_cedar_*` (3 evaluator tests) | yes | yes (Decision verdict + matching policy id) | PASS |
+| `test_compute_skill_admission_attributes_*` (4 helper tests) | yes | yes | PASS |
+| `test_eight_skills_declare_model_pinning_keys` | yes (YAML parse + shape check) | yes | PASS |
+| `test_lint_warns_when_*` / `_passes_when_*` (5 model-pinning lint tests) | yes | yes | PASS |
+| `test_capability_tier_extraction_from_model_family_string` | yes | yes | PASS |
+| `test_lint_handles_unset_qor_model_family_env` | yes | yes | PASS |
+| **`test_skills_with_pinning_keys_are_covered_by_pinning_lint_invocation`** (replaces Pass-1 VETO test) | **yes** (conditional walk: enumerate every SKILL.md whose frontmatter declares the pinning pair, then assert at least one `phase: plan` skill invokes the lint; covers the actual frontmatter-declaration set, not a single-skill substring) | **yes** (per-skill enumeration + inner assertion) | **PASS** |
+| `test_sbom_emitter_*` (7 SBOM emission tests) | yes | yes | PASS |
+| **`test_skills_writing_deliver_gate_invoke_sbom_emit`** (replaces Pass-1 VETO test) | **yes** (conditional walk on `gate_writes: deliver` frontmatter; asserts each invokes `sbom_emit.emit` and captures `sbom_path`; conditional on actual deliver-gate-write target) | **yes** (per-skill conditional invariant) | **PASS** |
+| `test_release_cli_subcommand_emits_sbom` | yes (subprocess) | yes | PASS |
+| `test_release_handler_register_function_exists` | yes (import + isinstance) | yes | PASS |
+| `test_qor_cli_dispatches_release_subcommand` | yes (subprocess) | yes | PASS |
+| `test_lint_detects_*` / `_passes_for_*` (12 plan-lint tests across both lints) | yes | yes | PASS |
+| **`test_audit_phase_skills_invoke_both_pre_audit_lints`** (replaces Pass-1 VETO test) | **yes** (conditional walk on `phase: audit` frontmatter; asserts each body invokes BOTH `plan_test_lint` and `plan_grep_lint`; conditional on actual audit-phase frontmatter set) | **yes** (per-skill enumeration + per-lint inner assertion) | **PASS** |
+| `test_phase55_implement_gate_carries_ai_provenance` | yes | yes | PASS |
+| `test_eight_scoped_skills_admit_under_new_policy` | yes | yes | PASS |
+| `test_sbom_emitter_produces_valid_document_for_current_repo` | yes | yes | PASS |
+| `test_pre_audit_lints_clean_against_phase55_plan` | yes (calls both lints) | yes (asserts empty warning list) | PASS |
+| `test_sprint_progress_reports_4_of_5_priorities_after_phase55` | yes (computes against brief + ledger) | yes (asserts on rendered output) | PASS |
 
-**All described tests now invoke the unit under test and assert on its output**. The three Pass-1 presence-only tests have been reformed:
+**All described tests now invoke the unit under test and assert on its output.** The three Pass-1 presence-only tests have been reformed as true Phase-50-pattern conditional co-occurrence invariants:
 
-1. `test_six_sdlc_skills_call_build_manifest` -> `test_skills_writing_gate_artifacts_invoke_build_manifest`. Now a true co-occurrence behavior invariant: the conditional rule "any skill calling `gate_chain.write_gate_artifact` MUST call `ai_provenance.build_manifest`" makes the assertion behavior-anchored. A regression in any gate-writing skill that drops the build_manifest call (whether deleted, moved into a comment block, or detached) is caught because the conditional set still includes that skill and the inner assertion fails.
+1. `test_qor_plan_skill_step_0_2_invokes_model_pinning_lint` → `test_skills_with_pinning_keys_are_covered_by_pinning_lint_invocation`. Conditional on the eight-skill pinning-frontmatter declaration set; asserts plan-phase-skill coverage. Acceptance: regression in any pinning-declaring skill, or any plan-phase skill regressing to drop the lint, fails the test.
+2. `test_release_skill_step_z_invokes_sbom_emit` → `test_skills_writing_deliver_gate_invoke_sbom_emit`. Conditional on the `gate_writes: deliver` set; asserts each writes the SBOM and captures `sbom_path`. Acceptance: any deliver-writing skill regressing to drop SBOM emission fails the test.
+3. `test_audit_skill_step_0_5_invokes_pre_audit_lints` → `test_audit_phase_skills_invoke_both_pre_audit_lints`. Conditional on `phase: audit` frontmatter; asserts each invokes both lints. Acceptance: regression dropping either lint fails the per-lint inner assertion identifying which one is missing.
 
-2. `test_plan_skill_step_1c_present` -> `test_plan_skill_step_1c_round_trips_impact_assessment_subfields`. Schema-anchored round-trip integrity test (mirrors Phase 53's `test_doctrine_round_trip_against_canary_catalog` model). Drift between the schema's `impact_assessment` sub-field declarations and the SKILL.md prose surfaces immediately. Body-emptiness check rejects "heading-only" presence.
-
-3. `test_six_gate_skills_handle_override_friction_required` -> `test_skills_emitting_gate_overrides_handle_friction_exception`. Co-occurrence behavior invariant: the conditional rule "any skill calling `emit_gate_override` MUST handle `OverrideFrictionRequired` AND describe re-call with `justification=`" anchors to the override-emission behavior.
-
-4. Borderline `test_doctrine_declares_qor_logic_not_high_risk` -> `test_doctrine_classifies_qor_logic_under_applicability_section_with_non_empty_body`. Heading-tree integrity per Phase 53 template; multi-axis assertion (heading present + body non-empty + canonical-substring round-trip on `Annex III` and `not high-risk`).
+**Acute irony from Pass 1 resolved**: Phase 55 Phase 4 introduces `plan_test_lint.py` to catch presence-only test descriptions. The reformed test descriptions now satisfy the lint's behavior-anchor criterion; the self-application Phase 5 test (`test_pre_audit_lints_clean_against_phase55_plan`) will assert this when implementation lands.
 
 ### Dependency Audit — PASS
 
-| Package | Justification | <10 lines vanilla? | Verdict |
-|---|---|---|---|
-| (none) | Zero new dependencies; uses stdlib (`tomllib`, `json`, `argparse`, `dataclasses`, `pathlib`) | yes | PASS |
+Zero new dependencies; stdlib only (`json`, `re`, `pathlib`, `dataclasses`, `argparse`, `tomllib`).
 
 ### Macro-Level Architecture Pass — PASS
 
-- Module boundaries clear: parser/dispatcher in `qor/cli.py`, subcommand handlers in `qor/cli_handlers/`, helpers under `qor/scripts/`, schemas under `qor/gates/schema/`, doctrine under `qor/references/`.
-- New `qor/cli_handlers/` package is a clean layering split: cli (entry) → cli_handlers (subcommand handlers) → scripts (utility helpers). Forward direction; no reverse imports.
-- No cycles. The `_provenance.schema.json` `$ref` from 6 phase schemas is JSON Schema cross-reference, not a Python import cycle.
-- Single source of truth preserved: `_provenance.schema.json` for provenance shape; `qor.scripts.ai_provenance.build_manifest` for builder; `qor.cli_handlers.compliance` for compliance subcommand handlers; `qor.scripts.override_friction` for the escalator.
-- Cross-cutting concerns (host detection, version derivation) consolidated in `ai_provenance.py`; not duplicated across the six skills.
-- Build path explicit: `qor-logic compliance ai-provenance` argv-form CLI; `qor.cli_handlers.compliance.register(sub)` is the single registration site.
+- Module boundaries clear: `qor/cli_handlers/release.py` parallels `compliance.py`; `qor/policy/resource_attributes.py` extended with one new helper adjacent to existing `compute_governance_attributes`; standalone scripts (`plan_test_lint`, `plan_grep_lint`, `model_pinning_lint`, `sbom_emit`) under `qor/scripts/`.
+- New `qor/gates/schema/deliver.schema.json` parallels existing phase schemas; `validate_gate_artifact.PHASES` extension is one literal addition.
+- No cycles introduced. Layering preserved.
+- Single source of truth: `_CANONICAL_TOOLS` frozenset for tool-name set; `_CAPABILITY_ORDER` tuple for model-tier ordering; `deliver.schema.json` for deliver-gate shape (per amendment); `dist/sbom.cdx.json` for SBOM artifact location.
+- Cross-cutting: SG-PreAuditLintGap-A entry codifies the recurrence pattern in the existing doctrine file.
+- Build path explicit: argv-form CLIs throughout.
 
 ### Infrastructure Alignment Pass (Phase 37) — PASS
 
 Pass-1 VETO finding remediated. Re-verifying each plan claim against HEAD:
 
-1. ✓ `qor.scripts.qor_platform.current()` — verified at `qor/scripts/qor_platform.py:140`. Returns `dict | None` (full platform-state dict). Plan now correctly cites this path; `build_manifest` extracts host via `state.get("detected", {}).get("host", "unknown")` per the existing `qor-implement` SKILL.md Step 1.a pattern.
-2. ✓ `qor.cli` `compliance` subcommand group exists at `qor/cli.py:150-160` (`_register_compliance_policy`); plan declares the existing `_do_compliance_report` body extracts to `qor/cli_handlers/compliance.py::do_report` (refactor, not break).
-3. ✓ `qor.scripts.gate_chain.write_gate_artifact()` accepts kwargs at `qor/scripts/gate_chain.py:126`; additive `ai_provenance: dict | None = None` does not break existing callers.
-4. ✓ `qor.scripts.gate_chain.emit_gate_override()` exists at `qor/scripts/gate_chain.py:83`.
-5. ✓ `qor.scripts.cycle_count_escalator` exists; symmetric threshold (3) matches plan.
-6. ✓ `qor.scripts.shadow_process.append_event` exists at `qor/scripts/shadow_process.py:68`.
-7. ✓ `qor.scripts.validate_gate_artifact._validate_data` exists at `qor/scripts/validate_gate_artifact.py:112`.
-8. ✓ `qor/gates/schema/shadow_event.schema.json` exists.
-9. ✓ `tomllib` is Python 3.11+ stdlib (already required by `pyproject.toml`).
+1. ✓ `qor/cli_handlers/__init__.py` exists (Phase 54).
+2. ✓ `qor.policy.evaluator.evaluate` at `qor/policy/evaluator.py:118`.
+3. ✓ `qor.policy.parser.parse_policies` at `qor/policy/parser.py:159`.
+4. ✓ `qor/skills/meta/qor-repo-release/SKILL.md` Step Z at line 205.
+5. ✓ `qor.scripts.qor_platform.current()` (Phase 54-verified).
+6. ✓ `qor/skills/governance/qor-substantiate/SKILL.md` Step 4.6 reliability sweep surface.
+7. ✓ `qor/policies/skill_admission.cedar` exists.
+8. ✓ **`qor/gates/schema/deliver.schema.json` declared NEW in amended Phase 3 Affected Files** (no longer hedged). Plan now closes the pre-existing surface gap where `qor-repo-release` writes `phase="deliver"` but `validate_gate_artifact.PHASES` had no `"deliver"` entry. Phase 3 sub-deliverable: declare `deliver.schema.json` with required fields `{phase: const "deliver", ts, session_id, version, tag, sbom_path}` (sbom_path optional); extend `PHASES` list with `"deliver"`; one-line additions to two files.
+9. ✓ Sidecar SBOM path `dist/sbom.cdx.json` mirrors existing post-substantiate Merkle-seal pattern; consistent with the doctrine of post-seal artifacts as ledger sidecars.
 
 No infrastructure-mismatch findings remain.
 
@@ -125,20 +107,19 @@ No infrastructure-mismatch findings remain.
 
 | Proposed File | Entry Point Connection | Status |
 |---|---|---|
-| `qor/scripts/ai_provenance.py` | imported by `qor.scripts.gate_chain.write_gate_artifact` and the six SDLC + governance skills' Step Z blocks | Connected |
-| `qor/scripts/override_friction.py` | imported by `qor.scripts.gate_chain.emit_gate_override` | Connected |
-| `qor/scripts/sprint_progress.py` | imported by `qor.cli_handlers.compliance.do_sprint_progress` (new entry surface) | Connected |
-| `qor/cli_handlers/__init__.py` | package marker; required for `qor.cli_handlers.compliance` import | Connected |
-| `qor/cli_handlers/compliance.py` | imported by `qor.cli` parser/dispatcher via `register(sub)` call | Connected |
-| `qor/gates/schema/_provenance.schema.json` | `$ref`'d from 6 phase schemas | Connected |
-| `qor/references/doctrine-eu-ai-act.md` / `doctrine-ai-rmf.md` | cross-linked from `CLAUDE.md` Authority line + plan template impact-assessment Step 1c | Connected |
-| 12 new test files | pytest collection | Connected |
+| `qor/policy/resource_attributes.py` extension | imported by `qor/reliability/skill_admission.py` (extended) and `qor/policies/skill_admission.cedar` (forbid rule consumes the computed attribute) | Connected |
+| `qor/scripts/model_pinning_lint.py` | argv-form CLI; invoked by at least one `phase: plan` skill | Connected |
+| `qor/scripts/sbom_emit.py` | argv-form CLI; invoked by `qor-repo-release` Step Z; also via `qor-logic release sbom` | Connected |
+| `qor/cli_handlers/release.py` | imported by `qor/cli.py` parser/dispatcher | Connected |
+| `qor/scripts/plan_test_lint.py` / `plan_grep_lint.py` | argv-form CLI; invoked by `qor-audit` Step 0.5 | Connected |
+| `qor/gates/schema/deliver.schema.json` (NEW) | `$ref`'d implicitly via `validate_gate_artifact._registry()`; `qor-repo-release` writes payloads conforming to this schema | Connected |
+| 6 new test files | pytest collection | Connected |
 
 ---
 
 ## Verdict: **PASS**
 
-All eight passes clear. Plan-text defects from Pass 1 (`razor-overage`, `test-failure`, `infrastructure-mismatch`) are remediated. Architectural posture is preserved: bundling Priorities 2/4/5 into one feature phase; `_provenance.schema.json` `$ref` single source of truth; `human_oversight` enum mapping cleanly to EU AI Act Art. 14; override-friction threshold (3) symmetric with cycle-count escalator; declarative-only `permitted_tools` frontmatter as a clean two-step rollout for Phase 55 enforcement; self-application Phase 4 + sprint-progress dashboard as correct meta-coherence checks.
+All eight passes clear. Plan-text defects from Pass 1 (`test-failure`, `infrastructure-mismatch`) are remediated. Architectural posture preserved + extended: Phase 55 incidentally closes the long-standing `deliver.schema.json` surface gap as part of Priority-3 work.
 
 ### No findings
 
@@ -150,22 +131,22 @@ Per `qor/gates/chain.md`: `/qor-implement`. Implementation should track each pha
 
 ### Strengths preserved (do not change)
 
-- CLI subcommand-handler split (Pass-2 amendment): clean layering separation; `qor/cli.py` regains headroom for Phase 55+ subcommand additions without re-hitting the razor cap.
-- Co-occurrence behavior invariant pattern (Phase 50 model) consistently applied across the three reformed lints — *conditional on actual behavior, not literal substring presence*.
-- Schema-anchored round-trip integrity (Phase 53 template) for Step 1c sub-field test — drift between schema and SKILL.md prose surfaces immediately.
-- Heading-tree integrity (Phase 53 template) for the applicability-section doctrine test — body-emptiness rejection rejects heading-only presence.
-- Override-friction count threshold (3) matches the existing cycle-count escalator — symmetric, learnable, single tuning point across the override-discipline doctrine.
-- Subagent `permitted_tools` frontmatter as declarative-only this phase, with Phase 55 wiring the Cedar enforcement — clean two-step rollout.
+- Conditional co-occurrence invariants (Phase 50 model) consistently applied across all three reformed lint tests — each conditional anchors to actual frontmatter declarations rather than literal substrings.
+- Sidecar SBOM at `dist/sbom.cdx.json` mirrors existing post-substantiate Merkle-seal pattern; deliver-gate payload carries only the path reference, keeping schema lightweight.
+- Pre-audit lint pair (`plan_test_lint` + `plan_grep_lint`) explicitly closes the Phase 53/54/55 cross-session recurring-pattern advisory. Once landed, Phase 56+ first audits should drop their Pass-1 VETO rate for these specific failure classes.
+- `_CANONICAL_TOOLS` round-trip test against doctrine + `_CAPABILITY_ORDER` ordering — model templates for future scope-set validation.
+- SG-PreAuditLintGap-A codifies the recurrence pattern + countermeasure for future operators.
+- Sprint-progress reconciliation closes Phase 54's known-issue where the dashboard misreported bundled priorities.
 
 ### Process pattern advisory
 
-`veto_pattern.check()` would return `detected=False` (1 VETO + 1 PASS in this session; well below the 3-consecutive-same-signature threshold). No `/qor-remediate` recommendation.
+`veto_pattern.check()` would return `detected=False` (1 VETO + 1 PASS in this session; below the 3-consecutive-same-signature threshold). No `/qor-remediate` recommendation.
 
-**Cross-session pattern signal (carryover from Pass-1 advisory)**: The presence-only-test pattern recurred across Phase 53 and Phase 54 first audits despite SG-035 doctrine being live. Phase 55 should consider pre-audit lints (`qor/scripts/plan_test_lint.py`, `qor/scripts/plan_grep_lint.py`) that catch presence-only test descriptions and infrastructure-mismatch citations before the Judge sees them. Net savings ≈ half an audit cycle per phase.
+**Cross-session pattern resolution**: Phase 55's pre-audit lint pair is the structural countermeasure for the three-phase recurring pattern (presence-only-disguised-as-co-occurrence + hedged-citation drift). Once Phase 55 implements and ships, the `plan_test_lint` and `plan_grep_lint` invocations at `/qor-audit` Step 0.5 will catch these classes pre-Step-3, eliminating the Pass-1 VETO → amend → Pass-2 PASS cycle for Phase 56+ first audits.
 
 ### Risk grade rationale
 
-L2 retained: feature phase touches AI-governance metadata + skill-prose surfaces; not L3 because no auth/credentials/cryptographic code is modified.
+L2 retained: feature phase touches policy + frontmatter + supply-chain surfaces; not L3 because no auth/credentials/cryptographic code is modified.
 
 ---
 

@@ -14,6 +14,8 @@ gate_reads: research
 gate_writes: plan
 permitted_tools: [Read, Grep, Glob, Bash, Edit, Write]
 permitted_subagents: []
+model_compatibility: [claude-opus-4-7]
+min_model_capability: opus
 ---
 # /qor-plan - Simple Made Easy Planning
 
@@ -100,6 +102,16 @@ python -m qor.scripts.install_drift_check --host claude --scope repo || \
 ```
 
 Fix on drift: `qor-logic install --host <host> --scope <scope>` regenerates the installed copy from source. See `qor/references/doctrine-governance-enforcement.md` §8 Install Currency for the full contract.
+
+### Step 0.3: Model-pinning lint (Phase 55 wiring)
+
+Verify the operator's running model meets each scoped skill's declared `min_model_capability`. Non-blocking WARN; operator decides whether to swap models before proceeding.
+
+```bash
+python -m qor.scripts.model_pinning_lint --repo-root . || true
+```
+
+Reads `QOR_MODEL_FAMILY` env (set by harness when available) and walks `qor/skills/**/SKILL.md` for `model_compatibility` + `min_model_capability` frontmatter. Emits stderr warnings for any skill whose declared minimum exceeds the current model's tier (`haiku < sonnet < opus`). Per `qor/references/doctrine-ai-rmf.md` §MANAGE-3.1.
 
 ### Step 0.5: Phase branch creation (Phase 13 wiring)
 

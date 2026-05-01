@@ -78,7 +78,46 @@ def check_admission(name: str, skills: dict[str, Path]) -> tuple[bool, str]:
     if fm["name"] != name:
         return False, f"NOT-ADMITTED: {name} reason=name-mismatch"
 
+    # Phase 55: Cedar tool/subagent scope enforcement (LLM07 + AI RMF GV-6.1).
+    # Skips if the skill is not in the eight-skill scoped set (skills without
+    # permitted_tools/permitted_subagents frontmatter are advisory-only).
+    scope_check = check_tool_scope(name, skills[name])
+    if not scope_check[0]:
+        return False, scope_check[1]
+
     return True, f"ADMITTED: {name}"
+
+
+def check_tool_scope(name: str, skill_path: Path) -> tuple[bool, str]:
+    """Phase 55: enforce permitted_tools/permitted_subagents via Cedar.
+
+    Skips skills that don't declare the frontmatter keys (Phase 54 advisory-only
+    posture; Phase 55 admission only enforces declared scope, not absence).
+
+    Gracefully degrades when invoked via direct file-path (legacy callsites
+    where ``qor.policy`` is not importable): skips scope check.
+    """
+    try:
+        from qor.policy.resource_attributes import compute_skill_admission_attributes
+    except ImportError:
+        return True, ""  # legacy file-path invocation; skip Phase 55 enforcement
+
+    attrs = compute_skill_admission_attributes(skill_path)
+    body = skill_path.read_text(encoding="utf-8", errors="replace")
+    if "permitted_tools:" not in body and "permitted_subagents:" not in body:
+        return True, ""  # advisory-only; not in scoped set
+
+    if attrs["actual_tool_invocations_exceed_scope"]:
+        return False, (
+            f"NOT-ADMITTED: {name} reason=tool-scope-exceeded; "
+            f"actual prose-cited Tool invocations exceed permitted_tools allowlist"
+        )
+    if attrs["actual_subagent_invocations_exceed_scope"]:
+        return False, (
+            f"NOT-ADMITTED: {name} reason=subagent-scope-exceeded; "
+            f"actual subagent_type invocations exceed permitted_subagents allowlist"
+        )
+    return True, ""
 
 
 def main(argv: list[str] | None = None) -> int:

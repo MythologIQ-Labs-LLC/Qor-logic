@@ -14,6 +14,8 @@ gate_reads: ""
 gate_writes: research
 permitted_tools: [Read, Grep, Glob, Bash]
 permitted_subagents: [Explore, general-purpose]
+model_compatibility: [claude-opus-4-7, claude-sonnet-4-6]
+min_model_capability: sonnet
 ---
 # /qor-research — Deep Research Phase
 

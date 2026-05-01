@@ -6425,3 +6425,136 @@ SHA256(content_hash + "|" + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 54 feature substantiated)
 *Merkle seal: 8d2d4986...* (Phase 54 seal on top of Phase 53's 4050f3ae; Entries #175-#178 chained; first seal with AI provenance metadata embedded across all six gate-artifact schemas)
+
+---
+
+### Entry #179: GATE TRIBUNAL — Phase 55 Pass 1 — **VETO** (L2)
+
+**Timestamp**: 2026-05-01T07:00:00Z
+**Phase**: GATE
+**Author**: Judge (solo mode)
+**Risk Grade**: L2
+**Verdict**: VETO
+
+**Target**: `docs/plan-qor-phase55-subagent-admission-and-supply-chain.md`
+**Report**: `.agent/staging/AUDIT_REPORT.md` (Pass 1 content; superseded by Pass 2)
+**Session**: `2026-05-01T0616-0b8d09`
+**Gate Artifact**: `.qor/gates/2026-05-01T0616-0b8d09/audit.json` (overwritten with PASS payload at Entry #180)
+
+**Content Hash (synthetic placeholder)**:
+```
+SHA256("VETO synthetic content hash placeholder for Entry #179")
+= b2a606d2d403ff5b82c427a5e54e5b07e664ea6f3550809b0ebea6198d75a0d6
+```
+
+**Previous Hash**: `8d2d4986989ebe20b729de352b2ed18a738b59f08020707ac3fa71917c114724`
+
+**Chain Hash**:
+```
+SHA256(content_hash + "|" + previous_hash)
+= 79d13002c0753be660375831f19812eb2c5e5d5edc4ec0ed5d8eb2f6e302fe25
+```
+
+**Findings Categories**: `test-failure`, `infrastructure-mismatch`
+
+**Note**: this entry retroactively records the Pass-1 VETO that the audit issued at the time of Pass-1 report authoring; the audit gate artifact was overwritten with the Pass-2 PASS payload before this ledger entry landed (single-artifact-per-session contract). Content hash is a deterministic synthetic placeholder so the chain link to Entry #180 remains content-addressed and verifiable. Pass-1 findings preserved in Pass-2 audit report's preamble for archaeology.
+
+**Findings**:
+- `test-failure` — three single-target presence-only tests labeled "co-occurrence behavior invariant" but actually substring-presence checks on individual SKILL.md files (`test_qor_plan_skill_step_0_2_invokes_model_pinning_lint`, `test_release_skill_step_z_invokes_sbom_emit`, `test_audit_skill_step_0_5_invokes_pre_audit_lints`).
+- `infrastructure-mismatch` — Phase 3 hedged on `qor/gates/schema/deliver.schema.json` ("UPDATE if exists OR ..."); the file does not exist at HEAD; `validate_gate_artifact.PHASES` enum has no `"deliver"` entry exposing a pre-existing surface gap qor-repo-release inherited.
+
+**Cross-session pattern signal**: third consecutive Pass-1 VETO with this finding combination (Phase 53/54/55 first audits all caught presence-only-disguised-as-co-occurrence + hedged-citation drift). Phase 55 deliverable (`plan_test_lint` + `plan_grep_lint` at `/qor-audit` Step 0.5) is the structural countermeasure; once landed, Phase 56+ first audits should drop their Pass-1 VETO rate for these specific failure classes.
+
+**Required next action**: Governor amends plan: (a) reform three presence-only tests as true conditional co-occurrence invariants; (b) replace hedged `deliver.schema.json` language with concrete sidecar SBOM path (`dist/sbom.cdx.json`) and explicit declaration of `deliver.schema.json` as NEW (closes pre-existing surface gap incidentally).
+
+**Decision**: VETO. First audit on session 2026-05-01T0616-0b8d09. No repeated-VETO pattern within the session; no `/qor-remediate` recommendation.
+
+---
+
+### Entry #180: GATE TRIBUNAL — Phase 55 Pass 2 — **PASS** (L2)
+
+**Timestamp**: 2026-05-01T17:42:00Z
+**Phase**: GATE
+**Author**: Judge (solo mode)
+**Risk Grade**: L2
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase55-subagent-admission-and-supply-chain.md` (amended per Entry #179 VETO findings)
+**Report**: `.agent/staging/AUDIT_REPORT.md`
+**Session**: `2026-05-01T0616-0b8d09`
+**Gate Artifact**: `.qor/gates/2026-05-01T0616-0b8d09/audit.json` (PASS payload)
+
+**Content Hash**:
+```
+SHA256(.agent/staging/AUDIT_REPORT.md)
+= 59a3f59b7b24dfaf447db03d30fadeaa47f215a4df105782f429572f933854b1
+```
+
+**Previous Hash**: `79d13002c0753be660375831f19812eb2c5e5d5edc4ec0ed5d8eb2f6e302fe25`
+
+**Chain Hash**:
+```
+SHA256(content_hash + "|" + previous_hash)
+= b7220417a9fc5f5f82255ea1643b7305ec0b4c1665bfbf947149f33498f72e9c
+```
+
+**Findings Categories**: (none)
+
+**Pass-1 remediations verified**:
+- *`test-failure` cleared*: three presence-only tests reformed as true conditional co-occurrence invariants — `test_skills_with_pinning_keys_are_covered_by_pinning_lint_invocation` (conditional on pinning frontmatter set), `test_skills_writing_deliver_gate_invoke_sbom_emit` (conditional on `gate_writes: deliver` set), `test_audit_phase_skills_invoke_both_pre_audit_lints` (conditional on `phase: audit` set).
+- *`infrastructure-mismatch` cleared*: Phase 3 declares concrete sidecar SBOM at `dist/sbom.cdx.json` (parallels post-substantiate Merkle-seal pattern); `qor/gates/schema/deliver.schema.json` declared NEW (closes pre-existing surface gap); `validate_gate_artifact.PHASES` extended with `"deliver"`.
+
+**Eight passes clear**: Security · OWASP Top 10 · Ghost UI (N/A) · Section 4 Razor · Test Functionality · Dependency · Macro-Architecture · Infrastructure Alignment · Orphan Detection.
+
+**Strengths preserved**: conditional co-occurrence invariants applied uniformly; sidecar SBOM mirrors existing post-seal patterns; `_CANONICAL_TOOLS` + `_CAPABILITY_ORDER` round-trip integrity templates; pre-audit lint pair structurally closes the cross-session recurring pattern; sprint-progress reconciliation closes Phase 54 known issue.
+
+**Required next action**: `/qor-implement`. Per `qor/gates/chain.md`. Intent-lock to be captured at implement Step 5.5.
+
+**Cross-session pattern resolution**: Phase 55 ships the structural countermeasure (`plan_test_lint` + `plan_grep_lint` at Step 0.5). Once implemented, Phase 56+ first audits should catch presence-only-disguised-as-co-occurrence + hedged-citation drift pre-Step-3. Net savings: ~half an audit cycle per future phase.
+
+**Decision**: PASS. 1 VETO + 1 PASS in this session; well below 3-consecutive-same-signature threshold; no `/qor-remediate` recommendation. Plan unblocked for implementation.
+
+---
+
+### Entry #181: IMPLEMENTATION — Phase 55 (Cedar admission + model-pinning + CycloneDX SBOM + pre-audit lints + deliver schema)
+
+**Timestamp**: 2026-05-01T19:00:00Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+
+**Plan**: `docs/plan-qor-phase55-subagent-admission-and-supply-chain.md`
+**Audit**: `.agent/staging/AUDIT_REPORT.md` (Pass 2 PASS verdict; Entry #180)
+**Session**: `2026-05-01T0616-0b8d09`
+**Gate Artifact**: `.qor/gates/2026-05-01T0616-0b8d09/implement.json`
+
+**Content Hash**: `7714380534878e6e0cc04d3bc9070d002863dd175e568d60fcd1aa5f988a60c7`
+**Previous Hash**: `b7220417a9fc5f5f82255ea1643b7305ec0b4c1665bfbf947149f33498f72e9c`
+**Chain Hash**: `80c4281d126e5d9f3fd899aa6a175cdba6ed18c93bc0310aafc0f09364cb16a1`
+
+**Test Summary**: 1104 passed, 1 skipped, 4 deselected (twice in a row, deterministic). +67 from Phase 54 baseline.
+
+**Phase 1 — Cedar admission**: `qor/policies/skill_admission.cedar` extended with two new `forbid` rules; `qor/policy/resource_attributes.py` extended with `compute_skill_admission_attributes` + `_CANONICAL_TOOLS` frozenset (10 Tool names); `qor/reliability/skill_admission.py` `check_admission` extended with `check_tool_scope` Phase 55 enforcement (graceful fallback for legacy file-path invocations). 19 phase-1 tests across `test_skill_admission_tool_scope.py`, `test_cedar_subagent_admission.py`, `test_resource_attributes_skill_scope.py`.
+
+**Phase 2 — model-pinning**: 8 scoped skills declare `model_compatibility:` + `min_model_capability:` from ordered tier set `(haiku, sonnet, opus)`. New `qor/scripts/model_pinning_lint.py` (~135 LOC) with WARN-only CLI. `/qor-plan` Step 0.3 wires the lint. 12 phase-2 tests including conditional co-occurrence invariant `test_skills_with_pinning_keys_are_covered_by_pinning_lint_invocation`.
+
+**Phase 3 — CycloneDX SBOM + deliver schema**: `qor/scripts/sbom_emit.py` (~145 LOC, hand-rolled CycloneDX v1.5, zero new runtime deps) emits root + skill + doctrine + variant components. New `qor/cli_handlers/release.py` (~38 LOC) hosts `do_sbom`; `qor-logic release sbom` registered. `/qor-repo-release` Step Z emits sidecar `dist/sbom.cdx.json` + captures `sbom_path` into deliver gate payload. **`qor/gates/schema/deliver.schema.json` declared NEW** (closes pre-existing surface gap; `validate_gate_artifact.PHASES` extended with `"deliver"`). 16 phase-3 tests including `test_skills_writing_deliver_gate_invoke_sbom_emit`.
+
+**Phase 4 — pre-audit lints**: `qor/scripts/plan_test_lint.py` (~76 LOC) detects four canonical presence-only patterns; `qor/scripts/plan_grep_lint.py` (~99 LOC) detects infrastructure-mismatch citations (excludes paths declared NEW in Affected Files; skips placeholder-style citations). `/qor-audit` Step 0.6 + `/qor-repo-audit` Step 0.6 invoke both lints WARN-only. SG-PreAuditLintGap-A appended. 15 phase-4 tests including `test_audit_phase_skills_invoke_both_pre_audit_lints`.
+
+**Phase 5 — self-application + sprint reconciliation**: `qor/scripts/sprint_progress.py` extended with `sealed_priorities_from_ledger` (handles "Bundles Priorities 2 (...), 4 (...), and 5 (...)" pattern via sentence boundary parsing). 5 phase-5 self-application tests verify the eight scoped skills pass the new admission policy, the SBOM emitter produces a valid document, the pre-audit lints run cleanly against the Phase 55 plan, and sprint-progress reports >= 4/5 priorities sealed pre-Phase-55-seal. Three new glossary terms (tool-scope policy, model-pinning frontmatter, CycloneDX SBOM).
+
+**Reliability sweep**:
+- `python -m qor.reliability.skill_admission qor-substantiate` → ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` → 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.dist_compile` → 4 variants emitted.
+- `python -m qor.scripts.check_variant_drift` → OK 236 files, no drift.
+- `python -m qor.scripts.badge_currency` → OK (Tests 1038 → 1105 [collected], Doctrines 20, Ledger 178 → 180).
+
+**Razor compliance**: all new modules ≤145 LOC; longest function `sbom_emit.emit()` at 30 LOC; max nesting depth 2; zero nested ternaries.
+
+**Sprint state**: `qor-logic compliance sprint-progress` reports 4/5 priorities sealed pre-Phase-55-seal; post-seal expected 5/5 (Priority 3 lands with this seal).
+
+**Decision**: Phase 55 implementation complete. All four substantive phases landed plus Phase 5 self-application. 1104 tests passing twice in a row. Reality matches Promise. Handoff to `/qor-substantiate`.
+
+---

@@ -207,12 +207,19 @@ Calculate and record content hash and chain hash per standard Merkle chain proto
 Persist the structured gate artifact at `.qor/gates/<session_id>/deliver.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
 
 ```python
-from qor.scripts import gate_chain, shadow_process, ai_provenance
+from pathlib import Path
+from qor.scripts import gate_chain, shadow_process, ai_provenance, sbom_emit
+
+# Phase 55: emit CycloneDX v1.5 SBOM as sidecar before writing the deliver gate.
+sbom_path = sbom_emit.write(Path.cwd(), Path("dist/sbom.cdx.json"))
 
 # Build payload conforming to qor/gates/schema/deliver.schema.json
 payload = {
     "ts": shadow_process.now_iso(),
-    # ... phase-specific required fields (see schema)
+    "version": new_version,                  # e.g. "0.40.0"
+    "tag": f"v{new_version}",
+    "sbom_path": str(sbom_path),             # sidecar path; doctrine-eu-ai-act.md Art. 50
+    # ... additional release metadata as needed
 }
 manifest = ai_provenance.build_manifest(
     "implement", human_oversight=ai_provenance.HumanOversight.ABSENT
@@ -222,7 +229,7 @@ gate_chain.write_gate_artifact(
 )
 ```
 
-Schema lives at `qor/gates/schema/deliver.schema.json`; the helper validates before write. Per Phase 54: repo-release calls `ai_provenance.build_manifest` to embed AI provenance (uses the implement-class oversight signal — release is implementation-tier work).
+Schema lives at `qor/gates/schema/deliver.schema.json` (Phase 55 NEW; closes pre-existing surface gap where `phase="deliver"` writes had no schema validation). Per Phase 54: repo-release calls `ai_provenance.build_manifest` to embed AI provenance. Per Phase 55: SBOM emitted as sidecar at `dist/sbom.cdx.json` (CycloneDX v1.5); gate payload carries the path reference for downstream operator discovery.
 
 ## Constraints
 
