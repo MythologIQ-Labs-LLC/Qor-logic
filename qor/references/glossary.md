@@ -422,3 +422,36 @@ referenced_by:
   - qor/references/doctrine-governance-enforcement.md
 introduced_in_plan: phase54-ai-provenance-and-act-alignment
 ```
+
+
+```yaml
+term: tool-scope policy
+definition: 'Phase 55 Cedar admission rule pair on qor/policies/skill_admission.cedar that forbids skill invocations whose actual prose-cited Tool invocations or Agent(subagent_type=...) callsites exceed the declared permitted_tools / permitted_subagents YAML frontmatter allowlist. Resource attributes computed by qor.policy.resource_attributes.compute_skill_admission_attributes; enforcement at the qor.reliability.skill_admission helper layer (not harness Tool/Agent invocation). Closes OWASP LLM Top 10 LLM07 (Insecure Plugin Design) at the manifest layer; Phase 55 wires what Phase 54 declared advisory-only.'
+home: qor/references/doctrine-ai-rmf.md
+referenced_by:
+  - qor/policies/skill_admission.cedar
+  - qor/policy/resource_attributes.py
+  - qor/reliability/skill_admission.py
+introduced_in_plan: phase55-subagent-admission-and-supply-chain
+```
+
+```yaml
+term: model-pinning frontmatter
+definition: 'Per-skill YAML frontmatter keys model_compatibility (list of compatible model families) and min_model_capability (declared minimum capability tier from the ordered set haiku/sonnet/opus). Lint at qor.scripts.model_pinning_lint walks scoped skills and warns when the operator-running model falls below the declared minimum or is not in the compatibility list. WARN-only at /qor-plan Step 0.3 (Phase 54-style declarative-only rollout); Phase 56+ may promote to ABORT. Closes OWASP LLM Top 10 LLM05 (Supply Chain).'
+home: qor/references/doctrine-ai-rmf.md
+referenced_by:
+  - qor/scripts/model_pinning_lint.py
+  - qor/skills/sdlc/qor-plan/SKILL.md
+introduced_in_plan: phase55-subagent-admission-and-supply-chain
+```
+
+```yaml
+term: CycloneDX SBOM
+definition: 'CycloneDX v1.5 Software Bill of Materials JSON document emitted by qor.scripts.sbom_emit at /qor-repo-release Step Z as a sidecar artifact at dist/sbom.cdx.json. Lists the Qor-logic root component plus skill, doctrine, and variant components with bom-ref, name, version, type, description, and a root-depends-on-all dependency edge. Path captured into the deliver gate payload as sbom_path. Maps to EU AI Act Art. 50 transparency-of-AI-generated-content surface; downstream operator inclusion in compliance packages.'
+home: qor/references/doctrine-eu-ai-act.md
+referenced_by:
+  - qor/scripts/sbom_emit.py
+  - qor/cli_handlers/release.py
+  - qor/skills/meta/qor-repo-release/SKILL.md
+introduced_in_plan: phase55-subagent-admission-and-supply-chain
+```

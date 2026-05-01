@@ -15,6 +15,8 @@ gate_reads: implement
 gate_writes: substantiate
 permitted_tools: [Read, Grep, Glob, Bash, Edit, Write]
 permitted_subagents: []
+model_compatibility: [claude-opus-4-7]
+min_model_capability: opus
 ---
 # /qor-substantiate - Session Seal
 

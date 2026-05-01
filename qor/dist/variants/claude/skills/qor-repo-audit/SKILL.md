@@ -12,6 +12,10 @@ phase: audit
 tone_aware: false
 gate_reads: ""
 gate_writes: audit
+permitted_tools: [Read, Grep, Glob, Bash]
+permitted_subagents: []
+model_compatibility: [claude-opus-4-7]
+min_model_capability: opus
 ---
 # /qor-repo-audit - Repository Governance Audit
 
@@ -27,6 +31,18 @@ gate_writes: audit
 Audit repository against GitHub Gold Standard. Integrates with GitHub API for community profile score when available.
 
 ## Execution Protocol
+
+### Step 0.6: Pre-audit lints (Phase 55 wiring — best-effort)
+
+If a current-phase plan file is discoverable, run the pre-audit lints against it (WARN-only). qor-repo-audit primarily audits repo state, not plan files, so lints no-op when no plan is in scope.
+
+```bash
+PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path() or '')" 2>/dev/null || echo "")
+if [ -n "$PLAN_PATH" ] && [ -f "$PLAN_PATH" ]; then
+  python -m qor.scripts.plan_test_lint --plan "$PLAN_PATH" || true
+  python -m qor.scripts.plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
+fi
+```
 
 ### Step 1: Local File Inventory
 

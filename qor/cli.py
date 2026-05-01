@@ -128,7 +128,9 @@ def _build_parser() -> tuple[argparse.ArgumentParser, dict[str, argparse.Argumen
     _register_install_family(sub)
     _register_misc(sub)
     sp_compliance, sp_policy = _register_compliance_policy(sub)
-    return parser, {"compliance": sp_compliance, "policy": sp_policy}
+    from qor.cli_handlers import release as release_handlers
+    sp_release = release_handlers.register(sub)
+    return parser, {"compliance": sp_compliance, "policy": sp_policy, "release": sp_release}
 
 
 def _dispatch(args: argparse.Namespace) -> int | None:
@@ -177,6 +179,13 @@ def main(argv: list[str] | None = None) -> int:
         if getattr(args, "policy_command", None) == "check":
             return do_policy_check(args)
         subparsers["policy"].print_help()
+        return 0
+    if args.command == "release":
+        from qor.cli_handlers import release as release_handlers
+        rc = release_handlers.dispatch(args)
+        if rc is not None:
+            return rc
+        subparsers["release"].print_help()
         return 0
     parser.print_help()
     return 0
