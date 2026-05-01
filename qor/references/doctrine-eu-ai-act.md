@@ -132,6 +132,22 @@ inputs to their Annex IV documentation package:
 - The `ai_provenance` field is descriptive metadata, not a cryptographic signature. Tampering with the manifest after seal is detected only by the existing Merkle chain integrity, not by the manifest itself.
 - The Act's full scope (Art. 51 et seq. for general-purpose AI providers, Art. 99 et seq. for sanctions) lies with the foundation-model provider, not with Qor-logic as a tooling layer.
 
+## Secret-scanning gate (Phase 56)
+
+Phase 56 wires a substantiate-time secret-scanning gate that BLOCKs seal commits containing detected secrets. Closes OWASP LLM Top 10 LLM06 (Sensitive Information Disclosure) and NIST AI 600-1 §2.10 (preventing model and infrastructure credential leakage at the artifact-publication boundary). Drives the previously dormant Cedar attribute `has_hardcoded_secrets` (rule on books since Phase 23 with no scanner driving the boolean).
+
+**Applicability**: enforced at `/qor-substantiate` Step 4.6.5 over the staged set for the seal commit. Pre-staged uncommitted changes are out of scope and rescanned on next stage cycle.
+
+**Pattern catalog** (single source of truth: `qor/scripts/secret_scanner.PATTERNS`): `aws-access-key`, `github-pat-classic`, `github-pat-finegrained`, `github-oauth`, `private-key-header`, `stripe-live`, `slack-token`, `google-api-key`, `anthropic-key`, `generic-high-entropy-assignment`, `private-key-url`. Each entry is a frozen dataclass with `name` (used as gitleaks `RuleID`), regex, severity (3 high-confidence, 2 medium), and description.
+
+**Allowlist semantics**: `qor/scripts/secret_scanner._ALLOWLIST` is a frozenset of literal substrings. A line containing any allowlisted substring is silently passed (false-positive class). Seeded with Cedar/schema attribute names (`permitted_tools`, `permitted_subagents`, `model_compatibility`, `min_model_capability`, `compute_skill_admission_attributes`, etc.) plus the AWS docs sample (`AKIAIOSFODNN7EXAMPLE`) and redaction sentinels (`REDACTED`, `EXAMPLE_SECRET`, `YOUR_API_KEY_HERE`).
+
+**Output format**: gitleaks v8 schema. Each finding emits `{Description, RuleID, File, Line, Match, Secret, Tags}`. The `Match` and `Secret` fields always carry the redacted form (`<first4>...<last2>`) — original match never persisted, so the findings JSON may be committed/shared without leaking the secret. Default output path is `dist/secrets.findings.json` (Phase 55 SBOM convention).
+
+**Operator workflow on BLOCK**: scanner exits 1; substantiate aborts. Operator reviews `dist/secrets.findings.json`, remediates each finding (remove from staging, redact in-place, or — for literal-match false positives — add the discriminating substring to `_ALLOWLIST` and re-stage), then re-runs `/qor-substantiate`. The scanner itself is not gitleaks; for full-history sweeps prior to Phase 56, operators should run `gitleaks detect --source . --log-opts="--all"` separately.
+
+**Limitations**: regex-pattern detection only (no entropy heuristics, no probabilistic ML); allowlist is literal-substring (context-unaware); scope is the staged set at substantiate-time. Encrypted-blob detection, GitHub secret-scanning API integration, and auto-redaction are out of scope.
+
 ## References
 
 - EU AI Act (Regulation 2024/1689) consolidated text
@@ -139,4 +155,5 @@ inputs to their Annex IV documentation package:
 - `qor/gates/schema/_provenance.schema.json` — provenance schema
 - `qor/scripts/ai_provenance.py` — manifest builder
 - `qor/cli_handlers/compliance.py` — `ai-provenance` aggregator subcommand
+- `qor/scripts/secret_scanner.py` — Phase 56 secret-scanning gate (LLM06 + AI 600-1 §2.10)
 - `docs/research-brief-prompt-logic-frameworks-2026-04-30.md` §C — research basis for this mapping

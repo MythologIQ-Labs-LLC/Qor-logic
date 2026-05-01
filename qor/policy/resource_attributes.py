@@ -11,8 +11,10 @@ without normalization through ``compute_governance_attributes``.
 
 Phase 53: governance markdown canary attributes.
 Phase 55: skill admission tool/subagent scope attributes.
+Phase 56: production code secret-scan attribute (drives `has_hardcoded_secrets`).
 
-Per Phase 53 plan and SG-PromptInjection-A; Phase 55 plan and Cedar admission.
+Per Phase 53 plan and SG-PromptInjection-A; Phase 55 plan and Cedar admission;
+Phase 56 plan and SG-SecretLeakAtSeal-A.
 """
 from __future__ import annotations
 
@@ -20,6 +22,7 @@ import re
 from pathlib import Path, PurePosixPath
 
 from qor.scripts.prompt_injection_canaries import scan
+from qor.scripts.secret_scanner import scan_text as _scan_secrets
 
 
 _GOVERNANCE_PATH_PREFIXES: tuple[str, ...] = (
@@ -144,3 +147,17 @@ def compute_skill_admission_attributes(
         "actual_tool_invocations_exceed_scope": bool(actual_tools - declared_tools),
         "actual_subagent_invocations_exceed_scope": bool(actual_subagents - declared_subagents),
     }
+
+
+def compute_production_attributes(
+    path: str | Path, content: str
+) -> dict[str, bool]:
+    """Phase 56: compute Cedar attributes for a `Code::"production"` resource.
+
+    Drives the long-standing `has_hardcoded_secrets` boolean (Phase 23 rule).
+    Path is metadata only — detection is purely from `content` per Phase 56
+    plan Open Question 1 / Phase 2 wiring. Allowlist semantics are inherited
+    from `qor.scripts.secret_scanner._ALLOWLIST`.
+    """
+    findings = _scan_secrets(content, file=str(path))
+    return {"has_hardcoded_secrets": bool(findings)}

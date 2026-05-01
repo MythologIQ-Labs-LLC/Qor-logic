@@ -1,0 +1,68 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-01T1825-c495a9",
+  "ts": "2026-05-01T18:43:37Z",
+  "plan_path": "docs/plan-qor-phase56-secret-scanning-gate.md",
+  "phases": [
+    "Phase 1: secret_scanner module + PATTERNS catalog + allowlist + CLI",
+    "Phase 2: substantiate Step 4.6.5 wiring + compute_production_attributes + Cedar attribute computation",
+    "Phase 3: doctrine + glossary + self-application"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_secret_scanner.py tests/test_secret_scanner_findings_format.py -v",
+    "python -m pytest tests/test_substantiate_step_4_secret_scan_wiring.py tests/test_substantiate_secret_scan_aborts_on_finding.py tests/test_resource_attributes_production_scope.py -v",
+    "python -m pytest tests/test_doctrine_secret_scanning_anchored.py tests/test_phase56_self_application.py -v",
+    "python -m pytest -x",
+    "python -m qor.scripts.prompt_injection_canaries --mask-code-blocks --files docs/plan-qor-phase56-secret-scanning-gate.md docs/META_LEDGER.md qor/references/doctrine-eu-ai-act.md",
+    "python -m qor.scripts.plan_test_lint --plan docs/plan-qor-phase56-secret-scanning-gate.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase56-secret-scanning-gate.md --repo-root .",
+    "python -m qor.scripts.secret_scanner --files docs/plan-qor-phase56-secret-scanning-gate.md qor/references/doctrine-eu-ai-act.md qor/scripts/secret_scanner.py qor/policy/resource_attributes.py",
+    "python -m qor.reliability.skill_admission qor-substantiate",
+    "python -m qor.reliability.gate_skill_matrix",
+    "python -m qor.scripts.check_variant_drift",
+    "python -m qor.scripts.badge_currency --repo-root . --ledger docs/META_LEDGER.md"
+  ],
+  "open_questions": [
+    "Scan scope: staged set only (default) / staged + META_LEDGER + CHANGELOG / entire worktree",
+    "Allowlist source: frozenset constant in scanner module (default) / data file / schema config",
+    "Findings JSON output: --out dist/secrets.findings.json default (Phase 55 SBOM convention) / sidecar to gate dir / operator-only"
+  ],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "secret-scanning gate",
+      "home": "qor/references/doctrine-eu-ai-act.md"
+    },
+    {
+      "term": "gitleaks-compatible findings",
+      "home": "qor/references/doctrine-eu-ai-act.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "Regex-pattern detection only; no entropy heuristics or ML detection.",
+      "Allowlist is literal-substring only; context-unaware.",
+      "Scan covers staged set at substantiate-time; pre-staged uncommitted changes are out of scope.",
+      "Findings JSON follows gitleaks v8 schema; scanner itself is hand-rolled regex catalog (not gitleaks)."
+    ],
+    "non_goals": [
+      "Live Git history scanning (gitleaks-style full-history sweep)",
+      "Encrypted secret detection",
+      "GitHub secret-scanning API integration",
+      "Auto-redaction or git-filter-repo-style purge"
+    ],
+    "exclusions": [
+      "Retroactive scanning of historical seal commits",
+      "Modifying skill bodies beyond /qor-substantiate Step 4 wiring"
+    ]
+  },
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.41.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-01T18:43:37Z"
+  }
+}

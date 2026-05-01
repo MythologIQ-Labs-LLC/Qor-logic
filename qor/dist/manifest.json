@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-01T18:23:47Z",
+  "generated_ts": "2026-05-01T19:49:08Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -360,7 +360,7 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "bfcfbb23c6611955a47a71fa4f0547cf7d6c550d27f0a35d32c8024d97df3b84"
+      "sha256": "bf937a5d59189ac4b2e828b80b694cd99757cf33c633de2f740da0a6d3a5af21"
     },
     {
       "id": "qor-tone",

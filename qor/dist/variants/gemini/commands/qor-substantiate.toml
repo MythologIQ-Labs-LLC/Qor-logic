@@ -209,6 +209,16 @@ python -m qor.reliability.gate_skill_matrix || ABORT
 
 Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit, re-admit, or fix broken handoff) and re-run substantiation.
 
+### Step 4.6.5: Secret-scanning gate (Phase 56 wiring)
+
+Pre-seal scan over staged content. ABORTs on any detected secret. Closes OWASP LLM Top 10 LLM06 (Sensitive Information Disclosure) and NIST AI 600-1 §2.10. Drives the previously dormant `has_hardcoded_secrets` Cedar attribute (rule on books since Phase 23).
+
+```bash
+python -m qor.scripts.secret_scanner --staged --out dist/secrets.findings.json || ABORT
+```
+
+ABORT semantics on non-zero exit: operator must remediate detected secrets (remove from staging, redact, or add to allowlist when literal-match false-positive) before re-running substantiation. Findings JSON written to `dist/secrets.findings.json` in gitleaks v8 schema for downstream tool compatibility.
+
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
 
 Read the plan artifact and run doc-integrity checks against the declared tier. ABORTs on any `ValueError` per `qor/references/doctrine-documentation-integrity.md` (no silent override; `legacy` tier bypasses all checks).

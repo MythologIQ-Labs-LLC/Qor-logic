@@ -6607,6 +6607,144 @@ SHA256(content_hash + "|" + previous_hash)
 
 ---
 
+### Entry #183: GATE TRIBUNAL — Phase 56 — **PASS** (L2)
+
+**Timestamp**: 2026-05-01T19:00:16Z
+
+**Plan**: `docs/plan-qor-phase56-secret-scanning-gate.md`
+
+**Session**: `2026-05-01T1825-c495a9`
+
+**Mode**: solo (codex-plugin not declared; capability shortfall logged to shadow genome)
+
+**Pre-audit lints (Step 0.6)** — all CLEAN:
+- `plan_test_lint` → EXIT 0
+- `plan_grep_lint` → EXIT 0
+- `prompt_injection_canaries --mask-code-blocks` → EXIT 0
+
+**Audit passes (12/12 PASS)**:
+1. Security (L3) — no placeholder auth, no hardcoded secrets, no bypassed checks.
+2. OWASP Top 10 (2021) — A03 argv-form subprocess locked; A04 fail-closed BLOCK; A05 redacted-match discipline; A08 stdlib-only.
+3. OWASP LLM Top 10 (2025) — Phase 56 IS the LLM06 closure.
+4. Ghost UI — N/A (CLI module + skill-prose wiring).
+5. Section 4 Razor — `secret_scanner.py ~150 LOC`; per-function ≤40; max nesting 2; zero nested ternaries.
+6. Test functionality — 29 tests, all input→behavior assertions; co-occurrence behavior invariant for the substantiate-skill wiring (Phase 50 model); negative-path coverage on allowlist + binary skip + empty-stage + invalid-input.
+7. Dependency — zero new runtime deps (stdlib only: re/subprocess/pathlib/json/dataclasses/argparse).
+8. Macro-architecture — `qor/scripts/` placement matches Phase 53/54/55 convention; `compute_production_attributes` symmetric to existing `compute_governance_attributes` (Phase 53) and `compute_skill_admission_attributes` (Phase 55); single-direction layering (scripts ← policy ← skill-prose).
+9. Orphan detection — zero orphans; all proposed artifacts connect to build path.
+10. Infrastructure alignment — `compute_governance_attributes` confirmed at `qor/policy/resource_attributes.py:50`; `compute_skill_admission_attributes` at line 111; `compute_production_attributes` correctly declared NEW; `forbid has_hardcoded_secrets` confirmed at `qor/policies/owasp_enforcement.cedar:30` (rule on books since Phase 23 — Phase 56 wires the boolean).
+11. Prompt-injection canary scan (Phase 53 self-application) — clean.
+12. Self-application meta-coherence — Phase 56 plan + new doctrine + new tests must scan clean against the new scanner; provenance + lints carry forward.
+
+**Open question resolutions** (defaults approved):
+- Scan scope: staged set only (option a).
+- Allowlist source: `_ALLOWLIST` frozenset constant in `qor/scripts/secret_scanner.py` (option a; matches `_CANONICAL_TOOLS` and Phase 53 `CANARIES` pattern).
+- Findings JSON output: `--out dist/secrets.findings.json` default, operator-overridable (option c with a as default; matches Phase 55 SBOM convention).
+
+**Risk grade L2 rationale**: introduces a new pre-seal gate that ABORTs substantiate on detection (operator-visible behavior change, fail-closed and operator-actionable). Not L3 (no production-traffic security gap introduced — gate adds a check that did not exist). Not L1 (Cedar policy gains a real signal; previously dormant `has_hardcoded_secrets` boolean now driven by scanner).
+
+**Mandated next action**: `/qor-implement` per `qor/gates/chain.md`. Implementation begins with `tests/test_secret_scanner.py` (TDD), then `qor/scripts/secret_scanner.py`, then Phase 2 wiring (substantiate Step 4.6.5 + `compute_production_attributes`), then Phase 3 doctrine + glossary + self-application.
+
+**SSDF Practices**: PO.1.3, PO.5.1, PS.1.1, PS.3.1, PW.4.1, PW.5.1, PW.7.1, RV.1.1, RV.1.2.
+
+**Content Hash**: `8a8dcc91e822489698f670b8d972a2cfaf4107992175c5dc224c924817d1177d`
+**Previous Hash**: `d569ad934e37f8385d0527bffee9762e7e1af27e309b55e78871ec31aa5d6c7f`
+**Chain Hash**: `47498e661aae360cf5796b3166364a1fdc73a9d751cb68322c1e4bb59d11c754`
+
+---
+
+### Entry #184: IMPLEMENTATION — Phase 56 (secret-scanning gate at `/qor-substantiate` Step 4.6.5)
+
+**Timestamp**: 2026-05-01T19:30:00Z
+
+**Plan**: `docs/plan-qor-phase56-secret-scanning-gate.md`
+
+**Session**: `2026-05-01T1825-c495a9`
+
+**Scope**: Phase 56 closes OWASP LLM Top 10 (2025) LLM06 (Sensitive Information Disclosure) + NIST AI 600-1 §2.10 (preventing model and infrastructure credential leakage at the artifact-publication boundary). Drives the previously dormant Cedar attribute `has_hardcoded_secrets` (rule on books since Phase 23 with no scanner driving the boolean). Final phase of the five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md` (Priority 6, originally optional; ships as Phase 56 to fully close the LLM/AI-RMF/EU-AI-Act surface).
+
+**Phase 1 — `secret_scanner` module**: `qor/scripts/secret_scanner.py` (~190 LOC). Public API: frozen `Pattern` and `Finding` dataclasses; `PATTERNS: tuple[Pattern, ...]` (11 entries: aws-access-key, github-pat-classic, github-pat-finegrained, github-oauth, private-key-header, stripe-live, slack-token, google-api-key, anthropic-key, generic-high-entropy-assignment, private-key-url); `_ALLOWLIST: frozenset[str]` (15 seeds incl. `noqa: secret-scan` per-line opt-out); `scan(path, mask_blocks=False)`, `scan_paths`, `scan_staged(repo_root)`, `scan_text(content, file)`, `to_gitleaks_json(findings)`, `mask_code_blocks(content)`. CLI exits 0 (clean) / 1 (BLOCK) / 2 (input invalid). 23 phase-1 tests including frozen-catalog invariant and CLI exit-code matrix. Zero new runtime deps.
+
+**Phase 2 — substantiate Step 4.6.5 wiring**: New `### Step 4.6.5: Secret-scanning gate (Phase 56 wiring)` between existing reliability-sweep Step 4.6 and documentation-integrity Step 4.7 in `qor/skills/governance/qor-substantiate/SKILL.md`. Single `python -m qor.scripts.secret_scanner --staged --out dist/secrets.findings.json || ABORT` invocation. New `compute_production_attributes(path, content)` in `qor/policy/resource_attributes.py` returns `{"has_hardcoded_secrets": bool}` from `secret_scanner.scan_text` — symmetric to Phase 53 `compute_governance_attributes` and Phase 55 `compute_skill_admission_attributes`. 8 phase-2 tests including Phase 50 co-occurrence behavior invariant (`test_substantiate_skill_invokes_secret_scanner_at_step_4_6_5`).
+
+**Phase 3 — doctrine + glossary + self-application**: New `## Secret-scanning gate (Phase 56)` section in `qor/references/doctrine-eu-ai-act.md` (applicability + pattern-catalog + allowlist semantics + gitleaks-v8 output format + operator workflow + limitations). New SG entry `SG-SecretLeakAtSeal-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` (dormant-Cedar-attribute risk class + Phase 56 countermeasure). 2 new glossary terms (`secret-scanning gate`, `gitleaks-compatible findings`). 6 phase-3 tests including doctrine round-trip integrity, scanner self-application against own plan/doctrine/tests (with code-block masking for markdown + per-line `noqa: secret-scan` sentinel for Python sources), Phase 55 pre-audit lints clean against Phase 56 plan, glossary round-trip.
+
+**Reliability sweep**:
+- `python -m qor.reliability.intent_lock capture` → LOCKED (session `2026-05-01T1825-c495a9`).
+- `python -m qor.reliability.skill_admission qor-substantiate` → ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` → 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.secret_scanner --mask-blocks --files docs/plan-qor-phase56-secret-scanning-gate.md qor/references/doctrine-eu-ai-act.md` → EXIT 0 (markdown self-application clean).
+- `python -m qor.scripts.secret_scanner --files qor/scripts/secret_scanner.py qor/policy/resource_attributes.py` → EXIT 0 (Python self-application clean).
+- `python -m pytest -q` → 1141 passing, 1 skipped (twice in a row, deterministic).
+
+**Razor compliance**: `secret_scanner.py` 190 LOC (under 250 cap); longest function `main()` at 22 LOC; `scan_text()` at 16 LOC; max nesting depth 3 (loop / for-pattern / if-skip); zero nested ternaries.
+
+**SSDF Practices**: PO.1.3, PO.5.1, PS.1.1, PS.3.1, PW.4.1, PW.5.1, PW.7.1, PW.9.1, RV.1.1, RV.1.2.
+
+**Sprint state**: post-Phase-56 implementation, the five-phase compliance sprint surface is fully closed:
+- Phase 53 (sealed v0.39.0) → LLM01 + DRIFT-1/2 + OWASP LOW-4
+- Phase 54 (sealed v0.40.0) → EU AI Act Art. 13/14/50 + AI RMF + LLM08
+- Phase 55 (sealed v0.41.0) → LLM05 + LLM07 + AI RMF GV-6.1/MG-3.1
+- Phase 56 (this entry; pending substantiate) → LLM06 + AI 600-1 §2.10
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`. Substantiate must invoke its own newly-wired Step 4.6.5 against the seal commit (meta-coherence enforcement: the seal commit must scan clean).
+
+**Content Hash**: `a7600930660dff6fc02b995c8b78af585fb88dd37701d0db30f1a2c397be5b40`
+**Previous Hash**: `47498e661aae360cf5796b3166364a1fdc73a9d751cb68322c1e4bb59d11c754`
+**Chain Hash**: `50f0f297f910af336267e5cf92b80454a5e8792d3f1202d87d53fbc3771e1201`
+
+---
+
+### Entry #185: SESSION SEAL -- Phase 56 feature substantiated
+
+**Timestamp**: 2026-05-01T19:45:00Z
+
+**Plan**: `docs/plan-qor-phase56-secret-scanning-gate.md`
+
+**Session**: `2026-05-01T1825-c495a9`
+
+**Content Hash (session seal)**: `4e0e09139b3b4b48c939f41c3c8974ef2af8b7ff0cbe3535caf965fbb8831c7d`
+**Previous Hash**: `50f0f297f910af336267e5cf92b80454a5e8792d3f1202d87d53fbc3771e1201`
+**Chain Hash (Merkle seal)**: `dbec764642de264a1d53e93ed66c5ab1ed54e562e1bc77d23617c8cb44e99e93`
+
+**SSDF Practices**: PO.1.3, PO.5.1, PS.1.1, PS.3.1, PS.3.2, PW.4.1, PW.5.1, PW.7.1, PW.9.1, RV.1.1, RV.1.2, RV.3.4
+
+**Scope**: Phase 56 closes OWASP LLM Top 10 (2025) LLM06 (Sensitive Information Disclosure) + NIST AI 600-1 §2.10 at the substantiate-time enforcement layer. Final phase of the five-phase compliance sprint (originally optional Priority 6, ships as Phase 56 for full surface closure). Drives the long-dormant Cedar `has_hardcoded_secrets` attribute (rule on books since Phase 23 with no scanner). Secret-scanning gate at `/qor-substantiate` Step 4.6.5 BLOCKs seal commits containing detected secrets via fail-closed `|| ABORT` semantics.
+
+**Reality = Promise**: 15/15 planned files exist. No missing. No unplanned orphans.
+
+**Phase 1 — `secret_scanner` module**: `qor/scripts/secret_scanner.py` (248 LOC). Public API: frozen `Pattern` and `Finding` dataclasses; `PATTERNS: tuple[Pattern, ...]` (11 entries); `_ALLOWLIST: frozenset[str]` (15 seeds incl. `noqa: secret-scan` per-line opt-out and Cedar/schema attribute names); `scan(path, mask_blocks=None)` with auto-mask for `.md` suffix; `scan_paths`, `scan_staged(repo_root)`, `scan_text`, `to_gitleaks_json`, `mask_code_blocks`. CLI `--staged | --files | --out | --mask-blocks`; exits 0/1/2 (clean/BLOCK/invalid). 23 phase-1 tests including frozen-catalog invariant.
+
+**Phase 2 — substantiate Step 4.6.5 wiring**: New `### Step 4.6.5: Secret-scanning gate (Phase 56 wiring)` between Step 4.6 and Step 4.7. Single `python -m qor.scripts.secret_scanner --staged --out dist/secrets.findings.json || ABORT` invocation. New `compute_production_attributes(path, content)` symmetric to Phase 53/55 helpers. 8 phase-2 tests including Phase 50 co-occurrence behavior invariant.
+
+**Phase 3 — doctrine + glossary + self-application**: New `## Secret-scanning gate (Phase 56)` doctrine section in `qor/references/doctrine-eu-ai-act.md`. New SG entry `SG-SecretLeakAtSeal-A` codifying dormant-Cedar-attribute risk class. 2 new glossary terms. 6 phase-3 tests including doctrine round-trip integrity, scanner self-application against own plan/doctrine/tests, Phase 55 pre-audit lints clean against Phase 56 plan.
+
+**Substantiate-time meta-coherence enforcement**: Step 4.6.5 invoked against the seal commit's staged set (the very gate Phase 56 ships) — `dist/secrets.findings.json` empty, EXIT 0. Auto-mask-by-suffix (`.md` → masked, `.py` → unmasked) was the design refinement that emerged from running the gate against itself; landed in `secret_scanner.scan` default behavior; non-breaking (existing tests + CLI flag still work; explicit `--mask-blocks` still forces).
+
+**Reliability sweep**:
+- `python -m qor.reliability.intent_lock verify --session 2026-05-01T1825-c495a9` → VERIFIED.
+- `python -m qor.reliability.skill_admission qor-substantiate` → ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` → 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.secret_scanner --staged --out dist/secrets.findings.json` → EXIT 0 (empty findings; gate self-application clean).
+- `python -m qor.scripts.dist_compile` → 4 variants emitted.
+- `python -m qor.scripts.check_variant_drift` → OK 236 files, no drift.
+- `python -m qor.scripts.badge_currency` → OK (Tests 1142, Doctrines 20, Ledger 185).
+- `doc_integrity.run_all_checks_from_plan` strict → OK.
+
+**Razor compliance**: `secret_scanner.py` 248 LOC (under 250 cap); longest function `main()` 24 LOC; `scan_text()` 16 LOC; max nesting depth 3; zero nested ternaries.
+
+**Sprint state**: post-Phase-56-seal the five-phase compliance sprint surface is fully closed (all six original framework gaps from `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`):
+- Phase 53 (sealed v0.39.0) → LLM01 + DRIFT-1/2 + OWASP LOW-4
+- Phase 54 (sealed v0.40.0) → EU AI Act Art. 13/14/50 + AI RMF + LLM08
+- Phase 55 (sealed v0.41.0) → LLM05 + LLM07 + AI RMF GV-6.1/MG-3.1
+- **Phase 56 (this seal v0.42.0) → LLM06 + AI 600-1 §2.10**
+
+`qor-logic compliance sprint-progress` reports 5/5 + LLM06 extension (six priorities sealed against the original five-priority brief).
+
+**Decision**: Phase 56 sealed at v0.42.0. Scanner gate operational; previously dormant Cedar `has_hardcoded_secrets` attribute now driven by structural enforcement. SG-SecretLeakAtSeal-A codified. Sprint surface complete. Forward-only enforcement starting this seal; retroactive history sweeps remain operator-driven (`gitleaks detect --log-opts="--all"`).
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 55 feature substantiated)
-*Merkle seal: d569ad93...* (Phase 55 seal on top of Phase 54's 8d2d4986; Entries #179-#182 chained; closes OWASP LLM Top 10 LLM05+LLM07 + cross-session recurring-pattern advisory)
+*Session: SEALED* (Phase 56 feature substantiated)
+*Merkle seal: dbec7646...* (Phase 56 seal on top of Phase 55's d569ad93; Entries #183-#185 chained; closes OWASP LLM Top 10 LLM06 + NIST AI 600-1 §2.10; finalizes five-phase compliance sprint at 6/5 priorities)

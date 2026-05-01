@@ -164,3 +164,13 @@ Cross-session observation: Phase 53/54/55 first audits each issued Pass-1 VETO w
 **Countermeasure** (codified Phase 55): two pre-audit lints invoked at `/qor-audit` Step 0.6 (and `/qor-repo-audit` Step 0.6 as best-effort): `qor.scripts.plan_test_lint` greps plan files for the four canonical presence-only patterns (substring-presence, section-exists, substring-in-file, path-exists); `qor.scripts.plan_grep_lint` walks plan files for cited Python module / skill paths and verifies each resolves at HEAD (excluding paths declared as NEW in Affected Files blocks). Both WARN-only — the existing Test Functionality Pass and Infrastructure Alignment Pass at Step 3 issue binding VETOs; the lints catch these classes earlier so the Governor can amend without consuming an audit cycle.
 
 **Verification hint**: `python -m qor.scripts.plan_test_lint --plan docs/plan-qor-phase*.md` should exit 0 with no stderr warnings for any plan ready for audit. Same for `plan_grep_lint`. Pre-Phase-55 plans are not retroactively scanned (forward-only enforcement).
+
+## SG-SecretLeakAtSeal-A: dormant Cedar attribute without scanner
+
+Historical risk: the Cedar `forbid` rule on `Code::"production"` keyed on `resource.has_hardcoded_secrets` has existed since Phase 23, but no scanner drove the boolean. Pre-Phase-56 seal commits could have committed secrets undetected; the policy enforced nothing.
+
+**Source incident**: Phase 56 audit gap discovery (research brief `docs/research-brief-prompt-logic-frameworks-2026-04-30.md` Priority 6 / NIST AI 600-1 §2.10 / OWASP LLM06).
+
+**Countermeasure** (codified Phase 56): `qor.scripts.secret_scanner` provides regex-pattern detection (frozen `PATTERNS` tuple) with literal-substring `_ALLOWLIST` for the known false-positive class (Cedar/schema attribute names). `compute_production_attributes(path, content)` in `qor/policy/resource_attributes.py` returns the `has_hardcoded_secrets` boolean for the Cedar evaluator. `/qor-substantiate` Step 4.6.5 invokes `python -m qor.scripts.secret_scanner --staged --out dist/secrets.findings.json || ABORT` before seal — fail-closed BLOCK on any finding. Findings JSON follows gitleaks v8 schema; redacted match form (`<first4>...<last2>`) prevents leakage in the findings file itself.
+
+**Verification hint**: `python -m qor.scripts.secret_scanner --files <path>...` should exit 0 with empty findings JSON for clean files; exit 1 with populated JSON for files containing secrets. Retroactive remediation of historical seals is operator-driven (e.g., `gitleaks detect --source . --log-opts="--all"` for full-history sweep). Forward-only enforcement starting Phase 56.

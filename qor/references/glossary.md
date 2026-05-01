@@ -455,3 +455,24 @@ referenced_by:
   - qor/skills/meta/qor-repo-release/SKILL.md
 introduced_in_plan: phase55-subagent-admission-and-supply-chain
 ```
+
+```yaml
+term: secret-scanning gate
+definition: 'Phase 56 substantiate-time enforcement gate that runs qor.scripts.secret_scanner over the staged set before seal. BLOCKs on any detected secret (regex-based catalog with literal-substring allowlist) and aborts substantiation. Drives the previously dormant has_hardcoded_secrets Cedar attribute (rule on books since Phase 23). Closes OWASP LLM Top 10 LLM06 (Sensitive Information Disclosure) and NIST AI 600-1 §2.10. Wired into /qor-substantiate Step 4.6.5 with || ABORT semantics matching the existing reliability-sweep idiom.'
+home: qor/references/doctrine-eu-ai-act.md
+referenced_by:
+  - qor/scripts/secret_scanner.py
+  - qor/policy/resource_attributes.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase56-secret-scanning-gate
+```
+
+```yaml
+term: gitleaks-compatible findings
+definition: 'JSON output format produced by qor.scripts.secret_scanner.to_gitleaks_json. Emits a list of objects each carrying Description, RuleID (the Pattern.name), File, Line, Match (redacted), Secret (redacted), and Tags (severity:N). Compatible with gitleaks v8 downstream tooling without requiring gitleaks itself. Default output path is dist/secrets.findings.json (parallels Phase 55 SBOM sidecar convention). Match and Secret fields always carry the redacted form (<first4>...<last2>) so the findings JSON may be committed/shared without leaking secrets.'
+home: qor/references/doctrine-eu-ai-act.md
+referenced_by:
+  - qor/scripts/secret_scanner.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase56-secret-scanning-gate
+```
