@@ -6222,3 +6222,206 @@ SHA256(content_hash + "|" + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 53 feature substantiated)
 *Merkle seal: 4050f3ae...* (Phase 53 seal on top of Phase 52's a0560f9d; Entries #170-#174 chained; first seal closing OWASP LLM Top 10 LLM01)
+
+---
+
+### Entry #175: GATE TRIBUNAL — Phase 54 Pass 1 — **VETO** (L2)
+
+**Timestamp**: 2026-04-30T18:15:00Z
+**Phase**: GATE
+**Author**: Judge (solo mode)
+**Risk Grade**: L2
+**Verdict**: VETO
+
+**Target**: `docs/plan-qor-phase54-ai-provenance-and-act-alignment.md`
+**Report**: `.agent/staging/AUDIT_REPORT.md`
+**Session**: `2026-04-30T1758-48db18`
+**Gate Artifact**: `.qor/gates/2026-04-30T1758-48db18/audit.json`
+
+**Content Hash**:
+```
+SHA256(.agent/staging/AUDIT_REPORT.md)
+= ff464fdacc4d6665eb8c410b45301d05738682d852a9eebb2904210faecdc1c8
+```
+
+**Previous Hash**: `4050f3aef6695e2e18fb7625dc8a8a88cca36fc4c015d79b4b77b61934bab57e`
+
+**Chain Hash**:
+```
+SHA256(content_hash + "|" + previous_hash)
+= d204dd7e76832e3d0702d26ac59a2f61582587473198ba2b0f0f024bbc160382
+```
+
+**Findings Categories**: `test-failure`, `infrastructure-mismatch`, `razor-overage`
+
+**Scope**: First audit of Phase 54 plan — bundles Priorities 2/4/5 (AI provenance metadata + EU AI Act/AI RMF doctrine + subagent scaffolding + override-friction escalator). Architectural shape sound; three classes of plan-text defect block PASS.
+
+**Findings**:
+- `razor-overage` — `qor/cli.py` post-edit will exceed the 250-line cap (227 LOC current + ~60-80 LOC for two new compliance subcommands + handlers). Plan must declare CLI subcommand-handler split (e.g., `qor/cli_handlers/compliance.py` extraction or per-subcommand modules).
+- `test-failure` — three presence-only tests (recurrence of Phase 53 Pass-1 pattern; SG-035): `test_six_sdlc_skills_call_build_manifest` (substring presence in SKILL.md despite "Per Phase 50" claim), `test_plan_skill_step_1c_present` (section-heading presence), `test_six_gate_skills_handle_override_friction_required` (substring presence). Plus borderline `test_doctrine_declares_qor_logic_not_high_risk` under-specified.
+- `infrastructure-mismatch` — plan cites `qor.platform.current()`; actual surface is `qor.scripts.qor_platform.current()` returning a state `dict` (caller extracts host via `state.get("detected", {}).get("host")` per existing `qor-implement` SKILL.md Step 1.a pattern).
+
+**Strengths preserved**: bundling Priorities 2/4/5 reduces ceremony cost; `_provenance.schema.json` `$ref` from 6 phase schemas (single source of truth); `human_oversight` enum maps to EU AI Act Art. 14; override-friction threshold (3) symmetric with cycle-count escalator; declarative-only `permitted_tools` frontmatter with Phase 55 enforcement (clean two-step rollout); self-application + sprint-progress dashboard.
+
+**Cross-session pattern signal**: Phase 53 Pass 1 had 5 presence-only tests + 3 infrastructure mismatches; Phase 54 Pass 1 has 3 presence-only + 1 infrastructure mismatch. Recurrence pattern despite SG-035 doctrine being live. Phase 55 candidate: pre-audit lints (`plan_test_lint.py`, `plan_grep_lint.py`) catching these classes before the Judge sees them.
+
+**Required next action**: Governor amends plan: (a) declare CLI subcommand-handler split; (b) cite correct `qor.scripts.qor_platform` import path + adjust API contract; (c) reform three presence-only tests as co-occurrence behavior invariants or unit-driving fixtures; (d) clarify borderline doctrine test to heading-tree integrity. Plan-text grounds; no `/qor-debug`.
+
+**Decision**: VETO. First audit on session 2026-04-30T1758-48db18. No repeated-VETO pattern; no `/qor-remediate` recommendation.
+
+---
+
+### Entry #176: GATE TRIBUNAL — Phase 54 Pass 2 — **PASS** (L2)
+
+**Timestamp**: 2026-04-30T18:35:00Z
+**Phase**: GATE
+**Author**: Judge (solo mode)
+**Risk Grade**: L2
+**Verdict**: PASS
+
+**Target**: `docs/plan-qor-phase54-ai-provenance-and-act-alignment.md` (amended per Entry #175 VETO findings)
+**Report**: `.agent/staging/AUDIT_REPORT.md`
+**Session**: `2026-04-30T1758-48db18`
+**Gate Artifact**: `.qor/gates/2026-04-30T1758-48db18/audit.json` (overwritten with PASS payload)
+
+**Content Hash**:
+```
+SHA256(.agent/staging/AUDIT_REPORT.md)
+= f4ba85f9e02fd9874f59709a58d7bb63d59c04d71a6398d2f1cab7286c17c3d0
+```
+
+**Previous Hash**: `d204dd7e76832e3d0702d26ac59a2f61582587473198ba2b0f0f024bbc160382`
+
+**Chain Hash**:
+```
+SHA256(content_hash + "|" + previous_hash)
+= 77cc14dcabe07d482d2de357881ab22e2b987a320125a1a835bcb1775cb95b0a
+```
+
+**Findings Categories**: (none)
+
+**Pass-1 remediations verified**:
+- *`razor-overage` cleared*: Phase 1 Affected Files declares CLI subcommand-handler split. NEW `qor/cli_handlers/__init__.py` + `qor/cli_handlers/compliance.py` (~110 LOC) host `do_report` (extracted), `do_ai_provenance` (new), `do_sprint_progress` (new), and `register(sub)`. `qor/cli.py` 227 LOC -> ~190 LOC after extraction.
+- *`test-failure` cleared*: three presence-only tests reformed as co-occurrence behavior invariants — `test_skills_writing_gate_artifacts_invoke_build_manifest` (conditional on `gate_chain.write_gate_artifact` callsite); `test_plan_skill_step_1c_round_trips_impact_assessment_subfields` (schema-anchored round-trip + body-emptiness check); `test_skills_emitting_gate_overrides_handle_friction_exception` (conditional on `emit_gate_override` callsite). Borderline `test_doctrine_declares_qor_logic_not_high_risk` -> `test_doctrine_classifies_qor_logic_under_applicability_section_with_non_empty_body` (heading-tree integrity per Phase 53 template).
+- *`infrastructure-mismatch` cleared*: `build_manifest` signature and Changes prose now correctly cite `qor.scripts.qor_platform.current()` (verified at `qor/scripts/qor_platform.py:140`) returning `dict | None`; caller extracts via `state.get("detected", {}).get("host", "unknown")` per existing `qor-implement` SKILL.md Step 1.a pattern.
+
+**Eight passes clear**: Security · OWASP Top 10 · Ghost UI (N/A) · Section 4 Razor · Test Functionality · Dependency · Macro-Architecture · Infrastructure Alignment · Orphan Detection.
+
+**Strengths preserved**: bundling Priorities 2/4/5 reduces ceremony cost; `_provenance.schema.json` `$ref` single source of truth; `human_oversight` enum maps to EU AI Act Art. 14; CLI subcommand split gives `qor/cli.py` headroom for Phase 55+; co-occurrence behavior invariant pattern consistently applied; schema-anchored round-trip + heading-tree integrity tests reused from Phase 53 templates.
+
+**Required next action**: `/qor-implement`. Per `qor/gates/chain.md`. Intent-lock to be captured at implement Step 5.5.
+
+**Process pattern advisory carryover**: cross-session presence-only-test recurrence (Phase 53 + 54 first audits) suggests Phase 55 candidate — pre-audit lints (`plan_test_lint.py`, `plan_grep_lint.py`) catching these classes before Judge sees them.
+
+**Decision**: PASS. 1 VETO + 1 PASS in this session; well below 3-consecutive-same-signature threshold; no `/qor-remediate` recommendation. Plan unblocked for implementation.
+
+---
+
+### Entry #177: IMPLEMENTATION — Phase 54 (AI provenance + EU AI Act/AI RMF doctrines + subagent scaffolding + override-friction escalator)
+
+**Timestamp**: 2026-05-01T03:12:00Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+
+**Plan**: `docs/plan-qor-phase54-ai-provenance-and-act-alignment.md`
+**Audit**: `.agent/staging/AUDIT_REPORT.md` (Pass 2 PASS verdict; Entry #176)
+**Session**: `2026-04-30T1758-48db18`
+**Gate Artifact**: `.qor/gates/2026-04-30T1758-48db18/implement.json` (carries `ai_provenance` field — first implement gate to embed AI provenance)
+
+**Content Hash**:
+```
+SHA256(.qor/gates/2026-04-30T1758-48db18/implement.json)
+= 5bb336640eb339a5aeacf50e926887f40d182b68a7acf923999d8ef27d167fbe
+```
+
+**Previous Hash**: `77cc14dcabe07d482d2de357881ab22e2b987a320125a1a835bcb1775cb95b0a`
+
+**Chain Hash**:
+```
+SHA256(content_hash + "|" + previous_hash)
+= fd94fe5e1b9dea146c5d14cdc260c07bd562d8ffea6981bcb74f311965988e7a
+```
+
+**Test Summary**: 1037 passed, 1 skipped, 4 deselected (twice in a row, full suite, deterministic). +90 from pre-Phase-54 baseline (947 → 1037).
+
+**Phase 1 deliverables**: new `qor/gates/schema/_provenance.schema.json` (`$ref`'d from all six phase schemas: research/plan/audit/implement/substantiate/validate); new `qor/scripts/ai_provenance.py` (~140 LOC) with `build_manifest` + `HumanOversight` enum. CLI subcommand-handler split closes Pass-1 razor-overage: NEW `qor/cli_handlers/__init__.py` + `qor/cli_handlers/compliance.py` (~110 LOC) host extracted `do_report` plus new `do_ai_provenance` and `do_sprint_progress`. `qor/cli.py` reduced 227 → ~190 LOC. `qor/scripts/validate_gate_artifact` extended with a `referencing.Registry` to resolve cross-schema `$ref`. All six SDLC + governance skills wired to call `build_manifest` and pass through `gate_chain.write_gate_artifact(... ai_provenance=manifest)`. Plus four meta-skill writers (qor-refactor, qor-repo-audit, qor-repo-scaffold, qor-repo-release). 38 + 21 + 2 + 3 = 64 new tests across schema/helper/CLI/skill-prose surfaces; `prompt-injection`-style co-occurrence behavior invariant (Phase 50 model) for `test_skills_writing_gate_artifacts_invoke_build_manifest`.
+
+**Phase 2 deliverables**: new `qor/references/doctrine-eu-ai-act.md` (article-by-article mapping for Art. 9, 10, 12, 13, 14, 15, 50, 72; Annex IV guidance) and `qor/references/doctrine-ai-rmf.md` (GOVERN/MAP/MEASURE/MANAGE + AI 600-1 GenAI Profile §2.4/§2.7/§2.8/§2.10/§2.12 mapping). Plan schema amended with optional `impact_assessment` block (5 required subfields when `high_risk_target: true`). New Step 1c "Impact assessment dialogue" in `/qor-plan` SKILL.md. CLAUDE.md Authority line extended. 19 phase-2 tests including heading-tree integrity for both doctrines and schema-anchored round-trip for Step 1c subfields.
+
+**Phase 3 deliverables**: `permitted_tools:` and `permitted_subagents:` advisory frontmatter on all six SDLC + governance skills (declarative-only this phase; Phase 55 wires Cedar enforcement). New `qor/scripts/override_friction.py` (~80 LOC) with `check`, `record_with_justification`, and `OverrideFrictionRequired` exception. Threshold = 3 (symmetric with cycle-count escalator). `qor.scripts.gate_chain.emit_gate_override` consults the friction module and raises when threshold reached without `justification` (>=50 chars). `shadow_event.schema.json` extended with optional `justification` field (minLength 50). All seven override-emitting skills (six SDLC + governance + qor-refactor) updated to describe the friction exception handling. Doctrine §12 appended to `doctrine-governance-enforcement.md`. 18 phase-3 tests.
+
+**Phase 4 deliverables**: new `qor/scripts/sprint_progress.py` (~95 LOC) — reads latest `docs/research-brief-*.md`, parses Priority headings, walks META_LEDGER for SESSION SEAL entries citing each phase, emits status table. CLI integration via `qor-logic compliance sprint-progress`. 7 phase-4 tests including `compliance_subcommand_invokes_sprint_progress` end-to-end. 3 self-application canary scans confirm plan + EU AI Act doctrine + AI RMF doctrine all scan clean once code-block masking is applied.
+
+**Self-application observed at implement-time**: this implement gate artifact (`implement.json`) embeds an `ai_provenance` field — first such artifact in repo history. Field contents: `{system: "Qor-logic", version: "0.39.0", host: "unknown", model_family: "unknown", human_oversight: "absent", ts: <ISO>}`. The "unknown" fallbacks emit one-time stderr warnings per process (suppressible via `QOR_PROVENANCE_QUIET=1`); harness env vars (`QOR_MODEL_FAMILY`, populated platform-state file) would record concrete values in production deployment.
+
+**Reliability sweep**:
+- `python -m qor.reliability.skill_admission qor-implement` → ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` → 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.dist_compile` → 4 variants emitted.
+- `python -m qor.scripts.check_variant_drift` → OK 236 files.
+- `python -m qor.scripts.badge_currency` → OK (Tests 948→1038, Doctrines 18→20, Ledger 174→176).
+
+**Phase 53 historical fix landed mid-implement**: Phase 53 seal commit `ccfd4173` was committed without the canonical attribution trailer (Phase 49 doctrine violation caught by `test_attribution_tiered_usage`). Operator authorized local-only amend (Option A): seal commit amended to add `🤖 Authored via [Qor-logic SDLC]...` line + Co-Authored-By trailer; new SHA `377003c`; tag `v0.39.0` recreated at the new SHA. Merkle seal hash in Entry #174 unaffected (seal hash is content-addressed against the ledger entry body, not git commit metadata). No remote consumer impacted (tag was held local).
+
+**Razor compliance**: `ai_provenance.py` 142 LOC; `override_friction.py` 91 LOC; `sprint_progress.py` 99 LOC; `cli_handlers/compliance.py` 112 LOC; `qor/cli.py` 186 LOC (post-extraction). All test files <=170 LOC. Longest function: `build_manifest()` at 28 LOC (<=40). Max nesting depth 2; zero nested ternaries.
+
+**Sprint state**: `qor-logic compliance sprint-progress` reports 1/5 priorities sealed (Phase 53). Phase 54 closes Priorities 2/4/5 once sealed at v0.40.0. Phases 55 and 56 queued.
+
+**Decision**: Implementation complete. All four plan phases landed. 1037 tests passing twice in a row. Reality matches Promise. Handoff to `/qor-substantiate`.
+
+---
+
+### Entry #178: SESSION SEAL -- Phase 54 feature substantiated
+
+**Timestamp**: 2026-05-01T03:30:00Z
+**Phase**: SEAL (feature)
+**Author**: Judge
+**Verdict**: PASS (1037 tests green, 1 skipped, twice in a row)
+
+**Target**: `docs/plan-qor-phase54-ai-provenance-and-act-alignment.md`
+**Change Class**: `feature`
+**Version**: `0.39.0 -> 0.40.0`
+**Tag**: `v0.40.0` (created at Step 9.5.5 post-commit; LOCAL ONLY pending PR merge per Phase 40 doctrine)
+**Session**: `2026-04-30T1758-48db18`
+
+**Content Hash (session seal)**: `36d86a5d25161511e443b4f0407147a42edba6002e2443c8a95312f121dcd5c5`
+**Previous Hash**: `fd94fe5e1b9dea146c5d14cdc260c07bd562d8ffea6981bcb74f311965988e7a`
+**Chain Hash (Merkle seal)**: `8d2d4986989ebe20b729de352b2ed18a738b59f08020707ac3fa71917c114724`
+
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1, PW.7.1
+
+**Scope**: Phase 54 closes EU AI Act Art. 13/50 (transparency) + Art. 14 (oversight) at the gate-artifact metadata layer; aligns with NIST AI RMF 1.0 GOVERN/MAP/MEASURE/MANAGE and AI 600-1 GenAI Profile §2.7+§2.8. Second phase of a five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`. Bundles Priorities 2 (AI provenance + AI Act/RMF doctrines), 4 (path-currency, folded earlier into Phase 53), and 5 (override-friction escalator) into one feature phase. Phases 55 (Cedar-enforced subagent admission + model-pinning + SBOM) and 56 (secret-scanning gate) remain queued.
+
+**Phase 1 deliverables**: new `qor/gates/schema/_provenance.schema.json` (`$ref`'d from all six phase schemas) declaring `{system, version, host, model_family, human_oversight, ts}`. `human_oversight` enum `pass | veto | override | absent` is the EU AI Act Art. 14 oversight signal. New `qor/scripts/ai_provenance.py` (~140 LOC) with `build_manifest` + `HumanOversight` enum; auto-derives `version` from `pyproject.toml` (via `tomllib`), `host` from `qor.scripts.qor_platform.current()`, `model_family` from `QOR_MODEL_FAMILY` env (warning suppressible via `QOR_PROVENANCE_QUIET=1`). CLI subcommand-handler split (closes Pass-1 razor-overage): NEW `qor/cli_handlers/__init__.py` + `qor/cli_handlers/compliance.py` (~110 LOC) host extracted `do_report` plus new `do_ai_provenance` and `do_sprint_progress`; `qor/cli.py` 227 LOC -> 186 LOC. `qor.scripts.validate_gate_artifact` extended with `referencing.Registry` for cross-schema `$ref`. All ten gate-writing skills (six SDLC + governance + four meta) wired to call `build_manifest` and pass through `gate_chain.write_gate_artifact(... ai_provenance=manifest)`. 64 phase-1 tests across schema/helper/CLI/skill-prose surfaces; co-occurrence behavior invariant `test_skills_writing_gate_artifacts_invoke_build_manifest` enforces "any skill calling write_gate_artifact MUST call build_manifest".
+
+**Phase 2 deliverables**: new `qor/references/doctrine-eu-ai-act.md` (applicability classification asserts Qor-logic is *not* high-risk per Annex III; article-by-article mapping for Art. 9, 10, 12, 13, 14, 15, 50, 72; Annex IV technical-documentation guidance for downstream operators) and `qor/references/doctrine-ai-rmf.md` (GOVERN/MAP/MEASURE/MANAGE function-by-function mapping plus AI 600-1 GenAI Profile §2.4/§2.7/§2.8/§2.10/§2.12). Plan schema amended with optional `impact_assessment` block (5 required subfields when `high_risk_target: true`); new Step 1c "Impact assessment dialogue" in `/qor-plan` SKILL.md. CLAUDE.md Authority line extended with both new doctrines. 19 phase-2 tests (heading-tree integrity for both doctrines; schema-anchored round-trip for Step 1c subfields).
+
+**Phase 3 deliverables**: `permitted_tools` + `permitted_subagents` advisory frontmatter on all six SDLC + governance skill YAML frontmatters (declarative-only this phase; Phase 55 candidate wires Cedar admission). New `qor/scripts/override_friction.py` (~80 LOC) with `OverrideFrictionRequired` exception, `check`, `record_with_justification`. Threshold = 3 (symmetric with cycle-count escalator). `qor.scripts.gate_chain.emit_gate_override` consults the friction module and raises when threshold reached without justification (>=50 chars). `shadow_event.schema.json` extended with optional `justification` field. All seven override-emitting skills handle the exception. Doctrine §12 appended to `doctrine-governance-enforcement.md`. 18 phase-3 tests.
+
+**Phase 4 deliverables**: new `qor/scripts/sprint_progress.py` (~95 LOC) — reads latest `docs/research-brief-*.md`, parses Priority headings (`Phase NN candidate`), walks META_LEDGER for SESSION SEAL entries citing each Priority's phase, emits status table. CLI integration via `qor-logic compliance sprint-progress`. 7 phase-4 tests including `compliance_subcommand_invokes_sprint_progress` end-to-end. 3 self-application canary scans confirm plan + EU AI Act doctrine + AI RMF doctrine all scan clean once code-block masking is applied.
+
+**Self-application observed**: this implement gate (`.qor/gates/2026-04-30T1758-48db18/implement.json`) embeds the first `ai_provenance` field in repo history. The `qor-logic compliance ai-provenance --session 2026-04-30T1758-48db18` aggregator returns a manifest covering all five phase artifacts in this session, satisfying the EU AI Act Art. 50 transparency-of-AI-generated-content surface for downstream operator inclusion.
+
+**Phase 53 historical fix landed mid-implement**: Phase 53 seal commit `ccfd4173` was committed without the canonical attribution trailer (Phase 49 doctrine violation caught by `test_attribution_tiered_usage`). Operator authorized local-only amend (Option A). Commit message extended to include `🤖 Authored via [Qor-logic SDLC] on [Claude Code]` line + `Co-Authored-By:` trailer; new SHA `377003c`; tag `v0.39.0` deleted and recreated at the new SHA. Merkle seal hash in Entry #174 is unaffected (seal hash is content-addressed against the ledger entry body, not git commit metadata). Tag was held-local; no remote consumer impacted. This Phase 54 substantiate is the first cycle where every seal commit in the chain (Phases 53 + 54) carries the canonical trailer.
+
+**Reliability sweep**:
+- `python -m qor.reliability.intent_lock verify --session 2026-04-30T1758-48db18` -> VERIFIED (post-recapture; Phase 53 amend changed HEAD ancestry, recaptured intent lock).
+- `python -m qor.reliability.skill_admission qor-substantiate` -> ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` -> 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.dist_compile` -> 4 variants emitted.
+- `python -m qor.scripts.check_variant_drift` -> OK 236 files.
+- `python -m qor.scripts.badge_currency` -> OK after badge updates (Tests 948 -> 1038, Doctrines 18 -> 20, Ledger 174 -> 178).
+- `doc_integrity.run_all_checks_from_plan` strict mode -> OK after four new glossary terms appended (AI provenance manifest, human-oversight signal, subagent tool scope, override-friction escalator) and Gate term referenced_by extension to qor-research.
+
+**Razor compliance**: `ai_provenance.py` 142 LOC; `override_friction.py` 91 LOC; `sprint_progress.py` 99 LOC; `cli_handlers/compliance.py` 112 LOC; `qor/cli.py` 186 LOC (post-extraction). All test files <=170 LOC. Longest function: `build_manifest()` at 28 LOC. Max nesting depth 2; zero nested ternaries.
+
+**Sprint state**: `qor-logic compliance sprint-progress` reports 2/5 priorities sealed (Phases 53 + 54). Phases 55 and 56 queued.
+
+**Decision**: Phase 54 sealed at v0.40.0. EU AI Act Art. 13/50/14 surfaces closed at the gate-metadata layer. NIST AI RMF MEASURE-2.1 / MANAGE-1.1 evidence-collection contract operationalized. Override-friction escalator and subagent advisory frontmatter ready for Phase 55 enforcement wiring. Sprint Phase 2 of 5 complete.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 54 feature substantiated)
+*Merkle seal: 8d2d4986...* (Phase 54 seal on top of Phase 53's 4050f3ae; Entries #175-#178 chained; first seal with AI provenance metadata embedded across all six gate-artifact schemas)

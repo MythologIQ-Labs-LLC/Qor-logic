@@ -7,13 +7,14 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-948%20passing-brightgreen" alt="Tests: 948 passing">
-  <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20aligned-004488" alt="NIST SP 800-218A aligned">
-  <img src="https://img.shields.io/badge/OWASP-Top%2010%20audited-004488" alt="OWASP Top 10 audited">
+  <img src="https://img.shields.io/badge/Tests-1038%20passing-brightgreen" alt="Tests: 1038 passing">
+  <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
+  <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
+  <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-29-blue" alt="Skills: 29">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-18-blue" alt="Doctrines: 18">
-  <img src="https://img.shields.io/badge/Ledger-174%20entries%20sealed-green" alt="Ledger: 174 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-20-blue" alt="Doctrines: 20">
+  <img src="https://img.shields.io/badge/Ledger-178%20entries%20sealed-green" alt="Ledger: 178 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 

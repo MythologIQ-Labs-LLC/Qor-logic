@@ -106,17 +106,22 @@ git add [created files]
 Persist the structured gate artifact at `.qor/gates/<session_id>/implement.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
 
 ```python
-from qor.scripts import gate_chain, shadow_process
+from qor.scripts import gate_chain, shadow_process, ai_provenance
 
 # Build payload conforming to qor/gates/schema/implement.schema.json
 payload = {
     "ts": shadow_process.now_iso(),
     # ... phase-specific required fields (see schema)
 }
-gate_chain.write_gate_artifact(phase="implement", payload=payload, session_id=sid)
+manifest = ai_provenance.build_manifest(
+    "implement", human_oversight=ai_provenance.HumanOversight.ABSENT
+)
+gate_chain.write_gate_artifact(
+    phase="implement", payload=payload, session_id=sid, ai_provenance=manifest,
+)
 ```
 
-Schema lives at `qor/gates/schema/implement.schema.json`; the helper validates before write.
+Schema lives at `qor/gates/schema/implement.schema.json`; the helper validates before write. Per Phase 54: repo-scaffold calls `ai_provenance.build_manifest` to embed AI provenance.
 
 ## Constraints
 

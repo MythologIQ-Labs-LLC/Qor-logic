@@ -10,6 +10,32 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.40.0] - 2026-05-01
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+Phase 54: AI provenance metadata + EU AI Act + AI RMF doctrine + subagent scaffolding + override-friction escalator. Bundles Priorities 2/4/5 from `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`. Closes EU AI Act Art. 13/50 transparency and Art. 14 oversight surfaces; aligns with NIST AI RMF 1.0 GOVERN/MAP/MEASURE/MANAGE and AI 600-1 GenAI Profile §2.7+§2.8.
+
+### Added
+- **AI provenance metadata in gate artifacts** (Phase 54): new `qor/gates/schema/_provenance.schema.json` (`$ref`'d from all six phase schemas) declaring `{system, version, host, model_family, human_oversight, ts}`. `human_oversight` enum: `pass | veto | override | absent` — operator decision per gate. New `qor/scripts/ai_provenance.py` (~140 LOC) with `build_manifest()` + `HumanOversight` enum. Auto-derives `version` from `pyproject.toml`, `host` from `qor.scripts.qor_platform.current()`, `model_family` from `QOR_MODEL_FAMILY` env (suppressible via `QOR_PROVENANCE_QUIET=1`). All six SDLC + governance skills wired to call `build_manifest` and pass through `gate_chain.write_gate_artifact(... ai_provenance=manifest)`. Closes EU AI Act Art. 13/50 transparency surface and NIST AI RMF MEASURE-2.1 / MANAGE-1.1 evidence-collection contract.
+- **`qor-logic compliance ai-provenance` subcommand**: aggregates per-session provenance manifests across `.qor/gates/<sid>/*.json`. Suitable for inclusion in operator AI Act Art. 50 transparency packages. New `qor/cli_handlers/compliance.py` (~110 LOC) hosts this plus extracted `do_report` and new `do_sprint_progress`.
+- **`qor-logic compliance sprint-progress` subcommand**: reads the latest `docs/research-brief-*.md`, parses Recommendations Priority headings, walks META_LEDGER for SESSION SEAL entries citing each Priority's phase, emits a sprint-progress table. New `qor/scripts/sprint_progress.py` (~95 LOC).
+- **EU AI Act doctrine** (`qor/references/doctrine-eu-ai-act.md`): applicability classification (Qor-logic is *not* high-risk per Annex III; operator inheritance for downstream high-risk systems); article-by-article mapping for Art. 9, 10, 12, 13, 14, 15, 50, 72; Annex IV technical-documentation guidance.
+- **AI RMF doctrine** (`qor/references/doctrine-ai-rmf.md`): GOVERN/MAP/MEASURE/MANAGE function-by-function mapping plus AI 600-1 GenAI Profile §2.4/§2.7/§2.8/§2.10/§2.12 mapping. Forward-only evidence-collection contract starting Phase 54.
+- **Plan template `impact_assessment` block**: optional in plan top-matter; required when `high_risk_target: true`. Five sub-fields (purpose, affected_stakeholders, identified_risks, mitigations, residual_risks) per AI RMF MAP-3.1 / MAP-5.1. New Step 1c "Impact assessment dialogue" in `/qor-plan` SKILL.md.
+- **Subagent tool-scope advisory frontmatter**: `permitted_tools:` and `permitted_subagents:` keys added to all six SDLC + governance skill YAML frontmatters. Declarative-only this phase; Phase 55 candidate wires Cedar-based admission enforcement.
+- **Override-friction escalator** (`qor/scripts/override_friction.py`, ~80 LOC): counts `gate_override` events per session; threshold = 3 (symmetric with cycle-count escalator); raises `OverrideFrictionRequired` from `gate_chain.emit_gate_override` when threshold reached and no `justification` (>=50 chars) supplied. All six gate-checking skills wired to handle the exception. Closes OWASP LLM Top 10 LLM08 (Excessive Agency) strengthening + EU AI Act Art. 14.
+- **`shadow_event.schema.json` `justification` field**: optional minLength 50 string; populated by `override_friction.record_with_justification` when threshold-friction is supplied.
+- **Doctrine §12 "Override-friction escalator"** appended to `qor/references/doctrine-governance-enforcement.md`.
+
+### Changed
+- **CLI subcommand-handler split** (closes Pass-1 razor-overage): `qor/cli.py` 227 LOC → ~190 LOC after compliance handler bodies extracted to `qor/cli_handlers/compliance.py`. Headroom for Phase 55+ subcommand additions without re-hitting the cap. Tests under `tests/test_compliance_report_post_phase52.py` and `tests/test_nist_compliance.py` updated to import from the new location.
+- **`qor.scripts.validate_gate_artifact`** uses a `referencing.Registry` to resolve `$ref` across local schemas — required for the `_provenance.schema.json` cross-reference. Backward compatible.
+- **CLAUDE.md Authority line** appends `eu-ai-act` and `ai-rmf` doctrine references.
+
+### Security
+- Aligns Qor-logic with **EU AI Act (Reg. 2024/1689)** Art. 12 (logging, exemplary), Art. 13 (transparency), Art. 14 (oversight, strong), Art. 15 (cybersecurity), Art. 50 (transparency of AI-generated content). Aligns with **NIST AI RMF 1.0** GOVERN/MAP/MEASURE/MANAGE and **AI 600-1 GenAI Profile** §2.7 + §2.8. Sprint context: Phase 54 of a five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`; Phase 55 (model-pinning + Cedar-enforced subagent admission + SBOM) and Phase 56 (secret-scanning gate) remain queued.
+
 ## [0.39.0] - 2026-04-30
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

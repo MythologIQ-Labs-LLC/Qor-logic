@@ -1,0 +1,2 @@
+{"findings_categories":["test-failure","infrastructure-mismatch","razor-overage"],"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-04-30T1758-48db18","target":"docs/plan-qor-phase54-ai-provenance-and-act-alignment.md","ts":"2026-04-30T18:07:22Z","verdict":"VETO"}
+{"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-04-30T1758-48db18","target":"docs/plan-qor-phase54-ai-provenance-and-act-alignment.md","ts":"2026-04-30T18:19:01Z","verdict":"PASS"}

@@ -39,7 +39,8 @@
           "prompt-injection"
         ]
       }
-    }
+    },
+    "ai_provenance": { "$ref": "_provenance.schema.json" }
   },
   "allOf": [
     {

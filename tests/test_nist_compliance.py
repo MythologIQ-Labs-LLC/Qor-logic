@@ -21,7 +21,7 @@ def test_compliance_cli_imports():
 
 def test_compliance_report_format(tmp_path):
     """compliance report outputs practice coverage lines."""
-    from qor.cli import _do_compliance_report
+    from qor.cli_handlers.compliance import do_report as _do_compliance_report
     # Create a minimal ledger with SSDF tags
     ledger = tmp_path / "META_LEDGER.md"
     ledger.write_text("""### Entry #1: Test
@@ -52,7 +52,7 @@ Some other text
 
 def test_coverage_calculation(tmp_path):
     """Coverage counts practice groups and individual practices."""
-    from qor.cli import _compute_coverage
+    from qor.cli_handlers.compliance import _compute_coverage
     practice_map = {
         1: ["PO.1.1", "PW.1.1"],
         2: ["PS.1.1", "RV.1.1"],
@@ -66,7 +66,7 @@ def test_coverage_calculation(tmp_path):
 
 def test_empty_ledger_handling(tmp_path):
     """compliance report handles empty ledger gracefully."""
-    from qor.cli import _do_compliance_report
+    from qor.cli_handlers.compliance import do_report as _do_compliance_report
     ledger = tmp_path / "ledger.md"
     ledger.write_text("# Empty Ledger\n", encoding="utf-8")
     output = _do_compliance_report(ledger_path=ledger)

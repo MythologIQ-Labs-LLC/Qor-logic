@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qor-logic.mythologiq/schemas/gates/_provenance.schema.json",
+  "title": "AI Provenance Manifest",
+  "description": "Phase 54: per-phase AI-system provenance metadata embedded in gate artifacts. Maps to EU AI Act Art. 13/50 transparency obligations and NIST AI RMF MEASURE-2.1 / MANAGE-1.1.",
+  "type": "object",
+  "required": ["system", "version", "host", "model_family", "human_oversight", "ts"],
+  "additionalProperties": false,
+  "properties": {
+    "system": {
+      "type": "string",
+      "const": "Qor-logic",
+      "description": "Canonical system identifier; constant string for forward compatibility with downstream aggregators."
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Semver string of the Qor-logic system (read from pyproject.toml at manifest-build time)."
+    },
+    "host": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Detected harness host (e.g. claude-code, kilo-code, codex, unknown). Sourced from qor.scripts.qor_platform.current()."
+    },
+    "model_family": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Model family identifier (e.g. claude-opus-4-7, claude-sonnet-4-6, unknown). Sourced from QOR_MODEL_FAMILY env var or defaults to unknown."
+    },
+    "human_oversight": {
+      "type": "string",
+      "enum": ["pass", "veto", "override", "absent"],
+      "description": "Operator decision at the gate this artifact represents. EU AI Act Art. 14 mapping: pass and veto are operator-elected verdicts; override is operator-overrode-the-gate; absent is for phases without an operator decision (research, implement)."
+    },
+    "ts": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+      "description": "ISO 8601 UTC timestamp at manifest build time."
+    }
+  }
+}

@@ -74,6 +74,8 @@ elif not result.valid:
 
 Override is permitted (advisory gate) but logged as severity-1 `gate_override` event in the Process Shadow Genome.
 
+**Phase 54 wiring**: when `gate_chain.emit_gate_override` raises `OverrideFrictionRequired` (the per-session override count has reached the threshold per `qor.scripts.override_friction` defaults), prompt the operator for a written justification (>=50 chars) and re-call `emit_gate_override` with `justification=<text>`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-1.1 + `qor/references/doctrine-eu-ai-act.md` Art. 14.
+
 ### Step 0.2: Install drift check (Phase 32 wiring)
 
 Detect whether the operator's locally installed skills differ from the repo source. Non-blocking WARN; operator decides whether to reinstall before proceeding.
@@ -116,6 +118,20 @@ Before writing the plan, elicit `doc_tier`, `terms_introduced`, and `boundaries`
 4. For legacy: require a `doc_tier_rationale` (schema enforces; emit severity-2 `degradation` shadow event via `doc_integrity.emit_legacy_tier_event`).
 
 Warn (do not block) if `doc_tier` is omitted (default `standard`) or if `system` is declared with no `terms_introduced`.
+
+### Step 1c: Impact assessment dialogue (Phase 54 wiring)
+
+Triggered when the operator declares `high_risk_target: true` in plan top-matter. The flag asserts that the downstream system being supported by this Qor-logic invocation is itself a high-risk AI system per EU AI Act Annex III; per `qor/references/doctrine-eu-ai-act.md`, this triggers an Art. 9 risk-management contract that the plan must fulfil via the `impact_assessment` block.
+
+When `high_risk_target: true` is set, the plan MUST declare an `impact_assessment` object with the following five sub-fields (schema-enforced via `qor/gates/schema/plan.schema.json`):
+
+- **purpose** — what the downstream system is designed to do, expressed in operator-facing prose.
+- **affected_stakeholders** — who is affected by the system's decisions (users, third parties, operators, regulators).
+- **identified_risks** — the operationally-relevant risks per AI RMF MAP-3.1 / EU AI Act Art. 9.
+- **mitigations** — concrete controls that reduce the identified risks.
+- **residual_risks** — risks remaining after mitigation that the operator accepts and surfaces to deployers.
+
+Skipped silently when `high_risk_target` is false or omitted (default false). Maps to AI RMF MAP-3.1 / MAP-5.1 per `qor/references/doctrine-ai-rmf.md`.
 
 ### Step 2: Research Existing Code
 
@@ -257,17 +273,22 @@ A reader unfamiliar with code should be able to:
 Persist the structured gate artifact at `.qor/gates/<session_id>/plan.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
 
 ```python
-from qor.scripts import gate_chain, shadow_process
+from qor.scripts import gate_chain, shadow_process, ai_provenance
 
 # Build payload conforming to qor/gates/schema/plan.schema.json
 payload = {
     "ts": shadow_process.now_iso(),
     # ... phase-specific required fields (see schema)
 }
-gate_chain.write_gate_artifact(phase="plan", payload=payload, session_id=sid)
+manifest = ai_provenance.build_manifest(
+    "plan", human_oversight=ai_provenance.HumanOversight.ABSENT
+)
+gate_chain.write_gate_artifact(
+    phase="plan", payload=payload, session_id=sid, ai_provenance=manifest,
+)
 ```
 
-Schema lives at `qor/gates/schema/plan.schema.json`; the helper validates before write. Plans declaring `doc_tier: legacy` without `doc_tier_rationale` fail schema validation (enforced by the `if-then` rule added in Phase 28); operator must either add rationale or raise the tier.
+Schema lives at `qor/gates/schema/plan.schema.json`; the helper validates before write. Plans declaring `doc_tier: legacy` without `doc_tier_rationale` fail schema validation (enforced by the `if-then` rule added in Phase 28); operator must either add rationale or raise the tier. Per Phase 54: every gate-writing skill calls `ai_provenance.build_manifest` and passes the result through `ai_provenance=manifest`; closes EU AI Act Art. 13/50 transparency surface.
 
 ## Delegation
 

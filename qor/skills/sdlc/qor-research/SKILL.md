@@ -12,6 +12,8 @@ phase: research
 tone_aware: false
 gate_reads: ""
 gate_writes: research
+permitted_tools: [Read, Grep, Glob, Bash]
+permitted_subagents: [Explore, general-purpose]
 ---
 # /qor-research — Deep Research Phase
 
@@ -203,6 +205,28 @@ SHA256(content_hash + previous_hash)
 ```
 
 **Decision**: [Summary of key findings and any drift detected]
+```
+
+### Step 8.5: Write Gate Artifact (Phase 54 wiring)
+
+Persist the structured gate artifact at `.qor/gates/<session_id>/research.json` so downstream phases can read it via `gate_chain.check_prior_artifact`. Provenance manifest embedded per Phase 54 (closes EU AI Act Art. 13/50 transparency surface).
+
+```python
+from qor.scripts import gate_chain, shadow_process, ai_provenance
+
+payload = {
+    "ts": shadow_process.now_iso(),
+    "questions": questions,        # research questions investigated
+    "findings": findings,          # structured findings list
+    "sources": sources,            # cited file paths and references
+    "brief_path": brief_path,      # path to RESEARCH_BRIEF.md
+}
+manifest = ai_provenance.build_manifest(
+    "research", human_oversight=ai_provenance.HumanOversight.ABSENT
+)
+gate_chain.write_gate_artifact(
+    phase="research", payload=payload, session_id=sid, ai_provenance=manifest,
+)
 ```
 
 ### Step 9: Final Report

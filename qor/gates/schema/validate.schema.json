@@ -21,6 +21,7 @@
           "notes": { "type": "string" }
         }
       }
-    }
+    },
+    "ai_provenance": { "$ref": "_provenance.schema.json" }
   }
 }

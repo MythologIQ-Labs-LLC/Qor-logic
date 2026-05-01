@@ -227,3 +227,13 @@ Session-scoped only. A new session resets the suppression. Longer-term suppressi
 ## 11. Context Discipline (Phase 39)
 
 Personas in Qor-logic skills are context-prioritization scaffolds for edge-case determinations, evaluated by performance/accuracy/results — not aesthetic flavor. See `qor/references/doctrine-context-discipline.md` for the full doctrine: three-mechanism distinction, persona evaluation protocol, stance-directive discipline, subagent invocation rule, and verification protocol requiring `<persona-evidence>` pointers for retained tags.
+
+## 12. Override-friction escalator (Phase 54)
+
+Symmetric with §10.4 cycle-count escalator. `qor.scripts.override_friction.check(session_id)` counts `gate_override` events for the session in `docs/PROCESS_SHADOW_GENOME.md`. Threshold `K = 3` (same value, same per-session scope as cycle-count). When `count >= K`, the next call to `gate_chain.emit_gate_override` raises `OverrideFrictionRequired` unless the caller passes `justification=<text>` of `>= 50` characters.
+
+Friction form: free-text justification appended to the override event's payload via `override_friction.record_with_justification`. Lowest UX cost (one prompt at threshold), highest signal value (operator must articulate WHY the override is appropriate). Below threshold, override behavior is unchanged.
+
+Skill prose at every gate-checking skill (`/qor-research`, `/qor-plan`, `/qor-audit`, `/qor-implement`, `/qor-substantiate`, `/qor-validate`) handles the exception by prompting the operator for a justification and re-calling `emit_gate_override(..., justification=<text>)`. Operator refusal to provide a justification leaves the gate in its current state; operator must address the underlying cause via `/qor-remediate`.
+
+Maps to OWASP LLM Top 10 LLM08 (Excessive Agency) strengthening, NIST AI RMF MANAGE-1.1, and EU AI Act Art. 14 oversight. Per `qor/references/doctrine-ai-rmf.md` §MANAGE.

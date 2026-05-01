@@ -86,8 +86,27 @@ def emit_gate_override(
     reason: str,
     session_id: str,
     override_authority: str = "user",
+    justification: str | None = None,
 ) -> str:
-    """Append gate_override event (sev 1) to PROCESS_SHADOW_GENOME."""
+    """Append gate_override event (sev 1) to PROCESS_SHADOW_GENOME.
+
+    Phase 54: consults ``override_friction.check`` before emitting; raises
+    ``OverrideFrictionRequired`` when the per-session threshold is reached
+    and no ``justification`` is supplied. Skill prose handles the exception
+    by prompting the operator for a justification (>=50 chars) and
+    re-calling with ``justification=<text>``.
+    """
+    from qor.scripts import override_friction
+
+    friction = override_friction.check(session_id)
+    if friction.threshold_reached and not justification:
+        raise override_friction.OverrideFrictionRequired(
+            f"Override-friction threshold reached "
+            f"({friction.count}/{friction.threshold}) for session {session_id}. "
+            f"Re-call emit_gate_override with justification=<text "
+            f"(>={override_friction.MIN_JUSTIFICATION_LEN} chars)>."
+        )
+
     event = {
         "ts": shadow_process.now_iso(),
         "skill": f"qor-{current_phase}",
@@ -106,6 +125,8 @@ def emit_gate_override(
         "addressed_reason": None,
         "source_entry_id": None,
     }
+    if justification is not None:
+        event = override_friction.record_with_justification(event, justification)
     return shadow_process.append_event(event, attribution="UPSTREAM")
 
 
@@ -127,6 +148,7 @@ def write_gate_artifact(
     phase: str,
     payload: dict,
     session_id: str | None = None,
+    ai_provenance: dict | None = None,
 ) -> "Path":
     """Write a gate artifact to .qor/gates/<session_id>/<phase>.json after schema validation.
 
@@ -160,6 +182,8 @@ def write_gate_artifact(
                 f"with phase={phase!r}; skill-phase mismatch."
             )
     sid = session_id or session.get_or_create()
+    if ai_provenance is not None:
+        payload = {**payload, "ai_provenance": ai_provenance}
     path = vga.write_artifact(phase, payload, session_id=sid)
     if phase == "audit":
         from qor.scripts import audit_history

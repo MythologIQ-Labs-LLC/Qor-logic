@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-04-30T17:56:31Z",
+  "generated_ts": "2026-05-01T06:14:32Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -114,7 +114,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "5c09dba490820f2a11565d44baf24c3e48ef5ff532188a78cf2331e620cb6d41"
+      "sha256": "e900293e5d8c23629b4d6e53adf058c7478fc3fa6ffb6dad93588491a82ab197"
     },
     {
       "id": "qor-bootstrap",
@@ -204,7 +204,7 @@
       "id": "qor-implement",
       "source_path": "skills/qor-implement/SKILL.md",
       "install_rel_path": "skills/qor-implement/SKILL.md",
-      "sha256": "8e46cfd26fa308cb206973f8a7bed05cfd20cdd72f72fa31bc2a87fe88001189"
+      "sha256": "ad7346eb3e17041cc8393b14adbf9a8637ce2650f399d3cfa36146c24797e9db"
     },
     {
       "id": "qor-meta-log-decision",
@@ -258,7 +258,7 @@
       "id": "qor-plan",
       "source_path": "skills/qor-plan/SKILL.md",
       "install_rel_path": "skills/qor-plan/SKILL.md",
-      "sha256": "5b2091a9692adfa00c73fb6bff967236ba106f38e6ffe9d98950bbcad06d3fe4"
+      "sha256": "4a44bb6d943480f4fd1ffa61a4cff61d0aa327871171b2fc65594112777f713d"
     },
     {
       "id": "qor-process-review-cycle",
@@ -276,7 +276,7 @@
       "id": "qor-refactor",
       "source_path": "skills/qor-refactor/SKILL.md",
       "install_rel_path": "skills/qor-refactor/SKILL.md",
-      "sha256": "d0942c4f4ea779707414237781ab85781e0e8ae34e487763901a3cb3bb2ee854"
+      "sha256": "c1dcab8034e2090900855d60e4881f8ae30e25d47a43a51238b043c43e43f7eb"
     },
     {
       "id": "qor-remediate",
@@ -288,13 +288,13 @@
       "id": "qor-repo-audit",
       "source_path": "skills/qor-repo-audit/SKILL.md",
       "install_rel_path": "skills/qor-repo-audit/SKILL.md",
-      "sha256": "8c62fe6051fc6c777b7474e98cb07af32e8447406eeed41bb33c6143af7f91b2"
+      "sha256": "409733ba47a03962debfe0f9cce0c8a859b66591c0691c0103d8065e1491ae5b"
     },
     {
       "id": "qor-repo-release",
       "source_path": "skills/qor-repo-release/SKILL.md",
       "install_rel_path": "skills/qor-repo-release/SKILL.md",
-      "sha256": "bf2f66e8116c76cac39022002bf66641776b7ae04d3bf146faac0fbd9126bbd8"
+      "sha256": "431eaaced734b7cf959e3f8046cc25f64a50688813dc5b5dc0269f943f646950"
     },
     {
       "id": "qor-repo-scaffold",
@@ -330,13 +330,13 @@
       "id": "qor-repo-scaffold",
       "source_path": "skills/qor-repo-scaffold/SKILL.md",
       "install_rel_path": "skills/qor-repo-scaffold/SKILL.md",
-      "sha256": "0f6f403baa46923847e24dc350e018cc6465995bbee3445f61a9c11cbafa81dc"
+      "sha256": "0ae4a53a6652a824445d7ba4af765e1d083fdb4d75508fefc8713de812524171"
     },
     {
       "id": "qor-research",
       "source_path": "skills/qor-research/SKILL.md",
       "install_rel_path": "skills/qor-research/SKILL.md",
-      "sha256": "feea51910f426ec0646bef6907d465c1f09c875ffbd0afd1d98f4444576802a0"
+      "sha256": "1178e5a5bd6e92a6ad4e3d4b4684aebc9cafe91ad87f8af6bad1c9b95cdbe0cf"
     },
     {
       "id": "qor-shadow-process",
@@ -360,7 +360,7 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "4c2c642db56fed836b416cde38a38f0ca53d3fa64a2db53c8f7960e2bcc53081"
+      "sha256": "8d1eecc4d7a0f4aa64eabbd31b01eb1e885b0786a9060e167b02ddba6a3b4698"
     },
     {
       "id": "qor-tone",
@@ -378,7 +378,7 @@
       "id": "qor-validate",
       "source_path": "skills/qor-validate/SKILL.md",
       "install_rel_path": "skills/qor-validate/SKILL.md",
-      "sha256": "1bacbd3733bd9f5bd62ac6ca012a5d16fb833d64fe4ce4c48acd43179cda92ed"
+      "sha256": "773685233c52cc82dd731a8122b1d27cb1749205ad621de68d32e2d48aff00ee"
     },
     {
       "id": "track-shadow-genome.md",

@@ -20,6 +20,7 @@
     },
     "merkle_seal": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "content_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-    "ledger_entry": { "type": "integer", "minimum": 1 }
+    "ledger_entry": { "type": "integer", "minimum": 1 },
+    "ai_provenance": { "$ref": "_provenance.schema.json" }
   }
 }

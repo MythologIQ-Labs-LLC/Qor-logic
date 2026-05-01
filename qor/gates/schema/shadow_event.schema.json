@@ -90,6 +90,11 @@
     "addressed_pending": {
       "description": "Phase 36 two-stage flip: true when /qor-remediate has filed a remediation proposal targeting this event; remains true after /qor-audit PASSes the proposal (addressed also flips true). Optional for backward compatibility with legacy events (issue_created/stale closure paths).",
       "type": "boolean"
+    },
+    "justification": {
+      "description": "Phase 54: free-text justification supplied by operator when override-friction threshold has been reached for the session. Required by qor.scripts.override_friction.record_with_justification at runtime when count >= threshold; not enforced by schema (no allOf rule) because the threshold is per-session rather than per-event.",
+      "type": "string",
+      "minLength": 50
     }
   },
   "allOf": [

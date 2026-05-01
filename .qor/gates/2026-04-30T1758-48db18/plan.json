@@ -1,0 +1,67 @@
+{
+  "phase": "plan",
+  "session_id": "2026-04-30T1758-48db18",
+  "ts": "2026-04-30T18:16:22Z",
+  "plan_path": "docs/plan-qor-phase54-ai-provenance-and-act-alignment.md",
+  "phases": [
+    "Phase 1: AI provenance metadata in 6 gate schemas + helper module + qor/cli_handlers/compliance.py extraction",
+    "Phase 2: EU AI Act + AI RMF doctrine files + plan-template impact-assessment section",
+    "Phase 3: Subagent tool-scope advisory frontmatter + override-friction escalator",
+    "Phase 4: Self-application + sprint-progress dashboard"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ai_provenance_schema.py tests/test_ai_provenance_helper.py tests/test_skill_prose_cites_ai_provenance.py tests/test_compliance_ai_provenance_cli.py -v",
+    "python -m pytest tests/test_doctrine_eu_ai_act_anchored.py tests/test_doctrine_ai_rmf_anchored.py tests/test_plan_schema_impact_assessment.py tests/test_plan_skill_prose_cites_impact_assessment.py -v",
+    "python -m pytest tests/test_skill_frontmatter_permitted_tools.py tests/test_override_friction_escalator.py tests/test_skill_prose_handles_friction_exception.py -v",
+    "python -m pytest tests/test_phase54_self_application.py tests/test_sprint_progress_cli.py -v",
+    "python -m pytest -x",
+    "python -m qor.scripts.prompt_injection_canaries --mask-code-blocks --files docs/plan-qor-phase54-ai-provenance-and-act-alignment.md docs/META_LEDGER.md qor/references/doctrine-eu-ai-act.md qor/references/doctrine-ai-rmf.md",
+    "python -m qor.reliability.skill_admission qor-substantiate",
+    "python -m qor.reliability.gate_skill_matrix",
+    "python -m qor.scripts.check_variant_drift",
+    "python -m qor.scripts.badge_currency --repo-root . --ledger docs/META_LEDGER.md"
+  ],
+  "open_questions": [
+    "Provenance schema location: external _provenance.schema.json with $ref / inline / sidecar",
+    "Override-friction trigger threshold: 3 (default; matches cycle-count) / 5 / env-configurable",
+    "Friction form: justification text (default) / re-prompt / auto-/qor-remediate"
+  ],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "AI provenance manifest",
+      "home": "qor/references/doctrine-eu-ai-act.md"
+    },
+    {
+      "term": "human-oversight signal",
+      "home": "qor/references/doctrine-eu-ai-act.md"
+    },
+    {
+      "term": "subagent tool scope",
+      "home": "qor/references/doctrine-ai-rmf.md"
+    },
+    {
+      "term": "override-friction escalator",
+      "home": "qor/references/doctrine-ai-rmf.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "AI provenance metadata is descriptive, not cryptographic.",
+      "Subagent permitted_tools frontmatter is advisory; Phase 55 wires Cedar enforcement.",
+      "Override-friction escalator is count-based, not classification-based."
+    ],
+    "non_goals": [
+      "Model pinning per skill (Phase 55)",
+      "SBOM emission (Phase 55)",
+      "Secret-scanning gate (Phase 56)",
+      "Cedar-based subagent admission enforcement (Phase 55)",
+      "Cryptographic signing of provenance manifests"
+    ],
+    "exclusions": [
+      "Retroactive provenance backfill on entries < #175",
+      "Operator-facing UI changes to override prompts"
+    ]
+  },
+  "change_class": "feature"
+}

@@ -49,46 +49,6 @@ def _do_compile(args: argparse.Namespace) -> int:
     return 0
 
 
-def _compute_coverage(practice_map: dict[int, list[str]]) -> tuple[int, int, int]:
-    """Compute (group_count, unique_practices, total_tags) from practice_map."""
-    all_practices: set[str] = set()
-    total = 0
-    for practices in practice_map.values():
-        for p in practices:
-            all_practices.add(p)
-            total += 1
-    groups = {p.split(".")[0] for p in all_practices}
-    return len(groups), len(all_practices), total
-
-
-def _do_compliance_report(
-    ledger_path: Path | None = None,
-) -> str:
-    """Generate SSDF practice coverage report from ledger."""
-    from qor.scripts.ledger_hash import extract_ssdf_practices
-    if ledger_path is None:
-        from qor import workdir
-        ledger_path = workdir.meta_ledger()
-    practice_map = extract_ssdf_practices(ledger_path)
-    if not practice_map:
-        return "No SSDF practice tags found in ledger. Coverage: 0"
-
-    by_practice: dict[str, list[int]] = {}
-    for entry_num, practices in practice_map.items():
-        for p in practices:
-            by_practice.setdefault(p, []).append(entry_num)
-
-    lines = ["SSDF Practice Coverage:"]
-    for practice in sorted(by_practice):
-        entries = by_practice[practice]
-        entry_refs = ", ".join(f"Entry #{n}" for n in sorted(entries))
-        lines.append(f"  {practice}: {len(entries)} entries ({entry_refs})")
-
-    groups, unique, total = _compute_coverage(practice_map)
-    lines.append(f"Coverage: {groups} practice groups, {unique} individual practices, {total} total tags")
-    return "\n".join(lines)
-
-
 def _do_verify_ledger(args: argparse.Namespace) -> int:
     """Verify META_LEDGER.md chain."""
     from qor.scripts import ledger_hash
@@ -148,10 +108,8 @@ def _register_misc(sub) -> None:
 
 
 def _register_compliance_policy(sub) -> tuple[argparse.ArgumentParser, argparse.ArgumentParser]:
-    sp_compliance = sub.add_parser("compliance", help="NIST SSDF compliance reporting")
-    compliance_sub = sp_compliance.add_subparsers(dest="compliance_command", metavar="<subcommand>")
-    sp_compliance_report = compliance_sub.add_parser("report", help="show SSDF practice coverage")
-    sp_compliance_report.add_argument("--ledger", type=Path, default=None)
+    from qor.cli_handlers import compliance as compliance_handlers
+    sp_compliance = compliance_handlers.register(sub)
 
     sp_policy = sub.add_parser("policy", help="policy engine commands")
     policy_sub = sp_policy.add_subparsers(dest="policy_command", metavar="<subcommand>")
@@ -205,9 +163,10 @@ def main(argv: list[str] | None = None) -> int:
         return rc
 
     if args.command == "compliance":
-        if getattr(args, "compliance_command", None) == "report":
-            print(_do_compliance_report(ledger_path=getattr(args, "ledger", None)))
-            return 0
+        from qor.cli_handlers import compliance as compliance_handlers
+        rc = compliance_handlers.dispatch(args)
+        if rc is not None:
+            return rc
         subparsers["compliance"].print_help()
         return 0
     if args.command == "init":

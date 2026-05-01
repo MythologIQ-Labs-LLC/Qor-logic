@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 import jsonschema
+import referencing
 
 from qor.scripts import session
 
@@ -21,6 +22,33 @@ from qor import workdir as _workdir
 
 SCHEMA_DIR = Path(str(_resources.asset("gates", "schema")))
 GATES_DIR = _workdir.gate_dir()
+
+
+def _build_registry() -> referencing.Registry:
+    """Register every local schema file by both filename and $id (Phase 54).
+
+    Allows phase schemas to use ``"$ref": "_provenance.schema.json"`` without
+    triggering a network fetch when the validator encounters the reference.
+    """
+    registry: referencing.Registry = referencing.Registry()
+    for schema_path in SCHEMA_DIR.glob("*.schema.json"):
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        resource = referencing.Resource.from_contents(schema)
+        registry = registry.with_resource(uri=schema_path.name, resource=resource)
+        schema_id = schema.get("$id")
+        if schema_id:
+            registry = registry.with_resource(uri=schema_id, resource=resource)
+    return registry
+
+
+_REGISTRY: referencing.Registry | None = None
+
+
+def _registry() -> referencing.Registry:
+    global _REGISTRY
+    if _REGISTRY is None:
+        _REGISTRY = _build_registry()
+    return _REGISTRY
 
 PHASES = [
     "research",
@@ -49,7 +77,7 @@ def validate_one(phase: str, artifact_path: Path) -> list[str]:
         return [f"invalid JSON: {e}"]
     schema = load_schema(phase)
     errors: list[str] = []
-    validator = jsonschema.Draft202012Validator(schema)
+    validator = jsonschema.Draft202012Validator(schema, registry=_registry())
     for err in validator.iter_errors(data):
         path_str = ".".join(str(p) for p in err.absolute_path) or "<root>"
         errors.append(f"{path_str}: {err.message}")
@@ -112,7 +140,7 @@ def write_artifact(phase: str, data: dict, session_id: str | None = None) -> Pat
 def _validate_data(phase: str, data: dict) -> list[str]:
     schema = load_schema(phase)
     errors: list[str] = []
-    validator = jsonschema.Draft202012Validator(schema)
+    validator = jsonschema.Draft202012Validator(schema, registry=_registry())
     for err in validator.iter_errors(data):
         path_str = ".".join(str(p) for p in err.absolute_path) or "<root>"
         errors.append(f"{path_str}: {err.message}")

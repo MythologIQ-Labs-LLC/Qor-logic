@@ -17,7 +17,7 @@ def test_compliance_report_finds_tags_in_synthetic_ledger_with_tags(tmp_path):
     """Build a synthetic ledger with one entry containing SSDF tags;
     invoke the compliance-report function with controlled input;
     assert returned report mentions the practice IDs."""
-    from qor.cli import _do_compliance_report
+    from qor.cli_handlers.compliance import do_report as _do_compliance_report
 
     fixture = tmp_path / "META_LEDGER.md"
     fixture.write_text(
@@ -43,7 +43,7 @@ def test_compliance_report_finds_tags_in_synthetic_ledger_with_tags(tmp_path):
 
 def test_compliance_report_reports_zero_for_synthetic_ledger_without_tags(tmp_path):
     """Functional test: empty ledger returns the canonical 'no tags' message."""
-    from qor.cli import _do_compliance_report
+    from qor.cli_handlers.compliance import do_report as _do_compliance_report
 
     fixture = tmp_path / "META_LEDGER.md"
     fixture.write_text(

@@ -13,6 +13,8 @@ tone_aware: false
 autonomy: interactive
 gate_reads: plan
 gate_writes: audit
+permitted_tools: [Read, Grep, Glob, Bash]
+permitted_subagents: []
 ---
 # /qor-audit - Gate Tribunal
 
@@ -48,6 +50,8 @@ elif not result.valid:
 ```
 
 Override is permitted (advisory gate) but logged as severity-1 event in the Process Shadow Genome.
+
+**Phase 54 wiring**: when `runtime.emit_gate_override` (which delegates to `gate_chain.emit_gate_override`) raises `OverrideFrictionRequired`, prompt the operator for a written justification (>=50 chars) and re-call `emit_gate_override` with `justification=<text>`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-1.1 + `qor/references/doctrine-eu-ai-act.md` Art. 14.
 
 ### Step 0.5: Cycle-count escalation check (Phase 37 wiring)
 
@@ -361,7 +365,7 @@ Report verdict, risk grade, and next action. Template: `references/qor-audit-tem
 Persist the structured gate artifact at `.qor/gates/<session_id>/audit.json` so `/qor-implement` (and any other downstream phase) can read it via `gate_chain.check_prior_artifact`. Previously missing; Phase 29 closes the chain link.
 
 ```python
-from qor.scripts import gate_chain, shadow_process
+from qor.scripts import gate_chain, shadow_process, ai_provenance
 
 payload = {
     "ts": shadow_process.now_iso(),
@@ -371,10 +375,19 @@ payload = {
     "risk_grade": risk_grade,     # "L1" | "L2" | "L3"
     "findings_categories": findings_categories,  # Phase 37 B20b: required on VETO
 }
-gate_chain.write_gate_artifact(phase="audit", payload=payload, session_id=sid)
+manifest = ai_provenance.build_manifest(
+    "audit",
+    human_oversight=(
+        ai_provenance.HumanOversight.PASS if verdict == "PASS"
+        else ai_provenance.HumanOversight.VETO
+    ),
+)
+gate_chain.write_gate_artifact(
+    phase="audit", payload=payload, session_id=sid, ai_provenance=manifest,
+)
 ```
 
-Schema at `qor/gates/schema/audit.schema.json` validates before write. A schema violation raises `ValueError` the operator must resolve before proceeding; no silent fallback.
+Schema at `qor/gates/schema/audit.schema.json` validates before write. A schema violation raises `ValueError` the operator must resolve before proceeding; no silent fallback. Per Phase 54: every gate-writing skill calls `ai_provenance.build_manifest` with the operator's verdict mapped to `HumanOversight` (PASS / VETO); closes EU AI Act Art. 14 oversight-signal surface.
 
 **Phase 37 B20b — `findings_categories` mapping discipline**: each VETO finding maps deterministically to one value in the closed 12-value enum. Audit-pass → category map:
 

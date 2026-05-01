@@ -38,12 +38,33 @@
         "non_goals":   { "type": "array", "items": { "type": "string" } },
         "exclusions":  { "type": "array", "items": { "type": "string" } }
       }
-    }
+    },
+    "high_risk_target": {
+      "type": "boolean",
+      "description": "Phase 54: declare whether the downstream system being supported by this Qor-logic invocation is itself a high-risk AI system per EU AI Act Annex III. Default false; when true, impact_assessment is required."
+    },
+    "impact_assessment": {
+      "type": "object",
+      "description": "Phase 54: optional NIST AI RMF MAP-3.1/MAP-5.1 + EU AI Act Art. 9 risk-register block. Required when high_risk_target is true.",
+      "required": ["purpose", "affected_stakeholders", "identified_risks", "mitigations", "residual_risks"],
+      "properties": {
+        "purpose": { "type": "string", "minLength": 1 },
+        "affected_stakeholders": { "type": "array", "items": { "type": "string" } },
+        "identified_risks": { "type": "array", "items": { "type": "string" } },
+        "mitigations": { "type": "array", "items": { "type": "string" } },
+        "residual_risks": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ai_provenance": { "$ref": "_provenance.schema.json" }
   },
   "allOf": [
     {
       "if": { "properties": { "doc_tier": { "const": "legacy" } }, "required": ["doc_tier"] },
       "then": { "required": ["doc_tier_rationale"] }
+    },
+    {
+      "if": { "properties": { "high_risk_target": { "const": true } }, "required": ["high_risk_target"] },
+      "then": { "required": ["impact_assessment"] }
     }
   ]
 }
