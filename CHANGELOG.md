@@ -10,6 +10,27 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.41.0] - 2026-05-01
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+Phase 55: Cedar-enforced subagent admission + model-pinning frontmatter + CycloneDX v1.5 SBOM emitter + pre-audit lint pair + deliver schema. Closes OWASP LLM Top 10 (2025) **LLM05 Supply Chain** + **LLM07 Insecure Plugin Design** at the manifest layer; aligns with NIST AI RMF GV-6.1 + MG-3.1. Third phase of the five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`.
+
+### Added
+- **Cedar-enforced subagent admission** (Phase 1): `qor/policies/skill_admission.cedar` extended with two `forbid` rules over `actual_tool_invocations_exceed_scope` and `actual_subagent_invocations_exceed_scope`. New `compute_skill_admission_attributes` in `qor/policy/resource_attributes.py` with `_CANONICAL_TOOLS` frozenset (10 Tool names). `qor/reliability/skill_admission.py` `check_admission` extended with `check_tool_scope` Phase 55 enforcement (graceful fallback for legacy file-path invocations).
+- **Model-pinning frontmatter** (Phase 2): 8 scoped skills declare `model_compatibility:` lists and `min_model_capability:` from ordered tier set `(haiku, sonnet, opus)`. New `qor/scripts/model_pinning_lint.py` (~135 LOC) with WARN-only CLI; `/qor-plan` Step 0.3 wires the lint.
+- **CycloneDX v1.5 SBOM emitter** (Phase 3): `qor/scripts/sbom_emit.py` (~145 LOC, hand-rolled stdlib, zero new runtime deps) emits root + skill + doctrine + variant components with `bom-ref`, `name`, `version`, `purl`, `type`, `description`, and a root-depends-on-all dependency edge. New `qor/cli_handlers/release.py` (~38 LOC) hosts `do_sbom`; `qor-logic release sbom` registered. `/qor-repo-release` Step Z emits sidecar `dist/sbom.cdx.json` and captures `sbom_path` into the deliver gate payload.
+- **NEW `qor/gates/schema/deliver.schema.json`** (Phase 3): closes long-standing pre-existing surface gap where `qor-repo-release` wrote `phase="deliver"` artifacts that bypassed schema validation. `qor/scripts/validate_gate_artifact.py` `PHASES` extended with `"deliver"`.
+- **Pre-audit lint pair** (Phase 4): new `qor/scripts/plan_test_lint.py` (~76 LOC) detects four canonical presence-only patterns (substring-presence, section-exists, substring-in-file, path-exists). New `qor/scripts/plan_grep_lint.py` (~99 LOC) detects infrastructure-mismatch citations against actual repo state, excluding paths declared as NEW in plan Affected Files blocks. `/qor-audit` Step 0.6 + `/qor-repo-audit` Step 0.6 invoke both lints WARN-only. Closes the cross-session recurring pattern flagged across Phase 53/54/55 first audits.
+- **SG-PreAuditLintGap-A** doctrine entry codifies the recurring presence-only-test + hedged-citation pattern and its countermeasure.
+- **3 new glossary terms**: tool-scope policy, model-pinning frontmatter, CycloneDX SBOM.
+
+### Changed
+- **Sprint-progress reconciliation**: `qor/scripts/sprint_progress.py` extended with `sealed_priorities_from_ledger` that walks SESSION SEAL entries and recognizes "Bundles Priorities N, M, ..." patterns via sentence-boundary parsing. Closes the Phase 54 known-issue where bundled priorities reported PENDING.
+
+### Security
+- Closes OWASP LLM Top 10 (2025) **LLM05 Supply Chain** at the SBOM-manifest layer (downstream operators consume `dist/sbom.cdx.json` for vulnerability scanning) and **LLM07 Insecure Plugin Design** at the admission-policy layer (Cedar `forbid` rules enforce declared `permitted_tools` / `permitted_subagents` allowlists). Aligns with **NIST AI RMF** GV-6.1 + MG-3.1 (third-party AI risk). Sprint Phase 3 of 5 complete; Phase 56 (secret-scanning gate at substantiate) queued.
+
 ## [0.40.0] - 2026-05-01
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

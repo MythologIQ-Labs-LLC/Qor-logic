@@ -6558,3 +6558,55 @@ SHA256(content_hash + "|" + previous_hash)
 **Decision**: Phase 55 implementation complete. All four substantive phases landed plus Phase 5 self-application. 1104 tests passing twice in a row. Reality matches Promise. Handoff to `/qor-substantiate`.
 
 ---
+
+### Entry #182: SESSION SEAL -- Phase 55 feature substantiated
+
+**Timestamp**: 2026-05-01T19:30:00Z
+**Phase**: SEAL (feature)
+**Author**: Judge
+**Verdict**: PASS (1104 tests green, 1 skipped, twice in a row)
+
+**Target**: `docs/plan-qor-phase55-subagent-admission-and-supply-chain.md`
+**Change Class**: `feature`
+**Version**: `0.40.0 -> 0.41.0`
+**Tag**: `v0.41.0` (created at Step 9.5.5 post-commit; LOCAL ONLY pending PR merge per Phase 40 doctrine)
+**Session**: `2026-05-01T0616-0b8d09`
+
+**Content Hash (session seal)**: `d22e678c243a33cc6d8141e81c389fa305d40573a9e131e96cb5674fd928b11d`
+**Previous Hash**: `80c4281d126e5d9f3fd899aa6a175cdba6ed18c93bc0310aafc0f09364cb16a1`
+**Chain Hash (Merkle seal)**: `d569ad934e37f8385d0527bffee9762e7e1af27e309b55e78871ec31aa5d6c7f`
+
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1, PW.7.1, PW.9.1, RV.1.1, RV.1.2
+
+**Scope**: Phase 55 closes OWASP LLM Top 10 (2025) LLM05 (Supply Chain) at the SBOM-manifest layer + LLM07 (Insecure Plugin Design) at the Cedar admission-policy layer; aligns with NIST AI RMF 1.0 GV-6.1 + MG-3.1 (third-party AI risk). Third phase of the five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md` (Priority 3). Phase 56 (secret-scanning gate at substantiate) remains queued.
+
+**Phase 1 — Cedar-enforced subagent admission**: `qor/policies/skill_admission.cedar` extended with two new `forbid` rules over `actual_tool_invocations_exceed_scope` and `actual_subagent_invocations_exceed_scope`. New `compute_skill_admission_attributes` in `qor/policy/resource_attributes.py` with `_CANONICAL_TOOLS` frozenset (10 canonical Tool names). `qor.reliability.skill_admission.check_admission` extended with `check_tool_scope` Phase 55 enforcement (graceful fallback for legacy file-path invocations). 19 phase-1 tests.
+
+**Phase 2 — model-pinning frontmatter**: 8 scoped skills declare `model_compatibility:` lists and `min_model_capability:` from ordered tier set `(haiku, sonnet, opus)`. New `qor/scripts/model_pinning_lint.py` (~135 LOC) with WARN-only CLI; `/qor-plan` Step 0.3 wires the lint. 12 phase-2 tests including conditional co-occurrence invariant `test_skills_with_pinning_keys_are_covered_by_pinning_lint_invocation`.
+
+**Phase 3 — CycloneDX SBOM + deliver schema**: `qor/scripts/sbom_emit.py` (~145 LOC, hand-rolled CycloneDX v1.5, zero new runtime deps). New `qor/cli_handlers/release.py` (~38 LOC) hosts `do_sbom`; `qor-logic release sbom` registered. `/qor-repo-release` Step Z emits sidecar `dist/sbom.cdx.json` + captures `sbom_path` into deliver gate payload. **NEW `qor/gates/schema/deliver.schema.json`** closes pre-existing surface gap; `validate_gate_artifact.PHASES` extended with `"deliver"`. 16 phase-3 tests including `test_skills_writing_deliver_gate_invoke_sbom_emit`.
+
+**Phase 4 — pre-audit lints**: `qor/scripts/plan_test_lint.py` (~76 LOC) detects four canonical presence-only patterns; `qor/scripts/plan_grep_lint.py` (~99 LOC) detects infrastructure-mismatch citations (excludes paths declared NEW; skips placeholder-style citations). `/qor-audit` Step 0.6 + `/qor-repo-audit` Step 0.6 invoke both lints WARN-only. SG-PreAuditLintGap-A appended. 15 phase-4 tests including `test_audit_phase_skills_invoke_both_pre_audit_lints`.
+
+**Phase 5 — self-application + sprint reconciliation**: `qor/scripts/sprint_progress.py` extended with `sealed_priorities_from_ledger` that walks SESSION SEAL entries and recognizes "Bundles Priorities N, M, ..." patterns via sentence-boundary parsing. Closes Phase 54 known-issue where bundled priorities reported PENDING. 5 phase-5 self-application tests. Three new glossary terms (tool-scope policy, model-pinning frontmatter, CycloneDX SBOM).
+
+**Reliability sweep**:
+- `python -m qor.reliability.intent_lock verify` → VERIFIED.
+- `python -m qor.reliability.skill_admission qor-substantiate` → ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` → 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.dist_compile` → 4 variants emitted.
+- `python -m qor.scripts.check_variant_drift` → OK 236 files, no drift.
+- `python -m qor.scripts.badge_currency` → OK (Tests 1105, Doctrines 20, Ledger 182).
+- `doc_integrity.run_all_checks_from_plan` strict → OK.
+
+**Razor compliance**: all new modules ≤145 LOC; longest function `sbom_emit.emit()` at 30 LOC; max nesting depth 2; zero nested ternaries.
+
+**Sprint state**: post-Phase-55-seal `qor-logic compliance sprint-progress` reports 5/5 priorities sealed. Five-phase compliance sprint complete. Phase 56 (secret-scanning gate at `/qor-substantiate` Step 4) remains as a future optional doctrine extension.
+
+**Decision**: Phase 55 sealed at v0.41.0. OWASP LLM05 + LLM07 surfaces closed at manifest + admission-policy layers. NIST AI RMF GV-6.1 + MG-3.1 evidence-collection contracts operationalized. Pre-existing deliver-schema gap closed incidentally. Cross-session recurring-pattern advisory structurally resolved via pre-audit lint pair. Sprint at 5/5.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 55 feature substantiated)
+*Merkle seal: d569ad93...* (Phase 55 seal on top of Phase 54's 8d2d4986; Entries #179-#182 chained; closes OWASP LLM Top 10 LLM05+LLM07 + cross-session recurring-pattern advisory)
