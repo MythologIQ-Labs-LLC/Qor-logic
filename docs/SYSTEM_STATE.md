@@ -205,9 +205,7 @@ Partial phase seal. Phases 1 and 2 of the 4-phase plan ship in v0.29.0; Phases 3
 - `pyproject.toml` — `anthropic>=0.40,<1.0` under `[project.optional-dependencies].ab-harness`. Default installs do not pull this dependency.
 - `tests/test_ab_harness.py` — 16 CI tests, all Anthropic calls mocked.
 
-**Deferred (Phase 39b)**:
-- Phase 3 (operator action): `ANTHROPIC_API_KEY=... python qor/scripts/ab_live_run.py` produces `docs/phase39-ab-results.md`. Cost ~$32 per full cycle at Opus 4.7 pricing (corrected from plan's earlier ~$4 estimate). ~10-15 min wall-time.
-- Phase 4 (conditional on Phase 3 results): S3 persona sweep across 24 skills; R3 Identity Activation rewrites fire only if Phase 3 declares `winner: "stance"`; R4 (qor-debug → doctrine cross-reference); R5 (qor-document persona-vs-agent disambiguation).
+**Phase 39b Phase 3 status**: dropped. The originally-planned operator action (invoke `/qor-ab-run` with `ANTHROPIC_API_KEY` to produce `docs/phase39-ab-results.md`, ~$32/cycle external spend) is no longer scheduled. Phase 39b Phases 1+2 shipped the infrastructure (skill, aggregator, fixtures, persona sweep S3+R4+R5) and stand on their own. The R3 conditional rewrite mechanism that gated on results-file existence has been removed (Phase 59 cleanup).
 
 **Cost awareness (corrected from Pass 2 audit O1)**: actual skill body sizes are ~4,000-4,500 tokens each, not the plan's original ~500-token per-call assumption. Real cost ~$32 per full A/B cycle at Opus 4.7 pricing. Codified in `ab_harness.py` module docstring.
 
@@ -223,8 +221,7 @@ Supersedes the v0.29.0 anthropic-SDK approach. Ships:
 - **S3**: 5 decorative `<persona>` tags removed (`qor-status`, `qor-help`, `qor-repo-scaffold`, `qor-bootstrap`, `qor-document`).
 - **R4**: `qor-debug` line 108 subagent_type constraint cross-references `doctrine-context-discipline.md` §4.
 - **R5**: `qor-document` splits Identity Activation stance (main thread) from subagent pairing (`Task` dispatch) citing doctrine §1.2/§1.3.
-- **R3 pending**: test `test_identity_activation_matches_ab_winner_if_results_exist` enforces conditional rewrite when operator produces `docs/phase39-ab-results.md` via `/qor-ab-run`.
-- **LOAD_BEARING_PENDING_EVIDENCE registry** (19 skills): documented transitional state awaiting A/B evidence.
+- **LOAD_BEARING_PENDING_EVIDENCE registry** (20 skills incl. Phase 59 `qor-ideate`): documents skills retained as load-bearing by doctrine judgment.
 
 **Tests**: 743 pytest green × 2. Admission: `qor-ab-run` admitted. Matrix: 29 skills, 112 handoffs, 0 broken.
 

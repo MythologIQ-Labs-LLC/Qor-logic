@@ -5,11 +5,6 @@ Asserts the doctrine-context-discipline.md §5 verification protocol: every
 `<persona-evidence>` pointer line or a `<persona-pending>` placeholder
 marking it as awaiting measurement, OR belong to the doctrine-registered
 load-bearing list below.
-
-Also enforces R3 conditional rewrite (Identity Activation): if
-`docs/phase39-ab-results.md` exists and declares winner="stance" for a
-stance-critical skill, that skill's body must not contain the persona-named
-"You are now operating as" opener.
 """
 from __future__ import annotations
 
@@ -18,16 +13,10 @@ import re
 
 
 _SKILLS_ROOT = pathlib.Path("qor/skills")
-_RESULTS = pathlib.Path("docs/phase39-ab-results.md")
 
-# Skills that have been affirmatively evaluated as load-bearing by doctrine
-# judgment pending A/B evidence. Governor-curated; entries here document that
-# a persona is retained as a context-prioritization scaffold for edge-case
-# determinations AND is currently awaiting A/B evidence.
-#
-# Once A/B evidence lands in docs/phase39-ab-results.md, the corresponding
-# skills should gain a <persona-evidence> pointer in their SKILL.md and be
-# removed from this list.
+# Skills affirmatively evaluated as load-bearing by doctrine judgment.
+# Persona is retained as a context-prioritization scaffold for edge-case
+# determinations. Governor-curated.
 LOAD_BEARING_PENDING_EVIDENCE = {
     "qor-audit",             # adversarial stance; target of Phase 39 A/B
     "qor-substantiate",      # prove-not-improve stance; target of Phase 39 A/B
@@ -123,27 +112,3 @@ def test_qor_document_disambiguates_persona_and_agent():
     assert "doctrine-context-discipline" in text
 
 
-def test_identity_activation_matches_ab_winner_if_results_exist():
-    """R3 conditional: if A/B results declare winner='stance', Identity Activation uses stance-directive-first."""
-    if not _RESULTS.is_file():
-        # Phase 3 not yet run by operator; R3 is skipped per plan doctrine.
-        return
-    results_text = _RESULTS.read_text(encoding="utf-8")
-    # Parse per-skill winner declarations from the results artifact
-    # Format: "## /qor-audit\n...**Winner**: stance"
-    for skill in ("qor-audit", "qor-substantiate"):
-        skill_path = pathlib.Path(f"qor/skills/governance/{skill}/SKILL.md")
-        skill_text = skill_path.read_text(encoding="utf-8")
-        section_match = re.search(
-            rf"## /{re.escape(skill)}.*?\*\*Winner\*\*:\s*(\w+)",
-            results_text, re.DOTALL,
-        )
-        if not section_match:
-            continue
-        winner = section_match.group(1).lower()
-        has_persona_opener = "You are now operating as" in skill_text
-        if winner == "stance":
-            assert not has_persona_opener, (
-                f"{skill}: A/B declared stance winner but persona opener retained. "
-                f"Apply R3 rewrite."
-            )
