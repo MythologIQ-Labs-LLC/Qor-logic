@@ -10,6 +10,28 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.43.0] - 2026-05-01
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+Phase 57: `gate_written` observer push-channel. Closes PR #12 (FailSafe-Pro B24 contribution, opened 2026-04-20) by reintegrating the hook contract on top of current main with the OWASP A04 SIGINT-swallow VETO ground resolved. Net-new public-API surface: `qor_logic.events.gate_written` entry-point group + `<root>/.qor/hooks.yaml` config-file format + frozen `GateWrittenEvent` payload. Hook channel is non-authoritative observer-only; the authoritative gate-write path is unchanged.
+
+### Added
+- **gate_hooks dispatcher** (`qor/scripts/gate_hooks.py`, ~165 LOC, zero new runtime deps): frozen `GateWrittenEvent` and `_HookTarget` dataclasses; `dispatch_gate_written` synchronous fan-out over entry-points + config-file hooks; `reload_entry_points` (test-only cache invalidator); JSONL hook-log at `<root>/.qor/hooks/hooks.log`. `except Exception` (NOT `BaseException`) — `KeyboardInterrupt` and `SystemExit` propagate.
+- **gate_chain post-write hook fire** (`qor/scripts/gate_chain.py:_fire_gate_written_hook`): runs after Phase 52 provenance check + authoritative `vga.write_artifact` + Phase 37 `audit_history.append`. Reads artifact bytes back from disk to compute `payload_sha256` so the event matches what's persisted. Wrapped in `try/except Exception` so hook errors never break the write.
+- **Hook-contract doctrine** (`qor/references/doctrine-hook-contract.md`): event payload, entry-point + config-file registration, invocation order, log format, trust model, performance characteristics, Phase 57 changes vs. PR #12 origin (the `except BaseException` → `except Exception` fix and SIGINT-propagation invariant).
+- **Shadow-genome countermeasure** `SG-BareExceptionSwallowsSignals-A` (`qor/references/doctrine-shadow-genome-countermeasures.md`): codifies the BaseException-swallowing risk class with the corrected Exception catch + cleanup-then-reraise patterns.
+- **Glossary terms**: `gate_written hook`, `hook contract`.
+- **22 new tests** (Phase 1: 4 event-payload-shape + 5 dispatch + 3 swallow + 2 sigint-propagate + 6 config-file + 2 no-hooks-file; Phase 2: 2 fires-hook + 2 hook-does-not-break-write + 1 phase-52-still-enforced + 1 AST-based co-occurrence invariant). All behavior-asserting; no presence-only patterns.
+
+### Changed
+- `pyproject.toml` → 0.43.0.
+- `README.md` → Tests delta, Ledger delta.
+- META_LEDGER entries #186 (PR #12 audit VETO), #187 (Phase 57 plan audit PASS), #189 (implementation), #190 (session seal).
+
+### Fixed
+- PR #12 `feat/b24-gate-written-hooks` SIGINT-swallow: superseded by Phase 57. The PR's API surface (entry-point group, config-file format, GateWrittenEvent payload, swallow-log error semantics) is preserved exactly. The PR's BaseException catch is replaced by `except Exception` per Phase 57 audit verdict (Entry #186 VETO). B24 backlog item from FailSafe-Pro upstream now resolved at the qor-logic side of the contract; the FailSafe-Pro `failsafe-qor-hook` consumer in their B24 PR registers under `qor_logic.events.gate_written` and observes governance writes without filesystem polling.
+
 ## [0.42.0] - 2026-05-01
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

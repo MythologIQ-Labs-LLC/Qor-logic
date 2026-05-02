@@ -174,3 +174,38 @@ Historical risk: the Cedar `forbid` rule on `Code::"production"` keyed on `resou
 **Countermeasure** (codified Phase 56): `qor.scripts.secret_scanner` provides regex-pattern detection (frozen `PATTERNS` tuple) with literal-substring `_ALLOWLIST` for the known false-positive class (Cedar/schema attribute names). `compute_production_attributes(path, content)` in `qor/policy/resource_attributes.py` returns the `has_hardcoded_secrets` boolean for the Cedar evaluator. `/qor-substantiate` Step 4.6.5 invokes `python -m qor.scripts.secret_scanner --staged --out dist/secrets.findings.json || ABORT` before seal — fail-closed BLOCK on any finding. Findings JSON follows gitleaks v8 schema; redacted match form (`<first4>...<last2>`) prevents leakage in the findings file itself.
 
 **Verification hint**: `python -m qor.scripts.secret_scanner --files <path>...` should exit 0 with empty findings JSON for clean files; exit 1 with populated JSON for files containing secrets. Retroactive remediation of historical seals is operator-driven (e.g., `gitleaks detect --source . --log-opts="--all"` for full-history sweep). Forward-only enforcement starting Phase 56.
+
+## SG-BareExceptionSwallowsSignals-A: `except BaseException` swallows SIGINT/SystemExit
+
+Historical risk class: a `try/except BaseException` clause (with or without `# noqa: BLE001`) catches `KeyboardInterrupt` and `SystemExit` along with the intended `Exception` class. Operators lose Ctrl-C control over the running process. With long-timeout subprocess calls, indefinitely-spinning hooks, or daemon-style worker loops, the only escape is SIGKILL — which bypasses cleanup, leaves files in inconsistent states, and obscures the original failure cause from logs.
+
+**Source incident**: Phase 57 audit of PR #12 `feat/b24-gate-written-hooks` (Entry #186 VETO). The PR's `gate_hooks._invoke_hook_safely` and `gate_chain._fire_gate_written_hook` both used `except BaseException` (with `# noqa: BLE001`). With the proposed 30-second per-subprocess-hook timeout AND swallow-on-callable-hook, a misbehaving Python entry-point hook could spin indefinitely with SIGKILL the only escape. PR #12 design rationale was correct (hook errors must never break the authoritative write path) but the catch was over-broad.
+
+**Countermeasure** (codified Phase 57): use `except Exception` (NOT `except BaseException`) anywhere a "swallow and log" pattern is intentional. Reserve `BaseException` only for cleanup-then-reraise patterns where the cleanup itself must run regardless of signal class:
+
+```python
+# CORRECT: swallow + log; signals propagate
+try:
+    user_callable()
+except Exception:
+    log_error()
+
+# CORRECT: cleanup-then-reraise (use sparingly; usually try/finally is enough)
+try:
+    user_callable()
+except BaseException:
+    cleanup()
+    raise
+
+# WRONG: signals swallowed; operator loses Ctrl-C
+try:
+    user_callable()
+except BaseException:  # noqa: BLE001
+    log_error()
+```
+
+Phase 57 anchors the discipline with two regression tests:
+- `tests/test_gate_hooks_swallow.py::test_swallow_uses_except_exception_not_baseexception` — AST-anchored static check that the `_invoke_hook_safely` function source has `Exception` (not `BaseException`) in any `except` clause.
+- `tests/test_gate_hooks_sigint_propagates.py::test_keyboard_interrupt_in_callable_hook_propagates` and `::test_system_exit_in_callable_hook_propagates` — behavioral check that `KeyboardInterrupt` and `SystemExit` raised inside hook callables propagate through dispatch.
+
+**Verification hint**: search source for `except BaseException` excluding cleanup-then-reraise patterns: `rg "except BaseException" qor/ --type py | grep -v "raise"` should return zero hits in observer/swallow paths. False positives in `try/finally`-equivalent reraise patterns are acceptable.

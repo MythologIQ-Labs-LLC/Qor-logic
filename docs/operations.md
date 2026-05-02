@@ -120,6 +120,40 @@ python qor/scripts/session.py new     # creates a fresh session_id
 
 The substantiate Step Z auto-rotate (Phase 30) is the canonical path; manual rotation is for edge cases (mid-phase debugging, abandoned session cleanup).
 
+## `gate_written` observer hooks (Phase 57)
+
+Phase 57 (v0.43.0) ships a non-authoritative observer push-channel that fires after every successful `qor.scripts.gate_chain.write_gate_artifact` call. Two ways to register a consumer:
+
+### Python entry-point (in your package's `pyproject.toml`)
+
+```toml
+[project.entry-points."qor_logic.events.gate_written"]
+my-handler = "my_package.hooks:on_gate_written"
+```
+
+The referenced callable receives a single `qor.scripts.gate_hooks.GateWrittenEvent` positional argument with fields `phase`, `session_id`, `artifact_path`, `payload_sha256`, `ts`. Return value is ignored.
+
+### Project-local config (`<repo-root>/.qor/hooks.yaml`)
+
+```yaml
+gate_written:
+  # Python dotted path: imported and invoked with the event.
+  - module: my_package.hooks:on_event
+
+  # Shell command: argv list (NOT a string). The artifact path is appended
+  # as the final argument. shell=True is never used.
+  - command: [/usr/local/bin/my-hook.sh]
+```
+
+### Operator considerations
+
+- **Trust model**: hooks execute arbitrary code from the consumer's repo. Apply the same review and code-owner controls as you would for `.github/workflows/`, `.pre-commit-config.yaml`, or `Makefile`. qor-logic does NOT sandbox, sign, or vet hooks.
+- **Subprocess timeout**: 30 seconds per shell-command hook. Operator can SIGINT the calling skill if a Python callable hook hangs (Phase 57 propagates `KeyboardInterrupt` through dispatch — see `SG-BareExceptionSwallowsSignals-A`).
+- **Errors are swallow-logged**: hook exceptions are written to `<root>/.qor/hooks/hooks.log` as JSONL records (`status: error` + traceback) and never propagated to the gate-write path. The authoritative artifact is on disk before any hook fires.
+- **Disabling hooks**: remove the entry from your `pyproject.toml` entry-points or delete the relevant block from `.qor/hooks.yaml`. There is no "kill switch" env var; hooks are explicit-opt-in by registration.
+
+Full doctrine: [`../qor/references/doctrine-hook-contract.md`](../qor/references/doctrine-hook-contract.md).
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
@@ -129,6 +163,8 @@ The substantiate Step Z auto-rotate (Phase 30) is the canonical path; manual rot
 | `Tag v<X.Y.Z> already exists` | `create_seal_tag` called before `bump_version`, or bump_version called twice | Manual pyproject edit per Phase 30 constraint; re-run with correct ordering |
 | `test_every_changelog_section_has_tag` fails in CI only | CI checkout without tags | Confirm `actions/checkout@v4` uses `fetch-tags: true` (Phase 30 fix) |
 | Dist drift at seal | `dist_compile` not run post-edit | Phase 30 Step 8.5 runs it automatically; for legacy flows run manually |
+| Skill hangs after gate-artifact write | A registered `gate_written` hook (Python callable) is hanging | Ctrl-C — Phase 57 propagates `KeyboardInterrupt` through dispatch. Inspect `<root>/.qor/hooks/hooks.log` for the offending hook name; remove or fix it. |
+| `<root>/.qor/hooks/hooks.log` growing rapidly | A misbehaving hook is logging on every gate write | Inspect the log to identify the hook; the log is append-only — operator may rotate or truncate manually (no auto-rotation in Phase 57). |
 
 ## Related docs
 

@@ -1,0 +1,59 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-01T2050-phase57",
+  "ts": "2026-05-02T00:09:57Z",
+  "plan_path": "docs/plan-qor-phase57-gate-written-observer-channel.md",
+  "phases": [
+    "Phase 1: gate_hooks module + dispatcher + frozen event payload",
+    "Phase 2: gate_chain.write_gate_artifact post-write hook fire + Phase 50 co-occurrence invariant",
+    "Phase 3: doctrine + glossary + audit-pass alignment"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_gate_hooks_*.py -v",
+    "python -m pytest tests/test_gate_chain_fires_hook.py tests/test_gate_chain_phase52_provenance_still_enforced.py tests/test_gate_chain_co_occurrence_hook_dispatch.py -v",
+    "python -m pytest tests/test_phase57_self_application.py -v",
+    "python -m pytest -x"
+  ],
+  "open_questions": [
+    "fire-on-phase set: every phase (default) vs subset",
+    "hook-log location: <root>/.qor/hooks/hooks.log (default) vs sidecar",
+    "subprocess argv: artifact_path only (default) vs full event"
+  ],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "gate_written hook",
+      "home": "qor/references/doctrine-hook-contract.md"
+    },
+    {
+      "term": "hook contract",
+      "home": "qor/references/doctrine-hook-contract.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "hooks are non-authoritative observers",
+      "30s subprocess timeout",
+      "synchronous deterministic order"
+    ],
+    "non_goals": [
+      "sandboxing",
+      "async",
+      "replacing FailSafe-Pro watcher"
+    ],
+    "exclusions": [
+      "gate-artifact schema changes",
+      "Phase 52 provenance changes",
+      "retroactive hook fires"
+    ]
+  },
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.42.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-02T00:09:57Z"
+  }
+}

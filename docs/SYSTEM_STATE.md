@@ -229,3 +229,45 @@ Supersedes the v0.29.0 anthropic-SDK approach. Ships:
 **Tests**: 743 pytest green × 2. Admission: `qor-ab-run` admitted. Matrix: 29 skills, 112 handoffs, 0 broken.
 
 **Naming note**: branch `phase/39b-*` + plan `plan-qor-phase39b-*.md` use letter-suffix convention not supported by `governance_helpers._BRANCH_PHASE_RE` + `_PHASE_FILENAME_RE` (digit-only). Version bump performed manually (0.29.0 → 0.30.0). Future sub-phases should use next digit (e.g., phase/41) to remain compatible with automated bump.
+
+## Phase 57 (v0.43.0 — 2026-05-01): `gate_written` observer channel (PR #12 + B24 reintegration)
+
+Reintegrates PR #12 `feat/b24-gate-written-hooks` (FailSafe-Pro B24 contribution, opened 2026-04-20) on top of current main with the OWASP A04 SIGINT-swallow VETO ground from Entry #186 explicitly resolved. Net-new public-API surface for downstream governance-ledger bridges to observe gate writes without filesystem polling. Aligns with OWASP LLM Top 10 (2025) **LLM07 Insecure Plugin Design** at the contract layer.
+
+**Phase 1 — `gate_hooks` module**:
+- `qor/scripts/gate_hooks.py` (165 LOC, zero new runtime deps; PyYAML already locked).
+- Frozen `GateWrittenEvent(phase, session_id, artifact_path, payload_sha256, ts)` and `_HookTarget` dataclasses.
+- `dispatch_gate_written(event)` synchronous fan-out: entry-points (under group `qor_logic.events.gate_written`) first, then `<root>/.qor/hooks.yaml` config-file entries (top-to-bottom). Deterministic ordering; no concurrency.
+- `reload_entry_points()` test-only cache invalidator.
+- JSONL hook-log at `<root>/.qor/hooks/hooks.log` (ts, hook, event, status, duration_ms, [exception]).
+- **Critical Phase 57 fix**: `except Exception` (NOT `BaseException`) in `_invoke_hook_safely`. `KeyboardInterrupt` and `SystemExit` propagate so operators retain Ctrl-C control over runaway hooks.
+
+**Phase 2 — `gate_chain` post-write hook fire**:
+- `qor/scripts/gate_chain.py:_fire_gate_written_hook` (15-line bridging helper).
+- Fires AFTER Phase 52 provenance check, AFTER `vga.write_artifact`, AFTER Phase 37 `audit_history.append`, BEFORE function return.
+- Reads artifact bytes back from disk to compute `payload_sha256` so the event matches what's persisted (no in-memory/on-disk drift).
+- Wrapped in `try/except Exception` so hook errors never break the authoritative write path.
+
+**Phase 3 — doctrine + glossary + countermeasure + CHANGELOG**:
+- `qor/references/doctrine-hook-contract.md` (NEW, ~95 LOC): applicability + event payload + entry-point + config-file format + invocation order + log format + trust model + performance + Phase 57 changes vs. PR #12 origin.
+- `qor/references/doctrine-shadow-genome-countermeasures.md` extended with `SG-BareExceptionSwallowsSignals-A` codifying the BaseException-swallow risk class with corrected `except Exception` and cleanup-then-reraise patterns.
+- `qor/references/glossary.md` extended with 2 new terms: `gate_written hook`, `hook contract`.
+- CHANGELOG `[0.43.0] - 2026-05-01` entry.
+- README badges: Tests 1142 → 1176, Doctrines 20 → 21, Ledger 188 → 190.
+
+**Trust model**: hooks execute arbitrary code from the consumer's repo. Mirrors `.github/workflows/`, `.pre-commit-config.yaml`, `Makefile`, npm `preinstall`. Documented explicitly in `qor/references/doctrine-hook-contract.md`; qor-logic does NOT sandbox, sign, or vet hooks.
+
+**Tests**: 1175 pytest passing × 2 (deterministic). +34 new Phase 57 tests including AST-anchored static check that `_invoke_hook_safely` never catches `BaseException`, behavioral regression that `KeyboardInterrupt` and `SystemExit` propagate through dispatch, Phase 50 AST-based co-occurrence behavior invariant for the `gate_chain` ↔ `gate_hooks` wiring, Phase 52 provenance-still-enforced regression.
+
+**Reliability sweep**: intent-lock VERIFIED, skill admission ADMITTED, gate-skill matrix 29 skills/112 handoffs/0 broken, secret-scan EXIT 0 (Phase 56 substantiate Step 4.6.5 self-application clean), dist 4 variants OK (236 files, no drift), badge currency OK.
+
+**Razor compliance**: `gate_hooks.py` 165 LOC (under 250 cap); longest function `_resolve_config_entry` ~22 LOC; max nesting depth 2; zero nested ternaries.
+
+**Resolves Entry #186 VETO grounds explicitly**:
+1. ✅ `except Exception` (not `BaseException`) — SIGINT/SystemExit propagate; AST-anchored regression test in place.
+2. ✅ Built on top of current main (`d5726e9` post-Phase-56), not a stale-branch merge.
+3. ✅ Module docstring cites Phase 57 + LLM07 framework gap; FailSafe-Pro origin attribution moves to CHANGELOG per Phase 53/54/55/56 docstring discipline.
+
+**Companion**: Phase 58 plan + audit gate artifact (`docs/plan-qor-phase58-ideation-readiness-phase.md`, Issue #20 `/qor-ideate`) committed alongside this seal as governance records (audit PASS at Entry #188). Phase 58 implementation can proceed independently after this PR merges.
+
+**Decision**: Phase 57 sealed at v0.43.0. PR #12 superseded by this seal; close after merge with link to Entry #190. FailSafe-Pro `failsafe-qor-hook` consumer (their B24 PR) can register under `qor_logic.events.gate_written` and observe governance writes without filesystem polling.

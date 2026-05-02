@@ -1,0 +1,77 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-01T2055-phase58",
+  "ts": "2026-05-02T00:31:35Z",
+  "plan_path": "docs/plan-qor-phase58-ideation-readiness-phase.md",
+  "phases": [
+    "Phase 1: ideation gate-artifact schema + readiness model",
+    "Phase 2: /qor-ideate skill + dialogue protocol + gate-chain integration",
+    "Phase 3: doctrine + glossary + self-application + skill-registry rollup"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ideation_schema_validation.py tests/test_ideation_schema_round_trip.py -v",
+    "python -m pytest tests/test_qor_ideate_*.py tests/test_qor_research_reads_ideation_artifact.py tests/test_qor_plan_reads_ideation_artifact.py -v",
+    "python -m pytest tests/test_doctrine_ideation_readiness_anchored.py tests/test_phase58_self_application.py tests/test_skill_registry_includes_qor_ideate.py -v",
+    "python -m pytest -x"
+  ],
+  "open_questions": [
+    "mandatory vs advisory: advisory (default; matches Phase 8 posture)",
+    "readiness fields stored vs computed: stored as written (default)",
+    "skill placement: qor/skills/sdlc/qor-ideate (default; precedes plan in SDLC)"
+  ],
+  "doc_tier": "system",
+  "terms": [
+    {
+      "term": "ideation phase",
+      "home": "qor/references/doctrine-ideation-readiness.md"
+    },
+    {
+      "term": "spark record",
+      "home": "qor/references/doctrine-ideation-readiness.md"
+    },
+    {
+      "term": "problem frame",
+      "home": "qor/references/doctrine-ideation-readiness.md"
+    },
+    {
+      "term": "transformation statement",
+      "home": "qor/references/doctrine-ideation-readiness.md"
+    },
+    {
+      "term": "assumption ledger",
+      "home": "qor/references/doctrine-ideation-readiness.md"
+    },
+    {
+      "term": "ideation readiness",
+      "home": "qor/references/doctrine-ideation-readiness.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "operator-authored prose, not LLM-generated",
+      "rule-based readiness scoring (booleans only)",
+      "advisory gate (matches Phase 8)",
+      "10-section structural fields only"
+    ],
+    "non_goals": [
+      "mandatory blocking",
+      "hotfix-bypass enforcement",
+      "auto-LLM authoring",
+      "retroactive migration"
+    ],
+    "exclusions": [
+      "qor-remediate consumes ideation (future phase)",
+      "embedded-vs-inherited remediation routes (future)",
+      "substantiate readiness check (future)"
+    ]
+  },
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.42.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-02T00:31:35Z"
+  }
+}
