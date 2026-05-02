@@ -319,3 +319,38 @@ Reintegrates PR #12 `feat/b24-gate-written-hooks` (FailSafe-Pro B24 contribution
 **Companion**: Phase 58 plan + audit gate artifact (`docs/plan-qor-phase58-ideation-readiness-phase.md`, Issue #20 `/qor-ideate`) committed alongside this seal as governance records (audit PASS at Entry #188). Phase 58 implementation can proceed independently after this PR merges.
 
 **Decision**: Phase 57 sealed at v0.43.0. PR #12 superseded by this seal; close after merge with link to Entry #190. FailSafe-Pro `failsafe-qor-hook` consumer (their B24 PR) can register under `qor_logic.events.gate_written` and observe governance writes without filesystem polling.
+
+## Phase 58 (v0.44.0 — 2026-05-02): procedural-fidelity check + tech-debt wrap-up (B23 closure)
+
+Closes B23 (operator request from Phase 57 substantiate cycle where doc-surface gaps were caught manually) by shipping a static-analysis procedural-fidelity check at /qor-substantiate Step 4.6.6 with WARN-posture severity-2 events to the Process Shadow Genome. Plus three tech-debt wrap-up items: SYSTEM_STATE.md backfill for 12 sealed phases (41, 45-50, 52-56) with forward-only drift-prevention test, conftest.py session-end cleanup of `.qor/gates/test*` pollution, and Phase 58→59 ideation plan rename (Issue #20 ideation moves to Phase 59 since the Phase 58 slot is now this tech-debt scope). Codifies `SG-DocSurfaceUncovered-A` countermeasure.
+
+**Phase 1 — `procedural_fidelity` module + substantiate Step 4.6.6 wiring**:
+- `qor/scripts/procedural_fidelity.py` (~190 LOC, zero new runtime deps).
+- Frozen `Deviation` dataclass + `DEVIATION_CLASSES` frozenset (4 v1 classes: `doc-surface-uncovered` active, `missing-step` / `ordering-drift` / `argv-shape-divergence` reserved as stubs).
+- `check_seal_commit(repo_root, session_id)` reads `.qor/gates/<sid>/implement.json` `files_touched` and runs detectors. Empty list = clean.
+- `_detect_doc_surface_coverage` is the v1 detector: `qor/skills/`, `qor/scripts/`, `qor/references/doctrine-`, or `qor/gates/schema/` paths in `files_touched` require at least one of the four system-tier docs (`docs/SYSTEM_STATE.md`, `docs/operations.md`, `docs/architecture.md`, `docs/lifecycle.md`).
+- CLI: `python -m qor.scripts.procedural_fidelity --session SID [--repo-root .] [--out PATH]`. Exit 0 always (WARN posture); stderr WARN on deviations; exit 2 only on missing implement gate. Severity-2 events to Process Shadow Genome via `shadow_process.append_event`.
+- Substantiate Step 4.6.6 between existing Step 4.6.5 (Phase 56 secret-scan, BLOCK semantics) and Step 4.7 (Phase 28 doc-integrity, ABORT). WARN-only invocation; no `|| ABORT`.
+
+**Phase 2 — SYSTEM_STATE.md backfill + drift prevention**:
+- 12 sealed phases backfilled: 41 (v0.31.0), 45 (v0.32.0), 46 (v0.33.0), 47 (v0.34.0), 48 (v0.35.0), 49 (v0.36.0), 50 (v0.37.0), 52 (v0.38.0), 53 (v0.39.0), 54 (v0.40.0), 55 (v0.41.0), 56 (v0.42.0). One concise paragraph per phase extracted from corresponding META_LEDGER seal entry.
+- New `tests/test_system_state_phase_coverage.py` enforces forward-only invariant: every `### Entry #N: SESSION SEAL -- Phase X feature substantiated` ledger entry must have a corresponding `## Phase X (vY.Z.W)` heading in SYSTEM_STATE.md, modulo `_NO_SEAL_PHASES = {42, 43, 44, 51}` for adjacent-work-absorbed phases.
+- Meta-coherence: this very Phase 58 entry is required by the test the same phase ships. Drift-prevention dogfooded.
+
+**Phase 3 — conftest cleanup + ideation rename + doctrine + glossary + SG + CHANGELOG**:
+- `tests/conftest.py`: new session-scope autouse cleanup fixture sweeping `.qor/gates/test*`, `cli-*`, `tN` pollution at session-end. Pattern conservative; never matches timestamp-prefixed real session IDs.
+- `docs/plan-qor-phase58-ideation-readiness-phase.md` → `docs/plan-qor-phase59-ideation-readiness-phase.md` rename. Plan body Phase 58 → Phase 59 substring updates (19 occurrences).
+- `qor/references/doctrine-procedural-fidelity.md` (NEW, ~95 LOC): applicability + four-class catalog + doc-surface coverage rule + operator workflow + Phase 58 changes vs. ad-hoc operator review + future extensions.
+- `qor/references/doctrine-shadow-genome-countermeasures.md`: appended `SG-DocSurfaceUncovered-A` codifying documentation-update gap risk class with Phase 57 source incident.
+- `qor/references/glossary.md`: 3 new terms (`procedural-fidelity check`, `procedural deviation`, `doc-surface coverage`) all with `home: qor/references/doctrine-procedural-fidelity.md` + `introduced_in_plan: phase58-procedural-fidelity-and-tech-debt-wrapup`.
+- `docs/BACKLOG.md`: B23 marked `[x] (v0.44.0 — Complete)`.
+
+**Substantiate-time meta-coherence enforcement**: Step 4.6.6 ran against Phase 58's own seal commit's `files_touched` set — `dist/procedural-fidelity.findings.json` empty (`[]`), EXIT 0. The Phase 58 plan dogfoods its own contract: skill body + script + doctrine + schema-adjacent changes all matched against `docs/SYSTEM_STATE.md` update (12-phase backfill) → at-least-one threshold satisfied → no deviation.
+
+**Tests**: 1202 passing × 2 (deterministic). +27 new Phase 58 tests including AST-anchored substantiate-skill wiring invariant, doctrine round-trip integrity, conftest fixture introspection, glossary round-trip, Phase 59 ideation-rename regression, meta-coherence self-application.
+
+**Reliability sweep**: intent-lock VERIFIED, skill admission ADMITTED, gate-skill matrix 29/112/0, secret-scan EXIT 0, procedural-fidelity EXIT 0, dist 4 variants OK (236 files), badge currency OK.
+
+**Razor compliance**: `procedural_fidelity.py` 190 LOC (under 250 cap); longest function ~22 LOC; max nesting 2; zero nested ternaries.
+
+**Decision**: Phase 58 sealed at v0.44.0. B23 fully closed. Pre-Phase-58 SYSTEM_STATE drift remediated; forward-only invariant enforced. Test pollution structurally prevented. Issue #20 ideation moved to Phase 59 ready for independent implementation. The Phase 57-style "operator caught the doc-surface gap manually" failure mode is now structurally surfaced at substantiate-time via `SG-DocSurfaceUncovered-A` countermeasure.

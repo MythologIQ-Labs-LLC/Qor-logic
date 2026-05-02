@@ -7111,3 +7111,54 @@ SHA256(content_hash + "|" + previous_hash)
 **Content Hash**: `11399b61c8e6aef36d8b6301ca921d3036c28c91e05434f13108ba68a47e0690`
 **Previous Hash**: `c6ca32fe1b8b251beb7575ffbc6082949c0944c57d901d3db4039e5d77ea9c81`
 **Chain Hash**: `784de4afcf3ed14c2c070194bf47ac274011bc4212a3c92a09078d16a6143e9f`
+
+---
+
+### Entry #193: SESSION SEAL -- Phase 58 feature substantiated
+
+**Timestamp**: 2026-05-02T03:30:00Z
+
+**Plan**: `docs/plan-qor-phase58-procedural-fidelity-and-tech-debt-wrapup.md`
+
+**Session**: `2026-05-01T2200-phase58`
+
+**Content Hash (session seal)**: `87da4ea124fcceb93a0195f7d1647f14f4a35a8a48a0d5e801ae146aab2a381a`
+**Previous Hash**: `784de4afcf3ed14c2c070194bf47ac274011bc4212a3c92a09078d16a6143e9f`
+**Chain Hash (Merkle seal)**: `7089e58889107b929269fc9ace6bca91fab939f234d512cbad419ee7f057058e`
+
+**SSDF Practices**: PO.1.3, PO.5.1, PS.1.1, PS.3.1, PW.4.1, PW.5.1, PW.7.1, PW.9.1, RV.1.1, RV.1.2, RV.3.4
+
+**Scope**: Phase 58 closes B23 (operator request from Phase 57 substantiate cycle) by shipping a static-analysis procedural-fidelity check at /qor-substantiate Step 4.6.6 with WARN-posture severity-2 events to the Process Shadow Genome. Plus three tech-debt wrap-up items: SYSTEM_STATE.md backfill for 12 sealed phases (41, 45-50, 52-56) with forward-only drift-prevention test, conftest.py session-end cleanup of `.qor/gates/test*` pollution, and Phase 58→59 ideation plan rename (Issue #20 ideation moves to Phase 59 since the Phase 58 slot is now this tech-debt scope). Codifies `SG-DocSurfaceUncovered-A` countermeasure.
+
+**Reality = Promise**: 20/20 planned files exist. No missing. No unplanned orphans.
+
+**Phase 1 — `procedural_fidelity` module + substantiate Step 4.6.6 wiring**: `qor/scripts/procedural_fidelity.py` (~190 LOC, zero new runtime deps). Frozen `Deviation` and `DEVIATION_CLASSES` (4 v1 classes; `doc-surface-uncovered` active, three reserved as stubs). `check_seal_commit(repo_root, session_id)` reads `.qor/gates/<sid>/implement.json` `files_touched` and runs detectors. CLI exits 0 always (WARN posture); stderr WARN on deviations; severity-2 events to Process Shadow Genome via `shadow_process.append_event`. Step 4.6.6 between existing Step 4.6.5 (Phase 56 secret-scan, BLOCK semantics) and Step 4.7 (Phase 28 doc-integrity, ABORT). 14 phase-1 tests including AST-anchored substantiate-skill wiring invariant (Phase 50 model).
+
+**Phase 2 — SYSTEM_STATE.md backfill + drift prevention**: 12 sealed phases backfilled with concise per-phase entries extracted from corresponding META_LEDGER seal entries. New `tests/test_system_state_phase_coverage.py` enforces forward-only invariant: every `Phase N feature substantiated` ledger entry must have a corresponding `## Phase N (vX.Y.Z)` heading in SYSTEM_STATE.md, modulo `_NO_SEAL_PHASES = {42, 43, 44, 51}` for adjacent-work-absorbed phases. 3 phase-2 tests including Phase 57 entry regression sanity.
+
+**Phase 3 — conftest cleanup + ideation rename + doctrine + glossary + SG + CHANGELOG**: `tests/conftest.py` extended with session-scope autouse cleanup fixture (sweeps `.qor/gates/test*`, `cli-*`, `tN` pollution at session-end; never matches timestamp-prefixed real session IDs). `docs/plan-qor-phase58-ideation-readiness-phase.md` → `docs/plan-qor-phase59-ideation-readiness-phase.md` rename with body Phase 58 → Phase 59 substring updates (19 occurrences). New `qor/references/doctrine-procedural-fidelity.md` (~95 LOC) with four-class catalog + doc-surface coverage rule + operator workflow + future extensions. `SG-DocSurfaceUncovered-A` appended to shadow-genome countermeasures with Phase 57 source incident. 3 new glossary terms (`procedural-fidelity check`, `procedural deviation`, `doc-surface coverage`). B23 marked `[x] (v0.44.0 — Complete)` in BACKLOG.md. CHANGELOG `[0.44.0] - 2026-05-02` entry. 10 phase-3 tests including Phase 59 ideation-rename regression and meta-coherence self-application.
+
+**Substantiate-time meta-coherence enforcement**: Step 4.6.6 (the newly-wired procedural-fidelity check) ran against the seal commit's own `files_touched` set — `dist/procedural-fidelity.findings.json` empty (`[]`), EXIT 0. The Phase 58 plan dogfoods its own contract: skill body change + script change + doctrine change + schema-adjacent change all matched against `docs/SYSTEM_STATE.md` update (12-phase backfill) → at-least-one threshold satisfied → no deviation.
+
+**Reliability sweep**:
+- `python -m qor.reliability.intent_lock verify --session 2026-05-01T2200-phase58` → VERIFIED.
+- `python -m qor.reliability.skill_admission qor-substantiate` → ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` → 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.secret_scanner --staged` → EXIT 0 (Phase 56 self-application clean).
+- `python -m qor.scripts.procedural_fidelity --session 2026-05-01T2200-phase58` → EXIT 0 (Phase 58 self-application clean — meta-coherence dogfood).
+- `python -m qor.scripts.dist_compile` → 4 variants emitted.
+- `python -m qor.scripts.check_variant_drift` → OK 236 files, no drift.
+- `python -m qor.scripts.badge_currency` → OK (Tests 1203, Doctrines 22, Ledger 193).
+
+**Razor compliance**: `procedural_fidelity.py` 190 LOC (under 250 cap); longest function `_detect_doc_surface_coverage` ~22 LOC; `main()` ~22 LOC; max nesting depth 2; zero nested ternaries.
+
+**Test results**: 1202 passing twice in a row (deterministic). +27 Phase 58 tests including AST-anchored co-occurrence behavior invariant for substantiate Step 4.6.6 wiring + Phase 59 ideation-rename regression + meta-coherence self-application.
+
+**Decision**: Phase 58 sealed at v0.44.0. B23 (procedural-fidelity check) fully closed. Pre-Phase-58 SYSTEM_STATE drift remediated; forward-only invariant enforced. Test pollution structurally prevented. Issue #20 ideation moved to Phase 59 ready for independent implementation. The Phase 57-style "operator caught the doc-surface gap manually" failure mode is now structurally surfaced at substantiate-time via `SG-DocSurfaceUncovered-A` countermeasure.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 58 feature substantiated)
+*Merkle seal: 7089e588...* (Phase 58 seal on top of Phase 57's 0416529e; Entries #191-#193 chained; closes B23 + SYSTEM_STATE drift + test pollution + Phase 58→59 ideation rename)
+*Companion: docs/plan-qor-phase59-ideation-readiness-phase.md (Issue #20) — audit PASS at Entry #188, awaiting independent /qor-implement cycle*
