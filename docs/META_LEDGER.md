@@ -6947,3 +6947,53 @@ SHA256(content_hash + "|" + previous_hash)
 **Content Hash**: `e0bdb12e3998ec486f053576f8d2a7493bcaa16bf27cc40710bc99f4fc92916d`
 **Previous Hash**: `db36d9139b9aa513b9c1aebc5812c564f2efa97b0701917bbbb37ee204fee887`
 **Chain Hash**: `992051967c45c11d1a77a07876bf3312417fe98d8dabe557617e697d95ac00cb`
+
+---
+
+### Entry #190: SESSION SEAL -- Phase 57 feature substantiated
+
+**Timestamp**: 2026-05-01T21:15:00Z
+
+**Plan**: `docs/plan-qor-phase57-gate-written-observer-channel.md`
+
+**Session**: `2026-05-01T2050-phase57`
+
+**Content Hash (session seal)**: `8f542a4b76ff3be3b1b776858d5234d48db1fdfbd887be171e1603535c0b3e52`
+**Previous Hash**: `992051967c45c11d1a77a07876bf3312417fe98d8dabe557617e697d95ac00cb`
+**Chain Hash (Merkle seal)**: `0416529ed7707316def8647d019adf23dad4796965b2129f1b55803fbe55a6e2`
+
+**SSDF Practices**: PO.1.3, PO.5.1, PS.1.1, PS.3.1, PS.3.2, PW.4.1, PW.5.1, PW.7.1, PW.9.1, RV.1.1, RV.1.2, RV.3.4
+
+**Scope**: Phase 57 reintegrates PR #12 `feat/b24-gate-written-hooks` (FailSafe-Pro B24 contribution) on top of current main with the OWASP A04 SIGINT-swallow VETO ground from Entry #186 explicitly resolved. Net-new public-API surface: `qor_logic.events.gate_written` entry-point group + `<root>/.qor/hooks.yaml` config-file format + frozen `GateWrittenEvent` payload. Hook channel is non-authoritative observer-only; the authoritative gate-write path is structurally unchanged. Closes the polling-vs-push gap that prompted PR #12; downstream consumers can register and observe governance writes without filesystem polling. Aligns with OWASP LLM Top 10 (2025) **LLM07 Insecure Plugin Design** at the contract layer.
+
+**Reality = Promise**: 21/21 planned files exist. No missing. No unplanned orphans.
+
+**Phase 1 — `gate_hooks` module**: `qor/scripts/gate_hooks.py` (165 LOC, zero new runtime deps). Frozen `GateWrittenEvent` and `_HookTarget` dataclasses; `dispatch_gate_written` synchronous fan-out (entry-points first, config-file second; deterministic ordering); `reload_entry_points` test-only cache invalidator; JSONL hook-log at `<root>/.qor/hooks/hooks.log`. Critical Phase 57 fix: `except Exception` (NOT `BaseException`) — `KeyboardInterrupt` and `SystemExit` propagate. 22 phase-1 tests including AST-anchored static check that `_invoke_hook_safely` never catches `BaseException` and runtime regression tests that SIGINT/SystemExit propagate through dispatch.
+
+**Phase 2 — `gate_chain` post-write hook fire**: `qor/scripts/gate_chain.py:_fire_gate_written_hook` (15-line helper). Fires after Phase 52 provenance check, after `vga.write_artifact`, after Phase 37 `audit_history.append`, before return. Reads artifact bytes back from disk to compute `payload_sha256` so the event matches what's persisted. Wrapped in `try/except Exception` so hook errors never break the write. 6 phase-2 tests including Phase 52 provenance regression and Phase 50 AST-based co-occurrence behavior invariant verifying call ordering inside the function source.
+
+**Phase 3 — doctrine + glossary + countermeasure + CHANGELOG**: `qor/references/doctrine-hook-contract.md` (applicability + event payload + entry-point + config-file + invocation order + log format + trust model + performance + Phase 57 changes vs. PR #12 origin). New `SG-BareExceptionSwallowsSignals-A` shadow-genome entry codifying the BaseException-swallow risk class with corrected `except Exception` and cleanup-then-reraise patterns. Two new glossary terms (`gate_written hook`, `hook contract`). 6 phase-3 tests including doctrine round-trip and self-application meta-coherence.
+
+**Substantiate-time meta-coherence enforcement**: Step 4.6.5 (Phase 56 wiring) invoked against the seal commit's staged set — `dist/secrets.findings.json` empty, EXIT 0. Step 4.6 reliability sweep all PASS: intent-lock VERIFIED, skill admission ADMITTED, gate-skill matrix 29 skills/112 handoffs/0 broken.
+
+**Reliability sweep**:
+- `python -m qor.reliability.intent_lock verify --session 2026-05-01T2050-phase57` → VERIFIED.
+- `python -m qor.reliability.skill_admission qor-substantiate` → ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` → 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.secret_scanner --staged --out dist/secrets.findings.json` → EXIT 0 (empty findings; gate self-application clean).
+- `python -m qor.scripts.dist_compile` → 4 variants emitted.
+- `python -m qor.scripts.check_variant_drift` → OK 236 files, no drift.
+- `python -m qor.scripts.badge_currency` → OK (Tests 1176, Doctrines 21, Ledger 190).
+
+**Razor compliance**: `gate_hooks.py` 165 LOC (under 250 cap); longest function `_resolve_config_entry` ~22 LOC; `dispatch_gate_written` 7 LOC; `_invoke_hook_safely` 13 LOC; max nesting depth 2; zero nested ternaries.
+
+**Decision**: Phase 57 sealed at v0.43.0. PR #12 `feat/b24-gate-written-hooks` superseded by this seal; close after merge with link to commit + Entry #190. FailSafe-Pro `failsafe-qor-hook` consumer (their B24 PR) can now register under the `qor_logic.events.gate_written` entry-point group and observe governance writes without filesystem polling. SG-BareExceptionSwallowsSignals-A codified for future audits to catch the BaseException-swallow pattern.
+
+**Companion plan note**: Phase 58 (Issue #20 `/qor-ideate`) audit PASS at Entry #188 + plan committed alongside this seal; ready for its own `/qor-implement` cycle independently.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 57 feature substantiated)
+*Merkle seal: 0416529e...* (Phase 57 seal on top of Phase 56's dbec7646; Entries #186-#190 chained; closes PR #12 + B24; resolves OWASP A04 SIGINT-swallow VETO from Entry #186)
+*Companion: 2026-05-01T2055-phase58 (Phase 58 plan + audit PASS) awaiting /qor-implement*
