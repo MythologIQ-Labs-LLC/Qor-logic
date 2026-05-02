@@ -236,6 +236,17 @@ python -m qor.scripts.secret_scanner --staged --out dist/secrets.findings.json |
 
 ABORT semantics on non-zero exit: operator must remediate detected secrets (remove from staging, redact, or add to allowlist when literal-match false-positive) before re-running substantiation. Findings JSON written to `dist/secrets.findings.json` in gitleaks v8 schema for downstream tool compatibility.
 
+### Step 4.6.6: Procedural-fidelity check (Phase 58 wiring)
+
+Static-analysis pass over the implement-gate `files_touched` set. WARN-only posture: deviations append severity-2 events to the Process Shadow Genome but do NOT abort substantiate. Catches the doc-surface coverage gap (skill / script / doctrine / schema changes without at least one update to `docs/SYSTEM_STATE.md`, `docs/operations.md`, `docs/architecture.md`, or `docs/lifecycle.md`).
+
+```bash
+python -m qor.scripts.procedural_fidelity --session "$SESSION_ID" \
+  --out dist/procedural-fidelity.findings.json
+```
+
+Operator reviews `dist/procedural-fidelity.findings.json` after seal; remediation lands in the next seal cycle. See `qor/references/doctrine-procedural-fidelity.md` for the four-class deviation catalog and remediation workflow.
+
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
 
 Read the plan artifact and run doc-integrity checks against the declared tier. ABORTs on any `ValueError` per `qor/references/doctrine-documentation-integrity.md` (no silent override; `legacy` tier bypasses all checks).

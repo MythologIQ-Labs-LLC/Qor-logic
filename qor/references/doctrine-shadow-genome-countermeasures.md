@@ -209,3 +209,18 @@ Phase 57 anchors the discipline with two regression tests:
 - `tests/test_gate_hooks_sigint_propagates.py::test_keyboard_interrupt_in_callable_hook_propagates` and `::test_system_exit_in_callable_hook_propagates` — behavioral check that `KeyboardInterrupt` and `SystemExit` raised inside hook callables propagate through dispatch.
 
 **Verification hint**: search source for `except BaseException` excluding cleanup-then-reraise patterns: `rg "except BaseException" qor/ --type py | grep -v "raise"` should return zero hits in observer/swallow paths. False positives in `try/finally`-equivalent reraise patterns are acceptable.
+
+## SG-DocSurfaceUncovered-A: skill / script / doctrine / schema changes without system-tier doc update
+
+Historical risk class: a seal commit modifies skill bodies, helper scripts, doctrines, or gate schemas but does not update any of the four system-tier docs (`docs/SYSTEM_STATE.md`, `docs/operations.md`, `docs/architecture.md`, `docs/lifecycle.md`). Operators reading the SDLC narrative on a future date see stale documentation and either misunderstand the current state or have to reconstruct it from the META_LEDGER seal entries directly. /qor-substantiate Step 6 mandates SYSTEM_STATE.md update, but pre-Phase-58 the seal flow had no structural enforcement — only operator review of the PR caught the omission.
+
+**Source incident**: Phase 57 substantiate cycle (2026-05-01). Phase 57 shipped the gate_written observer channel, modified `qor/scripts/gate_hooks.py` (NEW), `qor/scripts/gate_chain.py`, `qor/references/doctrine-hook-contract.md` (NEW), and the substantiate skill body (existing Step 4.6.5 was unchanged but the new public API surface should have surfaced in operator-facing docs). All three system-tier docs (SYSTEM_STATE, operations, architecture) were initially omitted; the operator caught the gap on PR review and required a follow-up commit (`9aa1d84` "docs: phase 57 surface coverage + B23 future-phase note") that added the entries.
+
+**Countermeasure** (codified Phase 58):
+1. **Procedural-fidelity check at substantiate Step 4.6.6** (`qor/scripts/procedural_fidelity.py:_detect_doc_surface_coverage`): static-analysis pass over the implement-gate `files_touched` set. Skill / script / doctrine / schema changes without at least one system-tier doc update emit a severity-2 `doc-surface-uncovered` Deviation. WARN posture in v1 (no abort); future phase may tighten to BLOCK once false-positive rate is characterized.
+2. **SYSTEM_STATE drift-prevention test** (`tests/test_system_state_phase_coverage.py`): forward-only enforcement at every test run. Every META_LEDGER `Phase N feature substantiated` entry must have a corresponding `## Phase N (vX.Y.Z)` heading in `docs/SYSTEM_STATE.md`, modulo the explicit `_NO_SEAL_PHASES` set (phases 42-44 absorbed by Phase 41+45; Phase 51 absorbed by Phase 52).
+3. **Severity-2 events** appended to the Process Shadow Genome (`docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`) per deviation, providing a JSONL audit trail.
+
+Phase 58 also backfilled SYSTEM_STATE.md entries for 12 sealed phases (41, 45-50, 52-56) that had accumulated drift pre-Phase-58. Forward-only enforcement starts at Phase 58.
+
+**Verification hint**: `python -m qor.scripts.procedural_fidelity --session "$SESSION_ID"` after each implement gate write should emit no `doc-surface-uncovered` deviations for any seal commit touching skill / script / doctrine / schema surface. `python -m pytest tests/test_system_state_phase_coverage.py` enforces no future seal can land without the corresponding SYSTEM_STATE.md entry.

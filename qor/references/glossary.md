@@ -497,3 +497,33 @@ referenced_by:
   - CHANGELOG.md
 introduced_in_plan: phase57-gate-written-observer-channel
 ```
+
+```yaml
+term: procedural-fidelity check
+definition: 'Phase 58 static-analysis pass at /qor-substantiate Step 4.6.6 that verifies the seal commit''s surface coverage matches the doc-surface coverage rule. Reads .qor/gates/<sid>/implement.json files_touched; runs four detectors (doc-surface-uncovered active in v1; missing-step, ordering-drift, argv-shape-divergence stubs reserved for future phases). WARN posture: deviations append severity-2 events to the Process Shadow Genome via shadow_process.append_event but do NOT abort substantiate. Closes B23 (operator request from Phase 57 substantiate cycle).'
+home: qor/references/doctrine-procedural-fidelity.md
+referenced_by:
+  - qor/scripts/procedural_fidelity.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase58-procedural-fidelity-and-tech-debt-wrapup
+```
+
+```yaml
+term: procedural deviation
+definition: 'A finding emitted by the Phase 58 procedural-fidelity check. Frozen Deviation dataclass with (deviation_class, severity, step_id, description, files_referenced) fields. The deviation_class is one of the four values in the frozen DEVIATION_CLASSES catalog (doc-surface-uncovered, missing-step, ordering-drift, argv-shape-divergence). Severity is rule-based (3 missing-step, 2 doc-surface-uncovered + argv-shape-divergence, 1 ordering-drift). Each deviation also appends a severity-N procedural_deviation event to the Process Shadow Genome.'
+home: qor/references/doctrine-procedural-fidelity.md
+referenced_by:
+  - qor/scripts/procedural_fidelity.py
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase58-procedural-fidelity-and-tech-debt-wrapup
+```
+
+```yaml
+term: doc-surface coverage
+definition: 'Phase 58 rule that any seal commit touching qor/skills/, qor/scripts/, qor/references/doctrine-, or qor/gates/schema/ paths MUST also update at least one of the four system-tier docs (docs/SYSTEM_STATE.md, docs/operations.md, docs/architecture.md, docs/lifecycle.md). Threshold is at-least-one; different phases legitimately affect different doc surfaces. Enforced by _detect_doc_surface_coverage in qor/scripts/procedural_fidelity.py and supplemented by tests/test_system_state_phase_coverage.py forward-only drift prevention (every META_LEDGER SESSION SEAL entry must have a corresponding SYSTEM_STATE.md heading).'
+home: qor/references/doctrine-procedural-fidelity.md
+referenced_by:
+  - qor/scripts/procedural_fidelity.py
+  - tests/test_system_state_phase_coverage.py
+introduced_in_plan: phase58-procedural-fidelity-and-tech-debt-wrapup
+```

@@ -1,0 +1,64 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-01T2200-phase58",
+  "ts": "2026-05-02T01:27:04Z",
+  "plan_path": "docs/plan-qor-phase58-procedural-fidelity-and-tech-debt-wrapup.md",
+  "phases": [
+    "Phase 1: procedural-fidelity check module + substantiate Step 4.6.6 wiring",
+    "Phase 2: SYSTEM_STATE.md backfill + drift-prevention test",
+    "Phase 3: test isolation + ideation plan rename + doctrine + glossary + self-application"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_procedural_fidelity_*.py -v",
+    "python -m pytest tests/test_system_state_phase_coverage.py -v",
+    "python -m pytest tests/test_no_test_session_pollution.py tests/test_doctrine_procedural_fidelity_anchored.py tests/test_phase58_self_application.py -v",
+    "python -m pytest -x"
+  ],
+  "open_questions": [
+    "enforcement: WARN (default) vs BLOCK",
+    "doc-surface threshold: at-least-one (default) vs all-four",
+    "output location: dist/procedural-fidelity.findings.json (default) vs sidecar to gate dir"
+  ],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "procedural-fidelity check",
+      "home": "qor/references/doctrine-procedural-fidelity.md"
+    },
+    {
+      "term": "procedural deviation",
+      "home": "qor/references/doctrine-procedural-fidelity.md"
+    },
+    {
+      "term": "doc-surface coverage",
+      "home": "qor/references/doctrine-procedural-fidelity.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "best-effort static analyzer only",
+      "rule-based severity (not LLM-classified)",
+      "doc-surface coverage threshold-based, operator-overridable",
+      "forward-only enforcement"
+    ],
+    "non_goals": [
+      "runtime tracing",
+      "auto-remediation",
+      "replacing existing reliability sweep",
+      "mandating coverage for hotfixes"
+    ],
+    "exclusions": [
+      "modifying research/plan/implement/audit skill bodies",
+      "retroactive shadow-genome backfill"
+    ]
+  },
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.43.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-02T01:27:04Z"
+  }
+}

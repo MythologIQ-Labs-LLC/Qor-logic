@@ -10,6 +10,29 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.44.0] - 2026-05-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+Phase 58: procedural-fidelity check at `/qor-substantiate` Step 4.6.6 + SYSTEM_STATE.md backfill (13 phases) + drift-prevention test + test-session pollution cleanup + Phase 58→59 ideation plan rename. Closes B23 (operator request from Phase 57 substantiate cycle where doc-surface gaps were caught manually rather than structurally). Codifies `SG-DocSurfaceUncovered-A` countermeasure.
+
+### Added
+- **procedural_fidelity module** (`qor/scripts/procedural_fidelity.py`, ~190 LOC, zero new deps): frozen `Deviation` dataclass; `DEVIATION_CLASSES` frozenset with four v1 classes (`doc-surface-uncovered` active, `missing-step` / `ordering-drift` / `argv-shape-divergence` stubs reserved); `check_seal_commit(repo_root, session_id)` reads implement gate's `files_touched` and runs all detectors; `to_findings_json` for downstream tooling; CLI `python -m qor.scripts.procedural_fidelity --session SID [--repo-root .] [--out PATH]`.
+- **substantiate Step 4.6.6 wiring** (`qor/skills/governance/qor-substantiate/SKILL.md`): WARN-only invocation between Step 4.6.5 (Phase 56 secret-scan) and Step 4.7 (Phase 28 doc-integrity). Severity-2 deviations append to Process Shadow Genome; substantiate does NOT abort.
+- **Doc-surface coverage rule**: skill / script / doctrine / schema changes require at-least-one update to `docs/SYSTEM_STATE.md`, `docs/operations.md`, `docs/architecture.md`, or `docs/lifecycle.md`. Threshold-based; operator-overridable with documented rationale.
+- **SYSTEM_STATE.md drift-prevention test** (`tests/test_system_state_phase_coverage.py`): forward-only enforcement that every META_LEDGER `Phase N feature substantiated` entry has a corresponding `## Phase N (vX.Y.Z)` heading in SYSTEM_STATE.md.
+- **SYSTEM_STATE.md backfill**: 12 sealed phases (41, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 56) that had accumulated drift pre-Phase-58 now have entries.
+- **conftest.py session-scope cleanup**: autouse fixture sweeps `.qor/gates/test*` directories at session-end to prevent test pollution from synthetic session IDs (`test-session`, `cli-test`, `t1`-`t9`).
+- **`qor/references/doctrine-procedural-fidelity.md`** (NEW, ~95 LOC): applicability + four-class catalog + doc-surface coverage rule + operator workflow + Phase 58 changes vs. ad-hoc operator review + future extensions.
+- **`SG-DocSurfaceUncovered-A`** in `qor/references/doctrine-shadow-genome-countermeasures.md` codifying the documentation-update gap risk class with Phase 57 source incident + Phase 58 countermeasure.
+- **3 new glossary terms**: `procedural-fidelity check`, `procedural deviation`, `doc-surface coverage`.
+- **9 new test files** including AST-anchored substantiate-skill wiring invariant and meta-coherence dogfood.
+
+### Changed
+- `pyproject.toml` → 0.44.0.
+- `docs/plan-qor-phase58-ideation-readiness-phase.md` → `docs/plan-qor-phase59-ideation-readiness-phase.md` (Issue #20 ideation moves to Phase 59 since Phase 58 slot reassigned to tech-debt wrap-up). Plan body Phase 58 → Phase 59 references updated.
+- `docs/BACKLOG.md` B23 marked `[x] (v0.44.0 — Complete)`.
+
 ## [0.43.0] - 2026-05-01
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
