@@ -106,6 +106,7 @@ Qor-logic is a prompt system for governance-driven software development. The rep
 | New script helper | Plan declares `qor/scripts/<name>.py` plus tests; skill execution protocol imports it |
 | New schema | Plan declares `qor/gates/schema/<phase>.schema.json`; gate_chain validates before write |
 | New host variant | Plan extends `qor/scripts/dist_compile.py` emitter for the host; variant output lands in `qor/dist/variants/<host>/` |
+| New `gate_written` hook (Phase 57+) | Consumer registers under `qor_logic.events.gate_written` entry-point group OR adds an entry to `<root>/.qor/hooks.yaml`. Hooks observe gate-artifact writes; they do not modify the authoritative write path. See [doctrine-hook-contract.md](../qor/references/doctrine-hook-contract.md). |
 
 ## Dependency rules
 
