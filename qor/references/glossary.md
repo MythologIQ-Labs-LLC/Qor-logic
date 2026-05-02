@@ -476,3 +476,24 @@ referenced_by:
   - qor/skills/governance/qor-substantiate/SKILL.md
 introduced_in_plan: phase56-secret-scanning-gate
 ```
+
+```yaml
+term: gate_written hook
+definition: 'Phase 57 non-authoritative observer event fired after every successful qor.scripts.gate_chain.write_gate_artifact call. Carries a frozen GateWrittenEvent payload (phase, session_id, artifact_path, payload_sha256, ts) to consumers via two channels: Python entry-points under the qor_logic.events.gate_written group, and project-local config at <root>/.qor/hooks.yaml (dotted-path or list-form subprocess argv). Hooks run synchronously on the calling thread AFTER the authoritative artifact is on disk; Exception is swallowed and JSONL-logged to <root>/.qor/hooks/hooks.log; KeyboardInterrupt and SystemExit propagate so operators retain Ctrl-C control. Closes the polling-vs-push gap that prompted PR #12.'
+home: qor/references/doctrine-hook-contract.md
+referenced_by:
+  - qor/scripts/gate_hooks.py
+  - qor/scripts/gate_chain.py
+introduced_in_plan: phase57-gate-written-observer-channel
+```
+
+```yaml
+term: hook contract
+definition: 'Phase 57 doctrine specifying the gate_written hook event payload, dispatch order (entry-points then config-file), log format (JSONL one-line-per-fire), trust model (consumer-repo trust mirroring .github/workflows/ and .pre-commit-config.yaml), performance characteristics (sub-millisecond no-op when no hooks registered), and SIGINT-propagation invariant (except Exception not BaseException; Phase 57 fix vs. PR #12 origin per SG-BareExceptionSwallowsSignals-A). The contract is the public-API surface that downstream consumers (FailSafe-Pro and any future packages) depend on.'
+home: qor/references/doctrine-hook-contract.md
+referenced_by:
+  - qor/scripts/gate_hooks.py
+  - qor/scripts/gate_chain.py
+  - CHANGELOG.md
+introduced_in_plan: phase57-gate-written-observer-channel
+```

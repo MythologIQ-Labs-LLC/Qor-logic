@@ -188,4 +188,31 @@ def write_gate_artifact(
     if phase == "audit":
         from qor.scripts import audit_history
         audit_history.append(payload, session_id=sid)
+    _fire_gate_written_hook(phase, sid, path)
     return path
+
+
+def _fire_gate_written_hook(phase: str, session_id: str, path: "Path") -> None:
+    """Phase 57: invoke gate_hooks.dispatch_gate_written after authoritative write.
+
+    Read-back-from-disk hash so the event payload reflects what's persisted.
+    Wraps in `try/except Exception` so hook errors never break the write.
+    `KeyboardInterrupt` and `SystemExit` propagate (Phase 57 SIGINT-safety
+    invariant per SG-BareExceptionSwallowsSignals-A).
+    """
+    import hashlib
+    from qor.scripts import gate_hooks
+    try:
+        payload_bytes = path.read_bytes()
+        event = gate_hooks.GateWrittenEvent(
+            phase=phase,
+            session_id=session_id,
+            artifact_path=path,
+            payload_sha256=hashlib.sha256(payload_bytes).hexdigest(),
+            ts=shadow_process.now_iso(),
+        )
+        gate_hooks.dispatch_gate_written(event)
+    except Exception:
+        # Hook errors must not break the authoritative write path. KeyboardInterrupt
+        # and SystemExit propagate naturally.
+        pass

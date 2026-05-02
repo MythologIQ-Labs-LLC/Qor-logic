@@ -6748,3 +6748,202 @@ SHA256(content_hash + "|" + previous_hash)
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 56 feature substantiated)
 *Merkle seal: dbec7646...* (Phase 56 seal on top of Phase 55's d569ad93; Entries #183-#185 chained; closes OWASP LLM Top 10 LLM06 + NIST AI 600-1 §2.10; finalizes five-phase compliance sprint at 6/5 priorities)
+
+---
+
+### Entry #186: GATE TRIBUNAL — PR #12 (gate_written hooks) audited against current main — **VETO** (L2)
+
+**Timestamp**: 2026-05-01T20:50:00Z
+
+**Target**: PR #12 `feat/b24-gate-written-hooks` (HEAD `9d0da47`, opened 2026-04-20)
+
+**Audited against**: `main` at `d5726e9` (post-Phase-56)
+
+**Mode**: solo (codex-plugin not declared)
+
+**Pre-audit lints (Step 0.6)** — all CLEAN against the two follow-up plans (`docs/plan-qor-phase57-gate-written-observer-channel.md` + `docs/plan-qor-phase58-ideation-readiness-phase.md`):
+- `plan_test_lint` → EXIT 0
+- `plan_grep_lint` → EXIT 0
+- `prompt_injection_canaries --mask-code-blocks` → EXIT 0
+- `secret_scanner --mask-blocks` → EXIT 0
+
+**VETO grounds**:
+1. **OWASP A04 Insecure Design** — `except BaseException` (with `# noqa: BLE001`) in `qor/scripts/gate_hooks.py:_invoke_hook_safely` and `qor/scripts/gate_chain.py:_fire_gate_written_hook` swallows `KeyboardInterrupt` and `SystemExit`. Operators cannot interrupt a runaway hook with Ctrl-C; with the 30-second subprocess timeout AND swallow-on-callable-hook, a misbehaving Python entry-point hook could spin indefinitely with SIGKILL the only escape. The doctrine-aligned fix is `except Exception` (matches `prompt_injection_canaries` and `secret_scanner` patterns).
+2. **Stale branch** — PR predates 5 sealed phases (Phase 52 provenance binding, 53 prompt-injection canary, 54 AI provenance, 55 Cedar admission + SBOM + lints, 56 secret-scanning gate). Direct merge would not collide structurally but has not been audited under post-Phase-52 provenance constraints, post-Phase-55 admission rules, or post-Phase-56 substantiate gates.
+3. **Documentation/code drift** — `gate_hooks.py` opening docstring references "B24 — failsafe-pro issue" and `crates/failsafe-sentinel/src/gate_watcher.rs`, neither of which resolves in the qor-logic repo. Phase 53/54/55/56 docstring discipline: each new module's primary docstring cites its phase number and the framework gap it closes; upstream-origin attribution moves to CHANGELOG and PR body.
+
+**Audit pass results (12/13 clean)**: Security PASS · OWASP A03 PASS · OWASP A04 **FAIL** · OWASP A05 PASS · OWASP A08 PASS · OWASP LLM05 PASS (PyYAML already locked) · Ghost UI N/A · Section 4 Razor PASS (`gate_hooks.py` 176 LOC; longest fn `_resolve_config_entry` ~23 LOC; max nesting 2; zero nested ternaries) · Test functionality PASS (5 test files / 7 cases all behavior-asserting) · Dependency PASS (zero new runtime deps) · Macro-architecture PASS (`gate_hooks` in `qor/scripts/` matches Phase 53/54/55/56 convention; one-direction layering) · Orphan detection PASS · Phase 55 pre-audit lints PASS · Phase 53 prompt-injection PASS (with masking) · Phase 56 secret-scan PASS.
+
+**Mandated next action**: `/qor-implement` against `docs/plan-qor-phase57-gate-written-observer-channel.md` (Phase 57 reintegration plan). PR #12 closes after Phase 57 seals; the Phase 57 plan supersedes the PR.
+
+**Companion plan**: `docs/plan-qor-phase58-ideation-readiness-phase.md` (Issue #20 `/qor-ideate` ideation readiness phase). Independent of Phase 57; can ship in parallel or sequentially. Phase 58 was authored in the same session as the Phase 57 audit since the operator requested both plans alongside the PR #12 audit.
+
+**Risk grade L2 rationale**: not L3 — no production-traffic security gap; the BaseException issue is an operator-control / DX concern. Not L1 — the PR adds a new public API surface (`GateWrittenEvent`, entry-point group, config-file format) and downstream consumers (FailSafe-Pro) depend on the contract; the reintegration must preserve the documented event-payload shape.
+
+**SSDF Practices**: PO.1.3, PS.3.2, PW.4.1, PW.7.1, RV.1.1.
+
+**Content Hash**: `83f793790ef170c0b690c90d19d145bd217bfdc96d2bfad4c0cfad376a7a8905`
+**Previous Hash**: `dbec764642de264a1d53e93ed66c5ab1ed54e562e1bc77d23617c8cb44e99e93`
+**Chain Hash**: `34941f3c2f893d0aa32176c5d26559b7a3e85dbcd12b7cbe9bf53d49b0dacd89`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 56 feature substantiated; Phase 57 audit-only entry post-seal)
+*Merkle seal: 34941f3c...* (Entry #186 advisory audit verdict on PR #12 + companion plan for Issue #20; no implementation yet)
+
+---
+
+### Entry #187: GATE TRIBUNAL — Phase 57 plan — **PASS** (L2)
+
+**Timestamp**: 2026-05-01T20:55:00Z
+
+**Plan**: `docs/plan-qor-phase57-gate-written-observer-channel.md`
+
+**Session**: `2026-05-01T2050-phase57`
+
+**Mode**: solo (codex-plugin not declared; capability shortfall logged to shadow genome)
+
+**Pre-audit lints (Step 0.6)** — all CLEAN:
+- `plan_test_lint` → EXIT 0
+- `plan_grep_lint` → EXIT 0
+- `prompt_injection_canaries --mask-code-blocks` → EXIT 0
+- `secret_scanner --mask-blocks` → EXIT 0
+
+**Audit passes (10/10 PASS)**:
+1. Security (L3) — clean.
+2. OWASP Top 10 (2021) — A03 argv-form locked; A04 explicitly RESOLVES Entry #186's VETO ground (`except Exception` not `BaseException`; SIGINT/SystemExit propagate; new SG entry); A05 no secrets in event payload; A08 yaml.safe_load.
+3. OWASP LLM05/LLM07 — zero new runtime deps; trust-model documented in `doctrine-hook-contract.md`.
+4. Ghost UI — N/A.
+5. Section 4 Razor — `gate_hooks.py ~165 LOC` (reduced from PR #12's 176); `dispatch_gate_written` 7 LOC; longest fn `_resolve_config_entry` ~23 LOC; max nesting 2; zero nested ternaries.
+6. Test functionality — 22 tests across 7 files; all behavior-asserting; AST-based co-occurrence invariant for the `gate_chain` ↔ `gate_hooks` wiring.
+7. Dependency — zero new runtime deps (PyYAML already locked).
+8. Macro-architecture — convention-aligned placement; one-direction layering; no cycles; Phase 52 provenance compatibility tested explicitly.
+9. Orphan detection — zero orphans.
+10. Self-application meta-coherence — Phase 53/54/55/56 disciplines carried forward.
+
+**Open question resolutions** (defaults approved):
+- Fire-on-phase set: every successful `write_gate_artifact` call.
+- Hook-log location: `<root>/.qor/hooks/hooks.log`.
+- Subprocess argv: `[*config_argv, str(event.artifact_path)]` — only artifact_path appended.
+
+**Resolves PR #12 VETO grounds (Entry #186)**:
+1. `except Exception` (not `BaseException`) — SIGINT/SystemExit propagate.
+2. Built on top of current main `d5726e9` (post-Phase-56) — not a stale-branch merge.
+3. Module docstring cites Phase 57 + framework gap; FailSafe-Pro origin attribution moves to CHANGELOG.
+
+**Risk grade L2 rationale**: introduces new public API surface (`GateWrittenEvent`, entry-point group, `.qor/hooks.yaml`) that downstream consumers will depend on; future modifications need backward-compat or deprecation cycle. Not L3 (no production-traffic security gap; observer-only channel; Phase 52 provenance unchanged). Not L1 (consumers of the audit log will see new records).
+
+**Mandated next action**: `/qor-implement` per `qor/gates/chain.md`. Implementation begins with `tests/test_gate_hooks_event_payload_shape.py` (TDD), then `qor/scripts/gate_hooks.py`, then Phase 2 (`gate_chain.py` wiring), then Phase 3 (doctrine + glossary + SG-BareExceptionSwallowsSignals-A).
+
+**Companion plan note**: `docs/plan-qor-phase58-ideation-readiness-phase.md` (Issue #20 `/qor-ideate`) is independent and ready for its own audit cycle when the operator chooses.
+
+**SSDF Practices**: PO.1.3, PO.5.1, PS.1.1, PS.3.1, PW.4.1, PW.5.1, PW.7.1, RV.1.1.
+
+**Content Hash**: `8077a1b23f73ab6e9596af4ed67c8bc04f20682c5112fac455e88f71f0482ae4`
+**Previous Hash**: `34941f3c2f893d0aa32176c5d26559b7a3e85dbcd12b7cbe9bf53d49b0dacd89`
+**Chain Hash**: `68487e3a0aebb8dee09a5605594f96958a00087582f5adefd00ca44febf47f02`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 56 feature substantiated; Entries #186-#187 audit-only post-seal)
+*Active session: 2026-05-01T2050-phase57 (Phase 57 — audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #188: GATE TRIBUNAL — Phase 58 plan — **PASS** (L2)
+
+**Timestamp**: 2026-05-01T20:58:00Z
+
+**Plan**: `docs/plan-qor-phase58-ideation-readiness-phase.md`
+
+**Session**: `2026-05-01T2055-phase58`
+
+**Mode**: solo (codex-plugin not declared; capability shortfall logged to shadow genome)
+
+**Pre-audit lints (Step 0.6)** — all CLEAN:
+- `plan_test_lint` → EXIT 0
+- `plan_grep_lint` → EXIT 0
+- `prompt_injection_canaries --mask-code-blocks` → EXIT 0
+- `secret_scanner --mask-blocks` → EXIT 0
+
+**Audit passes (10/10 PASS)**:
+1. Security (L3) — clean.
+2. OWASP Top 10 (2021) — A03 no shell exec; A04 advisory-gate posture matches Phase 8 (workflow-level, not security fail-open); A05 no secrets in artifact payloads; A08 schema-validated JSON only.
+3. Ghost UI — N/A.
+4. Section 4 Razor — Phase 58 introduces no new `.py` modules (only schema + skill prose + doctrine prose + 1-line `PHASES` tuple extension); razor cap N/A for skill markdown bodies.
+5. Test functionality — 26 tests across 8 files; all behavior-asserting; bidirectional doctrine ↔ schema round-trip integrity (Phase 50 model).
+6. Dependency — zero new runtime deps (jsonschema + PyYAML already locked).
+7. Macro-architecture — `qor/skills/sdlc/qor-ideate/` matches existing SDLC convention; schema in `qor/gates/schema/`; doctrine in `qor/references/`; chain integration is pure additive change to `gate_chain.check_prior_artifact` phase-ordering tuple.
+8. Orphan detection — zero orphans across 12 proposed artifacts.
+9. Infrastructure alignment — every cited API verified at HEAD: `validate_gate_artifact.PHASES` line 53, `gate_chain.check_prior_artifact` line 53, `gate_chain.write_gate_artifact` line 147, `skill_admission`/`gate_skill_matrix`/`dist_compile` all reachable; `qor/gates/delegation-table.md` and `qor/gates/chain.md` both exist.
+10. Self-application meta-coherence — Phase 58 plan is itself meta-coherent: `## Sprint context` ↔ ideation `spark`, `## Open Questions` ↔ `assumption_ledger`, `boundaries` block ↔ `boundaries` field. Plan dogfoods its own structural contract via `test_phase58_plan_could_be_an_ideation_artifact`.
+
+**Open question resolutions** (defaults approved):
+- Mandatory vs. advisory: **advisory** (matches Phase 8 posture; future phase can tighten to mandatory).
+- Readiness fields: **stored as written** (operator declares; schema validates shape).
+- Skill placement: **`qor/skills/sdlc/qor-ideate/`** (matches research/plan/implement convention).
+
+**Resolves Issue #20** by introducing the governed ideation readiness phase: `/qor-ideate` skill + `ideation.schema.json` + `doctrine-ideation-readiness.md` + `SG-PrematureSolutioning-A` countermeasure + 6 canonical glossary terms (ideation phase, spark record, problem frame, transformation statement, assumption ledger, ideation readiness). Advisory-gate posture preserves Phase 8 semantics; hotfix exemption documented.
+
+**Risk grade L2 rationale**: introduces new SDLC chain phase with downstream consequences (skill registry +1, gate-skill-matrix updates, dist variants regenerate, `check_prior_artifact` recognizes ideation as predecessor for research+plan). Not L3 (no production-traffic security gap; advisory-gate means no flow is forced through). Not L1 (system-tier doctrine adds 6 canonical terms; downstream consumers parsing skill registries see additions).
+
+**Mandated next action**: `/qor-implement` per `qor/gates/chain.md`. Implementation begins with `tests/test_ideation_schema_validation.py` (TDD), then `qor/gates/schema/ideation.schema.json`, then Phase 2 (skill + dialogue protocol + gate-chain extension), then Phase 3 (doctrine + glossary + SG entry + dist regeneration).
+
+**Sequencing with Phase 57**: independent — no file/test/semantic overlap. Either may ship first; both may ship in parallel branches; both may ship co-bundled. Operator choice.
+
+**SSDF Practices**: PO.1.3, PO.5.1, PS.1.1, PS.3.1, PW.4.1, PW.5.1, PW.7.1, RV.1.1.
+
+**Content Hash**: `435574a7c6b6de4a30915cc978b9dbaa5c6b8d1b614866ca685859b423b94766`
+**Previous Hash**: `68487e3a0aebb8dee09a5605594f96958a00087582f5adefd00ca44febf47f02`
+**Chain Hash**: `db36d9139b9aa513b9c1aebc5812c564f2efa97b0701917bbbb37ee204fee887`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 56 feature substantiated; Entries #186-#188 audit-only post-seal)
+*Active sessions: 2026-05-01T2050-phase57 (Phase 57 audit PASS) + 2026-05-01T2055-phase58 (Phase 58 audit PASS); both awaiting /qor-implement; independent and parallel-shippable*
+
+---
+
+### Entry #189: IMPLEMENTATION — Phase 57 (`gate_written` observer channel; PR #12 reintegration)
+
+**Timestamp**: 2026-05-01T21:10:00Z
+
+**Plan**: `docs/plan-qor-phase57-gate-written-observer-channel.md`
+
+**Session**: `2026-05-01T2050-phase57`
+
+**Scope**: Phase 57 reintegrates PR #12 `feat/b24-gate-written-hooks` (FailSafe-Pro B24 contribution, opened 2026-04-20) on top of current main with the OWASP A04 SIGINT-swallow VETO ground from Entry #186 explicitly resolved. Net-new public-API surface: `qor_logic.events.gate_written` entry-point group + `<root>/.qor/hooks.yaml` config-file format + frozen `GateWrittenEvent` payload. Hook channel is non-authoritative observer-only; the authoritative gate-write path is structurally unchanged. Closes the polling-vs-push gap that prompted PR #12; downstream consumers (FailSafe-Pro `failsafe-qor-hook`) can register under the entry-point group and observe governance writes without filesystem polling.
+
+**Phase 1 — `gate_hooks` module**: `qor/scripts/gate_hooks.py` (~165 LOC, zero new runtime deps; PyYAML already locked). Frozen `GateWrittenEvent` and `_HookTarget` dataclasses; `dispatch_gate_written(event)` synchronous fan-out (entry-points first, config-file second; deterministic ordering); `reload_entry_points()` test-only cache invalidator; JSONL hook-log at `<root>/.qor/hooks/hooks.log`. Critical Phase 57 fix: `except Exception` (NOT `BaseException`) in `_invoke_hook_safely` and `_fire_gate_written_hook`. `KeyboardInterrupt` and `SystemExit` propagate. 22 phase-1 tests including AST-anchored static check that `_invoke_hook_safely` never catches `BaseException` and runtime regression tests that SIGINT/SystemExit propagate through dispatch.
+
+**Phase 2 — `gate_chain` post-write hook fire**: `qor/scripts/gate_chain.py:_fire_gate_written_hook` (15-line helper). Fires after Phase 52 provenance check, after `vga.write_artifact`, after Phase 37 `audit_history.append`, before return. Reads artifact bytes back from disk to compute `payload_sha256` so the event matches what's persisted. Wrapped in `try/except Exception` so hook errors never break the write. 6 phase-2 tests including Phase 52 provenance regression (`test_provenance_error_blocks_write_and_blocks_hook`) and Phase 50 AST-based co-occurrence behavior invariant (`test_write_gate_artifact_function_body_calls_fire_hook`) verifying call ordering inside the function source.
+
+**Phase 3 — doctrine + glossary + countermeasure + CHANGELOG**: new `qor/references/doctrine-hook-contract.md` (applicability + event payload + entry-point + config-file + invocation order + log format + trust model + performance + Phase 57 changes vs. PR #12 origin). New `SG-BareExceptionSwallowsSignals-A` shadow-genome entry codifying the BaseException-swallow risk class with corrected `except Exception` and cleanup-then-reraise patterns. Two new glossary terms (`gate_written hook`, `hook contract`). CHANGELOG `[0.43.0]` entry. 6 phase-3 tests including doctrine round-trip and self-application meta-coherence.
+
+**Reliability sweep**:
+- `python -m qor.reliability.intent_lock verify --session 2026-05-01T2050-phase57` → VERIFIED.
+- `python -m qor.reliability.skill_admission qor-substantiate` → ADMITTED.
+- `python -m qor.reliability.gate_skill_matrix` → 29 skills, 112 handoffs, 0 broken.
+- `python -m qor.scripts.dist_compile` → 4 variants emitted.
+- `python -m qor.scripts.check_variant_drift` → OK 236 files, no drift.
+- `python -m qor.scripts.badge_currency` → OK (Tests 1176, Doctrines 21, Ledger 189).
+
+**Razor compliance**: `gate_hooks.py` 165 LOC (under 250 cap); longest function `_resolve_config_entry` ~22 LOC; `dispatch_gate_written` 7 LOC; `_invoke_hook_safely` 13 LOC; max nesting depth 2; zero nested ternaries.
+
+**SSDF Practices**: PO.1.3, PO.5.1, PS.1.1, PS.3.1, PW.4.1, PW.5.1, PW.7.1, PW.9.1, RV.1.1, RV.1.2.
+
+**Resolves Entry #186 VETO grounds explicitly**:
+1. ✅ `except Exception` (not `BaseException`) — SIGINT/SystemExit propagate; AST-anchored regression test in place.
+2. ✅ Built on top of current main (`d5726e9` post-Phase-56), not a stale-branch merge.
+3. ✅ Module docstring cites Phase 57 + framework gap (LLM07 Insecure Plugin Design); FailSafe-Pro origin attribution moves to CHANGELOG.
+
+**Mandated next action**: `/qor-substantiate`. Substantiate must invoke its own newly-wired Step 4.6.5 (Phase 56 secret-scan) against the seal commit (existing meta-coherence enforcement). After Phase 57 seals: close PR #12 with comment linking to commit SHA + this ledger entry.
+
+**Companion plan note**: Phase 58 (Issue #20 `/qor-ideate`) audit PASS at Entry #188 remains independent and ready for its own `/qor-implement` cycle.
+
+**Content Hash**: `e0bdb12e3998ec486f053576f8d2a7493bcaa16bf27cc40710bc99f4fc92916d`
+**Previous Hash**: `db36d9139b9aa513b9c1aebc5812c564f2efa97b0701917bbbb37ee204fee887`
+**Chain Hash**: `992051967c45c11d1a77a07876bf3312417fe98d8dabe557617e697d95ac00cb`
