@@ -527,3 +527,63 @@ referenced_by:
   - tests/test_system_state_phase_coverage.py
 introduced_in_plan: phase58-procedural-fidelity-and-tech-debt-wrapup
 ```
+
+```yaml
+term: ideation phase
+definition: 'Phase 59 optional pre-research SDLC phase. Skill /qor-ideate writes .qor/gates/<sid>/ideation.json validated against qor/gates/schema/ideation.schema.json. Advisory-gate posture: /qor-research and /qor-plan accept either ideation OR research as their prior artifact via gate_chain.check_prior_artifact extension. Hotfixes MAY skip ideation. Captures intent and assumptions before they become inferred by downstream agents; closes Issue #20.'
+home: qor/references/doctrine-ideation-readiness.md
+referenced_by:
+  - qor/skills/sdlc/qor-ideate/SKILL.md
+  - qor/scripts/gate_chain.py
+  - qor/gates/chain.md
+introduced_in_plan: phase59-ideation-readiness-phase
+```
+
+```yaml
+term: spark record
+definition: 'First section of the ideation artifact. Captures the originating signal before it becomes over-compressed into requirements language. Required fields: spark.observation (what was noticed), spark.initial_question (the question raised), spark.why_now (recurrence/deadline/strategic charge that makes the signal worth preserving today). Schema-enforced via qor/gates/schema/ideation.schema.json.'
+home: qor/references/doctrine-ideation-readiness.md
+referenced_by:
+  - qor/skills/sdlc/qor-ideate/SKILL.md
+  - qor/skills/sdlc/qor-ideate/references/dialogue-protocol.md
+introduced_in_plan: phase59-ideation-readiness-phase
+```
+
+```yaml
+term: problem frame
+definition: 'Second section of the ideation artifact. Defines the actual failure mode without prescribing a solution. Required fields: problem_frame.affected_actors (list of users/systems affected), problem_frame.failure_mode (what goes wrong), problem_frame.cost_of_failure (operator hours, lost work, etc.). Anti-pattern guard for SG-PrematureSolutioning-A: skill REFUSES to advance to Transformation Statement until problem_frame is populated.'
+home: qor/references/doctrine-ideation-readiness.md
+referenced_by:
+  - qor/skills/sdlc/qor-ideate/SKILL.md
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase59-ideation-readiness-phase
+```
+
+```yaml
+term: transformation statement
+definition: 'Third section of the ideation artifact. Single-sentence statement of the desired change. Form: [Actor] moves from [current state] to [desired state] without [unacceptable cost]. Schema-enforced minLength=1 via qor/gates/schema/ideation.schema.json. Becomes the success definition that downstream substantiate refers back to (anti-pattern guard for validation-collapse).'
+home: qor/references/doctrine-ideation-readiness.md
+referenced_by:
+  - qor/skills/sdlc/qor-ideate/SKILL.md
+introduced_in_plan: phase59-ideation-readiness-phase
+```
+
+```yaml
+term: assumption ledger
+definition: 'Optional fourth section of the ideation artifact. Each entry: statement (text), category (user/market/technical/workflow/governance/operational/security/compliance), confidence (low/medium/high), impact_if_wrong (low/medium/high), validation_method (text), blocking (bool). Anti-pattern guard for assumption-laundering: tentative belief becoming requirement without evidence. Confidence + validation_method force explicit testing planning.'
+home: qor/references/doctrine-ideation-readiness.md
+referenced_by:
+  - qor/skills/sdlc/qor-ideate/SKILL.md
+  - qor/gates/schema/ideation.schema.json
+introduced_in_plan: phase59-ideation-readiness-phase
+```
+
+```yaml
+term: ideation readiness
+definition: 'Tenth section of the ideation artifact. The readiness.status enum encodes the routing decision (ready / blocked / research_required / planning_advisory_only) and recommended_next_phase enum (research / plan / hold) determines downstream skill handoff. Status ready + research routes to /qor-research; status ready + plan routes to /qor-plan; status blocked remains in ideation; status research_required overrides recommended_next_phase to research; status planning_advisory_only routes to /qor-plan with advisory flag.'
+home: qor/references/doctrine-ideation-readiness.md
+referenced_by:
+  - qor/skills/sdlc/qor-ideate/SKILL.md
+  - qor/gates/delegation-table.md
+introduced_in_plan: phase59-ideation-readiness-phase
+```

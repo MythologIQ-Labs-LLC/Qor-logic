@@ -6,10 +6,10 @@
 ## Sequence
 
 ```
-research -> plan -> audit -> implement -> substantiate -> validate -> (remediate?)
+(ideate?) -> research -> plan -> audit -> implement -> substantiate -> validate -> (remediate?)
 ```
 
-`remediate` is conditional — triggered by threshold breach in the Process Shadow Genome, or by explicit `/qor-remediate` invocation. Not part of the strict forward chain.
+**Phase 59**: `ideate` is an optional pre-research phase (advisory). When `ideation.json` exists in the session dir, `/qor-research` and `/qor-plan` accept it as a valid prior artifact. Hotfixes MAY skip ideation. `remediate` is conditional — triggered by threshold breach in the Process Shadow Genome, or by explicit `/qor-remediate` invocation. Not part of the strict forward chain.
 
 ## Artifact locations
 

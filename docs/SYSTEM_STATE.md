@@ -205,9 +205,7 @@ Partial phase seal. Phases 1 and 2 of the 4-phase plan ship in v0.29.0; Phases 3
 - `pyproject.toml` — `anthropic>=0.40,<1.0` under `[project.optional-dependencies].ab-harness`. Default installs do not pull this dependency.
 - `tests/test_ab_harness.py` — 16 CI tests, all Anthropic calls mocked.
 
-**Deferred (Phase 39b)**:
-- Phase 3 (operator action): `ANTHROPIC_API_KEY=... python qor/scripts/ab_live_run.py` produces `docs/phase39-ab-results.md`. Cost ~$32 per full cycle at Opus 4.7 pricing (corrected from plan's earlier ~$4 estimate). ~10-15 min wall-time.
-- Phase 4 (conditional on Phase 3 results): S3 persona sweep across 24 skills; R3 Identity Activation rewrites fire only if Phase 3 declares `winner: "stance"`; R4 (qor-debug → doctrine cross-reference); R5 (qor-document persona-vs-agent disambiguation).
+**Phase 39b Phase 3 status**: dropped. The originally-planned operator action (invoke `/qor-ab-run` with `ANTHROPIC_API_KEY` to produce `docs/phase39-ab-results.md`, ~$32/cycle external spend) is no longer scheduled. Phase 39b Phases 1+2 shipped the infrastructure (skill, aggregator, fixtures, persona sweep S3+R4+R5) and stand on their own. The R3 conditional rewrite mechanism that gated on results-file existence has been removed (Phase 59 cleanup).
 
 **Cost awareness (corrected from Pass 2 audit O1)**: actual skill body sizes are ~4,000-4,500 tokens each, not the plan's original ~500-token per-call assumption. Real cost ~$32 per full A/B cycle at Opus 4.7 pricing. Codified in `ab_harness.py` module docstring.
 
@@ -223,8 +221,7 @@ Supersedes the v0.29.0 anthropic-SDK approach. Ships:
 - **S3**: 5 decorative `<persona>` tags removed (`qor-status`, `qor-help`, `qor-repo-scaffold`, `qor-bootstrap`, `qor-document`).
 - **R4**: `qor-debug` line 108 subagent_type constraint cross-references `doctrine-context-discipline.md` §4.
 - **R5**: `qor-document` splits Identity Activation stance (main thread) from subagent pairing (`Task` dispatch) citing doctrine §1.2/§1.3.
-- **R3 pending**: test `test_identity_activation_matches_ab_winner_if_results_exist` enforces conditional rewrite when operator produces `docs/phase39-ab-results.md` via `/qor-ab-run`.
-- **LOAD_BEARING_PENDING_EVIDENCE registry** (19 skills): documented transitional state awaiting A/B evidence.
+- **LOAD_BEARING_PENDING_EVIDENCE registry** (20 skills incl. Phase 59 `qor-ideate`): documents skills retained as load-bearing by doctrine judgment.
 
 **Tests**: 743 pytest green × 2. Admission: `qor-ab-run` admitted. Matrix: 29 skills, 112 handoffs, 0 broken.
 
@@ -354,3 +351,31 @@ Closes B23 (operator request from Phase 57 substantiate cycle where doc-surface 
 **Razor compliance**: `procedural_fidelity.py` 190 LOC (under 250 cap); longest function ~22 LOC; max nesting 2; zero nested ternaries.
 
 **Decision**: Phase 58 sealed at v0.44.0. B23 fully closed. Pre-Phase-58 SYSTEM_STATE drift remediated; forward-only invariant enforced. Test pollution structurally prevented. Issue #20 ideation moved to Phase 59 ready for independent implementation. The Phase 57-style "operator caught the doc-surface gap manually" failure mode is now structurally surfaced at substantiate-time via `SG-DocSurfaceUncovered-A` countermeasure.
+
+## Phase 59 (v0.45.0 — 2026-05-02): `/qor-ideate` ideation readiness phase (Issue #20)
+
+Closes Issue #20 (governed ideation readiness phase) by introducing `/qor-ideate` as an optional pre-research SDLC phase. Captures intent and assumptions before they become inferred by downstream agents. Codifies `SG-PrematureSolutioning-A` countermeasure. Advisory-gate posture matching Phase 8: hotfixes MAY skip ideation; `/qor-research` and `/qor-plan` accept either ideation OR research as their prior artifact.
+
+**Phase 1 — Ideation gate-artifact schema**:
+- `qor/gates/schema/ideation.schema.json` (NEW): required envelope + 6 required content sections (`spark`, `problem_frame`, `transformation_statement`, `boundaries`, `governance_profile`, `readiness`) + 3 optional (`assumptions`, `options`, `failure_remediation`). Closed enums for `readiness.status`, `governance_profile.risk_grade`, `failure_remediation[].return_phase`.
+- `qor/scripts/validate_gate_artifact.py` `PHASES` extended with `"ideation"`.
+
+**Phase 2 — `/qor-ideate` skill + dialogue protocol + gate-chain extension**:
+- `qor/skills/sdlc/qor-ideate/SKILL.md` (NEW, ~120 LOC) + `references/dialogue-protocol.md` (NEW, ~150 LOC).
+- `qor/scripts/gate_chain.py:_check_ideation_predecessor` recognizes `ideation.json` as a valid prior for `/qor-research` and `/qor-plan`. Backward-compatible.
+- `qor/gates/delegation-table.md`: 5 new rows for `qor-ideate` routing.
+- `qor/gates/chain.md`: chain visualization extended with `(ideate?)` as optional pre-research phase.
+- `qor/skills/meta/qor-help/SKILL.md`: catalog row added.
+
+**Phase 3 — doctrine + glossary + SG + CHANGELOG**:
+- `qor/references/doctrine-ideation-readiness.md` (NEW, ~140 LOC): 10-section catalog + readiness scoring model + routing matrix + 8-failure-mode catalog (Premature Solutioning / Language Drift / Assumption Laundering / Scope Seepage / Research Asymmetry / Failure Blindness / Premature Decomposition / Validation Collapse).
+- `SG-PrematureSolutioning-A` in `doctrine-shadow-genome-countermeasures.md`.
+- 6 new glossary terms.
+
+**Tests**: 1237 passing × 2 (deterministic). +35 new Phase 59 tests. Skill registry: 30 skills (was 29). Handoff matrix: 115 handoffs (was 112; +3 from qor-ideate routes), 0 broken. Dist: 243 files (was 236; +7 for qor-ideate across 4 variants).
+
+**Reliability sweep**: intent-lock VERIFIED, skill admission ADMITTED, gate-skill matrix 30/115/0, dist drift OK, badge currency OK.
+
+**Razor compliance**: zero new `.py` modules; gate_chain.py extension `_check_ideation_predecessor` is 14 LOC. Within bounds.
+
+**Decision**: Phase 59 sealed at v0.45.0. Issue #20 fully closed. Ideation is now a first-class auditable SDLC phase with structural guards against the 8 canonical unraveling points. Advisory-gate posture preserves backward compatibility; existing flows continue to work without ideation.

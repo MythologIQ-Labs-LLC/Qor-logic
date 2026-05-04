@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-02T02:39:38Z",
+  "generated_ts": "2026-05-02T03:15:02Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -150,7 +150,13 @@
       "id": "qor-help.toml",
       "source_path": "commands/qor-help.toml",
       "install_rel_path": "commands/qor-help.toml",
-      "sha256": "992411f0bef5ac05396b1f12affde7dcb7f8af377b6763ebdb2dc2d7e329abd8"
+      "sha256": "0ac8df2c667ffa4c754351d425c57a48e0281e17a3a236c153a0ac92291a9591"
+    },
+    {
+      "id": "qor-ideate.toml",
+      "source_path": "commands/qor-ideate.toml",
+      "install_rel_path": "commands/qor-ideate.toml",
+      "sha256": "5e9353c51726d724bb2a28ddd6b020716cfcd6630c22bc21903c80544404f73b"
     },
     {
       "id": "qor-implement.toml",

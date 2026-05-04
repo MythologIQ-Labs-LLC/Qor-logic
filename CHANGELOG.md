@@ -10,6 +10,28 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.45.0] - 2026-05-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+Phase 59: `/qor-ideate` governed ideation readiness phase. Closes Issue #20 (originally catalogued as "future concept"). New optional pre-research SDLC phase that converts a raw concept into a structured artifact before research and planning, capturing intent and assumptions before they become inferred by downstream agents. Codifies `SG-PrematureSolutioning-A` countermeasure.
+
+### Added
+- **`/qor-ideate` skill** (`qor/skills/sdlc/qor-ideate/SKILL.md`): 10-section ideation dialogue protocol — Spark Record / Problem Frame / Transformation Statement / Assumption Ledger / Scope Boundary Record / Concept Brief / Options Matrix / Governance Profile / Failure Remediation Plan / Readiness Scoring + Routing. Skill REFUSES to advance past Section 2 (Problem Frame) without all 3 fields populated (anti-pattern guard for premature solutioning) and past Section 7 (Options Matrix) without ≥2 options compared.
+- **`qor/skills/sdlc/qor-ideate/references/dialogue-protocol.md`**: section-by-section operator prompts.
+- **`qor/gates/schema/ideation.schema.json`**: gate artifact schema with required top-level fields (`spark`, `problem_frame`, `transformation_statement`, `boundaries`, `governance_profile`, `readiness`, `ai_provenance`) + optional fields (`assumptions[]`, `options[]`, `failure_remediation[]`). Closed enums: `readiness.status` (ready/blocked/research_required/planning_advisory_only), `governance_profile.risk_grade` (L1/L2/L3/L4), `failure_remediation[].return_phase` (ideation/research/plan/audit/implement/remediate/substantiate).
+- **`gate_chain.check_prior_artifact` extension**: recognizes `ideation.json` as a valid predecessor for both `/qor-research` and `/qor-plan` phases via new `_check_ideation_predecessor` helper. Backward-compatible: research with no prior still passes (legacy); plan with neither research nor ideation still reports prior missing.
+- **`qor/scripts/validate_gate_artifact.py`**: `PHASES` tuple extended with `"ideation"` (matches Phase 55 `"deliver"` pattern).
+- **`qor/gates/delegation-table.md`**: 5 new rows for `qor-ideate` routing (ready+research/ready+plan/research_required/blocked/planning_advisory_only).
+- **`qor/gates/chain.md`**: chain visualization extended with `(ideate?)` as optional pre-research phase.
+- **`qor/references/doctrine-ideation-readiness.md`** (NEW): 10-section catalog + readiness scoring model + routing decision matrix + 8-failure-mode catalog (Premature Solutioning, Language Drift, Assumption Laundering, Scope Seepage, Research Asymmetry, Failure Blindness, Premature Decomposition, Validation Collapse) + hotfix exemption + relationship to qor-research/qor-plan/qor-remediate.
+- **`SG-PrematureSolutioning-A`** in `qor/references/doctrine-shadow-genome-countermeasures.md`: codifies the canonical failure pattern with Section 2 + Section 7 structural guards.
+- **6 new glossary terms**: `ideation phase`, `spark record`, `problem frame`, `transformation statement`, `assumption ledger`, `ideation readiness`.
+- **15 new tests** including schema validation (12 cases incl. enum-rejection + required-field), doctrine round-trip integrity, /qor-ideate skill admission, handoff matrix, predecessor recognition (research + plan), end-to-end gate artifact write, schema-validated round-trip.
+
+### Changed
+- `pyproject.toml` → 0.45.0.
+
 ## [0.44.0] - 2026-05-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

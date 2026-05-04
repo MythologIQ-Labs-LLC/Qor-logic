@@ -20,7 +20,12 @@ from qor import workdir as _workdir
 GATES_DIR = _workdir.gate_dir()
 
 # Phase sequence (remediate is out-of-band, not listed here)
+# Phase 59: ideation prepended as optional pre-research phase. Advisory-gate
+# posture: research and plan accept ideation OR research as their prior. The
+# `check_prior_artifact` helper recognizes the ideation predecessor when an
+# ideation.json is present in the session dir.
 CHAIN = ["research", "plan", "audit", "implement", "substantiate", "validate"]
+IDEATION_PHASE = "ideation"
 
 
 class ProvenanceError(Exception):
@@ -55,6 +60,13 @@ def check_prior_artifact(
 ) -> GateResult:
     prior = prior_phase(current_phase)
     if prior is None:
+        # Phase 59: research has no prior in CHAIN, but ideation may
+        # optionally precede research. If ideation.json exists, accept it
+        # as the prior; otherwise return the legacy "no prior" success.
+        if current_phase == "research":
+            return _check_ideation_predecessor(session_id) or GateResult(
+                found=True, valid=True, path=None, errors=[],
+            )
         return GateResult(found=True, valid=True, path=None, errors=[])
 
     sid = session_id or session.current()
@@ -66,6 +78,12 @@ def check_prior_artifact(
 
     artifact = GATES_DIR / sid / f"{prior}.json"
     if not artifact.exists():
+        # Phase 59: when checking plan's predecessor, accept ideation.json
+        # as a valid alternative to research.json (advisory-gate posture).
+        if current_phase == "plan":
+            ideation_result = _check_ideation_predecessor(session_id)
+            if ideation_result and ideation_result.found:
+                return ideation_result
         return GateResult(
             found=False, valid=False, path=artifact,
             errors=[f"prior-phase artifact missing: {artifact}"],
@@ -77,6 +95,24 @@ def check_prior_artifact(
         valid=not errs,
         path=artifact,
         errors=errs,
+    )
+
+
+def _check_ideation_predecessor(session_id: str | None) -> GateResult | None:
+    """Phase 59: recognize ideation.json as a valid predecessor.
+
+    Returns a GateResult if an ideation gate artifact is present and validates;
+    None otherwise (caller falls back to its legacy behavior).
+    """
+    sid = session_id or session.current()
+    if sid is None:
+        return None
+    artifact = GATES_DIR / sid / "ideation.json"
+    if not artifact.exists():
+        return None
+    errs = vga.validate_one("ideation", artifact)
+    return GateResult(
+        found=True, valid=not errs, path=artifact, errors=errs,
     )
 
 

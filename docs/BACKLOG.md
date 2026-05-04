@@ -94,8 +94,7 @@ Source: `docs/SHADOW_GENOME.md` Entry #26. Raised by operator postmortem 2026-04
 ### Phase 39b — Agent Team A/B + persona sweep
 
 - [x] **Phase 39b Phase 1 (v0.30.0 — Complete)** `/qor-ab-run` skill at `qor/skills/meta/qor-ab-run/SKILL.md` orchestrates A/B via parallel Task-tool subagent dispatch. `qor/scripts/ab_aggregator.py` provides pure-Python reduction (parse, group, mean/stddev, winner declaration, markdown rendering). Subagent prompt template at `qor/skills/meta/qor-ab-run/references/ab-subagent-prompt.md`. Delegation-table row added. `qor-help` catalog updated. 22 tests across `test_qor_ab_run_skill.py` and `test_ab_aggregator.py`.
-- [x] **Phase 39b Phase 2 partial (v0.30.0 — doctrine-judgment sweep complete; A/B-gated R3 pending evidence)** S3 decorative sweep: 5 tags removed (`qor-status`, `qor-help`, `qor-repo-scaffold`, `qor-bootstrap`, `qor-document`). R4: `qor-debug` line 108 constraint cross-references `doctrine-context-discipline.md` §4. R5: `qor-document` splits Identity Activation stance from subagent pairing (cites doctrine §1.2/§1.3). `LOAD_BEARING_PENDING_EVIDENCE` registry in `tests/test_persona_sweep.py` documents 19 skills awaiting A/B evidence. 5 sweep tests enforce.
-- [ ] **Phase 39b Phase 3 (operator action)**: invoke `/qor-ab-run` → produces `docs/phase39-ab-results.md`. R3 Identity Activation rewrite (conditional) fires automatically via `test_identity_activation_matches_ab_winner_if_results_exist` once results land and declare `winner: "stance"` for a skill.
+- [x] **Phase 39b Phase 2 (v0.30.0 — Complete)** S3 decorative sweep: 5 tags removed (`qor-status`, `qor-help`, `qor-repo-scaffold`, `qor-bootstrap`, `qor-document`). R4: `qor-debug` line 108 constraint cross-references `doctrine-context-discipline.md` §4. R5: `qor-document` splits Identity Activation stance from subagent pairing (cites doctrine §1.2/§1.3). `LOAD_BEARING_PENDING_EVIDENCE` registry in `tests/test_persona_sweep.py` documents 19 skills retained as load-bearing by doctrine judgment. 5 sweep tests enforce.
 
 ### Phase 58 — Procedural-fidelity check at /qor-substantiate (B23 — DONE)
 
@@ -107,6 +106,22 @@ Source: `docs/SHADOW_GENOME.md` Entry #26. Raised by operator postmortem 2026-04
   - **Deviation classification**: each deviation gets a `severity`, a `step_id`, a `reason` (operator-provided or "auto-detected"), and an `addressed` boolean. Deviations not addressed by the next seal cycle escalate.
   - **Source incident**: Phase 57 substantiate (2026-05-01) — operator manually identified the doc-update gap (`SYSTEM_STATE.md` not updated, `operations.md` not updated, `architecture.md` not updated for Phase 57 surface). Substantiate completed and sealed; gaps caught only on user review of the PR.
   - **Plan target**: future `docs/plan-qor-phase59-procedural-fidelity-check.md` (or whatever next-available phase number is when this gets prioritized). Should be a `change_class: feature` plan; `doc_tier: standard`; introduces 2-3 glossary terms (`procedural-fidelity check`, `procedural deviation`, possibly `procedural deviation severity`).
+
+### Phase 60+ wishlist (post-Phase-59 future-phase work)
+
+These items are tracked but not scheduled. Each is a deliberate future-phase reservation; none is imminent. Cite the relevant doctrine when scoping a real plan against any of them.
+
+- [ ] **[B24] (proposed; future phase)** Procedural-fidelity v2 detectors: implement the three reserved stub classes in `qor/scripts/procedural_fidelity.py` (`missing-step`, `ordering-drift`, `argv-shape-divergence`). Phase 58 v1 shipped only `doc-surface-uncovered` active; the other three are stubs returning `[]`. Operator-observation-driven; lands when accumulated WARN events characterize specific failure-mode patterns worth structurally surfacing. Doctrine: `qor/references/doctrine-procedural-fidelity.md` §"Future extensions".
+
+- [ ] **[B25] (proposed; future phase)** WARN → BLOCK escalation for `/qor-substantiate` Step 4.6.6 procedural-fidelity check. After accumulated WARN events characterize false-positive rate, tighten Step 4.6.6 from advisory WARN to fail-closed `|| ABORT` semantics matching Step 4.6.5 secret-scan. Phase 58 declared this as a future-phase decision per `qor/references/doctrine-procedural-fidelity.md`.
+
+- [ ] **[B26] (proposed; future phase)** `qor-remediate` consumes ideation artifacts when repeated failures suggest the original concept was malformed. Codified in Phase 59 plan §exclusions and Issue #20 Open Question 6. Routing: when `/qor-remediate` detects K consecutive same-signature VETOs across phases, walk the session's `ideation.json` to identify which assumption may have been wrong rather than diving into code-level diagnosis. Requires extending `qor-remediate` skill body and adding ideation-aware detector to `qor/scripts/cycle_count_escalator.py` or a sibling.
+
+- [ ] **[B27] (proposed; future phase)** Substantiate readiness check: tighten `/qor-substantiate` to verify `ideation.readiness.status == ready` for non-hotfix plans whose session has an `ideation.json` artifact. Phase 59 declared this as advisory-gate posture (no substantiate-time check); future phase makes it a substantiate-time gate. Hotfix exemption preserved.
+
+- [ ] **[B28] (proposed; future phase)** Embedded-vs-inherited remediation routes. Currently `failure_remediation[]` lives in the ideation artifact only; downstream phases read it via prior-artifact lookup. Future phase decides whether plan/audit/implement artifacts should also embed the routes (with override semantics) or always inherit. Per Phase 58 plan §exclusions and Issue #20 Open Question 5.
+
+- [ ] **[B29] (proposed; future phase)** Cross-link ideation predecessor in `qor-research` and `qor-plan` skill bodies. The `gate_chain.check_prior_artifact` helper accepts ideation as a valid prior since Phase 59, but the two skill bodies don't explicitly mention this in their Step 0 prose. Doc-only refresh; runtime behavior unchanged. Operators currently discover the new predecessor through `qor/gates/chain.md` and `qor/gates/delegation-table.md`.
 
 ---
 

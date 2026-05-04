@@ -64,7 +64,8 @@ Bundles: /qor-deep-audit, /qor-onboard-codebase, /qor-process-review-cycle
 
 | Command | Purpose | Typical When |
 |---|---|---|
-| `/qor-research` | Investigate before planning. Surface conventions, deps, prior art. | Beginning of any non-trivial work; chain start. |
+| `/qor-ideate` | Optional pre-research ideation phase. Capture spark, problem frame, transformation, assumptions, boundaries, options, governance profile, failure remediation, readiness. | Optional chain start; before research/plan when intent needs structural capture. Closes Issue #20 / SG-PrematureSolutioning-A. |
+| `/qor-research` | Investigate before planning. Surface conventions, deps, prior art. | Beginning of any non-trivial work; chain start (or post-ideation when intent is captured). |
 | `/qor-plan` | Author plan-*.md with phases, tests, open questions. | After research; before audit. |
 | `/qor-audit` | Adversarial PASS/VETO review. Each VETO ground names its required next action per `qor/references/doctrine-audit-report-language.md`: Razor -> `/qor-refactor`; Orphan or Macro-arch -> `/qor-organize`; Plan-text -> Governor amends plan, re-runs `/qor-audit`; Process-level -> `/qor-remediate`; Code-logic defect -> `/qor-debug`. | Before any L2/L3 risk implementation. |
 | `/qor-implement` | Execute work under KISS constraints after PASS. | After `/qor-audit` PASS. |

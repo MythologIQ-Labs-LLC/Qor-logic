@@ -13,6 +13,11 @@ This table is the single source of truth for cross-skill handoffs. Every `/qor-*
 | `qor-audit` | Macro-level architecture breach (cyclic deps, mixed domains, layering reversal) | `/qor-organize` | structural concerns are organize's domain |
 | `qor-audit` | PASS verdict | `/qor-implement` | next phase in chain |
 | `qor-audit` | VETO with security L3 | `/qor-debug` (root cause) then `/qor-refactor` or `/qor-implement` | security findings need diagnosis before fix |
+| `qor-ideate` | Readiness `ready` + recommended_next_phase `research` | `/qor-research` | grounded research follows ideation when external facts/APIs need verification |
+| `qor-ideate` | Readiness `ready` + recommended_next_phase `plan` | `/qor-plan` | direct-to-plan when ideation captured all context needed |
+| `qor-ideate` | Readiness `research_required` | `/qor-research` | unvalidated assumptions block planning; route to research |
+| `qor-ideate` | Readiness `blocked` | remain in `/qor-ideate` | surface blocking_reasons; resume when resolved |
+| `qor-ideate` | Readiness `planning_advisory_only` | `/qor-plan` (with advisory flag) | high-impact unvalidated assumptions; allow prototype planning |
 | `qor-research` | Research complete | `/qor-plan` | next phase in chain |
 | `qor-research` | Project-structure questions surface | `/qor-organize` | restructuring is organize's domain, not plan's |
 | `qor-plan` | Plan complete | `/qor-audit` | next phase in chain |

@@ -224,3 +224,20 @@ Historical risk class: a seal commit modifies skill bodies, helper scripts, doct
 Phase 58 also backfilled SYSTEM_STATE.md entries for 12 sealed phases (41, 45-50, 52-56) that had accumulated drift pre-Phase-58. Forward-only enforcement starts at Phase 58.
 
 **Verification hint**: `python -m qor.scripts.procedural_fidelity --session "$SESSION_ID"` after each implement gate write should emit no `doc-surface-uncovered` deviations for any seal commit touching skill / script / doctrine / schema surface. `python -m pytest tests/test_system_state_phase_coverage.py` enforces no future seal can land without the corresponding SYSTEM_STATE.md entry.
+
+## SG-PrematureSolutioning-A: spark becomes solution before problem is framed
+
+Historical risk class: an operator's spark of inspiration is structured as a solution shape (build a dashboard, ship a script, design a workflow) before the underlying problem is fully framed. Downstream planning then anchors on the solution shape; the actual problem (e.g., operational visibility, friction in workflow handoff, recurring incident class) is inferred from the solution rather than driving it. By the time `/qor-audit` pushes back, the plan has accumulated structural commitments to the wrong solution shape — premature decomposition has already split the work into tasks that match the inferred problem rather than the actual one.
+
+**Source incident**: Issue #20 ("Future Concept: Add governed ideation readiness phase before research and planning") explicitly catalogs this and 7 other "natural unraveling points" — premature solutioning being the canonical case. The original Phase 58 plan (later renamed to Phase 59 in Phase 58's tech-debt wrap-up) was authored to introduce a structural countermeasure rather than relying on adversarial audit at Step 3 of `/qor-audit` to catch the pattern after-the-fact.
+
+**Countermeasure** (codified Phase 59):
+1. **`/qor-ideate` skill** at `qor/skills/sdlc/qor-ideate/SKILL.md`. Pre-research SDLC phase; advisory-gate posture matching Phase 8.
+2. **Section 2 (Problem Frame) gate**: skill REFUSES to advance to Section 3 (Transformation Statement) until `problem_frame.affected_actors`, `problem_frame.failure_mode`, and `problem_frame.cost_of_failure` are all populated. Schema enforcement: `qor/gates/schema/ideation.schema.json` declares all three required.
+3. **Section 7 (Options Matrix) gate**: skill REFUSES to advance to Section 8 (Governance Profile) until `options[]` contains ≥2 entries with at least one selected and rejection_reason populated for non-selected options.
+4. **Predecessor recognition**: `gate_chain.check_prior_artifact` extension recognizes `ideation.json` as a valid prior for both `/qor-research` and `/qor-plan` phases. Hotfixes MAY skip ideation.
+5. **Doctrine catalog**: `qor/references/doctrine-ideation-readiness.md` documents all 8 unraveling points with structural countermeasures.
+
+The doctrine catalogs all 8 unraveling points (Premature Solutioning, Language Drift, Assumption Laundering, Scope Seepage, Research Asymmetry, Failure Blindness, Premature Decomposition, Validation Collapse) with the per-section guard mechanism that prevents each.
+
+**Verification hint**: a hand-authored ideation artifact with `problem_frame: {}` (empty object) MUST fail schema validation against `qor/gates/schema/ideation.schema.json` with a `'affected_actors' is a required property` error. Tests at `tests/test_ideation_schema_validation.py::test_rejects_artifact_missing_required_field` enforce this.

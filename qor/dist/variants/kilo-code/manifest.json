@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-02T02:39:39Z",
+  "generated_ts": "2026-05-02T03:15:02Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -192,7 +192,19 @@
       "id": "qor-help",
       "source_path": "skills/qor-help/SKILL.md",
       "install_rel_path": "skills/qor-help/SKILL.md",
-      "sha256": "7c57eaa95b531199e4e400f680550df7656099e18cb54b0aa4dfb0f68be3ebd5"
+      "sha256": "96147c8823d77c86b719954e5eea2f03e2e0dbc80eb0a47aa84d7848bf965018"
+    },
+    {
+      "id": "qor-ideate",
+      "source_path": "skills/qor-ideate/references/dialogue-protocol.md",
+      "install_rel_path": "skills/qor-ideate/references/dialogue-protocol.md",
+      "sha256": "2128eec3117085191313485c33681ccec7129781531b55e7c37717d4d10ca3d9"
+    },
+    {
+      "id": "qor-ideate",
+      "source_path": "skills/qor-ideate/SKILL.md",
+      "install_rel_path": "skills/qor-ideate/SKILL.md",
+      "sha256": "b690bb3b6c4e3e7b400fc5c82e432e6222e6e3f97ee5c43aeb06febe9c92dd33"
     },
     {
       "id": "qor-implement",

@@ -51,6 +51,7 @@ def _registry() -> referencing.Registry:
     return _REGISTRY
 
 PHASES = [
+    "ideation",
     "research",
     "plan",
     "audit",
