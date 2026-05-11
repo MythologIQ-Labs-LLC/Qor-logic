@@ -7336,3 +7336,58 @@ SHA256(content + previous) = 1c0ed269b4e8d50ae89bd6ea926e6bfbc96521f7e35d251552c
 *Session: SEALED* (Phase 60 consolidated reconciliation substantiated)
 *Merkle seal: 1c0ed269...* (chain-rewrite seal on top of Phase 59's 3ae2b9f8; session entries #148-164 abandoned to archive/session-2026-05-09; Entry #196 anchors new chain)
 *Open items at this seal: worktree disposition (operator decision per Phase 4 of reconciliation plan)*
+
+---
+
+### Entry #197: POST-RECONCILIATION CLEANUP -- worktree disposition + dist refresh
+
+**Timestamp**: 2026-05-11T22:30:00Z
+
+**Phase**: SEAL (cleanup follow-up to Phase 60 reconciliation)
+
+**Author**: Specialist (operator-led)
+
+**Content Hash**:
+```
+SHA256(cleanup seal body) = f6f50f6e24a57577bcf604acde283af89e551ddb441d2b31c67dbf2e3b9dab06
+```
+
+**Previous Hash**: `1c0ed269b4e8d50ae89bd6ea926e6bfbc96521f7e35d251552cf207fc988092a`
+
+**Chain Hash**:
+```
+SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca4734980e21c1489299c
+```
+
+**Scope**: Closes the only open item declared in Entry #196: "worktree disposition (operator decision per Phase 4 of reconciliation plan)". Both pre-reconciliation worktrees inspected and removed.
+
+**Worktrees inspected and removed**:
+- `.claude/worktrees/busy-williams-270b35` (branch `phase/59-ideation-readiness-phase`, HEAD `0b1629f`)
+  - Inspection: 3 commits beyond `origin/main` at inspection time: `0b1629f docs: drop Phase 39b Phase 3 from backlog + register Phase 60+ wishlist (B24-B29)`, `70cfd9c seal: phase 59 feature substantiated (v0.45.0)`, `4c9f489 phase 59: /qor-ideate ideation readiness phase (v0.45.0)`.
+  - Cherry-pick dry-run of `0b1629f` against current main produced NO file changes. Verification via `git diff main..0b1629f -- docs/BACKLOG.md docs/SYSTEM_STATE.md tests/test_persona_sweep.py docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` returned empty diff. Conclusion: the unique commit's content is fully subsumed by upstream's squash-merge (PR #37). The SHA differs but the code state is identical. No deliverable lost.
+  - Dirty state at removal time: modifications to docs/PROCESS_SHADOW_GENOME_UPSTREAM.md (gate-override event pollution; reverted to upstream), qor/dist/* manifests (build-artifact timestamp drift), and untracked .qor/gates/ test artifacts + .qor/hooks runtime state. None require preservation; all are reproducible.
+- `.claude/worktrees/fervent-easley-26be58` (branch `phase/52-structural-enforcement-and-remediation`, HEAD `390815b`)
+  - Inspection: HEAD reachable from `origin/main` (PR #29 merged). Zero unique commits.
+  - Dirty state at removal time: same gate-override pollution + a couple test gates.
+  - All work canonically present on `origin/main`; no deliverable lost.
+
+**Branch refs retained**: `phase/59-ideation-readiness-phase`, `phase/52-structural-enforcement-and-remediation`, and 51 other historical `phase/*` branches remain in the local ref namespace without working trees attached. Operator may delete via `git branch -D` at a later time; not destructive to do so since all merged work is on `main`.
+
+**Cherry-pick attempt** (documented for forensics): `git cherry-pick --no-commit 0b1629f` applied cleanly and produced no working-tree changes, confirming content subsumption.
+
+**Build-artifact resync**: `python -m qor.scripts.dist_compile` re-run after worktree removal to refresh the 5 `qor/dist/*manifest.json` files' `generated_ts` field. No skill/agent/file count drift; only timestamp delta.
+
+**Test results**: full suite remains at 1538 passing, 1 skipped, 4 deselected. No regressions from cleanup.
+
+**Outcome**: the Phase 63 reconciliation work-stream is now COMPLETE on the local tree. The canonical state is:
+- `main` at commit `dda66ba` (Phase 60 consolidated reconciliation, v0.46.0).
+- Entry #197 chains from Entry #196 (this entry).
+- Only `.qor/intent-lock/*.json`, `.qor/gates/*` (per-session evidence), and `.qor/hooks/` runtime state remain as gitignored or untracked artifacts.
+- Push to `origin/main` pending operator authorization.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (post-reconciliation cleanup complete)
+*Merkle seal: 885699ae...* (cleanup seal on top of Phase 60's 1c0ed269; closes worktree-disposition open item)
+*Open items at this seal: push to origin (operator authorization pending)*

@@ -38,9 +38,17 @@ def _rev_parse(rev: str) -> str:
     return result.stdout.strip()
 
 
-def test_main_at_origin_after_reset():
-    assert _rev_parse("main") == _rev_parse("origin/main"), (
-        "main has drifted from origin/main; Phase 2 reset is not in effect"
+def test_main_is_phase60_reconciliation_seal():
+    """After Phase 5 (consolidated reconciliation seal), main is ahead of
+    origin/main by exactly the reconciliation commit(s). The HEAD commit
+    subject must match the Phase 60 seal subject prefix.
+    """
+    subject = subprocess.run(
+        ["git", "log", "main", "-1", "--pretty=%s"],
+        capture_output=True, text=True, cwd=ROOT, check=True,
+    ).stdout.strip()
+    assert subject.startswith("seal: phase 60"), (
+        f"main HEAD must be the Phase 60 reconciliation seal; got: {subject!r}"
     )
 
 
