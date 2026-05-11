@@ -15,8 +15,11 @@ Thumbs.db
 # check verifies them on every PR).
 .failsafe/
 .qor/session/
-.qor/intent_lock/
+.qor/intent-lock/
 .qor/remediate-pending
+.qor/current_session
+.qor/hooks/
+.qor/hooks.log
 .qor/gates/sess-12345/
 
 # Python
