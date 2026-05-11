@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qor-logic.mythologiq/schemas/capability_inventory.schema.json",
+  "title": "Capability Inventory Row",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "skill", "phase", "inputs", "outputs", "risk_level"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "skill": { "type": "string", "minLength": 1 },
+    "phase": { "type": "string", "minLength": 1 },
+    "inputs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "outputs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "risk_level": { "type": "string", "enum": ["L1", "L2", "L3"] }
+  }
+}

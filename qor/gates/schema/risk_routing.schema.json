@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qor-logic.mythologiq/schemas/risk_routing.schema.json",
+  "title": "Risk Routing Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target", "risk_grade", "impacted_surfaces", "required_skills", "missing_evidence"],
+  "properties": {
+    "target": { "type": "string" },
+    "risk_grade": { "type": "string", "enum": ["L1", "L2", "L3"] },
+    "impacted_surfaces": { "type": "array", "items": { "type": "string" } },
+    "required_skills": { "type": "array", "items": { "type": "string" } },
+    "missing_evidence": { "type": "array", "items": { "type": "string" } }
+  }
+}

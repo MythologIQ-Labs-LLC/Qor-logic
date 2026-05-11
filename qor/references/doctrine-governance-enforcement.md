@@ -237,3 +237,18 @@ Friction form: free-text justification appended to the override event's payload 
 Skill prose at every gate-checking skill (`/qor-research`, `/qor-plan`, `/qor-audit`, `/qor-implement`, `/qor-substantiate`, `/qor-validate`) handles the exception by prompting the operator for a justification and re-calling `emit_gate_override(..., justification=<text>)`. Operator refusal to provide a justification leaves the gate in its current state; operator must address the underlying cause via `/qor-remediate`.
 
 Maps to OWASP LLM Top 10 LLM08 (Excessive Agency) strengthening, NIST AI RMF MANAGE-1.1, and EU AI Act Art. 14 oversight. Per `qor/references/doctrine-ai-rmf.md` §MANAGE.
+
+## §10.10 Session reconciliation protocol (Phase 63)
+
+When a local session work-stream diverges from `origin/main` in phase numbering AND version space (both ahead and behind on a fork), the canonical timeline is `origin/main`. Session work is REBASED + RENUMBERED — or, when shared governance surfaces have been independently evolved on both timelines, CONSOLIDATED — rather than force-pushed. The protocol:
+
+1. **Forensic preservation first.** Create `archive/session-<DATE>` pointing at the divergent local HEAD BEFORE any destructive git operation. The archive branch is the only authoritative record of the original session commit history after the rewrite.
+2. **Reset local main to upstream.** `git fetch origin && git reset --hard origin/main`. The reset is destructive on the working branch; the archive branch is the recovery path.
+3. **Choose replay strategy by conflict topology.**
+   - **Path A (per-phase replay)**: cherry-pick session phases sequentially with renumbered phase + version identifiers. Each replay is a fresh META_LEDGER seal entry chained from upstream's last entry. Suitable only when shared files have minimal conflict surface.
+   - **Path B (consolidated reconciliation)**: bundle session-NEW files (source, tests, docs) into ONE renumbered phase commit. Drop session-side edits to shared governance files (SKILLs, doctrines, schemas) that upstream has independently addressed. Suitable when both timelines materially evolved the same governance surfaces.
+4. **Test functionality, not artifact preservation.** When Path B is chosen, tests that assert session-side governance text (e.g., `assert "Step 6.8" in SKILL.md`) are dropped along with the corresponding session edits. The deliverable is the genuine source-code surface, not the parallel governance prose.
+5. **CLOSING SEAL documents the chain-rewrite explicitly.** Entry body cites: (a) which session entry numbers are abandoned, (b) the new anchor entry from upstream, (c) the path taken (A vs B), (d) the deliverables consolidated. The dropped chain-continuity is the documented compromise, not a defect.
+6. **Old session tags are deleted after the closing seal.** Tags pointing at abandoned commits are removed via `git tag -d`; the abandoned commits remain reachable only through the archive branch.
+
+Maps to NIST AI RMF MANAGE-2.4 (decommissioning), GOVERN-5.1 (incident response), and EU AI Act Art. 12 (record-keeping continuity through the discontinuity). The audit trail is preserved on the archive branch even though the live chain forks.

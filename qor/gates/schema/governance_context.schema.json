@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qor-logic.mythologiq/schemas/governance_context.schema.json",
+  "title": "Governance Context Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target", "doctrines", "known_failure_patterns", "feature_inventory_rows", "recent_ledger_refs", "recommended_checks"],
+  "properties": {
+    "target": { "type": "string", "minLength": 1 },
+    "doctrines": { "type": "array", "items": { "type": "string" } },
+    "known_failure_patterns": { "type": "array", "items": { "type": "string" } },
+    "feature_inventory_rows": { "type": "array", "items": { "type": "string" } },
+    "recent_ledger_refs": { "type": "array", "items": { "type": "string" } },
+    "recommended_checks": { "type": "array", "items": { "type": "string" } }
+  }
+}

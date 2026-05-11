@@ -13,8 +13,8 @@
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-23-blue" alt="Doctrines: 23">
-  <img src="https://img.shields.io/badge/Ledger-195%20entries%20sealed-green" alt="Ledger: 195 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-27-blue" alt="Doctrines: 27">
+  <img src="https://img.shields.io/badge/Ledger-196%20entries%20sealed-green" alt="Ledger: 196 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 

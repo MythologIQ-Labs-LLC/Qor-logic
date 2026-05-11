@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qor-logic.mythologiq/schemas/gates/feature_index.schema.json",
+  "title": "Feature Index Row",
+  "description": "Phase 46 (#40): structured shape for one row of a FEATURE_INDEX.md table. Tooling that parses the markdown can validate each row against this shape. The markdown table is the canonical artifact; this schema mirrors its row shape for programmatic consumers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "status"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier (e.g., FX091). Never reassigned; deprecated entries keep their ID."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short human-readable name."
+    },
+    "source_of_truth": {
+      "type": "string",
+      "description": "file:line where the feature is implemented. Empty when feature is purely conceptual."
+    },
+    "doc_citation": {
+      "type": "string",
+      "description": "Link or path to user-facing documentation. Empty when internal."
+    },
+    "test_path": {
+      "type": "string",
+      "description": "File path containing the feature-level test. Empty when status is unverified or n/a."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["verified", "unverified", "n/a"]
+    },
+    "n_a_rationale": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Required when status is n/a; explains why the feature is intentionally untested."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "n/a" } },
+        "required": ["status"]
+      },
+      "then": { "required": ["n_a_rationale"] }
+    }
+  ]
+}

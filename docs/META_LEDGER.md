@@ -7270,3 +7270,69 @@ SHA256(content_hash + "|" + previous_hash)
 *Session: SEALED* (Phase 59 feature substantiated)
 *Merkle seal: 3ae2b9f8...* (Phase 59 seal on top of Phase 58's 7089e588; Entries #194-#195 chained; closes Issue #20 governed ideation readiness)
 *Open items at this seal: NONE — five-phase compliance sprint, B23 tech-debt wrap-up, and Issue #20 ideation phase all closed*
+
+---
+
+### Entry #196: SESSION RECONCILIATION SEAL -- Phase 60 consolidated reconciliation
+
+**Timestamp**: 2026-05-11T22:00:00Z
+
+**Plan**: `docs/plan-qor-phase63-session-reconciliation.md`
+
+**Matrix**: `docs/reconciliation-2026-05-11.md`
+
+**Session**: `2026-05-11T2000-phase63`
+
+**Content Hash**:
+```
+SHA256(reconciliation seal body) = e144cf8034b09fb20d29aac5a8523c32f779eba50c4c85148b40f4217bd41cc4
+```
+
+**Previous Hash**: `3ae2b9f89b21206d1fe220f32cdf1ef94a73de7871617683b197cbd5ccca85f1`
+
+**Chain Hash**:
+```
+SHA256(content + previous) = 1c0ed269b4e8d50ae89bd6ea926e6bfbc96521f7e35d251552cf207fc988092a
+```
+
+**Scope**: Phase 63 reconciles a divergent local work-stream (originally Phase 45 through Phase 61 + two hotfixes; sealed locally at v0.45.0 through v0.59.0 + v0.54.1 + v0.58.1) against canonical upstream (`origin/main` at Phase 59 ideate, v0.45.0). Per doctrine §10.10 Session reconciliation protocol, **Path B (consolidated reconciliation)** was chosen: the session-NEW source files (prompt compiler, capabilities package, path_match, audit_triggers, hash_guard, ledger_entry_id, ledger_fragment, meta_ledger_walker, host_capability, pipeline_inversion_lint, plan_text_consistency_lint, feature_index_verify, 4 new doctrines, 5 new schemas, ~50 functionality tests, 20 historical plan/roadmap docs) are consolidated into THIS single Phase 60 commit at v0.46.0. Session-side governance edits to qor-audit / qor-substantiate / qor-implement / qor-plan / qor-debug SKILLs and to existing doctrines were intentionally NOT replayed; upstream's parallel evolution of those surfaces (Phases 45-58) is canonical.
+
+**Chain-rewrite notice**: this entry breaks chain continuity from session entries #148-164 (sealed on `archive/session-2026-05-09` 2026-05-09 through 2026-05-11) by design. The new chain anchors at Entry #195 (upstream Phase 59 ideate seal) and proceeds sequentially. Verifiers reading entries in the [148, 164] range on `archive/session-2026-05-09` should treat them as historical artifacts preserved for forensics. The archive branch SHA at the time of seal: `8c72acf039f6098152a4dcd142708b05c461c91f`.
+
+**Replayed-as-consolidated phases** (originally Phase 45-61 + 2 hotfixes; all 17 source deliverables consolidated into this Phase 60):
+- Phase 45 alpha bundle (audit hardening + plan_text_consistency_lint V1)
+- Phase 46 gamma bundle (feature-level TDD + inventory discipline)
+- Phase 47 delta bundle (host-repo posture; GH #38 + B23)
+- Phase 48 beta bundle (lint V2 + cross-session escalator)
+- Phase 49 (filter-stage ordering coherence)
+- Phase 50 (prompt compiler V1)
+- Phase 51 (compiler governance gate)
+- Phase 52 (compiler rulepack registry)
+- Phase 53 (compiler execution modes)
+- Phase 54 (compiler evaluation loop)
+- Phase 59 hotfix (seal hash integrity fail-closed)
+- Phase 55 (implement documentation lifecycle)
+- Phase 57 (audit adversary + SDK alignment)
+- Phase 56 (federated ledger entry identity)
+- Phase 58 (governance capability surface)
+- Phase 60 (qor-debug hotfix batch)
+- Phase 61 (unified path-match helper)
+
+**Dropped surfaces** (upstream subsumes): all session-side edits to `qor/skills/governance/qor-audit/SKILL.md`, `qor/skills/governance/qor-substantiate/SKILL.md`, `qor/skills/sdlc/qor-implement/SKILL.md`, `qor/skills/sdlc/qor-plan/SKILL.md`, `qor/skills/governance/qor-audit/references/adversarial-mode.md`, `qor/references/doctrine-governance-enforcement.md` (except the new §10.10 added by THIS reconciliation), `qor/references/doctrine-documentation-integrity.md`, `qor/references/doctrine-shadow-genome-countermeasures.md`, `qor/gates/schema/audit.schema.json`, `qor/gates/schema/plan.schema.json`, `qor/gates/schema/implement.schema.json`, `qor/gates/schema/shadow_event.schema.json`. Also dropped: 36 session-side tests that asserted the specific text of the above dropped governance edits, plus `tests/test_cross_session_escalator.py` (depended on session-only cross-session escalator extension), `tests/test_residual_remediation.py` (Codex's Phase 62 advisory; upstream's secret_scanner is canonical), and `tests/test_governance_context_packet.py` (asserted SG-040 anchor in dropped doctrine).
+
+**Tag cleanup**: 16 abandoned session tags deleted as part of reconciliation: v0.46.0, v0.47.0, v0.48.0, v0.49.0, v0.50.0, v0.51.0, v0.52.0, v0.53.0, v0.54.0, v0.54.1, v0.55.0, v0.56.0, v0.57.0, v0.58.0, v0.58.1, v0.59.0. The local v0.45.0 tag (formerly pointing at session Phase 45) re-bound to upstream's Phase 59 ideate commit (`5c0879361f70a283b8f3f53326676d59d867516e`) for tag-coverage parity.
+
+**Worktrees**: `.claude/worktrees/busy-williams-270b35` (phase/59-ideation-readiness-phase) and `.claude/worktrees/fervent-easley-26be58` (phase/52-structural-enforcement-and-remediation) remain on disk pending separate operator inspection. Their HEAD commits are reachable via the branch refs after worktree removal. Phase 63 does NOT remove the worktrees automatically; the operator decides per `docs/plan-qor-phase63-session-reconciliation.md` Phase 4.
+
+**Test results**: 1538 passing, 1 skipped, 4 deselected. Deterministic across two consecutive runs. No failing tests at seal time.
+
+**Reality = Promise**: 110+ session-NEW files imported; 36 session tests that asserted dropped governance edits removed; 4 M-file imports (qor/cli.py, qor/scripts/ledger_hash.py, qor/scripts/cycle_count_escalator.py, tests/test_ledger_hash.py) reverted to upstream and surgically re-augmented with the genuine session deliverables (capabilities subcommand only; other M-edits dropped per Path B). Doctrine §10.10 added to lock the reconciliation protocol for future divergences. CHANGELOG [0.46.0] section authored. pyproject version 0.45.0 -> 0.46.0.
+
+**Decision**: Phase 63 sealed at v0.46.0. The session work-stream is reconciled with upstream. The archive branch `archive/session-2026-05-09` preserves the original 17-phase commit history; the canonical timeline proceeds from this entry. Path B chosen explicitly because shared governance surfaces had been independently evolved by both timelines (upstream Phases 45-58 vs session Phases 45-61), making per-phase replay impractical without merge-resolution domain judgment on every shared file.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 60 consolidated reconciliation substantiated)
+*Merkle seal: 1c0ed269...* (chain-rewrite seal on top of Phase 59's 3ae2b9f8; session entries #148-164 abandoned to archive/session-2026-05-09; Entry #196 anchors new chain)
+*Open items at this seal: worktree disposition (operator decision per Phase 4 of reconciliation plan)*

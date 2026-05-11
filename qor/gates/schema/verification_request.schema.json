@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qor-logic.mythologiq/schemas/verification_request.schema.json",
+  "title": "Verification Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target", "required_confidence", "requested_checks", "context_packet", "risk_routing"],
+  "properties": {
+    "target": { "type": "string", "minLength": 1 },
+    "required_confidence": {
+      "type": "string",
+      "enum": ["targeted", "package", "workspace", "release"]
+    },
+    "requested_checks": { "type": "array", "items": { "type": "string" } },
+    "context_packet": { "type": "object" },
+    "risk_routing": { "type": "object" }
+  }
+}

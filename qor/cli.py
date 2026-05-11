@@ -66,6 +66,43 @@ def _do_seed(args: argparse.Namespace) -> int:
     return 0
 
 
+def _do_capabilities(args: argparse.Namespace) -> int:
+    """Phase 58: governance capability surface."""
+    import json as _json
+    from dataclasses import asdict
+    from qor import capabilities as caps
+    cmd = getattr(args, "capabilities_command", None)
+    if cmd == "inventory":
+        inv = caps.build_inventory(repo_root=".")
+        print(_json.dumps([asdict(c) for c in inv], indent=2))
+        return 0
+    if cmd == "context":
+        packet = caps.build_context_packet(repo_root=".", target=args.target)
+        print(_json.dumps(asdict(packet), indent=2))
+        return 0
+    if cmd == "route-risk":
+        report = caps.route_risk(repo_root=".", changed_files=tuple(args.changed_file))
+        print(_json.dumps(asdict(report), indent=2))
+        return 0
+    if cmd == "verification-request":
+        from qor.capabilities.verification_request import to_dict
+        req = caps.build_verification_request(
+            repo_root=".", target=args.target, required_confidence=args.confidence,
+        )
+        payload = to_dict(req)
+        print(_json.dumps(payload, indent=2))
+        if getattr(args, "write_gate", False):
+            out_dir = Path(".qor") / "gates" / "verification-requests"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            slug = args.target.replace("/", "_").replace(".", "_")
+            out = out_dir / f"{slug}.json"
+            out.write_text(_json.dumps(payload, indent=2), encoding="utf-8")
+            print(f"wrote {out}")
+        return 0
+    print("capabilities: provide a subcommand (inventory | context | route-risk | verification-request)")
+    return 1
+
+
 _HOSTS_CHOICES = ["claude", "kilo-code", "codex", "gemini"]
 _SCOPES_CHOICES = ["repo", "global"]
 _PROFILE_CHOICES = ["sdlc", "filesystem", "data", "research"]
@@ -107,6 +144,21 @@ def _register_misc(sub) -> None:
     sp_seed.add_argument("--target", type=Path, default=None)
 
 
+def _register_capabilities(sub) -> argparse.ArgumentParser:
+    sp_caps = sub.add_parser("capabilities", help="governance capability surface (Phase 58)")
+    caps_sub = sp_caps.add_subparsers(dest="capabilities_command", metavar="<subcommand>")
+    caps_sub.add_parser("inventory", help="emit KNOWN_CAPABILITIES as JSON")
+    sp_ctx = caps_sub.add_parser("context", help="emit governance context packet for a target")
+    sp_ctx.add_argument("--target", required=True)
+    sp_route = caps_sub.add_parser("route-risk", help="route changed files to a risk grade + required skills")
+    sp_route.add_argument("--changed-file", action="append", default=[], required=True)
+    sp_vr = caps_sub.add_parser("verification-request", help="emit verification-request artifact for a target")
+    sp_vr.add_argument("--target", required=True)
+    sp_vr.add_argument("--confidence", default="targeted")
+    sp_vr.add_argument("--write-gate", action="store_true", default=False)
+    return sp_caps
+
+
 def _register_compliance_policy(sub) -> tuple[argparse.ArgumentParser, argparse.ArgumentParser]:
     from qor.cli_handlers import compliance as compliance_handlers
     sp_compliance = compliance_handlers.register(sub)
@@ -127,6 +179,7 @@ def _build_parser() -> tuple[argparse.ArgumentParser, dict[str, argparse.Argumen
     sub = parser.add_subparsers(dest="command", metavar="<command>")
     _register_install_family(sub)
     _register_misc(sub)
+    _register_capabilities(sub)
     sp_compliance, sp_policy = _register_compliance_policy(sub)
     from qor.cli_handlers import release as release_handlers
     sp_release = release_handlers.register(sub)
@@ -147,6 +200,7 @@ def _dispatch(args: argparse.Namespace) -> int | None:
         "compile": lambda: _do_compile(args),
         "verify-ledger": lambda: _do_verify_ledger(args),
         "seed": lambda: _do_seed(args),
+        "capabilities": lambda: _do_capabilities(args),
     }
     if args.command in direct:
         return direct[args.command]()

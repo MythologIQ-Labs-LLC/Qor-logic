@@ -10,6 +10,59 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.46.0] - 2026-05-11
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- Phase 63 session reconciliation: consolidated 17 session-side phases
+  (originally numbered Phase 45-61 + Phase 59 / Phase 60 hotfixes) onto
+  upstream's Phase 59 baseline as a single consolidated feature commit.
+- Prompt compiler package (`qor/compiler/`) with PromptIR, ProviderCompiler
+  protocol, AnthropicCompiler, governance gate, rulepack registry,
+  execution modes, evaluation loop, and intent parser.
+- Capability surface package (`qor/capabilities/`) with KNOWN_CAPABILITIES
+  inventory, governance context packet builder, risk routing, and
+  verification-request artifact emitter.
+- `qor/scripts/path_match.py` — unified asymmetric path-prefix boundary matcher.
+- `qor/scripts/audit_triggers.py` — structured adversarial-review trigger registry.
+- `qor/scripts/hash_guard.py` — strict SHA-256 validation with placeholder rejection.
+- `qor/scripts/ledger_entry_id.py` — federated entry UID generation (`le_<16hex>`).
+- `qor/scripts/ledger_fragment.py` — ledger entry canonicalization helpers.
+- `qor/scripts/meta_ledger_walker.py` — structured META_LEDGER traversal.
+- `qor/scripts/host_capability.py` — host-capability declarations.
+- `qor/scripts/pipeline_inversion_lint.py` — filter-stage ordering lint.
+- `qor/scripts/plan_text_consistency_lint.py` — plan-text consistency lint.
+- `qor/scripts/feature_index_verify.py` — feature-index integrity helper.
+- 4 new doctrine documents: feature-inventory, feature-tdd, host-repo-posture,
+  prompt-compilation.
+- 5 new gate schemas: capability_inventory, feature_index, governance_context,
+  risk_routing, verification_request.
+- 18 session plan documents (Phase 45-63) and 2 roadmap docs preserved
+  under `docs/` for historical reference.
+- `qor capabilities {inventory,context,route-risk,verification-request}`
+  CLI subcommand.
+- ~50 functionality tests for the imported source surfaces.
+
+### Changed
+
+- `qor/cli.py` extended with the capabilities subcommand (additive only;
+  upstream's qor-logic rename + release/compliance/policy subcommands preserved).
+- `archive/session-2026-05-09` branch preserves the original 17-phase
+  session commit history for forensic reference.
+- Session-side governance edits to qor-audit / qor-substantiate /
+  qor-implement / qor-plan / qor-debug SKILL.md and to existing doctrines
+  (governance-enforcement, documentation-integrity, shadow-genome-countermeasures)
+  were intentionally NOT replayed; upstream's parallel evolution of those
+  surfaces (Phases 45-58) is canonical. Only the session's unique
+  source-code deliverables and accompanying tests are consolidated here.
+  The META_LEDGER chain between session entries #148-164 (sealed
+  2026-05-09 through 2026-05-11) and this entry has been intentionally
+  rewritten; the new chain anchors at upstream's Entry #195 (Phase 59
+  ideate seal). See doctrine §10.10 "Session reconciliation protocol"
+  for the governance rationale.
+
 ## [0.45.0] - 2026-05-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
