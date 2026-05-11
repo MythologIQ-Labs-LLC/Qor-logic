@@ -38,17 +38,18 @@ def _rev_parse(rev: str) -> str:
     return result.stdout.strip()
 
 
-def test_main_is_phase60_reconciliation_seal():
-    """After Phase 5 (consolidated reconciliation seal), main is ahead of
-    origin/main by exactly the reconciliation commit(s). The HEAD commit
-    subject must match the Phase 60 seal subject prefix.
+def test_main_contains_phase60_reconciliation_seal():
+    """After Phase 5 (consolidated reconciliation seal), main must contain
+    the Phase 60 seal commit somewhere in its history above origin/main.
+    Subsequent hygiene/cleanup commits are allowed on top.
     """
-    subject = subprocess.run(
-        ["git", "log", "main", "-1", "--pretty=%s"],
+    subjects = subprocess.run(
+        ["git", "log", "origin/main..main", "--pretty=%s"],
         capture_output=True, text=True, cwd=ROOT, check=True,
-    ).stdout.strip()
-    assert subject.startswith("seal: phase 60"), (
-        f"main HEAD must be the Phase 60 reconciliation seal; got: {subject!r}"
+    ).stdout.strip().splitlines()
+    assert any(s.startswith("seal: phase 60") for s in subjects), (
+        f"no Phase 60 reconciliation seal found in commits ahead of origin/main; "
+        f"got subjects: {subjects!r}"
     )
 
 

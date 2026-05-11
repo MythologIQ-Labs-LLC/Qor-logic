@@ -379,3 +379,33 @@ Closes Issue #20 (governed ideation readiness phase) by introducing `/qor-ideate
 **Razor compliance**: zero new `.py` modules; gate_chain.py extension `_check_ideation_predecessor` is 14 LOC. Within bounds.
 
 **Decision**: Phase 59 sealed at v0.45.0. Issue #20 fully closed. Ideation is now a first-class auditable SDLC phase with structural guards against the 8 canonical unraveling points. Advisory-gate posture preserves backward compatibility; existing flows continue to work without ideation.
+
+## Phase 60 (v0.46.0 — 2026-05-11): session reconciliation consolidated (Phase 63 closing seal)
+
+Reconciles a divergent local session work-stream (originally numbered Phase 45 through Phase 61 plus two hotfixes; locally sealed at v0.45.0-v0.59.0 + v0.54.1 + v0.58.1) onto canonical upstream (`origin/main` at Phase 59 ideate, v0.45.0). Path B (consolidated reconciliation) chosen per the new `qor/references/doctrine-governance-enforcement.md` §10.10 because session and upstream had independently evolved shared governance surfaces (qor-audit, qor-substantiate, qor-implement, qor-plan SKILLs plus governance/documentation/shadow-genome doctrines), making per-phase replay impractical without merge-domain judgment on every shared file.
+
+**Consolidated session-NEW deliverables imported into this Phase 60 commit**:
+- `qor/compiler/` package (prompt compiler V1-V4 chain): PromptIR, ProviderCompiler protocol, AnthropicCompiler, governance gate, rulepack registry, execution modes, evaluation loop, intent parser.
+- `qor/capabilities/` package: KNOWN_CAPABILITIES inventory, governance context packet builder, risk routing, verification-request artifact emitter.
+- 11 NEW `qor/scripts/` modules: `path_match`, `audit_triggers`, `hash_guard`, `ledger_entry_id`, `ledger_fragment`, `meta_ledger_walker`, `host_capability`, `pipeline_inversion_lint`, `plan_text_consistency_lint`, `feature_index_verify` (note: upstream Phase 56's `secret_scanner` is canonical; session's parallel implementation deferred).
+- 4 NEW doctrines: feature-inventory, feature-tdd, host-repo-posture, prompt-compilation.
+- 5 NEW gate schemas: capability_inventory, feature_index, governance_context, risk_routing, verification_request.
+- ~50 functionality tests for the imported surfaces.
+- 20 historical plan + roadmap docs (forensic record).
+- `qor capabilities {inventory,context,route-risk,verification-request}` CLI subcommand (surgically added; upstream's qor-logic rename + release/compliance/policy subcommands preserved).
+
+**Intentionally dropped surfaces** (upstream's parallel evolution is canonical): all session-side edits to `qor-audit`, `qor-substantiate`, `qor-implement`, `qor-plan`, `qor-debug` SKILLs; all session-side edits to `doctrine-governance-enforcement.md` (except the new §10.10 added by this phase), `doctrine-documentation-integrity.md`, `doctrine-shadow-genome-countermeasures.md`; all session-side edits to existing gate schemas. Also dropped: 36 session-side tests that asserted the specific text of the above dropped governance edits.
+
+**Doctrine added**: `qor/references/doctrine-governance-enforcement.md` §10.10 Session reconciliation protocol — the rebase+renumber-or-consolidate playbook for future divergences.
+
+**Tag cleanup**: 16 abandoned session tags deleted (v0.46.0-v0.59.0 + v0.54.1 + v0.58.1). Local v0.45.0 re-bound to upstream's Phase 59 ideate commit (`5c0879361f70a283b8f3f53326676d59d867516e`).
+
+**Chain-rewrite event** (NIST AI RMF MANAGE-2.4 / EU AI Act Art. 12 record-keeping): META_LEDGER Entry #196 documents the rewrite explicitly; chain anchors at upstream's Entry #195 (Phase 59 ideate seal). Original 17-phase session commit history preserved on the local `archive/session-2026-05-09` branch at `8c72acf039f6098152a4dcd142708b05c461c91f`. Session entries #148-164 (locally sealed 2026-05-09 through 2026-05-11) are intentionally orphaned from the canonical chain.
+
+**Follow-up cleanup** (Entry #197): both pre-reconciliation worktrees (`busy-williams-270b35`, `fervent-easley-26be58`) inspected and removed; cherry-pick dry-run confirmed the WT1 unique commit was content-subsumed by upstream's PR #37 squash. No deliverable lost.
+
+**Audit-driven hygiene** (commit `2eda709`): `.gitignore` typo fixed (`.qor/intent_lock/` → `.qor/intent-lock/`); runtime state entries added (`.qor/current_session`, `.qor/hooks/`, `.qor/hooks.log`).
+
+**Tests**: 1538 passing, 1 skipped, 4 deselected. Deterministic across multiple runs. Build: `python -m build` produces `qor_logic-0.46.0.tar.gz` + `qor_logic-0.46.0-py3-none-any.whl`, both pip-installable; CLI smoke `qor-logic --version` returns `qor-logic 0.46.0`.
+
+**Decision**: Phase 60 sealed at v0.46.0. The session work-stream is reconciled with upstream's canonical timeline. Path B's explicit trade-off — sacrificing granular 17-phase replay identity in exchange for tractable merge resolution — is documented in §10.10 as the standard approach when shared governance surfaces have been independently evolved by both timelines.
