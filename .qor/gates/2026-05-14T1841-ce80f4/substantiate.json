@@ -1,0 +1,22 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-14T1841-ce80f4",
+  "ts": "2026-05-14T18:51:49Z",
+  "verdict": "PASS",
+  "merkle_seal": "09e3feee44009359c7bbccb06521827c36076be90c1f318f3a974663c5b9cd43",
+  "content_hash": "d219d36abd143e9a5c1cea6b404431fe0b216a3962b36bdd9e2034d4601b6048",
+  "ledger_entry": 202,
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "matches": 8
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.47.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-05-14T18:51:49Z"
+  }
+}

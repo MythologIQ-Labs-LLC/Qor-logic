@@ -1,0 +1,46 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T1841-ce80f4",
+  "ts": "2026-05-14T18:43:23Z",
+  "plan_path": "docs/plan-qor-phase68-audit-self-application-and-adversarial-codification.md",
+  "phases": [
+    "Phase 1: plan.schema.json declares originating_remediation",
+    "Phase 2: qor-audit Step 3.5 Self-Application Sub-Pass (GH #44)",
+    "Phase 3: qor-audit Step 1.a Option B independent reviewer codification (GH #50)",
+    "Phase 4: Documentation refresh"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_schema_originating_remediation.py tests/test_qor_audit_self_application_pass.py tests/test_qor_audit_option_b_codification.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase68-audit-self-application-and-adversarial-codification.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "V1 self-application relies on plan declaring originating_remediation; no inference from prose.",
+      "V1 Option B codification is prose-only; no auto-dispatch."
+    ],
+    "non_goals": [
+      "Auto-discovering self-application targets.",
+      "Auto-spawning independent reviewers."
+    ],
+    "exclusions": [
+      "No changes to qor-implement or qor-substantiate.",
+      "No CLI changes."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "hotfix",
+  "originating_remediation": "GH #44 + GH #50",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.47.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T18:43:23Z"
+  }
+}

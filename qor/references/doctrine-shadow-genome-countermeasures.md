@@ -253,3 +253,23 @@ The doctrine catalogs all 8 unraveling points (Premature Solutioning, Language D
 **Countermeasure**: `qor/scripts/plan_text_consistency_lint.py` (sealed at Phase 55 from COREFORGE; wired upstream at Phase 67 GH #42) detects same-operation drift via stem extraction + grouping. Wired into `/qor-plan` Step 5 review checklist (operator self-check) and `/qor-audit` Step 0.6 (WARN-only pre-audit lint). Tolerance is zero: any drift in commands, dependencies, or paths returns exit 1 with the divergent sites named.
 
 **Cross-reference**: Issue #42; SG-CitationDrift-A (Issue #56) catalogues a related cross-iteration citation-drift pattern targeted for a future phase.
+
+---
+
+## SG-AuthorAuditMomentum-A — author-audit self-verification scope bias (Phase 68)
+
+**Pattern**: when the same LLM agent authors a plan and then audits it, the audit inherits the author's search-path momentum. The locations the author did not check during planning are the same locations the author will not check during audit. Independent reviewers with no plan-authorship context naturally check different sources and find different defects.
+
+**Originating recurrence**: SG-007 narrative reference (pre-Phase-68), promoted to structured countermeasure at Phase 68. Concrete empirical results from consumer-workspace audit chains:
+
+- Sub-plan 01 canonical schema audit chain: self-audit iteration 1 found 4 defects but missed `src/integrations/supabase/types.ts` as a schema verification source; independent reviewer at iteration 2 found 3 additional defects including a case where iteration 1's own verification was wrong (F3 became F7).
+- Sub-plan 02a audit chain: independent reviewer from iteration 1 caught 10 + 9 + 12 findings including the critical `pg_notify` durability hallucination (SG-009) at iteration 1. Without independent review, the broken architecture would have passed self-audit and shipped.
+
+A second recurrence dimension: when a plan introduces a discipline (lint, audit pass, doctrine), the plan itself is structurally vulnerable to exhibiting the very pattern it remediates, because the discipline is not yet runnable as code. COREFORGE 3-VETO meta-cycle (META_LEDGER #200/#201/#203 in the consumer ledger): the plan authoring `plan_text_consistency_lint` exhibited the text-drift pattern the lint targets.
+
+**Countermeasures** (Phase 68; GH #44 + #50):
+
+- **Option B codification** in `/qor-audit` Step 1.a (GH #50): the skill prompt names "Option B: independent reviewer" as the formal fallback (and explicit operator choice) when Codex-plugin-driven Option A is unavailable. Dispatch protocol enumerated: fresh-context audit (new session), architect-reviewer subagent, second operator.
+- **Self-Application Sub-Pass** in `/qor-audit` Step 3 (GH #44): when the plan's `originating_remediation` field is set (Phase 68 schema declaration in `qor/gates/schema/plan.schema.json`), the auditor manually applies the to-be-introduced discipline against the plan's own content. VETO category: `specification-drift` when self-application detects the targeted pattern.
+
+**Cross-reference**: SG-007 (predecessor narrative); Issue #44, Issue #50; FailSafe + COREFORGE empirical evidence.
