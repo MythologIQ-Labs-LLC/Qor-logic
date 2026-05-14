@@ -110,6 +110,16 @@ else:
 
 Adversarial mode contract (input/output schemas) lives in `qor/skills/governance/qor-audit/references/adversarial-mode.md` (TBD — wiring placeholder; full Codex integration is future work).
 
+**Phase 68 wiring (GH #50) — Option B: independent reviewer codification.** The pre-Phase-68 block above runs Option A: Codex-plugin-driven Claude+Codex adversarial pairing when the harness exposes it. **Option B** is the fallback (and explicit choice) when Option A is unavailable OR when the auditor was also the plan's author. Per SG-007 (self-audit verification scope bias) and the recurring "author-audit momentum" pattern: when the same LLM agent authors a plan and then audits it, the audit inherits the author's search-path momentum — the locations the author did not check during planning are the same locations the author will not check during audit. Independent reviewers with no plan-authorship context naturally check different sources.
+
+Operator dispatch protocol for Option B (any of the following clears author-context):
+
+- **Fresh-context audit**: re-run `/qor-audit` in a new session (different `.qor/session/current`) so the LLM running the audit has no carryover from plan authorship.
+- **Architect-reviewer subagent**: invoke an `architect-reviewer` (or `code-reviewer`) subagent for the audit pass; the subagent receives only the plan content, not the plan-authoring conversation.
+- **Second operator**: dispatch the audit to a second human (or human+LLM) operator who did not participate in plan authorship.
+
+Operator selects Option A by default when the harness supports Codex plugin; Option B otherwise. Selecting Option B mid-cycle is also valid when the operator notices that prior audit iterations missed defects the author would not have searched for (cross-reference: SG-007 empirical results — sub-plan 01 audit chain found 4 self-audit defects + 3 additional independent-reviewer defects; sub-plan 02a found 10/9/12 with independent review from iter 1 including critical `pg_notify` durability hallucination).
+
 Your role is to find violations, not to help. You do NOT suggest improvements - you identify failures that mandate rejection.
 
 ### Step 2: State Verification
@@ -215,6 +225,29 @@ Verify KISS compliance in proposed design:
 ```
 
 **Any violation -> VETO**. **Required next action:** `/qor-refactor` (file-internal logic shape is its domain). Per `qor/gates/delegation-table.md`, never inline a refactor process inside an audit report — name the skill.
+
+#### Self-Application Sub-Pass (Phase 68 wiring - GH #44)
+
+When the plan's `originating_remediation` field is set (declared at Phase 68 in `qor/gates/schema/plan.schema.json`), the Judge MUST manually apply the discipline the plan introduces against the plan's own content. This closes the temporal gap between proposing a discipline and the discipline becoming runnable: every plan authored before the new lint/check is implemented is a future audit liability for the same pattern the plan targets.
+
+Procedure:
+
+```python
+from qor.scripts import gate_chain
+plan_artifact = gate_chain.read_phase_artifact("plan", session_id=sid)
+remediation = plan_artifact.get("originating_remediation")
+if remediation:
+    # Read the named issue / pattern body, extract the discipline the plan
+    # introduces (lint rules, check semantics, doctrine constraint).
+    # Apply that discipline against this plan's own prose, code blocks, and
+    # citations. The discipline is not yet runnable as code; the Judge
+    # enacts it manually.
+    pass
+```
+
+Pattern origin: **SG-007 (self-audit verification scope bias)** and the recurring "author-audit momentum" anti-pattern — when the same agent that authored a plan also audits it, the audit inherits the author's search-path momentum and misses precisely the locations the author would also not check. The concrete recurrence is documented in the COREFORGE 3-VETO meta-cycle: META_LEDGER #200/#201/#203 (consumer ledger) where the plan authoring `plan_text_consistency_lint` itself exhibited the very text-drift pattern the lint targets. The originating Failure Entry #26 ratified self-application as the framework countermeasure.
+
+**Any violation surfaced by self-application -> VETO with `specification-drift` category.** **Required next action:** Governor: amend plan to remove the self-violation, then re-run `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md`, this is a **Plan-text** ground.
 
 #### Test Functionality Pass
 

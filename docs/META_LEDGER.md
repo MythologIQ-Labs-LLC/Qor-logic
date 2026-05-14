@@ -7608,3 +7608,50 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 67 hotfix complete; GH #42 + GH #45 closed)
 *Merkle seal: 23146a5d...* (Phase 67 seal on top of Phase 66's a1417bbe...)
 *Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
+
+---
+
+### Entry #202: SESSION SEAL — Phase 68: qor-audit self-application + Option B codification (v0.47.2, GH #44 + #50)
+
+**Timestamp**: 2026-05-14T19:00:00Z
+
+**Phase**: SUBSTANTIATE (Phase 68 hotfix)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase68-audit-self-application-and-adversarial-codification.md
+
+**Session**: `2026-05-14T1841-ce80f4`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash (session seal)**: `d219d36abd143e9a5c1cea6b404431fe0b216a3962b36bdd9e2034d4601b6048`
+
+**Previous Hash**: `23146a5d603c6c5aca001afccf84931299310f2acdb0266a9347ceffd04d8e12`
+
+**Chain Hash (Merkle seal)**: `09e3feee44009359c7bbccb06521827c36076be90c1f318f3a974663c5b9cd43`
+
+**Scope**: Audit-process meta-loop closures from Wave 1 of the post-Phase-67 queue.
+
+**GH #44**: `/qor-audit` Step 3 Self-Application Sub-Pass. When plan declares `originating_remediation`, auditor manually applies the to-be-introduced discipline against the plan's own content. VETO category: `specification-drift`. Closes the temporal gap between proposing a discipline and the discipline becoming runnable.
+
+**GH #50**: `/qor-audit` Step 1.a Option B codified. Independent reviewer pattern (per SG-007 / SG-AuthorAuditMomentum-A) named in skill prompt with three dispatch options: fresh-context audit / architect-reviewer subagent / second operator.
+
+**Schema**: `plan.schema.json` declares optional `originating_remediation` field.
+
+**Doctrine**: SG-AuthorAuditMomentum-A promoted from SG-007 narrative reference to structured countermeasure.
+
+**Files touched** (8): 3 new test files, 1 schema field, 1 SKILL.md prose update, 1 doctrine entry, SYSTEM_STATE + plan.
+
+**Test surface**: 1593 passing, 1 skipped, 0 failures. All 9 Phase 68 tests green.
+
+**Self-application**: Phase 64 Step 6.8 gate validated this seal. Phase 67's `plan_text_consistency_lint` cleared this plan during audit (no drift). Phase 68's Self-Application Sub-Pass IS applicable (plan declares `originating_remediation: GH #44 + GH #50`); the discipline introduced is audit-skill prose, not a textual pattern; auditor found no self-violations.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 68 hotfix complete; GH #44 + GH #50 closed)
+*Merkle seal: 09e3feee...* (Phase 68 seal on top of Phase 67's 23146a5d...)
+*Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*

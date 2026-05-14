@@ -10,6 +10,27 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.47.2] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 68 (hotfix, GH #44 + #50)**: qor-audit self-application + Option B codification.
+  - `/qor-audit` Step 3 gains Self-Application Sub-Pass: when plan declares
+    `originating_remediation`, auditor manually applies the to-be-introduced
+    discipline against the plan's own content. VETO category:
+    `specification-drift`. Closes the temporal gap between proposing a
+    discipline and the discipline becoming runnable.
+  - `/qor-audit` Step 1.a gains Option B codification: the independent
+    reviewer pattern (per SG-007 / SG-AuthorAuditMomentum-A) is now in the
+    skill prompt with dispatch options (fresh-context audit /
+    architect-reviewer subagent / second operator).
+  - `qor/gates/schema/plan.schema.json` declares optional
+    `originating_remediation` field.
+  - Doctrine `SG-AuthorAuditMomentum-A` promoted from SG-007 narrative.
+  - 9 new tests across 3 files.
+
 ## [0.47.1] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
