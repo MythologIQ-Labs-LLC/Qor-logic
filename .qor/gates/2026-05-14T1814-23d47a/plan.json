@@ -1,0 +1,44 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T1814-23d47a",
+  "ts": "2026-05-14T18:16:10Z",
+  "plan_path": "docs/plan-qor-phase67-plan-lint-wiring-and-audit-short-circuit.md",
+  "phases": [
+    "Phase 1: plan_text_consistency_lint wiring (GH #42)",
+    "Phase 2: qor-audit unchanged-plan short-circuit (GH #45)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_text_consistency_lint_audit_wiring.py tests/test_qor_audit_unchanged_plan_short_circuit.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase67-plan-lint-wiring-and-audit-short-circuit.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "V1 wires existing plan_text_consistency_lint.py; no detection logic changes.",
+      "V1 short-circuit looks at current session only."
+    ],
+    "non_goals": [
+      "Replacing or extending the lint's detection rules.",
+      "Cross-session short-circuit."
+    ],
+    "exclusions": [
+      "No changes to /qor-implement or /qor-substantiate.",
+      "No new CLI flags."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "hotfix",
+  "originating_remediation": "GH #42 + GH #45",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.47.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T18:16:10Z"
+  }
+}

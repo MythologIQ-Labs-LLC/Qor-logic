@@ -10,6 +10,27 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.47.1] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 67 (hotfix, GH #42 + #45)**: pre-audit lint wiring + audit short-circuit.
+  - `plan_text_consistency_lint` wired into `/qor-audit` Step 0.6 (third lint
+    alongside plan_test_lint + plan_grep_lint) and `/qor-plan` Step 5 review
+    checklist. The lint detects same-operation drift across plan sites
+    (commands, dependencies, paths) per the COREFORGE-class pattern.
+  - Doctrine `SG-PlanTextDrift-A` catalogued in
+    `doctrine-shadow-genome-countermeasures.md`.
+  - `qor.scripts.qor_audit_runtime.check_unchanged_plan_short_circuit()`
+    helper detects byte-identical re-invocation against prior audit's
+    `target_content_hash`; `/qor-audit` Step 0.4 surfaces the prior verdict
+    instead of consuming a new audit cycle.
+  - `audit.schema.json` gains optional `target_content_hash` field
+    (pre-Phase-67 audits without the field gracefully bypass short-circuit).
+  - 8 new tests across 2 files.
+
 ## [0.47.0] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

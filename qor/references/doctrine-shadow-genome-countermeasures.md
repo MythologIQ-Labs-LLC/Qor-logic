@@ -241,3 +241,15 @@ Historical risk class: an operator's spark of inspiration is structured as a sol
 The doctrine catalogs all 8 unraveling points (Premature Solutioning, Language Drift, Assumption Laundering, Scope Seepage, Research Asymmetry, Failure Blindness, Premature Decomposition, Validation Collapse) with the per-section guard mechanism that prevents each.
 
 **Verification hint**: a hand-authored ideation artifact with `problem_frame: {}` (empty object) MUST fail schema validation against `qor/gates/schema/ideation.schema.json` with a `'affected_actors' is a required property` error. Tests at `tests/test_ideation_schema_validation.py::test_rejects_artifact_missing_required_field` enforce this.
+
+---
+
+## SG-PlanTextDrift-A — prose-boundary precision drift in plan markdown (Phase 67)
+
+**Pattern**: same operation (command, dependency, filesystem path, env var, function signature) specified differently at multiple plan sites, where the divergence is byte-level and silent. Caught when a downstream audit pass surfaces one form as wrong while the alternate form remained unchallenged.
+
+**Originating recurrence**: COREFORGE session 2026-05-08T1610-21dfe5, 3-VETO cycle on the same drift signature across 2 plans (META_LEDGER #200, #201, #203 in the consumer workspace).
+
+**Countermeasure**: `qor/scripts/plan_text_consistency_lint.py` (sealed at Phase 55 from COREFORGE; wired upstream at Phase 67 GH #42) detects same-operation drift via stem extraction + grouping. Wired into `/qor-plan` Step 5 review checklist (operator self-check) and `/qor-audit` Step 0.6 (WARN-only pre-audit lint). Tolerance is zero: any drift in commands, dependencies, or paths returns exit 1 with the divergent sites named.
+
+**Cross-reference**: Issue #42; SG-CitationDrift-A (Issue #56) catalogues a related cross-iteration citation-drift pattern targeted for a future phase.
