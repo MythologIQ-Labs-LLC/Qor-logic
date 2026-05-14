@@ -724,3 +724,33 @@ referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
 introduced_in_plan: phase74-audit-pass-extensions
 ```
+
+```yaml
+term: substantiate step prerequisite
+definition: 'A machine-readable declaration in qor-substantiate SKILL.md (`## Step Prerequisites` table) naming the artifact or module each step requires (predicate kinds: `file:<path>`, `module:<dotted>`, `command:<binary>`). Parsed by `qor/scripts/substantiate_capability.py` and surfaced by `qor-logic substantiate-capability` CLI as a markdown table of PRESENT/ABSENT status for each step. Operators on non-Python hosts use the report to identify which steps will run vs skip on their archetype. Phase 75 wiring (GH #38).'
+home: qor/scripts/substantiate_capability.py
+referenced_by:
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase75-skill-capability-declaration
+```
+
+```yaml
+term: gate_skipped_prerequisite_absent
+definition: 'Shadow Process Genome event_type (severity 1 default) emitted when an operator skips a /qor-substantiate step whose declared prerequisite is absent on the host archetype (e.g., Step 7.5 version bump on a non-Python host without pyproject.toml). Catches the SG-HalfSealedClaim-A pattern. Schema enum entry added at Phase 75.'
+home: qor/gates/schema/shadow_event.schema.json
+referenced_by:
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase75-skill-capability-declaration
+```
+
+```yaml
+term: SG-HalfSealedClaim-A
+definition: 'Shadow-genome pattern: /qor-substantiate runs against a host whose archetype lacks Python toolkit prerequisites; multiple gate steps silently fail or no-op; the operator hand-skips after the first failure; the resulting SESSION SEAL entry Merkle hash anchors a half-checked state. Originating recurrence: 2026-05-06 Customer-App-3.0 React+bun+Supabase incident (SUBSTANTIATE DEFERRED). Countermeasure: qor-logic substantiate-capability CLI + gate_skipped_prerequisite_absent shadow events. Phase 75 wiring (GH #38).'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/scripts/substantiate_capability.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase75-skill-capability-declaration
+```

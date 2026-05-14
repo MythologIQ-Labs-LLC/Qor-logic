@@ -10,6 +10,32 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.51.0] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 75 (feature, GH #38)**: Skill capability declaration for
+  `/qor-substantiate` (V1 -- Option 1 from issue body; pluggable backends
+  and two-track split deferred to V2/V3).
+  - New `qor/scripts/substantiate_capability.py` (~110 LOC, pure-function)
+    parses qor-substantiate SKILL.md `## Step Prerequisites` table and
+    returns per-step CapabilityReport (PRESENT/ABSENT + evidence).
+    Predicate kinds: `file:<path>`, `module:<dotted>`, `command:<binary>`.
+  - New `qor-logic substantiate-capability` CLI prints a markdown table
+    (4 columns: Step / Requires / Present / Evidence) paste-able into
+    the SESSION SEAL entry body.
+  - `qor-substantiate` SKILL.md gains `## Step Prerequisites` table with
+    12 V1 declarations. Each affected step body cross-references the
+    table with a `Prerequisite (Phase 75; GH #38)` callout.
+  - `qor/gates/schema/shadow_event.schema.json` `event_type` enum gains
+    `gate_skipped_prerequisite_absent` (severity 1 default).
+  - SG-HalfSealedClaim-A doctrine entry catalogues the half-checked-seal
+    pattern with 2026-05-06 originating recurrence.
+  - 3 new glossary terms; 12 new tests across 5 files.
+  - V2/V3 follow-on: pluggable backends, two-track skill split.
+
 ## [0.50.0] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

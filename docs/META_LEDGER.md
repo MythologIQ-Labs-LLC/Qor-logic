@@ -7824,3 +7824,43 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 74 feature complete; GH #49 + #58 closed)
 *Merkle seal: 8c72f2d8...* (Phase 74 seal on top of Phase 73's a1da7c50...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+### Entry #207: SESSION SEAL — Phase 75: Skill capability declaration for /qor-substantiate (v0.51.0, GH #38)
+
+**Timestamp**: 2026-05-14T22:53:04Z
+
+**Phase**: SUBSTANTIATE (Phase 75 feature)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase75-skill-capability-declaration.md
+
+**Session**: `2026-05-14T2216-a5f692`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+
+**Scope**: Closes GH #38 V1 (Option 1 from issue body: skill capability declaration; Options 2 and 3 deferred to V2/V3 per ideation packet 2026-05-14T2216-a5f692). New `qor/scripts/substantiate_capability.py` (~110 LOC pure-function) parses the new `## Step Prerequisites` table in qor-substantiate SKILL.md and returns per-step `CapabilityReport(step_id, requires, present, evidence)` tuples. Predicate kinds: `file:<path>`, `module:<dotted>`, `command:<binary>`. New `qor-logic substantiate-capability` CLI (handler in `qor/cli_handlers/substantiate.py`) emits a markdown table (4 columns: Step / Requires / Present / Evidence) paste-able into the SESSION SEAL entry body. qor-substantiate SKILL.md gains the `## Step Prerequisites` section with 12 V1 declarations covering Steps 4.6, 4.6.5, 4.6.6, 4.7, 6.5, 6.8, 7.4, 7.5, 7.6, 7.7, 7.8, 8.5. Each affected step body gains a `**Prerequisite (Phase 75; GH #38)**:` cross-reference callout. `qor/gates/schema/shadow_event.schema.json` `event_type` enum extended with `gate_skipped_prerequisite_absent` (severity 1 default). `qor/references/doctrine-shadow-genome-countermeasures.md` SG-HalfSealedClaim-A catalogues the half-checked-seal pattern with 2026-05-06 originating recurrence (Customer-App-3.0 React 18 + bun + Supabase, 8 of 15 gates failed/skipped, session ended SUBSTANTIATE DEFERRED rather than seal).
+
+**Files touched** (~10): qor/scripts/substantiate_capability.py (NEW ~110 LOC), qor/cli_handlers/substantiate.py (NEW ~40 LOC), qor/cli.py (subcommand registration + dispatch), qor/skills/governance/qor-substantiate/SKILL.md (Step Prerequisites table + 7 step cross-references), qor/gates/schema/shadow_event.schema.json (enum extension), qor/references/doctrine-shadow-genome-countermeasures.md (SG-HalfSealedClaim-A entry), qor/references/glossary.md (3 new entries), 5 new test files (12 tests total), CHANGELOG.md (0.51.0 stamped), README.md (Tests 1639 -> 1651), SYSTEM_STATE.md, docs/plan-qor-phase75-skill-capability-declaration.md. Dist variants regenerated.
+
+**Test surface**: 12 new tests pass twice deterministically. Helper tests cover predicate parsing + file/module/command predicates. CLI tests cover markdown table emission + exit code semantics. SKILL.md prose tests cover table presence + per-step cross-references. Schema test covers new enum entry. Doctrine tests cover SG entry shape + countermeasure cross-reference.
+
+**Self-application**: Phase 67 plan_text_consistency_lint cleared this plan. Phase 68 Self-Application Sub-Pass: the plan introduces capability-declaration discipline; this plan itself is the discipline's first user (the `## Step Prerequisites` table in qor-substantiate SKILL.md is the canonical instance). Phase 72 Infrastructure Citation Inventory: every cited path (qor/scripts/substantiate_capability.py NEW, qor/cli_handlers/substantiate.py NEW, qor/cli.py existing, qor/skills/governance/qor-substantiate/SKILL.md existing, qor/gates/schema/shadow_event.schema.json existing, qor/references/doctrine-shadow-genome-countermeasures.md existing) verified via Glob. Phase 73 Feature Inventory Touches: 4 new operator-touchable features declared (substantiate-capability CLI + parser + predicate kinds + capability report rendering); all 4 have feature-level test descriptors surviving SG-035 acceptance question at feature scope. Phase 74 Infrastructure Alignment sixth bullet: no third-party SDK citations; no behavioral-semantics claims. Phase 64 Step 6.8 gate validates this seal's digests.
+
+**Deferral**: Option 2 (pluggable backends for version_bump / changelog_stamp / release_artifact_compile keyed off .qor/workspace.json archetype) and Option 3 (two-track skill split: qor-substantiate-core + qor-substantiate-release) deferred to V2/V3 per ideation packet rationale (smallest viable surface first; later options gated on V1 deployment signal via gate_skipped_prerequisite_absent event counts).
+
+**Content Hash (session seal)**: `798a07e5dfbf69ac94e720b7d921713b26a7c91f962e67a9052f70123d3fbef2`
+
+**Previous Hash**: `8c72f2d8c4c44545c7079d952eedf35b91bf1fff990ab2d43e903ec25f8133cb`
+
+**Chain Hash (Merkle seal)**: `7cd3cc506b529c4488ac0504478d297f0ccda317d45caf463126b4bc962e5d63`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 75 feature complete; GH #38 V1 closed; Options 2+3 queued)
+*Merkle seal: 7cd3cc50...* (Phase 75 seal on top of Phase 74's 8c72f2d8...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*

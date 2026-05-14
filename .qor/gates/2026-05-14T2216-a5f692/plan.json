@@ -1,0 +1,57 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T2216-a5f692",
+  "ts": "2026-05-14T22:42:41Z",
+  "plan_path": "docs/plan-qor-phase75-skill-capability-declaration.md",
+  "phases": [
+    "Phase 1: Capability helper + CLI",
+    "Phase 2: SKILL.md prose declarations",
+    "Phase 3: Shadow-event schema extension + SG doctrine entry"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_substantiate_capability_helper.py tests/test_substantiate_capability_cli.py tests/test_qor_substantiate_capability_declarations.py tests/test_shadow_event_gate_skipped_prerequisite_absent.py tests/test_doctrine_sg_half_sealed_claim_a.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase75-skill-capability-declaration.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "substantiate step prerequisite",
+      "home": "qor/scripts/substantiate_capability.py"
+    },
+    {
+      "term": "gate_skipped_prerequisite_absent",
+      "home": "qor/gates/schema/shadow_event.schema.json"
+    },
+    {
+      "term": "SG-HalfSealedClaim-A",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 prose+helper+CLI; operator-driven skip (no mechanical auto-skip)."
+    ],
+    "non_goals": [
+      "No pluggable backends (V2)",
+      "No two-track split (V3)",
+      "No chain_hash/content_hash changes"
+    ],
+    "exclusions": [
+      "No /qor-plan, /qor-audit, /qor-implement, /qor-research, /qor-organize changes; no new gate steps."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "feature",
+  "originating_remediation": "GH #38",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.50.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T22:42:41Z"
+  }
+}

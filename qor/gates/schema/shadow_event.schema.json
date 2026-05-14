@@ -51,7 +51,8 @@
         "aged_high_severity_unremediated",
         "repeated_veto_pattern",
         "plan-replay",
-        "orchestration_override"
+        "orchestration_override",
+        "gate_skipped_prerequisite_absent"
       ]
     },
     "severity": {

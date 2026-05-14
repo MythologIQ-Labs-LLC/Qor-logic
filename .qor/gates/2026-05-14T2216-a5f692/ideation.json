@@ -1,0 +1,121 @@
+{
+  "phase": "ideation",
+  "session_id": "2026-05-14T2216-a5f692",
+  "ts": "2026-05-14T22:18:20Z",
+  "concept_name": "Python-toolkit decoupling for /qor-substantiate (GH #38)",
+  "spark": {
+    "observation": "/qor-substantiate (and adjacent lifecycle skills) bakes in assumptions that the host repo is a Python project with a specific release ceremony shape. Hit on Qor-logic Customer-App-3.0 (React 18 + bun + Supabase) on 2026-05-06 during a security migration session -- 8 of ~15 substantiate steps either failed loudly or silently no-op'd; session ended in SUBSTANTIATE DEFERRED rather than a seal.",
+    "initial_question": "How does Qor-logic deliver its governance value proposition (Merkle-sealed audit trail) on non-Python host repos without requiring each consumer to re-implement the lifecycle from scratch?",
+    "why_now": "Recurring: the issue is from 2026-05-06; the same shape will hit every non-Python consumer until the substantiate step bodies honor archetype detection that /qor-bootstrap + /qor-organize already perform. Qor-logic's CONCEPT claims general SDLC applicability; this gap contradicts the stated scope."
+  },
+  "problem_frame": {
+    "affected_actors": [
+      "Non-Python repo operators running Qor-logic (TypeScript, Rust, Go, polyglot)",
+      "Qor-logic maintainers (every cross-language consumer that fails silently is a future SG entry)",
+      "Downstream auditors / compliance reviewers reading sealed META_LEDGER entries"
+    ],
+    "failure_mode": "When /qor-substantiate runs against a non-Python repo, the seal entry can claim chain completeness while 5+ gate steps silently skipped. The Merkle hash anchors a half-checked state. Operators either decline to seal (governance trail breaks) or hand-author seal (skill protocol bypass).",
+    "cost_of_failure": "The governance trail is the value proposition. A seal that lies about gate coverage is worse than no seal -- it manufactures false confidence and contaminates the chain for any downstream consumer trusting it. Cross-workspace federation (GH #51) would amplify the contamination."
+  },
+  "transformation_statement": "Non-Python repo operators move from substantiate fails mid-flight or silently skips half the gates, leaving the ledger contaminated with a half-checked seal to substantiate runs to completion with explicit per-step skipped/ran status, and the seal entry records which gates ran versus were skipped due to host-archetype prerequisites without rewriting the lifecycle from scratch per language, weakening the Python-host ceremony, or producing seals that overclaim coverage.",
+  "boundaries": {
+    "non_goals": [
+      "Full multi-language re-implementation of every gate (no porting qor.scripts.secret_scanner to JS/Rust/Go in V1)",
+      "Replacement for /qor-bootstrap or /qor-organize archetype detection",
+      "New release-ceremony framework (we honor existing ceremonies, not replace them)"
+    ],
+    "limitations": [
+      "V1 lands the skill capability declaration mechanism (Option 1; smallest viable surface). Pluggable backends (Option 2) and two-track skill split (Option 3) are V2/V3.",
+      "Skipped gates surface in seal entry + Process Shadow Genome events; they do NOT block seal. Operator judgment decides whether half-coverage is acceptable for their compliance posture."
+    ],
+    "exclusions": [
+      "No changes to first-party Qor-logic-on-Qor-logic seal ceremony (must remain backward-compatible -- current Python toolkit path is one valid archetype).",
+      "No new gate steps in this phase -- only capability declarations on existing steps."
+    ],
+    "forbidden_interpretations": [
+      "This is NOT permission to silently skip security gates. When prerequisites are absent the seal entry MUST surface the gap; skipped: prerequisite absent is itself an explicit signal, not a no-op.",
+      "This is NOT a green light to author seals without a META_LEDGER entry. Only the per-gate completeness narrative inside the entry becomes archetype-aware."
+    ]
+  },
+  "options_matrix": [
+    {
+      "name": "Skill capability declaration",
+      "summary": "Each substantiate step declares requires: (e.g., requires: pyproject.toml, requires: qor.scripts.secret_scanner). At skill-load, missing-requirement steps log skipped: prerequisite absent + emit a Process Shadow Genome event. Seal entry surfaces which gates ran vs skipped.",
+      "selected": true,
+      "rejection_reason": null,
+      "selection_reason": "Smallest reversible step. Would have unblocked the 2026-05-06 session. Honors existing archetype detection without forcing language ports. Forward-compatible with options 2 + 3."
+    },
+    {
+      "name": "Pluggable backends",
+      "summary": "version_bump, changelog_stamp, release_artifact_compile each get a backend selector chosen by .qor/workspace.json archetype (already produced by /qor-organize).",
+      "selected": false,
+      "rejection_reason": "Larger surface; each backend is its own integration project. Defer to V2 once V1 capability declarations show which backends matter most via Process Shadow Genome usage data."
+    },
+    {
+      "name": "Two-track skill split",
+      "summary": "Split into qor-substantiate-core (language-agnostic gates) + qor-substantiate-release (version/changelog/tag/dist ceremony). Core always runs; release runs only when matching backend is declared.",
+      "selected": false,
+      "rejection_reason": "Structurally clean but disruptive -- breaks every existing skill citation to /qor-substantiate. Premature without first knowing which backend points the field actually demands (signal from Option 2 usage)."
+    }
+  ],
+  "governance_profile": {
+    "risk_grade": "L2",
+    "evidence_required": [
+      "Tests proving each declared requires: actually controls skip vs run",
+      "Tests proving a seal entry with skipped gates surfaces the skip list verbatim in the SESSION SEAL body",
+      "Tests proving Python-host first-party seals still produce the same coverage as today (no regression in Qor-logic-on-Qor-logic)",
+      "Process Shadow Genome event schema extension gate_skipped_prerequisite_absent with severity-1 default",
+      "Doctrine entry SG-HalfSealedClaim-A cataloguing the seal claims coverage it does not have pattern with the 2026-05-06 originating recurrence"
+    ],
+    "escalation_triggers": [
+      "If implementation finds that any gate currently lacks a clean prerequisite signal (i.e., the gate's prerequisite is intertwined with the gate's behavior), escalate to /qor-refactor before continuing.",
+      "If the seal-entry surfacing format would silently look identical to all gates ran in any rendering (terminal, ledger viewer, federation consumer), escalate to /qor-audit before merge."
+    ]
+  },
+  "failure_remediation_plan": [
+    {
+      "failure_class": "Prerequisite check misclassifies a present prerequisite as absent (false-negative)",
+      "detection_signal": "Test in regression suite asserts Python-host first-party seal still runs all 15 gates; CI catches if any gate flips to skipped on the canonical host",
+      "containment_action": "Revert capability declaration to no-op; re-audit the gate's prerequisite predicate",
+      "return_phase": "audit"
+    },
+    {
+      "failure_class": "Prerequisite check misclassifies an absent prerequisite as present (false-positive -- gate runs and crashes)",
+      "detection_signal": "Existing ABORT paths in each gate surface as test failure on synthetic non-Python fixture",
+      "containment_action": "Tighten the predicate; add a fixture covering the missed-shape",
+      "return_phase": "implement"
+    },
+    {
+      "failure_class": "Seal entry surfaces skip list but downstream federation consumer treats skipped == ran",
+      "detection_signal": "Cross-workspace ledger replay finds two seals with same gate-coverage claim where one is half-skipped",
+      "containment_action": "Pause federation reconciliation; emit gate_skipped_prerequisite_absent events to alert",
+      "return_phase": "substantiate"
+    },
+    {
+      "failure_class": "Capability declaration mechanism itself drifts (e.g., requires: syntax changes silently)",
+      "detection_signal": "Lint at /qor-audit Step 0.6 detects malformed or undeclared requirements on any modified substantiate step",
+      "containment_action": "VETO audit; route to /qor-plan to amend",
+      "return_phase": "plan"
+    },
+    {
+      "failure_class": "Operator routinely overrides skipped warnings without justification (governance-norm decay)",
+      "detection_signal": "Override-friction escalator already exists (Phase 54 wiring); session-total mode (Phase 69) catches the recurrence",
+      "containment_action": "Surface to /qor-remediate; consider raising the gate's severity from advisory to blocking",
+      "return_phase": "remediate"
+    }
+  ],
+  "readiness": {
+    "status": "ready",
+    "recommended_next_phase": "plan",
+    "rationale": "Problem frame is concrete (2026-05-06 incident), options matrix is decided (Option 1 V1; Options 2+3 explicitly deferred), scope is bounded (capability declarations only; no language ports; no new gates), evidence required is enumerable. Research is not needed -- we already know which gates exist, which prerequisites each requires, and where the archetype detection lives (/qor-bootstrap, /qor-organize)."
+  },
+  "originating_issue": "GH #38",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "unknown",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T22:18:20Z"
+  }
+}

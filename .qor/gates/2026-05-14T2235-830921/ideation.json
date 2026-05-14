@@ -1,0 +1,131 @@
+{
+  "phase": "ideation",
+  "session_id": "2026-05-14T2235-830921",
+  "ts": "2026-05-14T22:36:06Z",
+  "concept_name": "META_LEDGER concurrent-federation entry numbering (GH #51)",
+  "spark": {
+    "observation": "/qor-substantiate Step 7 appends entries to docs/META_LEDGER.md using sequential numbering (Entry #1, #2, etc.) which is fundamentally single-writer. In a multi-worker federation session, Entries #16, #17, and #18 each appeared twice from different concurrent sessions working different issues (Canonical Event Schema #376 / Accountable Live #335 / Migration Pipeline #332). Chain-hash linkage stayed intact (each worker read latest at append time) but sequential ordering was corrupted.",
+    "initial_question": "How should META_LEDGER preserve sequential-ordering invariants under concurrent federation append without breaking the cryptographic chain or requiring centralized coordination?",
+    "why_now": "Federation is no longer hypothetical -- FED-0001 through FED-0026 dispatches have been observed in production. Every concurrent seal cycle has a non-trivial chance of producing duplicate-numbered entries until this is closed. Each duplicate degrades audit-trail readability and confuses downstream tooling that assumes sequential entries."
+  },
+  "problem_frame": {
+    "affected_actors": [
+      "Federation operators (multiple workers running concurrent SDLC cycles against the same ledger)",
+      "Downstream auditors / compliance reviewers who rely on sequential entry numbers to navigate the ledger",
+      "Tools that parse META_LEDGER (currently assume sequential entries: seal_entry_check, ledger_hash.verify, badge_currency counter)",
+      "Qor-logic maintainers (every duplicate entry is a future SG entry + downstream-tool patch)"
+    ],
+    "failure_mode": "Concurrent writers race on entry-number allocation. Worker A reads 'latest is #15', appends '#16: A's work'. Worker B (started before A's commit) also reads 'latest is #15', appends '#16: B's work'. Both reads were correct at the moment they were taken; the entry-number space has no atomic-allocation mechanism. The cryptographic chain survives (chain_hash uses previous_hash which is content-addressable) but human-readable structure breaks.",
+    "cost_of_failure": "Audit trail readability degrades; seal_entry_check and ledger_hash.verify don't detect duplicate numbering today (they validate per-entry chain math but not entry-number uniqueness); badge_currency overcounts entries; manual reconciliation post-incident is non-trivial; risk compounds as federation scales."
+  },
+  "transformation_statement": "META_LEDGER moves from sequential-numbering single-writer assumption that silently produces duplicate entries under concurrent federation append to content-addressable entry IDs + topological ordering by previous_hash chain that tolerates concurrent append while preserving cryptographic chain integrity without breaking existing audit-tool assumptions, requiring federation workers to coordinate via locks, or producing seals that downstream consumers can't trust.",
+  "boundaries": {
+    "non_goals": [
+      "NOT eliminating the human-readable 'Entry #N' label entirely -- operators and auditors are accustomed to it; the V1 fix can add content-addressable IDs alongside, not replace.",
+      "NOT building a distributed-consensus protocol (Raft / Paxos / Tendermint) for ledger writes -- overkill for the actual scale.",
+      "NOT introducing a centralized append broker -- federation should remain leaderless."
+    ],
+    "limitations": [
+      "V1 may require a one-time ledger reconciliation pass to renumber the existing duplicate entries (#16a/b, #17a/b, #18a/b) into a consistent ordering. This is a forward-only operation (immutable Merkle chain after the renumber commit).",
+      "The chain-integrity guarantee remains previous_hash-anchored; entry numbers become advisory display, not load-bearing ordering."
+    ],
+    "exclusions": [
+      "No changes to chain_hash / content_hash algorithms -- only the numbering / display scheme.",
+      "No changes to existing seal-ceremony Steps 7.4-7.8 (SSDF tags, badge currency, gate-chain-completeness) beyond what's needed to consume the new numbering."
+    ],
+    "forbidden_interpretations": [
+      "This is NOT permission to drop entry numbers entirely. Auditor-facing readability matters. The V1 design must preserve a deterministic, human-readable numbering even when allocated post-hoc via topological sort.",
+      "This is NOT a green light to break backward compatibility for past ledger entries. Existing Entries #1-#206 stay numbered as-is."
+    ]
+  },
+  "options_matrix": [
+    {
+      "name": "Content-addressable entry IDs + post-hoc sequential renumber",
+      "summary": "Each entry gets a primary ID SHA256(timestamp + phase + content_hash)[:12]. Sequential 'Entry #N' label is allocated by topological sort of previous_hash chain at seal time (or at a periodic reconciliation step). seal_entry_check extended to detect previous_hash uniqueness violations (catches concurrent races).",
+      "selected": true,
+      "rejection_reason": null,
+      "selection_reason": "Matches the issue's proposed fix. Preserves chain integrity (already-correct under concurrency). Catches duplicates structurally. Backward-compatible: past entries keep their numbers; new entries get content-addressable ID + sequential label."
+    },
+    {
+      "name": "Session-scoped ledger segments",
+      "summary": "Each session writes to docs/META_LEDGER-{session_id}.md; segments merge into the canonical META_LEDGER.md at periodic reconciliation. Eliminates concurrent append entirely.",
+      "selected": false,
+      "rejection_reason": "Larger surface: requires merge logic, conflict resolution between segments, fresh tooling for ledger viewers. Filer raised it as alternative; the simpler content-addressable approach achieves the same goal with less mechanism."
+    },
+    {
+      "name": "File-lock the append step",
+      "summary": "/qor-substantiate Step 7 acquires an OS-level advisory lock on META_LEDGER.md before append.",
+      "selected": false,
+      "rejection_reason": "Introduces a single-writer bottleneck that defeats federation parallelism. Doesn't work across machines / network filesystems. Workers might deadlock."
+    },
+    {
+      "name": "No fix; document the limitation",
+      "summary": "Add a doctrine entry catalogueing concurrent-append as known-unsafe. Operators serialize federation manually.",
+      "selected": false,
+      "rejection_reason": "Honest but unsatisfying -- the federation pattern is documented as first-class; making operators serialize manually contradicts that."
+    }
+  ],
+  "governance_profile": {
+    "risk_grade": "L3",
+    "evidence_required": [
+      "Tests proving content-addressable ID derivation is deterministic and collision-resistant (synthetic-collision fixtures)",
+      "Tests proving topological renumber produces the same sequential labels regardless of write-order (commutative under previous_hash chain)",
+      "Tests proving seal_entry_check detects duplicate previous_hash claims (the new concurrency-race signature)",
+      "Tests proving past Entries #1-#206 survive the change unchanged (backward-compat regression suite)",
+      "Tests proving badge_currency counter correctly counts entries under the new scheme",
+      "Synthetic federation-race fixture: two workers simultaneously appending; assert exactly one survives or both get distinct numbers via topological sort",
+      "Doctrine entry SG-ConcurrentLedgerRace-A catalogueing the Entry #16/17/18 duplicate-numbering incident"
+    ],
+    "escalation_triggers": [
+      "If implementation finds existing ledger_hash.verify semantics are incompatible with topological renumber, escalate to /qor-research before continuing -- verify-then-build is critical given chain blast radius.",
+      "If the synthetic-collision fixture finds any hash-collision for SHA256[:12] truncation at realistic scale, escalate to /qor-plan to extend ID length or use full-hash.",
+      "If the renumber commit produces any entry whose number/content combo doesn't match a past auditor's expectation, escalate to /qor-remediate before publishing."
+    ]
+  },
+  "failure_remediation_plan": [
+    {
+      "failure_class": "Topological-sort renumber produces non-deterministic results across re-runs",
+      "detection_signal": "Test fixture: run the renumber twice; assert byte-identical output",
+      "containment_action": "Tighten tiebreaker (e.g., add (session_id, ts) as secondary sort key); ABORT seal if non-deterministic",
+      "return_phase": "implement"
+    },
+    {
+      "failure_class": "Content-addressable ID collision (two different entries hash to same 12-char prefix)",
+      "detection_signal": "Test fixture with synthetic-collision dataset; hash-distribution analysis on real ledger",
+      "containment_action": "Extend ID length to 16 or 20 chars; or use full 64-char hash with display-truncation",
+      "return_phase": "plan"
+    },
+    {
+      "failure_class": "previous_hash uniqueness check catches a real federation race after deployment",
+      "detection_signal": "New concurrent-ledger-race event in Process Shadow Genome; seal abort emits diagnostic",
+      "containment_action": "Operator decides whether to merge the two competing entries via reconciliation pass (forward-only) or revert one branch",
+      "return_phase": "remediate"
+    },
+    {
+      "failure_class": "Backward-compat regression: an existing tool (badge_currency, audit viewer) breaks under new numbering",
+      "detection_signal": "CI regression suite fails on a pinned-version snapshot of past ledger entries",
+      "containment_action": "Revert to Option 4 (document limitation) temporarily; root-cause the dependency on numbering semantics",
+      "return_phase": "audit"
+    },
+    {
+      "failure_class": "Renumber commit history-rewrites past entries (anti-pattern)",
+      "detection_signal": "Git diff on META_LEDGER.md shows lines changed in already-sealed Entries #1-#206",
+      "containment_action": "ABORT publish; doctrine entry forbids retroactive renumbering",
+      "return_phase": "substantiate"
+    }
+  ],
+  "readiness": {
+    "status": "ready",
+    "recommended_next_phase": "plan",
+    "rationale": "Problem is concrete (Entry #16/17/18 duplicates have actual identifiers), fix is well-defined (Option 1 content-addressable + topological sort), evidence requirements are enumerable. The L3 risk grade means /qor-plan should include high_risk_target: true and impact_assessment per EU AI Act dialogue. No /qor-research needed -- the proposed solution is technically straightforward; the work is implementing it carefully against the high-risk surface."
+  },
+  "originating_issue": "GH #51",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "unknown",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T22:36:06Z"
+  }
+}

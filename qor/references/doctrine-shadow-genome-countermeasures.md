@@ -270,6 +270,18 @@ The doctrine catalogs all 8 unraveling points (Premature Solutioning, Language D
 
 ---
 
+## SG-HalfSealedClaim-A — substantiate seal claims gate coverage it does not have (Phase 75)
+
+**Pattern**: an operator runs `/qor-substantiate` against a host whose archetype lacks the Python toolkit prerequisites the skill bakes in (TypeScript/Rust/Go/polyglot repos without `pyproject.toml`, `qor.scripts.*`, or `CHANGELOG.md` in Keep-a-Changelog form). Multiple gate steps silently fail or no-op. The operator hand-skips after the first failure. The resulting SESSION SEAL entry's Merkle hash anchors a **half-checked** state where only a subset of gates actually ran, but the entry body **claims coverage** the implementation does not have.
+
+**Originating recurrence**: 2026-05-06 incident -- `Qor-logic Customer-App-3.0` (React 18 + bun + Supabase repo) during a security migration session. 8 of ~15 substantiate steps failed/skipped on the non-Python host. Session ended in a `SUBSTANTIATE DEFERRED` ledger entry rather than a seal -- preserving chain integrity but blocking the protocol from completing in the host repo without hand-authored seal (which itself defeats the automation).
+
+**Countermeasure** (`qor/scripts/substantiate_capability.py` + `qor-logic substantiate-capability` CLI, Phase 75 wiring): each substantiate step declares its prerequisite in qor-substantiate SKILL.md's `## Step Prerequisites` table (predicate kinds `file:<path>`, `module:<dotted>`, `command:<binary>`). Operators run `qor-logic substantiate-capability` before invoking the skill to receive a markdown table of per-step prerequisite status (PRESENT / ABSENT + evidence path). The output is paste-able into the SESSION SEAL entry body so the seal explicitly cites which gates ran vs were skipped on the host archetype. Missing prerequisites emit `gate_skipped_prerequisite_absent` shadow events (severity 1; schema enum extended at Phase 75).
+
+**Cross-reference**: Issue #38; Phase 76 ideation packet `2026-05-14T2216-a5f692` selected Option 1 (skill capability declaration) as smallest reversible step; Phases 2 (pluggable backends) and 3 (two-track skill split) deferred to V2/V3 pending operator demand signal from V1 deployment via Process Shadow Genome event counts.
+
+---
+
 ## SG-FakeProgress-A — UI fake-jump progress without intermediate state (Phase 74)
 
 **Pattern**: a UI element with progress semantics (progress bar, spinner, phase indicator, step list) animates from `style.width = '0%'` directly to `style.width = '100%'` with no intermediate writes while the backing operation runs silently for >2 seconds (often 20-60 seconds). The operator perceives the click as having done nothing; the progress bar appears frozen at 0%; on completion the bar jumps directly to 100% (or stays at 0% on error with no dismiss/retry control). Backing event streams (WebSocket / EventEmitter) often exist and emit per-phase events, but the UI does not subscribe and re-render.
