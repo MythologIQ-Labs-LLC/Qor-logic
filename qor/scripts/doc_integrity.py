@@ -215,7 +215,7 @@ def run_all_checks_from_plan(plan: dict, repo_root: str, strict: bool = False) -
         repo_root=repo_root,
     )
     if strict:
-        import doc_integrity_strict as dis
+        from qor.scripts import doc_integrity_strict as dis
         dis.check_term_drift(glossary_path, repo_root, strict=True)
         dis.check_cross_doc_conflicts(glossary_path, repo_root, strict=True)
 

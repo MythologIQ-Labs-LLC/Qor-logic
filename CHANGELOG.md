@@ -10,6 +10,47 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.46.1] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- Phase 64 (hotfix): Seal Hash Integrity Gate at `/qor-substantiate` Step 6.8
+  wires the existing `qor.scripts.hash_guard` helpers (`require_toolkit_modules`,
+  `validate_sha256`) into the substantiate skill prose. Fail-closed gate
+  validates `merkle_seal`, `content_hash`, `previous_hash`, and `chain_hash`
+  before any digest enters the SESSION SEAL entry body. Step 6.8 carries a
+  Preparation paragraph naming the canonical hash-producing helpers
+  (`hash_guard.hash_file`, `ledger_hash.content_hash`, `ledger_hash.chain_hash`).
+  Closes GH #48 (CRITICAL: substantiate produced fabricated patterned-hex
+  strings in non-Python repos). Lands the Phase 59 Phase 2 work that was
+  dropped during the Phase 60 session-consolidation commit.
+- Doctrine `qor/references/doctrine-governance-enforcement.md` §13 documents
+  the gate contract (toolkit modules, four validated labels, ABORT remediation
+  guidance, OWASP LLM06 / NIST AI RMF MAP-3.1 / EU AI Act Art. 12 mapping).
+- Operations runbook (`docs/operations.md`) gains three Phase 64 troubleshooting
+  rows covering `ValueError` from `validate_sha256`, `RuntimeError` from
+  `require_toolkit_modules`, and the pre-Phase-64 `ModuleNotFoundError` from
+  the bare `doc_integrity_strict` import.
+
+### Fixed
+
+- `qor/scripts/doc_integrity.py:218` strict-mode import: bare
+  `import doc_integrity_strict` -> package form
+  `from qor.scripts import doc_integrity_strict`. Pre-Phase-31 bug that left
+  `/qor-substantiate` Step 4.7 (strict-mode documentation integrity check)
+  crashing with `ModuleNotFoundError` whenever the active working directory
+  did not include `qor/scripts/` on `sys.path`. Regression locked by
+  `tests/test_doc_integrity_strict_import.py` (three tests: runtime check,
+  lenient-mode isolation, source invariant).
+- `qor/references/glossary.md` `referenced_by` drift surfaced by the
+  doc_integrity strict-mode fix: four pre-existing latent gaps patched
+  (Gate x qor-ideate + doctrine-governance-enforcement; Substantiate x
+  doctrine-procedural-fidelity; doc-surface coverage x qor-substantiate;
+  ideation phase x qor-help; problem frame x qor-help). All edits document
+  existing reality.
+
 ## [0.46.0] - 2026-05-11
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

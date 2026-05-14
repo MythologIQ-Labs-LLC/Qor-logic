@@ -252,3 +252,17 @@ When a local session work-stream diverges from `origin/main` in phase numbering 
 6. **Old session tags are deleted after the closing seal.** Tags pointing at abandoned commits are removed via `git tag -d`; the abandoned commits remain reachable only through the archive branch.
 
 Maps to NIST AI RMF MANAGE-2.4 (decommissioning), GOVERN-5.1 (incident response), and EU AI Act Art. 12 (record-keeping continuity through the discontinuity). The audit trail is preserved on the archive branch even though the live chain forks.
+
+## 13. Seal Hash Integrity Gate (Phase 64)
+
+The Seal Hash Integrity Gate at `/qor-substantiate` Step 6.8 is the fail-closed validator that prevents fabricated hash strings from entering the META_LEDGER chain. Closes the GH #48 failure mode where the substantiate skill, running in a non-Python repo with no local `calculate-session-seal.py`, instructed the LLM operator to compute cryptographic seals and produced patterned hex strings (ascending odd-position digits, 67-character non-SHA256 lengths) that passed no validation.
+
+Contract:
+
+- The gate calls `qor.scripts.hash_guard.require_toolkit_modules(("qor.scripts.ledger_hash", "qor.scripts.hash_guard"))` to fail closed when the seal-critical helpers are absent. Missing modules raise `RuntimeError` and ABORT substantiation.
+- The gate calls `qor.scripts.hash_guard.validate_sha256(value, label=...)` for each of the four seal-critical hash values: `merkle_seal`, `content_hash`, `previous_hash`, `chain_hash`. Each validation raises `ValueError` on empty, wrong-length, uppercase, non-hex, or placeholder (all-zero) digests.
+- The gate sits AFTER Step 6.5 (Documentation Currency Check) and BEFORE Step 7 (Final Merkle Seal). It runs before any hash value enters the SESSION SEAL entry body.
+- The gate has NO override path and is NOT governed by Phase 47 skip semantics. Cryptographic evidence is seal-critical; advisory bypass is not available. This distinguishes the gate from §10 cycle-count escalation (operator override allowed) and §12 override-friction (operator justification allowed).
+- Remediation on ABORT: install the seal-critical helper modules, regenerate the affected hash via `python -m qor.scripts.ledger_hash hash <path>`, or amend a fabricated value to a real digest, then re-run `/qor-substantiate`.
+
+Maps to OWASP LLM Top 10 LLM06 (Sensitive Information Disclosure: prevent fabricated cryptographic evidence), NIST AI RMF MAP-3.1 (trust anchor integrity), and EU AI Act Art. 12 (record-keeping integrity). The gate is the runtime enforcement that closes the gap between `hash_guard`'s Phase 59 helper module landing on main and the substantiate skill actually invoking it.

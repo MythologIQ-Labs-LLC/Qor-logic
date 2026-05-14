@@ -1,0 +1,45 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T0030-552696",
+  "ts": "2026-05-14T00:32:28Z",
+  "plan_path": "docs/plan-qor-phase64-seal-hash-substantiate-wiring.md",
+  "phases": [
+    "Phase 1: Substantiate SKILL.md gains Step 6.8 (Seal Hash Integrity Gate)",
+    "Phase 2: Dist variant regeneration"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_substantiate_hash_integrity_step.py tests/test_substantiate_dist_variants_carry_hash_gate.py tests/test_hash_guard.py tests/test_ledger_hash_validation.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase64-seal-hash-substantiate-wiring.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "system",
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "V1 wires the existing hash_guard helper into /qor-substantiate Step 6.8 only. It does not change the Step 7 Merkle-seal computation path or add new hash modes.",
+      "V1 validates locally produced hash strings before they enter the ledger body. Remote attestation is out of scope."
+    ],
+    "non_goals": [
+      "Adding new validators beyond validate_sha256 and require_toolkit_modules already exposed by qor/scripts/hash_guard.py.",
+      "Modifying qor/scripts/ledger_hash.py verification behavior."
+    ],
+    "exclusions": [
+      "No changes to prompt compiler behavior.",
+      "No changes to qor/reliability/seal_entry_check.py.",
+      "No retroactive ledger edits."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "hotfix",
+  "originating_remediation": "GH #48 (Phase 59 Phase 2 dropped during Phase 60 session-consolidation)",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.46.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T00:32:28Z"
+  }
+}
