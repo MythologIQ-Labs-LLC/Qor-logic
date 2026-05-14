@@ -10,6 +10,34 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.48.0] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 72 (feature, GH #56)**: SG-CitationDrift-A cross-iteration citation
+  drift countermeasure (P1 + P2 prose + doctrine).
+  - `/qor-plan` Step 2 gains an **Infrastructure Citation Inventory**
+    sub-section requiring every Locked Decision citing sealed infrastructure
+    (migration name, function signature, file:line, schema, env var,
+    edge-function path) to carry a paired grep-evidence statement of the
+    canonical form `git show <sealed-ref>:<path> | grep -nE '<pattern>' ->
+    <exact observed text>`. Citations without paired evidence are Open
+    Questions, not Locked Decisions, and block submission to `/qor-audit`.
+  - `/qor-audit` Step 3 Infrastructure Alignment Pass gains an iter-N>1
+    sub-section: on iterations after the first, the Judge re-walks the
+    **full** Locked Decision set (not the diff-from-iter-N-1) and
+    grep-verifies every sealed-infrastructure citation. Missing inline
+    grep-evidence triggers immediate VETO with `infrastructure-mismatch`
+    category, regardless of whether the LD was amended this iteration.
+  - `qor/references/doctrine-shadow-genome-countermeasures.md` SG-CitationDrift-A
+    catalogues the pattern, originating recurrence, and P1+P2 countermeasures.
+  - 8 new tests across 3 files (`test_qor_plan_infrastructure_citation_inventory`,
+    `test_qor_audit_full_citation_rewalk`, `test_doctrine_sg_citation_drift_a`).
+  - Lint-extension complement (P4 - heuristic plan_grep_lint hook for
+    sealed-infrastructure citation patterns) deferred to a future phase.
+
 ## [0.47.3] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

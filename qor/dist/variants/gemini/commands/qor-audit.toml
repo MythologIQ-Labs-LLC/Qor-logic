@@ -323,7 +323,9 @@ For each plan claim in scope, verify against current code:
 
 **Any violation -> VETO with `infrastructure-mismatch` category**. **Required next action:** amend the plan to reflect actual infrastructure OR add the missing infrastructure as an explicit Phase Affected File. No implicit dependencies.
 
-See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-InfrastructureMismatch` for the countermeasure catalog entry.
+**Phase 72 wiring (GH #56; SG-CitationDrift-A countermeasure)** -- iter-N>1 full re-walk: on iterations after the first (iter-N>1), the Judge re-walks the **FULL Locked Decision set**, not the diff-from-iter-N-1. Every sealed-infrastructure citation (migration name, function signature, file:line, schema, env var, edge-function path) is grep-verified against current code, including LDs that were not modified in this iteration. Citations that lack the inline grep-evidence statement required by `/qor-plan` Step 2 Infrastructure Citation Inventory trigger immediate VETO with `infrastructure-mismatch` category -- regardless of whether the LD was amended in the current iteration. This closes the drift surface where an unverified citation in an unchanged LD propagates across iterations without re-challenge.
+
+See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-InfrastructureMismatch` (Phase 37) and `SG-CitationDrift-A` (Phase 72) for the countermeasure catalog entries.
 
 #### Orphan Detection
 

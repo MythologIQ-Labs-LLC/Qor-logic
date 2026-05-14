@@ -1,0 +1,52 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T1958-dcd418",
+  "ts": "2026-05-14T19:59:50Z",
+  "plan_path": "docs/plan-qor-phase72-sg-citation-drift-countermeasure.md",
+  "phases": [
+    "Phase 1: /qor-plan Step 2 Infrastructure Citation Inventory (P1)",
+    "Phase 2: /qor-audit Infrastructure Alignment Pass full re-walk on iter-N>1 (P2)",
+    "Phase 3: Doctrine SG-CitationDrift-A entry (P3)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_plan_infrastructure_citation_inventory.py tests/test_qor_audit_full_citation_rewalk.py tests/test_doctrine_sg_citation_drift_a.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase72-sg-citation-drift-countermeasure.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "Infrastructure Citation Inventory",
+      "home": "qor/skills/sdlc/qor-plan/SKILL.md"
+    },
+    {
+      "term": "grep-evidence statement",
+      "home": "qor/skills/sdlc/qor-plan/SKILL.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 operator-discipline + doctrine; lint heuristic advisory-only."
+    ],
+    "non_goals": [
+      "Replacing operator review with lint.",
+      "Auto-fetching grep evidence."
+    ],
+    "exclusions": [
+      "No /qor-implement or /qor-substantiate changes."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "feature",
+  "originating_remediation": "GH #56",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.47.3",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T19:59:50Z"
+  }
+}
