@@ -643,3 +643,48 @@ referenced_by:
   - qor/references/doctrine-shadow-genome-countermeasures.md
 introduced_in_plan: phase72-sg-citation-drift-countermeasure
 ```
+
+```yaml
+term: Feature Inventory
+definition: 'A tracked governance artifact (canonical name `FEATURE_INDEX.md`) enumerating every user-touchable feature of the product, cross-referenced against the test surface. One row per feature with columns `ID | Name | Source-of-truth file:line | Doc citation | Test path | Verification status`. Status enum: `verified | unverified | n/a`. Cross-referenced at /qor-substantiate Step 6 verification pass; counts surfaced in the SESSION SEAL ledger entry. Phase 73 wiring (GH #40).'
+home: qor/references/doctrine-feature-inventory.md
+referenced_by:
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/sdlc/qor-implement/SKILL.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/references/doctrine-feature-tdd.md
+introduced_in_plan: phase73-feature-inventory-tdd
+```
+
+```yaml
+term: Feature Inventory Touches
+definition: 'A required section in /qor-plan plan markdown (and `feature_inventory_touches` array in plan.json) listing every Feature Inventory entry the plan touches, with `entry_id`, `operation` (NEW/MODIFIED/n/a-justified), `test_path`, and `test_descriptor`. Consumed at /qor-audit Step 3 Feature Test Coverage Pass (VETO category `feature-test-undeclared`) and at /qor-implement Step 5 (per-feature TDD-Light). Phase 73 wiring (GH #41).'
+home: qor/references/doctrine-feature-tdd.md
+referenced_by:
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/sdlc/qor-implement/SKILL.md
+introduced_in_plan: phase73-feature-inventory-tdd
+```
+
+```yaml
+term: per-feature TDD
+definition: 'Test-driven development discipline applied at user-touchable-feature scope. Distinct from per-unit TDD-Light (which operates on helpers/functions). For each entry in the plan''s `Feature Inventory Touches` table, the implementer authors the failing feature-level test first at the declared path with the declared assertion, runs it red, implements the feature, runs it green. Both per-unit and per-feature layers coexist in /qor-implement Step 5. Phase 73 wiring (GH #41).'
+home: qor/references/doctrine-feature-tdd.md
+referenced_by:
+  - qor/skills/sdlc/qor-implement/SKILL.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/governance/qor-audit/SKILL.md
+introduced_in_plan: phase73-feature-inventory-tdd
+```
+
+```yaml
+term: feature-test-undeclared
+definition: 'VETO findings category emitted by /qor-audit Step 3 Feature Test Coverage Pass when a row in the plan''s `Feature Inventory Touches` table cites a presence-only test descriptor (one that fails the SG-035 acceptance question at feature scope: "If the feature were silently broken but the test artifact still existed, would this assertion fail?"). Added to `audit.schema.json` findings_categories enum at Phase 73 (GH #41).'
+home: qor/references/doctrine-feature-tdd.md
+referenced_by:
+  - qor/gates/schema/audit.schema.json
+  - qor/skills/governance/qor-audit/SKILL.md
+introduced_in_plan: phase73-feature-inventory-tdd
+```

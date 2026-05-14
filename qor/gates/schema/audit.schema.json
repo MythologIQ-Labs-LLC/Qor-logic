@@ -41,7 +41,8 @@
           "test-failure",
           "coverage-gap",
           "infrastructure-mismatch",
-          "prompt-injection"
+          "prompt-injection",
+          "feature-test-undeclared"
         ]
       }
     },

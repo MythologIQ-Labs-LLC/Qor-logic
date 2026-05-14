@@ -10,6 +10,43 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.49.0] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 73 (feature, GH #40 + #41)**: Feature Inventory artifact +
+  per-feature TDD-Light contract (V1 prose + schema; runtime helpers
+  deferred to V2).
+  - New doctrine `qor/references/doctrine-feature-inventory.md` documents
+    the FEATURE_INDEX.md artifact format (6-column markdown table),
+    status enum (`verified | unverified | n/a`), lifecycle hooks
+    (`/qor-implement` Step 12.5 append/update; `/qor-substantiate`
+    Step 6 verify + count surface), and the V2 ABORT-on-regression contract.
+  - New doctrine `qor/references/doctrine-feature-tdd.md` documents the
+    three-gate upstream contract (`/qor-plan` Step 5 Feature Inventory
+    Touches declaration; `/qor-audit` Step 3 Feature Test Coverage Pass
+    with VETO category `feature-test-undeclared`; `/qor-implement` Step 5
+    per-feature failing-test-first) and the SG-035 acceptance question
+    inheritance at feature scope.
+  - `qor/gates/schema/plan.schema.json` gains optional
+    `feature_inventory_touches` array field with `entry_id`, `operation`
+    (NEW/MODIFIED/n/a-justified), `test_path`, `test_descriptor`.
+  - `qor/gates/schema/audit.schema.json` `findings_categories` enum
+    gains `feature-test-undeclared`.
+  - 4 new glossary terms: `Feature Inventory`, `Feature Inventory Touches`,
+    `per-feature TDD`, `feature-test-undeclared`.
+  - SKILL prose updates: `/qor-plan` Step 5; `/qor-audit` Step 3 Feature
+    Test Coverage Pass; `/qor-implement` Step 5 per-feature TDD layer +
+    Step 12.5 FEATURE_INDEX update obligation; `/qor-substantiate` Step 6
+    FEATURE_INDEX verification pass with count surface in seal entry.
+  - 15 new tests across 7 files (doctrine prose, schema validation,
+    SKILL prose).
+  - Source incident: FailSafe v5 2026-05-06 -> 264-feature retroactive
+    test marathon. V2 follow-on (runtime parser/verifier + ABORT helper)
+    queued.
+
 ## [0.48.0] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

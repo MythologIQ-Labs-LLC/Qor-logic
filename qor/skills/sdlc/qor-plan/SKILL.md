@@ -306,6 +306,19 @@ Before finalizing, ensure:
 - [ ] Each unit test description names the behavior it confirms (the unit's output for a given input), not the artifact it expects to find. Per `qor/references/doctrine-test-functionality.md`.
 - [ ] Plan asserts the same command, dependency, or filesystem path identically at every site where it appears (Phase 67 wiring; GH #42). Verify by running `python -m qor.scripts.plan_text_consistency_lint --check <plan-path>`; any drift surfaces as exit 1 with the divergent sites named. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PlanTextDrift-A.
 
+#### Feature Inventory Touches declaration (Phase 73 wiring; GH #40 + #41)
+
+When the plan touches `src/`, it MUST include a `## Feature Inventory Touches` section enumerating every user-touchable feature the plan introduces or modifies. Each row carries:
+
+- `entry_id` -- the FEATURE_INDEX.md row identifier (stable, opaque, e.g., `FX091`).
+- `operation` -- one of `NEW` (entry doesn't exist in current FEATURE_INDEX), `MODIFIED` (entry exists; plan changes its surface), `n/a-justified` (entry exists; plan doesn't touch it but plan affects neighborhood -- declared for traceability).
+- `test_path` -- the test file path (existing or new) that proves the feature works.
+- `test_descriptor` -- a one-line behavior assertion (e.g., `POST /api/marketplace/install/:id returns 200 + nonce structure`). Survives the SG-035 acceptance question at feature scope: "If the feature were silently broken but the test artifact still existed, would this assertion fail?"
+
+Plans that touch only docs/governance MAY declare the block empty. The schema field `feature_inventory_touches` on `qor/gates/schema/plan.schema.json` accepts the array.
+
+See `qor/references/doctrine-feature-tdd.md` for the per-feature TDD-Light contract that consumes this declaration at audit + implement time. Companion: `qor/references/doctrine-feature-inventory.md` for the FEATURE_INDEX artifact format + seal-time gate.
+
 ## Success Criteria
 
 A reader unfamiliar with code should be able to:

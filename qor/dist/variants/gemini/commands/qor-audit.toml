@@ -305,6 +305,18 @@ Verify system-level coherence and module organization:
 
 **Any violation -> VETO**. **Required next action:** `/qor-organize` (project-level structure is its domain). Per `qor/gates/delegation-table.md`.
 
+#### Feature Test Coverage Pass (Phase 73 wiring; GH #41)
+
+For every row in the plan's `Feature Inventory Touches` block (see `/qor-plan` Step 5; declared in plan schema `feature_inventory_touches`), the Judge runs the SG-035 acceptance question at feature scope:
+
+- [ ] Does the row cite a specific `test_path` (existing or NEW)?
+- [ ] Does the `test_descriptor` name the assertion that proves the feature works (e.g., "POST returns 200 + nonce structure"), not a presence-only check ("route exists", "command appears in help", "method defined")?
+- [ ] Does the assertion survive the acceptance question at feature scope: "If the feature were silently broken but the test artifact still existed, would this assertion fail?"
+
+**Any row failing any check -> VETO with `feature-test-undeclared` category**. **Required next action:** amend the plan's `Feature Inventory Touches` block; re-submit to `/qor-audit`. Plans that touch only docs/governance MAY declare the block empty and are exempt from this pass.
+
+See `qor/references/doctrine-feature-tdd.md` for the three-gate contract (plan / audit / implement) and `qor/references/doctrine-feature-inventory.md` for the seal-time complement.
+
 #### Infrastructure Alignment Pass (Phase 37 wiring)
 
 Grep-verify every plan claim about filesystem behavior, gate artifact globbing, event types, and cross-module interfaces against current repository code BEFORE implementation. Catches the V10-class failure from Phase 36: plans that reference infrastructure the repo does not actually provide.
