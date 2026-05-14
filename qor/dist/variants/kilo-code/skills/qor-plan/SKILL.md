@@ -163,6 +163,20 @@ Skipped silently when `high_risk_target` is false or omitted (default false). Ma
 
 Use existing code as foundation for plan. Identify existing abstractions, naming conventions, test structure, and integration points.
 
+#### Infrastructure Citation Inventory (Phase 72 wiring; SG-CitationDrift-A countermeasure)
+
+Every Locked Decision (LD) that cites **sealed infrastructure** MUST be paired with an inline grep-evidence statement. Sealed-infrastructure citation kinds include: sealed migration name, function signature, file:line reference, table schema, enum value, index/constraint name, env-var name, edge-function path.
+
+The canonical grep-evidence form is:
+
+> `git show <sealed-ref>:<path> | grep -nE '<pattern>' -> <exact observed text>`
+
+The grep-evidence statement is part of the LD body, not a separate appendix. It documents the observed reality the LD is encoded against, so a downstream auditor (or the next plan iteration) can re-execute the same grep without re-reading the source.
+
+Citations that lack paired grep-evidence are **Open Questions**, not Locked Decisions. They must be resolved before `/qor-audit`. Plans that ship to audit with unverified citations in load-bearing LDs return to `/qor-plan` without consuming an audit cycle (per `/qor-audit` Step 3 Infrastructure Alignment Pass full re-walk on iter-N>1).
+
+See `qor/references/doctrine-shadow-genome-countermeasures.md` SG-CitationDrift-A for the originating recurrence pattern and the full P1+P2 countermeasure pair.
+
 ### Step 2b: Grounding Protocol (MANDATORY)
 
 See `qor/references/doctrine-shadow-genome-countermeasures.md` for the full Grounding Protocol and Shadow Genome countermeasure inventory. Residual `{{verify: ...}}` tags in a plan block its submission.

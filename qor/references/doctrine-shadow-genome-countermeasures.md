@@ -256,6 +256,20 @@ The doctrine catalogs all 8 unraveling points (Premature Solutioning, Language D
 
 ---
 
+## SG-CitationDrift-A — cross-iteration unverified citation drift (Phase 72)
+
+**Pattern**: a Locked Decision (LD) cites sealed infrastructure (migration name, function signature, file:line, table schema, enum value, index/constraint name, env-var name, edge-function path) without an inline grep-evidence statement. The unverified citation enters the plan in iter-1 and survives across iterations because subsequent audits only diff-against-iter-N-1, never re-challenging LDs that were not amended in the current iteration. The drift remains silent until a downstream consumer (implementation, second auditor, runtime) trips on the mismatch.
+
+**Originating recurrence**: Accountable-App `attribution-12g` plan, audit cycle 2026-05-13, iter-1 -> iter-3 audit chain. Iter-1 included a citation to a sealed migration column that did not match the actual schema; iter-2 audited the diff against iter-1 and did not re-grep the unchanged citation; iter-3 surfaced the mismatch via independent reviewer (SG-AuthorAuditMomentum-A), but the citation had already shaped two iterations of plan structure.
+
+**Countermeasure P1** (`/qor-plan` Step 2 Infrastructure Citation Inventory): every LD citing sealed infrastructure MUST carry a paired grep-evidence statement of the form `git show <sealed-ref>:<path> | grep -nE '<pattern>' -> <exact observed text>`. Citations without paired evidence are Open Questions, not LDs, and block submission to `/qor-audit`.
+
+**Countermeasure P2** (`/qor-audit` Step 3 Infrastructure Alignment Pass, iter-N>1 sub-section): on iterations after the first, the Judge re-walks the **full Locked Decision set** and grep-verifies every sealed-infrastructure citation, not just the diff-from-iter-N-1. Missing inline grep-evidence triggers immediate VETO with `infrastructure-mismatch` category, regardless of whether the LD was amended in the current iteration.
+
+**Cross-reference**: Issue #56; SG-PlanTextDrift-A (Phase 67, Issue #42; same-iteration text-drift pattern -- distinct from this cross-iteration variant); SG-AuthorAuditMomentum-A (Phase 68; independent-reviewer countermeasure that exposed the iter-3 mismatch). Lint-extension complement (P4 -- heuristic plan_grep_lint hook for sealed-infrastructure citation patterns) deferred to a future phase.
+
+---
+
 ## SG-AuthorAuditMomentum-A — author-audit self-verification scope bias (Phase 68)
 
 **Pattern**: when the same LLM agent authors a plan and then audits it, the audit inherits the author's search-path momentum. The locations the author did not check during planning are the same locations the author will not check during audit. Independent reviewers with no plan-authorship context naturally check different sources and find different defects.

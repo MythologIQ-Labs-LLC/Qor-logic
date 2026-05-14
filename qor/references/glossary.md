@@ -623,3 +623,23 @@ referenced_by:
   - qor/skills/governance/qor-validate/SKILL.md
 introduced_in_plan: phase66-qor-validate-integrity-bundle
 ```
+
+```yaml
+term: Infrastructure Citation Inventory
+definition: 'A sub-section of /qor-plan Step 2 (Phase 72 wiring) that requires every Locked Decision citing sealed infrastructure (migration name, function signature, file:line reference, table schema, enum value, index/constraint name, env-var name, edge-function path) to carry a paired grep-evidence statement of the canonical form `git show <sealed-ref>:<path> | grep -nE ''<pattern>'' -> <exact observed text>`. Citations without paired evidence are Open Questions, not Locked Decisions, and block submission to /qor-audit. Closes SG-CitationDrift-A.'
+home: qor/skills/sdlc/qor-plan/SKILL.md
+referenced_by:
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase72-sg-citation-drift-countermeasure
+```
+
+```yaml
+term: grep-evidence statement
+definition: 'A one-line inline citation paired with each Locked Decision that references sealed infrastructure. Canonical form: `git show <sealed-ref>:<path> | grep -nE ''<pattern>'' -> <exact observed text>`. Documents the observed reality the LD is encoded against so downstream auditors and the next plan iteration can re-execute the same grep without re-reading the source. Required by /qor-plan Step 2 Infrastructure Citation Inventory; enforced by /qor-audit Step 3 Infrastructure Alignment Pass iter-N>1 full re-walk. Per Phase 72 (GH #56) SG-CitationDrift-A countermeasure.'
+home: qor/skills/sdlc/qor-plan/SKILL.md
+referenced_by:
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase72-sg-citation-drift-countermeasure
+```

@@ -7700,3 +7700,43 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 69 hotfix complete; GH #43 closed)
 *Merkle seal: 57247161...* (Phase 69 seal on top of Phase 68's 09e3feee...)
 *Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
+
+### Entry #204: SESSION SEAL — Phase 72: SG-CitationDrift-A cross-iteration citation drift countermeasure (v0.48.0, GH #56)
+
+**Timestamp**: 2026-05-14T20:12:19Z
+
+**Phase**: SUBSTANTIATE (Phase 72 feature)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase72-sg-citation-drift-countermeasure.md
+
+**Session**: `2026-05-14T1958-dcd418`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+
+**Scope**: Closes GH #56 -- SG-CitationDrift-A cross-iteration citation drift countermeasure (P1+P2+P3, prose-only). `/qor-plan` Step 2 gains an **Infrastructure Citation Inventory** sub-section requiring every Locked Decision citing sealed infrastructure (migration name, function signature, file:line, schema, env var, edge-function path) to carry a paired grep-evidence statement of the canonical form `git show <sealed-ref>:<path> | grep -nE '<pattern>' -> <exact observed text>`. Unverified citations are Open Questions, not Locked Decisions, and block submission to `/qor-audit`. `/qor-audit` Step 3 Infrastructure Alignment Pass gains an iter-N>1 sub-section: on iterations after the first, the Judge re-walks the **full** Locked Decision set (not the diff-from-iter-N-1) and grep-verifies every sealed-infrastructure citation. Missing inline grep-evidence triggers immediate VETO with `infrastructure-mismatch` category, regardless of whether the LD was amended this iteration. `qor/references/doctrine-shadow-genome-countermeasures.md` SG-CitationDrift-A catalogues the pattern, originating recurrence (Accountable-App `attribution-12g` 2026-05-13 iter-1 -> iter-3 chain), and P1+P2 countermeasures.
+
+**Files touched** (10): 3 SKILL.md/doctrine prose updates (qor-plan, qor-audit, doctrine-shadow-genome-countermeasures), 3 new test files, glossary.md (2 new entries: `Infrastructure Citation Inventory`, `grep-evidence statement`), CHANGELOG.md (0.48.0 stamped), README.md (Tests 1610 -> 1618), SYSTEM_STATE.md, docs/plan-qor-phase72-sg-citation-drift-countermeasure.md.
+
+**Test surface**: 8 new tests (3 + 3 + 2). Full suite 1612 passing twice deterministically. Suite truth count 1618 (matches updated badge within tolerance). 
+
+**Self-application**: Phase 67's `plan_text_consistency_lint` cleared this plan. Phase 68's Self-Application Sub-Pass was applied informally (plan introduces prose disciplines for citation-evidence pairing; the plan itself was reviewed for unpaired citations to sealed infrastructure -- finding: only `git show ... grep ...` literal canonical-form references, no concrete sealed-infrastructure citations in the plan body that would require grep-evidence). Phase 64 Step 6.8 gate validates this seal's digests.
+
+**Deferral**: P4 (heuristic plan_grep_lint extension for sealed-infrastructure citation patterns) deferred to a future phase pending operator demand from V1 (prose + doctrine) deployment.
+
+**Content Hash (session seal)**: `531bddba67a5a57dc76ec4c5dc4e705504ce614cc60e9e4461cd5654b72a11a2`
+
+**Previous Hash**: `57247161064057779953c3cb90ffa44b62d93bd620351ef2c443a2c5aecb4ccd`
+
+**Chain Hash (Merkle seal)**: `7aaa92ddecabf1e5963ace07439234178694eb2a7d7bd95afe5a1706968cdcee`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 72 feature complete; GH #56 closed)
+*Merkle seal: 7aaa92dd...* (Phase 72 seal on top of Phase 69's 57247161...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
