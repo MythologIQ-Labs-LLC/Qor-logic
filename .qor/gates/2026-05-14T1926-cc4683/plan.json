@@ -1,0 +1,40 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T1926-cc4683",
+  "ts": "2026-05-14T19:28:26Z",
+  "plan_path": "docs/plan-qor-phase70-pipeline-inversion-lint-wiring.md",
+  "phases": [
+    "Phase 1: Wire pipeline_inversion_lint into qor-audit Step 0.6 + SG doctrine"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_pipeline_inversion_lint_audit_wiring.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase70-pipeline-inversion-lint-wiring.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "V1 wires existing Phase 49 lint."
+    ],
+    "non_goals": [
+      "No detection rule changes."
+    ],
+    "exclusions": [
+      "No lint script changes."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "hotfix",
+  "originating_remediation": "GH #47",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.47.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T19:28:26Z"
+  }
+}

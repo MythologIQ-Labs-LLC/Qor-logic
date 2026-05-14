@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"opus","system":"Qor-logic","ts":"2026-05-14T19:28:28Z","version":"0.47.2"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L1","session_id":"2026-05-14T1926-cc4683","target":"docs/plan-qor-phase70-pipeline-inversion-lint-wiring.md","ts":"2026-05-14T19:28:28Z","verdict":"PASS"}

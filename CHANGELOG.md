@@ -10,6 +10,20 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.47.4] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 70 (hotfix, GH #47)**: pipeline_inversion_lint wired into qor-audit Step 0.6.
+  - `pipeline_inversion_lint` invoked as fourth pre-audit lint alongside
+    plan_test_lint, plan_grep_lint, plan_text_consistency_lint. WARN-only.
+  - Doctrine `SG-FilterStageInversion-A` catalogues the filter-stage
+    ordering composition defect class (originating COREFORGE Skill-Forge
+    dispatcher pattern).
+  - 3 new tests.
+
 ## [0.47.3] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

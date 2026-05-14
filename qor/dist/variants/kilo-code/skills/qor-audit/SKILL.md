@@ -105,7 +105,10 @@ PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_
 python -m qor.scripts.plan_test_lint --plan "$PLAN_PATH" || true
 python -m qor.scripts.plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
 python -m qor.scripts.plan_text_consistency_lint --check "$PLAN_PATH" || true
+python -m qor.scripts.pipeline_inversion_lint --repo-root . || true
 ```
+
+**Phase 70 wiring (GH #47)**: `pipeline_inversion_lint` (fourth lint above) is a heuristic AST walker that detects filter-stage ordering inversions in Python source — catches the composition-defect class where stage N runs before stage M even though N depends on an invariant M enforces. WARN-only at audit time; Judge confirms at Step 3 whether surfaced findings represent real inversions. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-FilterStageInversion-A.
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
 

@@ -7700,3 +7700,46 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 69 hotfix complete; GH #43 closed)
 *Merkle seal: 57247161...* (Phase 69 seal on top of Phase 68's 09e3feee...)
 *Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
+
+---
+
+### Entry #204: SESSION SEAL — Phase 70: pipeline_inversion_lint wiring (v0.47.4, GH #47)
+
+**Timestamp**: 2026-05-14T19:48:00Z
+
+**Phase**: SUBSTANTIATE (Phase 70 hotfix)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase70-pipeline-inversion-lint-wiring.md
+
+**Session**: `2026-05-14T1926-cc4683`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash (session seal)**: `cf8c6c159c0fddf42f1d71edaf73b906aa72d005b0a2bd7897a3123913afe847`
+
+**Previous Hash**: `57247161064057779953c3cb90ffa44b62d93bd620351ef2c443a2c5aecb4ccd`
+
+**Chain Hash (Merkle seal)**: `1b56f56a9968f174b7560e856054f15636f5867bcea1cdf02e1da5f94af9752e`
+
+**Scope**: Wires the Phase 49 `pipeline_inversion_lint.py` heuristic detector into `/qor-audit` Step 0.6 as a fourth pre-audit lint alongside plan_test_lint, plan_grep_lint, and plan_text_consistency_lint. WARN-only at audit time; Judge confirms inversions at Step 3.
+
+**Doctrine**: SG-FilterStageInversion-A catalogues the filter-stage ordering composition defect class (originating COREFORGE Skill-Forge dispatcher pattern).
+
+**Files touched** (5): 1 new test, 1 SKILL.md prose, 1 doctrine entry, SYSTEM_STATE, plan.
+
+**Test surface**: 3 Phase 70 tests green.
+
+**Branch sequencing note**: phase/70 was branched from main BEFORE Phase 69 merged. After Phase 69 squash-merged, this branch was rebased onto post-Phase-69 main. Entry #204 chains correctly from Phase 69's Entry #203. pyproject 0.47.4 (skipped 0.47.3 which is Phase 69's reserved version).
+
+**Self-application**: Phase 67's `plan_text_consistency_lint` cleared this plan. Phase 64 Step 6.8 gate validates this seal's digests.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 70 hotfix complete; GH #47 closed)
+*Merkle seal: 1b56f56a...* (Phase 70 seal on top of Phase 69's 57247161...)
+*Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*

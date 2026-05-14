@@ -273,3 +273,17 @@ A second recurrence dimension: when a plan introduces a discipline (lint, audit 
 - **Self-Application Sub-Pass** in `/qor-audit` Step 3 (GH #44): when the plan's `originating_remediation` field is set (Phase 68 schema declaration in `qor/gates/schema/plan.schema.json`), the auditor manually applies the to-be-introduced discipline against the plan's own content. VETO category: `specification-drift` when self-application detects the targeted pattern.
 
 **Cross-reference**: SG-007 (predecessor narrative); Issue #44, Issue #50; FailSafe + COREFORGE empirical evidence.
+
+---
+
+## SG-FilterStageInversion-A — filter-stage ordering composition defect (Phase 70)
+
+**Pattern**: a multi-stage filter pipeline runs stage N before stage M even though stage N's correctness depends on an invariant M enforces. Each stage is individually correct; the composition is wrong. Caught when an invalid candidate that should have been rejected by stage M survives into stage N's scoring/selection and dominates valid candidates. Stage-by-stage correctness review (Wave 2 multi-agent audit pattern) consistently catches stage defects but misses composition defects.
+
+**Originating recurrence**: COREFORGE Skill-Forge V1 dispatcher (`src-tauri/src/synapse/skill_forge/dispatcher.rs`) sealed at META_LEDGER #209 (consumer ledger). Validator (rejects manifests violating 7 coherence rules) was invoked elsewhere in the codebase but not before cost scoring inside `decide()`. Invalid manifests with low cost score could dominate selection. Operator fix in COREFORGE commit `0999e47`: validator now runs as first filter stage.
+
+**Countermeasure**: `qor/scripts/pipeline_inversion_lint.py` (sealed at Phase 49; wired into `/qor-audit` Step 0.6 at Phase 70 GH #47). The heuristic walks Python source via stdlib `ast`, detects filter-pipeline patterns (chained `.filter()` calls, sequential guards, multiple early-return guards), extracts field names referenced in predicates, identifies validator-shaped functions in the module (name starts with `validate`/`check`/`verify`/`is_valid`), and emits findings when a pipeline references fields that also appear in a validator AND no validator-shaped call runs first in the pipeline.
+
+WARN-only at audit time; the lint surfaces the question. The Judge confirms at Step 3 whether the surfaced order represents a real inversion.
+
+**Cross-reference**: Issue #47; COREFORGE Skill-Forge V1 dispatcher pattern; Phase 49 lint implementation; Phase 70 wiring.
