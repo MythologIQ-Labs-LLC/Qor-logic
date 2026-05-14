@@ -182,3 +182,11 @@ Scope fences (Phase 31 wiring):
 - Per-entry `scope_exclude: []` list in glossary frontmatter.
 
 **Strict mode is live at `/qor-substantiate` Step 4.7 as of Phase 32** via `run_all_checks_from_plan(..., strict=True)`. Lenient mode (default) remains the mode for the ad-hoc drift report CLI and any future skill that wants advisory output. Phase 32 delivered the zero-finding baseline that made live wiring viable: docs/*.md archive-by-default (except the 4 system-tier docs), README + CHANGELOG excluded as narrative entry points, targeted `referenced_by:` adoption for high-usage terms.
+
+## 8. Implement-time authoring (Phase 71)
+
+Documentation authoring belongs in `/qor-implement` Step 8.5, where the implementing agent has the fullest context for accurate doc updates. The substantiate-time integrity checks (Steps 4.7 / 6 / 6.5 / 4.6.6) serve as verification — confirming docs were updated — rather than as the primary authoring mechanism.
+
+The failure mode addressed by Phase 71 (per Issue #52): across an 18+ ledger-entry analytics program, `ARCHITECTURE_PLAN.md` file tree went stale because no implement step updated it; schema documentation drifted because the implementing agent moved to the next sub-plan before substantiation ran the WARN-only currency check. By the time `/qor-substantiate` Step 4.6.6 (procedural-fidelity check) caught the doc-surface coverage gap as a severity-2 shadow event, the context for accurate authoring had been discarded.
+
+**Phase 71 contract**: `/qor-implement` Step 8.5 walks four documentation surfaces against the implement diff (file tree, architecture docs, operations docs, schema docs) with doc_tier-conditional semantics (`minimal` → WARN-skip; `standard`/`system` → at least file tree + architecture; `legacy` → bypass). The substantiate-time gates verify but no longer carry the authoring burden alone. Per `qor/skills/sdlc/qor-implement/SKILL.md` Step 8.5 and Issue #52.

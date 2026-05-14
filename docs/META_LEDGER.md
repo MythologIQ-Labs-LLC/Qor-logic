@@ -7700,3 +7700,46 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 69 hotfix complete; GH #43 closed)
 *Merkle seal: 57247161...* (Phase 69 seal on top of Phase 68's 09e3feee...)
 *Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
+
+---
+
+### Entry #205: SESSION SEAL — Phase 71: qor-implement Step 8.5 Documentation Sync (v0.47.5, GH #52)
+
+**Timestamp**: 2026-05-14T20:05:00Z
+
+**Phase**: SUBSTANTIATE (Phase 71 hotfix)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase71-qor-implement-step-8-5-documentation-sync.md
+
+**Session**: `2026-05-14T1951-1f949f`
+
+**SSDF Practices**: PS.2.1, PW.1.1, RV.2.1
+
+**Content Hash (session seal)**: `f1612ec2dadc993770e3299f5278500882c1110256900c9710ba7bc4ff52fa48`
+
+**Previous Hash**: `57247161064057779953c3cb90ffa44b62d93bd620351ef2c443a2c5aecb4ccd`
+
+**Chain Hash (Merkle seal)**: `3d432da117f03aeed56d0d076ca7aa01a22b53b3e076fbc3461f02a8b11e17f6`
+
+**Scope**: `/qor-implement` Step 8.5 Documentation Sync added between Post-Build Cleanup (Step 8) and Complexity Self-Check (Step 9). Operator-facing checklist walks four documentation surfaces (ARCHITECTURE_PLAN file tree / architecture docs / operations docs / schema docs) with doc_tier-conditional semantics.
+
+**Doctrine**: `doctrine-documentation-integrity.md` §8 documents the implement-time authoring discipline.
+
+**Files touched** (5): 1 new test, 1 SKILL.md prose, 1 doctrine section, SYSTEM_STATE, plan.
+
+**Test surface**: 4 Phase 71 tests green.
+
+**Branch sequencing note**: phase/71 branched from main AFTER Phase 69 merged but BEFORE Phase 70 (PR #65). Entry #205 chains from Phase 69's Entry #203; ships in parallel with Phase 70's Entry #204.
+
+**Self-application**: Phase 67's `plan_text_consistency_lint` cleared this plan. Phase 64 Step 6.8 gate validates this seal.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 71 hotfix complete; GH #52 closed)
+*Merkle seal: 3d432da1...* (Phase 71 seal on top of Phase 69's 57247161...; Phase 70 parallel at Entry #204)
+*Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*

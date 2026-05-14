@@ -10,6 +10,23 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.47.5] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 71 (hotfix, GH #52)**: qor-implement Step 8.5 Documentation Sync.
+  - New Step 8.5 between Post-Build Cleanup (Step 8) and Complexity
+    Self-Check (Step 9) in `/qor-implement` SKILL.md. Operator-facing
+    checklist for four documentation surfaces (file tree / architecture /
+    operations / schema) with doc_tier-conditional semantics
+    (minimal: WARN-skip; standard/system: required; legacy: bypass).
+  - Doctrine `doctrine-documentation-integrity.md` §8 cross-references
+    the implement-time authoring discipline. Substantiate-time gates
+    (Steps 4.7, 6, 6.5, 4.6.6) now serve verification, not authoring.
+  - 4 new tests.
+
 ## [0.47.3] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -1,0 +1,40 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T1951-1f949f",
+  "ts": "2026-05-14T19:51:51Z",
+  "plan_path": "docs/plan-qor-phase71-qor-implement-step-8-5-documentation-sync.md",
+  "phases": [
+    "Phase 1: qor-implement Step 8.5 prose + doctrine cross-reference"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_implement_step_8_5_documentation_sync.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase71-qor-implement-step-8-5-documentation-sync.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "Operator-discipline; no automation."
+    ],
+    "non_goals": [
+      "No detection automation."
+    ],
+    "exclusions": [
+      "No substantiate skill changes."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "hotfix",
+  "originating_remediation": "GH #52",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.47.3",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T19:51:51Z"
+  }
+}

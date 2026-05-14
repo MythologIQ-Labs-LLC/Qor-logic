@@ -171,6 +171,25 @@ For UI examples, see:
 Final pass checklist:
 `references/qor-implement-patterns.md`.
 
+### Step 8.5: Documentation Sync (Phase 71 wiring - GH #52)
+
+For each file created or modified in this implementation, identify which documentation files should reflect the change. Documentation authoring belongs in this phase, where the implementing agent has the fullest context. `/qor-substantiate` Steps 4.7, 6, 6.5, and 4.6.6 verify documentation currency but should not be the primary authoring mechanism — by substantiation, the context for accurate doc updates has degraded.
+
+For every file in this implement diff, walk the following checklist:
+
+- [ ] **`docs/ARCHITECTURE_PLAN.md` file tree** — add new files, remove deleted files, restructure directories as needed.
+- [ ] **Architecture docs** (`docs/architecture.md` + schema docs) — update interface contracts, data flows, dependency tables for new tables, functions, env vars, or cron jobs introduced.
+- [ ] **Operations docs** (`docs/operations.md`) — document new scripts, env vars, deployment steps, or troubleshooting rows for new failure modes.
+- [ ] **Schema docs** — document new migrations, RLS policies, function signatures.
+
+**doc_tier semantics** (from plan top-matter):
+
+- `minimal`: skip this step with a WARN log entry (matches the existing minimal-tier escape hatch).
+- `standard` or `system`: update at least the `ARCHITECTURE_PLAN.md` file tree AND the relevant architecture doc section. Schema and operations sections required when the implement diff touches those surfaces.
+- `legacy`: bypass (matches the existing legacy-tier semantics per `qor/references/doctrine-documentation-integrity.md`).
+
+The post-hoc verification at `/qor-substantiate` Step 4.6.6 (procedural-fidelity check) still emits severity-2 shadow events for any doc-surface coverage gap; this Step 8.5 makes such gaps the exception rather than the default. Per `qor/references/doctrine-documentation-integrity.md` "Implement-time authoring".
+
 ### Step 9: Complexity Self-Check
 
 Before declaring completion:
