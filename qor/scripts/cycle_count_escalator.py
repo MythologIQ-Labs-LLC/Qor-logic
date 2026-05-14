@@ -53,3 +53,33 @@ def check(session_id: str) -> EscalationRecommendation | None:
         signature=signature or "",
         cycle_count=count,
     )
+
+
+def check_session_total(session_id: str) -> EscalationRecommendation | None:
+    """Session-total mode: escalate when any signature reaches K=3 cumulative.
+
+    Phase 69 (GH #43): catches the recurrence-across-artifacts pattern where
+    the same signature appears 3+ times in one session but is interrupted by
+    PASS audits or implement breaks (so the consecutive-streak ``check``
+    misses it). Runs alongside ``check``; both modes can fire independently.
+
+    Returns ``EscalationRecommendation`` with
+    ``escalation_reason="session-total"`` when threshold met; ``None`` otherwise.
+    Respects the same suppression marker as ``check``.
+    """
+    totals = stall_walk.count_session_signature_totals(session_id)
+    if not totals:
+        return None
+    over_threshold = [(sig, n) for sig, n in totals.items() if n >= ESCALATION_THRESHOLD]
+    if not over_threshold:
+        return None
+    if _suppression_active(session_id, None):
+        return None
+    over_threshold.sort(key=lambda item: (-item[1], item[0]))
+    signature, count = over_threshold[0]
+    return EscalationRecommendation(
+        suggested_skill="/qor-remediate",
+        escalation_reason="session-total",
+        signature=signature,
+        cycle_count=count,
+    )

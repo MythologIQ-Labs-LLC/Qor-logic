@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-14T18:47:31Z",
+  "generated_ts": "2026-05-14T19:21:21Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -114,7 +114,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "3938bafc42bcdcbc6ab2b806603b6fdb014c2b8398b789f8fae9ba74fa63a98a"
+      "sha256": "7e3df2864084f7d0c24edbcd46694e18a899a470cf47ee1862d1b9dc28d3bdff"
     },
     {
       "id": "qor-bootstrap",
@@ -270,7 +270,7 @@
       "id": "qor-plan",
       "source_path": "skills/qor-plan/SKILL.md",
       "install_rel_path": "skills/qor-plan/SKILL.md",
-      "sha256": "e4ecbb2bc2143007ec50afb459c10621e4c3cb091ec42ca7b02fae69effaf06d"
+      "sha256": "4a8817a49b7f430780a694a58db6c523202c396d1b5d7bdb57c7f773c1c79819"
     },
     {
       "id": "qor-process-review-cycle",

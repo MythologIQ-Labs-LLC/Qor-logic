@@ -10,6 +10,24 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.47.3] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 69 (hotfix, GH #43)**: cycle_count_escalator session-total signature mode.
+  - New `qor/scripts/stall_walk.count_session_signature_totals(session_id)`
+    aggregates per-signature VETO counts across the entire session audit
+    history (non-consecutive, ignores PASS / LEGACY / implement breaks).
+  - New `qor/scripts/cycle_count_escalator.check_session_total(session_id)`
+    returns `EscalationRecommendation(escalation_reason="session-total", ...)`
+    when any signature reaches K=3 cumulative. Runs alongside the existing
+    consecutive-streak `check`; both modes can fire independently.
+  - `/qor-plan` Step 2c + `/qor-audit` Step 0.5 + doctrine §10.4 all updated
+    to invoke and document the new mode.
+  - 11 new tests across 2 files.
+
 ## [0.47.2] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

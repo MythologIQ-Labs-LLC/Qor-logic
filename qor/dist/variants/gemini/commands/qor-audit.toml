@@ -67,9 +67,13 @@ Before engaging adversarial mode, check whether the session has already accumula
 from qor.scripts import cycle_count_escalator as cce
 
 rec = cce.check(sid)
-if rec:
-    # Surface to operator. On decline, record the override via
-    # orchestration_override.record and proceed with audit.
+# Phase 69 (GH #43): also check session-total mode (recurrence across
+# artifacts within one session, non-consecutive). escalation_reason
+# distinguishes "cycle-count" (consecutive) from "session-total" (cumulative).
+total_rec = cce.check_session_total(sid)
+if rec or total_rec:
+    # Surface to operator (both if both fired). On decline, record the
+    # override via orchestration_override.record and proceed with audit.
     # See /qor-plan Step 2c for symmetric handling.
 ```
 

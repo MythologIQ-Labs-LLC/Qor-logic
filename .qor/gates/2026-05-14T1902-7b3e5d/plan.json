@@ -1,0 +1,44 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T1902-7b3e5d",
+  "ts": "2026-05-14T19:03:14Z",
+  "plan_path": "docs/plan-qor-phase69-session-total-signature-escalator.md",
+  "phases": [
+    "Phase 1: Session-total signature counter helper",
+    "Phase 2: Skill prose wiring + doctrine update"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_session_total_signature_count.py tests/test_session_total_escalator_skill_wiring.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase69-session-total-signature-escalator.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "V1 counts non-consecutive within single session.",
+      "Runs alongside existing consecutive-streak mode."
+    ],
+    "non_goals": [
+      "Cross-session aggregation.",
+      "Per-target aggregation."
+    ],
+    "exclusions": [
+      "No audit_history schema changes.",
+      "No findings_signature algorithm changes."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "hotfix",
+  "originating_remediation": "GH #43",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.47.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T19:03:14Z"
+  }
+}

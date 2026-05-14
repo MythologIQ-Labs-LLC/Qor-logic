@@ -215,6 +215,8 @@ Both `/qor-plan` (Step 2c) and `/qor-audit` (Step 0.5) call `cycle_count_escalat
 
 When `count >= K`, the helper returns `EscalationRecommendation(suggested_skill="/qor-remediate", escalation_reason="cycle-count", signature, cycle_count)`. The skill SURFACES the recommendation to the operator; it does not auto-execute. Operator may proceed with the current phase (plan/audit), in which case §10.5 applies.
 
+**Phase 69 (GH #43) addition — session-total mode**. The consecutive-streak mode above misses the session-arc pattern where the same signature recurs across MULTIPLE artifacts (e.g., 3 plans authored in one session, each VETO'd with the same signature, but interleaved with PASS records or implement breaks that reset the consecutive counter). `cycle_count_escalator.check_session_total(session_id)` aggregates per-signature counts across the entire session audit history via `stall_walk.count_session_signature_totals`; when any signature reaches `K = 3` cumulative, returns `EscalationRecommendation(escalation_reason="session-total", ...)`. Both modes run in parallel at `/qor-plan` Step 2c and `/qor-audit` Step 0.5; either firing surfaces the same `/qor-remediate` recommendation. The `escalation_reason` field distinguishes them in shadow-event payloads. Same suppression marker applies (§10.5).
+
 ### 10.5 Operator override and re-prompt suppression (Phase 37)
 
 When an operator declines a cycle-count escalation, `orchestration_override.record(session_id, skill, recommended_skill, reason)` does two things:
