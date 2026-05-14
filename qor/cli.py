@@ -153,6 +153,9 @@ def _register_misc(sub) -> None:
     sp_info.add_argument("skill", help="skill name")
     sp_compile = sub.add_parser("compile", help="regenerate variants from source")
     sp_compile.add_argument("--dry-run", action="store_true")
+    # Phase 75 (GH #38): substantiate-capability report
+    from qor.cli_handlers import substantiate as substantiate_handlers
+    substantiate_handlers.register(sub)
     sp_verify = sub.add_parser("verify-ledger", help="verify META_LEDGER.md chain")
     sp_verify.add_argument(
         "--ledger", default=None,
@@ -227,6 +230,7 @@ def _dispatch(args: argparse.Namespace) -> int | None:
         "verify-ledger": lambda: _do_verify_ledger(args),
         "seed": lambda: _do_seed(args),
         "capabilities": lambda: _do_capabilities(args),
+        "substantiate-capability": lambda: args.func(args),
     }
     if args.command in direct:
         return direct[args.command]()

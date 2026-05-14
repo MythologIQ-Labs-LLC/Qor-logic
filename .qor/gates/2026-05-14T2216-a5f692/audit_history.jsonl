@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"opus","system":"Qor-logic","ts":"2026-05-14T22:42:43Z","version":"0.50.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-05-14T2216-a5f692","target":"docs/plan-qor-phase75-skill-capability-declaration.md","ts":"2026-05-14T22:42:43Z","verdict":"PASS"}

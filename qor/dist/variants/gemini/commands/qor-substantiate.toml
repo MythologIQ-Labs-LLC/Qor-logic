@@ -14,6 +14,27 @@ prompt = """
 
 The final phase of the S.H.I.E.L.D. lifecycle. Verify that implementation matches the encoded blueprint (Reality = Promise), then cryptographically seal the session.
 
+## Step Prerequisites (Phase 75 wiring; GH #38)
+
+This skill is multi-step; each step declares its prerequisite so non-Python hosts can use `qor-logic substantiate-capability` to identify which steps will run vs skip on their archetype. When a prerequisite is absent the operator records SKIP in the seal entry and emits a `gate_skipped_prerequisite_absent` shadow event (severity 1). See `qor/references/doctrine-shadow-genome-countermeasures.md` SG-HalfSealedClaim-A for the countermeasure rationale.
+
+| Step | Requires | Notes |
+|---|---|---|
+| 4.6 intent_lock + skill_admission + gate_skill_matrix | module:qor.reliability.intent_lock | Python reliability toolkit |
+| 4.6.5 secret_scanner | module:qor.scripts.secret_scanner | OWASP LLM06 / NIST AI 600-1 §2.10 |
+| 4.6.6 procedural_fidelity | module:qor.scripts.procedural_fidelity | WARN-only doc-surface coverage gap |
+| 4.7 doc_integrity (strict) | module:qor.scripts.doc_integrity | tier-driven glossary + orphan + term-drift checks |
+| 6.5 doc currency + badge currency | module:qor.scripts.doc_integrity_strict | release-class badge ABORT (Phase 49) |
+| 6.8 seal hash integrity gate | module:qor.scripts.hash_guard | Phase 64 fail-closed gate |
+| 7.4 SSDF tagger | module:qor.scripts.ssdf_tagger | NIST SP 800-218A practice tag emission |
+| 7.5 version bump | file:pyproject.toml | python-archetype release shape |
+| 7.6 changelog stamp | file:CHANGELOG.md | Keep-a-Changelog Unreleased convention |
+| 7.7 seal_entry_check | module:qor.reliability.seal_entry_check | post-seal entry consistency verification |
+| 7.8 gate_chain_completeness | module:qor.reliability.gate_chain_completeness | phase ≥ 52 grandfather boundary |
+| 8.5 dist recompile | module:qor.scripts.dist_compile | per-host variant compile |
+
+Operators run `qor-logic substantiate-capability` before invoking `/qor-substantiate` to confirm which gates will run on their host. Output is a paste-able markdown table for the seal entry body.
+
 ## Execution Protocol
 
 ### Step 0: Gate Check (advisory — Phase 8 wiring)
@@ -189,6 +210,8 @@ Report: "Skill [name] missing required section: [section]. Fix before sealing."
 
 ### Step 4.6: Reliability Sweep (Phase 17 wiring)
 
+**Prerequisite (Phase 75; GH #38)**: see Step Prerequisites table; this step requires `module:qor.reliability.intent_lock`. Operators on hosts where the prerequisite is absent should record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.
+
 Three reliability enforcement gates run sequentially. Each is an interdiction: non-zero exit aborts substantiation.
 
 ```bash
@@ -211,6 +234,8 @@ Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit
 
 ### Step 4.6.5: Secret-scanning gate (Phase 56 wiring)
 
+**Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.secret_scanner`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.
+
 Pre-seal scan over staged content. ABORTs on any detected secret. Closes OWASP LLM Top 10 LLM06 (Sensitive Information Disclosure) and NIST AI 600-1 §2.10. Drives the previously dormant `has_hardcoded_secrets` Cedar attribute (rule on books since Phase 23).
 
 ```bash
@@ -231,6 +256,8 @@ python -m qor.scripts.procedural_fidelity --session "$SESSION_ID" \\
 Operator reviews `dist/procedural-fidelity.findings.json` after seal; remediation lands in the next seal cycle. See `qor/references/doctrine-procedural-fidelity.md` for the four-class deviation catalog and remediation workflow.
 
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
+
+**Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.doc_integrity`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.
 
 Read the plan artifact and run doc-integrity checks against the declared tier. ABORTs on any `ValueError` per `qor/references/doctrine-documentation-integrity.md` (no silent override; `legacy` tier bypasses all checks).
 
@@ -278,6 +305,8 @@ When `FEATURE_INDEX.md` exists in the repo, verify every declared feature after 
 Repos without `FEATURE_INDEX.md` record a single-line note (`**Feature Inventory**: not adopted`) in the seal entry and skip the verification pass. V1 (this phase): operator reviews the surfaced counts manually; the ABORT-on-outside-scope-regression helper is deferred to a follow-on phase. Per `qor/references/doctrine-feature-inventory.md`.
 
 ### Step 6.5: Documentation Currency Check (Phase 31 wiring)
+
+**Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.doc_integrity_strict`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.
 
 Verify that doc-affecting phase changes also updated the system-tier docs (`docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md`). Heuristic lives in `doc_integrity_strict.check_documentation_currency` and returns a warning list.
 
@@ -364,6 +393,8 @@ Operator pastes `$SSDF_LINE` into the SESSION SEAL entry body before Step 7 comp
 
 ### Step 7.5: Version bump (Phase 13 wiring; Phase 33 split)
 
+**Prerequisite (Phase 75; GH #38)**: requires `file:pyproject.toml` (Python-archetype). Non-Python hosts skip this step and use their archetype-native version mechanism (e.g., `package.json` for Node, `Cargo.toml` for Rust); record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event. Future V2 (deferred per ideation 2026-05-14T2216-a5f692) will add pluggable backends.
+
 Bump `pyproject.toml` only. Tag creation was moved to Step 9.5.5 after the seal commit (Phase 33 — prevents the historical off-by-one seal-tag timing bug where tags pointed at the pre-seal HEAD).
 
 ```python
@@ -395,6 +426,8 @@ apply_stamp(
 
 ### Step 7.7: Post-seal verification (Phase 47 wiring)
 
+**Prerequisite (Phase 75; GH #38)**: requires `module:qor.reliability.seal_entry_check`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.
+
 Closes SG-AdjacentState-A (Phase 46's sixth instance: substantiate sealed at v0.33.0 without writing META_LEDGER entries; intent-lock and the Step 4.6 reliability gates did not catch it because they run before the seal entry is written). Runs *after* Step 7 (Final Merkle Seal) has appended the SESSION SEAL entry to `docs/META_LEDGER.md`. Verifies the entry exists for this phase and the latest chain hash is internally consistent.
 
 ```bash
@@ -425,6 +458,8 @@ Clear: `.agent/staging/` (transient working directory).
 Preserve only the final AUDIT_REPORT.md (or archive it).
 
 ### Step 8.5: Dist Recompile (Phase 30 wiring)
+
+**Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.dist_compile`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.
 
 Rebuild variant outputs so seal cannot complete with dist drift against source skills. Closes the gap where Phase 28/29 operators manually ran `python -m qor.scripts.dist_compile` between implementation and seal.
 
