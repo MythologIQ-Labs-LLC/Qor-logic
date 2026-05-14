@@ -50,10 +50,24 @@ def _do_compile(args: argparse.Namespace) -> int:
 
 
 def _do_verify_ledger(args: argparse.Namespace) -> int:
-    """Verify META_LEDGER.md chain."""
+    """Verify META_LEDGER.md chain.
+
+    Phase 66 (GH #55) extensions:
+    - ``--ledger PATH``: explicit ledger path override; defaults to
+      ``workdir.meta_ledger()``.
+    - ``--post-anchor``: switch to post-anchor verification mode for
+      re-anchored consumer ledgers (tolerates disclosed pre-anchor
+      failures up to a boundary).
+    - ``--boundary N``: pin the post-anchor boundary at entry N; only
+      valid with ``--post-anchor``. Default is auto-detect.
+    """
     from qor.scripts import ledger_hash
     from qor import workdir
-    ledger_path = workdir.meta_ledger()
+    explicit = getattr(args, "ledger", None)
+    ledger_path = Path(explicit) if explicit else workdir.meta_ledger()
+    if getattr(args, "post_anchor", False):
+        boundary = getattr(args, "boundary", None)
+        return ledger_hash.verify_post_anchor(ledger_path, boundary_entry=boundary)
     return ledger_hash.verify(ledger_path)
 
 
@@ -139,7 +153,19 @@ def _register_misc(sub) -> None:
     sp_info.add_argument("skill", help="skill name")
     sp_compile = sub.add_parser("compile", help="regenerate variants from source")
     sp_compile.add_argument("--dry-run", action="store_true")
-    sub.add_parser("verify-ledger", help="verify META_LEDGER.md chain")
+    sp_verify = sub.add_parser("verify-ledger", help="verify META_LEDGER.md chain")
+    sp_verify.add_argument(
+        "--ledger", default=None,
+        help="explicit ledger path (default: workdir.meta_ledger())",
+    )
+    sp_verify.add_argument(
+        "--post-anchor", action="store_true",
+        help="tolerate disclosed pre-anchor failures (Phase 66, GH #55)",
+    )
+    sp_verify.add_argument(
+        "--boundary", type=int, default=None,
+        help="pin post-anchor boundary at entry N (default: auto-detect)",
+    )
     sp_seed = sub.add_parser("seed", help="scaffold governance files in a workspace")
     sp_seed.add_argument("--target", type=Path, default=None)
 

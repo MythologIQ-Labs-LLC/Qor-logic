@@ -52,8 +52,19 @@ def _ledger(entries: list[str]) -> str:
 
 
 def _zhash(seed: int) -> str:
-    """Deterministic 64-char hex from a seed (synthetic test hashes)."""
-    return f"{seed:064x}"
+    """Deterministic 64-char hex from a seed.
+
+    Phase 66 (GH #54) note: pre-Phase-66 used `f"{seed:064x}"` which produces
+    low-entropy patterns the new placeholder detector flags. Now derives from
+    `hashlib.sha256(seed-bytes)` so fixtures pass placeholder detection
+    while remaining deterministic.
+    """
+    import hashlib
+    if seed == 0:
+        # Preserve the genesis-anchor convention (all-zeros previous_hash)
+        # which the placeholder detector exempts explicitly.
+        return "0" * 64
+    return hashlib.sha256(f"phase66-seal-fixture-{seed}".encode()).hexdigest()
 
 
 def _write_ledger(tmp_path: Path, entries: list[str]) -> Path:

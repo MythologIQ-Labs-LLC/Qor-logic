@@ -1,0 +1,62 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T1636-5ebd78",
+  "ts": "2026-05-14T17:19:22Z",
+  "plan_path": "docs/plan-qor-phase66-qor-validate-integrity-bundle.md",
+  "phases": [
+    "Phase 1: Verifier core extensions (Session Seal + placeholder + taint)",
+    "Phase 2: Post-anchor verify mode + CLI flags",
+    "Phase 3: qor-validate skill + doctrine refresh",
+    "Phase 4: Documentation + release housekeeping"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_session_seal_markup_recognition.py tests/test_placeholder_pattern_detection.py tests/test_taint_propagation.py tests/test_post_anchor_verify.py tests/test_verify_ledger_cli.py tests/test_qor_validate_skill_post_anchor_prose.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase66-qor-validate-integrity-bundle.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "TAINTED entry",
+      "home": "qor/scripts/ledger_hash.py"
+    },
+    {
+      "term": "DISCLOSED_PRE_ANCHOR",
+      "home": "qor/scripts/ledger_hash.py"
+    },
+    {
+      "term": "post-anchor boundary",
+      "home": "qor/references/doctrine-governance-enforcement.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 placeholder-pattern detection uses conservative heuristics.",
+      "V1 post-anchor boundary defaults to last canonically verifying entry; operator override supported.",
+      "V1 Session Seal markup recognition is one-way pattern."
+    ],
+    "non_goals": [
+      "Backfilling historical entries to canonical Chain Hash markup.",
+      "Cross-repo ledger validation.",
+      "Repairing tainted downstream entries."
+    ],
+    "exclusions": [
+      "No changes to substantiate Step 6.8 (Phase 64) or Step 7.7 (Phase 47).",
+      "No changes to chain_hash() algorithm.",
+      "No changes to META_LEDGER schema."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "feature",
+  "originating_remediation": "GH #54 + GH #55",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.46.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T17:19:22Z"
+  }
+}

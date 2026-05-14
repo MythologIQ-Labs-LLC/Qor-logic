@@ -128,7 +128,10 @@ def test_seal_commits_after_cutoff_have_full_canonical_trailer():
         if phase_num is None or phase_num < 49:
             continue  # grandfathered
         has_qor_line = "Qor-logic" in body and "Authored via" in body
-        has_coauthor = "Co-Authored-By:" in body
+        # GitHub squash merge normalizes trailers to canonical lowercase form
+        # `Co-authored-by:`; the doctrine accepts either case per git's
+        # case-insensitive trailer convention (see git-interpret-trailers).
+        has_coauthor = re.search(r"^Co-authored-by:", body, re.IGNORECASE | re.MULTILINE) is not None
         if not (has_qor_line and has_coauthor):
             failures.append(f"{sha[:8]} {subj!r}")
     assert not failures, (

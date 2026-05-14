@@ -16,9 +16,21 @@ Layered behavior:
 """
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 from qor.scripts import hash_guard, ledger_hash
+
+
+def _digest(seed: bytes) -> str:
+    """Phase 66 helper: produce a real-shape SHA-256 digest for fixtures.
+
+    Pre-Phase-66 tests used `"a" * 64` / `"b" * 64` synthetic shapes. The
+    placeholder detector introduced by GH #54 (Phase 66) correctly flags
+    those as fabrication. Fixtures now derive from `hashlib.sha256(seed)`
+    so they pass placeholder detection while still being deterministic.
+    """
+    return hashlib.sha256(seed).hexdigest()
 
 
 def _content(h: str) -> str:
@@ -49,8 +61,8 @@ def _write_ledger(tmp_path: Path, body: str) -> Path:
 
 
 def test_verify_accepts_known_good_chain(tmp_path, capsys):
-    content_h = "a" * 64
-    prev_h = "b" * 64
+    content_h = _digest(b"phase66-fixture-content")
+    prev_h = _digest(b"phase66-fixture-prev")
     chain_h = ledger_hash.chain_hash(content_h, prev_h)
     p = _write_ledger(tmp_path, _entry(1, content_h, prev_h, chain_h))
     rc = ledger_hash.verify(p)
@@ -82,8 +94,8 @@ def test_verify_skips_entries_with_short_hash(tmp_path, capsys):
 def test_verify_rejects_fabricated_but_well_formed_chain_hash(tmp_path, capsys):
     """The actual GH #48 read-side failure mode: write a real-looking hex that
     doesn't correspond to the actual content. Caught by chain comparison."""
-    content_h = "a" * 64
-    prev_h = "b" * 64
+    content_h = _digest(b"phase66-fixture-content")
+    prev_h = _digest(b"phase66-fixture-prev")
     fabricated = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     p = _write_ledger(tmp_path, _entry(1, content_h, prev_h, fabricated))
     rc = ledger_hash.verify(p)
@@ -92,8 +104,8 @@ def test_verify_rejects_fabricated_but_well_formed_chain_hash(tmp_path, capsys):
 
 
 def test_verify_reports_entry_number_on_failure(tmp_path, capsys):
-    content_h = "a" * 64
-    prev_h = "b" * 64
+    content_h = _digest(b"phase66-fixture-content")
+    prev_h = _digest(b"phase66-fixture-prev")
     real = ledger_hash.chain_hash(content_h, prev_h)
     fabricated = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     body = _entry(1, content_h, prev_h, real) + _entry(2, content_h, prev_h, fabricated)

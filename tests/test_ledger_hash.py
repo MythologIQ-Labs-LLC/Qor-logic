@@ -12,6 +12,15 @@ import pytest
 
 from qor.scripts import ledger_hash as lh
 
+
+def _digest(seed: bytes) -> str:
+    """Phase 66 helper: produce a real-shape SHA-256 digest for fixtures.
+    Synthetic "a"*64 / "b"*64 fixtures trigger the placeholder detector
+    introduced by GH #54 (Phase 66). Replace with hashlib.sha256 outputs.
+    """
+    import hashlib
+    return hashlib.sha256(seed).hexdigest()
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 LEDGER_MD = REPO_ROOT / "docs" / "META_LEDGER.md"
 
@@ -53,8 +62,8 @@ def test_chain_hash_recomputable_synthetic():
     Phase 23: chain_hash now uses "|" separator between content and prev.
     """
     import hashlib
-    content = "a" * 64
-    prev = "b" * 64
+    content = _digest(b"a")
+    prev = _digest(b"b")
     # Compute expected via the same algorithm we're testing — inverts to identity check
     # but still validates the hash function isn't silently broken (e.g., returns "")
     expected = hashlib.sha256((content + "|" + prev).encode("utf-8")).hexdigest()
@@ -64,13 +73,13 @@ def test_chain_hash_recomputable_synthetic():
 
 def test_chain_hash_differs_on_content_change():
     prev = "0" * 64
-    h1 = lh.chain_hash("a" * 64, prev)
-    h2 = lh.chain_hash("b" * 64, prev)
+    h1 = lh.chain_hash(_digest(b"a"), prev)
+    h2 = lh.chain_hash(_digest(b"b"), prev)
     assert h1 != h2
 
 
 def test_chain_hash_differs_on_prev_change():
-    content = "a" * 64
+    content = _digest(b"a")
     h1 = lh.chain_hash(content, "0" * 64)
     h2 = lh.chain_hash(content, "1" * 64)
     assert h1 != h2
@@ -158,10 +167,10 @@ def test_verify_detects_tampered_chain_hash(tmp_path):
     """Flip one chain hash byte; verify should fail."""
     fake_ledger = tmp_path / "ledger.md"
     # Build a minimal valid 2-entry ledger
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
-    content_b = "b" * 64
+    content_b = _digest(b"b")
     chain_b = lh.chain_hash(content_b, chain_a)
 
     fake_ledger.write_text(f"""# Test ledger
@@ -199,10 +208,10 @@ def test_verify_clean_synthetic_ledger(tmp_path, capsys):
     silently skips these entries, `OK   Entry #N:` lines disappear even
     though `rc == 0` is still satisfied by the skipped-no-errors path.
     """
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
-    content_b = "b" * 64
+    content_b = _digest(b"b")
     chain_b = lh.chain_hash(content_b, chain_a)
 
     fake_ledger = tmp_path / "ledger.md"
@@ -250,7 +259,7 @@ def test_verify_handles_non_monotonic_entry_numbers(tmp_path, capsys):
     Phase 41: uses bold-anchored `**Chain Hash**:` form with capsys assertion to
     guard against vacuous-green regression.
     """
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
 
@@ -298,10 +307,10 @@ def test_verify_accepts_inline_backtick_chain_hash(tmp_path):
     ledgers adopt the inline form to satisfy all three hash-field regexes with
     one consistent markup.
     """
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
-    content_b = "b" * 64
+    content_b = _digest(b"b")
     chain_b = lh.chain_hash(content_b, chain_a)
 
     fake_ledger = tmp_path / "ledger.md"
@@ -326,10 +335,10 @@ def test_verify_accepts_mixed_chain_hash_forms(tmp_path, capsys):
     the stricter regex accepts for `= <hex>`). Capsys assertion guards against
     vacuous-green regression.
     """
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
-    content_b = "b" * 64
+    content_b = _digest(b"b")
     chain_b = lh.chain_hash(content_b, chain_a)
 
     fake_ledger = tmp_path / "ledger.md"
@@ -356,7 +365,7 @@ SHA256(content_hash + previous_hash)
 
 def test_verify_detects_tampered_inline_backtick_chain(tmp_path):
     """Inline-backtick chain with a wrong hash should still be detected as FAIL."""
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     wrong_chain = "deadbeef" * 8  # 64 hex but wrong
 
@@ -399,10 +408,10 @@ def test_verify_chain_anchor_rejects_prose_mention(tmp_path, capsys):
     backtick-hex that followed -- often the content_hash value from an earlier
     field. The stricter anchor `\\*\\*Chain Hash\\*\\*` rejects prose mentions.
     """
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
-    unrelated_hex = "c" * 64  # appears in prose, must not be captured
+    unrelated_hex = _digest(b"c")  # appears in prose, must not be captured
 
     fake_ledger = tmp_path / "ledger.md"
     fake_ledger.write_text(f"""### Entry #1: PROSE MENTION
@@ -426,10 +435,10 @@ def test_verify_fenced_content_with_trailing_inline_hash(tmp_path, capsys):
     so with a fenced Content Hash the regex would silently sweep forward under
     re.DOTALL and capture a later Plan Hash's backtick-hex value as content.
     """
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
-    plan_hex = "d" * 64  # unrelated; must not be captured as content
+    plan_hex = _digest(b"d")  # unrelated; must not be captured as content
 
     fake_ledger = tmp_path / "ledger.md"
     fake_ledger.write_text(f"""### Entry #1: FENCED CONTENT + INLINE PLAN
@@ -452,10 +461,10 @@ SHA256(stuff)
 
 def test_verify_fenced_previous_with_trailing_inline_hash(tmp_path, capsys):
     """Fenced Previous Hash must not bleed into a later inline-backtick hex field."""
-    content_a = "a" * 64
-    prev_a = "f" * 64
+    content_a = _digest(b"a")
+    prev_a = _digest(b"f")
     chain_a = lh.chain_hash(content_a, prev_a)
-    plan_hex = "d" * 64
+    plan_hex = _digest(b"d")
 
     fake_ledger = tmp_path / "ledger.md"
     fake_ledger.write_text(f"""### Entry #1: FENCED PREVIOUS + INLINE PLAN
@@ -486,7 +495,7 @@ def test_verify_bounded_span_stops_at_next_field(tmp_path, capsys):
     Hash's value captured as content.
     """
     prev_a = "0" * 64
-    chain_mismatch = "e" * 64  # unrelated to any valid chain computation
+    chain_mismatch = _digest(b"e")  # unrelated to any valid chain computation
 
     fake_ledger = tmp_path / "ledger.md"
     fake_ledger.write_text(f"""### Entry #1: BROKEN MARKUP
@@ -506,7 +515,7 @@ def test_verify_bounded_span_stops_at_next_field(tmp_path, capsys):
 
 def test_verify_accepts_fenced_content_hash(tmp_path, capsys):
     """**Content Hash** in fenced `= <hex>` form verifies clean (symmetric with chain hash)."""
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
 
@@ -528,8 +537,8 @@ SHA256(file bytes)
 
 def test_verify_accepts_fenced_previous_hash(tmp_path, capsys):
     """**Previous Hash** in fenced `= <hex>` form verifies clean."""
-    content_a = "a" * 64
-    prev_a = "f" * 64
+    content_a = _digest(b"a")
+    prev_a = _digest(b"f")
     chain_a = lh.chain_hash(content_a, prev_a)
 
     fake_ledger = tmp_path / "ledger.md"
@@ -550,10 +559,10 @@ SHA256(prior content)
 
 def test_verify_accepts_mixed_content_hash_forms(tmp_path, capsys):
     """A ledger mixing inline-backtick and fenced Content Hash forms verifies clean."""
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
-    content_b = "b" * 64
+    content_b = _digest(b"b")
     chain_b = lh.chain_hash(content_b, chain_a)
 
     fake_ledger = tmp_path / "ledger.md"
@@ -598,7 +607,7 @@ def test_verify_accepts_chain_hash_with_merkle_seal_suffix(tmp_path, capsys):
     silently skipped 7+ ledger entries. Phase 44 relaxes the anchor to accept
     an optional parenthetical suffix inside the bold markers.
     """
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
 
@@ -616,7 +625,7 @@ def test_verify_accepts_chain_hash_with_merkle_seal_suffix(tmp_path, capsys):
 
 def test_verify_accepts_content_hash_with_session_seal_suffix(tmp_path, capsys):
     """`**Content Hash (session seal)**:` is the SESSION SEAL convention paired with Chain Hash."""
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
 
@@ -638,7 +647,7 @@ def test_verify_accepts_previous_hash_with_arbitrary_suffix(tmp_path, capsys):
     Real ledgers don't use this convention for Previous Hash today, but the
     regex change applies symmetrically; this test guards against future drift.
     """
-    content_a = "a" * 64
+    content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
 

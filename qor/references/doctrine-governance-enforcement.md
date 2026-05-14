@@ -266,3 +266,20 @@ Contract:
 - Remediation on ABORT: install the seal-critical helper modules, regenerate the affected hash via `python -m qor.scripts.ledger_hash hash <path>`, or amend a fabricated value to a real digest, then re-run `/qor-substantiate`.
 
 Maps to OWASP LLM Top 10 LLM06 (Sensitive Information Disclosure: prevent fabricated cryptographic evidence), NIST AI RMF MAP-3.1 (trust anchor integrity), and EU AI Act Art. 12 (record-keeping integrity). The gate is the runtime enforcement that closes the gap between `hash_guard`'s Phase 59 helper module landing on main and the substantiate skill actually invoking it.
+
+## 14. Post-anchor ledger invariant (Phase 66)
+
+`/qor-validate` runs in two modes that reflect distinct trust contracts on the META_LEDGER chain. Phase 66 introduces the post-anchor invariant alongside the existing raw-verifier semantics.
+
+**Raw mode** (default): every entry verifies under canonical or Session Seal markup, every chain link math-checks against its recorded predecessor, every hash passes placeholder-pattern detection. Any failure is a hard error. Use for canonical-ledger pre-release audits.
+
+**Post-anchor mode** (`qor-logic verify-ledger --post-anchor`): the active chain contract begins at a boundary entry; pre-boundary failures are reported as `DISCLOSED_PRE_ANCHOR` and tolerated, post-boundary failures remain hard errors. The boundary defaults to the highest-numbered cleanly-verifying entry; operator may pin via `--boundary N`.
+
+Contract:
+
+- A consumer workspace that has documented its pre-anchor edit cluster (e.g., as `## Edit Disclosure` entries cited in `docs/SHADOW_GENOME.md`) may release with `verify_post_anchor` exit 0 even when raw verifier exit code is non-zero.
+- The pre-anchor disclosure is part of the audit trail; it is not concealed, it is acknowledged. Raw mode remains the strict-correctness audit and is the right tool for catching tampering on a canonical ledger.
+- TAINTED entries propagate downstream from every FAIL: once a chain link breaks, every subsequent entry is reported as `TAINTED Entry #N: depends on failed predecessor #M` regardless of whether its own chain math is internally consistent. Math consistency alone is not trust; the chain root is poisoned.
+- Placeholder-pattern hashes (ascending hex, repeating bigrams, FailSafe-class fabrication shapes, low-entropy runs) are flagged as FAIL with the offending field named. The conventional all-zeros previous_hash for genesis entries is exempted.
+
+Maps to NIST AI RMF MAP-3.1 (trust anchor integrity), OWASP LLM Top 10 LLM06 (Sensitive Information Disclosure: prevent unwarranted OK signals on poisoned chains), and EU AI Act Art. 12 (record-keeping continuity through documented anchor events). The two modes close the GH #54 / GH #55 pair: #54's blind spot where Session-Seal-only entries and placeholder-pattern hashes silently passed; #55's false-positive where raw-verifier failures on disclosed pre-anchor entries blocked release on otherwise-clean post-anchor surfaces.
