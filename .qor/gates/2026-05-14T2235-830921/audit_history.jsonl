@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"opus","system":"Qor-logic","ts":"2026-05-14T23:09:10Z","version":"0.50.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L3","session_id":"2026-05-14T2235-830921","target":"docs/plan-qor-phase76-meta-ledger-federation.md","ts":"2026-05-14T23:09:10Z","verdict":"PASS"}

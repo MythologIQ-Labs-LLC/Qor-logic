@@ -10,6 +10,36 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.52.0] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 76 (feature, GH #51, L3 high_risk_target)**: META_LEDGER
+  federation entry IDs + duplicate detection V1 (forward-only;
+  retroactive renumbering of past entries explicitly forbidden).
+  - New `qor/scripts/entry_id.py` provides `derive_entry_id(ts, phase,
+    content_hash, length=12)` returning a content-addressable hex ID
+    (SHA256[:12] = 48 bits collision-resistant). Env
+    `QOR_ENTRY_ID_FULL_HASH=1` switches to 64-char full-hash mode.
+  - `qor.reliability.seal_entry_check.check_previous_hash_uniqueness(
+    ledger_path, min_entry_num=207)` detects the concurrent-append
+    race signature (two entries claiming the same previous_hash).
+    Forward-only: past entries < min_entry_num are grandfathered.
+  - `/qor-substantiate` Step 7 prose requires new entries carry an
+    `**Entry ID**:` body line. Step 7.7 invokes the uniqueness check.
+  - SG-ConcurrentLedgerRace-A doctrine entry with originating
+    recurrence (cross-workspace #16a/b, #17a/b, #18a/b + canonical
+    #109/#111/#113) and explicit prohibition of retroactive renumber.
+  - 2 new glossary terms: `content-addressable entry ID`,
+    `SG-ConcurrentLedgerRace-A`.
+  - 10 new tests across 4 files. EU AI Act Art. 9 impact_assessment
+    block populated for L3 plan.
+  - V2 follow-on: operator-authorized one-time reconciliation pass
+    for past duplicate-previous_hash entries (forward-only commit
+    format; never history-rewrite).
+
 ## [0.51.0] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

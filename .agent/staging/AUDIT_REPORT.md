@@ -1,12 +1,12 @@
-# Audit Report - Phase 75 (Skill capability declaration; GH #38)
+# Audit Report - Phase 76 (META_LEDGER federation entry IDs + duplicate detection V1; GH #51)
 
-**Plan**: `docs/plan-qor-phase75-skill-capability-declaration.md`
-**Session**: `2026-05-14T2216-a5f692`
+**Plan**: `docs/plan-qor-phase76-meta-ledger-federation.md`
+**Session**: `2026-05-14T2235-830921`
 **Verdict**: **PASS**
-**Risk grade**: L2
-**Mode**: solo (Option B independent self-audit)
+**Risk grade**: L3 (high_risk_target=true; impact_assessment populated per EU AI Act Art. 9)
+**Mode**: solo
 
-Pre-audit lints exit 0. Plan reads ideation packet (option matrix selected exploratory probe equivalent at substantiate-capability scope); scope-bounded V1: prose+helper+CLI; no mechanical auto-skip; no pluggable backends. 12 new tests across 5 files, all behavior-focused. Infrastructure citations (Phase 72 Inventory): all cited files (qor/scripts/substantiate_capability.py NEW, qor/cli_handlers/substantiate.py NEW, qor/cli.py, qor/gates/schema/shadow_event.schema.json, qor/skills/governance/qor-substantiate/SKILL.md, qor/references/doctrine-shadow-genome-countermeasures.md) verified to exist or declared NEW in Affected Files. Phase 73 Feature Inventory Touches: this plan touches src/qor/scripts + src/qor/cli_handlers + src/qor/cli; declares 4 new operator-touchable features (substantiate-capability CLI, parser, predicate kinds, capability report rendering) -- all 4 have test descriptors that survive SG-035 acceptance question at feature scope. Phase 74 Infrastructure Alignment sixth bullet: no third-party SDK references; no behavioral-semantics claims about external mechanisms.
+Pre-audit lints exit 0. L3 risk grade respected with explicit forward-only scope (past Entries #1-#207 grandfathered; retroactive renumbering prohibited). 10 new tests across 4 files; all behavior-focused.
 
 ## Verdict
-**PASS** at L2.
+**PASS** at L3.

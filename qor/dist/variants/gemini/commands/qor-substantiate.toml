@@ -369,6 +369,8 @@ Any raised `ValueError` or `RuntimeError` from missing toolkit or invalid hash s
 
 ### Step 7: Final Merkle Seal
 
+**Phase 76 wiring (GH #51)**: each new SESSION SEAL entry body MUST include an `**Entry ID**: \\`<12-char-hex>\\`` line derived via `entry_id.derive_entry_id(ts, phase, content_hash)`. The Entry ID is content-addressable and survives concurrent federation append because it does not require entry-number-allocation coordination. Forward-only: Entries #1-#207 are unchanged; Phase 76+ entries carry the additional field. See `qor/scripts/entry_id.py` for derivation; set env `QOR_ENTRY_ID_FULL_HASH=1` for 64-char mode at federation scale.
+
 Calculate session seal:
 
 Reference implementation: `.claude/commands/scripts/calculate-session-seal.py`.
@@ -427,6 +429,8 @@ apply_stamp(
 ### Step 7.7: Post-seal verification (Phase 47 wiring)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.reliability.seal_entry_check`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.
+
+**Phase 76 wiring (GH #51)**: the post-seal check is extended with a `previous_hash uniqueness` pass via `seal_entry_check.check_previous_hash_uniqueness(ledger_path, min_entry_num=207)`. Two entries claiming the same `previous_hash` signal a concurrent federation race; the check returns `SealEntryResult(ok=False, errors=...)` and the operator must reconcile per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-ConcurrentLedgerRace-A. Forward-only: pre-Phase-76 entries are grandfathered; the canonical META_LEDGER's pre-existing duplicates (#109/#111/#113 era) remain documented residual.
 
 Closes SG-AdjacentState-A (Phase 46's sixth instance: substantiate sealed at v0.33.0 without writing META_LEDGER entries; intent-lock and the Step 4.6 reliability gates did not catch it because they run before the seal entry is written). Runs *after* Step 7 (Final Merkle Seal) has appended the SESSION SEAL entry to `docs/META_LEDGER.md`. Verifies the entry exists for this phase and the latest chain hash is internally consistent.
 

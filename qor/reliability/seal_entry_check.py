@@ -103,6 +103,52 @@ def check(ledger_path: Path, phase_num: int) -> SealEntryResult:
     return SealEntryResult(ok=not errors, errors=errors)
 
 
+def check_previous_hash_uniqueness(ledger_path: Path, min_entry_num: int = 207) -> SealEntryResult:
+    """Phase 76 wiring (GH #51): detect concurrent federation race signature.
+
+    Walks all entries in the ledger from ``min_entry_num`` onward (default 207,
+    the entry that introduced the check at Phase 76 seal), groups by
+    ``previous_hash`` value, and reports any value claimed by more than one
+    entry. Two entries claiming the same predecessor hash is the signature
+    of a concurrent append race.
+
+    Forward-only by design (per SG-ConcurrentLedgerRace-A): pre-Phase-76
+    entries are grandfathered to preserve chain immutability. Past duplicate
+    instances (e.g., META_LEDGER #109/#111/#113 from earlier federation
+    activity) remain in the ledger as documented residual; V2 operator-
+    authorized reconciliation is the only path that may change them.
+
+    Returns ``SealEntryResult(ok=True, errors=[])`` when all in-scope
+    previous_hash values are unique. Returns ``SealEntryResult(ok=False,
+    errors=[...])`` naming the duplicate entry numbers and shared hash prefix.
+    """
+    text = Path(ledger_path).read_text(encoding="utf-8")
+    seen: dict[str, list[int]] = {}
+    for match in _ENTRY_HEADER_RE.finditer(text):
+        entry_num = int(match.group(1))
+        if entry_num < min_entry_num:
+            continue
+        block_end = text.find("\n### Entry #", match.end())
+        block = text[match.start(): block_end if block_end != -1 else len(text)]
+        prev_match = re.search(
+            r"\*\*Previous Hash(?:\s*\([^)]+\))?\*\*:\s*`([0-9a-fA-F]{64})`",
+            block,
+        )
+        if not prev_match:
+            continue
+        prev_hash = prev_match.group(1).lower()
+        seen.setdefault(prev_hash, []).append(entry_num)
+    errors: list[str] = []
+    for prev_hash, nums in sorted(seen.items()):
+        if len(nums) > 1:
+            num_list = ", ".join(f"#{n}" for n in sorted(nums))
+            errors.append(
+                f"concurrent-ledger-race: entries {num_list} all claim previous_hash "
+                f"prefix {prev_hash[:8]}... (full: {prev_hash})"
+            )
+    return SealEntryResult(ok=not errors, errors=errors)
+
+
 def _main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Verify SESSION SEAL ledger entry")
     parser.add_argument("--ledger", required=True, type=Path)

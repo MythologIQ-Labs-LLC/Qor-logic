@@ -270,6 +270,20 @@ The doctrine catalogs all 8 unraveling points (Premature Solutioning, Language D
 
 ---
 
+## SG-ConcurrentLedgerRace-A — duplicate entries from concurrent federation append (Phase 76)
+
+**Pattern**: META_LEDGER's sequential entry-numbering scheme (`Entry #N` allocated by reading the latest entry at append time) is fundamentally single-writer. Under concurrent federation append, two workers both read "latest is #N", both append "#N+1", and the ledger gets duplicate-numbered entries. The cryptographic chain survives (each worker's `previous_hash` is correctly anchored to what it saw) but human-readable structure breaks: downstream tooling that assumes sequential entries (audit viewers, badge_currency counter) over-counts or mis-renders.
+
+**Originating recurrence**: cross-workspace federation observed Entries #16a/b, #17a/b, #18a/b each appearing twice from different concurrent sessions (Canonical Event Schema Extension #376 / Accountable Live Phase 01 #335 / Fix Migration Pipeline #332). The chain hashes linked forward correctly via per-entry `previous_hash`, but sequential numbering was corrupted. Earlier in the canonical Qor-logic META_LEDGER, Entries #109/#111/#113 also share a `previous_hash` from a pre-Phase-76 federation episode.
+
+**Countermeasure** (`qor/scripts/entry_id.py` + `qor.reliability.seal_entry_check.check_previous_hash_uniqueness`, Phase 76 wiring): forward-only V1. New entries (Phase 76+) carry a content-addressable `Entry ID` derived from `SHA256(timestamp|phase|content_hash)[:12]` -- collision-resistant and coordination-free. `/qor-substantiate` Step 7.7 invokes `check_previous_hash_uniqueness(ledger_path, min_entry_num=207)` after seal write; two entries claiming the same `previous_hash` raise `SealEntryResult(ok=False, ...)` and the operator reconciles before publishing. The **previous_hash uniqueness** check is the structural detector for the concurrent-append race.
+
+**Forbidden interpretation**: retroactive renumbering of past sealed entries (#1-#207) is structurally **prohibited**. The Merkle chain's immutability is the value proposition; any commit that rewrites past entry numbers or hashes is an audit-trail violation and must be reverted. Past sealed entries with duplicate-previous_hash instances (#109/#111/#113 plus the cross-workspace #16/17/18) remain in the ledger as documented residual; V2 operator-authorized reconciliation is the only path that may resolve them, and that V2 design must produce a forward-only reconciliation entry rather than rewriting past content. **Past sealed entries are grandfathered.**
+
+**Cross-reference**: Issue #51; Phase 78 ideation packet `2026-05-14T2235-830921` selected Option 1 (content-addressable IDs + topological sort) with explicit forbidden-interpretation guards. Option 2 (session-scoped segments) and Option 3 (file-lock) rejected as overkill / federation-defeating. V2 follow-on: operator-authorized one-time reconciliation pass for past duplicates -- forward-only commit format.
+
+---
+
 ## SG-HalfSealedClaim-A — substantiate seal claims gate coverage it does not have (Phase 75)
 
 **Pattern**: an operator runs `/qor-substantiate` against a host whose archetype lacks the Python toolkit prerequisites the skill bakes in (TypeScript/Rust/Go/polyglot repos without `pyproject.toml`, `qor.scripts.*`, or `CHANGELOG.md` in Keep-a-Changelog form). Multiple gate steps silently fail or no-op. The operator hand-skips after the first failure. The resulting SESSION SEAL entry's Merkle hash anchors a **half-checked** state where only a subset of gates actually ran, but the entry body **claims coverage** the implementation does not have.

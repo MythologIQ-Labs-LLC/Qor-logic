@@ -1,0 +1,79 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T2235-830921",
+  "ts": "2026-05-14T23:09:09Z",
+  "plan_path": "docs/plan-qor-phase76-meta-ledger-federation.md",
+  "phases": [
+    "Phase 1: Content-addressable ID helper",
+    "Phase 2: previous_hash uniqueness detection at seal_entry_check",
+    "Phase 3: SKILL.md prose + SG doctrine entry"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_entry_id_helper.py tests/test_seal_entry_check_previous_hash_uniqueness.py tests/test_qor_substantiate_entry_id_prose.py tests/test_doctrine_sg_concurrent_ledger_race_a.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase76-meta-ledger-federation.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "content-addressable entry ID",
+      "home": "qor/scripts/entry_id.py"
+    },
+    {
+      "term": "SG-ConcurrentLedgerRace-A",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 forward-only; no renumber of past entries; SHA256[:12] truncation; previous_hash uniqueness at seal_entry_check (single-session)."
+    ],
+    "non_goals": [
+      "No distributed consensus",
+      "No session-scoped segments",
+      "No replacement of Entry #N as primary identifier"
+    ],
+    "exclusions": [
+      "No changes to chain_hash/content_hash/Merkle semantics; no changes to past Entries #1-#207; no new substantiate steps."
+    ]
+  },
+  "high_risk_target": true,
+  "impact_assessment": {
+    "purpose": "META_LEDGER concurrent-federation safety via forward-only content-addressable IDs + previous_hash uniqueness detection.",
+    "affected_stakeholders": [
+      "Federation operators running concurrent SDLC cycles",
+      "Downstream auditors reading sealed META_LEDGER entries",
+      "Tools parsing the ledger (seal_entry_check, ledger_hash.verify, badge_currency)",
+      "Qor-logic maintainers"
+    ],
+    "identified_risks": [
+      "Content-addressable ID collision at SHA256[:12]",
+      "Forward-only design leaves past duplicates (#16a/b, #17a/b, #18a/b) unfixed (documented residual)",
+      "previous_hash uniqueness false-positive on fork-merge patterns",
+      "Schema extension breaks existing META_LEDGER parsers",
+      "ID format drift across phases"
+    ],
+    "mitigations": [
+      "48-bit space + opt-in 64-char full-hash via env var",
+      "V1 explicitly defers retroactive renumber; SG doctrine forbids history-rewrite",
+      "Uniqueness check single-session at substantiate-time only",
+      "Additive field; existing Entry #N format preserved verbatim",
+      "Helper signature anchored with regression tests"
+    ],
+    "residual_risks": [
+      "Past duplicate entries remain in the ledger; pending V2 operator-authorized reconciliation"
+    ]
+  },
+  "change_class": "feature",
+  "originating_remediation": "GH #51",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.50.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T23:09:09Z"
+  }
+}
