@@ -2,6 +2,16 @@
 
 This doctrine extends `doctrine-test-discipline.md` (per-unit TDD-Light) with a second layer: per-feature TDD-Light. Both layers coexist.
 
+## Three upstream gates
+
+The per-feature TDD-Light contract is enforced by three gates upstream of substantiate:
+
+1. **`/qor-plan` Step 5 (Review Plan)** -- requires a `Feature Inventory Touches` declaration block when the plan touches `src/`. The block lists `entry_id`, `operation` (NEW/MODIFIED/n/a-justified), `test_path`, and `test_descriptor` per feature. Plans touching only docs/governance MAY declare the block empty.
+2. **`/qor-audit` Step 3 Feature Test Coverage Pass** -- routes any plan whose `feature_inventory_touches` carry presence-only descriptors to VETO with category `feature-test-undeclared`.
+3. **`/qor-implement` Step 5** -- author the failing feature-level test first, run it red, implement, run it green. Then Step 12.5 updates `FEATURE_INDEX.md`.
+
+Each of the three gates above is necessary but not sufficient on its own; see `doctrine-feature-inventory.md` for the seal-time regression complement (GH #40).
+
 ## Per-unit vs per-feature
 
 **Per-unit TDD-Light** (existing, governed by `doctrine-test-discipline.md` and enforced at `/qor-implement` Step 5): one minimal failing test before implementing a helper, function, or unit. The test invokes the unit under test (function call, CLI subprocess, helper render, parser pass) and asserts against its output.

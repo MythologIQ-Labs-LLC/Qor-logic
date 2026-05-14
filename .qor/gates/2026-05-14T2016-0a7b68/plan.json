@@ -1,0 +1,61 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T2016-0a7b68",
+  "ts": "2026-05-14T20:17:34Z",
+  "plan_path": "docs/plan-qor-phase73-feature-inventory-tdd.md",
+  "phases": [
+    "Phase 1: Doctrines (P1+P2 doctrines + 4 tests)",
+    "Phase 2: Plan schema feature_inventory_touches field (P1 partial + 3 tests)",
+    "Phase 3: SKILL prose updates (P3+P4+P5+P6 + 8 tests)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_doctrine_feature_inventory.py tests/test_doctrine_feature_tdd.py tests/test_plan_schema_feature_inventory_touches.py tests/test_qor_plan_feature_inventory_touches_prose.py tests/test_qor_audit_feature_test_coverage_pass_prose.py tests/test_qor_implement_per_feature_tdd_prose.py tests/test_qor_substantiate_feature_inventory_prose.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase73-feature-inventory-tdd.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "Feature Inventory",
+      "home": "qor/references/doctrine-feature-inventory.md"
+    },
+    {
+      "term": "Feature Inventory Touches",
+      "home": "qor/references/doctrine-feature-tdd.md"
+    },
+    {
+      "term": "per-feature TDD",
+      "home": "qor/references/doctrine-feature-tdd.md"
+    },
+    {
+      "term": "feature-test-undeclared",
+      "home": "qor/references/doctrine-feature-tdd.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 prose+schema only; no runtime helper; no FEATURE_INDEX format JSON-schema."
+    ],
+    "non_goals": [
+      "No qor/scripts/feature_inventory.py",
+      "No worked-example FEATURE_INDEX.md",
+      "No ABORT regression helper at substantiate"
+    ],
+    "exclusions": [
+      "No /qor-debug, /qor-refactor, /qor-remediate changes; no CI workflows."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "feature",
+  "originating_remediation": "GH #40 + GH #41",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.47.3",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T20:17:34Z"
+  }
+}

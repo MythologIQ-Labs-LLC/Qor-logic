@@ -59,7 +59,21 @@
         "residual_risks": { "type": "array", "items": { "type": "string" } }
       }
     },
-    "ai_provenance": { "$ref": "_provenance.schema.json" }
+    "ai_provenance": { "$ref": "_provenance.schema.json" },
+    "feature_inventory_touches": {
+      "type": "array",
+      "description": "Phase 73 (GH #41): per-feature TDD declaration block. Each entry names a feature touched by this plan, the operation kind, and the test path + descriptor that proves the feature works. Required-when-touching-src/ enforcement is operator discipline in V1; mechanical lint deferred to V2. Empty array is acceptable for plans that touch only docs/governance.",
+      "items": {
+        "type": "object",
+        "required": ["entry_id", "operation", "test_path", "test_descriptor"],
+        "properties": {
+          "entry_id": { "type": "string", "minLength": 1 },
+          "operation": { "enum": ["NEW", "MODIFIED", "n/a-justified"] },
+          "test_path": { "type": "string", "minLength": 1 },
+          "test_descriptor": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
   },
   "allOf": [
     {

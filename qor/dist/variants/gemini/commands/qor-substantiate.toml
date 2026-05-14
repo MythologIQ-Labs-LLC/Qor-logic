@@ -263,6 +263,20 @@ Create/Update `docs/SYSTEM_STATE.md`:
 
 Template: `references/qor-substantiate-templates.md`.
 
+#### FEATURE_INDEX verification pass (Phase 73 wiring; GH #40)
+
+When `FEATURE_INDEX.md` exists in the repo, verify every declared feature after re-syncing the system tree:
+
+1. For each non-`n/a` row, verify the cited `Test path` exists.
+2. Verify the cited test invokes the feature (not presence-only -- inherits `doctrine-test-functionality.md` acceptance question at feature scope).
+3. Verify the cited test currently passes.
+4. Surface counts in the SESSION SEAL ledger entry body:
+   `**Feature Inventory**: Total: N / verified: V / unverified: U / n/a: A`
+5. List newly unverified entries (regression from prior seal) with explicit names:
+   `**Newly unverified**: FX091, FX093, ...`
+
+Repos without `FEATURE_INDEX.md` record a single-line note (`**Feature Inventory**: not adopted`) in the seal entry and skip the verification pass. V1 (this phase): operator reviews the surfaced counts manually; the ABORT-on-outside-scope-regression helper is deferred to a follow-on phase. Per `qor/references/doctrine-feature-inventory.md`.
+
 ### Step 6.5: Documentation Currency Check (Phase 31 wiring)
 
 Verify that doc-affecting phase changes also updated the system-tier docs (`docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md`). Heuristic lives in `doc_integrity_strict.check_documentation_currency` and returns a warning list.

@@ -134,6 +134,15 @@ Template: `references/qor-implement-patterns.md`.
 
 **Test functionality, not presence**: the failing test MUST invoke the unit under test (function call, CLI subprocess, helper render, parser pass) and assert against its output. Tests that only check artifact existence (`assert path.exists()`, `assert <substring> in <file_text>`, `assert hasattr(...)`) do not satisfy TDD-Light. Acceptance question: "If the unit's behavior were silently broken but the artifact still existed, would this test fail?" If no, the test is presence-only and must be rewritten before implementation begins. Per `qor/references/doctrine-test-functionality.md`.
 
+**Per-feature TDD layer (Phase 73 wiring; GH #41)**: in addition to the per-unit TDD above, for each row in the plan's `Feature Inventory Touches` table (declared at `/qor-plan` Step 5):
+
+1. Author the failing **feature-level** test FIRST at the path declared in the plan, with the assertion declared in the plan's `test_descriptor`.
+2. Run it. It MUST fail (red).
+3. Only then implement the feature (route handler, command body, UI surface, service method).
+4. Run it again. It MUST pass (green) before the feature is considered shipped.
+
+The per-unit layer continues to apply for helpers introduced inside the feature implementation. Per-feature TDD covers the user-touchable surface (routes, commands, UI events, services); per-unit TDD covers the helpers. Both must be red-then-green in the same commit. Per `qor/references/doctrine-feature-tdd.md`.
+
 ### Step 5.5: Intent Lock Capture (Phase 17 wiring)
 
 Capture a fingerprint of the implementer's intent (plan + PASS audit + HEAD commit) before writing any implementation code. Interdicts drift during implementation.
@@ -221,6 +230,14 @@ Template: `references/qor-implement-patterns.md`.
 2. Glob src/** and tests/**
 3. Compare: every planned file exists
 4. Verify: no unplanned orphans in src/
+
+**FEATURE_INDEX update obligation (Phase 73 wiring; GH #40 + #41)**: for each row in the plan's `Feature Inventory Touches` table, update `FEATURE_INDEX.md` in the same commit:
+
+- `NEW`: append a row to the appropriate category section with status `verified` (the feature ships with its green test in this commit per Step 5 per-feature TDD).
+- `MODIFIED`: update the existing row's `Source-of-truth file:line` and/or `Test path` in place.
+- `n/a-justified`: no row change (the entry exists; this plan didn't touch the surface).
+
+Staging fails when the implement pass touches `src/` but does not append/update `FEATURE_INDEX.md` to reflect every declared touch. V1 (this phase): operator discipline; V2 will lint plan declarations against shipped index updates mechanically. Per `qor/references/doctrine-feature-inventory.md`.
 
 IF verification FAILS:
 ```

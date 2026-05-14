@@ -7740,3 +7740,45 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 72 feature complete; GH #56 closed)
 *Merkle seal: 7aaa92dd...* (Phase 72 seal on top of Phase 69's 57247161...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+### Entry #205: SESSION SEAL — Phase 73: Feature Inventory artifact + per-feature TDD-Light V1 (v0.49.0, GH #40 + #41)
+
+**Timestamp**: 2026-05-14T20:34:45Z
+
+**Phase**: SUBSTANTIATE (Phase 73 feature)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase73-feature-inventory-tdd.md
+
+**Session**: `2026-05-14T2016-0a7b68`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+
+**Scope**: Closes GH #40 + #41 -- Feature Inventory artifact + per-feature TDD-Light V1 (prose + schema; runtime helpers deferred to V2). New doctrines `qor/references/doctrine-feature-inventory.md` (FEATURE_INDEX artifact format, 6-column markdown table, status enum, lifecycle hooks, V2 ABORT contract) + `qor/references/doctrine-feature-tdd.md` (three-gate upstream contract: plan declaration / audit Feature Test Coverage Pass / implement per-feature failing-test-first, SG-035 acceptance inheritance at feature scope, VETO category `feature-test-undeclared`). `qor/gates/schema/plan.schema.json` gains optional `feature_inventory_touches` array field with `entry_id`, `operation` (NEW/MODIFIED/n/a-justified), `test_path`, `test_descriptor`. `qor/gates/schema/audit.schema.json` `findings_categories` enum gains `feature-test-undeclared`. SKILL prose updates: `/qor-plan` Step 5 Feature Inventory Touches declaration requirement; `/qor-audit` Step 3 Feature Test Coverage Pass with VETO category; `/qor-implement` Step 5 per-feature TDD layer + Step 12.5 FEATURE_INDEX update obligation; `/qor-substantiate` Step 6 FEATURE_INDEX verification pass with `Total: N / verified: V / unverified: U / n/a: A` count surface in seal entry. 4 new glossary terms. 15 new tests across 7 files.
+
+**Files touched** (15+): 2 new doctrines, 2 plan/audit schema field additions, 4 SKILL.md prose updates (qor-plan, qor-audit, qor-implement, qor-substantiate), glossary.md (4 new entries), CHANGELOG.md (0.49.0 stamped), README.md (Tests 1618 -> 1633, Ledger 204 -> 205), SYSTEM_STATE.md, docs/plan-qor-phase73-feature-inventory-tdd.md, 7 new test files. Dist variants regenerated.
+
+**Test surface**: 15 new tests pass twice deterministically. Full suite 1619 passing (pre-Phase-73 baseline 1612 + 7 added in Phase 72's PR #67 merge wave; +7 here from the rebased baseline). Suite truth count 1633 (matches updated badge).
+
+**Self-application**: Phase 67's `plan_text_consistency_lint` cleared this plan. Phase 68's Self-Application Sub-Pass: the plan introduces feature-inventory + per-feature-TDD discipline, but the plan itself does not ship new user-touchable features (prose+schema only), so the new disciplines do not apply self-referentially -- pass by inapplicability. Phase 72's Infrastructure Citation Inventory: the plan cites only doctrine + schema + SKILL.md paths, all verified to exist in tree pre-implement. Phase 64 Step 6.8 gate validates this seal's digests.
+
+**Branch sequencing note**: Phase 73 branch was created from main before Phase 72's PR #67 merged. After Phase 72 merge to origin/main (v0.48.0), this branch rebased onto post-Phase-72 main to inherit the Infrastructure Citation Inventory glossary entries + Phase 72 doctrine prose. Result: pyproject jumps 0.48.0 -> 0.49.0 (feature).
+
+**Deferral**: V2 runtime helper (`qor/scripts/feature_inventory.py` parser + verifier), `qor/gates/schema/feature_inventory.schema.json` JSON-schema mirror, worked-example FEATURE_INDEX.md, ABORT-on-outside-scope-regression contract -- all queued for follow-on phase pending V1 operator adoption signals.
+
+**Content Hash (session seal)**: `1d3c930d5c78ae78b5e0984e07bb391be1081fb0dabf4eb6ad7900c9215f7894`
+
+**Previous Hash**: `7aaa92ddecabf1e5963ace07439234178694eb2a7d7bd95afe5a1706968cdcee`
+
+**Chain Hash (Merkle seal)**: `a1da7c50b736d3f77ae47adea7e656ac436b354bc469aad24a63b32a5af453d2`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 73 feature complete; GH #40 + #41 closed)
+*Merkle seal: a1da7c50...* (Phase 73 seal on top of Phase 72's 7aaa92dd...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
