@@ -137,7 +137,7 @@ SHA256(content_hash + previous_hash)
 ---
 
 _Chain Status: SEALED_
-_Next Session: Run /qor-bootstrap for new feature or /qor-status to review_
+_Next Session: Run /qor-ideate for a new concept or /qor-plan for implementation planning; /qor-status to review prior work_
 ```
 
 ## Substantiation Report Template

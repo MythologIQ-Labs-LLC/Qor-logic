@@ -7453,3 +7453,60 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 64 hotfix complete; GH #48 closed)
 *Merkle seal: 72f4919d...* (Phase 64 seal on top of Phase 60+cleanup chain at 885699ae...)
 *Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
+
+---
+
+### Entry #199: SESSION SEAL — Phase 65: Substantiate template wording + kilo-code host filesystem path (v0.46.2, GH #57 + #53)
+
+**Timestamp**: 2026-05-14T16:30:00Z
+
+**Phase**: SUBSTANTIATE (Phase 65 hotfix)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1 + /qor-substantiate)
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase65-substantiate-template-and-kilo-host-paths.md
+
+**Session**: `2026-05-14T1603-4bb96c`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash (session seal)**: `5f9ee811157e4cd17c032d187769e3f98bf1a107926f207208fe3e5abf7ea232`
+
+**Previous Hash**: `72f4919d3b282b46bbf266013c1d8d2f88d2cad0311359fad4c4b5c9b81a6065`
+
+**Chain Hash (Merkle seal)**: `fcf2c8ba54bd52129a48dd15620a56d81e8b0a36bde3ad68f447da688a5c9bec`
+
+**Scope**: Two coupled bug fixes from the remediation-handoff Stage 3 grouping bundled into one hotfix.
+
+**GH #57** (substantiate template Next Session wording): `qor/skills/governance/qor-substantiate/references/qor-substantiate-templates.md:140` replaced `_Next Session: Run /qor-bootstrap for new feature or /qor-status to review_` with `_Next Session: Run /qor-ideate for a new concept or /qor-plan for implementation planning; /qor-status to review prior work_`. The pre-fix wording misrouted operators on already-bootstrapped projects toward `/qor-bootstrap` (a genesis-only skill). Dist variants regenerated.
+
+**GH #53** (kilo-code host filesystem path): `qor/hosts.py:68` `_kilo_target()` filesystem base changed from `.kilo-code` to `.kilo`. The Kilo tool reads its config from `.kilo/`; pre-fix qor-logic installed under `.kilo-code/` which Kilo never read. The logical host identifier `kilo-code` is preserved per Issue #53 and remediation handoff Stage 3.1 preference (no breaking CLI change).
+
+**Files touched** (12):
+- `tests/test_substantiate_template_next_session_wording.py` (NEW)
+- `tests/test_kilo_host_base_path.py` (NEW)
+- `tests/test_hosts_scope.py` (1 assertion updated)
+- `tests/test_phase21_harness.py` (2 assertions updated)
+- `qor/hosts.py` (1 line)
+- `qor/skills/governance/qor-substantiate/references/qor-substantiate-templates.md` (1 line)
+- `qor/dist/variants/{claude,codex,kilo-code}/skills/qor-substantiate/references/qor-substantiate-templates.md` (regenerated)
+- `docs/SYSTEM_STATE.md` (Phase 65 entry prepended)
+- `docs/operations.md` (1 troubleshooting row for kilo migration)
+- `docs/plan-qor-phase65-substantiate-template-and-kilo-host-paths.md` (NEW)
+- `CHANGELOG.md` (Phase 65 0.46.2 section stamped)
+- `pyproject.toml` (0.46.1 → 0.46.2)
+
+**Test surface**: 1546 passing, 1 skipped, 0 failures. All 9 Phase 65 tests green twice consecutively.
+
+**Gate artifacts**: `.qor/gates/2026-05-14T1603-4bb96c/{plan,audit,implement,substantiate}.json` all present.
+
+**Self-application**: Phase 64's Step 6.8 Seal Hash Integrity Gate fired on this seal cycle and validated the four real digests above (produced by `hash_guard.hash_file` + `ledger_hash.{content_hash,chain_hash}`). First fully-end-to-end exercise of Step 6.8 on a phase that did not itself introduce the gate; the gate validates digests for the seal it gates.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 65 hotfix complete; GH #57 + GH #53 closed)
+*Merkle seal: fcf2c8ba...* (Phase 65 seal on top of Phase 64's 72f4919d...)
+*Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*

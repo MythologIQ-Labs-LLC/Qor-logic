@@ -1,0 +1,31 @@
+{
+  "phase": "implement",
+  "session_id": "2026-05-14T1603-4bb96c",
+  "ts": "2026-05-14T16:12:25Z",
+  "files_touched": [
+    "tests/test_substantiate_template_next_session_wording.py",
+    "tests/test_kilo_host_base_path.py",
+    "tests/test_hosts_scope.py",
+    "tests/test_phase21_harness.py",
+    "qor/hosts.py",
+    "qor/skills/governance/qor-substantiate/references/qor-substantiate-templates.md",
+    "qor/dist/variants/claude/skills/qor-substantiate/references/qor-substantiate-templates.md",
+    "qor/dist/variants/codex/skills/qor-substantiate/references/qor-substantiate-templates.md",
+    "qor/dist/variants/kilo-code/skills/qor-substantiate/references/qor-substantiate-templates.md",
+    "docs/SYSTEM_STATE.md",
+    "docs/plan-qor-phase65-substantiate-template-and-kilo-host-paths.md"
+  ],
+  "test_summary": {
+    "passed": 1546,
+    "failed": 0,
+    "skipped": 1
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.46.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T16:12:25Z"
+  }
+}
