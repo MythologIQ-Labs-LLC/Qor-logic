@@ -754,3 +754,24 @@ referenced_by:
   - qor/skills/governance/qor-substantiate/SKILL.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
+
+```yaml
+term: content-addressable entry ID
+definition: 'A deterministic 12-char hex identifier derived from SHA256(timestamp|phase|content_hash)[:12] for each META_LEDGER entry. Per Phase 76 wiring (GH #51): forward-only -- new entries from Phase 76 onward carry an `**Entry ID**:` body line; past Entries #1-#207 are unchanged. Survives concurrent federation append because no entry-number-allocation coordination is required. Set env QOR_ENTRY_ID_FULL_HASH=1 for 64-char full-hash mode at federation scale.'
+home: qor/scripts/entry_id.py
+referenced_by:
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase76-meta-ledger-federation
+```
+
+```yaml
+term: SG-ConcurrentLedgerRace-A
+definition: 'Shadow-genome pattern: META_LEDGER sequential entry-numbering is single-writer; concurrent federation workers race on number allocation, producing duplicate-numbered entries with intact chain math but corrupted human-readable structure. Originating recurrence: cross-workspace Entries #16a/b, #17a/b, #18a/b plus canonical Qor-logic #109/#111/#113. Countermeasure: forward-only content-addressable Entry IDs + previous_hash uniqueness detection at /qor-substantiate Step 7.7. Retroactive renumbering of past sealed entries is structurally forbidden. Phase 76 wiring (GH #51).'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/scripts/entry_id.py
+  - qor/reliability/seal_entry_check.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase76-meta-ledger-federation
+```

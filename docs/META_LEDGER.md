@@ -7864,3 +7864,49 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 75 feature complete; GH #38 V1 closed; Options 2+3 queued)
 *Merkle seal: 7cd3cc50...* (Phase 75 seal on top of Phase 74's 8c72f2d8...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+### Entry #208: SESSION SEAL — Phase 76: META_LEDGER federation entry IDs + duplicate detection V1 (v0.52.0, GH #51)
+
+**Timestamp**: 2026-05-14T23:19:53Z
+
+**Phase**: SUBSTANTIATE (Phase 76 feature, L3 high_risk_target)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase76-meta-ledger-federation.md
+
+**Session**: `2026-05-14T2235-830921`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+
+**Entry ID**: `f5e2713f5165` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #51 V1 (Option 1 from ideation 2026-05-14T2235-830921 with explicit forbidden-interpretation guards on retroactive renumber). Forward-only mechanism: new entries from Phase 76 onward carry an Entry ID derived via SHA256(timestamp|phase|content_hash)[:12]. Past Entries #1-#207 are unchanged and grandfathered. New `qor/scripts/entry_id.py` (~25 LOC pure-function) anchors derivation; tests verify determinism, distinguishing-power on 1000-input synthetic dataset, and 64-char full-hash mode via env override. Extended `qor.reliability.seal_entry_check.py` with `check_previous_hash_uniqueness(ledger_path, min_entry_num=207)` -- structural detector for the concurrent-append race signature (two entries claiming the same predecessor hash). Default min_entry_num=207 grandfathers pre-Phase-76 entries; the canonical META_LEDGER's pre-existing #109/#111/#113 duplicate-previous_hash episode and cross-workspace #16/17/18 duplicates remain in the ledger as documented residual. `/qor-substantiate` Step 7 prose now requires new SESSION SEAL entries include an `**Entry ID**:` body line. Step 7.7 (post-seal verification) gains the uniqueness check invocation. New SG-ConcurrentLedgerRace-A doctrine entry catalogues pattern, originating recurrence (Entries #16a/b/#17a/b/#18a/b and #109/#111/#113), the forward-only V1 countermeasure, and explicit prohibition of retroactive renumbering.
+
+**Files touched** (~12): qor/scripts/entry_id.py (NEW ~25 LOC), qor/reliability/seal_entry_check.py (+~40 LOC for check_previous_hash_uniqueness), qor/skills/governance/qor-substantiate/SKILL.md (Step 7 + Step 7.7 prose additions), qor/references/doctrine-shadow-genome-countermeasures.md (SG-ConcurrentLedgerRace-A entry), qor/references/glossary.md (2 new entries), 4 new test files (10 tests total: entry_id helper x3, seal_entry_check uniqueness x4, qor-substantiate prose x2, doctrine prose x2 -- wait, recount: 3+4+2+2=11), CHANGELOG.md (0.52.0 stamped), README.md (Tests 1651 -> 1662), SYSTEM_STATE.md, docs/plan-qor-phase76-meta-ledger-federation.md. Dist variants regenerated.
+
+**Test surface**: 11 new tests pass twice deterministically. Helper tests cover determinism + distinguishing 1000-input synthetic dataset + env-var full-hash mode. Uniqueness-check tests cover unique-pass / duplicate-fail-with-entry-names / canonical-meta-ledger-grandfathered / pre-Phase-76-grandfather. SKILL.md prose tests cover Step 7 entry_id derivation reference + Step 7.7 uniqueness-check reference. Doctrine tests cover SG entry shape with originating-recurrence + retroactive-renumber prohibition language.
+
+**Self-application**: this seal entry itself carries the new `**Entry ID**:` body line as the first instance of the Phase 76 contract. Phase 67 plan_text_consistency_lint cleared this plan. Phase 68 Self-Application Sub-Pass: the plan introduces the entry-ID + uniqueness-check discipline; this plan's own ledger entry is the first user of the new contract -- self-application verified by this entry's Entry ID being computed via `derive_entry_id`. Phase 72 Infrastructure Citation Inventory: qor/scripts/entry_id.py NEW, qor/reliability/seal_entry_check.py existing, qor/skills/governance/qor-substantiate/SKILL.md existing, qor/references/doctrine-shadow-genome-countermeasures.md existing. Phase 73 Feature Inventory Touches: 3 new operator-touchable features (derive_entry_id helper, check_previous_hash_uniqueness function, **Entry ID** body-line semantics); each has feature-level test descriptors surviving SG-035. Phase 74 Infrastructure Alignment sixth bullet: no third-party SDK citations; no behavioral-semantics claims. Phase 75 substantiate-capability: this seal cycle ran with all 12 prerequisites PRESENT on the canonical Python host.
+
+**Branch sequencing note**: Phase 76 branched from main pre-Phase-75 merge; rebased onto post-Phase-75 main (v0.51.0) before substantiate. Result: pyproject jumps 0.51.0 -> 0.52.0 (feature, L3).
+
+**Risk grade**: L3 (high_risk_target=true). impact_assessment block declared 5 identified risks: (1) SHA256[:12] collision; (2) past duplicates remain unfixed; (3) previous_hash uniqueness false-positive on fork-merge; (4) schema extension breaks existing parsers; (5) ID format drift across phases. Mitigations: 48-bit space + opt-in 64-char mode; V1 forward-only with V2 deferral; single-session check only; additive field preserving existing format; helper signature anchored with regression tests. Residual: past duplicate entries remain in the ledger pending V2 operator-authorized reconciliation.
+
+**Deferral**: V2 -- operator-authorized one-time reconciliation pass for past duplicate-previous_hash entries. Design constraint per SG-ConcurrentLedgerRace-A: forward-only commit format only; never history-rewrite of past sealed entries.
+
+**Content Hash (session seal)**: `0b33068ee496669f1fe012e104bdca62f52148b2121b5d73703c2038d724da96`
+
+**Previous Hash**: `7cd3cc506b529c4488ac0504478d297f0ccda317d45caf463126b4bc962e5d63`
+
+**Chain Hash (Merkle seal)**: `40444e34a424d50b4332256d1456e41578a3f53ec7a8149a41e68ff3cd47d79a`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 76 feature L3 complete; GH #51 V1 closed; V2 reconciliation queued)
+*Merkle seal: 40444e34...* (Phase 76 seal on top of Phase 75's 7cd3cc50...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
