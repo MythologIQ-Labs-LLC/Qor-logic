@@ -1,0 +1,47 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T1603-4bb96c",
+  "ts": "2026-05-14T16:04:35Z",
+  "plan_path": "docs/plan-qor-phase65-substantiate-template-and-kilo-host-paths.md",
+  "phases": [
+    "Phase 1: Substantiate template wording fix (GH #57)",
+    "Phase 2: kilo-code host filesystem path fix (GH #53)",
+    "Phase 3: Documentation refresh"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_substantiate_template_next_session_wording.py tests/test_kilo_host_base_path.py tests/test_hosts_scope.py tests/test_phase21_harness.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase65-substantiate-template-and-kilo-host-paths.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "V1 changes the kilo-code host's filesystem base from .kilo-code to .kilo while preserving the logical host identifier kilo-code.",
+      "V1 fixes the substantiate template's Next Session recommendation only at the canonical source."
+    ],
+    "non_goals": [
+      "Renaming the kilo-code host identifier to kilo.",
+      "Updating historical archive references to /qor-bootstrap.",
+      "Migrating existing .kilo-code/ installations on operator workstations."
+    ],
+    "exclusions": [
+      "No changes to other host targets.",
+      "No changes to substantiate skill Step 9 prose.",
+      "No changes to doctrine-governance-enforcement.md historical mention."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "hotfix",
+  "originating_remediation": "GH #57 + GH #53",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.46.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T16:04:35Z"
+  }
+}

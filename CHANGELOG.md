@@ -10,6 +10,24 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.46.2] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+
+- **GH #57**: `/qor-substantiate` template's "Next Session" line at
+  `qor/skills/governance/qor-substantiate/references/qor-substantiate-templates.md:140`
+  was recommending `/qor-bootstrap for new feature`, which misroutes operators
+  on already-bootstrapped projects (`/qor-bootstrap` is genesis-only). Replaced
+  with `/qor-ideate for a new concept or /qor-plan for implementation planning;
+  /qor-status to review prior work`. Dist variants regenerated.
+- **GH #53**: `kilo-code` host filesystem base changed from `.kilo-code` to
+  `.kilo` in `qor/hosts.py:68` to match the Kilo tool's actual config directory.
+  The logical host identifier `kilo-code` is preserved (no command-line
+  breakage); only the on-disk install destination moves. Operators with prior
+  `.kilo-code/` installs should re-run `qor-logic install --host kilo-code`.
+
 ## [0.46.1] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

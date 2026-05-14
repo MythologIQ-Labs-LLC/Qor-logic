@@ -65,7 +65,7 @@ def _claude_target(scope: str = "repo") -> HostTarget:
 
 
 def _kilo_target(scope: str = "repo") -> HostTarget:
-    base = _scoped_base(".kilo-code", scope)
+    base = _scoped_base(".kilo", scope)
     return HostTarget(name="kilo-code", base=base, install_map=_skills_agents_map(base))
 
 

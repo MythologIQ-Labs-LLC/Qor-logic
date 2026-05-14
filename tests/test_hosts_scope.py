@@ -33,7 +33,7 @@ def test_kilo_repo_scope(tmp_path, monkeypatch):
     monkeypatch.delenv("QORLOGIC_PROJECT_DIR", raising=False)
     from qor.hosts import resolve
     target = resolve("kilo-code", scope="repo")
-    assert target.base == tmp_path / ".kilo-code"
+    assert target.base == tmp_path / ".kilo"
 
 
 def test_target_override_wins(tmp_path):

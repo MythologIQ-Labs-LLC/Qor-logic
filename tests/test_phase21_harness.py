@@ -23,8 +23,8 @@ def test_host_resolver_kilo_global_scope():
     from qor.hosts import resolve
     target = resolve("kilo-code", scope="global")
     assert target.name == "kilo-code"
-    assert target.skills_dir == Path.home() / ".kilo-code" / "skills"
-    assert target.agents_dir == Path.home() / ".kilo-code" / "agents"
+    assert target.skills_dir == Path.home() / ".kilo" / "skills"
+    assert target.agents_dir == Path.home() / ".kilo" / "agents"
 
 
 def test_host_resolver_codex_resolves():

@@ -1,0 +1,17 @@
+{
+  "phase": "audit",
+  "session_id": "2026-05-14T1603-4bb96c",
+  "ts": "2026-05-14T16:05:54Z",
+  "target": "docs/plan-qor-phase65-substantiate-template-and-kilo-host-paths.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.46.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-05-14T16:05:54Z"
+  }
+}
