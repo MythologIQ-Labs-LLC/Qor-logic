@@ -270,6 +270,18 @@ The doctrine catalogs all 8 unraveling points (Premature Solutioning, Language D
 
 ---
 
+## SG-FakeProgress-A — UI fake-jump progress without intermediate state (Phase 74)
+
+**Pattern**: a UI element with progress semantics (progress bar, spinner, phase indicator, step list) animates from `style.width = '0%'` directly to `style.width = '100%'` with no intermediate writes while the backing operation runs silently for >2 seconds (often 20-60 seconds). The operator perceives the click as having done nothing; the progress bar appears frozen at 0%; on completion the bar jumps directly to 100% (or stays at 0% on error with no dismiss/retry control). Backing event streams (WebSocket / EventEmitter) often exist and emit per-phase events, but the UI does not subscribe and re-render.
+
+**Originating recurrence**: FailSafe v5.1.0 Install QorLogic Skills card -- `install-skills-card.js` sets `progressBar.style.width = '0%'` at start; operator click fires `POST /api/actions/scaffold-skills`; backing pipeline runs 5 sequential phases (Python probe -> pip install -> per-host `qorlogic install` -> provenance verification -> hub refresh) over 20-60 seconds; modal shows frozen 0% throughout; `skills.install.progress` WebSocket events exist but the modal does not subscribe; bar jumps to 100% on completion. Two prior qor-audit PASS cycles (FailSafe META_LEDGER #361 + #362) missed the defect because the legacy Ghost UI Pass checked only handler presence, not live-feedback fidelity.
+
+**Countermeasure** (`/qor-audit` Step 3 Ghost UI Pass, Phase 74 wiring): the Live-Progress Invariant sub-rule requires every progress-semantics UI element to (1) carry at least one intermediate state when the backing operation takes >2 seconds; (2) avoid the fake-jump pattern (`style.width = '0%'` -> `style.width = '100%'` with no intermediate writes); (3) subscribe modals with progress UI to the backing event stream and re-render on each event; (4) surface explicit dismiss/retry controls on terminal error states. Violations VETO with `ghost-ui` category, sub-tag `live-progress-fake`.
+
+**Cross-reference**: Issue #58; FailSafe META_LEDGER #360 (debug report for the misattribution caused by the same async-vs-UI timing gap), #361/#362 (the two PASS audits that missed the defect), #366 (audit-VETO of the in-repo amendment that filed this upstream issue). Future V2: mechanical `qor/scripts/plan_live_progress_lint.py` heuristic at Step 0.6 pre-audit lint surface (deferred to follow-on phase pending V1 prose adoption).
+
+---
+
 ## SG-AuthorAuditMomentum-A — author-audit self-verification scope bias (Phase 68)
 
 **Pattern**: when the same LLM agent authors a plan and then audits it, the audit inherits the author's search-path momentum. The locations the author did not check during planning are the same locations the author will not check during audit. Independent reviewers with no plan-authorship context naturally check different sources and find different defects.

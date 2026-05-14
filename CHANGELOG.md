@@ -10,6 +10,41 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.50.0] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 74 (feature, GH #49 + #58)**: qor-audit pass extensions
+  (prose-only V1; mechanical lint helper deferred to V2).
+  - `/qor-audit` Step 3 **Infrastructure Alignment Pass** gains a sixth
+    checklist bullet covering third-party SDK citations + behavioral-
+    semantics claims. Every cited third-party SDK method/property must
+    exist in installed type declarations (node_modules/<pkg>/dist/*.d.ts;
+    pip-show inspection; Cargo.toml + cargo doc) OR be quoted from
+    official documentation with citation. Every cited behavioral-
+    semantics claim (Postgres durability/concurrency/transaction
+    semantics, lock lifecycle, trigger side-effects, supabase-js method
+    behavior, auth-schema mutability) must include inline citation to
+    upstream docs (URL + quoted text), upstream source (file:line), or
+    in-repo precedent. Closes SG-006 + SG-010 hallucination classes.
+    VETO category unchanged (`infrastructure-mismatch`).
+  - `/qor-audit` Step 3 **Ghost UI Pass** gains a Live-Progress Invariant
+    sub-rule with 4 checklist items: intermediate state when backing op
+    takes >2s; no fake-jump (0% -> 100% with no intermediate writes);
+    modals subscribe to backing event stream and re-render; error UI
+    surfaces explicit dismiss/retry control. Sub-tag
+    `live-progress-fake` under existing `ghost-ui` VETO category.
+  - `qor/references/doctrine-shadow-genome-countermeasures.md`
+    SG-FakeProgress-A catalogues the pattern + originating recurrence
+    (FailSafe v5.1.0 Install QorLogic Skills card) + countermeasure.
+  - 4 new glossary terms: third-party SDK citation,
+    behavioral-semantics claim, Live-Progress Invariant, SG-FakeProgress-A.
+  - 6 new tests across 3 files (audit prose + doctrine prose).
+  - V2 follow-on: mechanical `qor/scripts/plan_live_progress_lint.py`
+    heuristic at Step 0.6 pre-audit lint surface queued.
+
 ## [0.49.0] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
