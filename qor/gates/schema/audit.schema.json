@@ -14,6 +14,11 @@
     "violations": { "type": "array", "items": { "type": "object" } },
     "risk_grade": { "type": "string", "enum": ["L1", "L2", "L3"] },
     "report_path": { "type": "string" },
+    "target_content_hash": {
+      "description": "Phase 67 (GH #45): SHA-256 of the plan file content audited in this gate. Enables qor-audit to short-circuit unchanged-plan re-invocation: when a subsequent audit's plan content hash matches a prior audit's recorded value, the skill recommends amendment instead of re-running passes. Optional; absent on pre-Phase-67 artifacts.",
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
     "reviews_remediate_gate": {
       "description": "Phase 36 V1 resolution: explicit signal that this audit reviews a /qor-remediate proposal. Set by /qor-audit when operator passes skill arg 'reviews-remediate:<path>'. Absence => audit does not trigger two-stage addressed flip in mark_addressed. Value is the path to the remediate gate artifact being reviewed (e.g., '.qor/gates/<sid>/remediate.json').",
       "type": ["string", "null"]

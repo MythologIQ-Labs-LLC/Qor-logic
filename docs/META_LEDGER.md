@@ -7565,3 +7565,46 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 66 feature complete; GH #54 + GH #55 closed)
 *Merkle seal: a1417bbe...* (Phase 66 seal on top of Phase 65's fcf2c8ba...)
 *Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
+
+---
+
+### Entry #201: SESSION SEAL — Phase 67: plan_text_consistency_lint wiring + qor-audit unchanged-plan short-circuit (v0.47.1, GH #42 + #45)
+
+**Timestamp**: 2026-05-14T18:30:00Z
+
+**Phase**: SUBSTANTIATE (Phase 67 hotfix)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase67-plan-lint-wiring-and-audit-short-circuit.md
+
+**Session**: `2026-05-14T1814-23d47a`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash (session seal)**: `74a017eed01c4b49320f06eafb587dd02adfa6f9e4a0873c637aa24247e11877`
+
+**Previous Hash**: `a1417bbeb966f0815c79ae81235d1861f179077a4893d4c366dbc5a6708b42bf`
+
+**Chain Hash (Merkle seal)**: `23146a5d603c6c5aca001afccf84931299310f2acdb0266a9347ceffd04d8e12`
+
+**Scope**: Quick-win bundle closing two pre-audit wiring items from the post-#54/#55 enhancement queue.
+
+**GH #42**: `plan_text_consistency_lint` wired into `/qor-audit` Step 0.6 (third lint) + `/qor-plan` Step 5 review checklist. Doctrine `SG-PlanTextDrift-A` catalogues the prose-boundary precision drift pattern (originating COREFORGE 3-VETO cycle).
+
+**GH #45**: `qor.scripts.qor_audit_runtime.check_unchanged_plan_short_circuit()` helper + `/qor-audit` Step 0.4 prose. When operator re-invokes audit on byte-identical plan, prior verdict carries forward via `target_content_hash` comparison; no new audit cycle consumed. `audit.schema.json` gains optional `target_content_hash` field with graceful backward compat.
+
+**Files touched** (9): 2 new test files, 3 SKILL.md / doctrine prose edits, 1 helper module extension, 1 schema field, SYSTEM_STATE + plan.
+
+**Test surface**: 1584 passing, 1 skipped, 0 failures. All 8 Phase 67 tests green.
+
+**Self-application**: Phase 64 Step 6.8 gate validated this seal. Phase 67's newly-wired `plan_text_consistency_lint` cleared this plan during audit (caught one drift on first attempt: skill-template form vs literal-path CI form; reworded skill-prose-reference abstractly; clean on re-lint).
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 67 hotfix complete; GH #42 + GH #45 closed)
+*Merkle seal: 23146a5d...* (Phase 67 seal on top of Phase 66's a1417bbe...)
+*Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*

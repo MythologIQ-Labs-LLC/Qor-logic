@@ -5,9 +5,12 @@ Used by qor-audit to:
   - check that a prior plan artifact exists before auditing
   - decide whether to run in adversarial mode (claude-code + codex-plugin)
   - log capability_shortfall when adversarial isn't available
+  - short-circuit unchanged-plan re-invocation (Phase 67; GH #45)
 """
 from __future__ import annotations
 
+import hashlib
+from dataclasses import dataclass
 from pathlib import Path
 
 from qor.scripts import gate_chain
@@ -16,6 +19,56 @@ from qor.scripts import session
 from qor.scripts import shadow_process
 
 CURRENT_PHASE = "audit"
+
+
+@dataclass(frozen=True)
+class ShortCircuitResult:
+    """Outcome of the unchanged-plan short-circuit check.
+
+    Phase 67 (GH #45): when ``should_skip=True``, the operator amended
+    nothing since the prior audit produced ``prior_verdict``; the skill
+    surfaces the prior verdict instead of consuming a new audit cycle.
+    """
+    should_skip: bool
+    prior_verdict: str | None = None
+    plan_content_hash: str | None = None
+
+
+def check_unchanged_plan_short_circuit(
+    plan_path: Path,
+    session_id: str,
+) -> ShortCircuitResult:
+    """Return a ShortCircuitResult indicating whether to skip re-audit.
+
+    Reads the current plan file, computes its SHA-256, and compares against
+    the prior audit gate artifact's ``target_content_hash`` field. When the
+    hashes match, the plan is unchanged and the prior verdict carries
+    forward.
+
+    Graceful fallbacks (all return ``should_skip=False``):
+      - plan file missing on disk
+      - no prior audit.json for the session
+      - prior artifact lacks ``target_content_hash`` (pre-Phase-67 audits)
+    """
+    try:
+        plan_bytes = Path(plan_path).read_bytes()
+    except (FileNotFoundError, IsADirectoryError):
+        return ShortCircuitResult(should_skip=False)
+    plan_hash = hashlib.sha256(plan_bytes).hexdigest()
+    try:
+        prior = gate_chain.read_phase_artifact("audit", session_id=session_id)
+    except (FileNotFoundError, ValueError, KeyError):
+        return ShortCircuitResult(should_skip=False, plan_content_hash=plan_hash)
+    if not prior:
+        return ShortCircuitResult(should_skip=False, plan_content_hash=plan_hash)
+    prior_hash = prior.get("target_content_hash")
+    if prior_hash and prior_hash == plan_hash:
+        return ShortCircuitResult(
+            should_skip=True,
+            prior_verdict=prior.get("verdict"),
+            plan_content_hash=plan_hash,
+        )
+    return ShortCircuitResult(should_skip=False, plan_content_hash=plan_hash)
 
 
 def check_prior_artifact(session_id: str | None = None) -> gate_chain.GateResult:
