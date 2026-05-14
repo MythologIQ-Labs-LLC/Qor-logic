@@ -90,8 +90,8 @@ def test_canonicalize_emission_uses_existing_hash_regex_shapes(tmp_path):
     CONTENT_HASH_RE / PREV_HASH_RE / CHAIN_HASH_RE for the hash-integrity
     gate to fire. Compose a real chain end-to-end."""
     p = _ledger(tmp_path, "# Ledger\n")
-    content_h = "a" * 64
-    prev_h = "b" * 64
+    content_h = hashlib.sha256(b"phase66-canon-content").hexdigest()
+    prev_h = hashlib.sha256(b"phase66-canon-prev").hexdigest()
     chain_h = ledger_hash.chain_hash(content_h, prev_h)
     body = (
         f"**Content Hash**:\n```\nSHA256(x) = {content_h}\n```\n\n"

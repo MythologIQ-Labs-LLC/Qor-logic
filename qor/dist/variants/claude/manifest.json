@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-14T16:16:17Z",
+  "generated_ts": "2026-05-14T17:51:21Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -390,7 +390,7 @@
       "id": "qor-validate",
       "source_path": "skills/qor-validate/SKILL.md",
       "install_rel_path": "skills/qor-validate/SKILL.md",
-      "sha256": "2fbe6b14ef35ff7be061790258ded3a0e9f955ecf9c16a83f2e772003d0d82d7"
+      "sha256": "543bfc56e0c17b1aac01720dee0c6059ea077819694a7525775a8105905afc37"
     },
     {
       "id": "track-shadow-genome.md",

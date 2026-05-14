@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"opus","system":"Qor-logic","ts":"2026-05-14T17:20:21Z","version":"0.46.2"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-05-14T1636-5ebd78","target":"docs/plan-qor-phase66-qor-validate-integrity-bundle.md","ts":"2026-05-14T17:20:21Z","verdict":"PASS"}

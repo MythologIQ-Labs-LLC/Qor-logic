@@ -7510,3 +7510,58 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 65 hotfix complete; GH #57 + GH #53 closed)
 *Merkle seal: fcf2c8ba...* (Phase 65 seal on top of Phase 64's 72f4919d...)
 *Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
+
+---
+
+### Entry #200: SESSION SEAL — Phase 66: qor-validate integrity bundle (v0.47.0, GH #54 + #55)
+
+**Timestamp**: 2026-05-14T17:00:00Z
+
+**Phase**: SUBSTANTIATE (Phase 66 feature)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase66-qor-validate-integrity-bundle.md
+
+**Session**: `2026-05-14T1636-5ebd78`
+
+**SSDF Practices**: PS.2.1, PW.1.1, RV.1.1, RV.2.1
+
+**Content Hash (session seal)**: `9a7b513ef4d35687dbc733c146322edb2a01582e46ec28941000fefd79f0dd61`
+
+**Previous Hash**: `fcf2c8ba54bd52129a48dd15620a56d81e8b0a36bde3ad68f447da688a5c9bec`
+
+**Chain Hash (Merkle seal)**: `a1417bbeb966f0815c79ae81235d1861f179077a4893d4c366dbc5a6708b42bf`
+
+**Scope**: Validator integrity bundle from the remediation-handoff Stage 3.2 grouping. Closes GH #54 (qor-validate skips session seals + reports downstream placeholder-chain entries as OK) and GH #55 (qor-validate skill should honor post-anchor ledger invariant instead of raw verifier failure).
+
+**GH #54 deliverables**:
+- `SESSION_SEAL_RE` recognizes `**Session Seal**: ... = \`<hex>\`` markup as a chain-hash source; entries previously skipped now verify.
+- `is_placeholder_pattern()` flags ascending-hex, repeating-bigram, FailSafe-class, and low-entropy fabrication shapes; all-zeros genesis previous_hash exempted.
+- Taint propagation: downstream entries after a FAIL report as `TAINTED Entry #N: depends on failed predecessor #M` regardless of own math.
+
+**GH #55 deliverables**:
+- `verify_post_anchor()` mode with auto-detected or operator-pinned boundary; pre-boundary failures classified `DISCLOSED_PRE_ANCHOR` and tolerated.
+- CLI flags `--ledger PATH`, `--post-anchor`, `--boundary N` on `qor-logic verify-ledger`.
+- qor-validate SKILL.md Step 4.5 (Mode Selection); stale path-arg invocation removed; source URL corrected to `MythologIQ-Labs-LLC/Qor-logic`.
+
+**Doctrine §14 added**: post-anchor ledger invariant.
+
+**3 new glossary terms**: `TAINTED entry`, `DISCLOSED_PRE_ANCHOR`, `post-anchor boundary`.
+
+**Files touched** (18 source + tests + dist + docs).
+
+**Test surface**: 1576 passing, 1 skipped, 0 failures. 30 new tests across 6 files plus 17 pre-existing test-fixture refactors from synthetic shapes to real `hashlib.sha256` digests.
+
+**Gate artifacts**: `.qor/gates/2026-05-14T1636-5ebd78/{plan,audit,implement,substantiate}.json` all present.
+
+**Self-application**: Phase 64's Step 6.8 Seal Hash Integrity Gate validated this seal's four digests (real, produced by `hash_guard.hash_file` + `ledger_hash.chain_hash`).
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 66 feature complete; GH #54 + GH #55 closed)
+*Merkle seal: a1417bbe...* (Phase 66 seal on top of Phase 65's fcf2c8ba...)
+*Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*

@@ -593,3 +593,33 @@ referenced_by:
   - qor/gates/delegation-table.md
 introduced_in_plan: phase59-ideation-readiness-phase
 ```
+
+```yaml
+term: TAINTED entry
+definition: 'A META_LEDGER entry whose own chain hash math is internally consistent but whose recorded previous_hash chains from a failed predecessor entry. Per Phase 66 (GH #54), `qor.scripts.ledger_hash.verify` reports such entries as `TAINTED Entry #N: depends on failed predecessor #M`. Math consistency alone is not trust; once an upstream FAIL poisons the chain root, every subsequent entry is tainted until the operator fixes the predecessor.'
+home: qor/scripts/ledger_hash.py
+referenced_by:
+  - qor/skills/governance/qor-validate/SKILL.md
+  - qor/references/doctrine-governance-enforcement.md
+introduced_in_plan: phase66-qor-validate-integrity-bundle
+```
+
+```yaml
+term: DISCLOSED_PRE_ANCHOR
+definition: 'A META_LEDGER entry id at or below the operator-pinned (or auto-detected) post-anchor boundary whose chain math fails. Per Phase 66 (GH #55), `qor.scripts.ledger_hash.verify_post_anchor` reports such entries as `DISCLOSED_PRE_ANCHOR Entry #N: tolerated pre-boundary failure` and does NOT count them as errors. Used by consumer workspaces with sealed re-anchors that have documented pre-anchor edit clusters in their shadow genome.'
+home: qor/scripts/ledger_hash.py
+referenced_by:
+  - qor/skills/governance/qor-validate/SKILL.md
+  - qor/references/doctrine-governance-enforcement.md
+introduced_in_plan: phase66-qor-validate-integrity-bundle
+```
+
+```yaml
+term: post-anchor boundary
+definition: 'The entry id partition between disclosed pre-anchor failures (tolerated) and the post-anchor surface (strict). Default: highest-numbered cleanly-verifying entry. Operator override via `--boundary N` on `qor-logic verify-ledger --post-anchor`. See `qor.scripts.ledger_hash.verify_post_anchor` for the auto-detection algorithm.'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/scripts/ledger_hash.py
+  - qor/skills/governance/qor-validate/SKILL.md
+introduced_in_plan: phase66-qor-validate-integrity-bundle
+```

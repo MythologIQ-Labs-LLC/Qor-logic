@@ -10,6 +10,37 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.47.0] - 2026-05-14
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 66 (feature, GH #54 + #55)**: qor-validate integrity bundle.
+  - `qor/scripts/ledger_hash.py` gains `SESSION_SEAL_RE` for Session Seal
+    markup recognition, `is_placeholder_pattern()` detector
+    (ascending-hex / repeating-bigram / FailSafe-class / low-entropy
+    heuristics; all-zeros genesis convention exempted), and
+    `verify_post_anchor()` mode with auto-detected or operator-pinned
+    boundary.
+  - `verify()` extended with taint propagation: downstream entries after
+    a FAIL are reported as `TAINTED Entry #N: depends on failed
+    predecessor #M` regardless of their own chain math.
+  - `qor-logic verify-ledger` CLI gains `--ledger PATH`, `--post-anchor`,
+    and `--boundary N` flags. Backward compatible: bare invocation
+    unchanged.
+  - `qor/skills/governance/qor-validate/SKILL.md` gains Step 4.5 (Mode
+    Selection); stale `qor-logic verify-ledger docs/META_LEDGER.md`
+    path-arg references removed; source URL corrected to
+    `MythologIQ-Labs-LLC/Qor-logic`.
+  - `qor/references/doctrine-governance-enforcement.md` §14 documents
+    the post-anchor invariant.
+  - 3 new glossary terms: `TAINTED entry`, `DISCLOSED_PRE_ANCHOR`,
+    `post-anchor boundary`.
+  - 30 new tests across 6 files; 5 pre-existing test files refactored
+    from synthetic 64-char fixtures to real `hashlib.sha256` digests
+    (the placeholder detector was correctly flagging them).
+
 ## [0.46.2] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

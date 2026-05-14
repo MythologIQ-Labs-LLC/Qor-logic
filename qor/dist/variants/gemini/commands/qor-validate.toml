@@ -67,11 +67,21 @@ Ask the user: "docs/META_LEDGER.md not found. Should I correct it by running 'qo
 
 Extract all ledger entries:
 
-Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `CONTENT_HASH_RE`, `PREV_HASH_RE`, `CHAIN_HASH_RE` and the `verify()` entrypoint. CLI: `qor-logic verify-ledger docs/META_LEDGER.md`.
+Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `CONTENT_HASH_RE`, `PREV_HASH_RE`, `CHAIN_HASH_RE`, `SESSION_SEAL_RE`, `verify()`, `verify_post_anchor()`, and `is_placeholder_pattern()`. CLI: `qor-logic verify-ledger` (default scope = workdir ledger; pass `--ledger PATH` to override).
 
 ### Step 4: Verify Chain
 
-Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `CONTENT_HASH_RE`, `PREV_HASH_RE`, `CHAIN_HASH_RE` and the `verify()` entrypoint. CLI: `qor-logic verify-ledger docs/META_LEDGER.md`.
+Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `CONTENT_HASH_RE`, `PREV_HASH_RE`, `CHAIN_HASH_RE`, `SESSION_SEAL_RE`, `verify()`, `verify_post_anchor()`, and `is_placeholder_pattern()`. CLI: `qor-logic verify-ledger` (default scope = workdir ledger; pass `--ledger PATH` to override).
+
+### Step 4.5: Mode Selection (Phase 66 wiring - GH #54 + #55)
+
+`/qor-validate` runs in one of two modes per consumer-workspace needs:
+
+**Raw mode** (default; `qor-logic verify-ledger`): walks every entry and reports each as `OK Entry #N` / `FAIL Entry #N` / `TAINTED Entry #N: depends on failed predecessor #M` / `Skipped N entries with non-verifiable markup`. The `TAINTED` classification (Phase 66) flags downstream entries whose own chain math is internally consistent only because they chain from a failed predecessor's recorded value -- math consistency alone is not trust. Use raw mode for strict-correctness audits and pre-release gates on canonical ledgers.
+
+**Post-anchor mode** (`qor-logic verify-ledger --post-anchor [--boundary N]`): tolerates documented pre-anchor failures up to a boundary entry, then strict on the post-anchor surface. Pre-boundary FAILs report as `DISCLOSED_PRE_ANCHOR Entry #N`; post-boundary FAILs remain hard errors. Boundary defaults to the highest-numbered cleanly-verifying entry; operator may pin via `--boundary N`. Use post-anchor mode for consumer workspaces with a sealed re-anchor (e.g., COREFORGE pattern from GH #55).
+
+Both modes recognize Session Seal markup (`**Session Seal**: ... = \\`<hex>\\``) as a chain-hash source (Phase 66; closes the GH #54 blind spot where Session-Seal-only entries were skipped) and flag placeholder-pattern hashes (ascending hex, repeating bigrams, low entropy) as FAIL.
 
 ### Step 5: Generate Report
 
@@ -99,7 +109,7 @@ Template: `references/qor-validate-reports.md`.
 
 For thorough validation, recalculate content hashes:
 
-Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `CONTENT_HASH_RE`, `PREV_HASH_RE`, `CHAIN_HASH_RE` and the `verify()` entrypoint. CLI: `qor-logic verify-ledger docs/META_LEDGER.md`.
+Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `CONTENT_HASH_RE`, `PREV_HASH_RE`, `CHAIN_HASH_RE`, `SESSION_SEAL_RE`, `verify()`, `verify_post_anchor()`, and `is_placeholder_pattern()`. CLI: `qor-logic verify-ledger` (default scope = workdir ledger; pass `--ledger PATH` to override).
 
 Template: `references/qor-validate-reports.md`.
 
