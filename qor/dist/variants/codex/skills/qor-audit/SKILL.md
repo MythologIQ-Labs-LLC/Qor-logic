@@ -230,6 +230,21 @@ Scan for UI elements without backend handlers:
 
 **Required next action:** per `qor/references/doctrine-audit-report-language.md` -- frontend handler gap classifies as **Code-logic defect** -> `/qor-debug`; metadata-only declaration without backing behavior (SG-Phase25-B pattern) classifies as **Plan-text** -> Governor: amend plan text, re-run `/qor-audit`.
 
+##### Live-Progress Invariant (Phase 74 wiring; GH #58)
+
+For every UI element with progress semantics (progress bar, spinner, phase indicator, step list), the audit MUST verify that the element's state reflects the underlying operation's progress at intermediate points, not only at start and end.
+
+```markdown
+### Live-Progress Audit
+
+- [ ] Every CSS animation or width transition driven by JS has at least one intermediate state when the underlying operation takes >2 seconds
+- [ ] No `style.width = '0%'` immediately followed by `style.width = '100%'` with no intermediate writes (fake-jump pattern; SG-FakeProgress-A)
+- [ ] Modals with progress UI subscribe to the backing event stream (WebSocket / EventEmitter / etc.) and re-render on each event
+- [ ] Error UI surfaces an explicit dismiss/retry control; modal does NOT trap the operator on a terminal error state
+```
+
+**Any violation -> VETO with `ghost-ui` category, sub-tag `live-progress-fake`**. The sub-tag is prose-only (no `findings_categories` schema enum addition); the existing `ghost-ui` enum value absorbs the new sub-rule. **Required next action:** the implementing surface MUST subscribe to the backing progress event stream and re-render on each event; per-phase intermediate states are required. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-FakeProgress-A.
+
 #### Section 4 Razor Pass
 
 Verify KISS compliance in proposed design:
@@ -348,6 +363,7 @@ For each plan claim in scope, verify against current code:
 - [ ] Every referenced `event_type` appears in `qor/gates/schema/shadow_event.schema.json` enum OR is explicitly declared NEW in the plan
 - [ ] Every cross-module function signature (`module.func(args)`) exists in current source OR is explicitly declared NEW in Affected Files
 - [ ] Every skill reference (`/qor-X` Step N) matches the actual current skill structure
+- [ ] Every cited **third-party SDK** method/property exists in installed type declarations (`node_modules/<package>/dist/*.d.ts` for JS/TS; `pip show <pkg>` + module inspection for Python; `Cargo.toml` + `cargo doc` for Rust) OR is explicitly quoted from official documentation with citation (URL + quoted text). Every cited **behavioral-semantics claim** (Postgres durability/concurrency/transaction semantics, lock lifecycle, trigger side-effects, supabase-js method behavior, auth-schema mutability, managed-schema constraints) includes inline citation to upstream docs (URL + quoted text), upstream source (file:line), or in-repo precedent demonstrating the claimed behavior. Phase 74 wiring (GH #49); closes SG-006 + SG-010 surface.
 ```
 
 **Any violation -> VETO with `infrastructure-mismatch` category**. **Required next action:** amend the plan to reflect actual infrastructure OR add the missing infrastructure as an explicit Phase Affected File. No implicit dependencies.

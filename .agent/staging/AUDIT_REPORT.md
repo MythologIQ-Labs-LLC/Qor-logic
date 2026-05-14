@@ -1,12 +1,12 @@
-# Audit Report - Phase 73 (Feature Inventory + per-feature TDD V1)
+# Audit Report - Phase 74 (qor-audit pass extensions: #49 + #58)
 
-**Plan**: `docs/plan-qor-phase73-feature-inventory-tdd.md`
-**Session**: `2026-05-14T2016-0a7b68`
+**Plan**: `docs/plan-qor-phase74-audit-pass-extensions.md`
+**Session**: `2026-05-14T2154-26505b`
 **Verdict**: **PASS**
-**Risk grade**: L2
+**Risk grade**: L1
 **Mode**: solo
 
-All audit passes PASS. Pre-audit lints exit 0. 15 new tests (12 from plan + 3 schema) all behavior-focused. Plan is V1 scope-bounded; runtime helpers + ABORT semantics explicitly deferred to V2 with rationale.
+Pre-audit lints exit 0. L1: prose-only audit-pass extensions + SG doctrine entry; no schema changes, no new modules, no CLI. 6 new tests across 3 files, behavior-focused.
 
 ## Verdict
-**PASS** at L2.
+**PASS** at L1.

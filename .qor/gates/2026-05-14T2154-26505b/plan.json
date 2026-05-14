@@ -1,0 +1,61 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-14T2154-26505b",
+  "ts": "2026-05-14T21:57:15Z",
+  "plan_path": "docs/plan-qor-phase74-audit-pass-extensions.md",
+  "phases": [
+    "Phase 1: Infrastructure Alignment sixth bullet (GH #49)",
+    "Phase 2: Ghost UI Live-Progress Invariant sub-rule (GH #58)",
+    "Phase 3: SG-FakeProgress-A doctrine entry (GH #58)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_audit_third_party_sdk_check.py tests/test_qor_audit_live_progress_invariant.py tests/test_doctrine_sg_fake_progress_a.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase74-audit-pass-extensions.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "third-party SDK citation",
+      "home": "qor/skills/governance/qor-audit/SKILL.md"
+    },
+    {
+      "term": "behavioral-semantics claim",
+      "home": "qor/skills/governance/qor-audit/SKILL.md"
+    },
+    {
+      "term": "Live-Progress Invariant",
+      "home": "qor/skills/governance/qor-audit/SKILL.md"
+    },
+    {
+      "term": "SG-FakeProgress-A",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 prose+doctrine only; no Python lint helper this phase."
+    ],
+    "non_goals": [
+      "No plan_live_progress_lint.py",
+      "No findings_categories enum change",
+      "No --check CLI"
+    ],
+    "exclusions": [
+      "No /qor-plan, /qor-implement, /qor-substantiate, /qor-debug, /qor-refactor, /qor-remediate changes; no CI workflows."
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "feature",
+  "originating_remediation": "GH #49 + GH #58",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.48.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T21:57:15Z"
+  }
+}

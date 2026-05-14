@@ -688,3 +688,39 @@ referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
 introduced_in_plan: phase73-feature-inventory-tdd
 ```
+
+```yaml
+term: third-party SDK citation
+definition: 'A required citation form at /qor-audit Step 3 Infrastructure Alignment Pass (Phase 74 wiring, GH #49): every plan claim referencing a third-party SDK method or property must cite either an installed type declaration (node_modules/<package>/dist/*.d.ts for JS/TS; pip show + module inspection for Python; Cargo.toml + cargo doc for Rust) OR an official documentation URL with quoted text. Missing citation triggers VETO with `infrastructure-mismatch` category. Closes SG-006 PostHog SDK hallucination class.'
+home: qor/skills/governance/qor-audit/SKILL.md
+referenced_by:
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase74-audit-pass-extensions
+```
+
+```yaml
+term: behavioral-semantics claim
+definition: 'A plan assertion about runtime behavior of an external mechanism (Postgres durability/concurrency/transaction semantics, lock lifecycle, trigger side-effects, supabase-js method behavior, auth-schema mutability, managed-schema constraints). Required at /qor-audit Step 3 Infrastructure Alignment Pass (Phase 74 wiring, GH #49) to include inline citation: upstream docs URL + quoted text, upstream source file:line, or in-repo precedent demonstrating the claimed behavior. Closes SG-010 mechanism-detail hallucination recurrence class.'
+home: qor/skills/governance/qor-audit/SKILL.md
+referenced_by:
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase74-audit-pass-extensions
+```
+
+```yaml
+term: Live-Progress Invariant
+definition: 'A sub-rule under /qor-audit Step 3 Ghost UI Pass (Phase 74 wiring, GH #58): every UI element with progress semantics (progress bar, spinner, phase indicator, step list) must reflect the underlying operation''s progress at intermediate points. Required behaviors: intermediate state when backing op takes >2s; no fake-jump pattern (0%->100% without intermediate writes); modals subscribe to backing event stream and re-render; error UI surfaces explicit dismiss/retry. Violations VETO with `ghost-ui` category, sub-tag `live-progress-fake`.'
+home: qor/skills/governance/qor-audit/SKILL.md
+referenced_by:
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase74-audit-pass-extensions
+```
+
+```yaml
+term: SG-FakeProgress-A
+definition: 'Shadow-genome pattern: UI element with progress semantics animates 0%->100% with no intermediate writes while the backing operation runs silently for >2 seconds. Operator perceives the click as having done nothing. Originating recurrence: FailSafe v5.1.0 Install QorLogic Skills card (META_LEDGER #360/#361/#362/#366). Countermeasure: /qor-audit Ghost UI Pass Live-Progress Invariant sub-rule. Phase 74 wiring (GH #58).'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/skills/governance/qor-audit/SKILL.md
+introduced_in_plan: phase74-audit-pass-extensions
+```

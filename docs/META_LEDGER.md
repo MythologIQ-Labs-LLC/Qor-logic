@@ -7782,3 +7782,45 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 73 feature complete; GH #40 + #41 closed)
 *Merkle seal: a1da7c50...* (Phase 73 seal on top of Phase 72's 7aaa92dd...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+### Entry #206: SESSION SEAL — Phase 74: qor-audit pass extensions (Infrastructure Alignment sixth bullet + Ghost UI Live-Progress Invariant) (v0.50.0, GH #49 + #58)
+
+**Timestamp**: 2026-05-14T22:04:50Z
+
+**Phase**: SUBSTANTIATE (Phase 74 feature)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase74-audit-pass-extensions.md
+
+**Session**: `2026-05-14T2154-26505b`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+
+**Scope**: Closes GH #49 + #58 -- qor-audit pass extensions (prose-only V1). `/qor-audit` Step 3 Infrastructure Alignment Pass gains a sixth checklist bullet covering third-party SDK citations (installed type declarations: `node_modules/<pkg>/dist/*.d.ts` for JS/TS, `pip show <pkg>` + module inspection for Python, `Cargo.toml` + `cargo doc` for Rust) and behavioral-semantics claims (Postgres durability/concurrency/transaction semantics, lock lifecycle, trigger side-effects, supabase-js method behavior, auth-schema mutability, managed-schema constraints). Each claim must include inline citation: upstream docs URL + quoted text, upstream source file:line, or in-repo precedent. Closes SG-006 PostHog SDK hallucination class + SG-010 mechanism-detail hallucination recurrence class. `/qor-audit` Step 3 Ghost UI Pass gains a Live-Progress Invariant sub-rule with 4 checklist items: (1) intermediate state when backing op takes >2s; (2) no fake-jump pattern (`style.width = '0%'` -> `style.width = '100%'` with no intermediate writes); (3) modals subscribe to backing event stream and re-render on each event; (4) error UI surfaces explicit dismiss/retry control. VETO category unchanged (`ghost-ui` with sub-tag `live-progress-fake`; prose-only sub-tag, no schema enum change). SG-FakeProgress-A doctrine entry catalogues the fake-jump pattern with originating recurrence (FailSafe v5.1.0 Install QorLogic Skills card, two PASS audits at FailSafe META_LEDGER #361 + #362 missed it).
+
+**Files touched** (9): qor-audit SKILL.md (2 prose additions: Infrastructure Alignment sixth bullet + Ghost UI Live-Progress Invariant sub-rule), doctrine-shadow-genome-countermeasures.md (SG-FakeProgress-A entry), 3 new test files (test_qor_audit_third_party_sdk_check.py, test_qor_audit_live_progress_invariant.py, test_doctrine_sg_fake_progress_a.py), glossary.md (4 new entries), CHANGELOG.md (0.50.0 stamped), README.md (Tests 1633 -> 1639), SYSTEM_STATE.md, docs/plan-qor-phase74-audit-pass-extensions.md. Dist variants regenerated.
+
+**Test surface**: 6 new tests pass twice deterministically. All tests behavior-focused (read SKILL.md/doctrine prose regions and assert on prose contents).
+
+**Self-application**: Phase 67's `plan_text_consistency_lint` cleared this plan. Phase 72's Infrastructure Citation Inventory: the plan cites only qor-audit/SKILL.md, doctrine-shadow-genome-countermeasures.md (both exist in tree); no sealed-infrastructure citations requiring grep-evidence. Phase 68's Self-Application Sub-Pass: the plan introduces audit-pass extensions but the plan itself is prose-only and does not declare new SDK or behavioral-semantics claims, so the new disciplines apply by inapplicability. Phase 64 Step 6.8 gate validates this seal's digests.
+
+**Branch sequencing note**: Phase 74 branch was created from main pre-Phase-73 merge; rebased onto post-Phase-73 main (v0.49.0) before substantiate. Result: pyproject jumps 0.49.0 -> 0.50.0 (feature).
+
+**Deferral**: V2 mechanical `qor/scripts/plan_live_progress_lint.py` heuristic at Step 0.6 pre-audit lint surface (per GH #58 reference implementation) queued pending V1 prose adoption signals.
+
+**Content Hash (session seal)**: `5bfecbeeb7be1d0da4ebac95337282ecb1a5009b8ff29df162401600e1179f5c`
+
+**Previous Hash**: `a1da7c50b736d3f77ae47adea7e656ac436b354bc469aad24a63b32a5af453d2`
+
+**Chain Hash (Merkle seal)**: `8c72f2d8c4c44545c7079d952eedf35b91bf1fff990ab2d43e903ec25f8133cb`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 74 feature complete; GH #49 + #58 closed)
+*Merkle seal: 8c72f2d8...* (Phase 74 seal on top of Phase 73's a1da7c50...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
