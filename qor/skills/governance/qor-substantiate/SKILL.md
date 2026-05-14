@@ -314,6 +314,33 @@ fi
 
 The exit-1 ABORT is what distinguishes Phase 49's enforcement from Phase 31's WARN-only currency check above. Operator must update the README badges in the implement pass (or here, before re-running substantiate). Locked by `tests/test_readme_badge_currency.py` and `tests/test_substantiate_badge_currency_wiring.py` per `qor/references/doctrine-governance-enforcement.md` §"Badge currency".
 
+### Step 6.8: Seal Hash Integrity Gate (Phase 64 wiring - GH #48)
+
+Before Step 7 computes or records any seal hash, import the seal-critical toolkit and validate every hash value that will enter the ledger body. Missing toolkit modules or invalid hash strings ABORT substantiation. Fail-closed: this step has no override path and is not governed by Phase 47 skip semantics; cryptographic evidence must always be validated.
+
+**Preparation (operator runs this BEFORE the validation block below):** compute the four seal-critical hashes via the canonical helpers, so the four Python variables (`merkle_seal`, `content_hash`, `previous_hash`, `chain_hash`) exist before validation. Use `qor.scripts.hash_guard.hash_file(path).sha256` for file-content digests, `qor.scripts.ledger_hash.content_hash(path)` for the candidate SESSION SEAL entry's content digest, and `qor.scripts.ledger_hash.chain_hash(content, previous)` for the chain digest. Do not pattern-fill hex strings, do not delegate to a missing reference script, and do not interpolate placeholder text. The validation block below then catches any digest the helpers did not actually produce.
+
+```python
+from qor.scripts.hash_guard import (
+    require_toolkit_modules,
+    validate_sha256,
+)
+
+require_toolkit_modules(
+    ("qor.scripts.ledger_hash", "qor.scripts.hash_guard")
+)
+
+# Validate every hash value that Step 7 will write into the SESSION SEAL
+# entry. Order matches the ledger entry layout. Each variable was produced
+# by the helpers named in the Preparation paragraph above.
+validate_sha256(merkle_seal,   label="merkle_seal")
+validate_sha256(content_hash,  label="content_hash")
+validate_sha256(previous_hash, label="previous_hash")
+validate_sha256(chain_hash,    label="chain_hash")
+```
+
+Any raised `ValueError` or `RuntimeError` from missing toolkit or invalid hash strings ABORTs substantiation. Operator fixes the underlying cause (install the seal-critical helper modules, regenerate the affected hash via `python -m qor.scripts.ledger_hash hash <path>`, or amend the fabricated value to a real digest) and re-runs `/qor-substantiate`. Per `qor/references/doctrine-governance-enforcement.md` (Seal Hash Integrity Gate subsection).
+
 ### Step 7: Final Merkle Seal
 
 Calculate session seal:

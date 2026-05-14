@@ -120,8 +120,10 @@ referenced_by:
   - qor/skills/sdlc/qor-research/SKILL.md
   - qor/skills/governance/qor-audit/references/qor-audit-templates.md
   - qor/references/doctrine-nist-ssdf-alignment.md
+  - qor/references/doctrine-governance-enforcement.md
   - qor/references/patterns-devops.md
   - qor/references/ql-audit-templates.md
+  - qor/skills/sdlc/qor-ideate/SKILL.md
   - docs/architecture.md
   - docs/lifecycle.md
   - docs/operations.md
@@ -170,6 +172,7 @@ aliases:
 referenced_by:
   - qor/gates/chain.md
   - qor/references/doctrine-governance-enforcement.md
+  - qor/references/doctrine-procedural-fidelity.md
   - qor/references/ql-substantiate-templates.md
   - qor/skills/governance/qor-substantiate/references/qor-substantiate-templates.md
   - docs/lifecycle.md
@@ -524,6 +527,7 @@ definition: 'Phase 58 rule that any seal commit touching qor/skills/, qor/script
 home: qor/references/doctrine-procedural-fidelity.md
 referenced_by:
   - qor/scripts/procedural_fidelity.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
   - tests/test_system_state_phase_coverage.py
 introduced_in_plan: phase58-procedural-fidelity-and-tech-debt-wrapup
 ```
@@ -534,6 +538,7 @@ definition: 'Phase 59 optional pre-research SDLC phase. Skill /qor-ideate writes
 home: qor/references/doctrine-ideation-readiness.md
 referenced_by:
   - qor/skills/sdlc/qor-ideate/SKILL.md
+  - qor/skills/meta/qor-help/SKILL.md
   - qor/scripts/gate_chain.py
   - qor/gates/chain.md
 introduced_in_plan: phase59-ideation-readiness-phase
@@ -555,6 +560,7 @@ definition: 'Second section of the ideation artifact. Defines the actual failure
 home: qor/references/doctrine-ideation-readiness.md
 referenced_by:
   - qor/skills/sdlc/qor-ideate/SKILL.md
+  - qor/skills/meta/qor-help/SKILL.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
 introduced_in_plan: phase59-ideation-readiness-phase
 ```

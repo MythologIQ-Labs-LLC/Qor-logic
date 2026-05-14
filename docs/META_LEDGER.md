@@ -7391,3 +7391,65 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (post-reconciliation cleanup complete)
 *Merkle seal: 885699ae...* (cleanup seal on top of Phase 60's 1c0ed269; closes worktree-disposition open item)
 *Open items at this seal: push to origin (operator authorization pending)*
+
+---
+
+### Entry #198: SESSION SEAL — Phase 64: Seal hash integrity gate substantiate wiring (v0.46.1, GH #48)
+
+**Timestamp**: 2026-05-14T11:16:00Z
+
+**Phase**: SUBSTANTIATE (Phase 64 hotfix)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1 + /qor-substantiate)
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase64-seal-hash-substantiate-wiring.md
+
+**Session**: `2026-05-14T0030-552696`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash (session seal)**: `dae324e3c1922f73b97042e1e40bdfb85128a2fc756ada6e200b13c02c1ec0e7`
+
+**Previous Hash**: `885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca4734980e21c1489299c`
+
+**Chain Hash (Merkle seal)**: `72f4919d3b282b46bbf266013c1d8d2f88d2cad0311359fad4c4b5c9b81a6065`
+
+**Scope**: Wires the existing `qor/scripts/hash_guard.py` helpers into `/qor-substantiate` Step 6.8 (Seal Hash Integrity Gate). New step calls `require_toolkit_modules` then `validate_sha256` on `merkle_seal`, `content_hash`, `previous_hash`, `chain_hash` before any digest enters the SESSION SEAL entry body. Fail-closed; no override path; not governed by Phase 47 skip semantics. Closes GH #48 (CRITICAL: substantiate produced fabricated patterned-hex strings in non-Python repos) by landing the Phase 59 Phase 2 work that was dropped during the Phase 60 session-consolidation commit.
+
+**Bundled fixes** (scope expansion 2026-05-14, operator-approved):
+- `qor/scripts/doc_integrity.py:218` strict-mode import: bare `import doc_integrity_strict` → `from qor.scripts import doc_integrity_strict`. Pre-Phase-31 bug that left `/qor-substantiate` Step 4.7 crashing with `ModuleNotFoundError`. Regression locked by `tests/test_doc_integrity_strict_import.py`.
+- `qor/references/glossary.md` `referenced_by` drift surfaced by the strict-mode fix: 4 pre-existing latent gaps patched.
+- Step 6.8 Preparation paragraph naming the canonical hash-producing helpers (`hash_guard.hash_file`, `ledger_hash.content_hash`, `ledger_hash.chain_hash`).
+- `qor/references/doctrine-governance-enforcement.md` §13 documents the gate contract.
+- `docs/operations.md` gains 3 Phase 64 troubleshooting rows.
+
+**Files touched** (14 surfaces):
+- `tests/test_substantiate_hash_integrity_step.py` (NEW, 5 tests)
+- `tests/test_substantiate_dist_variants_carry_hash_gate.py` (NEW, 3 tests)
+- `tests/test_doc_integrity_strict_import.py` (NEW, 3 tests)
+- `qor/skills/governance/qor-substantiate/SKILL.md` (Step 6.8 added)
+- `qor/references/doctrine-governance-enforcement.md` (§13 added)
+- `qor/references/glossary.md` (5 referenced_by additions)
+- `qor/scripts/doc_integrity.py` (strict-mode import fix)
+- `qor/dist/variants/{claude,codex,kilo-code}/skills/qor-substantiate/SKILL.md` (regenerated)
+- `qor/dist/variants/gemini/commands/qor-substantiate.toml` (regenerated)
+- `docs/SYSTEM_STATE.md` (Phase 64 entry prepended)
+- `docs/operations.md` (3 troubleshooting rows added)
+- `docs/plan-qor-phase64-seal-hash-substantiate-wiring.md` (NEW)
+- `CHANGELOG.md` (Phase 64 0.46.1 section stamped)
+- `pyproject.toml` (0.46.0 → 0.46.1)
+
+**Test surface**: 1543 passing, 1 skipped, 1 pre-existing unrelated failure (`test_main_contains_phase60_reconciliation_seal`, structurally broken because `origin/main..main` is empty when local main matches origin). All 11 Phase 64 tests green twice consecutively.
+
+**Gate artifacts**: `.qor/gates/2026-05-14T0030-552696/{plan,audit,implement,substantiate}.json` all present at seal.
+
+**Self-application**: Step 6.8 of the substantiate skill fired during this very seal cycle. The four hashes recorded in this entry body were produced by `hash_guard.hash_file`, `ledger_hash.content_hash`, and `ledger_hash.chain_hash` exactly as Step 6.8's Preparation paragraph instructs, then validated by `validate_sha256` (the gate this phase introduces). Closes the dogfooding loop: the gate that prevents fabricated digests was exercised on its own seal entry and accepted real ones.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 64 hotfix complete; GH #48 closed)
+*Merkle seal: 72f4919d...* (Phase 64 seal on top of Phase 60+cleanup chain at 885699ae...)
+*Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
