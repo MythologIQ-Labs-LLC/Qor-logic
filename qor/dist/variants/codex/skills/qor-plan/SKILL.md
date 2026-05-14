@@ -175,9 +175,14 @@ Before authoring a new plan, check whether the session already has three consecu
 from qor.scripts import cycle_count_escalator as cce
 
 rec = cce.check(sid)
-if rec:
-    # Surface to operator: "Session has N consecutive VETOs on signature <sig>.
-    # Recommended skill: /qor-remediate. Proceed with plan anyway, or escalate?"
+# Phase 69 (GH #43): session-total mode catches recurrence across artifacts
+# (e.g., 3 VETOs same signature across 3 different plans in one session).
+# The consecutive-streak `check` resets on PASS / signature change /
+# implement break; `check_session_total` does not. Both modes can fire.
+total_rec = cce.check_session_total(sid)
+if rec or total_rec:
+    # Surface BOTH if both fired (different reasons: cycle-count vs session-total).
+    # Recommended skill: /qor-remediate. Proceed with plan anyway, or escalate?
     # On escalate: exit qor-plan and invoke /qor-remediate.
     # On decline: record the override and continue.
     if operator_declines:
@@ -185,11 +190,12 @@ if rec:
         orchestration_override.record(
             session_id=sid,
             skill="qor-plan",
-            recommended_skill=rec.suggested_skill,
+            recommended_skill=(rec or total_rec).suggested_skill,
             reason="operator elected to continue planning",
         )
         # Next cycle_count_escalator.check in this session will see the
-        # suppression marker and skip.
+        # suppression marker and skip. The same marker also suppresses
+        # check_session_total in the same session (Phase 69 contract).
 ```
 
 The override event is unioned with `gate_override` in the gate-loop classifier (see `qor/scripts/remediate_pattern_match.py`), so repeated overrides still eventually escalate.

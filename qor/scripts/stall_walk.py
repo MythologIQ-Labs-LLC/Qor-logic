@@ -77,3 +77,26 @@ def run(session_id: str) -> tuple[int, str | None, str | None]:
     audits = audit_history.read(session_id)
     breaks = _list_break_artifacts(session_id)
     return _walk_backward(audits, breaks)
+
+
+def count_session_signature_totals(session_id: str) -> dict[str, int]:
+    """Return ``{signature: count}`` across the entire session audit history.
+
+    Phase 69 (GH #43): the consecutive-streak mode in ``run()`` resets on any
+    PASS / signature change / implement break. This counter does NOT reset --
+    it counts every VETO contribution to each signature across the whole
+    session, catching the session-arc recurrence pattern where the same
+    signature recurs across multiple artifacts non-consecutively.
+
+    LEGACY-sentinel records (pre-Phase-37 audits without findings_categories)
+    are excluded; PASS audits do not contribute.
+    """
+    totals: dict[str, int] = {}
+    for record in audit_history.read(session_id):
+        if record.get("verdict") != "VETO":
+            continue
+        sig = findings_signature.compute_record(record)
+        if sig == findings_signature.LEGACY_SENTINEL:
+            continue
+        totals[sig] = totals.get(sig, 0) + 1
+    return totals

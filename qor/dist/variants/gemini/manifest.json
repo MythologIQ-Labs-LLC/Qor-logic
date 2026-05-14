@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-14T18:47:31Z",
+  "generated_ts": "2026-05-14T19:21:21Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -96,7 +96,7 @@
       "id": "qor-audit.toml",
       "source_path": "commands/qor-audit.toml",
       "install_rel_path": "commands/qor-audit.toml",
-      "sha256": "a7526ac65403b46fdfca9bd78a3ee0739b6e2b7bb5edc0f991cc728e10b2bdc2"
+      "sha256": "96d5e919ca0932dd0bff39ea9d60bff5e01bc8b33d44fda2a86d6486d5655cd1"
     },
     {
       "id": "qor-bootstrap.toml",
@@ -192,7 +192,7 @@
       "id": "qor-plan.toml",
       "source_path": "commands/qor-plan.toml",
       "install_rel_path": "commands/qor-plan.toml",
-      "sha256": "cda06cece4314e36d9afbe141d3ed4c3f3a803740964363e7ac0b5e1d64ebb69"
+      "sha256": "36a00320f0fb588f125e4b7b491aa5c75e4af45346256c89036885cae6b00727"
     },
     {
       "id": "qor-process-review-cycle.toml",

@@ -7655,3 +7655,48 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 68 hotfix complete; GH #44 + GH #50 closed)
 *Merkle seal: 09e3feee...* (Phase 68 seal on top of Phase 67's 23146a5d...)
 *Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
+
+---
+
+### Entry #203: SESSION SEAL — Phase 69: cycle_count_escalator session-total signature mode (v0.47.3, GH #43)
+
+**Timestamp**: 2026-05-14T19:30:00Z
+
+**Phase**: SUBSTANTIATE (Phase 69 hotfix)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase69-session-total-signature-escalator.md
+
+**Session**: `2026-05-14T1902-7b3e5d`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash (session seal)**: `a4e93314632c5681732e4373d092fae6e929844410988e4d42c420a5ccd5309b`
+
+**Previous Hash**: `09e3feee44009359c7bbccb06521827c36076be90c1f318f3a974663c5b9cd43`
+
+**Chain Hash (Merkle seal)**: `57247161064057779953c3cb90ffa44b62d93bd620351ef2c443a2c5aecb4ccd`
+
+**Scope**: Wave 1 quick-win closing GH #43. Adds `stall_walk.count_session_signature_totals` (per-signature counts across entire session audit history, non-consecutive) and `cycle_count_escalator.check_session_total` (surfaces escalation at K=3 cumulative). Catches the recurrence-across-artifacts pattern where the same VETO signature appears 3+ times in one session non-consecutively — the existing consecutive-streak `check` resets on PASS / signature change / implement break and misses this case.
+
+**Wiring**: `/qor-plan` Step 2c + `/qor-audit` Step 0.5 both invoke `check_session_total` alongside `check`; either firing surfaces the `/qor-remediate` recommendation. The `escalation_reason` field distinguishes "cycle-count" (consecutive) from "session-total" (cumulative) in shadow-event payloads.
+
+**Doctrine**: §10.4 (Cycle-count escalation) updated to document both modes.
+
+**Files touched** (9): 2 new test files, 2 helper module additions, 2 SKILL.md prose updates, 1 doctrine update, SYSTEM_STATE + plan.
+
+**Test surface**: 11 Phase 69 tests green deterministically. Suite at 1604+ passing. Pre-existing `test_doc_integrity_drift_report_cli` Windows-fs-walk timeout (60s subprocess) is environmental flakiness unrelated to this phase.
+
+**Self-application**: Phase 67's `plan_text_consistency_lint` cleared this plan. Phase 68's Self-Application Sub-Pass not directly applicable (plan introduces helper code, not a textual discipline). Phase 64 Step 6.8 gate validates this seal's digests.
+
+**Branch sequencing note**: Phase 69 branch was created from main before Phase 68's PR merged. After Phase 68 merge to origin/main, this branch merged origin/main back in to inherit Phase 68's Entry #202 + pyproject 0.47.2. Result: pyproject jumps 0.47.1 → 0.47.3 (Phase 68's 0.47.2 is on the inherited merge commit; Phase 69 bump targets 0.47.3). No semver gap; v0.47.2 tag exists at Phase 68's squash commit.
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 69 hotfix complete; GH #43 closed)
+*Merkle seal: 57247161...* (Phase 69 seal on top of Phase 68's 09e3feee...)
+*Open items at this seal: push to origin (operator authorization pending — Step 9.6 menu)*
