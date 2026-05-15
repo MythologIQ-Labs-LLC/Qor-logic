@@ -1,0 +1,45 @@
+{
+  "phase": "research",
+  "session_id": "2026-05-14T2230-bf77eb",
+  "ts": "2026-05-14T23:24:24Z",
+  "questions": [
+    "(a) Do existing prompt-IR / target-aware compiler projects already occupy this territory?",
+    "(b) Could existing Qor-logic governance hooks be repurposed for GovernanceDecision?",
+    "(c) What does API-shape validation look like with one real consumer?",
+    "(d) Spike approved, or Option 3 (defer) recommended?"
+  ],
+  "findings": [
+    {
+      "question": "(a)",
+      "answer": "Real gap exists -- no surveyed project ships canonical PromptIR + governance + target resolver as tracked artifact. But competing for mindshare against LangChain/DSPy/etc. is multi-year strategic commitment."
+    },
+    {
+      "question": "(b)",
+      "answer": "5 of 6 existing Qor-logic hooks are directly reusable (Cedar evaluator + secret_scanner + prompt_injection_canaries + ai_provenance + partial intent_lock/doc_integrity). Compiler is composition not greenfield."
+    },
+    {
+      "question": "(c)",
+      "answer": "Self-application via /qor-help --stuck or /qor-research is lowest-friction validation; FailSafe as second validation point."
+    },
+    {
+      "question": "(d)",
+      "answer": "Spike approved CONDITIONALLY (reuse-don't-rebuild + self-application-first + strategic-identity-guard). If any condition fails, defer to Option 3."
+    }
+  ],
+  "sources": [
+    "ideation packet .qor/gates/2026-05-14T2230-bf77eb/ideation.json",
+    "qor codebase walk: qor/reliability/intent_lock.py, qor/scripts/secret_scanner.py, qor/scripts/prompt_injection_canaries.py, qor/policies/*.cedar, qor/scripts/ai_provenance.py",
+    "Project surface review: LangChain, DSPy, Guidance, Pydantic AI, MS Prompt Flow, Semantic Kernel (public docs)",
+    "Research brief: docs/research-brief-prompt-compiler-scope-fit-2026-05-14.md"
+  ],
+  "originating_issue": "GH #39",
+  "recommended_next_phase": "plan",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.51.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-14T23:24:24Z"
+  }
+}

@@ -1,120 +1,120 @@
 {
   "phase": "ideation",
   "session_id": "2026-05-14T2230-bf77eb",
-  "ts": "2026-05-14T22:31:23Z",
+  "ts": "2026-05-14T23:22:13Z",
   "concept_name": "Target-Aware Governed Prompt Compilation subsystem evaluation (GH #39)",
   "spark": {
-    "observation": "Some prompt optimization systems take a horizontal approach: optimizing the same prompt in parallel for OpenAI, Anthropic, and Google, then sending one variant to one provider. This is wasteful when the execution target is already known. Filer proposes Qor-logic instead compile vertically through intent -> canonical IR -> governance -> target resolution -> provider-specific adaptation.",
-    "initial_question": "Should Qor-logic expand its surface from 'governance skills for AI coding agents' into 'deterministic target-aware prompt compiler for governed AI execution' -- adopting prompt IR, provider rulepacks, and execution-plan-driven multi-model workflows as a first-class Python package subsystem?",
-    "why_now": "Filer asserts this is a strategic identity decision: framing Qor-logic as a compiler rather than a prettifier differentiates it in the prompt-tooling space. The proposal references multi-agent federation use cases (Claude planning + GPT JSON synthesis + Gemini long-context) which are emerging in 2026 production workflows."
+    "observation": "Horizontal multi-provider prompt optimization is wasteful when target is known. Filer proposes Qor-logic compile vertically: intent -> canonical IR -> governance -> target resolution -> provider compilation.",
+    "initial_question": "Should Qor-logic expand from governance skills to deterministic target-aware prompt compiler as a Python package subsystem?",
+    "why_now": "Multi-agent federation use cases emerging in 2026; differentiates Qor-logic from prompt prettifiers."
   },
   "problem_frame": {
     "affected_actors": [
-      "Operators using Qor-logic as a governance shim around prompt execution",
-      "Developers building federated multi-model workflows who currently re-implement prompt routing per-provider",
-      "Qor-logic maintainers (5-phase scope-expansion has multi-quarter implementation cost)"
+      "Operators using Qor-logic as governance shim around prompt execution",
+      "Developers building federated multi-model workflows",
+      "Qor-logic maintainers (5-phase scope-expansion = multi-quarter)"
     ],
-    "failure_mode": "Two distinct framings the proposal blends: (1) Wasteful prompt optimization -- external systems do multi-provider compilation when only one target executes; (2) Qor-logic strategic identity -- current scope (skills + doctrines + Merkle seal) doesn't explicitly own prompt-compilation territory. Failing to address (1) means consumers keep re-implementing. Failing to carefully scope (2) means 5-phase implementation dilutes existing skill focus.",
-    "cost_of_failure": "If we don't address: consumers continue to re-implement per-provider prompt routing per-project; Qor-logic stays positioned as a governance framework rather than a governed prompt compiler. If we DO address without scoping carefully: 5-phase implementation pulls maintainer attention from existing SDLC skills (substantiate/audit/plan) for months. Risk of becoming a less-focused product."
+    "failure_mode": "Two blended framings: wasteful prompt optimization + Qor-logic strategic identity. Failing to address (1) means consumers re-implement; failing to scope (2) carefully dilutes existing skill focus.",
+    "cost_of_failure": "Either consumers continue re-implementing or 5-phase implementation dilutes maintainer attention from existing SDLC skills."
   },
-  "transformation_statement": "Qor-logic moves from a governance framework that ships skills + doctrines + Merkle-sealed audit trail for AI coding agents to either (option A) the same plus a target-aware prompt compiler subsystem that converts intent -> canonical IR -> governance-gated provider-specific compiled prompts OR (option B) the same with explicit declaration that prompt compilation lives elsewhere (Qortara, FailSafe, downstream consumer) without diluting the existing skill/doctrine surface, multiplying scope before validating demand, or claiming a product identity (the governed prompt compiler) the implementation can't yet support.",
+  "transformation_statement": "Qor-logic moves from governance-framework to (A) same + target-aware prompt compiler OR (B) same with explicit out-of-scope declaration -- without diluting skill/doctrine surface or claiming product identity implementation can't support.",
   "boundaries": {
     "non_goals": [
-      "NOT replacing existing skill-based governance with prompt-compilation as the only path",
-      "NOT building a benchmarking/comparison product (compare-mode would exist but is explicitly non-default)",
-      "NOT shipping provider rulepacks for every Anthropic / OpenAI / Google / local-model release in V1"
+      "NOT replacing skill-based governance",
+      "NOT a benchmark product",
+      "NOT shipping rulepacks for every provider in V1"
     ],
     "limitations": [
-      "V1 should be exploratory: Canonical IR + one provider compiler + governance gate at minimum (Phase 1 + Phase 2 from issue body). The full 5-phase plan is a multi-quarter project, not a single Qor-logic phase.",
-      "The compiler subsystem CANNOT replace existing META_LEDGER / Merkle-seal lifecycle; it complements it. Compiled prompts get governance annotations + content hashes anchored in the ledger."
+      "V1 exploratory: minimum viable IR + 1 provider",
+      "Compiler cannot replace Merkle-seal lifecycle"
     ],
     "exclusions": [
-      "No changes to existing SDLC skills (plan/audit/implement/substantiate) in this initiative. Compiler is additive.",
-      "No prompt-execution / model-call functionality in V1 -- Qor-logic compiles, consumers execute (per current skill posture: governance, not runtime)."
+      "No changes to existing SDLC skills",
+      "No prompt-execution in V1"
     ],
     "forbidden_interpretations": [
-      "This is NOT permission to rewrite Qor-logic as primarily a prompt compiler with skills as a side-feature. The skill/doctrine/Merkle-seal lifecycle remains the product center.",
-      "Target-aware does NOT mean Qor-logic becomes a model router -- selecting which model to run is upstream of compilation, decided by the consumer's execution plan.",
-      "This is NOT a hard commitment to ship Phases 2-5; V1 may stop at Phase 1 (Canonical IR + single-target compile) pending demand signal."
+      "NOT permission to rewrite Qor-logic as primarily compiler",
+      "Target-aware does NOT mean model router",
+      "NOT a hard commitment to Phases 2-5"
     ]
   },
   "options_matrix": [
     {
       "name": "Accept (vertical compiler subsystem)",
-      "summary": "Implement Phase 1 (Canonical IR + ParsedIntent + minimal intent parser + one provider compiler + tests) as a Qor-logic feature phase. Defer Phases 2-5 to follow-on phases gated on demand.",
+      "summary": "Phase 1 (Canonical IR + ParsedIntent + 1 provider compiler).",
       "selected": false,
-      "rejection_reason": "Largest scope expansion in Qor-logic history. Real risk of scope-creep into all 5 phases without validation. Requires Phase 1 alone to ship a new top-level package directory + 4-5 new schemas + one provider compiler + tests."
+      "rejection_reason": "Largest scope expansion; real risk of creep into all 5 phases without validation."
     },
     {
       "name": "Accept as exploratory probe",
-      "summary": "Ship a minimal Spike: just PromptIR + ParsedIntent schemas + a stub compile_prompt() function returning the IR unchanged. No provider compiler, no rulepacks. Used to validate API shape against one real consumer.",
+      "summary": "Minimal Spike: PromptIR + ParsedIntent schemas + stub compile_prompt().",
       "selected": true,
       "rejection_reason": null,
-      "selection_reason": "Smallest reversible step. Validates IR shape without committing to compiler subsystem. Forward-compatible with Option 1 if signal emerges. Doesn't dilute Qor-logic's current focus. Honors the proposal's intent (vertical pipeline) without paying full implementation cost upfront."
+      "selection_reason": "Smallest reversible step; validates IR shape; forward-compatible."
     },
     {
       "name": "Defer (out-of-scope)",
-      "summary": "Document in a NEW doctrine doctrine-scope-boundaries.md that prompt compilation is OUT of Qor-logic's scope. Recommend it be built in a sibling project (Qortara / FailSafe / dedicated repo). Close #39 with this disposition.",
+      "summary": "Doctrine entry: prompt-compilation out of scope.",
       "selected": false,
-      "rejection_reason": "Loses a potential strategic identity. The proposal raises legitimate points (intent before formatting, governance before compilation, deterministic rulepacks vs live doc lookup). Closing without engagement abandons signal."
+      "rejection_reason": "Loses strategic identity; abandons signal."
     },
     {
       "name": "Pilot in consumer",
-      "summary": "Build the compiler subsystem in a sibling/consumer project (e.g., Qortara). If it proves out there, contribute upstream into Qor-logic as a fully-validated Phase 1+.",
+      "summary": "Build in sibling project; contribute upstream if validated.",
       "selected": false,
-      "rejection_reason": "Lowest commitment but loses Qor-logic's first-mover position on the architectural identity. Worth holding as a fallback if Option 2 spike returns negative signal."
+      "rejection_reason": "Lowest commitment but loses first-mover position; fallback if Option 2 spike returns negative."
     }
   ],
   "governance_profile": {
     "risk_grade": "L2",
     "evidence_required": [
-      "V1 spike-validation: PromptIR + ParsedIntent schemas plus a stub compile_prompt() that round-trips IR with zero loss",
-      "One consumer integration report on whether the IR shape captures their use case",
-      "Decision artifact: a follow-on /qor-ideate phase gating whether to proceed from spike to Option 1 (full Phase 1 implementation)",
-      "SG-ScopeExpansionGuard-A doctrine entry cataloguing the exploratory probe before full subsystem build pattern"
+      "Spike PromptIR + ParsedIntent schemas + stub compile_prompt",
+      "Consumer integration report",
+      "Follow-on /qor-ideate gating",
+      "SG-ScopeExpansionGuard-A doctrine entry"
     ],
     "escalation_triggers": [
-      "If implementation discovers that PromptIR requires provider-specific shape (i.e., the IR is NOT actually provider-agnostic), escalate immediately back to /qor-ideate -- the proposal's core premise is broken and Option 3 (defer) becomes the right answer.",
-      "If spike shows zero demand from any consumer over a defined trial window, escalate to /qor-remediate to close the initiative with disposition recorded in doctrine.",
-      "If demand signal is strong but the spike API shape needs major rework, escalate to /qor-refactor before committing to Phase 1 build."
+      "If PromptIR requires provider-specific shape, escalate back to /qor-ideate (proposal's premise broken; Option 3 becomes right answer)",
+      "If spike shows zero demand, escalate to /qor-remediate to close with disposition in doctrine",
+      "If demand strong but API needs rework, escalate to /qor-refactor before Phase 1"
     ]
   },
   "failure_remediation_plan": [
     {
-      "failure_class": "Spike API shape doesn't fit any real consumer use case",
-      "detection_signal": "Consumer integration report flags critical gaps (e.g., missing context contract surface)",
-      "containment_action": "Re-author IR schema with consumer-driven shape; re-run spike with v2 schema",
+      "failure_class": "Spike API shape doesn't fit consumer use case",
+      "detection_signal": "Consumer integration report flags critical gaps",
+      "containment_action": "Re-author IR schema with consumer-driven shape; re-run spike",
       "return_phase": "ideation"
     },
     {
-      "failure_class": "Strategic-identity drift (Qor-logic increasingly positioned as compiler rather than governance framework)",
-      "detection_signal": "Doc surface check: count of compiler vs skill/doctrine/seal references in README/CONCEPT/CHANGELOG; threshold breach triggers review",
-      "containment_action": "Re-anchor with doctrine entry asserting governance-framework-primary identity; defer compiler-subsystem language in marketing surfaces",
+      "failure_class": "Strategic-identity drift",
+      "detection_signal": "compiler vs skill reference count threshold breach in README/CONCEPT/CHANGELOG",
+      "containment_action": "Re-anchor with doctrine asserting governance-primary identity",
       "return_phase": "remediate"
     },
     {
-      "failure_class": "Provider rulepack maintenance burden exceeds team capacity",
-      "detection_signal": "Number of stale rulepacks (>30 days behind upstream API release) exceeds threshold",
-      "containment_action": "Pause new provider onboarding; consider community-contributed rulepacks; or revert to dynamic doc lookup",
+      "failure_class": "Provider rulepack maintenance burden exceeds capacity",
+      "detection_signal": ">30 days stale rulepacks",
+      "containment_action": "Pause new provider onboarding; community contributions; or dynamic doc lookup",
       "return_phase": "substantiate"
     },
     {
-      "failure_class": "Phase 1 implementation reveals governance gate cannot be deterministic for prompt-injection risk",
-      "detection_signal": "Governance gate test fails on adversarial inputs that humans correctly classify",
-      "containment_action": "Escalate to /qor-audit for prompt-injection pass extension; consider hybrid LLM-assisted triage as policy carve-out",
+      "failure_class": "Governance gate cannot be deterministic for prompt-injection",
+      "detection_signal": "Gate test fails on adversarial inputs humans classify correctly",
+      "containment_action": "Escalate to /qor-audit for prompt-injection pass extension; hybrid LLM-assisted triage policy carve-out",
       "return_phase": "audit"
     },
     {
       "failure_class": "Compare-mode usage drifts from explicit benchmarking to default fallback",
-      "detection_signal": "Process Shadow Genome events show compare-mode invocation rate >5% of compile calls",
-      "containment_action": "Add friction (operator confirmation) on compare-mode invocation; doctrine entry codifies anti-pattern",
+      "detection_signal": "Shadow Genome compare-mode invocation rate >5%",
+      "containment_action": "Add friction (operator confirmation); doctrine entry codifies anti-pattern",
       "return_phase": "plan"
     }
   ],
   "readiness": {
     "status": "research_required",
     "recommended_next_phase": "research",
-    "rationale": "Unlike #38 (concrete failure on a specific 2026-05-06 incident with enumerable gates), #39 is a strategic architecture proposal with 4 explicit open questions in the filer's own text plus the meta-question of scope-fit for Qor-logic. /qor-research should: (a) survey existing prompt-IR / target-aware compiler projects (LangChain, DSPy, Guidance) to validate Qor-logic isn't building a duplicate; (b) interview 1-2 actual potential consumers to validate the spike API shape; (c) examine whether existing Qor-logic governance hooks (intent_lock, doc_integrity, secret_scanner) could be repurposed for GovernanceDecision; (d) decision artifact returns either spike approved or Option 3 defer recommended."
+    "rationale": "Unlike #38/#51 (concrete failures), #39 is strategic architecture with 4 open questions + meta-question of scope-fit. /qor-research must survey existing projects (LangChain, DSPy, Guidance), validate API shape with consumers, examine reuse of existing governance hooks, return spike-OK or defer-recommended."
   },
   "originating_issue": "GH #39",
   "ai_provenance": {
@@ -123,6 +123,6 @@
     "host": "unknown",
     "model_family": "opus",
     "human_oversight": "absent",
-    "ts": "2026-05-14T22:31:23Z"
+    "ts": "2026-05-14T23:22:13Z"
   }
 }
