@@ -7994,3 +7994,45 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 79 feature complete; GH #52 closed)
 *Merkle seal: d6b602ae...* (Phase 79 seal on top of Phase 78's 00627b14...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+### Entry #211: SESSION SEAL -- Phase 80: qor-bootstrap scaffolds FEATURE_INDEX.md (v0.55.0, GH #73)
+
+**Timestamp**: 2026-05-15T01:52:00Z
+
+**Phase**: SUBSTANTIATE (Phase 80 feature)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase80-bootstrap-feature-index.md
+
+**Session**: `2026-05-15T0147-7b2380`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+
+**Entry ID**: `0c6a68021346` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #73. New `### Step 6.6: Seed FEATURE_INDEX.md` inserted into `/qor-bootstrap` between Step 6.5 (Create Backlog) and Step 7 (Calculate Genesis Hash). Authors `docs/FEATURE_INDEX.md` from the canonical seed template at workspace genesis, closing the chicken-and-egg where newly-bootstrapped projects could not satisfy `/qor-implement` Step 12.5 staging gate (Phase 73 FEATURE_INDEX update obligation: refuses to ship when `src/` is touched but `FEATURE_INDEX.md` is not appended/updated) on their first cycle. Template structure: title with `{project_name}` placeholder; purpose paragraph naming Phase 73 obligation; Coverage Summary block initialized to 0/0/0/0 (Verified / Unverified / N/A / Total); one placeholder Section heading with the canonical 7-column table header (`ID | Feature | Doc | Code | Test | Status | Notes`); Gaps Surfaced placeholder block. Bootstrap Success Criteria updated to include the FEATURE_INDEX.md seed scaffold bullet.
+
+**Files touched** (~9): qor/skills/meta/qor-bootstrap/SKILL.md (Step 6.6 + Success Criteria update), qor/skills/meta/qor-bootstrap/references/qor-bootstrap-templates.md (new FEATURE_INDEX.md Template section), qor/references/glossary.md (1 new entry: FEATURE_INDEX.md genesis seed), tests/test_qor_bootstrap_feature_index_seed.py (NEW; 2 tests), tests/test_qor_bootstrap_feature_index_template.py (NEW; 1 test), tests/test_glossary_feature_index_seed_term.py (NEW; 1 test), CHANGELOG.md (0.55.0 stamped), README.md (Tests 1674 -> 1678; Ledger 210 -> 211), docs/plan-qor-phase80-bootstrap-feature-index.md. Dist variants regenerated.
+
+**Test surface**: 4 new tests pass twice deterministically. SKILL.md tests cover Step 6.6 presence + Phase 80/GH #73 tags + Phase 73 cross-reference + chicken-and-egg rationale + Step 12.5 cross-reference + Success Criteria bullet. Templates test covers FEATURE_INDEX.md Template section presence + `{project_name}` placeholder + Coverage Summary scaffold + 7-column table header + Gaps Surfaced + /qor-implement consumer reference. Glossary test asserts term defined with Phase 80 plan slug. Full suite expected 1678 passed (2 pre-existing environmental flakes in test_doc_integrity_drift_report_cli unrelated to this phase).
+
+**Self-application**: this seal entry carries an Entry ID (Phase 76 contract). Phase 80 itself does NOT touch `src/` (governance-only addition; SKILL.md + templates + glossary + tests). The Step 12.5 obligation therefore does not apply to this implement pass (governance/doctrine-only changes are exempt per Phase 73 wiring). Phase 67 plan_text_consistency_lint cleared this plan. Phase 68 Self-Application Sub-Pass: this plan introduces the seed; this plan itself is governance-only, so the seed it introduces is for downstream consumers, not for Phase 80's own implement pass. Phase 72 Infrastructure Citation Inventory: every cited path (qor/skills/meta/qor-bootstrap/SKILL.md existing, qor/skills/meta/qor-bootstrap/references/qor-bootstrap-templates.md existing, qor/references/glossary.md existing) verified via Glob. Phase 73 Feature Inventory Touches: 2 NEW operator-touchable features declared (Step 6.6 prose; FEATURE_INDEX.md Template section); both have feature-level test descriptors surviving SG-035. Phase 74 Infrastructure Alignment sixth bullet: no third-party SDK citations; no behavioral-semantics claims. Phase 75 substantiate-capability: all 12 prerequisites PRESENT on this Python host. Phase 76 Entry ID: this entry's ID `0c6a68021346` derived via `derive_entry_id` from this entry's content_hash. Phase 78 Filter-Stage Ordering Coherence: no pipeline-shaped functions in this phase's code surface (prose-only). Phase 79 doc-sync: this is a governance-only pass; doc_tier=standard requires file tree + architecture docs -- self-applied via the glossary addition + bootstrap SKILL.md edit which sit under the reference / governance surface.
+
+**Deferral**: V2 -- mechanical `/qor-implement` Step 10.6 lint comparing plan `Feature Inventory Touches` declarations against shipped `FEATURE_INDEX.md` rows in the same commit (per GH #73 bonus suggestion). Deferred to follow-on phase pending V1 deployment signal from newly-bootstrapped consumer workspaces.
+
+**Content Hash (session seal)**: `edf36f3c004210cdc4f9d562b1e9d2f1da532ae5fc37f897e5b5ba1ec6b612aa`
+
+**Previous Hash**: `d6b602ae2e94e567fe9b409f7e7468e4b980c76139ca32c0d2e8e7a8d74d8a15`
+
+**Chain Hash (Merkle seal)**: `82c908826bd6c580feb0895e0bb9745c5351753f31ced4c513d471f10822b2c4`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 80 feature complete; GH #73 closed)
+*Merkle seal: 82c90882...* (Phase 80 seal on top of Phase 79's d6b602ae...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*

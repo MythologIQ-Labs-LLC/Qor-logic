@@ -1,0 +1,20 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-15T0147-7b2380",
+  "ts": "2026-05-15T01:52:00Z",
+  "verdict": "PASS",
+  "change_class": "feature",
+  "version": "0.55.0",
+  "plan_path": "docs/plan-qor-phase80-bootstrap-feature-index.md",
+  "merkle_seal": "82c908826bd6c580feb0895e0bb9745c5351753f31ced4c513d471f10822b2c4",
+  "content_hash": "edf36f3c004210cdc4f9d562b1e9d2f1da532ae5fc37f897e5b5ba1ec6b612aa",
+  "previous_hash": "d6b602ae2e94e567fe9b409f7e7468e4b980c76139ca32c0d2e8e7a8d74d8a15",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.55.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-15T01:52:26Z"
+  }
+}

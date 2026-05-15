@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-15T01:32:11Z",
+  "generated_ts": "2026-05-15T01:50:48Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -120,13 +120,13 @@
       "id": "qor-bootstrap",
       "source_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
       "install_rel_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
-      "sha256": "d4e9770aa207600f0d27c6c6fc3cf13c3b14ec6e7af4e333e3a5501eb3d409bd"
+      "sha256": "2d8fbca25bdf3be26b9cf5c13cfbb9fd1eddac9bb6e4eabf20b7001b71e087e8"
     },
     {
       "id": "qor-bootstrap",
       "source_path": "skills/qor-bootstrap/SKILL.md",
       "install_rel_path": "skills/qor-bootstrap/SKILL.md",
-      "sha256": "4a237f6edc8388d5102c27cb9509461f0dac703c16f8370d83b9c4a311235915"
+      "sha256": "55d96d89a0e209307564d980c662538dbd49a2394474ab8ece810fd3efda8918"
     },
     {
       "id": "qor-debug",

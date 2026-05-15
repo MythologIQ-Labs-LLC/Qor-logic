@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-05-15T01:48:13Z","version":"0.54.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L1","session_id":"2026-05-15T0147-7b2380","target":"docs/plan-qor-phase80-bootstrap-feature-index.md","ts":"2026-05-15T01:49:00Z","verdict":"PASS"}

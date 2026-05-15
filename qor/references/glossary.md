@@ -820,3 +820,13 @@ referenced_by:
   - qor/skills/sdlc/qor-implement/SKILL.md
 introduced_in_plan: phase79-implement-doc-sync
 ```
+
+```yaml
+term: FEATURE_INDEX.md genesis seed
+definition: 'The seed scaffold for `docs/FEATURE_INDEX.md` created by `/qor-bootstrap` Step 6.6 (Phase 80 wiring, GH #73). Single canonical cross-reference of every user-touchable feature against documentation, source code, and test surface. Updated per the Phase 73 FEATURE_INDEX update obligation in every `/qor-implement` cycle. Closes the chicken-and-egg where newly-bootstrapped projects could not satisfy /qor-implement Step 12.5 staging gate (which refuses to ship when src/ is touched but FEATURE_INDEX.md is not appended/updated) on first cycle.'
+home: qor/skills/meta/qor-bootstrap/SKILL.md
+referenced_by:
+  - qor/skills/meta/qor-bootstrap/references/qor-bootstrap-templates.md
+  - qor/skills/sdlc/qor-implement/SKILL.md
+introduced_in_plan: phase80-bootstrap-feature-index
+```
