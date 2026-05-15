@@ -160,6 +160,38 @@ SHA256(CONCEPT.md + ARCHITECTURE_PLAN.md) = [calculated hash]
 _Updated by /qor-* commands automatically_
 ```
 
+## FEATURE_INDEX.md Template
+
+```markdown
+# {project_name} Feature Index
+
+Single canonical cross-reference of every user-touchable feature in {project_name} against documentation, source code, and test surface. Updated per the Phase 73 FEATURE_INDEX update obligation in every `/qor-implement` cycle (see `/qor-implement` Step 12.5).
+
+**Generated**: {iso_date} by `qor-bootstrap`
+**Sources**: declared by `/qor-plan` `Feature Inventory Touches` table per cycle.
+
+## Coverage Summary
+
+- Total entries: **0** (newly bootstrapped)
+- **Verified**: 0
+- **Unverified**: 0
+- **N/A (operator-justified)**: 0
+
+---
+
+## Section: {first category}
+
+| ID | Feature | Doc | Code | Test | Status | Notes |
+|---|---|---|---|---|---|---|
+<!-- First /qor-implement cycle appends rows here. -->
+
+---
+
+## Gaps Surfaced
+
+<!-- Reality without Promise / Promise without Reality entries land here. -->
+```
+
 ## Final Report Template
 
 ```markdown

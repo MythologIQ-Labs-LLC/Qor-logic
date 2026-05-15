@@ -110,6 +110,19 @@ Create `docs/BACKLOG.md` with blocker/backlog/wishlist structure.
 
 Template: `references/qor-bootstrap-templates.md`.
 
+### Step 6.6: Seed FEATURE_INDEX.md (Phase 80 wiring; GH #73)
+
+Create `docs/FEATURE_INDEX.md` with the seed scaffold. The file is the single canonical cross-reference of every user-touchable feature against documentation, source code, and test surface. `/qor-implement` Step 12.5 staging refuses to ship when `src/` is touched but `FEATURE_INDEX.md` is not appended/updated -- the **Phase 73 FEATURE_INDEX update obligation**. Without this seed step, newly-bootstrapped projects hit a chicken-and-egg on their first `/qor-implement` cycle: the staging gate fails because the file does not exist, and creating it manually is off-protocol.
+
+Template: `references/qor-bootstrap-templates.md` (§ `FEATURE_INDEX.md Template`). Seeded scaffold contains:
+- Title `# {project_name} Feature Index` (substitute the bootstrap project name).
+- Purpose paragraph that names the `/qor-implement` Phase 73 obligation as the consumer of this artifact.
+- `## Coverage Summary` block initialized to 0 / 0 / 0 / 0 (Verified / Unverified / N/A / Total).
+- One placeholder `## Section: {first category}` with the canonical 7-column table header (`| ID | Feature | Doc | Code | Test | Status | Notes |`) and a leading HTML comment marker (`<!-- First /qor-implement cycle appends rows here. -->`).
+- `## Gaps Surfaced` placeholder section (Reality without Promise / Promise without Reality entries land there during seal-time audits).
+
+Per `/qor-implement` Step 12.5 (Phase 73 wiring; GH #40 + #41): every row in the plan's `Feature Inventory Touches` table updates `FEATURE_INDEX.md` in the same commit (`NEW` / `MODIFIED` / `n/a-justified`). The seed file makes this gate satisfiable on the project's first implement cycle.
+
 ### Step 7: Calculate Genesis Hash
 
 ```python
@@ -155,6 +168,7 @@ Bootstrap succeeds when:
 - [ ] ARCHITECTURE_PLAN.md exists with file tree and risk assessment
 - [ ] META_LEDGER.md exists with genesis entry and hash
 - [ ] BACKLOG.md exists with template structure
+- [ ] FEATURE_INDEX.md exists with seed scaffold (Phase 73 obligation satisfiable on first cycle)
 - [ ] Genesis hash calculated and recorded
 - [ ] Risk grade properly assigned (L1/L2/L3)
 - [ ] Required directories created (.qor/gates/, docs/)

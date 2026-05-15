@@ -10,6 +10,33 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.55.0] - 2026-05-15
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 80 (feature, GH #73)**: `/qor-bootstrap` scaffolds
+  `docs/FEATURE_INDEX.md`. Closes the chicken-and-egg where newly-
+  bootstrapped projects could not satisfy `/qor-implement` Step 12.5
+  staging gate (the Phase 73 FEATURE_INDEX update obligation) on their
+  first cycle because no file existed for the gate to verify.
+  - New Step 6.6 inserted between Step 6.5 (Create Backlog) and Step 7
+    (Calculate Genesis Hash) authors `docs/FEATURE_INDEX.md` from the
+    canonical seed template.
+  - Seed template includes title with `{project_name}` placeholder,
+    purpose paragraph naming Phase 73 obligation, Coverage Summary
+    block (0/0/0/0 placeholders), one placeholder Section with the
+    canonical 7-column table header (`ID | Feature | Doc | Code | Test
+    | Status | Notes`), and a Gaps Surfaced placeholder block.
+  - Success Criteria updated to include the seed scaffold bullet.
+  - 1 new glossary term: `FEATURE_INDEX.md genesis seed`.
+  - 4 new tests across 3 files.
+
+  V2 follow-on: mechanical `/qor-implement` Step 10.6 lint comparing
+  plan `Feature Inventory Touches` declarations against shipped
+  FEATURE_INDEX.md rows deferred (per GH #73 bonus suggestion).
+
 ## [0.54.0] - 2026-05-15
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

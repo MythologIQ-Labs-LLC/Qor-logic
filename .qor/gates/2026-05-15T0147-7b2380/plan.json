@@ -1,0 +1,63 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-15T0147-7b2380",
+  "ts": "2026-05-15T01:48:00Z",
+  "plan_path": "docs/plan-qor-phase80-bootstrap-feature-index.md",
+  "phases": [
+    "Phase 1: Step 6.6 Seed FEATURE_INDEX.md (qor-bootstrap)",
+    "Phase 2: Glossary term"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_bootstrap_feature_index_seed.py tests/test_qor_bootstrap_feature_index_template.py tests/test_glossary_feature_index_seed_term.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase80-bootstrap-feature-index.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "FEATURE_INDEX.md genesis seed",
+      "home": "qor/skills/meta/qor-bootstrap/SKILL.md"
+    }
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "qor-bootstrap Step 6.6 FEATURE_INDEX.md seed",
+      "operation": "NEW",
+      "test_path": "tests/test_qor_bootstrap_feature_index_seed.py",
+      "test_descriptor": "asserts SKILL.md has Step 6.6 + Coverage Summary scaffold + 4-column table header + Phase 73 obligation cross-reference"
+    },
+    {
+      "entry_id": "qor-bootstrap templates FEATURE_INDEX.md section",
+      "operation": "NEW",
+      "test_path": "tests/test_qor_bootstrap_feature_index_template.py",
+      "test_descriptor": "asserts references/qor-bootstrap-templates.md has the FEATURE_INDEX seed template with required sections"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 bootstrap-side seed only; mechanical Step 10.6 lint deferred to V2."
+    ],
+    "non_goals": [
+      "No qor/scripts/feature_index_lint.py",
+      "No changes to /qor-implement Step 12.5",
+      "No changes to /qor-substantiate"
+    ],
+    "exclusions": [
+      "No CI workflow changes",
+      "No backfill of past-bootstrapped projects (forward-only)"
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "feature",
+  "originating_remediation": "GH #73",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.54.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-15T01:48:11Z"
+  }
+}
