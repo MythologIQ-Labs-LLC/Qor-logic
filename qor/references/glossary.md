@@ -802,3 +802,21 @@ referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
 introduced_in_plan: phase78-filter-stage-ordering
 ```
+
+```yaml
+term: implement documentation sync
+definition: 'A `/qor-implement` Step 8.5 (Phase 79 wiring, GH #52) inserted between Step 8 (Post-Build Cleanup) and Step 9 (Complexity Self-Check). For every file created or modified in the implementation pass, the operator updates 4 documentation surfaces (ARCHITECTURE_PLAN.md file tree; architecture docs; operations docs; schema docs) in the same commit batch -- while implementation context is fresh. doc_tier-aware: minimal -> WARN-skip; standard -> require file tree + architecture; system -> require all 4; legacy -> skip. Closes the gap where authoring was structurally deferred to /qor-substantiate Steps 4.7 / 6 / 6.5, by which time the implementing agent had already lost the context needed to write accurate docs.'
+home: qor/skills/sdlc/qor-implement/SKILL.md
+referenced_by:
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase79-implement-doc-sync
+```
+
+```yaml
+term: SG-DocsBackloadedToSubstantiate-A
+definition: 'Shadow-genome pattern: documentation authoring deferred to /qor-substantiate Steps 4.7 / 6 / 6.5 when the implementing agent has discarded the implementation-time context; substantiation Step 6.5 catches drift WARN-only post-hoc but cannot prevent it because substantiation is structurally a verification gate, not an authoring phase. Originating recurrence: 18+ META_LEDGER entries in a multi-session analytics program where ARCHITECTURE_PLAN.md file tree went stale and new tables/functions/migrations had no architecture-doc updates. Countermeasure: /qor-implement Step 8.5 Documentation Sync. Phase 79 wiring (GH #52).'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/skills/sdlc/qor-implement/SKILL.md
+introduced_in_plan: phase79-implement-doc-sync
+```

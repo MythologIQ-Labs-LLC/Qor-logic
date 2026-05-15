@@ -320,6 +320,18 @@ The doctrine catalogs all 8 unraveling points (Premature Solutioning, Language D
 
 ---
 
+## SG-DocsBackloadedToSubstantiate-A — documentation lifecycle deferred to seal-time when authoring context is lost (Phase 79)
+
+**Pattern**: `/qor-implement` has no documentation-authoring step. ARCHITECTURE_PLAN.md file-tree updates, architecture-doc additions, operations-doc entries, and schema-doc updates are all structurally deferred to `/qor-substantiate` Steps 4.7 (Documentation Integrity Check), 6 (SYSTEM_STATE.md sync), and 6.5 (Documentation Currency Check). By the time substantiation runs, the implementing agent has discarded the implementation-time context (which files changed, why, what they connect to, how the change interacts with surrounding modules). Substantiation's Step 6.5 currency check is WARN-only at `standard` tier and catches doc drift post-hoc; Step 4.6.6 procedural fidelity emits severity-2 shadow events but does not prevent the drift. Substantiation is structurally a **verification** gate, not an **authoring** phase; making it the primary authoring surface produces predictable doc-drift across sessions.
+
+**Originating recurrence**: across 18+ META_LEDGER entries in a multi-session analytics program, ARCHITECTURE_PLAN.md file tree went stale after sub-plans 01a/b/c, 02a-i, 02a-iv, 02a-iii, 02a-vi, and 02a-ii each created new files -- the file tree still listed `[30+ edge functions]` as a placeholder rather than enumerating actual files. Migrations created `analytics_events`, `feature_flags`, `analytics_health_state`, `analytics_mirror_failures` tables and multiple SQL functions; no implement step updated any architecture or schema documentation. Substantiate Step 6.5 detected the drift as WARN-only after the implementing agent had already moved to the next sub-plan; the context for writing accurate docs was lost.
+
+**Countermeasure** (`/qor-implement` Step 8.5 Documentation Sync, Phase 79 wiring): inserted between Step 8 (Post-Build Cleanup) and Step 9 (Complexity Self-Check). For every file created or modified in the implementation pass, the operator updates the 4 documentation surfaces (ARCHITECTURE_PLAN.md file tree / architecture docs / operations docs / schema docs) in the same commit batch -- while implementation context is fresh. `doc_tier`-aware skip semantics: `minimal` -> WARN-skip; `standard` -> require file tree + architecture docs; `system` -> require all 4 surfaces; `legacy` -> skip (matches doctrine-documentation-integrity bypass). Downstream substantiation gates (Steps 4.7 / 6 / 6.5 / 4.6.6) remain unchanged and now function as verification of Step 8.5's authoring output rather than primary-authoring fallbacks.
+
+**Cross-reference**: Issue #52; doctrinally adjacent to `qor/references/doctrine-documentation-integrity.md` (substantiation-side verification), `qor/references/doctrine-procedural-fidelity.md` (post-hoc drift catch). Future V2: mechanical `qor/scripts/plan_doc_sync_lint.py` heuristic comparing implement gate `files_touched` against doc-surface diffs in the same commit (deferred to follow-on phase pending V1 prose adoption).
+
+---
+
 ## SG-AuthorAuditMomentum-A — author-audit self-verification scope bias (Phase 68)
 
 **Pattern**: when the same LLM agent authors a plan and then audits it, the audit inherits the author's search-path momentum. The locations the author did not check during planning are the same locations the author will not check during audit. Independent reviewers with no plan-authorship context naturally check different sources and find different defects.
