@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-15T01:50:47Z",
+  "generated_ts": "2026-05-15T02:34:21Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -180,7 +180,7 @@
       "id": "qor-governance-compliance",
       "source_path": "skills/qor-governance-compliance/SKILL.md",
       "install_rel_path": "skills/qor-governance-compliance/SKILL.md",
-      "sha256": "2945c12b9a93da86fdf8880f1a353a41f94b1fc4fbbadd3295f9c48b3be73648"
+      "sha256": "c253c51d835a1457a7bc2e28714367560e6cb251fa89c5058e74e86f2eae7986"
     },
     {
       "id": "qor-governance-compliance",

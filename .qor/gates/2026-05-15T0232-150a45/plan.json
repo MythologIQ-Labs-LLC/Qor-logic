@@ -1,0 +1,51 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-15T0232-150a45",
+  "ts": "2026-05-15T02:33:00Z",
+  "plan_path": "docs/plan-qor-phase81-skill-provenance-hotfix.md",
+  "phases": [
+    "Phase 1: Add metadata.source nested block"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_governance_compliance_provenance.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase81-skill-provenance-hotfix.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "terms": [],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "qor-governance-compliance frontmatter provenance",
+      "operation": "MODIFIED",
+      "test_path": "tests/test_qor_governance_compliance_provenance.py",
+      "test_descriptor": "asserts metadata.source.repository (https URL) + metadata.source.path are present in YAML frontmatter"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 hotfix: minimal frontmatter edit + one regression test; no doctrine, no glossary."
+    ],
+    "non_goals": [
+      "No fix for qor-compliance (not in this repo; file against FailSafe upstream)",
+      "No org-spelling normalization across other skills",
+      "No schema extension"
+    ],
+    "exclusions": [
+      "No changes to other governance skills",
+      "No CI workflow changes"
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "hotfix",
+  "originating_remediation": "GH #77",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.55.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-15T02:33:24Z"
+  }
+}
