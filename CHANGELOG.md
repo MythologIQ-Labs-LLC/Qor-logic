@@ -10,6 +10,27 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.55.1] - 2026-05-15
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+
+- **Phase 81 (hotfix, GH #77)**: `qor-governance-compliance` SKILL.md
+  YAML frontmatter now carries the F244/FX359 provenance contract:
+  `metadata.source.repository` (https URL to this repo) and
+  `metadata.source.path`. Without these the FailSafe extension's
+  `skill-provenance-schema.test.ts` walker fails on every machine
+  where qor-logic has been installed; FailSafe's v5.1.0 release had
+  to patch locally to ship. The source-of-truth fix flows to dist
+  variants via `qor.scripts.dist_compile` and to installed copies on
+  the next `qor-logic install`. 2 regression tests added.
+
+  Out of scope: the companion `qor-compliance` skill referenced in
+  GH #77 does not exist in this repo (no occurrence in `qor/skills/`,
+  `qor/dist/`, or anywhere else); it is sourced from FailSafe's own
+  skills bundle and must be filed upstream against FailSafe.
+
 ## [0.55.0] - 2026-05-15
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

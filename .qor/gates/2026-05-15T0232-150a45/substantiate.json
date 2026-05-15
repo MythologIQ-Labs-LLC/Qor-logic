@@ -1,0 +1,20 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-15T0232-150a45",
+  "ts": "2026-05-15T02:36:00Z",
+  "verdict": "PASS",
+  "change_class": "hotfix",
+  "version": "0.55.1",
+  "plan_path": "docs/plan-qor-phase81-skill-provenance-hotfix.md",
+  "merkle_seal": "fffbb2d22f9c0678a4ce875235aa4926e7a1283c4f8b417b0f106a79357e2639",
+  "content_hash": "4279a003183bb943831b18f5785bf83829c97e17e7efa1883fbadea043aa6f26",
+  "previous_hash": "82c908826bd6c580feb0895e0bb9745c5351753f31ced4c513d471f10822b2c4",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.55.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-15T02:36:05Z"
+  }
+}

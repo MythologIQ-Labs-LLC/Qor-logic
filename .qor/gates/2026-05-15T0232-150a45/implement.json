@@ -1,0 +1,26 @@
+{
+  "phase": "implement",
+  "session_id": "2026-05-15T0232-150a45",
+  "ts": "2026-05-15T02:35:00Z",
+  "plan_path": "docs/plan-qor-phase81-skill-provenance-hotfix.md",
+  "files_touched": [
+    "qor/skills/governance/qor-governance-compliance/SKILL.md",
+    "tests/test_qor_governance_compliance_provenance.py",
+    "CHANGELOG.md",
+    "README.md",
+    "docs/plan-qor-phase81-skill-provenance-hotfix.md"
+  ],
+  "tests_added": [
+    "tests/test_qor_governance_compliance_provenance.py::test_metadata_source_block_present",
+    "tests/test_qor_governance_compliance_provenance.py::test_metadata_source_repository_is_https_url"
+  ],
+  "verdict": "PASS",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.55.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-15T02:36:04Z"
+  }
+}

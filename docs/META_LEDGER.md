@@ -8036,3 +8036,45 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 80 feature complete; GH #73 closed)
 *Merkle seal: 82c90882...* (Phase 80 seal on top of Phase 79's d6b602ae...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+### Entry #212: SESSION SEAL -- Phase 81: qor-governance-compliance provenance frontmatter hotfix (v0.55.1, GH #77)
+
+**Timestamp**: 2026-05-15T02:36:00Z
+
+**Phase**: SUBSTANTIATE (Phase 81 hotfix)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase81-skill-provenance-hotfix.md
+
+**Session**: `2026-05-15T0232-150a45`
+
+**SSDF Practices**: PS.2.1, PW.1.1
+
+
+**Entry ID**: `487f175a43f2` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #77 (in-scope half). `qor/skills/governance/qor-governance-compliance/SKILL.md` YAML frontmatter now declares the F244/FX359 provenance contract: `metadata.author: MythologIQ Labs, LLC` and `metadata.source` as a nested object with `repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic` (https URL satisfying FX359's `https?://` constraint) and `path: qor/skills/governance/qor-governance-compliance`. Existing top-level `creator`, `phase: governance`, `description`, and other fields preserved in their current YAML positions. The source-of-truth fix flows to dist variants via `qor.scripts.dist_compile` (verified: 4 variants -- claude / codex / kilo-code / gemini -- now carry the corrected frontmatter) and to installed `.claude/skills/qor-governance-compliance/SKILL.md` copies on the next `qor-logic install` cycle. Without this, the FailSafe extension's `skill-provenance-schema.test.ts` walker (FX359) fails on every machine where qor-logic is installed; FailSafe's v5.1.0 release had to patch locally to ship.
+
+**Files touched** (~5): qor/skills/governance/qor-governance-compliance/SKILL.md (frontmatter metadata.source nested block added), tests/test_qor_governance_compliance_provenance.py (NEW; 2 tests), CHANGELOG.md (0.55.1 stamped), README.md (Tests 1678 -> 1680; Ledger 211 -> 212), docs/plan-qor-phase81-skill-provenance-hotfix.md. Dist variants regenerated; all 4 variants (claude / codex / kilo-code / gemini) verified to carry the fix.
+
+**Test surface**: 2 new tests pass twice deterministically. `test_metadata_source_block_present` parses the YAML frontmatter via stdlib `yaml.safe_load` and asserts `metadata.source` is a nested object with both `repository` and `path` keys; rejects the prior scalar `source: FailSafe` form. `test_metadata_source_repository_is_https_url` asserts the value matches the `https?://` prefix per F244/FX359 schema requirement AND contains `Qor-logic` (rejects misdirection to a downstream consumer repo). Full suite expected 1680 passed (2 pre-existing environmental flakes in test_doc_integrity_drift_report_cli unrelated to this phase).
+
+**Out-of-scope (per plan boundaries)**: the companion `qor-compliance` skill referenced in GH #77 does NOT exist in this repo -- grep across `qor/skills/`, `qor/dist/`, and the wider tree returned zero occurrences. The filer encountered it as `.claude/skills/qor-compliance/SKILL.md` on disk via `qor-logic install`, but the installer cannot copy what isn't in the source -- the file must be sourced from FailSafe's own bundled skills. The qor-compliance half of the issue must be filed upstream against FailSafe.
+
+**Self-application**: this seal entry carries an Entry ID (Phase 76 contract). Hotfix scope: doc_tier=minimal; Phase 79 Step 8.5 doc-sync requires only a WARN-skip at minimal tier, which is satisfied (no doc-surface drift to author). Phase 67 plan_text_consistency_lint cleared this plan. Phase 68 Self-Application Sub-Pass: this hotfix introduces no new discipline; existing F244/FX359 schema is consumer-side authority. Phase 72 Infrastructure Citation Inventory: every cited path verified via grep (qor/skills/governance/qor-governance-compliance/SKILL.md existing; no qor-compliance occurrence confirms out-of-scope split). Phase 73 Feature Inventory Touches: 1 MODIFIED operator-touchable feature declared (qor-governance-compliance frontmatter provenance); behavior-anchored test asserts schema fields, not file existence. Phase 74 Infrastructure Alignment sixth bullet: F244/FX359 schema cited with inline contract quote from issue body (`https?://` URL constraint). Phase 75 substantiate-capability: all 12 prerequisites PRESENT on this Python host. Phase 76 Entry ID: this entry's ID `487f175a43f2` derived via `derive_entry_id`. Phase 78 Filter-Stage Ordering Coherence: no pipeline-shaped functions in this phase's code surface (frontmatter edit only). Phase 80 FEATURE_INDEX.md genesis seed: pre-existing FEATURE_INDEX.md in repo; no `src/` files touched so Phase 73 obligation does not engage.
+
+**Content Hash (session seal)**: `4279a003183bb943831b18f5785bf83829c97e17e7efa1883fbadea043aa6f26`
+
+**Previous Hash**: `82c908826bd6c580feb0895e0bb9745c5351753f31ced4c513d471f10822b2c4`
+
+**Chain Hash (Merkle seal)**: `fffbb2d22f9c0678a4ce875235aa4926e7a1283c4f8b417b0f106a79357e2639`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 81 hotfix complete; GH #77 in-scope half closed; qor-compliance half routed upstream to FailSafe)
+*Merkle seal: fffbb2d2...* (Phase 81 seal on top of Phase 80's 82c90882...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*

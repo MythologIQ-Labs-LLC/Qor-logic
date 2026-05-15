@@ -2,6 +2,10 @@
 name: qor-governance-compliance
 metadata:
   category: governance
+  author: MythologIQ Labs, LLC
+  source:
+    repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
+    path: qor/skills/governance/qor-governance-compliance
 description: Enforce FailSafe physical isolation and environment compliance constraints across repository structure, platform limits, and security hygiene.
 creator: MythologIQ Labs, LLC
 license: Proprietary (FailSafe Project)
