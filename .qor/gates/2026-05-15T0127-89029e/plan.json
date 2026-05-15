@@ -1,0 +1,68 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-15T0127-89029e",
+  "ts": "2026-05-15T01:28:00Z",
+  "plan_path": "docs/plan-qor-phase79-implement-doc-sync.md",
+  "phases": [
+    "Phase 1: Step 8.5 Documentation Sync (qor-implement)",
+    "Phase 2: SG-DocsBackloadedToSubstantiate-A doctrine entry",
+    "Phase 3: Glossary terms"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_implement_doc_sync.py tests/test_doctrine_sg_docs_backloaded_to_substantiate_a.py tests/test_glossary_implement_doc_sync_terms.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase79-implement-doc-sync.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "implement documentation sync",
+      "home": "qor/skills/sdlc/qor-implement/SKILL.md"
+    },
+    {
+      "term": "SG-DocsBackloadedToSubstantiate-A",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    }
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "/qor-implement Step 8.5 Documentation Sync",
+      "operation": "NEW",
+      "test_path": "tests/test_qor_implement_doc_sync.py",
+      "test_descriptor": "asserts Step 8.5 inserts between Step 8 and Step 9 with 4-item checklist + doc_tier-aware skip semantics"
+    },
+    {
+      "entry_id": "SG-DocsBackloadedToSubstantiate-A doctrine entry",
+      "operation": "NEW",
+      "test_path": "tests/test_doctrine_sg_docs_backloaded_to_substantiate_a.py",
+      "test_descriptor": "asserts SG entry exists with pattern description + countermeasure cross-reference to qor-implement Step 8.5"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 prose-only addition; no mechanical lint helper."
+    ],
+    "non_goals": [
+      "No qor/scripts/plan_doc_sync_lint.py",
+      "No changes to /qor-substantiate Steps 4.7 / 6 / 6.5",
+      "No schema change to implement.schema.json"
+    ],
+    "exclusions": [
+      "No CI workflow changes",
+      "No retroactive amendment of past implement gate artifacts"
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "feature",
+  "originating_remediation": "GH #52",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.53.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-15T01:29:12Z"
+  }
+}

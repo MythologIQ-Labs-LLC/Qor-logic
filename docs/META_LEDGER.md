@@ -7952,3 +7952,45 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 78 feature complete; GH #47 closed)
 *Merkle seal: 00627b14...* (Phase 78 seal on top of Phase 76's 40444e34...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+### Entry #210: SESSION SEAL -- Phase 79: /qor-implement Step 8.5 Documentation Sync (v0.54.0, GH #52)
+
+**Timestamp**: 2026-05-15T01:32:00Z
+
+**Phase**: SUBSTANTIATE (Phase 79 feature)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase79-implement-doc-sync.md
+
+**Session**: `2026-05-15T0127-89029e`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+
+**Entry ID**: `3bdb5518b9f0` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #52. New `### Step 8.5: Documentation Sync` inserted into `/qor-implement` between Step 8 (Post-Build Cleanup) and Step 9 (Complexity Self-Check). For every file created or modified in the implementation pass, the operator updates 4 documentation surfaces in the same commit batch -- while implementation context is fresh: (1) ARCHITECTURE_PLAN.md file tree; (2) architecture docs (interface contracts, data flows, dependency tables for new tables / functions / env vars / cron jobs); (3) operations docs (scripts, env vars, deployment steps); (4) schema docs (migrations, RLS policies, function signatures). doc_tier-aware skip semantics: `minimal` -> WARN-skip; `standard` -> require items 1 + 2; `system` -> require items 1-4; `legacy` -> skip (matches doctrine-documentation-integrity bypass). Cross-references to `/qor-substantiate` Steps 4.7 / 6 / 6.5 / 4.6.6 as downstream verification gates; substantiation behavior unchanged. Closes the structural gap where doc authoring was deferred to seal-time when the implementing agent had already discarded the context needed for accurate docs. New SG-DocsBackloadedToSubstantiate-A doctrine entry catalogues pattern with originating recurrence (18+ ledger entries in a multi-session analytics program where ARCHITECTURE_PLAN.md file tree went stale and new tables / functions / migrations had no architecture-doc updates).
+
+**Files touched** (~9): qor/skills/sdlc/qor-implement/SKILL.md (Step 8.5 inserted between Step 8 and Step 9), qor/references/doctrine-shadow-genome-countermeasures.md (SG-DocsBackloadedToSubstantiate-A entry), qor/references/glossary.md (2 new entries), tests/test_qor_implement_doc_sync.py (NEW; 3 tests), tests/test_doctrine_sg_docs_backloaded_to_substantiate_a.py (NEW; 2 tests), tests/test_glossary_implement_doc_sync_terms.py (NEW; 1 test), CHANGELOG.md (0.54.0 stamped), README.md (Tests 1668 -> 1674; Ledger 209 -> 210), docs/plan-qor-phase79-implement-doc-sync.md. Dist variants regenerated.
+
+**Test surface**: 6 new tests pass twice deterministically. SKILL.md tests cover insertion-point ordering (between Step 8 and Step 9) + 4-item checklist + doc_tier-aware skip semantics + cross-reference to SG-DocsBackloadedToSubstantiate-A. Doctrine tests cover SG entry pattern description (backloaded / deferred + verification vs authoring + WARN-only post-hoc detection) + countermeasure cross-reference to /qor-implement Step 8.5. Glossary test asserts 2 terms defined with Phase 79 plan slug. Full suite expected 1674 passed (2 pre-existing environmental flakes in test_doc_integrity_drift_report_cli unrelated to this phase).
+
+**Self-application**: this seal entry carries an Entry ID (Phase 76 contract). Phase 79's own implementation cycle is the first user of the new Step 8.5 -- this implement pass touched governance / doctrine / glossary / test surfaces; doc_tier=standard required item 1 (ARCHITECTURE_PLAN.md file tree) + item 2 (architecture docs). Item 1 is satisfied by this phase NOT introducing any `src/`-tree files (governance-only); the file tree therefore needs no update. Item 2 (architecture docs) was self-applied via the new SG doctrine entry and the glossary additions, both of which sit under the architecture-bearing reference surface. Phase 67 plan_text_consistency_lint cleared this plan. Phase 68 Self-Application Sub-Pass: this plan introduces a doc-sync discipline; the plan itself self-applies via the audit of its own implement pass. Phase 72 Infrastructure Citation Inventory: every cited path (qor/skills/sdlc/qor-implement/SKILL.md existing, qor/references/doctrine-shadow-genome-countermeasures.md existing, qor/references/glossary.md existing) verified via Glob. Phase 73 Feature Inventory Touches: 2 NEW operator-touchable features declared (Step 8.5 prose; SG doctrine entry); both have feature-level test descriptors surviving SG-035. Phase 74 Infrastructure Alignment sixth bullet: no third-party SDK citations; no behavioral-semantics claims. Phase 75 substantiate-capability: all 12 prerequisites PRESENT on this Python host. Phase 76 Entry ID: this entry's ID `3bdb5518b9f0` derived via `derive_entry_id` from this entry's content_hash. Phase 78 Filter-Stage Ordering Coherence: no pipeline-shaped functions in this phase's code surface (prose-only SKILL.md addition).
+
+**Deferral**: V2 mechanical `qor/scripts/plan_doc_sync_lint.py` heuristic comparing implement gate `files_touched` against doc-surface diffs in the same commit (deferred to follow-on phase pending V1 deployment signal via SG-DocsBackloadedToSubstantiate-A event counts in Process Shadow Genome).
+
+**Content Hash (session seal)**: `d2be7bd4d4e2e08f1fe7b642682d3ae83cc5a0ece26bc938c2ef05489a64d71f`
+
+**Previous Hash**: `00627b14831564995dd2122c5b5740c7e5dbb473a053b03fb76a51de629f05e8`
+
+**Chain Hash (Merkle seal)**: `d6b602ae2e94e567fe9b409f7e7468e4b980c76139ca32c0d2e8e7a8d74d8a15`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 79 feature complete; GH #52 closed)
+*Merkle seal: d6b602ae...* (Phase 79 seal on top of Phase 78's 00627b14...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*

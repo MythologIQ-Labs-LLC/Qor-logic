@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-15T00:57:23Z",
+  "generated_ts": "2026-05-15T01:32:11Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -162,7 +162,7 @@
       "id": "qor-implement.toml",
       "source_path": "commands/qor-implement.toml",
       "install_rel_path": "commands/qor-implement.toml",
-      "sha256": "afe38e9a36559a406fa391423f850996c1f0a2f137410dc9f23f9b1185058c47"
+      "sha256": "2c92e7bd0d33ab2f06d92025bdb9689ee6b471c66e86184c614fe955b9654159"
     },
     {
       "id": "qor-meta-log-decision.toml",

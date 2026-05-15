@@ -10,6 +10,41 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.54.0] - 2026-05-15
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 79 (feature, GH #52)**: `/qor-implement` Step 8.5 Documentation
+  Sync. Inserts a new step between Step 8 (Post-Build Cleanup) and Step 9
+  (Complexity Self-Check) that authors ARCHITECTURE_PLAN.md file tree +
+  architecture / operations / schema docs in the same commit batch as the
+  implementation, while context is fresh. Closes the gap where the
+  authoring lifecycle was structurally deferred to `/qor-substantiate`
+  Steps 4.7 / 6 / 6.5, by which time the implementing agent had already
+  discarded the context needed for accurate docs.
+  - 4-item checklist covering ARCHITECTURE_PLAN.md file tree;
+    architecture docs (interface contracts, data flows, dependency
+    tables); operations docs (scripts, env vars, deployment steps);
+    schema docs (migrations, RLS policies, function signatures).
+  - `doc_tier`-aware skip semantics: minimal -> WARN-skip; standard
+    -> require file tree + architecture docs; system -> require all
+    4 surfaces; legacy -> skip.
+  - Cross-references to `/qor-substantiate` Steps 4.7 / 6 / 6.5 /
+    4.6.6 as the downstream verification gates; substantiation
+    behavior unchanged.
+  - SG-DocsBackloadedToSubstantiate-A doctrine entry with originating
+    recurrence (18+ ledger entries in a multi-session analytics
+    program where ARCHITECTURE_PLAN.md file tree went stale and new
+    tables/functions/migrations had no architecture-doc updates).
+  - 2 new glossary terms: `implement documentation sync`,
+    `SG-DocsBackloadedToSubstantiate-A`.
+  - 6 new tests across 3 files. V2 follow-on: mechanical
+    `qor/scripts/plan_doc_sync_lint.py` comparing implement
+    `files_touched` against doc-surface diffs in the same commit
+    deferred pending V1 adoption.
+
 ## [0.53.0] - 2026-05-15
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
