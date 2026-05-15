@@ -1,0 +1,20 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-15T0047-079f9f",
+  "ts": "2026-05-15T00:55:00Z",
+  "verdict": "PASS",
+  "change_class": "feature",
+  "version": "0.53.0",
+  "plan_path": "docs/plan-qor-phase78-filter-stage-ordering.md",
+  "merkle_seal": "00627b14831564995dd2122c5b5740c7e5dbb473a053b03fb76a51de629f05e8",
+  "content_hash": "0135af39429ab297b2cf7d900cffc934944d85a84675b5b7547ace1bf8c40b8b",
+  "previous_hash": "40444e34a424d50b4332256d1456e41578a3f53ec7a8149a41e68ff3cd47d79a",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.53.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-15T01:19:58Z"
+  }
+}

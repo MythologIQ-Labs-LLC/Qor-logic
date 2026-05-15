@@ -1,0 +1,72 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-15T0047-079f9f",
+  "ts": "2026-05-15T00:48:00Z",
+  "plan_path": "docs/plan-qor-phase78-filter-stage-ordering.md",
+  "phases": [
+    "Phase 1: Filter-Stage Ordering Coherence sub-pass (qor-audit Step 3)",
+    "Phase 2: SG-FilterOrderInversion-A doctrine entry",
+    "Phase 3: Glossary terms"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_audit_filter_stage_ordering.py tests/test_doctrine_sg_filter_order_inversion_a.py tests/test_glossary_filter_stage_terms.py -v",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase78-filter-stage-ordering.md",
+    "python -m pytest --deselect tests/test_changelog_tag_coverage.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "pipeline stage dependency graph",
+      "home": "qor/skills/governance/qor-audit/SKILL.md"
+    },
+    {
+      "term": "filter-stage ordering coherence",
+      "home": "qor/skills/governance/qor-audit/SKILL.md"
+    },
+    {
+      "term": "SG-FilterOrderInversion-A",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    }
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "qor-audit Step 3 Filter-Stage Ordering Coherence sub-pass",
+      "operation": "NEW",
+      "test_path": "tests/test_qor_audit_filter_stage_ordering.py",
+      "test_descriptor": "asserts Step 3 contains Filter-Stage Ordering Coherence heading + 4-step procedure + filter-order-inversion sub-tag"
+    },
+    {
+      "entry_id": "SG-FilterOrderInversion-A doctrine entry",
+      "operation": "NEW",
+      "test_path": "tests/test_doctrine_sg_filter_order_inversion_a.py",
+      "test_descriptor": "asserts SG entry exists with pattern description + countermeasure cross-reference to qor-audit Step 3"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 prose-only audit-pass extension; no mechanical Python lint helper this phase."
+    ],
+    "non_goals": [
+      "No qor/scripts/plan_filter_stage_lint.py",
+      "No findings_categories enum change",
+      "No changes to /qor-plan, /qor-implement, /qor-substantiate"
+    ],
+    "exclusions": [
+      "No CI workflow changes",
+      "No retroactive review of prior phase audits"
+    ]
+  },
+  "high_risk_target": false,
+  "change_class": "feature",
+  "originating_remediation": "GH #47",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.52.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-15T00:48:00Z"
+  }
+}

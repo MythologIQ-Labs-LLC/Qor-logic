@@ -10,6 +10,35 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.53.0] - 2026-05-15
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 78 (feature, GH #47)**: `/qor-audit` Step 3 Filter-Stage
+  Ordering Coherence sub-pass. V1 prose-only audit-pass extension
+  (matches Phase 73/74 pattern). Catches the COREFORGE-class
+  composition defect where stage-by-stage review passes each filter
+  individually but the validator that enforces an upstream invariant
+  runs elsewhere instead of as the first stage of the pipeline.
+  - New sub-pass under Step 3 names the 4-step procedure
+    (preconditions / invariants / dependency graph / topological
+    sort) and the heuristic for detecting pipeline-shaped functions
+    across Rust / Python / TypeScript.
+  - VETO sub-tag `filter-order-inversion` under existing `composition`
+    category (or `infrastructure-mismatch` when the missing
+    precondition is an external-state assumption). No schema enum
+    change.
+  - SG-FilterOrderInversion-A doctrine entry with originating
+    recurrence (COREFORGE Skill-Forge V1 dispatcher META_LEDGER #209;
+    operator-caught at PR #82 merge commit `0999e47`).
+  - 3 new glossary terms: `pipeline stage dependency graph`,
+    `filter-stage ordering coherence`, `SG-FilterOrderInversion-A`.
+  - 6 new tests across 3 files. V2 follow-on: mechanical
+    `qor/scripts/plan_filter_stage_lint.py` AST helper deferred
+    pending operator demand from V1 deployment.
+
 ## [0.52.0] - 2026-05-14
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
