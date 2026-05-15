@@ -372,6 +372,39 @@ For each plan claim in scope, verify against current code:
 
 See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-InfrastructureMismatch` (Phase 37) and `SG-CitationDrift-A` (Phase 72) for the countermeasure catalog entries.
 
+#### Filter-Stage Ordering Coherence (Phase 78 wiring; GH #47)
+
+For any function or method with a pipeline shape -- candidate set -> multiple filter stages -> selection -- the Judge constructs the **pipeline stage dependency graph** and verifies the code executes a topological sort of that graph. Catches the COREFORGE-class composition defect from META_LEDGER #209: stage-by-stage correctness review (Wave 2 multi-agent or single-reviewer audit) passes each filter individually, but `validate()` is invoked elsewhere instead of as the first stage of `decide()`; invalid manifests with low cost score dominate selection over valid candidates. Per GH #47.
+
+Heuristic for V1 (operator-judgment-based): a pipeline shape is present when the audited code uses any of:
+- Rust functional chains: `.filter(...).filter(...).map(...)` over a candidate iterator
+- Sequential `let after_X = filter_X(after_prev)` blocks composing a candidate set into a winner
+- Python chained `filter(predicate, ...)` or comprehension stacks producing a selection
+- TypeScript `.filter().filter().reduce()` over a candidate array
+
+For each pipeline so identified, the Judge runs the 4-step **filter-stage ordering coherence** procedure:
+
+1. **Identify each filter stage's preconditions** -- what invariants must hold on inputs for the stage's logic to be sound (e.g., "manifest has passed schema validation"; "user has an authenticated session"; "row is owned by current tenant").
+2. **Identify each filter stage's invariants** -- what the stage enforces on outputs (e.g., "candidate's `tier` matches request"; "candidate's `cost_score` is in [0, 1]"; "candidate is non-quarantined").
+3. **Construct the dependency graph** -- stage N depends on stage M iff M enforces an invariant that N's correctness *assumes*. If a filter references a struct field that is also referenced inside a separate validation / `check` / `verify` / `is_valid` function, raise the question: "did that validation run before this filter?"
+4. **Verify the actual code order is a topological sort** of the dependency graph. Any inversion -- stage N runs before stage M where N depends on M -- is a defect.
+
+```markdown
+### Filter-Stage Ordering Coherence Audit
+
+For each pipeline-shaped function in the implementation:
+
+- [ ] Pipeline stages enumerated with explicit names
+- [ ] Per stage: preconditions identified
+- [ ] Per stage: output invariants identified
+- [ ] Dependency graph drawn (stage N -> stage M iff M is N's precondition)
+- [ ] Code execution order is a topological sort of the graph (no inversions)
+```
+
+**Any inversion -> VETO with `composition` category, sub-tag `filter-order-inversion`** (or `infrastructure-mismatch` when the missing precondition is an external-state assumption). **Required next action:** amend the implementation to invoke the missing precondition stage before the dependent filter, OR amend the plan to declare the precondition is enforced upstream of the pipeline entry (with citation). Doctrinal precedent: this is structurally analogous to read-before-write checks in static analyzers, lifted to the pipeline-stage abstraction.
+
+See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-FilterOrderInversion-A` for the originating COREFORGE recurrence (skill_forge dispatcher tier -> classification -> vendor -> cost without validator-first) and the operator-fix regression test (`test_dispatch_skips_invalid_skill_and_selects_valid_candidate`).
+
 #### Orphan Detection
 
 Verify all proposed files connect to build path:

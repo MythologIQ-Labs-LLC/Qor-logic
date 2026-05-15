@@ -775,3 +775,30 @@ referenced_by:
   - qor/skills/governance/qor-substantiate/SKILL.md
 introduced_in_plan: phase76-meta-ledger-federation
 ```
+
+```yaml
+term: pipeline stage dependency graph
+definition: 'A directed graph constructed at /qor-audit Step 3 Filter-Stage Ordering Coherence sub-pass for any pipeline-shaped function (candidate set -> multiple filter stages -> selection). Stage N depends on stage M iff M enforces an invariant that N''s correctness assumes. The audit verifies that the code execution order is a topological sort of the graph. Phase 78 wiring (GH #47).'
+home: qor/skills/governance/qor-audit/SKILL.md
+referenced_by:
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase78-filter-stage-ordering
+```
+
+```yaml
+term: filter-stage ordering coherence
+definition: 'A /qor-audit Step 3 sub-pass (Phase 78 wiring, GH #47) that runs a 4-step procedure on pipeline-shaped functions: identify each filter stage''s preconditions; identify each filter stage''s invariants; construct the pipeline stage dependency graph; verify code execution order is a topological sort. Any inversion VETOes with `composition` category, sub-tag `filter-order-inversion` (or `infrastructure-mismatch` when the missing precondition is an external-state assumption). Catches the COREFORGE Skill-Forge dispatcher pattern (META_LEDGER #209): validator invoked elsewhere instead of as first filter stage, allowing invalid candidates to dominate selection.'
+home: qor/skills/governance/qor-audit/SKILL.md
+referenced_by:
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase78-filter-stage-ordering
+```
+
+```yaml
+term: SG-FilterOrderInversion-A
+definition: 'Shadow-genome pattern: a pipeline-shaped function composes filter stages out of their dependency order; stage-by-stage correctness review passes each stage individually but misses that an upstream invariant is enforced elsewhere in the codebase instead of as a stage of the same pipeline. Originating recurrence: COREFORGE Skill-Forge V1 dispatcher (META_LEDGER #209): tier -> classification -> vendor -> cost filters without validator-first; invalid manifests with low cost dominated selection; operator-caught at PR #82 merge review (commit 0999e47). Countermeasure: /qor-audit Step 3 Filter-Stage Ordering Coherence sub-pass. Phase 78 wiring (GH #47).'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/skills/governance/qor-audit/SKILL.md
+introduced_in_plan: phase78-filter-stage-ordering
+```

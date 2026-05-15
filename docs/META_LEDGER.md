@@ -7910,3 +7910,45 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 76 feature L3 complete; GH #51 V1 closed; V2 reconciliation queued)
 *Merkle seal: 40444e34...* (Phase 76 seal on top of Phase 75's 7cd3cc50...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+### Entry #209: SESSION SEAL -- Phase 78: /qor-audit Filter-Stage Ordering Coherence sub-pass (v0.53.0, GH #47)
+
+**Timestamp**: 2026-05-15T00:55:00Z
+
+**Phase**: SUBSTANTIATE (Phase 78 feature)
+
+**Author**: Judge (operator-authorized via /qor-auto-dev-1)
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase78-filter-stage-ordering.md
+
+**Session**: `2026-05-15T0047-079f9f`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+
+**Entry ID**: `c6572363963d` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #47. V1 prose-only audit-pass extension (matches Phase 73/74 pattern). New Filter-Stage Ordering Coherence sub-pass under /qor-audit Step 3 codifies the 4-step procedure for pipeline-shaped functions: (1) identify each filter stage's preconditions; (2) identify each filter stage's invariants; (3) construct the pipeline stage dependency graph (stage N depends on stage M iff M enforces an invariant that N's correctness assumes); (4) verify the code execution order is a topological sort of the dependency graph. Heuristic detects pipeline shapes across Rust functional chains, sequential let-binding pipelines, Python comprehension stacks, and TypeScript filter-reduce composition. Inversions VETO with `composition` category, sub-tag `filter-order-inversion`; missing external-state preconditions VETO with `infrastructure-mismatch` category and the same sub-tag. No schema enum change -- prose sub-tagging follows the Phase 74 Live-Progress Invariant precedent. New SG-FilterOrderInversion-A doctrine entry catalogues pattern with originating recurrence (COREFORGE Skill-Forge V1 dispatcher META_LEDGER #209: tier -> classification -> vendor -> cost filters without validator-first; operator-caught at PR #82 merge commit `0999e47` with regression test `test_dispatch_skips_invalid_skill_and_selects_valid_candidate` locking the invariant).
+
+**Files touched** (~9): qor/skills/governance/qor-audit/SKILL.md (Filter-Stage Ordering Coherence sub-pass under Step 3 + 4-step procedure + heuristic + VETO sub-tag + cross-reference), qor/references/doctrine-shadow-genome-countermeasures.md (SG-FilterOrderInversion-A entry), qor/references/glossary.md (3 new entries: pipeline stage dependency graph, filter-stage ordering coherence, SG-FilterOrderInversion-A), tests/test_qor_audit_filter_stage_ordering.py (NEW; 3 tests), tests/test_doctrine_sg_filter_order_inversion_a.py (NEW; 2 tests), tests/test_glossary_filter_stage_terms.py (NEW; 1 test), CHANGELOG.md (0.53.0 stamped), README.md (Tests 1662 -> 1668; Ledger 208 -> 209), docs/SYSTEM_STATE.md, docs/plan-qor-phase78-filter-stage-ordering.md. Dist variants regenerated.
+
+**Test surface**: 6 new tests pass twice deterministically. SKILL.md prose tests cover sub-pass heading + 4-step procedure (preconditions / invariants / dependency graph / topological sort) + VETO sub-tag + SG cross-reference. Doctrine tests cover SG entry pattern description (pipeline + filter + dependency order + composition) + countermeasure cross-reference + COREFORGE originating recurrence. Glossary test asserts 3 terms defined with Phase 78 plan slug. Full suite 1668 passed (2 environmental flakes in test_doc_integrity_drift_report_cli unrelated to this phase -- pre-existing 60s subprocess timeout on Windows where CLI runs ~3 min; documented as flake).
+
+**Self-application**: this seal entry carries an Entry ID (Phase 76 contract) and runs through Step 4.6.5 secret-scanning, Step 4.7 doc integrity, Step 6.5 documentation currency, Step 7.7 previous_hash uniqueness, Step 7.8 gate-chain completeness, Step 4.6 reliability sweep (intent_lock + skill_admission + gate_skill_matrix). Phase 67 plan_text_consistency_lint cleared this plan. Phase 68 Self-Application Sub-Pass: this plan introduces a filter-stage ordering rule; the plan itself has no pipeline-shape filter stages (sequential prose additions), so self-application is N/A as filter-stage target -- the plan defines the rule for downstream code. Phase 72 Infrastructure Citation Inventory: every cited path (qor/skills/governance/qor-audit/SKILL.md existing, qor/references/doctrine-shadow-genome-countermeasures.md existing, qor/references/glossary.md existing) verified via Glob. Phase 73 Feature Inventory Touches: 2 NEW operator-touchable features declared (Filter-Stage Ordering Coherence sub-pass under qor-audit Step 3; SG-FilterOrderInversion-A doctrine entry); both have feature-level test descriptors surviving SG-035 at feature scope. Phase 74 Infrastructure Alignment sixth bullet: no third-party SDK citations; no behavioral-semantics claims. Phase 75 substantiate-capability: all 12 prerequisites PRESENT on this Python host. Phase 76 Entry ID: this entry's ID `c6572363963d` derived via `derive_entry_id` from this entry's content_hash.
+
+**Deferral**: V2 mechanical `qor/scripts/plan_filter_stage_lint.py` AST helper across Rust/Python/TypeScript pipeline shapes (deferred to follow-on phase pending operator demand from V1 deployment). The V2 lint would mechanically detect pipeline shapes and surface candidate dependency-graph inversions at Step 0.6 pre-audit lint surface; V1 operator-judgment-based check is the precondition.
+
+**Content Hash (session seal)**: `0135af39429ab297b2cf7d900cffc934944d85a84675b5b7547ace1bf8c40b8b`
+
+**Previous Hash**: `40444e34a424d50b4332256d1456e41578a3f53ec7a8149a41e68ff3cd47d79a`
+
+**Chain Hash (Merkle seal)**: `00627b14831564995dd2122c5b5740c7e5dbb473a053b03fb76a51de629f05e8`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 78 feature complete; GH #47 closed)
+*Merkle seal: 00627b14...* (Phase 78 seal on top of Phase 76's 40444e34...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
