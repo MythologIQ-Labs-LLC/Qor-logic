@@ -1,0 +1,37 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-22T2047-0dd39a",
+  "ts": "2026-05-22T22:37:57Z",
+  "plan_path": "docs/plan-qor-phase88-pr-state-precheck.md",
+  "phases": [
+    "Phase 1: Step 2.5 issue-state pre-check + lint enforcement"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_research_issue_state_check.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase88-pr-state-precheck.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "advisory WARN-only pre-check; operator decides whether existing MERGED PR truly closed the same target; searches current repo only (no cross-repo); when gh unavailable or non-issue target, step is skipped with one-line note (Phase 75 declarative-tolerance pattern)"
+    ],
+    "non_goals": [
+      "/qor-auto-dev-1 SKILL.md not updated (lives outside repo SSoT at user-side install path); same prose pattern can be applied externally as a recommended companion change"
+    ],
+    "exclusions": [
+      "no changes to /qor-plan, /qor-implement, /qor-audit, /qor-substantiate; Step 2.5 scope-conditional (only fires when target is an existing GH issue number)"
+    ]
+  },
+  "originating_remediation": "GH #80",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.58.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-22T22:37:57Z"
+  }
+}

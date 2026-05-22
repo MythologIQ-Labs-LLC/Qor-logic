@@ -10,6 +10,26 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.59.0] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 88 (feature, GH #80)**: `/qor-research` gains a new Step 2.5
+  issue-state pre-check. When the research target is an existing GitHub
+  issue, the skill runs `gh pr list --state all --search "#<N>"` and
+  `--search "in:body <N>"` before fresh research begins; if a MERGED PR
+  closes the target, the skill surfaces it (number, state, mergedAt,
+  title) to the operator. Saves the cycle when the work has already
+  shipped from a different branch. Scope-conditional (only fires for
+  existing-issue targets); skipped with a one-line note when `gh` is not
+  on PATH or the target is not an issue. Wiring locked by anchored +
+  strip-and-fail + scope-conditional substring tests at
+  `tests/test_qor_research_issue_state_check.py`. Same prose pattern is
+  recommended for the user-side `/qor-auto-dev-1` skill (which lives
+  outside this repo's SSoT and is not sealed here).
+
 ## [0.58.0] - 2026-05-22
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

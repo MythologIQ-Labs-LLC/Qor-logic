@@ -8893,3 +8893,120 @@ SHA256(content_hash + previous_hash) = `6b769c5b4c1b0f7d8a95a1677ca96fe97be70993
 *Session: SEALED* (Phase 87 feature complete; GH #82 closed)
 *Merkle seal: 95ff272a...* (Phase 87 seal on top of Phase 86's 7b209a3a...)
 *Open items at this seal: push branch + PR; tag push deferred to post-merge (Step 9.7)*
+
+---
+
+### Entry #233: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-22T22:50:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Plan**: docs/plan-qor-phase88-pr-state-precheck.md
+
+**Session**: `2026-05-22T2047-0dd39a`
+
+**Entry ID**: `le_75159556cb043e00`
+
+**Decision**: Phase 88 plan (GH #80 gh-PR-state pre-check for /qor-research) cleared on iter-1. Audit conducted solo per `audit_risk_score` reporting `option_b_required: false` (no `*.config.*` citation; fewer than 5 grep-evidence citations). All applicable Step 3 passes PASS. Infrastructure Alignment verified `/qor-research` SKILL.md location, `/qor-auto-dev-1` correctly disclosed as out-of-repo non_goal, and all cited references (`doctrine-test-functionality.md`, `doctrine-shadow-genome-countermeasures.md`, the Phase 84 wiring-test precedent at `tests/test_audit_skill_iteration_lint_wiring.py`). Plan declares `Feature Inventory Touches: []` with rationale (docs/governance-only change). The Step 2.5 scope-conditional design — only fires for existing-issue targets, skips with one-line note on `gh`-absent hosts — was ruled an honest disclosed boundary aligned with the Phase 75 declarative-tolerance pattern.
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `327c188907353ecabe48f58fa74cdc2d2153526257306d264414d4841b0cd7e0`
+
+**Previous Hash**: `95ff272a70729033f031cbec262306e6d6ce954068b88ed95b370fddeab8bc47`
+
+**Chain Hash**: `f7318b79b8a9aa3853136ef49dcc8f90e47ea0c207c4bd0fb38ffe65a92543a7`
+
+---
+
+*Session: 2026-05-22T2047-0dd39a (Phase 88 -- audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #234: IMPLEMENTATION -- Phase 88 (gh-PR-state pre-check for /qor-research)
+
+**Timestamp**: 2026-05-22T22:55:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+
+**Plan**: docs/plan-qor-phase88-pr-state-precheck.md
+
+**Session**: `2026-05-22T2047-0dd39a`
+
+**Entry ID**: `le_525983664eccef36`
+
+**Scope**: Closes GH #80. `/qor-research` previously had no mechanism to detect that the PR closing the target issue had already MERGED elsewhere; a full plan-audit-implement cycle could be wasted on already-shipped work (the COREFORGE 2026-05-18 #410/#493 incident). New Step 2.5 in `qor/skills/sdlc/qor-research/SKILL.md` runs `gh pr list --state all --search "#<N>"` and `gh pr list --state all --search "in:body <N>"` when the research target is an existing GitHub issue; on a MERGED hit, the skill surfaces PR number, state, mergedAt, and title to the operator before continuing. Scope-conditional: skipped with a one-line note when `gh` is not on PATH or the target is not an existing issue (Phase 75 declarative-tolerance pattern). No new doctrine file, no new script — kept lean per the GH #92 progressive-disclosure lesson.
+
+**Files touched** (6): `qor/skills/sdlc/qor-research/SKILL.md` (Step 2.5 insertion), `tests/test_qor_research_issue_state_check.py` (NEW), `docs/plan-qor-phase88-pr-state-precheck.md` (NEW), `docs/SYSTEM_STATE.md` (Phase 88 entry), `CHANGELOG.md` (Unreleased + stamp), `pyproject.toml` (0.59.0).
+
+**Test surface**: TDD red-green observed (the three new wiring tests failed before the Step 2.5 insertion: "qor-research SKILL.md has no '### Step 2.5' section"; passed after). 3 new tests in `tests/test_qor_research_issue_state_check.py` — anchored positive (Step 2.5 cites both `gh pr list` invocations + `MERGED` + `surface` operative directive), strip-and-fail negative (assertions collapse when the section is removed), scope-conditional language guard (`existing GH issue` substring is load-bearing). Pattern mirrors `tests/test_audit_skill_iteration_lint_wiring.py` (Phase 84 wiring-test convention). All 3 pass twice deterministically. Full suite: 1742 passed, 1 skipped, 0 failed.
+
+**Razor compliance**: skill-prose insertion is 21 lines (incl. the two-line code fence wrapping the two `gh pr list` invocations); inline prose only — no new script, no new module, no new doctrine file. Per `qor/references/doctrine-token-efficiency.md` and the GH #92 progressive-disclosure lesson.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. SYSTEM_STATE.md gains a Phase 88 entry; CHANGELOG.md gains a 0.59.0 section. No architecture or doctrine surface modified.
+
+**Reliability**: intent-lock captured at substantiate start (`LOCKED: 2026-05-22T2047-0dd39a`). `secret_scanner`, `procedural_fidelity`, `doc_integrity_strict` all clean.
+
+**Self-application**: `originating_remediation: GH #80`. The Step 2.5 prose pattern is recommended as a parallel companion change for the user-side `/qor-auto-dev-1` SKILL.md (which lives at the user-side install path, outside this repo's canonical SSoT under `qor/skills/`); the in-repo half ships in this seal, the user-side application is handed off as a recommended manual follow-up.
+
+**Content Hash**:
+SHA256(plan-qor-phase88-pr-state-precheck.md) = `d43d2d347c66c57d4ae8e8a96029bdb813c5ffadde0fb7af367744b87f6d4ab2`
+
+**Previous Hash**: `f7318b79b8a9aa3853136ef49dcc8f90e47ea0c207c4bd0fb38ffe65a92543a7`
+
+**Chain Hash**: `8e80bdadeaff7dd3b2fe551de2dd62b107ec4326283b7afa932b1dd3991ec2cf`
+
+---
+
+*Session: 2026-05-22T2047-0dd39a (Phase 88 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #235: SESSION SEAL -- Phase 88 feature substantiated: gh-PR-state pre-check for /qor-research (v0.59.0, GH #80)
+
+**Timestamp**: 2026-05-22T23:00:00Z
+
+**Phase**: SUBSTANTIATE (Phase 88 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase88-pr-state-precheck.md
+
+**Session**: `2026-05-22T2047-0dd39a`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `le_a2d20a93aeb7b947` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #80. `/qor-research` gains a Step 2.5 issue-state pre-check between Step 2 (State Verification) and Step 3 (Target Discovery). When the research target is an existing GitHub issue, the skill runs `gh pr list --state all --search "#<N>"` + `gh pr list --state all --search "in:body <N>"` before fresh research begins; on a MERGED hit, surfaces the PR (number, state, mergedAt, title) to the operator and pauses for the decision whether to proceed. Scope-conditional: skipped with a one-line note when `gh` is not on PATH or the target is not an existing issue (Phase 75 declarative-tolerance pattern). Five-line operator pre-check; no new script, no new doctrine file — honors the GH #92 progressive-disclosure lesson. GH #80 also names `/qor-auto-dev-1`; that skill lives outside this repo's canonical SSoT under `qor/skills/` (user-side install path `~/.claude/skills/qor-auto-dev-1/SKILL.md`), declared `non_goal` in the plan and handed off as a recommended parallel companion change.
+
+**Files touched** (~9): `qor/skills/sdlc/qor-research/SKILL.md` (Step 2.5 insertion), `tests/test_qor_research_issue_state_check.py` (NEW), `docs/plan-qor-phase88-pr-state-precheck.md` (NEW), `docs/SYSTEM_STATE.md` (Phase 88 entry), `docs/META_LEDGER.md` (entries #233-#235), `CHANGELOG.md` (0.59.0 stamped), `pyproject.toml` (0.59.0), `.qor/gates/2026-05-22T2047-0dd39a/{plan,audit,implement,substantiate}.json`, `.agent/staging/AUDIT_REPORT.md`.
+
+**Test surface**: TDD red-green observed (three new wiring tests failed before the Step 2.5 insertion). 3 new tests in `tests/test_qor_research_issue_state_check.py` — anchored positive, strip-and-fail negative, scope-conditional language guard. All 3 pass twice deterministically. Full suite: 1742 passed, 1 skipped.
+
+**Razor compliance**: skill-prose insertion is 21 lines including code-fence wrapping the two `gh pr list` invocations; inline prose only; no new script, no new module, no new doctrine file. Maximally narrow change for the scope.
+
+**Audit history**: iter-1 PASS (Entry #233, L2). Solo audit — `audit_risk_score` reported `option_b_required: false` (no `*.config.*` citation; fewer than 5 grep-evidence citations to sealed infrastructure). Plan declared `Feature Inventory Touches: []` with rationale (docs/governance-only change); the docs/governance-only exemption is documented in the Feature Test Coverage Pass.
+
+**Self-application**: this phase consumes the same `/qor-auto-dev-1` orchestrator that GH #80 also recommends gain a Step 0 — the orchestrator's own version was applied in-conversation to triage GH #80 before this cycle began (verified there was no existing MERGED PR closing #80 before the cycle started). The in-repo `/qor-research` half ships here; the user-side `/qor-auto-dev-1` half is handed off. `doc_tier: standard`; the architecture-bearing documentation is the SYSTEM_STATE Phase 88 entry, authored in-context.
+
+**Content Hash (session seal)**: `3b82c3480f04d2836bc562153d27bd28199eb816a52517ad33047bb4b80c7a7e`
+
+**Previous Hash**: `8e80bdadeaff7dd3b2fe551de2dd62b107ec4326283b7afa932b1dd3991ec2cf`
+
+**Chain Hash (Merkle seal)**: `5a3a4429553f5c6f0d115e427b118d088d8703010577be6583d21aafd6ee4073`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 88 feature complete; GH #80 in-repo half closed)
+*Merkle seal: 5a3a4429...* (Phase 88 seal on top of Phase 87's 95ff272a...)
+*Open items at this seal: stage artifacts for user review (Review Boundary); user-side /qor-auto-dev-1 companion update handed off as recommended manual change*

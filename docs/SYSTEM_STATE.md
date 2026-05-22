@@ -473,3 +473,15 @@ Feature closing GH #82 — the Phase 68 Option B independent reviewer was operat
 **Audit history**: iter-1 PASS (Entry #230, L2), conducted under Step 1.a Option B (independent `architect-reviewer` subagent — doubly indicated, since the plan cites `vitest.config.ts` and so trips the very V1 signal it introduces). The 2-of-4-signals V1 scoping was ruled a legitimate disclosed boundary.
 
 **Decision**: Phase 87 implemented; audit PASS on iter-1. Targets v0.58.0 (feature → minor bump) at substantiate.
+
+## Phase 88 (v0.59.0 — 2026-05-22): gh-PR-state pre-check for /qor-research (GH #80)
+
+Feature closing GH #80 — `/qor-research` previously had no mechanism to detect that the PR closing the target issue had already MERGED elsewhere. A full plan-audit-implement cycle could be wasted on already-shipped work (the COREFORGE 2026-05-18 incident: issue #410 cycled to staged implementation before PR #493 was discovered merged hours earlier). This phase adds a five-line operator pre-check at the top of the research flow.
+
+**`/qor-research` SKILL.md gains Step 2.5 (issue-state pre-check)**: when the research target is an existing GH issue (e.g., `#80`), run `gh pr list --state all --search "#<N>"` and `gh pr list --state all --search "in:body <N>"`; if any PR is MERGED and closes the target, surface number/state/mergedAt/title to the operator before continuing. Scope-conditional — non-issue targets (API surfaces, dependencies) and `gh`-absent hosts skip with a one-line note (Phase 75 declarative-tolerance pattern). No new script, no new doctrine file — kept lean per the GH #92 progressive-disclosure lesson.
+
+**Out of scope (declared non_goal)**: GH #80 also names `/qor-auto-dev-1`, but that skill lives at the user-side install path (`~/.claude/skills/qor-auto-dev-1/SKILL.md`), not in this repo's canonical SSoT under `qor/skills/`. The same Step 2.5 prose pattern is recommended as a companion change applied externally to the user-side artifact.
+
+**Tests**: 3 new wiring tests in `tests/test_qor_research_issue_state_check.py` — anchored positive (Step 2.5 cites both `gh pr list` invocations + `MERGED` + `surface` operative directive) + strip-and-fail negative (assertions collapse when the section is removed) + scope-conditional language guard (the `existing GH issue` phrase is load-bearing; without it the prose would direct unconditional `gh` API calls on non-issue research targets). Pattern mirrors `tests/test_audit_skill_iteration_lint_wiring.py` (Phase 84 wiring-test convention).
+
+**Decision**: Phase 88 implemented; audit PASS on iter-1 (audit_risk_score reported no Option B mandate — no `*.config.*` cite, fewer than 5 grep-evidence citations; solo audit valid). Targets v0.59.0 (feature → minor bump) at substantiate.
