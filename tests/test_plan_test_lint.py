@@ -91,3 +91,53 @@ def test_lint_handles_missing_plan(tmp_path):
     plan = tmp_path / "missing.md"
     warnings = check_plan(plan)
     assert warnings == []
+
+
+# --- Phase 84: inverse-coverage discipline for closed-enum taxonomies (GH #84) ---
+
+
+def test_inverse_coverage_flags_taxonomy_missing_inverse(tmp_path):
+    plan = _write_plan(tmp_path, """
+        # Plan
+        ## Phase 1
+        ### Changes
+        Define `CANONICAL_SOURCE_VALUES` tuple and `normalizeSource` function.
+        ### Unit Tests
+        - `test_forward` — invokes normalizeSource on each alias key and asserts the result is in the canonical set.
+    """)
+    warnings = check_plan(plan)
+    assert "inverse-coverage-missing" in [w.pattern for w in warnings]
+
+
+def test_inverse_coverage_silent_when_both_directions_present(tmp_path):
+    plan = _write_plan(tmp_path, """
+        # Plan
+        ## Phase 1
+        ### Changes
+        Define `CANONICAL_SOURCE_VALUES` tuple and `normalizeSource` function.
+        ### Unit Tests
+        - `test_forward` — invokes normalizeSource on each alias key and asserts the result is in the canonical set.
+        - `test_inverse` — asserts every canonical value is reachable via an identity mapping.
+    """)
+    warnings = check_plan(plan)
+    assert "inverse-coverage-missing" not in [w.pattern for w in warnings]
+
+
+def test_inverse_coverage_silent_when_no_taxonomy_declared(tmp_path):
+    plan = _write_plan(tmp_path, """
+        # Plan
+        ### Unit Tests
+        - `test_x` — invokes scan() with input X and asserts the returned hit class is "y".
+    """)
+    warnings = check_plan(plan)
+    assert "inverse-coverage-missing" not in [w.pattern for w in warnings]
+
+
+def test_presence_only_detection_unaffected_by_inverse_check(tmp_path):
+    plan = _write_plan(tmp_path, """
+        ### Unit Tests
+        - `test_x` — asserts the body contains the literal "foo".
+    """)
+    warnings = check_plan(plan)
+    assert len(warnings) == 1
+    assert warnings[0].pattern == "substring-presence"

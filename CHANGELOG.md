@@ -10,6 +10,29 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.57.0] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 84 (feature, GH #81 + #84)**: two pre-audit guards that stop a
+  not-ready plan from wasting an audit cycle. **Pre-audit readiness
+  short-circuit (#81)** — a new `plan_iteration_status_lint` detects a plan
+  that declares itself not audit-ready (an `iteration` value of
+  `draft` / `pre-audit`, an "Operator Decisions Required Before Audit"
+  section, or an Open Questions bullet ending "Operator confirms before
+  audit"); `/qor-audit` Step 0.3 runs it as a hard short-circuit and aborts
+  before any adversarial pass, consuming no audit cycle. **Inverse-coverage
+  discipline (#84)** — `plan_test_lint` now flags a plan that declares a
+  closed-enum taxonomy (a `CANONICAL_*_VALUES` constant plus a `normalize*`
+  function) with no inverse-coverage test; `/qor-plan` Step 5 and
+  `/qor-audit` Step 3 Test Functionality Pass require both the forward
+  round-trip and the inverse coverage assertion, and missing inverse
+  coverage is a `coverage-gap` VETO. Adds the `SG-PreAuditDraftSubmission-A`
+  and `SG-InverseCoverageGapTaxonomy-A` doctrine entries and the
+  Inverse-coverage discipline section in `doctrine-test-functionality.md`.
+
 ## [0.56.0] - 2026-05-22
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

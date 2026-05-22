@@ -8384,3 +8384,122 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 83 feature complete; GH #83 + GH #87 closed)
 *Merkle seal: bd3e1412...* (Phase 83 seal on top of Phase 82's 375a0214...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+---
+
+### Entry #220: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-22T05:00:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: PASS
+
+**Plan**: docs/plan-qor-phase84-audit-readiness-guards.md (iter-1)
+
+**Session**: `2026-05-22T0433-b5299e`
+
+**Decision**: Phase 84 plan (GH #81 pre-audit readiness short-circuit + GH #84 inverse-coverage discipline) cleared on iter-1. Audit conducted under Step 1.a Option B: the adversarial pass was dispatched to an independent `architect-reviewer` subagent with no plan-authorship context, clearing the SG-AuthorAuditMomentum-A self-audit scope bias. All eight passes PASS. Self-Application Sub-Pass clean (the plan carries no `**iteration**:` draft marker, no "Operator Decisions Required Before Audit" section, no `CANONICAL_*_VALUES` taxonomy). Infrastructure Alignment verified `current_phase_plan_path` (governance_helpers.py:57), the `LintWarning` 4-field dataclass shape, and the `coverage-gap` audit-schema enum value. Non-VETO documentation-drift advisory: declared SG terms lack glossary entries -- to be added during `/qor-implement` ahead of the substantiate-time integrity check.
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `9c6efdd03442c908a5875d5a1c9b41802e6c70d92f7b276163cc7648d3e2996e`
+
+**Previous Hash**: `bd3e1412af711cd0371fe2fc72f024b87d1bc6140582a6972c7558db7df71e49`
+
+**Chain Hash**:
+SHA256(content_hash + previous_hash) = `923e18e7b3280c160d309a584f2593740c4795e8b8e2e7e1a8b8a795d6b3b7ff`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0433-b5299e (Phase 84 -- audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #221: IMPLEMENTATION -- Phase 84 (Audit-readiness guards)
+
+**Timestamp**: 2026-05-22T05:30:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Specialist
+
+**Plan**: `docs/plan-qor-phase84-audit-readiness-guards.md`
+
+**Session**: `2026-05-22T0433-b5299e`
+
+**Scope**: Closes GH #81 + GH #84. Two pre-audit lint guards plus thin skill-prose wiring. **GH #81**: new `qor/scripts/plan_iteration_status_lint.py` detects three pre-audit self-declaration signals (`**iteration**:` value containing `draft`/`pre-audit`; "Operator Decisions Required Before Audit" heading; Open Questions bullet ending "Operator confirms before audit") and exits non-zero on any hit; `/qor-audit` Step 0.3 runs it as a hard short-circuit before any adversarial pass. **GH #84**: `qor/scripts/plan_test_lint.py` gains an inverse-coverage check (WARN-only `inverse-coverage-missing` finding when a plan declares a `CANONICAL_*_VALUES` + `normalize*` taxonomy with no inverse-coverage test bullet); `/qor-plan` Step 5 and `/qor-audit` Step 3 Test Functionality Pass require both directional assertions, missing inverse coverage is a `coverage-gap` VETO.
+
+**Files touched** (10): `qor/scripts/plan_iteration_status_lint.py` (NEW), `qor/scripts/plan_test_lint.py` (inverse-coverage check), `qor/skills/governance/qor-audit/SKILL.md` (Step 0.3 + Test Functionality Pass sub-rule), `qor/skills/sdlc/qor-plan/SKILL.md` (Step 5 checklist item), `qor/references/doctrine-test-functionality.md` (Inverse-coverage discipline section + anti-pattern row + verification bullet), `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-PreAuditDraftSubmission-A` + `SG-InverseCoverageGapTaxonomy-A`), `qor/references/glossary.md` (3 terms), `docs/SYSTEM_STATE.md` (Phase 84 entry), `tests/test_plan_iteration_status_lint.py` (NEW), `tests/test_audit_skill_iteration_lint_wiring.py` + `tests/test_inverse_coverage_skill_wiring.py` (NEW) + `tests/test_plan_test_lint.py` (4 cases added).
+
+**Test surface**: TDD red-green observed (`test_plan_iteration_status_lint.py` failed to import the absent module before implementation; 6 wiring/inverse-coverage assertions failed pre-implementation). 26 tests: 8 in `test_plan_iteration_status_lint.py` (three signal detections, clean-plan, CLI exit-1-with-guidance, CLI exit-0, missing-plan), 2 in `test_audit_skill_iteration_lint_wiring.py` (Step 0.3 wiring anchored + strip-and-fail), 4 in `test_inverse_coverage_skill_wiring.py` (doctrine section + skill citations, anchored + strip-and-fail), 4 added to `test_plan_test_lint.py` (inverse-coverage flag/silent/no-taxonomy + presence-only regression). All 26 pass twice deterministically. Full suite: 1705 passed, 1 skipped; the README ledger-badge test fails transiently (this entry advances the ledger count -- `/qor-substantiate` Step 6.5 reconciles the badge). Three pre-existing failures (squash-merge attribution trailer; doc-integrity drift-report CLI 60s timeout x2) confirmed present on a clean pre-cycle baseline -- out of cycle scope.
+
+**Razor compliance**: `plan_iteration_status_lint.py` 95 lines (<=250); longest function 21 lines; max nesting depth 3; zero nested ternaries. `plan_test_lint.py` 111 lines; `_inverse_coverage_warnings` 21 lines.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. ARCHITECTURE_PLAN.md carries no granular `qor/scripts/` file tree -- no-op. Architecture-bearing documentation is the Inverse-coverage discipline section in `doctrine-test-functionality.md` and the two `SG-` doctrine entries, all authored in this pass. `docs/SYSTEM_STATE.md` Phase 84 entry authored in-context.
+
+**Reliability**: intent-lock captured at implement start (`LOCKED: 2026-05-22T0433-b5299e`).
+
+**Self-application**: the plan declares `originating_remediation: GH #81 + GH #84`; the audit Self-Application Sub-Pass confirmed the plan carries no pre-audit draft marker and no `CANONICAL_*_VALUES` taxonomy of its own. Audit conducted under Step 1.a Option B (independent `architect-reviewer` subagent) per SG-AuthorAuditMomentum-A.
+
+**SSDF Practices**: PW.5.1, PW.7.1, PW.8.1, RV.1.1.
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`.
+
+**Content Hash**: `8c9ed42ea2e08ef056ee9b857854734c1dc1da682a79cc89d607013e8bab11fe`
+**Previous Hash**: `923e18e7b3280c160d309a584f2593740c4795e8b8e2e7e1a8b8a795d6b3b7ff`
+**Chain Hash**: `d136e3c4df6fb6a6fa475a69def5f7da2809f72a84a861c4fc439ef90d4e179c`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0433-b5299e (Phase 84 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #222: SESSION SEAL -- Phase 84 feature substantiated: audit-readiness guards (v0.57.0, GH #81 + #84)
+
+**Timestamp**: 2026-05-22T06:00:00Z
+
+**Phase**: SUBSTANTIATE (Phase 84 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase84-audit-readiness-guards.md
+
+**Session**: `2026-05-22T0433-b5299e`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `49863dee0bba` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #81 + GH #84 -- two pre-audit guards that stop a structurally not-ready plan from wasting an audit-iteration slot. **GH #81 (pre-audit readiness short-circuit)**: new `qor/scripts/plan_iteration_status_lint.py` detects three pre-audit self-declaration signals -- an `**iteration**:` value containing `draft` / `pre-audit`, an "Operator Decisions Required Before Audit" heading, or an Open Questions bullet ending "Operator confirms before audit" -- and exits non-zero on any hit. `/qor-audit` gains Step 0.3, a hard short-circuit that runs the lint before Step 1 identity activation and before any adversarial pass; on non-zero exit the audit aborts and emits no gate artifact, so the not-ready plan consumes no cycle. **GH #84 (inverse-coverage discipline)**: `qor/scripts/plan_test_lint.py` gains an inverse-coverage check emitting a WARN-only `inverse-coverage-missing` finding when a plan declares a closed-enum taxonomy (`CANONICAL_*_VALUES` constant + `normalize*` function) with no inverse-coverage test bullet; `/qor-plan` Step 5 and `/qor-audit` Step 3 Test Functionality Pass require both the forward round-trip and the inverse coverage assertion, missing inverse coverage being a `coverage-gap` VETO. Detailed prose lands in doctrine reference files per GH #92 progressive disclosure; SKILL.md files carry thin pointers.
+
+**Files touched** (~31): `qor/scripts/plan_iteration_status_lint.py` (NEW), `qor/scripts/plan_test_lint.py`, `qor/skills/governance/qor-audit/SKILL.md` (Step 0.3 + Test Functionality Pass sub-rule), `qor/skills/sdlc/qor-plan/SKILL.md` (Step 5 item), `qor/references/doctrine-test-functionality.md` (Inverse-coverage discipline section), `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-PreAuditDraftSubmission-A` + `SG-InverseCoverageGapTaxonomy-A`), `qor/references/glossary.md` (3 terms), `tests/test_plan_iteration_status_lint.py` (NEW), `tests/test_audit_skill_iteration_lint_wiring.py` (NEW), `tests/test_inverse_coverage_skill_wiring.py` (NEW), `tests/test_plan_test_lint.py`, `docs/plan-qor-phase84-audit-readiness-guards.md` (NEW), `docs/SYSTEM_STATE.md`, `docs/META_LEDGER.md` (entries #220-#222), `CHANGELOG.md` (0.57.0 stamped), `README.md` (badges), `pyproject.toml` (0.57.0), 13 regenerated `qor/dist/` variants.
+
+**Test surface**: TDD red-green observed (`test_plan_iteration_status_lint.py` failed to import the absent module before implementation; 6 wiring/inverse-coverage assertions failed pre-implementation). 26 new tests across 4 files, all passing twice deterministically: `test_plan_iteration_status_lint.py` (8 -- three signal detections, clean-plan, CLI exit-1-with-guidance, CLI exit-0, missing-plan), `test_audit_skill_iteration_lint_wiring.py` (2 -- Step 0.3 wiring anchored + strip-and-fail), `test_inverse_coverage_skill_wiring.py` (4 -- doctrine section + skill citations, anchored + strip-and-fail), `test_plan_test_lint.py` (4 added -- inverse-coverage flag/silent/no-taxonomy + presence-only regression). Full suite: 1705 passed, 1 skipped. Three pre-existing failures (squash-merge attribution trailer on a prior seal commit; `doc_integrity_drift_report` CLI 60s timeout x2) confirmed present on a clean pre-cycle `git stash` baseline -- out of cycle scope, flagged for separate triage.
+
+**Razor compliance**: `plan_iteration_status_lint.py` 95 lines (<=250); longest function 21 lines; max nesting depth 3; zero nested ternaries. `plan_test_lint.py` 111 lines; `_inverse_coverage_warnings` 21 lines.
+
+**Audit history**: iter-1 PASS (Entry #220, L2). Conducted under `/qor-audit` Step 1.a Option B -- the adversarial pass was dispatched to an independent `architect-reviewer` subagent with no plan-authorship context, clearing the SG-AuthorAuditMomentum-A self-audit scope bias. All eight audit passes cleared; no VETO this phase.
+
+**Self-application**: the plan declared `originating_remediation: GH #81 + GH #84`, triggering the audit Self-Application Sub-Pass -- confirmed the plan carries no `**iteration**:` draft marker, no "Operator Decisions Required Before Audit" section, and no `CANONICAL_*_VALUES` taxonomy of its own, so it does not trip either new discipline. Entry carries an Entry ID. `doc_tier: standard`; architecture-bearing documentation is the Inverse-coverage discipline section in `doctrine-test-functionality.md` and the two `SG-` doctrine entries, all authored in-context. Phase 79 Step 8.5: `docs/SYSTEM_STATE.md` Phase 84 entry authored during implement. Intent-lock re-captured at substantiate after git autocrlf normalized the plan file's line endings during an earlier baseline-investigation `git stash`/`pop` -- a cosmetic encoding change, not intent drift (plan semantic content byte-identical modulo CR characters).
+
+**Content Hash (session seal)**: `cd3f662c9e457003c14465afa309160f8638a4a639af40fc17ed96d5f613c7fb`
+
+**Previous Hash**: `d136e3c4df6fb6a6fa475a69def5f7da2809f72a84a861c4fc439ef90d4e179c`
+
+**Chain Hash (Merkle seal)**: `f38d7085ba29813a732e303ad11a421b65a642de50567166a16fe7e1f375e320`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 84 feature complete; GH #81 + GH #84 closed)
+*Merkle seal: f38d7085...* (Phase 84 seal on top of Phase 83's bd3e1412...)
+*Open items at this seal: push + PR + merge (operator-authorized -- Step 9.6)*

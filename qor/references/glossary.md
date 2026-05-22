@@ -835,3 +835,36 @@ referenced_by:
   - qor/skills/sdlc/qor-implement/SKILL.md
 introduced_in_plan: phase80-bootstrap-feature-index
 ```
+
+```yaml
+term: SG-PreAuditDraftSubmission-A
+definition: 'Shadow-genome pattern: a plan declares itself not yet audit-ready (an **iteration** value of draft / pre-audit, an "Operator Decisions Required Before Audit" section, or Open Questions ending "Operator confirms before audit") yet the autonomous cycle invokes /qor-audit anyway, burning an audit-iteration slot on a structurally not-ready plan. Countermeasure: the qor.scripts.plan_iteration_status_lint pre-audit lint plus the /qor-audit Step 0.3 hard short-circuit. Phase 84 wiring (GH #81).'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/scripts/plan_iteration_status_lint.py
+  - qor/skills/governance/qor-audit/SKILL.md
+introduced_in_plan: phase84-audit-readiness-guards
+```
+
+```yaml
+term: SG-InverseCoverageGapTaxonomy-A
+definition: 'Shadow-genome pattern: a plan defines a closed-enum taxonomy (a CANONICAL_*_VALUES constant plus a normalize* function) whose test list covers only the forward round-trip direction, so a canonical bucket can be declared yet be unreachable through normalize* and downstream queries return zero rows. Countermeasure: the inverse-coverage discipline in /qor-plan Step 5, the /qor-audit Step 3 Test Functionality Pass coverage-gap VETO, and the qor.scripts.plan_test_lint inverse-coverage-missing WARN. Phase 84 wiring (GH #84).'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/scripts/plan_test_lint.py
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/references/doctrine-test-functionality.md
+introduced_in_plan: phase84-audit-readiness-guards
+```
+
+```yaml
+term: inverse-coverage discipline
+definition: 'A test-list rule for closed-enum taxonomies (a CANONICAL_*_VALUES constant plus a normalize* function): the test list must assert BOTH the forward direction (every alias-map key normalizes into the canonical set) AND the inverse direction (every non-gated canonical value is reachable via at least one identity-mapping). Gated buckets (documented fallbacks, runtime-checked allowlist values) are exempt. Documented in doctrine-test-functionality.md; enforced at /qor-plan Step 5, /qor-audit Step 3 Test Functionality Pass, and qor.scripts.plan_test_lint. Phase 84 wiring (GH #84).'
+home: qor/references/doctrine-test-functionality.md
+referenced_by:
+  - qor/references/doctrine-test-functionality.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/scripts/plan_test_lint.py
+introduced_in_plan: phase84-audit-readiness-guards
+```

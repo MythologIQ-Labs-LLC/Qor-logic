@@ -55,6 +55,19 @@ Override is permitted (advisory gate) but logged as severity-1 event in the Proc
 
 **Phase 54 wiring**: when `runtime.emit_gate_override` (which delegates to `gate_chain.emit_gate_override`) raises `OverrideFrictionRequired`, prompt the operator for a written justification (>=50 chars) and re-call `emit_gate_override` with `justification=<text>`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-1.1 + `qor/references/doctrine-eu-ai-act.md` Art. 14.
 
+### Step 0.3: Pre-audit readiness short-circuit (Phase 84 wiring; GH #81)
+
+Before the cycle-count and lint steps, detect whether the plan declares itself not yet ready for audit. Per `SG-PreAuditDraftSubmission-A`, a plan carrying a pre-audit self-declaration still triggers audit under the autonomous cycle and burns an audit-iteration slot on a structurally not-ready plan.
+
+```bash
+PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
+python -m qor.scripts.plan_iteration_status_lint --plan "$PLAN_PATH" || ABORT
+```
+
+`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. The lint exits non-zero when the plan carries any of: an `**iteration**:` value containing `draft` / `pre-audit`; an "Operator Decisions Required Before Audit" section; or an Open Questions bullet ending "Operator confirms before audit". On non-zero exit, abort BEFORE Step 1 identity activation and BEFORE any adversarial pass — print the lint's guidance, skip the remaining steps, and do NOT emit an audit gate artifact (no cycle consumed). The Governor resolves the operator-decision items, bumps the plan past its pre-audit state, and re-runs `/qor-audit`.
+
+Unlike the Step 0.6 pre-audit lints (WARN-only), this lint is a hard short-circuit: a plan that declares itself not-ready is not a candidate for adversarial review. Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-PreAuditDraftSubmission-A`.
+
 ### Step 0.4: Unchanged-plan short-circuit (Phase 67 wiring - GH #45)
 
 After the prior-artifact gate check passes, detect whether the operator invoked `/qor-audit` on a byte-identical plan re-run (no amendment since the prior VETO). When the content hash matches the prior audit's recorded `target_content_hash`, the same plan will produce the same verdict; the cycle is wasted and inflates the cycle-count escalator (§10.4) prematurely.
@@ -303,6 +316,8 @@ A test is **presence-only** when its assertion is solely about artifact existenc
 **Any planned test that asserts only file existence, substring presence, or structural placement without invoking the unit and validating its output -> VETO with `test-failure` category.**
 
 **Required next action:** Governor: amend plan to replace presence-only tests with functionality tests (invoke the unit, assert against output), re-run `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md`, this is a **Plan-text** ground.
+
+**Closed-enum taxonomy coverage (Phase 84 wiring; GH #84)**: when the plan declares a closed-enum taxonomy — a `CANONICAL_*_VALUES` constant paired with a `normalize*` function — the test list MUST assert BOTH directions: forward (every alias-map key normalizes into the canonical set) AND inverse (every non-gated canonical value is reachable via at least one identity-mapping). A taxonomy with only forward coverage can define a canonical bucket that `normalize*` never produces, so downstream consumers querying that bucket get zero rows. **Missing inverse coverage -> VETO with `coverage-gap` category.** Per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline and `SG-InverseCoverageGapTaxonomy-A`.
 
 #### Dependency Audit
 

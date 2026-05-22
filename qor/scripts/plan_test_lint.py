@@ -37,6 +37,34 @@ _PRESENCE_PATTERNS: tuple[tuple[str, re.Pattern], ...] = (
      re.compile(r"\bassert\s+(?:path\.exists|os\.path\.exists)\b")),
 )
 
+# Phase 84 (GH #84): closed-enum taxonomy inverse-coverage detection.
+_CANONICAL_TUPLE_RE = re.compile(r"\bCANONICAL_[A-Z][A-Z0-9_]*VALUES\b")
+_NORMALIZE_FN_RE = re.compile(r"\bnormalize[A-Za-z][A-Za-z0-9_]*\b")
+_INVERSE_SIGNAL_RE = re.compile(r"\binverse\b|\breachable\b", re.IGNORECASE)
+
+
+def _inverse_coverage_warnings(text: str, plan_path: Path) -> list[LintWarning]:
+    """Flag a plan that declares a closed-enum taxonomy (a CANONICAL_*_VALUES
+    constant plus a normalize* function) whose test list carries no
+    inverse-coverage assertion. Per qor/references/doctrine-test-functionality.md
+    inverse-coverage discipline (SG-InverseCoverageGapTaxonomy-A)."""
+    lines = text.splitlines()
+    taxonomy_line = 0
+    for line_no, line in enumerate(lines, start=1):
+        if _CANONICAL_TUPLE_RE.search(line):
+            taxonomy_line = line_no
+            break
+    if not taxonomy_line or not _NORMALIZE_FN_RE.search(text):
+        return []
+    for line in lines:
+        if line.lstrip().startswith(("- ", "* ")) and _INVERSE_SIGNAL_RE.search(line):
+            return []
+    return [LintWarning(
+        plan=str(plan_path), line=taxonomy_line,
+        pattern="inverse-coverage-missing",
+        excerpt=lines[taxonomy_line - 1].strip()[:120],
+    )]
+
 
 def check_plan(plan_path: Path) -> list[LintWarning]:
     if not plan_path.exists():
@@ -53,6 +81,7 @@ def check_plan(plan_path: Path) -> list[LintWarning]:
                     pattern=pattern_name, excerpt=line.strip()[:120],
                 ))
                 break
+    warnings.extend(_inverse_coverage_warnings(text, plan_path))
     return warnings
 
 
@@ -70,8 +99,8 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
     print(
-        f"\n{len(warnings)} presence-only test descriptions detected. "
-        f"Reform as conditional co-occurrence behavior invariants per "
+        f"\n{len(warnings)} test-list issue(s) detected (presence-only "
+        f"descriptions and/or missing inverse coverage). See "
         f"qor/references/doctrine-test-functionality.md.",
         file=sys.stderr,
     )

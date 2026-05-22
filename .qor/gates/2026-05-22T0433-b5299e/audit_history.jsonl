@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-05-22T14:26:10Z","version":"0.56.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-05-22T0433-b5299e","target":"docs/plan-qor-phase84-audit-readiness-guards.md","ts":"2026-05-22T14:26:10Z","verdict":"PASS"}
