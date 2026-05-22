@@ -10,6 +10,8 @@ and scope live in qor/references/doctrine-attribution.md.
 """
 from __future__ import annotations
 
+import re
+
 _SDK_NAME = "Claude Code"
 _SDK_URL = "https://claude.com/claude-code"
 _QOR_URL = "https://github.com/MythologIQ-Labs-LLC/qor-logic"
@@ -93,3 +95,21 @@ def changelog_attribution_line(*, qor_url: str | None = None) -> str:
     """
     qor_url = _QOR_URL if qor_url is None else qor_url
     return f"_Built via [Qor-logic SDLC]({qor_url})._"
+
+
+def message_has_full_trailer(message: str) -> bool:
+    """Return True iff a commit message carries the full canonical trailer.
+
+    The full trailer (per `commit_trailer`) is the `Authored via [Qor-logic
+    SDLC]` line AND a `Co-Authored-By:` line. This is the single source of
+    truth for the seal-commit trailer predicate, consumed by
+    `qor.scripts.seal_trailer_check` and by
+    `tests/test_attribution_tiered_usage.py`. The co-author match is
+    case-insensitive: git trailer keys are case-insensitive and a
+    GitHub-merged commit may render `Co-authored-by:` lowercase.
+    """
+    has_qor_line = "Authored via" in message and "Qor-logic" in message
+    has_coauthor = re.search(
+        r"^Co-authored-by:", message, re.IGNORECASE | re.MULTILINE
+    ) is not None
+    return has_qor_line and has_coauthor

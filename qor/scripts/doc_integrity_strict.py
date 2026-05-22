@@ -45,6 +45,21 @@ def _iter_scan_files(repo_root: str):
             yield p
 
 
+def _scan_corpus(repo_root: str) -> list[tuple[str, str]]:
+    """Materialize the in-scope markdown corpus once as (rel_posix, text).
+
+    Phase 85 (GH #96): hoisting this out of the per-term loops in
+    check_term_drift / check_cross_doc_conflicts turns an O(terms x files)
+    directory re-scan into O(terms + files).
+    """
+    repo = Path(repo_root)
+    return [
+        (f.relative_to(repo).as_posix(),
+         f.read_text(encoding="utf-8", errors="replace"))
+        for f in _iter_scan_files(repo_root)
+    ]
+
+
 def check_term_drift(
     glossary_path: str,
     repo_root: str,
@@ -60,13 +75,12 @@ def check_term_drift(
     findings: list[str] = []
     repo = Path(repo_root)
     glossary_rel = Path(glossary_path).relative_to(repo).as_posix() if Path(glossary_path).is_absolute() else "qor/references/glossary.md"
+    scanned = _scan_corpus(repo_root)
     for entry in entries:
         pattern = re.compile(r"\b" + re.escape(entry.term) + r"\b")
-        for f in _iter_scan_files(repo_root):
-            rel = f.relative_to(repo).as_posix()
+        for rel, text in scanned:
             if _excluded_by_scope_fence(entry, rel, glossary_rel):
                 continue
-            text = f.read_text(encoding="utf-8", errors="replace")
             if pattern.search(text):
                 msg = f"Term '{entry.term}' used in {rel} not declared as referenced_by"
                 if strict:
@@ -183,17 +197,16 @@ def check_cross_doc_conflicts(
     findings: list[str] = []
     repo = Path(repo_root)
     glossary_rel = Path(glossary_path).relative_to(repo).as_posix() if Path(glossary_path).is_absolute() else "qor/references/glossary.md"
+    scanned = _scan_corpus(repo_root)
     for entry in entries:
         pattern = re.compile(
             _DEF_PATTERN_TMPL.format(term=re.escape(entry.term)),
             re.IGNORECASE,
         )
-        for f in _iter_scan_files(repo_root):
-            rel = f.relative_to(repo).as_posix()
+        for rel, text in scanned:
             # Phase 32: E shares D's scope fence (archives + home/peer exclusions)
             if _excluded_by_scope_fence(entry, rel, glossary_rel):
                 continue
-            text = f.read_text(encoding="utf-8", errors="replace")
             for match in pattern.finditer(text):
                 found_def = match.group(1).strip()
                 canonical = entry.definition.strip()
