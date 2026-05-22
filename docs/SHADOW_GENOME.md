@@ -1179,4 +1179,34 @@ Argument-injection-vs-shell-injection conflation. Candidate SG family entry if i
 
 ---
 
+## Phase 86 Pass 1 -- VETO
+
+**Date**: 2026-05-22
+
+**Verdict**: VETO (L2)
+
+**Categories**: `infrastructure-mismatch`
+
+### Findings
+
+V1: the plan (GH #98, deferring the seal-tag push from `/qor-substantiate` Step 9.6 to a new Step 9.7) mutates the Step 9.5.5 / Step 9.6 / `## Failure Scenarios` region of `qor/skills/governance/qor-substantiate/SKILL.md`. Two existing tests read that exact region by step-header position -- `tests/test_seal_flow_ordering.py` (slices Step 9.5.5 bounded by `body.find("### Step 9.6")`) and `tests/test_substantiate_tag_timing_wired.py` (`_STEP_HEADER_RE` matches `### Step 9.N` headers into an ordered list). The plan's Affected Files enumerated neither, asserting coverage completeness without an impact analysis of the tests that depend on the layout it changes.
+
+### Root Cause Analysis
+
+The plan author scoped Affected Files to the files the change *writes* (SKILL.md, the doctrine, the new test file) and did not walk the set of files that *read* the mutated artifact. Skill-prose changes have a non-obvious dependency surface: wiring tests anchored to step headers are coupled to step layout. The author reasoned forward (what do I edit?) but not backward (what asserts against what I edit?). Mechanically the inserted `### Step 9.7` header lands after Step 9.6, so neither dependent test actually breaks -- but the plan stated completeness it had not established.
+
+### Pattern to Avoid
+
+When a plan mutates a markdown artifact that wiring tests anchor to (skill steps, doctrine section headers), enumerate every test that reads that artifact's mutated region and record the impact -- "verified unaffected, boundary X unchanged" is an acceptable conclusion, but it must be stated, not assumed. Forward scoping (files written) is not coverage scoping (files that depend on what was written).
+
+### Remediation Attempted
+
+Governor amendment in the same cycle: the plan's Phase 1 gains an explicit dependent-tests note enumerating `tests/test_seal_flow_ordering.py` and `tests/test_substantiate_tag_timing_wired.py` with the verified-unaffected boundary analysis (Step 9.5.5/9.6 boundary unchanged; `### Step 9.7` inserts after Step 9.6) and adds both to the regression gate. Re-submitted to `/qor-audit` iter-2.
+
+### Pattern ID
+
+Forward-only Affected-Files scoping omits artifact-reading dependents. Candidate SG family entry if it recurs: `SG-AffectedFilesReadDeps-A` -- a plan enumerates files it writes but not the wiring tests that read the mutated region. First instance; logged narratively, not yet promoted to a structured countermeasure.
+
+---
+
 *Shadow integrity: ACTIVE*

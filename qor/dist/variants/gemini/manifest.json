@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-22T18:15:40Z",
+  "generated_ts": "2026-05-22T19:35:24Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -252,7 +252,7 @@
       "id": "qor-substantiate.toml",
       "source_path": "commands/qor-substantiate.toml",
       "install_rel_path": "commands/qor-substantiate.toml",
-      "sha256": "fea985a65412ca5c6630eb3ca67e6283633b912c34850eba84937fe69be24cba"
+      "sha256": "2bc946e227ab91499050d7edabb18ca170378b6ead519ab10c54111f85d1b8b1"
     },
     {
       "id": "qor-tone.toml",

@@ -10,6 +10,22 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.57.2] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+
+- **Phase 86 (hotfix, GH #98)**: seal PRs no longer require an admin merge
+  override on the release-publish check. `/qor-substantiate` previously
+  pushed the annotated release tag together with the phase branch, before
+  the seal commit was on `main`; `release.yml`'s `build-and-publish` job
+  then refused to publish a tag whose commit is not reachable from
+  `origin/main`, and that failing check blocked the seal PR. Tag creation
+  stays at Step 9.5.5 (pre-merge); a new Step 9.7 pushes the tag only after
+  the seal commit reaches `origin/main`, gated on the same
+  `git merge-base --is-ancestor` check `release.yml` itself uses.
+
 ## [0.57.1] - 2026-05-22
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

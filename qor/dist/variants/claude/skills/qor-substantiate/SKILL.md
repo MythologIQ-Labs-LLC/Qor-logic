@@ -566,9 +566,24 @@ Prompt user with four options (never offer continuation menus when work is seala
 3. **Merge to main locally (dry-run first)** — `git merge --no-commit --no-ff <branch>`; on conflict, abort and prompt operator.
 4. **Hold local** — no push/merge this session.
 
-Annotated tag was already created in Step 9.5.5; do not re-offer. Push `--tags` alongside the branch push.
+The annotated tag was created in Step 9.5.5 but is NOT pushed in this step. `release.yml` triggers on tag push and its `build-and-publish` job refuses to publish a tag whose commit is not yet reachable from `origin/main`; pushing the tag now would fail that check and block the seal PR. Push the branch only; Step 9.7 pushes the tag after the seal commit reaches `origin/main`.
 
 Template: `references/qor-substantiate-templates.md`.
+
+### Step 9.7: Post-merge seal-tag push (Phase 86 wiring; GH #98)
+
+The annotated tag from Step 9.5.5 stays local until the seal commit is on `origin/main`. `release.yml` triggers on tag push and refuses to publish a tag whose commit is not reachable from `origin/main`; pushing the tag before the merge produces a failing `build-and-publish` check that blocks the seal PR. Push the tag only after the seal commit reaches `origin/main`, gated on the same reachability check `release.yml` uses:
+
+```bash
+git fetch origin main
+if git merge-base --is-ancestor "$SEAL_COMMIT" origin/main; then
+  git push origin "$SEAL_TAG"
+else
+  echo "Seal commit not on origin/main yet; tag $SEAL_TAG held local. Push after merge: git push origin $SEAL_TAG"
+fi
+```
+
+For Step 9.6 option 3 (merge to main locally), run this immediately after `git push origin main`. For option 2 (push + PR), run it after the PR is merged. For options 1 and 4 the seal commit is not on `origin/main`; the tag stays local and the operator pushes it after a later merge with `git push origin <tag>`. The reachability gate mirrors `release.yml`'s own guard, so the tag push and the publish guard agree by construction.
 
 ## Failure Scenarios
 
@@ -588,6 +603,7 @@ Template: `references/qor-substantiate-templates.md`.
 - **ALWAYS** document any unplanned files in ledger
 - **ALWAYS** verify chain integrity before sealing
 - **ALWAYS** call `governance_helpers.bump_version` at Step 7.5 and `governance_helpers.create_seal_tag` at Step 9.5.5 (after the seal commit); never author tags manually and never tag at Step 7.5 (SG-Phase33-A: tagging before commit targets the pre-seal HEAD, producing off-by-one tags).
+- **NEVER** push the seal tag before the seal commit is reachable from `origin/main` (GH #98): tag creation is Step 9.5.5 (pre-merge), tag push is Step 9.7 (post-merge). Pushing the tag with the branch fails `release.yml`'s `build-and-publish` guard and blocks the seal PR.
 - **ALWAYS** run `python -m qor.scripts.dist_compile` at Step 8.5 so variant outputs are rebuilt on seal; prevents dist drift.
 - **ALWAYS** call `session.rotate()` at Step Z after writing `substantiate.json`; prior session directory preserved for archaeology.
 

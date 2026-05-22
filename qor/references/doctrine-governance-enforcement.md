@@ -46,6 +46,8 @@ Class: {change_class}
 
 **seal_tag_timing** (Phase 33 wiring): the tag is created at `/qor-substantiate` Step 9.5.5, AFTER the seal commit is made at Step 9.5 — not at Step 7.5. `governance_helpers.create_seal_tag` takes a required `commit: str` parameter; the caller captures the seal SHA via `git rev-parse HEAD` between the commit and the tag call. The pre-Phase-33 flow (tagging at Step 7.5) placed the tag on the pre-seal HEAD, producing off-by-one tags across v0.19.0–v0.22.0 where `git show <tag>:pyproject.toml` showed the version one behind the tag name. See SG-Phase33-A for the historical record.
 
+Tag CREATION (Step 9.5.5) and tag PUSH (Step 9.7) are separated (Phase 86 wiring; GH #98). The tag is created locally on the seal commit pre-merge, but pushed to the remote only AFTER the seal commit is reachable from `origin/main`. `release.yml` triggers `on: push: tags` and its `build-and-publish` job refuses to publish a tag whose commit is not an ancestor of `origin/main`; pushing the tag alongside the branch makes that job fail on the seal PR and — because the branch ruleset gates merge on all checks — blocks the very merge that would make the tag valid. Step 9.7 gates the tag push on `git merge-base --is-ancestor`, the same predicate `release.yml` uses.
+
 ## 5. Push/Merge
 
 Four operator options (V-9 safety):
