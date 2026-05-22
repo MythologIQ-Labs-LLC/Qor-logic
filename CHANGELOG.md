@@ -10,6 +10,22 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.58.0] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 87 (feature, GH #82)**: `/qor-audit` now auto-dispatches the
+  Option B independent reviewer when a plan exceeds an author-momentum risk
+  threshold. New `qor.scripts.audit_risk_score` scores the plan under audit;
+  when it reports `option_b_required: true` — a cited `*.config.*` file, or
+  five or more grep-evidence citations to sealed infrastructure — `/qor-audit`
+  Step 1 makes Option B (independent reviewer) mandatory for that audit,
+  proactive on the iteration the risk first appears rather than
+  operator-discretion dispatched after a VETO. Extends the Phase 68
+  `SG-AuthorAuditMomentum-A` countermeasure.
+
 ## [0.57.2] - 2026-05-22
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

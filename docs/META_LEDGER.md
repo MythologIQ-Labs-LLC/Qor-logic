@@ -8774,3 +8774,122 @@ SHA256(content_hash + previous_hash) = `0ad6c820fd5e73d39aa193cfde838441c82eac84
 *Session: SEALED* (Phase 86 hotfix complete; GH #98 closed)
 *Merkle seal: 7b209a3a...* (Phase 86 seal on top of Phase 85's ea14dcfe...)
 *Open items at this seal: push branch + PR; tag push deferred to post-merge (Step 9.7)*
+
+---
+
+### Entry #230: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-22T20:00:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: PASS
+
+**Plan**: docs/plan-qor-phase87-audit-risk-score.md (iter-1)
+
+**Session**: `2026-05-22T1935-7bd39e`
+
+**Decision**: Phase 87 plan (GH #82 author-momentum risk auto-dispatch) cleared on iter-1. Audit conducted under Step 1.a Option B -- an independent `architect-reviewer` subagent, doubly indicated (self-authored plan; the plan cites `vitest.config.ts` and so trips its own V1 config-cite signal). All nine passes PASS. Infrastructure Alignment verified `current_phase_plan_path`, the `/qor-audit` Step 1 insertion point, `SG-AuthorAuditMomentum-A`'s extensible Countermeasures section, and the `*_lint.py` structural precedent. The 2-of-4-signals scoping (V1 ships the deterministic config-cite + high-citation-surface signals; GH #82 signals 2/3 declared `non_goals`) was ruled a legitimate disclosed V1 boundary -- not specification-drift -- and the test-discipline-correct choice. All 10 planned tests are functionality tests.
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `58899ef757d2c6dce7d04fb5f3ee73cc992a582d492850007c7ebdb4b986061a`
+
+**Previous Hash**: `7b209a3a48849f9e7ad7249939a8786f57d6993d6d65352edf6d9d6b01d8e856`
+
+**Chain Hash**:
+SHA256(content_hash + previous_hash) = `6b769c5b4c1b0f7d8a95a1677ca96fe97be709936cf8f49f2acce5fddfbf4c43`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T1935-7bd39e (Phase 87 -- audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #231: IMPLEMENTATION -- Phase 87 (Author-momentum risk auto-dispatch)
+
+**Timestamp**: 2026-05-22T20:20:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Specialist
+
+**Plan**: `docs/plan-qor-phase87-audit-risk-score.md`
+
+**Session**: `2026-05-22T1935-7bd39e`
+
+**Scope**: Closes GH #82. The Phase 68 Option B independent reviewer was operator-discretion and reactive (dispatched after a VETO). New `qor/scripts/audit_risk_score.py` (`score_plan(plan_path) -> RiskAssessment`) scores the plan under audit for SG-007 author-momentum risk; V1 implements the two mechanically-deterministic GH #82 signals -- `config-file-cite` (a cited `*.config.{ts,js,yaml,toml}` file) and `high-citation-surface` (>=5 `git show ... | grep` grep-evidence statements). `option_b_required = bool(flags)` fires on ANY signal. `/qor-audit` Step 1 gains a `Phase 87 wiring (GH #82)` paragraph that runs the scorer and, on `option_b_required: true`, makes Option B mandatory (independent reviewer, not solo) -- proactive dispatch on the iteration the risk first appears. GH #82 signals 2/3 declared `non_goals` (plan-semantic judgements; the `flags` tuple is open for a follow-on).
+
+**Files touched** (7): `qor/scripts/audit_risk_score.py` (NEW), `qor/skills/governance/qor-audit/SKILL.md` (Step 1 Phase 87 wiring paragraph), `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-AuthorAuditMomentum-A` Risk-score auto-dispatch countermeasure bullet), `tests/test_audit_risk_score.py` (NEW), `tests/test_audit_risk_score_wiring.py` (NEW), `docs/SYSTEM_STATE.md` (Phase 87 entry), `docs/META_LEDGER.md` (entries #230-#231).
+
+**Test surface**: TDD red-green observed (`test_audit_risk_score.py` failed to import the absent module before implementation). 10 new tests: 8 behavior tests in `test_audit_risk_score.py` (each signal fires; the 4-vs-5 grep-evidence threshold boundary; clean plan; both signals; missing plan; CLI true-with-flags / false), 2 anchored + strip-and-fail wiring tests in `test_audit_risk_score_wiring.py`. All 10 pass twice deterministically. Full suite: 1738 passed, 1 skipped; the single failure is the README ledger-badge transient (`/qor-substantiate` Step 6.5 reconciles it).
+
+**Razor compliance**: `audit_risk_score.py` 81 lines; `score_plan` 16 lines, `main` 15 lines; max nesting depth 2; zero nested ternaries.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. Architecture-bearing documentation is the `SG-AuthorAuditMomentum-A` countermeasure extension and the `docs/SYSTEM_STATE.md` Phase 87 entry, authored in-context.
+
+**Reliability**: intent-lock captured at implement start (`LOCKED: 2026-05-22T1935-7bd39e`).
+
+**Self-application**: `originating_remediation: GH #82`. The plan cites `vitest.config.ts` and so trips the V1 `config-file-cite` signal it introduces -- the audit was conducted under Step 1.a Option B (independent `architect-reviewer` subagent), the very dispatch the phase automates. Consistent. Audit PASS iter-1 (Entry #230); the 2-of-4-signals V1 scoping was ruled a legitimate disclosed boundary.
+
+**SSDF Practices**: PW.5.1, PW.7.1, PW.8.1, RV.1.1.
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`.
+
+**Content Hash**: `7949c10cdb047e676dd27077db050deeee2496057a5f978f3e02c3bf7ed56b82`
+**Previous Hash**: `6b769c5b4c1b0f7d8a95a1677ca96fe97be709936cf8f49f2acce5fddfbf4c43`
+**Chain Hash**: `ef1eaed2971ff958050af8d36a674f64e15c191516995cc5bb6840b4b7d957ce`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T1935-7bd39e (Phase 87 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #232: SESSION SEAL -- Phase 87 feature substantiated: author-momentum risk auto-dispatch (v0.58.0, GH #82)
+
+**Timestamp**: 2026-05-22T20:40:00Z
+
+**Phase**: SUBSTANTIATE (Phase 87 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase87-audit-risk-score.md
+
+**Session**: `2026-05-22T1935-7bd39e`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `69c6de4802b2` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #82. The Phase 68 Option B independent reviewer was operator-discretion and reactive (dispatched after a VETO). New `qor/scripts/audit_risk_score.py` (`score_plan(plan_path) -> RiskAssessment`) scores the plan under audit for SG-007 author-momentum risk; V1 implements the two mechanically-deterministic GH #82 signals -- `config-file-cite` (a cited `*.config.{ts,js,yaml,toml}` file) and `high-citation-surface` (>=5 `git show ... | grep` grep-evidence statements). `option_b_required = bool(flags)` fires on ANY signal. `/qor-audit` Step 1 gains a `Phase 87 wiring (GH #82)` paragraph that runs the scorer and, on `option_b_required: true`, makes Option B mandatory -- proactive dispatch on the iteration the risk first appears. The `SG-AuthorAuditMomentum-A` doctrine entry gains a Risk-score auto-dispatch countermeasure bullet. GH #82 signals 2/3 declared `non_goals` (plan-semantic judgements; the `flags` tuple is open for a follow-on).
+
+**Files touched** (~23): `qor/scripts/audit_risk_score.py` (NEW), `qor/skills/governance/qor-audit/SKILL.md` (Step 1 Phase 87 wiring), `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-AuthorAuditMomentum-A` countermeasure bullet), `tests/test_audit_risk_score.py` (NEW), `tests/test_audit_risk_score_wiring.py` (NEW), `docs/SYSTEM_STATE.md` (Phase 87 entry), `docs/META_LEDGER.md` (entries #230-#232), `CHANGELOG.md` (0.58.0 stamped), `README.md` (badges), `pyproject.toml` (0.58.0), 8 regenerated `qor/dist/` variants.
+
+**Test surface**: TDD red-green observed (`test_audit_risk_score.py` failed to import the absent module before implementation). 10 new tests across two files (8 behavior incl. the 4-vs-5 grep-evidence threshold boundary; 2 anchored + strip-and-fail wiring), all passing twice deterministically. Full suite: 1738 passed, 1 skipped.
+
+**Razor compliance**: `audit_risk_score.py` 81 lines; `score_plan` 16 lines, `main` 15 lines; zero nested ternaries.
+
+**Audit history**: iter-1 PASS (Entry #230, L2). Conducted under `/qor-audit` Step 1.a Option B -- an independent `architect-reviewer` subagent, doubly indicated: a self-authored plan, and the plan cites `vitest.config.ts` and so trips the very V1 `config-file-cite` signal it introduces. The 2-of-4-signals V1 scoping was ruled a legitimate disclosed boundary, not specification-drift.
+
+**Self-application**: this phase dogfoods its own discipline -- the plan trips the `config-file-cite` signal, so the audit ran under Option B (independent reviewer), exactly the dispatch the feature automates. This seal also self-applies the Phase 86 fix: the v0.58.0 tag is created locally at Step 9.5.5 and held for the post-merge Step 9.7 push; Step 9.6 pushes the branch only. `doc_tier: standard`; architecture-bearing documentation is the `SG-AuthorAuditMomentum-A` countermeasure extension and the SYSTEM_STATE Phase 87 entry, authored in-context.
+
+**Content Hash (session seal)**: `471c587e46aceb68e549f6073f4feb2bafd0a227cc9d544fffb1047f96d457fb`
+
+**Previous Hash**: `ef1eaed2971ff958050af8d36a674f64e15c191516995cc5bb6840b4b7d957ce`
+
+**Chain Hash (Merkle seal)**: `95ff272a70729033f031cbec262306e6d6ce954068b88ed95b370fddeab8bc47`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 87 feature complete; GH #82 closed)
+*Merkle seal: 95ff272a...* (Phase 87 seal on top of Phase 86's 7b209a3a...)
+*Open items at this seal: push branch + PR; tag push deferred to post-merge (Step 9.7)*

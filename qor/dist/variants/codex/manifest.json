@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-22T19:35:24Z",
+  "generated_ts": "2026-05-22T20:46:57Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -120,7 +120,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "6398c60d7a13a01edc5d4c25067ecae462ec77a850452100b370dfb0dc82435d"
+      "sha256": "e52dc70e8ce9f807214e020bee8855326963b4363785886e210125c2c4a8a18c"
     },
     {
       "id": "qor-bootstrap",
