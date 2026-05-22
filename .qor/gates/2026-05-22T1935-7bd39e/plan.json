@@ -1,0 +1,39 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-22T1935-7bd39e",
+  "ts": "2026-05-22T20:10:06Z",
+  "plan_path": "docs/plan-qor-phase87-audit-risk-score.md",
+  "phases": [
+    "Phase 1: Author-momentum risk score + auto-dispatch wiring"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_audit_risk_score.py -q",
+    "python -m pytest tests/test_audit_risk_score_wiring.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase87-audit-risk-score.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 risk score implements 2 of GH #82's 4 signals (config-cite, high-citation-surface); config-cite is a broad path grep that can over-fire toward Option B (the safe direction)"
+    ],
+    "non_goals": [
+      "GH #82 signals 2 and 3 (sealed-shared-module/new-field; analytics-emit/new-state-flow) deferred to a follow-on -- fuzzy plan-semantics, not honestly a lean text heuristic",
+      "the score does not dispatch a subagent itself, does not gate/VETO"
+    ],
+    "exclusions": [
+      "score routes solo-vs-Option-B only; /qor-audit is LLM-run, the Step 1 prose directs dispatch"
+    ]
+  },
+  "originating_remediation": "GH #82",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.57.2",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-22T20:10:06Z"
+  }
+}

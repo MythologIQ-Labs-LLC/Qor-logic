@@ -459,3 +459,17 @@ Hotfix closing GH #98 — every seal PR required `gh pr merge --admin` because `
 **Audit history**: iter-1 VETO (Entry #226, L2) — `infrastructure-mismatch`: the plan omitted those two dependent wiring tests from Affected Files. Resolved at iter-2 (Entry #227 PASS) by a `### Dependent tests (verified unaffected)` plan subsection with the boundary impact analysis.
 
 **Decision**: Phase 86 implemented; audit PASS on iter-2 under Step 1.a Option B. Targets v0.57.2 (hotfix → patch bump) at substantiate. The fix takes effect for phase 87 onward; phase 86's own seal still tags-before-merge, so its own PR still needs `--admin`.
+
+## Phase 87 (v0.58.0 — 2026-05-22): Author-momentum risk auto-dispatch (GH #82)
+
+Feature closing GH #82 — the Phase 68 Option B independent reviewer was operator-discretion and reactive (dispatched after a VETO). This phase makes it proactive: a risk score, consulted at `/qor-audit` Step 1, auto-mandates Option B on the iteration where author-momentum risk first appears.
+
+**New module `qor/scripts/audit_risk_score.py`**: `score_plan(plan_path) -> RiskAssessment` (frozen dataclass: `flags: tuple[str, ...]`, `option_b_required: bool`). V1 implements the two mechanically-deterministic GH #82 signals — `config-file-cite` (a cited `*.config.{ts,js,yaml,toml}` file; config-fabrication class) and `high-citation-surface` (>=5 `git show ... | grep` grep-evidence statements). `option_b_required = bool(flags)` — fires on ANY signal. The CLI prints `option_b_required: true|false`. GH #82 signals 2 and 3 (sealed-shared-module + new shared-type field; analytics-emit + new state-flow) are declared `non_goals` for a follow-on: they are plan-semantic judgements a lean text heuristic cannot anchor a non-vague test to; the `flags` tuple is open so they can be added without an API break.
+
+**`/qor-audit` Step 1**: a `Phase 87 wiring (GH #82)` paragraph runs `audit_risk_score` against the plan; when it reports `option_b_required: true`, Option B is mandatory (the auditing agent must run an independent reviewer, not a solo audit), operator override only with written justification. The `SG-AuthorAuditMomentum-A` doctrine entry gains a Risk-score auto-dispatch countermeasure bullet.
+
+**Tests**: 10 new — 8 behavior tests in `tests/test_audit_risk_score.py` (each signal fires; the 4-vs-5 grep-evidence threshold boundary; clean plan; both signals; missing plan; CLI true/false) + 2 anchored + strip-and-fail wiring tests in `tests/test_audit_risk_score_wiring.py`. `audit_risk_score.py` 81 lines; functions 16/15.
+
+**Audit history**: iter-1 PASS (Entry #230, L2), conducted under Step 1.a Option B (independent `architect-reviewer` subagent — doubly indicated, since the plan cites `vitest.config.ts` and so trips the very V1 signal it introduces). The 2-of-4-signals V1 scoping was ruled a legitimate disclosed boundary.
+
+**Decision**: Phase 87 implemented; audit PASS on iter-1. Targets v0.58.0 (feature → minor bump) at substantiate.

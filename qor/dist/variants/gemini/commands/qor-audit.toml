@@ -138,6 +138,15 @@ Operator dispatch protocol for Option B (any of the following clears author-cont
 
 Operator selects Option A by default when the harness supports Codex plugin; Option B otherwise. Selecting Option B mid-cycle is also valid when the operator notices that prior audit iterations missed defects the author would not have searched for (cross-reference: SG-007 empirical results — sub-plan 01 audit chain found 4 self-audit defects + 3 additional independent-reviewer defects; sub-plan 02a found 10/9/12 with independent review from iter 1 including critical `pg_notify` durability hallucination).
 
+**Phase 87 wiring (GH #82) — author-momentum risk auto-dispatch.** Before the adversarial passes, score the plan under audit for SG-007 author-momentum risk:
+
+```bash
+PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
+python -m qor.scripts.audit_risk_score --plan "$PLAN_PATH"
+```
+
+`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. When `audit_risk_score` reports `option_b_required: true`, Option B is **mandatory** for this audit — the auditing agent MUST run an independent reviewer (architect-reviewer subagent or fresh-context audit), not a solo audit, regardless of the Option A/B operator default above. This makes Option B proactive: dispatched on the iteration where the author-momentum risk first appears, not reactively after a VETO. The operator may override the mandate only with explicit written justification recorded in the audit report. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AuthorAuditMomentum-A.
+
 Your role is to find violations, not to help. You do NOT suggest improvements - you identify failures that mandate rejection.
 
 ### Step 2: State Verification

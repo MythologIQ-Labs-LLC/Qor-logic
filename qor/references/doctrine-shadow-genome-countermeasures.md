@@ -347,8 +347,9 @@ A second recurrence dimension: when a plan introduces a discipline (lint, audit 
 
 - **Option B codification** in `/qor-audit` Step 1.a (GH #50): the skill prompt names "Option B: independent reviewer" as the formal fallback (and explicit operator choice) when Codex-plugin-driven Option A is unavailable. Dispatch protocol enumerated: fresh-context audit (new session), architect-reviewer subagent, second operator.
 - **Self-Application Sub-Pass** in `/qor-audit` Step 3 (GH #44): when the plan's `originating_remediation` field is set (Phase 68 schema declaration in `qor/gates/schema/plan.schema.json`), the auditor manually applies the to-be-introduced discipline against the plan's own content. VETO category: `specification-drift` when self-application detects the targeted pattern.
+- **Risk-score auto-dispatch** in `/qor-audit` Step 1 (Phase 87; GH #82): `qor.scripts.audit_risk_score` scores the plan under audit for author-momentum risk and, when it reports `option_b_required: true`, makes Option B mandatory for that audit. This makes the Phase 68 Option B proactive — auto-mandated on the iteration where a config-fabrication or high-citation-surface risk signal first appears, rather than reactively dispatched by operator discretion after a VETO. V1 scores the two mechanically-deterministic signals (a cited `*.config.*` file; >=5 grep-evidence statements). Originating recurrence: consumer-repo session 2026-05-18–19, where Option B caught 4 binding SG-007-family defects across 4 audit iterations that solo audits would have passed (`SG-AuthorMomentumConfigFabrication-A`, `SG-OverPromiseInvariant-A`, `SG-AuthorMomentumTestSeedFabrication-A`).
 
-**Cross-reference**: SG-007 (predecessor narrative); Issue #44, Issue #50; FailSafe + COREFORGE empirical evidence.
+**Cross-reference**: SG-007 (predecessor narrative); Issue #44, Issue #50, Issue #82; FailSafe + COREFORGE empirical evidence.
 
 ---
 
