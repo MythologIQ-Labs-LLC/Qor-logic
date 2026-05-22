@@ -8078,3 +8078,142 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 81 hotfix complete; GH #77 in-scope half closed; qor-compliance half routed upstream to FailSafe)
 *Merkle seal: fffbb2d2...* (Phase 81 seal on top of Phase 80's 82c90882...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+---
+
+### Entry #213: GATE TRIBUNAL — Phase 82 plan — **PASS** (L1)
+
+**Timestamp**: 2026-05-22T02:20:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L1
+
+**Verdict**: PASS
+
+**Plan**: `docs/plan-qor-phase82-seal-entry-post-anchor.md`
+
+**Session**: `2026-05-22T0210-ae7f9d`
+
+**Mode**: solo (codex-plugin not declared; capability shortfall logged to shadow genome). SG-007 author-momentum disclosed: audit operator also authored the plan; Option B independent-reviewer dispatch weighed and declined given the closed two-line verification surface; every technical claim re-derived from primary source.
+
+**Pre-audit lints (Step 0.6)** — all CLEAN:
+- `plan_test_lint` → EXIT 0
+- `plan_grep_lint` → EXIT 0
+- `plan_text_consistency_lint` → EXIT 0
+- `prompt_injection_canaries` → EXIT 0
+
+**Audit passes (12/12 PASS)**:
+1. Prompt Injection — clean.
+2. Security (L3) — no auth/secrets/bypass; change strengthens an integrity gate.
+3. OWASP Top 10 — A03 no new shell surface; A04 not fail-open (`verify_post_anchor` emits explicit `DISCLOSED_PRE_ANCHOR` lines; seal's own integrity still strictly checked at `seal_entry_check.py:79-96`; post-boundary breaks still rc=1); A08 no deserialization.
+4. Ghost UI / Live-Progress — N/A.
+5. Section 4 Razor — `check()` stays ~36 LOC (substitution, no growth); file 175 < 250.
+6. Self-Application Sub-Pass — `originating_remediation` GH #88 is a defect report, not a discipline-introducing plan; no-op.
+7. Test Functionality — 3 tests, all invoke `check()` and assert on `SealEntryResult`; red-green anchor is `test_check_tolerates_disclosed_pre_anchor_failure`; `test_check_fails_on_genuine_post_anchor_break` classified guard coverage.
+8. Dependency — zero new deps; `verify_post_anchor` is a sibling in the already-imported `ledger_hash`.
+9. Macro-architecture — no module-boundary change, no new coupling.
+10. Feature Test Coverage — `feature_inventory_touches` empty; plan touches `qor/reliability/` + `tests/`, not `src/`; exempt.
+11. Infrastructure Alignment — every citation grep-verified at HEAD: `seal_entry_check.py:99/:101`, `ledger_hash.verify_post_anchor` at `ledger_hash.py:270`, GH #54/#55 docstring attribution, `tests/test_seal_entry_check.py` + the rewritten `test_check_fails_when_full_chain_verification_fails` at lines 156-181, sibling test files present.
+12. Filter-Stage Ordering Coherence — N/A (sequential validator, not a filter pipeline). Orphan Detection — no new files.
+
+**Decision**: Plan closes GH #88 by switching `seal_entry_check.check()` from strict `ledger_hash.verify()` to `ledger_hash.verify_post_anchor()`. Two-line code substitution plus message/docstring update, one rewritten test, one new guard test. No violation across all twelve passes. Gate OPEN.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected in the last 2 sealed phases (Phase 80 PASS, Phase 81 PASS).
+
+**Mandated next action**: `/qor-implement` per `qor/gates/chain.md`.
+
+**SSDF Practices**: PW.7.1, PW.8.1, RV.1.1.
+
+**Content Hash**: `25427005870f00165df5277ce280decc90484612fa7c1329fdca680ac167f4c9`
+**Previous Hash**: `fffbb2d22f9c0678a4ce875235aa4926e7a1283c4f8b417b0f106a79357e2639`
+**Chain Hash**: `7c2aee1f117279f36563587c0eccc5c6ec0c902c9417fc7efa5138d49432e5db`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0210-ae7f9d (Phase 82 — audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #214: IMPLEMENTATION — Phase 82 (seal_entry_check honors re-anchored ledgers)
+
+**Timestamp**: 2026-05-22T02:35:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Specialist
+
+**Plan**: `docs/plan-qor-phase82-seal-entry-post-anchor.md`
+
+**Session**: `2026-05-22T0210-ae7f9d`
+
+**Scope**: Closes GH #88. `qor/reliability/seal_entry_check.py` `check()` now runs its defense-in-depth full-chain step via `ledger_hash.verify_post_anchor()` instead of the strict `ledger_hash.verify()`. The strict verifier's Phase-66 taint propagation (GH #54) returns `rc=1` permanently once it hits any pre-anchor `FAIL` entry, which made `check()` — run by `/qor-substantiate` Step 7.7 — abort a structurally valid SESSION SEAL on every re-anchored consumer ledger that carries disclosed pre-anchor failures. `verify_post_anchor()` (GH #55) classifies pre-boundary failures as `DISCLOSED_PRE_ANCHOR` and fails only on post-boundary breaks.
+
+**Files touched** (3): `qor/reliability/seal_entry_check.py` (`check()` line 99 → `verify_post_anchor`; failure-message string updated; docstring amended to "post-anchor chain verification"), `tests/test_seal_entry_check.py` (one test rewritten, one added), `docs/plan-qor-phase82-seal-entry-post-anchor.md` (NEW).
+
+**Test surface**: TDD red-green observed. `test_check_fails_when_full_chain_verification_fails` rewritten as `test_check_tolerates_disclosed_pre_anchor_failure` — its broken-pre-anchor-entry + valid-seal fixture now correctly asserts `ok=True`; the test failed against the pre-fix code (`['full chain verification failed (ledger_hash.verify rc=1)']`) and passes after. New `test_check_fails_on_genuine_post_anchor_break` — a SEAL with a low-entropy placeholder `previous_hash` and internally-consistent `chain_hash`; `verify_post_anchor` classifies it a post-boundary failure; asserts `ok=False`. CI suites all green, `test_seal_entry_check.py` run twice deterministically: `tests/test_seal_entry_check.py` 10 passed, `tests/test_substantiate_seal_entry_wiring.py` 6 passed, `tests/test_ledger_hash_validation.py` 8 passed (24 total).
+
+**Razor compliance**: `check()` 40 lines (≤40 cap); `seal_entry_check.py` 178 lines (≤250 cap); max nesting depth 2; zero nested ternaries.
+
+**Documentation Sync (Step 8.5)**: skipped — `doc_tier: minimal`.
+
+**Reliability**: intent-lock captured at implement start (`LOCKED: 2026-05-22T0210-ae7f9d`).
+
+**SSDF Practices**: PW.5.1, PW.7.1, RV.1.1.
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`.
+
+**Content Hash**: `6448e8afbd0d4b1c75f83458fdf34e57f4b2230518602c441900b027f57dc5dc`
+**Previous Hash**: `7c2aee1f117279f36563587c0eccc5c6ec0c902c9417fc7efa5138d49432e5db`
+**Chain Hash**: `79643c31beecca9a8f60912b4484e263295a137a17ea46f0ecf90d9f437b07ff`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0210-ae7f9d (Phase 82 — implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #215: SESSION SEAL -- Phase 82: seal_entry_check post-anchor verification hotfix (v0.55.2, GH #88)
+
+**Timestamp**: 2026-05-22T02:31:50Z
+
+**Phase**: SUBSTANTIATE (Phase 82 hotfix)
+
+**Author**: Judge
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase82-seal-entry-post-anchor.md
+
+**Session**: `2026-05-22T0210-ae7f9d`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Entry ID**: `db6ef71320d9` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #88. `qor.reliability.seal_entry_check.check()` ran its defense-in-depth full-chain step via the strict `ledger_hash.verify()`, whose Phase-66 taint propagation (GH #54) returns `rc=1` permanently once it hits any pre-anchor `FAIL` entry. `check()` is invoked by this very skill at Step 7.7, so the bug made `/qor-substantiate` abort a structurally valid SESSION SEAL on every re-anchored consumer ledger carrying disclosed pre-anchor failures -- the exact ledgers `RE-ANCHOR` entries exist to tolerate. The fix switches the call to `ledger_hash.verify_post_anchor()` (GH #55), which classifies pre-boundary failures as `DISCLOSED_PRE_ANCHOR` and fails only on post-boundary breaks. The failure-message string and `check()` docstring were updated to match.
+
+**Files touched** (~9): `qor/reliability/seal_entry_check.py` (`check()` line 99 + message + docstring), `tests/test_seal_entry_check.py` (one test rewritten, one added), `qor/references/glossary.md` (incidental drift repair, see below), `docs/plan-qor-phase82-seal-entry-post-anchor.md` (NEW), `docs/META_LEDGER.md` (entries #213-#215), `.agent/staging/AUDIT_REPORT.md`, `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` (this session's gate_override event), `pyproject.toml` (0.55.1 -> 0.55.2), `CHANGELOG.md` (0.55.2 stamped), `README.md` (Ledger badge).
+
+**Test surface**: TDD red-green observed. `test_check_fails_when_full_chain_verification_fails` rewritten as `test_check_tolerates_disclosed_pre_anchor_failure` -- its broken-pre-anchor-entry + valid-seal fixture now correctly asserts `ok=True`; failed against pre-fix code (`ledger_hash.verify rc=1`), passes after. New `test_check_fails_on_genuine_post_anchor_break` -- a SEAL with a low-entropy placeholder `previous_hash` and internally-consistent `chain_hash`; `verify_post_anchor` classifies it a post-boundary failure; asserts `ok=False`. Net +1 test. CI suites green, `test_seal_entry_check.py` run twice deterministically: `test_seal_entry_check.py` 10 passed, `test_substantiate_seal_entry_wiring.py` 6 passed, `test_ledger_hash_validation.py` 8 passed. Full suite 1681 collected (4 deselected).
+
+**Incidental drift repair (operator-authorized)**: Step 4.7 doc-integrity ABORTed on five pre-existing glossary `referenced_by` omissions unrelated to GH #88 -- term `Substantiate` used in `doctrine-shadow-genome-countermeasures.md` (Phase 79 origin, `SG-DocsBackloadedToSubstantiate-A`), and terms `Feature Inventory` / `Feature Inventory Touches` used in `qor-bootstrap/SKILL.md` and `qor-bootstrap-templates.md` (Phase 80 origin, FEATURE_INDEX scaffolding). Operator authorized inline repair: the three glossary entries' `referenced_by` lists were extended to declare the consuming files. The additions are factually correct (each file does reference the term); the seal commit folds them in. Filed for visibility because the drift accumulated silently across two prior phases -- a process-level instance of the additive-without-counterweight pattern tracked in GH #92.
+
+**Self-application**: Entry carries an Entry ID (Phase 76 contract). Hotfix scope, `doc_tier=minimal`: Phase 79 Step 8.5 doc-sync WARN-skipped at minimal tier. Phase 67 `plan_text_consistency_lint` cleared the plan. Phase 68 Self-Application Sub-Pass: `originating_remediation` is GH #88, a defect report introducing no new discipline -- sub-pass no-op. Phase 72 Infrastructure Citation Inventory: every cited symbol grep-verified at HEAD (`seal_entry_check.py:99`, `ledger_hash.verify_post_anchor` at `ledger_hash.py:270`). Phase 73 Feature Inventory: not adopted (no `FEATURE_INDEX.md` at repo root; no `src/` touch). Phase 78 Filter-Stage Ordering: no pipeline-shaped functions in scope. SYSTEM_STATE.md: no entry required (hotfix; the Phase 58 coverage test keys on `feature substantiated` seals only). Phase 47 post-seal verification (Step 7.7) dogfoods this phase's own fix: `seal_entry_check` now runs `verify_post_anchor` against this ledger.
+
+**Content Hash (session seal)**: `d6a424494165789e36c0c1eff0f48c1dc18479f5cdd73fb8223def7044ab8bfa`
+
+**Previous Hash**: `79643c31beecca9a8f60912b4484e263295a137a17ea46f0ecf90d9f437b07ff`
+
+**Chain Hash (Merkle seal)**: `375a02146a29e3a159bdd0288b5c427600c2b19e16288041738de325f78dd8f1`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 82 hotfix complete; GH #88 closed)
+*Merkle seal: 375a0214...* (Phase 82 seal on top of Phase 81's fffbb2d2...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*

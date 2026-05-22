@@ -153,12 +153,20 @@ def test_check_fails_when_chain_hash_internally_inconsistent(tmp_path):
     assert any(bogus[:8] in err for err in result.errors), result.errors
 
 
-def test_check_fails_when_full_chain_verification_fails(tmp_path):
-    # Latest SEAL entry's chain is internally consistent, but a prior entry's
-    # chain is broken (its chain_hash != chain_hash(content, previous)).
+def test_check_tolerates_disclosed_pre_anchor_failure(tmp_path):
+    """GH #88: a re-anchored ledger carries disclosed pre-anchor failures by
+    design. Entry #100's chain is genuinely broken; #101 and #102 are each
+    internally consistent with their recorded predecessor (the post-anchor
+    surface). check() must tolerate the pre-anchor failure and pass the
+    structurally valid SESSION SEAL — verify_post_anchor classifies #100 as
+    DISCLOSED_PRE_ANCHOR rather than tainting every downstream entry.
+
+    Fails against the pre-fix code (strict ledger_hash.verify taints #101/#102
+    and returns rc=1); passes once check() consumes verify_post_anchor.
+    """
     prev = _zhash(0)
     c1, c2, c3 = _zhash(1), _zhash(2), _zhash(3)
-    bogus_chain = _zhash(50)  # corrupt chain for entry #100
+    bogus_chain = _zhash(50)  # genuinely-broken chain for entry #100
     chain2 = chain_hash(c2, bogus_chain)
     chain3 = chain_hash(c3, chain2)
 
@@ -177,8 +185,46 @@ def test_check_fails_when_full_chain_verification_fails(tmp_path):
 
     result = seal_entry_check.check(ledger_path=ledger, phase_num=47)
 
+    assert result.ok is True, result.errors
+    assert result.errors == []
+
+
+def test_check_fails_on_genuine_post_anchor_break(tmp_path):
+    """The other half of the GH #88 contract: a genuine POST-anchor break must
+    still fail. The SEAL (#102, the highest entry) carries a low-entropy
+    placeholder previous_hash; its chain_hash is computed consistently from
+    that placeholder so check()'s latest-entry internal check passes and the
+    full-chain step is reached. verify_post_anchor flags the placeholder,
+    classifies #102 as a post-boundary failure, and returns rc=1.
+
+    Guard coverage — passes both before and after the fix (strict verify also
+    rejects a placeholder); confirms the switch does not lose detection of
+    genuine post-anchor breaks.
+    """
+    prev = _zhash(0)
+    c1, c2, c3 = _zhash(1), _zhash(2), _zhash(3)
+    chain1 = chain_hash(c1, prev)
+    chain2 = chain_hash(c2, chain1)
+    placeholder = f"{7:064x}"  # 2 distinct hex chars -> is_placeholder_pattern
+    chain3 = chain_hash(c3, placeholder)
+
+    raw = (
+        f"### Entry #100: GATE TRIBUNAL -- Phase 47 Pass 1 -- **PASS** (L1)\n\n"
+        f"**Content Hash**: `{c1}`\n**Previous Hash**: `{prev}`\n**Chain Hash**: `{chain1}`\n"
+        f"\n---\n\n"
+        f"### Entry #101: IMPLEMENTATION -- Phase 47\n\n"
+        f"**Content Hash**: `{c2}`\n**Previous Hash**: `{chain1}`\n**Chain Hash**: `{chain2}`\n"
+        f"\n---\n\n"
+        f"### Entry #102: SESSION SEAL -- Phase 47 feature substantiated\n\n"
+        f"**Content Hash**: `{c3}`\n**Previous Hash**: `{placeholder}`\n**Chain Hash**: `{chain3}`\n"
+    )
+    ledger = tmp_path / "META_LEDGER.md"
+    ledger.write_text("# Meta Ledger\n\n" + raw, encoding="utf-8")
+
+    result = seal_entry_check.check(ledger_path=ledger, phase_num=47)
+
     assert result.ok is False
-    assert any("100" in err or "chain" in err.lower() for err in result.errors), result.errors
+    assert any("full chain verification" in err for err in result.errors), result.errors
 
 
 def test_check_replays_phase_46_original_gap(tmp_path):

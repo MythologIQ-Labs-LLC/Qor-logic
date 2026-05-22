@@ -173,6 +173,7 @@ referenced_by:
   - qor/gates/chain.md
   - qor/references/doctrine-governance-enforcement.md
   - qor/references/doctrine-procedural-fidelity.md
+  - qor/references/doctrine-shadow-genome-countermeasures.md
   - qor/references/ql-substantiate-templates.md
   - qor/skills/governance/qor-substantiate/references/qor-substantiate-templates.md
   - docs/lifecycle.md
@@ -654,6 +655,8 @@ referenced_by:
   - qor/skills/sdlc/qor-implement/SKILL.md
   - qor/skills/sdlc/qor-plan/SKILL.md
   - qor/references/doctrine-feature-tdd.md
+  - qor/skills/meta/qor-bootstrap/SKILL.md
+  - qor/skills/meta/qor-bootstrap/references/qor-bootstrap-templates.md
 introduced_in_plan: phase73-feature-inventory-tdd
 ```
 
@@ -665,6 +668,8 @@ referenced_by:
   - qor/skills/sdlc/qor-plan/SKILL.md
   - qor/skills/governance/qor-audit/SKILL.md
   - qor/skills/sdlc/qor-implement/SKILL.md
+  - qor/skills/meta/qor-bootstrap/SKILL.md
+  - qor/skills/meta/qor-bootstrap/references/qor-bootstrap-templates.md
 introduced_in_plan: phase73-feature-inventory-tdd
 ```
 

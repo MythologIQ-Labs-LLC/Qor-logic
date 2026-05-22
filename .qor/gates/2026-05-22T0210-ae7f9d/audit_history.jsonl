@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"opus","system":"Qor-logic","ts":"2026-05-22T02:12:38Z","version":"0.55.1"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L1","session_id":"2026-05-22T0210-ae7f9d","target":"docs/plan-qor-phase82-seal-entry-post-anchor.md","ts":"2026-05-22T02:12:38Z","verdict":"PASS"}

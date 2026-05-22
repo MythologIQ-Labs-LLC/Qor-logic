@@ -10,6 +10,20 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.55.2] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+
+- **Phase 82 (hotfix, GH #88)**: `qor.reliability.seal_entry_check.check()`
+  now runs its full-chain verification via `ledger_hash.verify_post_anchor()`
+  instead of the strict `ledger_hash.verify()`. The strict verifier's
+  Phase-66 taint propagation returned a permanent failure on any re-anchored
+  ledger carrying disclosed pre-anchor failures, which made `/qor-substantiate`
+  Step 7.7 abort a structurally valid SESSION SEAL. The post-anchor verifier
+  tolerates pre-boundary failures and fails only on post-boundary breaks.
+
 ## [0.55.1] - 2026-05-15
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
