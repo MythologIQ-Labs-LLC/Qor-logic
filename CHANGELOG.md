@@ -10,27 +10,6 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
-## [0.60.0] - 2026-05-22
-
-_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
-
-### Added
-
-- **Phase 89 (feature, GH #91)**: `/qor-audit` Step 0.6 gains a fifth
-  pre-audit lint, `qor.scripts.ci_coverage_lint`, that reconciles the
-  plan's `## CI Commands` bullets against the Python-fingerprint `run:`
-  steps discovered in `.github/workflows/*.yml`. Closes the COREFORGE-class
-  credibility failure where a phase seals "all CI green" while a real
-  GitHub Actions job — one the operator simply forgot to enumerate —
-  would fail. WARN-only (parallels `plan_grep_lint` /
-  `plan_text_consistency_lint` / `delivery_branch_lint`); tag-only
-  workflows are skipped; environment-setup boilerplate is filtered.
-  Plans may declare a `## CI Coverage Exemptions` block of substring
-  patterns to justify pre-existing infrastructure CI not phase-relevant.
-  A self-application test asserts Phase 89's own plan reports zero WARNs
-  against this repo's actual workflows. Extends the
-  `SG-CICoverageDrift-A` countermeasure catalog entry.
-
 ## [0.59.0] - 2026-05-22
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
