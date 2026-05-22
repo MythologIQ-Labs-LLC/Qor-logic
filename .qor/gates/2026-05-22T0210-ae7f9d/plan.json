@@ -1,0 +1,26 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-22T0210-ae7f9d",
+  "ts": "2026-05-22T02:10:16Z",
+  "plan_path": "docs/plan-qor-phase82-seal-entry-post-anchor.md",
+  "phases": [
+    "Phase 1: Consume verify_post_anchor in seal_entry_check"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_seal_entry_check.py -v",
+    "python -m pytest tests/test_substantiate_seal_entry_wiring.py -v",
+    "python -m pytest tests/test_ledger_hash_validation.py -v"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "originating_remediation": "GH #88",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.55.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-22T02:10:16Z"
+  }
+}

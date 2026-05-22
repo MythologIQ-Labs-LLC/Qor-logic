@@ -8078,3 +8078,428 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 81 hotfix complete; GH #77 in-scope half closed; qor-compliance half routed upstream to FailSafe)
 *Merkle seal: fffbb2d2...* (Phase 81 seal on top of Phase 80's 82c90882...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+---
+
+### Entry #213: GATE TRIBUNAL — Phase 82 plan — **PASS** (L1)
+
+**Timestamp**: 2026-05-22T02:20:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L1
+
+**Verdict**: PASS
+
+**Plan**: `docs/plan-qor-phase82-seal-entry-post-anchor.md`
+
+**Session**: `2026-05-22T0210-ae7f9d`
+
+**Mode**: solo (codex-plugin not declared; capability shortfall logged to shadow genome). SG-007 author-momentum disclosed: audit operator also authored the plan; Option B independent-reviewer dispatch weighed and declined given the closed two-line verification surface; every technical claim re-derived from primary source.
+
+**Pre-audit lints (Step 0.6)** — all CLEAN:
+- `plan_test_lint` → EXIT 0
+- `plan_grep_lint` → EXIT 0
+- `plan_text_consistency_lint` → EXIT 0
+- `prompt_injection_canaries` → EXIT 0
+
+**Audit passes (12/12 PASS)**:
+1. Prompt Injection — clean.
+2. Security (L3) — no auth/secrets/bypass; change strengthens an integrity gate.
+3. OWASP Top 10 — A03 no new shell surface; A04 not fail-open (`verify_post_anchor` emits explicit `DISCLOSED_PRE_ANCHOR` lines; seal's own integrity still strictly checked at `seal_entry_check.py:79-96`; post-boundary breaks still rc=1); A08 no deserialization.
+4. Ghost UI / Live-Progress — N/A.
+5. Section 4 Razor — `check()` stays ~36 LOC (substitution, no growth); file 175 < 250.
+6. Self-Application Sub-Pass — `originating_remediation` GH #88 is a defect report, not a discipline-introducing plan; no-op.
+7. Test Functionality — 3 tests, all invoke `check()` and assert on `SealEntryResult`; red-green anchor is `test_check_tolerates_disclosed_pre_anchor_failure`; `test_check_fails_on_genuine_post_anchor_break` classified guard coverage.
+8. Dependency — zero new deps; `verify_post_anchor` is a sibling in the already-imported `ledger_hash`.
+9. Macro-architecture — no module-boundary change, no new coupling.
+10. Feature Test Coverage — `feature_inventory_touches` empty; plan touches `qor/reliability/` + `tests/`, not `src/`; exempt.
+11. Infrastructure Alignment — every citation grep-verified at HEAD: `seal_entry_check.py:99/:101`, `ledger_hash.verify_post_anchor` at `ledger_hash.py:270`, GH #54/#55 docstring attribution, `tests/test_seal_entry_check.py` + the rewritten `test_check_fails_when_full_chain_verification_fails` at lines 156-181, sibling test files present.
+12. Filter-Stage Ordering Coherence — N/A (sequential validator, not a filter pipeline). Orphan Detection — no new files.
+
+**Decision**: Plan closes GH #88 by switching `seal_entry_check.check()` from strict `ledger_hash.verify()` to `ledger_hash.verify_post_anchor()`. Two-line code substitution plus message/docstring update, one rewritten test, one new guard test. No violation across all twelve passes. Gate OPEN.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected in the last 2 sealed phases (Phase 80 PASS, Phase 81 PASS).
+
+**Mandated next action**: `/qor-implement` per `qor/gates/chain.md`.
+
+**SSDF Practices**: PW.7.1, PW.8.1, RV.1.1.
+
+**Content Hash**: `25427005870f00165df5277ce280decc90484612fa7c1329fdca680ac167f4c9`
+**Previous Hash**: `fffbb2d22f9c0678a4ce875235aa4926e7a1283c4f8b417b0f106a79357e2639`
+**Chain Hash**: `7c2aee1f117279f36563587c0eccc5c6ec0c902c9417fc7efa5138d49432e5db`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0210-ae7f9d (Phase 82 — audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #214: IMPLEMENTATION — Phase 82 (seal_entry_check honors re-anchored ledgers)
+
+**Timestamp**: 2026-05-22T02:35:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Specialist
+
+**Plan**: `docs/plan-qor-phase82-seal-entry-post-anchor.md`
+
+**Session**: `2026-05-22T0210-ae7f9d`
+
+**Scope**: Closes GH #88. `qor/reliability/seal_entry_check.py` `check()` now runs its defense-in-depth full-chain step via `ledger_hash.verify_post_anchor()` instead of the strict `ledger_hash.verify()`. The strict verifier's Phase-66 taint propagation (GH #54) returns `rc=1` permanently once it hits any pre-anchor `FAIL` entry, which made `check()` — run by `/qor-substantiate` Step 7.7 — abort a structurally valid SESSION SEAL on every re-anchored consumer ledger that carries disclosed pre-anchor failures. `verify_post_anchor()` (GH #55) classifies pre-boundary failures as `DISCLOSED_PRE_ANCHOR` and fails only on post-boundary breaks.
+
+**Files touched** (3): `qor/reliability/seal_entry_check.py` (`check()` line 99 → `verify_post_anchor`; failure-message string updated; docstring amended to "post-anchor chain verification"), `tests/test_seal_entry_check.py` (one test rewritten, one added), `docs/plan-qor-phase82-seal-entry-post-anchor.md` (NEW).
+
+**Test surface**: TDD red-green observed. `test_check_fails_when_full_chain_verification_fails` rewritten as `test_check_tolerates_disclosed_pre_anchor_failure` — its broken-pre-anchor-entry + valid-seal fixture now correctly asserts `ok=True`; the test failed against the pre-fix code (`['full chain verification failed (ledger_hash.verify rc=1)']`) and passes after. New `test_check_fails_on_genuine_post_anchor_break` — a SEAL with a low-entropy placeholder `previous_hash` and internally-consistent `chain_hash`; `verify_post_anchor` classifies it a post-boundary failure; asserts `ok=False`. CI suites all green, `test_seal_entry_check.py` run twice deterministically: `tests/test_seal_entry_check.py` 10 passed, `tests/test_substantiate_seal_entry_wiring.py` 6 passed, `tests/test_ledger_hash_validation.py` 8 passed (24 total).
+
+**Razor compliance**: `check()` 40 lines (≤40 cap); `seal_entry_check.py` 178 lines (≤250 cap); max nesting depth 2; zero nested ternaries.
+
+**Documentation Sync (Step 8.5)**: skipped — `doc_tier: minimal`.
+
+**Reliability**: intent-lock captured at implement start (`LOCKED: 2026-05-22T0210-ae7f9d`).
+
+**SSDF Practices**: PW.5.1, PW.7.1, RV.1.1.
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`.
+
+**Content Hash**: `6448e8afbd0d4b1c75f83458fdf34e57f4b2230518602c441900b027f57dc5dc`
+**Previous Hash**: `7c2aee1f117279f36563587c0eccc5c6ec0c902c9417fc7efa5138d49432e5db`
+**Chain Hash**: `79643c31beecca9a8f60912b4484e263295a137a17ea46f0ecf90d9f437b07ff`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0210-ae7f9d (Phase 82 — implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #215: SESSION SEAL -- Phase 82: seal_entry_check post-anchor verification hotfix (v0.55.2, GH #88)
+
+**Timestamp**: 2026-05-22T02:31:50Z
+
+**Phase**: SUBSTANTIATE (Phase 82 hotfix)
+
+**Author**: Judge
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase82-seal-entry-post-anchor.md
+
+**Session**: `2026-05-22T0210-ae7f9d`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Entry ID**: `db6ef71320d9` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #88. `qor.reliability.seal_entry_check.check()` ran its defense-in-depth full-chain step via the strict `ledger_hash.verify()`, whose Phase-66 taint propagation (GH #54) returns `rc=1` permanently once it hits any pre-anchor `FAIL` entry. `check()` is invoked by this very skill at Step 7.7, so the bug made `/qor-substantiate` abort a structurally valid SESSION SEAL on every re-anchored consumer ledger carrying disclosed pre-anchor failures -- the exact ledgers `RE-ANCHOR` entries exist to tolerate. The fix switches the call to `ledger_hash.verify_post_anchor()` (GH #55), which classifies pre-boundary failures as `DISCLOSED_PRE_ANCHOR` and fails only on post-boundary breaks. The failure-message string and `check()` docstring were updated to match.
+
+**Files touched** (~9): `qor/reliability/seal_entry_check.py` (`check()` line 99 + message + docstring), `tests/test_seal_entry_check.py` (one test rewritten, one added), `qor/references/glossary.md` (incidental drift repair, see below), `docs/plan-qor-phase82-seal-entry-post-anchor.md` (NEW), `docs/META_LEDGER.md` (entries #213-#215), `.agent/staging/AUDIT_REPORT.md`, `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` (this session's gate_override event), `pyproject.toml` (0.55.1 -> 0.55.2), `CHANGELOG.md` (0.55.2 stamped), `README.md` (Ledger badge).
+
+**Test surface**: TDD red-green observed. `test_check_fails_when_full_chain_verification_fails` rewritten as `test_check_tolerates_disclosed_pre_anchor_failure` -- its broken-pre-anchor-entry + valid-seal fixture now correctly asserts `ok=True`; failed against pre-fix code (`ledger_hash.verify rc=1`), passes after. New `test_check_fails_on_genuine_post_anchor_break` -- a SEAL with a low-entropy placeholder `previous_hash` and internally-consistent `chain_hash`; `verify_post_anchor` classifies it a post-boundary failure; asserts `ok=False`. Net +1 test. CI suites green, `test_seal_entry_check.py` run twice deterministically: `test_seal_entry_check.py` 10 passed, `test_substantiate_seal_entry_wiring.py` 6 passed, `test_ledger_hash_validation.py` 8 passed. Full suite 1681 collected (4 deselected).
+
+**Incidental drift repair (operator-authorized)**: Step 4.7 doc-integrity ABORTed on five pre-existing glossary `referenced_by` omissions unrelated to GH #88 -- term `Substantiate` used in `doctrine-shadow-genome-countermeasures.md` (Phase 79 origin, `SG-DocsBackloadedToSubstantiate-A`), and terms `Feature Inventory` / `Feature Inventory Touches` used in `qor-bootstrap/SKILL.md` and `qor-bootstrap-templates.md` (Phase 80 origin, FEATURE_INDEX scaffolding). Operator authorized inline repair: the three glossary entries' `referenced_by` lists were extended to declare the consuming files. The additions are factually correct (each file does reference the term); the seal commit folds them in. Filed for visibility because the drift accumulated silently across two prior phases -- a process-level instance of the additive-without-counterweight pattern tracked in GH #92.
+
+**Self-application**: Entry carries an Entry ID (Phase 76 contract). Hotfix scope, `doc_tier=minimal`: Phase 79 Step 8.5 doc-sync WARN-skipped at minimal tier. Phase 67 `plan_text_consistency_lint` cleared the plan. Phase 68 Self-Application Sub-Pass: `originating_remediation` is GH #88, a defect report introducing no new discipline -- sub-pass no-op. Phase 72 Infrastructure Citation Inventory: every cited symbol grep-verified at HEAD (`seal_entry_check.py:99`, `ledger_hash.verify_post_anchor` at `ledger_hash.py:270`). Phase 73 Feature Inventory: not adopted (no `FEATURE_INDEX.md` at repo root; no `src/` touch). Phase 78 Filter-Stage Ordering: no pipeline-shaped functions in scope. SYSTEM_STATE.md: no entry required (hotfix; the Phase 58 coverage test keys on `feature substantiated` seals only). Phase 47 post-seal verification (Step 7.7) dogfoods this phase's own fix: `seal_entry_check` now runs `verify_post_anchor` against this ledger.
+
+**Content Hash (session seal)**: `d6a424494165789e36c0c1eff0f48c1dc18479f5cdd73fb8223def7044ab8bfa`
+
+**Previous Hash**: `79643c31beecca9a8f60912b4484e263295a137a17ea46f0ecf90d9f437b07ff`
+
+**Chain Hash (Merkle seal)**: `375a02146a29e3a159bdd0288b5c427600c2b19e16288041738de325f78dd8f1`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 82 hotfix complete; GH #88 closed)
+*Merkle seal: 375a0214...* (Phase 82 seal on top of Phase 81's fffbb2d2...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+---
+
+### Entry #216: GATE TRIBUNAL -- Phase 83 plan -- **VETO** (L2)
+
+**Timestamp**: 2026-05-22T03:05:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: VETO
+
+**Plan**: `docs/plan-qor-phase83-audit-phase37-hardening.md`
+
+**Session**: `2026-05-22T0236-09b540`
+
+**Mode**: solo (codex-plugin not declared). SG-007 author-momentum disclosed: audit operator authored the plan; the Self-Application Sub-Pass ran (originating_remediation = GH #83 + GH #87) and the binding finding came from the OWASP pass.
+
+**Pre-audit lints (Step 0.6)** -- all CLEAN: `plan_test_lint`, `plan_grep_lint`, `plan_text_consistency_lint`, `prompt_injection_canaries` all EXIT 0.
+
+**Audit passes (11/12 PASS, 1 FAIL)**: Prompt Injection PASS; Security L3 PASS; **OWASP Top 10 FAIL (V1)**; Ghost UI N/A; Section 4 Razor PASS; Self-Application Sub-Pass PASS (plan's own citations resolve; plan declares no pr_target so delivery-branch check is a correct no-op for it); Test Functionality PASS (helper tests behavioral; Phase 1 prose-wiring tests cleared against the `test_audit_template_has_drift_marker` repo precedent); Dependency PASS (stdlib only); Macro-architecture PASS; Feature Test Coverage exempt; Infrastructure Alignment PASS (all cited paths resolve at HEAD); Filter-Stage Ordering N/A; Orphan Detection PASS.
+
+**Binding finding**:
+- **V1 (owasp-violation, A03 argument injection)**: Phase 2's `delivery_branch_lint` helper passes the plan-authored `pr_target` value to `git ls-remote --heads origin <pr_target>` as an argv element with no validation that it is a well-formed branch name. A `-`-prefixed `pr_target` is parsed by git as an option rather than a ref; `git ls-remote` accepts the command-specifying `--upload-pack` option. The plan's "list-form argv, no shell=True" design closes shell injection but not argument injection. Because `delivery_branch_lint` auto-runs at qor-audit Step 0.6 on every audit -- including in consumer repos where plan files may be contributor- or agent-authored -- this is a command-execution surface reachable through a plan file.
+
+**Required next action**: Governor: amend plan text -- `delivery_branch_lint` must validate `pr_target` against a conservative branch-name pattern (reject empty, `-`-prefixed, or out-of-charset values; report as a lint finding, never hand to `git`) with a unit test asserting a `-`-prefixed value is rejected without invoking the resolver. Then re-run `/qor-audit`.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected in the last 2 sealed phases (Phase 81 PASS, Phase 82 PASS).
+
+**SSDF Practices**: PW.7.1, PW.8.1, RV.1.1.
+
+**Content Hash**: `a9b17b6f04e2feb3f7da412db98d2fa79b6c1bb5f3f95345aa6859b30e8109e1`
+**Previous Hash**: `375a02146a29e3a159bdd0288b5c427600c2b19e16288041738de325f78dd8f1`
+**Chain Hash**: `0cffc97b358853e649d429f868965c01617f6668d8266b27968355e6d0316ddb`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0236-09b540 (Phase 83 -- audit VETO; plan returns to /qor-plan for amendment)*
+
+---
+
+### Entry #217: GATE TRIBUNAL -- Phase 83 plan iter-2 -- **PASS** (L2)
+
+**Timestamp**: 2026-05-22T03:20:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: PASS
+
+**Plan**: `docs/plan-qor-phase83-audit-phase37-hardening.md` (iter-2)
+
+**Session**: `2026-05-22T0236-09b540`
+
+**Mode**: solo. Iteration 2 — follows the iter-1 VETO at Entry #216.
+
+**Resolution of iter-1 V1 (owasp-violation, A03)**: the amended plan specifies that `delivery_branch_lint` validates `pr_target` against the conservative branch-name pattern `^[A-Za-z0-9._/][A-Za-z0-9._/-]*$` before any subprocess call; empty, `-`-prefixed, and out-of-charset values are reported as a `LintWarning` and never passed to `git`; the resolver is invoked only after validation passes. A new test `test_dash_prefixed_pr_target_rejected_without_resolver` asserts a `--upload-pack=evil` value yields a finding without the resolver being called. The argument-injection surface is closed.
+
+**Audit passes (12/12 PASS)**: full plan re-walk per Phase 72 iter-N>1 contract. Prompt Injection, Security L3, OWASP Top 10 (A03 resolved), Ghost UI N/A, Section 4 Razor, Self-Application Sub-Pass (plan's own citations resolve; plan declares no pr_target), Test Functionality (helper tests behavioral; new dash-prefix test survives the acceptance question), Dependency (stdlib only), Macro-architecture, Feature Test Coverage exempt, Infrastructure Alignment (all cited paths resolve at HEAD), Filter-Stage Ordering N/A, Orphan Detection — all PASS.
+
+**Decision**: Plan closes GH #83 + GH #87 by hardening the Phase 37 Infrastructure Alignment Pass with a consumer-trace prose sub-check and a delivery-branch currency sub-check (tested helper + prose + plan.schema.json pr_target field + SG-DeliveryBranchDrift-A doctrine entry). No violation across all twelve passes. Gate OPEN.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected in the last 2 sealed phases (Phase 81 PASS, Phase 82 PASS). The single Phase 83 iter-1 VETO is not a repeated pattern.
+
+**Mandated next action**: `/qor-implement` per `qor/gates/chain.md`.
+
+**SSDF Practices**: PW.7.1, PW.8.1, RV.1.1.
+
+**Content Hash**: `bfd9ba423201deb1c646804091c1f16c116cdcb5a929ce596aba71309ec45857`
+**Previous Hash**: `0cffc97b358853e649d429f868965c01617f6668d8266b27968355e6d0316ddb`
+**Chain Hash**: `884d325d1d93c511d661393b8c20e1c4cecb9661ab4e9f9ebf9d4b79e80db6bc`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0236-09b540 (Phase 83 -- audit PASS iter-2, awaiting /qor-implement)*
+
+---
+
+### Entry #218: IMPLEMENTATION -- Phase 83 (qor-audit Phase 37 Infrastructure Alignment hardening)
+
+**Timestamp**: 2026-05-22T03:40:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Specialist
+
+**Plan**: `docs/plan-qor-phase83-audit-phase37-hardening.md`
+
+**Session**: `2026-05-22T0236-09b540`
+
+**Scope**: Closes GH #83 + GH #87. Two sub-checks added to the `/qor-audit` Phase 37 Infrastructure Alignment Pass via the hybrid build shape settled in planning dialogue: #83 consumer-trace as auditor-executed prose, #87 delivery-branch currency as a tested helper plus prose. Full sub-pass procedures live in the new reference file `phase37-subpasses.md` (progressive disclosure per GH #92); `SKILL.md` carries one-line pointers only.
+
+**Files touched** (9): `qor/scripts/delivery_branch_lint.py` (NEW), `qor/gates/schema/plan.schema.json` (optional `pr_target` string field), `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (NEW), `qor/skills/governance/qor-audit/SKILL.md` (Step 0.6 lint + Step 3 sub-pass pointers), `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-DeliveryBranchDrift-A`), `docs/SYSTEM_STATE.md` (Phase 83 entry), `tests/test_delivery_branch_lint.py` (NEW), `tests/test_audit_phase37_subpasses.py` (NEW), `docs/plan-qor-phase83-audit-phase37-hardening.md` (NEW).
+
+**Test surface**: TDD red-green observed (`test_delivery_branch_lint.py` failed to import the absent module before implementation). 11 new tests: 6 in `test_delivery_branch_lint.py` (no-op when no `pr_target`; existing branch clean; `-`-prefixed `pr_target` rejected without invoking the resolver -- the OWASP A03 guard; absent branch yields finding; CLI exits non-zero; `plan.schema.json` accepts a string `pr_target` and rejects a non-string), 5 in `test_audit_phase37_subpasses.py` (consumer-trace + delivery-branch SKILL wiring, procedure-content completeness, `SG-DeliveryBranchDrift-A` round-trip). All 11 pass twice deterministically. `gate_skill_matrix` after the SKILL.md edits: 30 skills, 116 handoffs, 0 broken.
+
+**Razor compliance**: `delivery_branch_lint.py` 119 lines (<=250); longest function `check_delivery_branch` ~25 lines; max nesting depth 2; zero nested ternaries.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. ARCHITECTURE_PLAN.md carries no granular `qor/scripts/` file tree -- no-op. The architecture-bearing documentation for this change is the `SG-DeliveryBranchDrift-A` doctrine entry and the `phase37-subpasses.md` reference file, both authored in this pass. `docs/SYSTEM_STATE.md` Phase 83 entry authored in-context.
+
+**Reliability**: intent-lock captured at implement start (`LOCKED: 2026-05-22T0236-09b540`).
+
+**Self-application**: iter-1 OWASP A03 VETO (Entry #216) -- the unvalidated `pr_target` argument-injection surface -- corrected at iter-2; `delivery_branch_lint` now allowlist-validates `pr_target` before any subprocess call, with `test_dash_prefixed_pr_target_rejected_without_resolver` proving the resolver is never reached for a hostile value.
+
+**SSDF Practices**: PW.5.1, PW.7.1, PW.8.1, RV.1.1.
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`.
+
+**Content Hash**: `a5ea9f2403476800670b3994941dd9b3ea3c8137ac981cd3e3e4d0ef05115a18`
+**Previous Hash**: `884d325d1d93c511d661393b8c20e1c4cecb9661ab4e9f9ebf9d4b79e80db6bc`
+**Chain Hash**: `368d617582d2720e45976a95df241f672d6df50539edcfa38ef0eb9a76ba9208`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0236-09b540 (Phase 83 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #219: SESSION SEAL -- Phase 83 feature substantiated: qor-audit Phase 37 hardening (v0.56.0, GH #83 + #87)
+
+**Timestamp**: 2026-05-22T04:29:02Z
+
+**Phase**: SUBSTANTIATE (Phase 83 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase83-audit-phase37-hardening.md
+
+**Session**: `2026-05-22T0236-09b540`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PS.3.1, PW.1.1, PW.5.1, RV.1.1, RV.1.2
+
+**Entry ID**: `68405b6bcd2e` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #83 + GH #87. The `/qor-audit` Step 3 Infrastructure Alignment Pass gains two sub-checks. **Citation consumer-trace (GH #83)**: an auditor-executed prose sub-check -- for every cited code symbol in a plan Locked Decision claiming to fix a defect at a named entry-point surface, the symbol must be reachable from that entry point; an unreached citation is an `infrastructure-mismatch` VETO. **Delivery-Branch Currency (GH #87)**: a new pre-audit lint `qor/scripts/delivery_branch_lint.py` wired into `/qor-audit` Step 0.6 extracts the optional `pr_target` plan field, allowlist-validates it, and runs `git ls-remote` to confirm the branch exists on the remote; prose directs the auditor to obtain operator confirmation the branch is still open and to grep cited infrastructure against `pr_target` specifically. Full sub-pass procedures live in the new reference file `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (progressive disclosure per GH #92). New optional `pr_target` field on `plan.schema.json`; new `SG-DeliveryBranchDrift-A` doctrine entry.
+
+**Files touched** (~13): `qor/scripts/delivery_branch_lint.py` (NEW), `qor/gates/schema/plan.schema.json`, `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (NEW), `qor/skills/governance/qor-audit/SKILL.md`, `qor/references/doctrine-shadow-genome-countermeasures.md`, `docs/SYSTEM_STATE.md`, `docs/SHADOW_GENOME.md`, `tests/test_delivery_branch_lint.py` (NEW), `tests/test_audit_phase37_subpasses.py` (NEW), `docs/plan-qor-phase83-audit-phase37-hardening.md` (NEW), `docs/META_LEDGER.md` (entries #216-#219), `CHANGELOG.md` (0.56.0 stamped), `README.md` (badges).
+
+**Test surface**: TDD red-green observed. 11 new tests across two files, all passing twice deterministically: `test_delivery_branch_lint.py` (6 -- helper no-op / existing / dash-prefix rejection without resolver / absent / CLI exit / schema accept-reject), `test_audit_phase37_subpasses.py` (5 -- sub-pass SKILL wiring, procedure-content completeness, SG doctrine round-trip).
+
+**Audit history**: iter-1 VETO (Entry #216, L2) -- OWASP A03 argument injection: the unvalidated `pr_target` reaching `git ls-remote` as argv where a `-`-prefixed value is parsed as an option. Corrected at iter-2 (Entry #217 PASS) by adding conservative branch-name allowlist validation before any subprocess call, with `test_dash_prefixed_pr_target_rejected_without_resolver` proving a hostile value never reaches `git`. Shadow Genome: Phase 83 Pass 1 entry logs the argument-injection-vs-shell-injection conflation pattern.
+
+**Self-application**: Entry carries an Entry ID. `doc_tier: standard`; the architecture-bearing documentation is the `SG-DeliveryBranchDrift-A` doctrine entry + the `phase37-subpasses.md` reference file, both authored in-context. Phase 58 procedural-fidelity: `docs/SYSTEM_STATE.md` in the implement files_touched set satisfies the doc-surface coverage detector. Phase 79 Step 8.5: SYSTEM_STATE Phase 83 entry authored during implement. GH #92 progressive disclosure honored: sub-pass prose in a reference file, SKILL.md gains only short pointers (6 lines added).
+
+**Content Hash (session seal)**: `dc022ea9f3b4110c0744cbd9ed95cbef81e0a999ca169802ae993be9ca0112a2`
+
+**Previous Hash**: `368d617582d2720e45976a95df241f672d6df50539edcfa38ef0eb9a76ba9208`
+
+**Chain Hash (Merkle seal)**: `bd3e1412af711cd0371fe2fc72f024b87d1bc6140582a6972c7558db7df71e49`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 83 feature complete; GH #83 + GH #87 closed)
+*Merkle seal: bd3e1412...* (Phase 83 seal on top of Phase 82's 375a0214...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+---
+
+### Entry #220: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-22T05:00:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: PASS
+
+**Plan**: docs/plan-qor-phase84-audit-readiness-guards.md (iter-1)
+
+**Session**: `2026-05-22T0433-b5299e`
+
+**Decision**: Phase 84 plan (GH #81 pre-audit readiness short-circuit + GH #84 inverse-coverage discipline) cleared on iter-1. Audit conducted under Step 1.a Option B: the adversarial pass was dispatched to an independent `architect-reviewer` subagent with no plan-authorship context, clearing the SG-AuthorAuditMomentum-A self-audit scope bias. All eight passes PASS. Self-Application Sub-Pass clean (the plan carries no `**iteration**:` draft marker, no "Operator Decisions Required Before Audit" section, no `CANONICAL_*_VALUES` taxonomy). Infrastructure Alignment verified `current_phase_plan_path` (governance_helpers.py:57), the `LintWarning` 4-field dataclass shape, and the `coverage-gap` audit-schema enum value. Non-VETO documentation-drift advisory: declared SG terms lack glossary entries -- to be added during `/qor-implement` ahead of the substantiate-time integrity check.
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `9c6efdd03442c908a5875d5a1c9b41802e6c70d92f7b276163cc7648d3e2996e`
+
+**Previous Hash**: `bd3e1412af711cd0371fe2fc72f024b87d1bc6140582a6972c7558db7df71e49`
+
+**Chain Hash**:
+SHA256(content_hash + previous_hash) = `923e18e7b3280c160d309a584f2593740c4795e8b8e2e7e1a8b8a795d6b3b7ff`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0433-b5299e (Phase 84 -- audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #221: IMPLEMENTATION -- Phase 84 (Audit-readiness guards)
+
+**Timestamp**: 2026-05-22T05:30:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Specialist
+
+**Plan**: `docs/plan-qor-phase84-audit-readiness-guards.md`
+
+**Session**: `2026-05-22T0433-b5299e`
+
+**Scope**: Closes GH #81 + GH #84. Two pre-audit lint guards plus thin skill-prose wiring. **GH #81**: new `qor/scripts/plan_iteration_status_lint.py` detects three pre-audit self-declaration signals (`**iteration**:` value containing `draft`/`pre-audit`; "Operator Decisions Required Before Audit" heading; Open Questions bullet ending "Operator confirms before audit") and exits non-zero on any hit; `/qor-audit` Step 0.3 runs it as a hard short-circuit before any adversarial pass. **GH #84**: `qor/scripts/plan_test_lint.py` gains an inverse-coverage check (WARN-only `inverse-coverage-missing` finding when a plan declares a `CANONICAL_*_VALUES` + `normalize*` taxonomy with no inverse-coverage test bullet); `/qor-plan` Step 5 and `/qor-audit` Step 3 Test Functionality Pass require both directional assertions, missing inverse coverage is a `coverage-gap` VETO.
+
+**Files touched** (10): `qor/scripts/plan_iteration_status_lint.py` (NEW), `qor/scripts/plan_test_lint.py` (inverse-coverage check), `qor/skills/governance/qor-audit/SKILL.md` (Step 0.3 + Test Functionality Pass sub-rule), `qor/skills/sdlc/qor-plan/SKILL.md` (Step 5 checklist item), `qor/references/doctrine-test-functionality.md` (Inverse-coverage discipline section + anti-pattern row + verification bullet), `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-PreAuditDraftSubmission-A` + `SG-InverseCoverageGapTaxonomy-A`), `qor/references/glossary.md` (3 terms), `docs/SYSTEM_STATE.md` (Phase 84 entry), `tests/test_plan_iteration_status_lint.py` (NEW), `tests/test_audit_skill_iteration_lint_wiring.py` + `tests/test_inverse_coverage_skill_wiring.py` (NEW) + `tests/test_plan_test_lint.py` (4 cases added).
+
+**Test surface**: TDD red-green observed (`test_plan_iteration_status_lint.py` failed to import the absent module before implementation; 6 wiring/inverse-coverage assertions failed pre-implementation). 26 tests: 8 in `test_plan_iteration_status_lint.py` (three signal detections, clean-plan, CLI exit-1-with-guidance, CLI exit-0, missing-plan), 2 in `test_audit_skill_iteration_lint_wiring.py` (Step 0.3 wiring anchored + strip-and-fail), 4 in `test_inverse_coverage_skill_wiring.py` (doctrine section + skill citations, anchored + strip-and-fail), 4 added to `test_plan_test_lint.py` (inverse-coverage flag/silent/no-taxonomy + presence-only regression). All 26 pass twice deterministically. Full suite: 1705 passed, 1 skipped; the README ledger-badge test fails transiently (this entry advances the ledger count -- `/qor-substantiate` Step 6.5 reconciles the badge). Three pre-existing failures (squash-merge attribution trailer; doc-integrity drift-report CLI 60s timeout x2) confirmed present on a clean pre-cycle baseline -- out of cycle scope.
+
+**Razor compliance**: `plan_iteration_status_lint.py` 95 lines (<=250); longest function 21 lines; max nesting depth 3; zero nested ternaries. `plan_test_lint.py` 111 lines; `_inverse_coverage_warnings` 21 lines.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. ARCHITECTURE_PLAN.md carries no granular `qor/scripts/` file tree -- no-op. Architecture-bearing documentation is the Inverse-coverage discipline section in `doctrine-test-functionality.md` and the two `SG-` doctrine entries, all authored in this pass. `docs/SYSTEM_STATE.md` Phase 84 entry authored in-context.
+
+**Reliability**: intent-lock captured at implement start (`LOCKED: 2026-05-22T0433-b5299e`).
+
+**Self-application**: the plan declares `originating_remediation: GH #81 + GH #84`; the audit Self-Application Sub-Pass confirmed the plan carries no pre-audit draft marker and no `CANONICAL_*_VALUES` taxonomy of its own. Audit conducted under Step 1.a Option B (independent `architect-reviewer` subagent) per SG-AuthorAuditMomentum-A.
+
+**SSDF Practices**: PW.5.1, PW.7.1, PW.8.1, RV.1.1.
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`.
+
+**Content Hash**: `8c9ed42ea2e08ef056ee9b857854734c1dc1da682a79cc89d607013e8bab11fe`
+**Previous Hash**: `923e18e7b3280c160d309a584f2593740c4795e8b8e2e7e1a8b8a795d6b3b7ff`
+**Chain Hash**: `d136e3c4df6fb6a6fa475a69def5f7da2809f72a84a861c4fc439ef90d4e179c`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0433-b5299e (Phase 84 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #222: SESSION SEAL -- Phase 84 feature substantiated: audit-readiness guards (v0.57.0, GH #81 + #84)
+
+**Timestamp**: 2026-05-22T06:00:00Z
+
+**Phase**: SUBSTANTIATE (Phase 84 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase84-audit-readiness-guards.md
+
+**Session**: `2026-05-22T0433-b5299e`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `49863dee0bba` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #81 + GH #84 -- two pre-audit guards that stop a structurally not-ready plan from wasting an audit-iteration slot. **GH #81 (pre-audit readiness short-circuit)**: new `qor/scripts/plan_iteration_status_lint.py` detects three pre-audit self-declaration signals -- an `**iteration**:` value containing `draft` / `pre-audit`, an "Operator Decisions Required Before Audit" heading, or an Open Questions bullet ending "Operator confirms before audit" -- and exits non-zero on any hit. `/qor-audit` gains Step 0.3, a hard short-circuit that runs the lint before Step 1 identity activation and before any adversarial pass; on non-zero exit the audit aborts and emits no gate artifact, so the not-ready plan consumes no cycle. **GH #84 (inverse-coverage discipline)**: `qor/scripts/plan_test_lint.py` gains an inverse-coverage check emitting a WARN-only `inverse-coverage-missing` finding when a plan declares a closed-enum taxonomy (`CANONICAL_*_VALUES` constant + `normalize*` function) with no inverse-coverage test bullet; `/qor-plan` Step 5 and `/qor-audit` Step 3 Test Functionality Pass require both the forward round-trip and the inverse coverage assertion, missing inverse coverage being a `coverage-gap` VETO. Detailed prose lands in doctrine reference files per GH #92 progressive disclosure; SKILL.md files carry thin pointers.
+
+**Files touched** (~31): `qor/scripts/plan_iteration_status_lint.py` (NEW), `qor/scripts/plan_test_lint.py`, `qor/skills/governance/qor-audit/SKILL.md` (Step 0.3 + Test Functionality Pass sub-rule), `qor/skills/sdlc/qor-plan/SKILL.md` (Step 5 item), `qor/references/doctrine-test-functionality.md` (Inverse-coverage discipline section), `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-PreAuditDraftSubmission-A` + `SG-InverseCoverageGapTaxonomy-A`), `qor/references/glossary.md` (3 terms), `tests/test_plan_iteration_status_lint.py` (NEW), `tests/test_audit_skill_iteration_lint_wiring.py` (NEW), `tests/test_inverse_coverage_skill_wiring.py` (NEW), `tests/test_plan_test_lint.py`, `docs/plan-qor-phase84-audit-readiness-guards.md` (NEW), `docs/SYSTEM_STATE.md`, `docs/META_LEDGER.md` (entries #220-#222), `CHANGELOG.md` (0.57.0 stamped), `README.md` (badges), `pyproject.toml` (0.57.0), 13 regenerated `qor/dist/` variants.
+
+**Test surface**: TDD red-green observed (`test_plan_iteration_status_lint.py` failed to import the absent module before implementation; 6 wiring/inverse-coverage assertions failed pre-implementation). 26 new tests across 4 files, all passing twice deterministically: `test_plan_iteration_status_lint.py` (8 -- three signal detections, clean-plan, CLI exit-1-with-guidance, CLI exit-0, missing-plan), `test_audit_skill_iteration_lint_wiring.py` (2 -- Step 0.3 wiring anchored + strip-and-fail), `test_inverse_coverage_skill_wiring.py` (4 -- doctrine section + skill citations, anchored + strip-and-fail), `test_plan_test_lint.py` (4 added -- inverse-coverage flag/silent/no-taxonomy + presence-only regression). Full suite: 1705 passed, 1 skipped. Three pre-existing failures (squash-merge attribution trailer on a prior seal commit; `doc_integrity_drift_report` CLI 60s timeout x2) confirmed present on a clean pre-cycle `git stash` baseline -- out of cycle scope, flagged for separate triage.
+
+**Razor compliance**: `plan_iteration_status_lint.py` 95 lines (<=250); longest function 21 lines; max nesting depth 3; zero nested ternaries. `plan_test_lint.py` 111 lines; `_inverse_coverage_warnings` 21 lines.
+
+**Audit history**: iter-1 PASS (Entry #220, L2). Conducted under `/qor-audit` Step 1.a Option B -- the adversarial pass was dispatched to an independent `architect-reviewer` subagent with no plan-authorship context, clearing the SG-AuthorAuditMomentum-A self-audit scope bias. All eight audit passes cleared; no VETO this phase.
+
+**Self-application**: the plan declared `originating_remediation: GH #81 + GH #84`, triggering the audit Self-Application Sub-Pass -- confirmed the plan carries no `**iteration**:` draft marker, no "Operator Decisions Required Before Audit" section, and no `CANONICAL_*_VALUES` taxonomy of its own, so it does not trip either new discipline. Entry carries an Entry ID. `doc_tier: standard`; architecture-bearing documentation is the Inverse-coverage discipline section in `doctrine-test-functionality.md` and the two `SG-` doctrine entries, all authored in-context. Phase 79 Step 8.5: `docs/SYSTEM_STATE.md` Phase 84 entry authored during implement. Intent-lock re-captured at substantiate after git autocrlf normalized the plan file's line endings during an earlier baseline-investigation `git stash`/`pop` -- a cosmetic encoding change, not intent drift (plan semantic content byte-identical modulo CR characters).
+
+**Content Hash (session seal)**: `cd3f662c9e457003c14465afa309160f8638a4a639af40fc17ed96d5f613c7fb`
+
+**Previous Hash**: `d136e3c4df6fb6a6fa475a69def5f7da2809f72a84a861c4fc439ef90d4e179c`
+
+**Chain Hash (Merkle seal)**: `f38d7085ba29813a732e303ad11a421b65a642de50567166a16fe7e1f375e320`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 84 feature complete; GH #81 + GH #84 closed)
+*Merkle seal: f38d7085...* (Phase 84 seal on top of Phase 83's bd3e1412...)
+*Open items at this seal: push + PR + merge (operator-authorized -- Step 9.6)*

@@ -304,6 +304,7 @@ Before finalizing, ensure:
 - [ ] No backwards compatibility concerns
 - [ ] No concluding errata sections
 - [ ] Each unit test description names the behavior it confirms (the unit's output for a given input), not the artifact it expects to find. Per `qor/references/doctrine-test-functionality.md`.
+- [ ] When the plan declares a closed-enum taxonomy (a `CANONICAL_*_VALUES` constant plus a `normalize*` function), the test list includes BOTH the forward round-trip assertion and the inverse coverage assertion. Per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline.
 - [ ] Plan asserts the same command, dependency, or filesystem path identically at every site where it appears (Phase 67 wiring; GH #42). Verify by running `python -m qor.scripts.plan_text_consistency_lint --check <plan-path>`; any drift surfaces as exit 1 with the divergent sites named. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PlanTextDrift-A.
 
 #### Feature Inventory Touches declaration (Phase 73 wiring; GH #40 + #41)

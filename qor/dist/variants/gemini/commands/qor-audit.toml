@@ -38,6 +38,19 @@ Override is permitted (advisory gate) but logged as severity-1 event in the Proc
 
 **Phase 54 wiring**: when `runtime.emit_gate_override` (which delegates to `gate_chain.emit_gate_override`) raises `OverrideFrictionRequired`, prompt the operator for a written justification (>=50 chars) and re-call `emit_gate_override` with `justification=<text>`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-1.1 + `qor/references/doctrine-eu-ai-act.md` Art. 14.
 
+### Step 0.3: Pre-audit readiness short-circuit (Phase 84 wiring; GH #81)
+
+Before the cycle-count and lint steps, detect whether the plan declares itself not yet ready for audit. Per `SG-PreAuditDraftSubmission-A`, a plan carrying a pre-audit self-declaration still triggers audit under the autonomous cycle and burns an audit-iteration slot on a structurally not-ready plan.
+
+```bash
+PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
+python -m qor.scripts.plan_iteration_status_lint --plan "$PLAN_PATH" || ABORT
+```
+
+`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. The lint exits non-zero when the plan carries any of: an `**iteration**:` value containing `draft` / `pre-audit`; an "Operator Decisions Required Before Audit" section; or an Open Questions bullet ending "Operator confirms before audit". On non-zero exit, abort BEFORE Step 1 identity activation and BEFORE any adversarial pass — print the lint's guidance, skip the remaining steps, and do NOT emit an audit gate artifact (no cycle consumed). The Governor resolves the operator-decision items, bumps the plan past its pre-audit state, and re-runs `/qor-audit`.
+
+Unlike the Step 0.6 pre-audit lints (WARN-only), this lint is a hard short-circuit: a plan that declares itself not-ready is not a candidate for adversarial review. Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-PreAuditDraftSubmission-A`.
+
 ### Step 0.4: Unchanged-plan short-circuit (Phase 67 wiring - GH #45)
 
 After the prior-artifact gate check passes, detect whether the operator invoked `/qor-audit` on a byte-identical plan re-run (no amendment since the prior VETO). When the content hash matches the prior audit's recorded `target_content_hash`, the same plan will produce the same verdict; the cycle is wasted and inflates the cycle-count escalator (§10.4) prematurely.
@@ -88,6 +101,7 @@ PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_
 python -m qor.scripts.plan_test_lint --plan "$PLAN_PATH" || true
 python -m qor.scripts.plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
 python -m qor.scripts.plan_text_consistency_lint --check "$PLAN_PATH" || true
+python -m qor.scripts.delivery_branch_lint --plan "$PLAN_PATH" --repo-root . || true
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
@@ -286,6 +300,8 @@ A test is **presence-only** when its assertion is solely about artifact existenc
 
 **Required next action:** Governor: amend plan to replace presence-only tests with functionality tests (invoke the unit, assert against output), re-run `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md`, this is a **Plan-text** ground.
 
+**Closed-enum taxonomy coverage (Phase 84 wiring; GH #84)**: when the plan declares a closed-enum taxonomy — a `CANONICAL_*_VALUES` constant paired with a `normalize*` function — the test list MUST assert BOTH directions: forward (every alias-map key normalizes into the canonical set) AND inverse (every non-gated canonical value is reachable via at least one identity-mapping). A taxonomy with only forward coverage can define a canonical bucket that `normalize*` never produces, so downstream consumers querying that bucket get zero rows. **Missing inverse coverage -> VETO with `coverage-gap` category.** Per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline and `SG-InverseCoverageGapTaxonomy-A`.
+
 #### Dependency Audit
 
 Check for hallucinated or unnecessary dependencies:
@@ -354,6 +370,11 @@ For each plan claim in scope, verify against current code:
 **Phase 72 wiring (GH #56; SG-CitationDrift-A countermeasure)** -- iter-N>1 full re-walk: on iterations after the first (iter-N>1), the Judge re-walks the **FULL Locked Decision set**, not the diff-from-iter-N-1. Every sealed-infrastructure citation (migration name, function signature, file:line, schema, env var, edge-function path) is grep-verified against current code, including LDs that were not modified in this iteration. Citations that lack the inline grep-evidence statement required by `/qor-plan` Step 2 Infrastructure Citation Inventory trigger immediate VETO with `infrastructure-mismatch` category -- regardless of whether the LD was amended in the current iteration. This closes the drift surface where an unverified citation in an unchanged LD propagates across iterations without re-challenge.
 
 See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-InfrastructureMismatch` (Phase 37) and `SG-CitationDrift-A` (Phase 72) for the countermeasure catalog entries.
+
+**Phase 83 wiring (GH #83 + GH #87)** -- two extended sub-passes run as part of this pass; the full procedures live in `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (progressive disclosure per GH #92):
+
+- **Citation consumer-trace**: for every cited code symbol in an LD that claims to fix a defect at a named entry-point surface, verify the cited symbol is reachable from that entry point. An unreached citation (dead code, or the wrong symbol cited) is an `infrastructure-mismatch` VETO.
+- **Delivery-Branch Currency**: when the plan declares a `pr_target`, verify the branch exists on the remote (the Step 0.6 `delivery_branch_lint` reports a missing branch), is still open for merges (operator confirmation -- not git-derivable), and that cited infrastructure resolves against `pr_target` specifically. A stale delivery premise is an `infrastructure-mismatch` VETO.
 
 #### Filter-Stage Ordering Coherence (Phase 78 wiring; GH #47)
 

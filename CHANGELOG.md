@@ -10,6 +10,61 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.57.0] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 84 (feature, GH #81 + #84)**: two pre-audit guards that stop a
+  not-ready plan from wasting an audit cycle. **Pre-audit readiness
+  short-circuit (#81)** — a new `plan_iteration_status_lint` detects a plan
+  that declares itself not audit-ready (an `iteration` value of
+  `draft` / `pre-audit`, an "Operator Decisions Required Before Audit"
+  section, or an Open Questions bullet ending "Operator confirms before
+  audit"); `/qor-audit` Step 0.3 runs it as a hard short-circuit and aborts
+  before any adversarial pass, consuming no audit cycle. **Inverse-coverage
+  discipline (#84)** — `plan_test_lint` now flags a plan that declares a
+  closed-enum taxonomy (a `CANONICAL_*_VALUES` constant plus a `normalize*`
+  function) with no inverse-coverage test; `/qor-plan` Step 5 and
+  `/qor-audit` Step 3 Test Functionality Pass require both the forward
+  round-trip and the inverse coverage assertion, and missing inverse
+  coverage is a `coverage-gap` VETO. Adds the `SG-PreAuditDraftSubmission-A`
+  and `SG-InverseCoverageGapTaxonomy-A` doctrine entries and the
+  Inverse-coverage discipline section in `doctrine-test-functionality.md`.
+
+## [0.56.0] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 83 (feature, GH #83 + #87)**: the `/qor-audit` Phase 37
+  Infrastructure Alignment Pass gains two sub-checks. **Citation
+  consumer-trace** — every cited code symbol in a plan must be reachable from
+  the entry-point surface the plan claims to fix; dead-code or wrong-symbol
+  citations become an `infrastructure-mismatch` VETO. **Delivery-Branch
+  Currency** — a new `delivery_branch_lint` pre-audit lint verifies a plan's
+  declared `pr_target` branch still exists on the remote, and the audit
+  prose directs an operator confirmation that it is still open for merges.
+  Adds an optional `pr_target` field to the plan schema and the
+  `SG-DeliveryBranchDrift-A` doctrine entry. Sub-pass procedures live in a
+  new qor-audit reference file (progressive disclosure).
+
+## [0.55.2] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+
+- **Phase 82 (hotfix, GH #88)**: `qor.reliability.seal_entry_check.check()`
+  now runs its full-chain verification via `ledger_hash.verify_post_anchor()`
+  instead of the strict `ledger_hash.verify()`. The strict verifier's
+  Phase-66 taint propagation returned a permanent failure on any re-anchored
+  ledger carrying disclosed pre-anchor failures, which made `/qor-substantiate`
+  Step 7.7 abort a structurally valid SESSION SEAL. The post-anchor verifier
+  tolerates pre-boundary failures and fails only on post-boundary breaks.
+
 ## [0.55.1] - 2026-05-15
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

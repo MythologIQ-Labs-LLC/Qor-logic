@@ -67,7 +67,9 @@ def _parse_latest_entry(text: str) -> dict | None:
 
 def check(ledger_path: Path, phase_num: int) -> SealEntryResult:
     """Verify the latest ledger entry is a SESSION SEAL for ``phase_num`` with
-    internally-consistent chain hash, and that full chain verification passes."""
+    internally-consistent chain hash, and that post-anchor chain verification
+    passes (GH #88: tolerates a re-anchored ledger's disclosed pre-anchor
+    failures instead of tainting every entry after them)."""
     text = Path(ledger_path).read_text(encoding="utf-8")
     latest = _parse_latest_entry(text)
     errors: list[str] = []
@@ -96,9 +98,11 @@ def check(ledger_path: Path, phase_num: int) -> SealEntryResult:
         )
 
     if not errors:
-        rc = ledger_hash.verify(Path(ledger_path))
+        rc = ledger_hash.verify_post_anchor(Path(ledger_path))
         if rc != 0:
-            errors.append(f"full chain verification failed (ledger_hash.verify rc={rc})")
+            errors.append(
+                f"full chain verification failed (ledger_hash.verify_post_anchor rc={rc})"
+            )
 
     return SealEntryResult(ok=not errors, errors=errors)
 

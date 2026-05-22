@@ -1,26 +1,104 @@
-# AUDIT REPORT - Phase 78
+# AUDIT REPORT
 
-**Plan**: docs/plan-qor-phase78-filter-stage-ordering.md
-**Session**: 2026-05-15T0047-079f9f
+**Tribunal Date**: 2026-05-22T05:00:00Z
+**Target**: docs/plan-qor-phase84-audit-readiness-guards.md (iter-1)
+**Risk Grade**: L2
+**Auditor**: The Qor-logic Judge
 **Verdict**: PASS
-**Risk grade**: L1 (prose-only audit-pass extension; no high-risk surface; matches Phase 73/74 precedent)
 
-## Passes
+---
 
-1. **Plan Form** -- well-formed: change_class=feature, doc_tier=standard, originating_remediation=GH #47, 3 terms_introduced, feature_inventory_touches table populated (2 NEW entries), CI commands enumerated.
-2. **Spec Match** -- GH #47 acceptance: 4-step procedure (preconditions / invariants / dependency graph / topological sort) reproduced verbatim in Phase 1 changes. Sub-tag `filter-order-inversion` named. SG-FilterOrderInversion-A catalogued per #47 doctrinal-precedent ask.
-3. **Test Coverage** -- 3 test files, 6 tests total, each citing the plan-named symbol it verifies. Tests are presence-anchored to file content (read+assert pattern matches Phase 74 precedent that passed SG-035 + V1 functional acceptance).
-4. **Feature Inventory Touches** -- 2 NEW entries declared with explicit test_path + test_descriptor. Per GH #41 / Phase 73 Feature Test Coverage Pass: every entry has a descriptor naming the assertion (heading present + sub-tag present + cross-reference present), not just "the file exists".
-5. **Infrastructure Alignment** -- no third-party SDK citations; no behavioral-semantics claims; no Postgres/auth-schema infrastructure. N/A this phase.
-6. **Ghost UI Pass** -- no UI changes. N/A.
-7. **Filter-Stage Ordering Coherence (self-application)** -- the plan IS the introduction of this rule; self-application probed: the plan's own 3-phase order has no pipeline-shape filter stages (sequential prose additions, no candidate-set selection). N/A as filter-stage check target; the plan defines the rule for downstream targets.
-8. **Plan-Text Consistency** -- `plan_text_consistency_lint --check` will run at CI; plan uses one `python -m pytest` invocation per identity (the test-files set is one identity; the dist_compile + lint + full-suite are separate identities).
+## VERDICT: PASS
 
-## Findings
+---
 
-None blocking. Plan is ready for `/qor-implement`.
+### Executive Summary
 
-## Notes
+The plan implements GH #81 (pre-audit readiness short-circuit lint) and GH #84 (inverse-coverage discipline for closed-enum taxonomies) as two pre-audit lint scripts plus thin skill-prose wiring, with detailed prose in doctrine reference files per the GH #92 progressive-disclosure rule. The audit was conducted under Step 1.a Option B (independent reviewer): the adversarial pass was dispatched to an `architect-reviewer` subagent with no plan-authorship context, clearing the SG-AuthorAuditMomentum-A self-audit scope bias. All eight audit passes clear. Every cited path, module, function (`current_phase_plan_path`), dataclass shape (`LintWarning`), schema field (`originating_remediation`), and enum value (`coverage-gap`) resolves against current repository code. The plan survives its own #81 and #84 disciplines under the Self-Application Sub-Pass. The wiring tests are functionality tests, not presence-only, because each anchored-prose assertion is paired with a mandatory strip-and-fail negative test — the exact mitigation `doctrine-test-functionality.md` sanctions. No violations mandate rejection.
 
-- V1 scope: prose-only audit-pass extension. Mechanical lint helper (`plan_filter_stage_lint.py`) is explicitly non-goal; deferred to V2 conditional on operator demand. Matches Phase 74 pattern (V1 prose + SG; V2 mechanical helper conditional).
-- VETO sub-tag `filter-order-inversion` is a prose sub-tag under existing `composition` / `infrastructure-mismatch` categories; no schema enum change. Same enum-conservation pattern Phase 74 used for `live-progress-fake`.
+### Audit Results
+
+#### Prompt Injection Pass
+**Result**: PASS
+`prompt_injection_canaries` scanned ARCHITECTURE_PLAN.md, META_LEDGER.md, CONCEPT.md, and the plan file. Exit 0 — no canary hits.
+
+#### Security Pass (L3) / OWASP Top 10 Pass
+**Result**: PASS
+The new lint scripts take `--plan` via `argparse` and consume the value as a `Path`, never interpolated into a shell string or `python -c`. Neither new script passes the argv value to `git` (unlike `delivery_branch_lint`), so there is no argument-injection surface. No placeholder auth, no hardcoded secrets, no `shell=True`, no unsafe deserialization. A missing-plan returning exit 0 is the documented #81 intent (an absent plan is not a readiness failure), not a fail-open defect.
+
+#### Ghost UI Pass
+**Result**: PASS (N/A)
+No UI surface. Plan touches lint scripts, skill prose, and doctrine references only.
+
+#### Section 4 Razor Pass
+**Result**: PASS
+`plan_iteration_status_lint.py` mirrors `plan_grep_lint.py` (120 lines): a frozen dataclass, one `check_plan`, one `main`, module-level regexes — within 40-line functions / 250-line file / depth 3. The `plan_test_lint.py` addition is a separable pass appended after the presence-only scan; the plan describes it as factorable into a helper, so the existing `check_plan` stays within the function-line limit.
+
+#### Self-Application Sub-Pass
+**Result**: PASS
+`originating_remediation` is set, so the plan's own new disciplines were applied to the plan file. (a) #81: the plan carries no `**iteration**:` field, its `## Open Questions` body is `None`, and it has no "Operator Decisions Required Before Audit" section; the trigger strings appear only inside design-narrative prose, never in the line-scoped structural positions the detector inspects — no self-trip. (b) #84: the plan declares no `CANONICAL_*_VALUES` constant or `normalize*` function of its own; the inverse-coverage sub-check is N/A. No self-violation.
+
+#### Test Functionality Pass
+**Result**: PASS
+Every behavior test in both Unit Tests sections invokes the unit and asserts on output: `test_detects_*` / `test_clean_plan_*` / `test_inverse_coverage_*` call `check_plan` and assert on returned-finding fields; `test_main_exits_*` run the CLI as a subprocess and assert `returncode` and stderr. The wiring tests read SKILL.md / doctrine prose, but each is paired with a strip-and-fail negative (`test_*_assertion_fails_when_section_removed`, `test_skill_citations_fail_when_directives_removed`) — the accepted mitigation named at `qor/references/doctrine-test-functionality.md` line 28. Not presence-only.
+
+#### Dependency Pass
+**Result**: PASS
+No third-party packages. `argparse`, `re`, `sys`, `dataclasses`, `pathlib`, `subprocess`, `textwrap` — all stdlib, same import set as the cited template scripts.
+
+#### Infrastructure Alignment Pass
+**Result**: PASS
+`current_phase_plan_path` exists at `qor/scripts/governance_helpers.py:57`. The `LintWarning` dataclass shape (`plan`, `line`, `pattern`, `excerpt`) matches `plan_test_lint.py:21-26` — the plan claims no new field. `coverage-gap` is a real enum value in `qor/gates/schema/audit.schema.json`. The `/qor-audit` Step 0.3 insertion point introduces no numbering collision (existing steps: 0, 0.4, 0.5, 0.6). `qor-plan` Step 5 and the qor-audit Test Functionality Pass both exist as insertion targets. All NEW files are declared NEW in Affected Files blocks.
+
+#### Filter-Stage Ordering Coherence Pass
+**Result**: PASS (N/A)
+No pipeline-shaped candidate-filter-select function in scope.
+
+#### Macro-Level Architecture Pass / Orphan Detection
+**Result**: PASS
+`plan_iteration_status_lint.py` connects to a build path via the new `/qor-audit` Step 0.3 wiring. The `plan_test_lint.py` change extends an already-wired module (Step 0.6). New test files are pytest-discovered. No orphan, no mixed domains.
+
+#### Feature Test Coverage Pass
+**Result**: PASS (exempt)
+`feature_inventory_touches` is empty. The plan touches governance skills, doctrine references, and pre-audit lint scripts — no `src/` user-facing feature. Exempt per the Feature Test Coverage Pass docs/governance exemption.
+
+### Violations Found
+
+None.
+
+| ID  | Category | Location | Description |
+| --- | -------- | -------- | ----------- |
+| —   | —        | —        | No violations. |
+
+## Process Pattern Advisory
+
+<!-- qor:veto-pattern-advisory -->
+
+No repeated-VETO pattern detected in the last 2 sealed phases.
+
+<!-- qor:drift-section -->
+## Documentation Drift
+
+Non-VETO advisory. These issues would hard-block at /qor-substantiate per `qor/references/doctrine-documentation-integrity.md`. Governor can fix in a follow-on amendment or accept the block at seal time.
+
+- Glossary: Declared term 'SG-PreAuditDraftSubmission-A' has no entry in qor\references\glossary.md.
+
+Note: the declared terms `SG-PreAuditDraftSubmission-A`, `SG-InverseCoverageGapTaxonomy-A`, and `inverse-coverage discipline` should receive glossary entries during `/qor-implement` so the substantiate-time documentation-integrity check does not block the seal.
+
+### Verdict Hash
+
+SHA256(this_report) = computed at ledger entry #220
+
+---
+_This verdict is binding._
+
+## Tribunal Complete
+
+**Verdict**: PASS
+**Risk Grade**: L2
+**Report Location**: .agent/staging/AUDIT_REPORT.md
+
+Gate cleared. The Specialist may proceed with `/qor-implement`.
+
+---
+_Gate OPEN. Proceed accordingly._

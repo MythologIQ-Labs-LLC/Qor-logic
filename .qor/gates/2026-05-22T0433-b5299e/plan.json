@@ -1,0 +1,56 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-22T0433-b5299e",
+  "ts": "2026-05-22T14:23:07Z",
+  "plan_path": "docs/plan-qor-phase84-audit-readiness-guards.md",
+  "phases": [
+    "Phase 1: Pre-audit readiness short-circuit (GH #81)",
+    "Phase 2: Inverse-coverage discipline for closed-enum taxonomies (GH #84)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_iteration_status_lint.py -q",
+    "python -m pytest tests/test_plan_test_lint.py -q",
+    "python -m pytest tests/test_audit_skill_iteration_lint_wiring.py tests/test_inverse_coverage_skill_wiring.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase84-audit-readiness-guards.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "SG-PreAuditDraftSubmission-A",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    },
+    {
+      "term": "SG-InverseCoverageGapTaxonomy-A",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    },
+    {
+      "term": "inverse-coverage discipline",
+      "home": "qor/references/doctrine-test-functionality.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "plan_test_lint inverse-coverage check is a keyword heuristic over plan prose, WARN-only; binding VETO is /qor-audit Step 3"
+    ],
+    "non_goals": [
+      "no iteration field added to plan.schema.json",
+      "no AST parsing of taxonomy source",
+      "no change to plan_test_lint WARN-only exit posture"
+    ],
+    "exclusions": [
+      "lints run against plan markdown only"
+    ]
+  },
+  "originating_remediation": "GH #81 + GH #84",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.56.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-22T14:23:07Z"
+  }
+}

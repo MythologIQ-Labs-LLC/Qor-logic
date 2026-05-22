@@ -43,6 +43,11 @@
       "type": "boolean",
       "description": "Phase 54: declare whether the downstream system being supported by this Qor-logic invocation is itself a high-risk AI system per EU AI Act Annex III. Default false; when true, impact_assessment is required."
     },
+    "pr_target": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Phase 83 (GH #87): the branch this plan will be merged into, when it is not the default branch (e.g. a release branch 'RC1.4'). Optional; absent for plans targeting the default branch. Consumed by /qor-audit Step 0.6 delivery_branch_lint and the Phase 37 Delivery-Branch Currency sub-check."
+    },
     "originating_remediation": {
       "type": ["string", "null"],
       "description": "Phase 68 (GH #44): free-form reference to the issue, incident, or SG pattern this plan remediates (e.g., 'GH #44', 'SG-PlanTextDrift-A', 'COREFORGE 3-VETO cycle 2026-05-08'). Read by /qor-audit Step 3.5 (Self-Application Sub-Pass): when set, the auditor manually performs the to-be-introduced discipline against the plan's own content. Optional; absence skips the sub-pass."

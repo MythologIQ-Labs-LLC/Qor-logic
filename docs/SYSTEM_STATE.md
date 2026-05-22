@@ -409,3 +409,29 @@ Reconciles a divergent local session work-stream (originally numbered Phase 45 t
 **Tests**: 1538 passing, 1 skipped, 4 deselected. Deterministic across multiple runs. Build: `python -m build` produces `qor_logic-0.46.0.tar.gz` + `qor_logic-0.46.0-py3-none-any.whl`, both pip-installable; CLI smoke `qor-logic --version` returns `qor-logic 0.46.0`.
 
 **Decision**: Phase 60 sealed at v0.46.0. The session work-stream is reconciled with upstream's canonical timeline. Path B's explicit trade-off — sacrificing granular 17-phase replay identity in exchange for tractable merge resolution — is documented in §10.10 as the standard approach when shared governance surfaces have been independently evolved by both timelines.
+
+## Phase 83 (v0.56.0 — 2026-05-22): qor-audit Phase 37 Infrastructure Alignment hardening (GH #83 + #87)
+
+Two sub-checks added to the `/qor-audit` Step 3 Infrastructure Alignment Pass. Full procedures live in the new reference file `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (progressive disclosure per GH #92); `SKILL.md` carries one-line pointers.
+
+**Citation consumer-trace (GH #83)**: an auditor-executed prose sub-check. For every cited code symbol in a plan Locked Decision claiming to fix a defect at a named entry-point surface, the auditor verifies the symbol is reachable from that entry point; an unreached citation (dead code, or the wrong symbol cited) is an `infrastructure-mismatch` VETO.
+
+**Delivery-Branch Currency (GH #87)**: a new pre-audit lint `qor/scripts/delivery_branch_lint.py` (wired into `/qor-audit` Step 0.6) extracts the optional `pr_target` plan field, allowlist-validates it against a conservative branch-name pattern (a `-`-prefixed value is rejected and never passed to `git` — argument-injection guard added per the iter-1 OWASP A03 VETO), and runs `git ls-remote` to confirm the branch exists on the remote. Prose in the reference file directs the auditor to obtain operator confirmation that the branch is still open and to grep cited infrastructure against `pr_target` specifically. New optional `pr_target` field on `qor/gates/schema/plan.schema.json`; new `SG-DeliveryBranchDrift-A` doctrine entry.
+
+**Tests**: 11 new tests across `tests/test_delivery_branch_lint.py` (helper behavior — no-op, existing, dash-prefix rejection, absent, CLI, schema) and `tests/test_audit_phase37_subpasses.py` (sub-pass wiring + procedure-content + SG doctrine round-trip). Deterministic across two runs.
+
+**Decision**: Phase 83 sealed at v0.56.0. Audit iter-1 VETO (OWASP A03 argument injection in the unvalidated `pr_target` path) corrected at iter-2 by adding branch-name allowlist validation before any subprocess call.
+
+## Phase 84 (v0.57.0 — 2026-05-22): Audit-readiness guards — pre-audit short-circuit + inverse-coverage discipline (GH #81 + #84)
+
+Two pre-audit lint guards plus thin skill-prose wiring; detailed prose lands in doctrine reference files per GH #92 progressive disclosure.
+
+**Pre-audit readiness short-circuit (GH #81)**: a new pre-audit lint `qor/scripts/plan_iteration_status_lint.py` detects three pre-audit self-declaration signals in a plan — an `**iteration**:` value containing `draft` / `pre-audit`, an "Operator Decisions Required Before Audit" section, or an Open Questions bullet ending "Operator confirms before audit" — and exits non-zero on any hit. `/qor-audit` gains Step 0.3, which runs the lint before identity activation and before any adversarial pass; on non-zero exit the audit aborts and emits no gate artifact, so a structurally not-ready plan consumes no audit cycle. Unlike the WARN-only Step 0.6 lints, this is a hard short-circuit.
+
+**Inverse-coverage discipline (GH #84)**: `qor/scripts/plan_test_lint.py` gains an inverse-coverage check — when a plan declares a closed-enum taxonomy (a `CANONICAL_*_VALUES` constant plus a `normalize*` function) with no inverse-coverage test bullet, it emits a WARN-only `inverse-coverage-missing` finding. `/qor-plan` Step 5 and the `/qor-audit` Step 3 Test Functionality Pass require both the forward round-trip and the inverse coverage assertion; missing inverse coverage is a `coverage-gap` VETO. The discipline (forward + inverse assertions, gated-bucket exemption, standard test pattern) is documented in `qor/references/doctrine-test-functionality.md`.
+
+**Doctrine**: two new entries — `SG-PreAuditDraftSubmission-A` and `SG-InverseCoverageGapTaxonomy-A` — in `qor/references/doctrine-shadow-genome-countermeasures.md`; three new glossary terms.
+
+**Tests**: 26 tests across `tests/test_plan_iteration_status_lint.py` (8 — signal detection, CLI exit codes, missing-plan), `tests/test_audit_skill_iteration_lint_wiring.py` (2 — Step 0.3 wiring, anchored + strip-and-fail), `tests/test_inverse_coverage_skill_wiring.py` (4 — doctrine section + skill citations, anchored + strip-and-fail), and `tests/test_plan_test_lint.py` (4 added — inverse-coverage detection + presence-only regression). Deterministic across two runs.
+
+**Decision**: Phase 84 implemented; audit PASS on iter-1 under Step 1.a Option B (independent architect-reviewer subagent, clearing SG-AuthorAuditMomentum-A self-audit bias). Targets v0.57.0 (feature → minor bump) at substantiate.
