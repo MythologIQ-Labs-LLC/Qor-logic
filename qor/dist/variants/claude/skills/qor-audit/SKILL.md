@@ -105,6 +105,7 @@ PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_
 python -m qor.scripts.plan_test_lint --plan "$PLAN_PATH" || true
 python -m qor.scripts.plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
 python -m qor.scripts.plan_text_consistency_lint --check "$PLAN_PATH" || true
+python -m qor.scripts.delivery_branch_lint --plan "$PLAN_PATH" --repo-root . || true
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
@@ -371,6 +372,11 @@ For each plan claim in scope, verify against current code:
 **Phase 72 wiring (GH #56; SG-CitationDrift-A countermeasure)** -- iter-N>1 full re-walk: on iterations after the first (iter-N>1), the Judge re-walks the **FULL Locked Decision set**, not the diff-from-iter-N-1. Every sealed-infrastructure citation (migration name, function signature, file:line, schema, env var, edge-function path) is grep-verified against current code, including LDs that were not modified in this iteration. Citations that lack the inline grep-evidence statement required by `/qor-plan` Step 2 Infrastructure Citation Inventory trigger immediate VETO with `infrastructure-mismatch` category -- regardless of whether the LD was amended in the current iteration. This closes the drift surface where an unverified citation in an unchanged LD propagates across iterations without re-challenge.
 
 See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-InfrastructureMismatch` (Phase 37) and `SG-CitationDrift-A` (Phase 72) for the countermeasure catalog entries.
+
+**Phase 83 wiring (GH #83 + GH #87)** -- two extended sub-passes run as part of this pass; the full procedures live in `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (progressive disclosure per GH #92):
+
+- **Citation consumer-trace**: for every cited code symbol in an LD that claims to fix a defect at a named entry-point surface, verify the cited symbol is reachable from that entry point. An unreached citation (dead code, or the wrong symbol cited) is an `infrastructure-mismatch` VETO.
+- **Delivery-Branch Currency**: when the plan declares a `pr_target`, verify the branch exists on the remote (the Step 0.6 `delivery_branch_lint` reports a missing branch), is still open for merges (operator confirmation -- not git-derivable), and that cited infrastructure resolves against `pr_target` specifically. A stale delivery premise is an `infrastructure-mismatch` VETO.
 
 #### Filter-Stage Ordering Coherence (Phase 78 wiring; GH #47)
 

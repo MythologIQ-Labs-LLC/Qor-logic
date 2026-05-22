@@ -8217,3 +8217,170 @@ SHA256(content + previous) = 885699ae870f3493ef4621e7b2a34bdb6f17fb30c88ca473498
 *Session: SEALED* (Phase 82 hotfix complete; GH #88 closed)
 *Merkle seal: 375a0214...* (Phase 82 seal on top of Phase 81's fffbb2d2...)
 *Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*
+
+---
+
+### Entry #216: GATE TRIBUNAL -- Phase 83 plan -- **VETO** (L2)
+
+**Timestamp**: 2026-05-22T03:05:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: VETO
+
+**Plan**: `docs/plan-qor-phase83-audit-phase37-hardening.md`
+
+**Session**: `2026-05-22T0236-09b540`
+
+**Mode**: solo (codex-plugin not declared). SG-007 author-momentum disclosed: audit operator authored the plan; the Self-Application Sub-Pass ran (originating_remediation = GH #83 + GH #87) and the binding finding came from the OWASP pass.
+
+**Pre-audit lints (Step 0.6)** -- all CLEAN: `plan_test_lint`, `plan_grep_lint`, `plan_text_consistency_lint`, `prompt_injection_canaries` all EXIT 0.
+
+**Audit passes (11/12 PASS, 1 FAIL)**: Prompt Injection PASS; Security L3 PASS; **OWASP Top 10 FAIL (V1)**; Ghost UI N/A; Section 4 Razor PASS; Self-Application Sub-Pass PASS (plan's own citations resolve; plan declares no pr_target so delivery-branch check is a correct no-op for it); Test Functionality PASS (helper tests behavioral; Phase 1 prose-wiring tests cleared against the `test_audit_template_has_drift_marker` repo precedent); Dependency PASS (stdlib only); Macro-architecture PASS; Feature Test Coverage exempt; Infrastructure Alignment PASS (all cited paths resolve at HEAD); Filter-Stage Ordering N/A; Orphan Detection PASS.
+
+**Binding finding**:
+- **V1 (owasp-violation, A03 argument injection)**: Phase 2's `delivery_branch_lint` helper passes the plan-authored `pr_target` value to `git ls-remote --heads origin <pr_target>` as an argv element with no validation that it is a well-formed branch name. A `-`-prefixed `pr_target` is parsed by git as an option rather than a ref; `git ls-remote` accepts the command-specifying `--upload-pack` option. The plan's "list-form argv, no shell=True" design closes shell injection but not argument injection. Because `delivery_branch_lint` auto-runs at qor-audit Step 0.6 on every audit -- including in consumer repos where plan files may be contributor- or agent-authored -- this is a command-execution surface reachable through a plan file.
+
+**Required next action**: Governor: amend plan text -- `delivery_branch_lint` must validate `pr_target` against a conservative branch-name pattern (reject empty, `-`-prefixed, or out-of-charset values; report as a lint finding, never hand to `git`) with a unit test asserting a `-`-prefixed value is rejected without invoking the resolver. Then re-run `/qor-audit`.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected in the last 2 sealed phases (Phase 81 PASS, Phase 82 PASS).
+
+**SSDF Practices**: PW.7.1, PW.8.1, RV.1.1.
+
+**Content Hash**: `a9b17b6f04e2feb3f7da412db98d2fa79b6c1bb5f3f95345aa6859b30e8109e1`
+**Previous Hash**: `375a02146a29e3a159bdd0288b5c427600c2b19e16288041738de325f78dd8f1`
+**Chain Hash**: `0cffc97b358853e649d429f868965c01617f6668d8266b27968355e6d0316ddb`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0236-09b540 (Phase 83 -- audit VETO; plan returns to /qor-plan for amendment)*
+
+---
+
+### Entry #217: GATE TRIBUNAL -- Phase 83 plan iter-2 -- **PASS** (L2)
+
+**Timestamp**: 2026-05-22T03:20:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: PASS
+
+**Plan**: `docs/plan-qor-phase83-audit-phase37-hardening.md` (iter-2)
+
+**Session**: `2026-05-22T0236-09b540`
+
+**Mode**: solo. Iteration 2 — follows the iter-1 VETO at Entry #216.
+
+**Resolution of iter-1 V1 (owasp-violation, A03)**: the amended plan specifies that `delivery_branch_lint` validates `pr_target` against the conservative branch-name pattern `^[A-Za-z0-9._/][A-Za-z0-9._/-]*$` before any subprocess call; empty, `-`-prefixed, and out-of-charset values are reported as a `LintWarning` and never passed to `git`; the resolver is invoked only after validation passes. A new test `test_dash_prefixed_pr_target_rejected_without_resolver` asserts a `--upload-pack=evil` value yields a finding without the resolver being called. The argument-injection surface is closed.
+
+**Audit passes (12/12 PASS)**: full plan re-walk per Phase 72 iter-N>1 contract. Prompt Injection, Security L3, OWASP Top 10 (A03 resolved), Ghost UI N/A, Section 4 Razor, Self-Application Sub-Pass (plan's own citations resolve; plan declares no pr_target), Test Functionality (helper tests behavioral; new dash-prefix test survives the acceptance question), Dependency (stdlib only), Macro-architecture, Feature Test Coverage exempt, Infrastructure Alignment (all cited paths resolve at HEAD), Filter-Stage Ordering N/A, Orphan Detection — all PASS.
+
+**Decision**: Plan closes GH #83 + GH #87 by hardening the Phase 37 Infrastructure Alignment Pass with a consumer-trace prose sub-check and a delivery-branch currency sub-check (tested helper + prose + plan.schema.json pr_target field + SG-DeliveryBranchDrift-A doctrine entry). No violation across all twelve passes. Gate OPEN.
+
+**Process Pattern Advisory**: No repeated-VETO pattern detected in the last 2 sealed phases (Phase 81 PASS, Phase 82 PASS). The single Phase 83 iter-1 VETO is not a repeated pattern.
+
+**Mandated next action**: `/qor-implement` per `qor/gates/chain.md`.
+
+**SSDF Practices**: PW.7.1, PW.8.1, RV.1.1.
+
+**Content Hash**: `bfd9ba423201deb1c646804091c1f16c116cdcb5a929ce596aba71309ec45857`
+**Previous Hash**: `0cffc97b358853e649d429f868965c01617f6668d8266b27968355e6d0316ddb`
+**Chain Hash**: `884d325d1d93c511d661393b8c20e1c4cecb9661ab4e9f9ebf9d4b79e80db6bc`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0236-09b540 (Phase 83 -- audit PASS iter-2, awaiting /qor-implement)*
+
+---
+
+### Entry #218: IMPLEMENTATION -- Phase 83 (qor-audit Phase 37 Infrastructure Alignment hardening)
+
+**Timestamp**: 2026-05-22T03:40:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Specialist
+
+**Plan**: `docs/plan-qor-phase83-audit-phase37-hardening.md`
+
+**Session**: `2026-05-22T0236-09b540`
+
+**Scope**: Closes GH #83 + GH #87. Two sub-checks added to the `/qor-audit` Phase 37 Infrastructure Alignment Pass via the hybrid build shape settled in planning dialogue: #83 consumer-trace as auditor-executed prose, #87 delivery-branch currency as a tested helper plus prose. Full sub-pass procedures live in the new reference file `phase37-subpasses.md` (progressive disclosure per GH #92); `SKILL.md` carries one-line pointers only.
+
+**Files touched** (9): `qor/scripts/delivery_branch_lint.py` (NEW), `qor/gates/schema/plan.schema.json` (optional `pr_target` string field), `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (NEW), `qor/skills/governance/qor-audit/SKILL.md` (Step 0.6 lint + Step 3 sub-pass pointers), `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-DeliveryBranchDrift-A`), `docs/SYSTEM_STATE.md` (Phase 83 entry), `tests/test_delivery_branch_lint.py` (NEW), `tests/test_audit_phase37_subpasses.py` (NEW), `docs/plan-qor-phase83-audit-phase37-hardening.md` (NEW).
+
+**Test surface**: TDD red-green observed (`test_delivery_branch_lint.py` failed to import the absent module before implementation). 11 new tests: 6 in `test_delivery_branch_lint.py` (no-op when no `pr_target`; existing branch clean; `-`-prefixed `pr_target` rejected without invoking the resolver -- the OWASP A03 guard; absent branch yields finding; CLI exits non-zero; `plan.schema.json` accepts a string `pr_target` and rejects a non-string), 5 in `test_audit_phase37_subpasses.py` (consumer-trace + delivery-branch SKILL wiring, procedure-content completeness, `SG-DeliveryBranchDrift-A` round-trip). All 11 pass twice deterministically. `gate_skill_matrix` after the SKILL.md edits: 30 skills, 116 handoffs, 0 broken.
+
+**Razor compliance**: `delivery_branch_lint.py` 119 lines (<=250); longest function `check_delivery_branch` ~25 lines; max nesting depth 2; zero nested ternaries.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. ARCHITECTURE_PLAN.md carries no granular `qor/scripts/` file tree -- no-op. The architecture-bearing documentation for this change is the `SG-DeliveryBranchDrift-A` doctrine entry and the `phase37-subpasses.md` reference file, both authored in this pass. `docs/SYSTEM_STATE.md` Phase 83 entry authored in-context.
+
+**Reliability**: intent-lock captured at implement start (`LOCKED: 2026-05-22T0236-09b540`).
+
+**Self-application**: iter-1 OWASP A03 VETO (Entry #216) -- the unvalidated `pr_target` argument-injection surface -- corrected at iter-2; `delivery_branch_lint` now allowlist-validates `pr_target` before any subprocess call, with `test_dash_prefixed_pr_target_rejected_without_resolver` proving the resolver is never reached for a hostile value.
+
+**SSDF Practices**: PW.5.1, PW.7.1, PW.8.1, RV.1.1.
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`.
+
+**Content Hash**: `a5ea9f2403476800670b3994941dd9b3ea3c8137ac981cd3e3e4d0ef05115a18`
+**Previous Hash**: `884d325d1d93c511d661393b8c20e1c4cecb9661ab4e9f9ebf9d4b79e80db6bc`
+**Chain Hash**: `368d617582d2720e45976a95df241f672d6df50539edcfa38ef0eb9a76ba9208`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T0236-09b540 (Phase 83 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #219: SESSION SEAL -- Phase 83 feature substantiated: qor-audit Phase 37 hardening (v0.56.0, GH #83 + #87)
+
+**Timestamp**: 2026-05-22T04:29:02Z
+
+**Phase**: SUBSTANTIATE (Phase 83 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase83-audit-phase37-hardening.md
+
+**Session**: `2026-05-22T0236-09b540`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PS.3.1, PW.1.1, PW.5.1, RV.1.1, RV.1.2
+
+**Entry ID**: `68405b6bcd2e` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #83 + GH #87. The `/qor-audit` Step 3 Infrastructure Alignment Pass gains two sub-checks. **Citation consumer-trace (GH #83)**: an auditor-executed prose sub-check -- for every cited code symbol in a plan Locked Decision claiming to fix a defect at a named entry-point surface, the symbol must be reachable from that entry point; an unreached citation is an `infrastructure-mismatch` VETO. **Delivery-Branch Currency (GH #87)**: a new pre-audit lint `qor/scripts/delivery_branch_lint.py` wired into `/qor-audit` Step 0.6 extracts the optional `pr_target` plan field, allowlist-validates it, and runs `git ls-remote` to confirm the branch exists on the remote; prose directs the auditor to obtain operator confirmation the branch is still open and to grep cited infrastructure against `pr_target` specifically. Full sub-pass procedures live in the new reference file `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (progressive disclosure per GH #92). New optional `pr_target` field on `plan.schema.json`; new `SG-DeliveryBranchDrift-A` doctrine entry.
+
+**Files touched** (~13): `qor/scripts/delivery_branch_lint.py` (NEW), `qor/gates/schema/plan.schema.json`, `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (NEW), `qor/skills/governance/qor-audit/SKILL.md`, `qor/references/doctrine-shadow-genome-countermeasures.md`, `docs/SYSTEM_STATE.md`, `docs/SHADOW_GENOME.md`, `tests/test_delivery_branch_lint.py` (NEW), `tests/test_audit_phase37_subpasses.py` (NEW), `docs/plan-qor-phase83-audit-phase37-hardening.md` (NEW), `docs/META_LEDGER.md` (entries #216-#219), `CHANGELOG.md` (0.56.0 stamped), `README.md` (badges).
+
+**Test surface**: TDD red-green observed. 11 new tests across two files, all passing twice deterministically: `test_delivery_branch_lint.py` (6 -- helper no-op / existing / dash-prefix rejection without resolver / absent / CLI exit / schema accept-reject), `test_audit_phase37_subpasses.py` (5 -- sub-pass SKILL wiring, procedure-content completeness, SG doctrine round-trip).
+
+**Audit history**: iter-1 VETO (Entry #216, L2) -- OWASP A03 argument injection: the unvalidated `pr_target` reaching `git ls-remote` as argv where a `-`-prefixed value is parsed as an option. Corrected at iter-2 (Entry #217 PASS) by adding conservative branch-name allowlist validation before any subprocess call, with `test_dash_prefixed_pr_target_rejected_without_resolver` proving a hostile value never reaches `git`. Shadow Genome: Phase 83 Pass 1 entry logs the argument-injection-vs-shell-injection conflation pattern.
+
+**Self-application**: Entry carries an Entry ID. `doc_tier: standard`; the architecture-bearing documentation is the `SG-DeliveryBranchDrift-A` doctrine entry + the `phase37-subpasses.md` reference file, both authored in-context. Phase 58 procedural-fidelity: `docs/SYSTEM_STATE.md` in the implement files_touched set satisfies the doc-surface coverage detector. Phase 79 Step 8.5: SYSTEM_STATE Phase 83 entry authored during implement. GH #92 progressive disclosure honored: sub-pass prose in a reference file, SKILL.md gains only short pointers (6 lines added).
+
+**Content Hash (session seal)**: `dc022ea9f3b4110c0744cbd9ed95cbef81e0a999ca169802ae993be9ca0112a2`
+
+**Previous Hash**: `368d617582d2720e45976a95df241f672d6df50539edcfa38ef0eb9a76ba9208`
+
+**Chain Hash (Merkle seal)**: `bd3e1412af711cd0371fe2fc72f024b87d1bc6140582a6972c7558db7df71e49`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 83 feature complete; GH #83 + GH #87 closed)
+*Merkle seal: bd3e1412...* (Phase 83 seal on top of Phase 82's 375a0214...)
+*Open items at this seal: push to origin (operator authorization pending -- Step 9.6 menu)*

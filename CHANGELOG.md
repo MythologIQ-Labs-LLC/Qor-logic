@@ -10,6 +10,24 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.56.0] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 83 (feature, GH #83 + #87)**: the `/qor-audit` Phase 37
+  Infrastructure Alignment Pass gains two sub-checks. **Citation
+  consumer-trace** — every cited code symbol in a plan must be reachable from
+  the entry-point surface the plan claims to fix; dead-code or wrong-symbol
+  citations become an `infrastructure-mismatch` VETO. **Delivery-Branch
+  Currency** — a new `delivery_branch_lint` pre-audit lint verifies a plan's
+  declared `pr_target` branch still exists on the remote, and the audit
+  prose directs an operator confirmation that it is still open for merges.
+  Adds an optional `pr_target` field to the plan schema and the
+  `SG-DeliveryBranchDrift-A` doctrine entry. Sub-pass procedures live in a
+  new qor-audit reference file (progressive disclosure).
+
 ## [0.55.2] - 2026-05-22
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

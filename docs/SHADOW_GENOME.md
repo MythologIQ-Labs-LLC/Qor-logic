@@ -1149,4 +1149,34 @@ SG-AdjacentState-A eighth instance. Two consecutive VETOs on the same plan, both
 
 ---
 
+## Phase 83 Pass 1 -- VETO
+
+**Date**: 2026-05-22
+
+**Verdict**: VETO (L2)
+
+**Categories**: `owasp-violation` (A03 argument injection)
+
+### Findings
+
+V1: Phase 2's `delivery_branch_lint` helper reads `pr_target` from plan front-matter and passes it to `git ls-remote --heads origin <pr_target>` as an argv element with no validation that it is a well-formed branch name. A `pr_target` beginning with `-` is parsed by git as an option rather than a ref; `git ls-remote` accepts `--upload-pack`, a command-specifying option. The plan's "list-form argv, no shell=True" design closes shell injection but not argument injection. The helper auto-runs at qor-audit Step 0.6 on every audit, including in consumer repos where plan files may be contributor- or agent-authored, so this is a command-execution surface reachable through a plan file.
+
+### Root Cause Analysis
+
+The plan equated "list-form argv, no shell=True" with injection-safe. That equivalence holds for shell metacharacter injection but not for argument injection: a leading-dash value reaching a CLI as a positional argument is reinterpreted as an option. The author (also the auditor here) reasoned about the shell boundary and stopped, never asking what `git` itself does with a hostile ref string. The qor-audit OWASP pass explicitly requires "user input validated"; the plan specified the argv form but not the validation.
+
+### Pattern to Avoid
+
+When a plan hands an externally-sourced string to a CLI subprocess, "list-form argv" is necessary but not sufficient. Any value that can reach an option-parsing position must be validated against an allowlist pattern (or separated with `--`) before the subprocess call. Treat leading-dash values as hostile by default. A subprocess-invoking lint that reads from operator/contributor files must validate every extracted token, not just avoid the shell.
+
+### Remediation Attempted
+
+Pending Governor amendment. Audit directs: `delivery_branch_lint` validates `pr_target` against a conservative branch-name pattern (reject empty, `-`-prefixed, or out-of-charset values; report as a lint finding, never hand to `git`), with a unit test asserting a `-`-prefixed value is rejected without invoking the resolver. Then re-run `/qor-audit`.
+
+### Pattern ID
+
+Argument-injection-vs-shell-injection conflation. Candidate SG family entry if it recurs: `SG-ArgInjectionBlindSpot-A` -- "list-form argv" cited as sufficient injection mitigation while a leading-dash argument-injection surface remains. First instance; logged narratively, not yet promoted to a structured countermeasure.
+
+---
+
 *Shadow integrity: ACTIVE*
