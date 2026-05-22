@@ -33,6 +33,30 @@ Read: docs/META_LEDGER.md (verify chain state)
 Read: docs/ARCHITECTURE_PLAN.md (understand what we're building)
 ```
 
+### Step 2.5: Issue-state pre-check (when target is an existing GH issue)
+
+If the research target is an existing GH issue (e.g., `#80`), check whether
+a PR has already addressed it before doing fresh research:
+
+```bash
+gh pr list --state all --search "#<ISSUE_NUMBER>" --limit 5 \\
+  --json number,state,title,mergedAt
+gh pr list --state all --search "in:body <ISSUE_NUMBER>" --limit 5 \\
+  --json number,state,title
+```
+
+If any PR is MERGED and closes the target issue, surface the PR number,
+state, mergedAt, and title to the operator before continuing. The operator
+decides whether the existing PR truly closed the same target (the body of
+an old issue can still read as a fresh defect; `/qor-research` should not
+redo work that has already shipped).
+
+When `gh` is not on PATH or the target is not an existing GH issue
+(e.g., the target is an API surface or a dependency rather than an issue
+number), skip this step with a one-line note and continue.
+
+Closes GH #80; pairs with the existing target-verification chain.
+
 ### Step 3: Target Discovery
 
 Identify the research target from the user's request or from ARCHITECTURE_PLAN.md dependencies.

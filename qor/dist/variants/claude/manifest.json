@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-22T20:46:57Z",
+  "generated_ts": "2026-05-22T22:51:07Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -354,7 +354,7 @@
       "id": "qor-research",
       "source_path": "skills/qor-research/SKILL.md",
       "install_rel_path": "skills/qor-research/SKILL.md",
-      "sha256": "eed426d56bee5b6158bf217d8e8159605191dbe916a63dafc3a6ce2e551b76dc"
+      "sha256": "a6948bcec8842853bafe44960596222dd34fadd33e5cfe69c89cf8c0828e5354"
     },
     {
       "id": "qor-shadow-process",
