@@ -8622,3 +8622,155 @@ SHA256(content_hash + previous_hash) = `144c99dd3c9800d46a91ace5371a4f28eb815497
 *Session: SEALED* (Phase 85 hotfix complete; GH #96 closed)
 *Merkle seal: ea14dcfe...* (Phase 85 seal on top of Phase 84's f38d7085...)
 *Open items at this seal: push + PR + merge (operator-authorized -- Step 9.6)*
+
+---
+
+### Entry #226: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-22T18:40:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: VETO
+
+**Plan**: docs/plan-qor-phase86-post-merge-tag-push.md (iter-1)
+
+**Session**: `2026-05-22T1816-ea1650`
+
+**Findings categories**: infrastructure-mismatch
+
+**Decision**: Phase 86 plan (GH #98 post-merge seal-tag push) VETOed on iter-1. Audit conducted under Step 1.a Option B (independent `architect-reviewer` subagent). The fix design itself PASSed every pass, including a dedicated Fix-Design evaluation confirming the deferral closes #98. One binding VETO under the Infrastructure Alignment Pass (V1, `infrastructure-mismatch`): the plan's Affected Files omits two existing wiring tests -- `tests/test_seal_flow_ordering.py` and `tests/test_substantiate_tag_timing_wired.py` -- that read the `qor-substantiate/SKILL.md` step-layout region the plan mutates. Mechanically neither test breaks (the Step 9.5.5/9.6 boundary is unchanged; `### Step 9.7` inserts after Step 9.6), but the plan asserts coverage completeness without recording that impact analysis. **Required next action:** Governor amends plan text to enumerate the two dependent tests with the verified-unaffected boundary analysis, re-run `/qor-audit`. Plan-text ground.
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `6209a57b8109a5552311eb984f3c090ea1a4ab64e0fea6aa01affee466c8f74c`
+
+**Previous Hash**: `ea14dcfec97f24e49bbec923a6aacac8ef6797d44ca83fcb0a6a0179c9f6e98e`
+
+**Chain Hash**:
+SHA256(content_hash + previous_hash) = `7bab0bada7a1d95228c574a1be5a17b2eacdefbd23f500789f14de8c09a3bc1a`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T1816-ea1650 (Phase 86 -- audit VETO iter-1, plan amendment required)*
+
+---
+
+### Entry #227: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-22T19:00:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: PASS
+
+**Plan**: docs/plan-qor-phase86-post-merge-tag-push.md (iter-2)
+
+**Session**: `2026-05-22T1816-ea1650`
+
+**Decision**: Phase 86 plan (GH #98 post-merge seal-tag push) cleared on iter-2. The iter-1 VETO (Entry #226, V1 `infrastructure-mismatch`) is resolved: the Governor amended the plan with a `### Dependent tests (verified unaffected)` subsection enumerating `tests/test_seal_flow_ordering.py` and `tests/test_substantiate_tag_timing_wired.py` with the boundary impact analysis (the `### Step 9.5.5` / `### Step 9.6` headers do not move; `### Step 9.7` inserts after Step 9.6, so both tests' slice boundaries are unchanged), plus a dedicated CI command running both. The amendment is documentation plus one CI line; the rest of the plan is byte-identical to iter-1, which cleared every other pass. All passes PASS. No repeated-VETO pattern (single VETO this session).
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `b502981e28ab267325182b9ec38553b2350b6da5306813c20b9f7434c9b7aa73`
+
+**Previous Hash**: `7bab0bada7a1d95228c574a1be5a17b2eacdefbd23f500789f14de8c09a3bc1a`
+
+**Chain Hash**:
+SHA256(content_hash + previous_hash) = `0ad6c820fd5e73d39aa193cfde838441c82eac84220d97ddb2c88f62cbbe3c0b`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T1816-ea1650 (Phase 86 -- audit PASS iter-2, awaiting /qor-implement)*
+
+---
+
+### Entry #228: IMPLEMENTATION -- Phase 86 (Post-merge seal-tag push)
+
+**Timestamp**: 2026-05-22T19:20:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Specialist
+
+**Plan**: `docs/plan-qor-phase86-post-merge-tag-push.md`
+
+**Session**: `2026-05-22T1816-ea1650`
+
+**Scope**: Closes GH #98. `/qor-substantiate` pushed the annotated `v{X.Y.Z}` tag with the phase branch (Step 9.6 `--tags`), before the seal commit was on `origin/main`; `release.yml`'s `build-and-publish` guard then failed on the seal PR and blocked the merge. Fix: tag CREATION stays at Step 9.5.5 (pre-merge); the Step 9.6 trailing directive is rewritten to push the branch only; a new **Step 9.7 (Post-merge seal-tag push)** pushes the tag gated on `git merge-base --is-ancestor "$SEAL_COMMIT" origin/main` -- the same predicate `release.yml` uses. A Constraints line and the `seal_tag_timing` doctrine note record the creation-vs-push separation.
+
+**Files touched** (5): `qor/skills/governance/qor-substantiate/SKILL.md` (Step 9.6 rewrite + new Step 9.7 + Constraints line), `qor/references/doctrine-governance-enforcement.md` (`seal_tag_timing` push-timing clause), `tests/test_substantiate_tag_push_timing.py` (NEW), `docs/SYSTEM_STATE.md` (Phase 86 entry), `docs/META_LEDGER.md` (entries #226-#228).
+
+**Test surface**: TDD red-green observed (4 of 5 wiring assertions failed pre-implementation -- Step 9.6 still carried `--tags`, Step 9.7 absent). 5 new tests in `test_substantiate_tag_push_timing.py` (Step 9.6 branch-only / no `--tags`; Step 9.6 defers the push; Step 9.7 pushes the tag gated on `origin/main` reachability; two strip-and-fail negatives), all passing twice deterministically. The two dependent step-layout tests enumerated in the plan (`test_seal_flow_ordering.py`, `test_substantiate_tag_timing_wired.py`) confirmed green after the SKILL.md edit -- the iter-1 V1 "verified unaffected" claim holds. Full suite: 1728 passed, 1 skipped; the single failure is the README ledger-badge transient (this phase's entries advance the count; `/qor-substantiate` Step 6.5 reconciles the badge).
+
+**Razor compliance**: no production code; `test_substantiate_tag_push_timing.py` ~96 lines, all functions <=40 lines. SKILL.md / doctrine are prose.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. Architecture-bearing documentation is the `doctrine-governance-enforcement.md` `seal_tag_timing` extension and the `docs/SYSTEM_STATE.md` Phase 86 entry, authored in-context.
+
+**Reliability**: intent-lock captured at implement start (`LOCKED: 2026-05-22T1816-ea1650`).
+
+**Self-application**: `originating_remediation: GH #98`. Audit took 2 iterations -- iter-1 VETO (Entry #226, `infrastructure-mismatch`: plan omitted the two dependent wiring tests) resolved at iter-2 (Entry #227 PASS) via the plan's `### Dependent tests (verified unaffected)` subsection. Audit conducted under Step 1.a Option B (independent `architect-reviewer` subagent). The VETO is catalogued in `docs/SHADOW_GENOME.md` as Phase 86 Pass 1 with candidate pattern `SG-AffectedFilesReadDeps-A`.
+
+**SSDF Practices**: PS.2.1, RV.2.1.
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`.
+
+**Content Hash**: `5ea9562b912246c83aed497068771f6f470f0ef6dce6196210120590711a59aa`
+**Previous Hash**: `0ad6c820fd5e73d39aa193cfde838441c82eac84220d97ddb2c88f62cbbe3c0b`
+**Chain Hash**: `f704204bed4b786febd4b5b2351974bc985058803716103d7e73e0435cf6c7d3`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T1816-ea1650 (Phase 86 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #229: SESSION SEAL -- Phase 86 hotfix substantiated: post-merge seal-tag push (v0.57.2, GH #98)
+
+**Timestamp**: 2026-05-22T19:40:00Z
+
+**Phase**: SUBSTANTIATE (Phase 86 hotfix)
+
+**Author**: Judge
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase86-post-merge-tag-push.md
+
+**Session**: `2026-05-22T1816-ea1650`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Entry ID**: `d1ee9b51e02c` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #98 -- seal PRs always required `gh pr merge --admin` because `/qor-substantiate` pushed the annotated `v{X.Y.Z}` tag together with the phase branch, before the seal commit reached `origin/main`. `release.yml` triggers `on: push: tags` and its `build-and-publish` job refuses to publish a tag whose commit is not an ancestor of `origin/main`; that failing check then blocked the seal PR (the branch ruleset gates merge on all checks). **Fix**: tag CREATION stays at Step 9.5.5 (pre-merge, on the seal commit -- the Phase 33 timing fix unchanged); the Step 9.6 trailing directive is rewritten to push the branch only; a new **Step 9.7 (Post-merge seal-tag push)** pushes the tag gated on `git merge-base --is-ancestor "$SEAL_COMMIT" origin/main` -- the same reachability predicate `release.yml` uses, so the tag push and the publish guard agree by construction. A Constraints line and the `doctrine-governance-enforcement.md` `seal_tag_timing` note record the creation-vs-push separation.
+
+**Files touched** (~22): `qor/skills/governance/qor-substantiate/SKILL.md` (Step 9.6 rewrite + new Step 9.7 + Constraints line), `qor/references/doctrine-governance-enforcement.md` (`seal_tag_timing` push-timing clause), `tests/test_substantiate_tag_push_timing.py` (NEW), `docs/SYSTEM_STATE.md` (Phase 86 entry), `docs/SHADOW_GENOME.md` (Phase 86 Pass 1 VETO), `docs/META_LEDGER.md` (entries #226-#229), `CHANGELOG.md` (0.57.2 stamped), `README.md` (badges), `pyproject.toml` (0.57.2), 8 regenerated `qor/dist/` variants.
+
+**Test surface**: TDD red-green observed (4 of 5 wiring assertions failed pre-implementation). 5 new anchored + strip-and-fail wiring tests in `tests/test_substantiate_tag_push_timing.py`, all passing twice deterministically. The two dependent step-layout tests (`tests/test_seal_flow_ordering.py`, `tests/test_substantiate_tag_timing_wired.py`, enumerated in the plan after the iter-1 VETO) confirmed green after the SKILL.md edit. Full suite: 1728 passed, 1 skipped.
+
+**Audit history**: iter-1 VETO (Entry #226, L2, `infrastructure-mismatch`) -- the plan omitted the two dependent wiring tests from Affected Files; catalogued in `docs/SHADOW_GENOME.md` as Phase 86 Pass 1 (candidate pattern `SG-AffectedFilesReadDeps-A`). Resolved at iter-2 (Entry #227 PASS) by a `### Dependent tests (verified unaffected)` plan subsection with the boundary impact analysis. Both audits conducted under Step 1.a Option B (independent `architect-reviewer` subagent).
+
+**Self-application**: this seal applies the Phase 86 fix to its own execution -- the v0.57.2 tag was created locally at Step 9.5.5 but is held for the post-merge Step 9.7 push; Step 9.6 pushed the branch only. The plan's conservative exclusion ("phase 86's own seal still tags-before-merge") is therefore beaten: phase 86 dogfoods its own fix. `doc_tier: standard`; architecture-bearing documentation is the `seal_tag_timing` doctrine extension and the SYSTEM_STATE Phase 86 entry, authored in-context.
+
+**Content Hash (session seal)**: `cb9b72090d970439be4d3ede8eabaf126ef8872103cf87f05e1e1a3e5f4671a6`
+
+**Previous Hash**: `f704204bed4b786febd4b5b2351974bc985058803716103d7e73e0435cf6c7d3`
+
+**Chain Hash (Merkle seal)**: `7b209a3a48849f9e7ad7249939a8786f57d6993d6d65352edf6d9d6b01d8e856`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 86 hotfix complete; GH #98 closed)
+*Merkle seal: 7b209a3a...* (Phase 86 seal on top of Phase 85's ea14dcfe...)
+*Open items at this seal: push branch + PR; tag push deferred to post-merge (Step 9.7)*

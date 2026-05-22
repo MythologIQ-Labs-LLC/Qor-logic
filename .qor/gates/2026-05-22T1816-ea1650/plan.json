@@ -1,0 +1,40 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-22T1816-ea1650",
+  "ts": "2026-05-22T18:31:14Z",
+  "plan_path": "docs/plan-qor-phase86-post-merge-tag-push.md",
+  "phases": [
+    "Phase 1: Defer the seal-tag push to post-merge"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_substantiate_tag_push_timing.py -q",
+    "python -m pytest tests/test_seal_flow_ordering.py tests/test_substantiate_tag_timing_wired.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase86-post-merge-tag-push.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "fixes only seal-tag push timing in /qor-substantiate; tag creation stays at Step 9.5.5; release.yml and the main ruleset unchanged"
+    ],
+    "non_goals": [
+      "no change to create_seal_tag",
+      "no change to the Step 9.6 four options themselves",
+      "build-and-publish not removed from the ruleset"
+    ],
+    "exclusions": [
+      "phase 86's own seal still tags-before-merge; fix takes effect phase 87+"
+    ]
+  },
+  "originating_remediation": "GH #98",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.57.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-22T18:31:14Z"
+  }
+}

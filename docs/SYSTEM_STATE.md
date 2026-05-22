@@ -447,3 +447,15 @@ Hotfix closing GH #96, the three pre-existing suite failures surfaced by the Pha
 **Tests**: 13 new tests across `tests/test_seal_trailer_guard.py` (7 — `message_has_full_trailer` accept/reject cases, CLI exit codes against tmp git repos, dash-prefix rejection), `tests/test_doc_integrity_strict_corpus_scan.py` (5 — hoisted-function findings correctness, strict-mode raise, `_scan_corpus` one-entry-per-file), and `tests/test_attribution_tiered_usage.py` (3 added — `_seal_phase_in_scope` scope helper). The previously-failing `test_doc_integrity_drift_report_cli.py` and `test_seal_commits_after_cutoff_have_full_canonical_trailer` now pass. `doc_integrity_strict.py` 222/250 lines after the hoist.
 
 **Decision**: Phase 85 implemented; audit PASS on iter-1 under Step 1.a Option B (independent architect-reviewer subagent). Targets v0.57.1 (hotfix → patch bump) at substantiate.
+
+## Phase 86 (v0.57.2 — 2026-05-22): Post-merge seal-tag push (GH #98)
+
+Hotfix closing GH #98 — every seal PR required `gh pr merge --admin` because `/qor-substantiate` pushed the annotated `v{X.Y.Z}` tag together with the phase branch, before the seal commit reached `origin/main`. `release.yml` triggers `on: push: tags` and its `build-and-publish` job refuses to publish a tag whose commit is not an ancestor of `origin/main`; that failing check then blocked the seal PR (the branch ruleset gates merge on all checks).
+
+**Fix**: tag CREATION stays at Step 9.5.5 (pre-merge, on the seal commit — the Phase 33 timing fix is unchanged). Tag PUSH moves to a new `/qor-substantiate` Step 9.7, gated on `git merge-base --is-ancestor "$SEAL_COMMIT" origin/main` — the same reachability predicate `release.yml` uses, so the tag push and the publish guard agree by construction. Step 9.6's push options push the branch only (the `--tags` instruction is removed). A Constraints line and the `doctrine-governance-enforcement.md` `seal_tag_timing` note record the creation-vs-push separation.
+
+**Tests**: 5 new anchored + strip-and-fail wiring tests in `tests/test_substantiate_tag_push_timing.py` (Step 9.6 pushes branch-only; Step 9.6 defers the tag; Step 9.7 pushes the tag gated on `origin/main` reachability; two strip-and-fail negatives). The two dependent step-layout tests (`test_seal_flow_ordering.py`, `test_substantiate_tag_timing_wired.py`, enumerated in the plan after the iter-1 VETO) confirmed green after the SKILL.md edit.
+
+**Audit history**: iter-1 VETO (Entry #226, L2) — `infrastructure-mismatch`: the plan omitted those two dependent wiring tests from Affected Files. Resolved at iter-2 (Entry #227 PASS) by a `### Dependent tests (verified unaffected)` plan subsection with the boundary impact analysis.
+
+**Decision**: Phase 86 implemented; audit PASS on iter-2 under Step 1.a Option B. Targets v0.57.2 (hotfix → patch bump) at substantiate. The fix takes effect for phase 87 onward; phase 86's own seal still tags-before-merge, so its own PR still needs `--admin`.
