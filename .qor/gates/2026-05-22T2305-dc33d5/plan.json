@@ -1,0 +1,43 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-22T2305-dc33d5",
+  "ts": "2026-05-22T23:05:24Z",
+  "plan_path": "docs/plan-qor-phase89-ci-commands-reconciliation.md",
+  "phases": [
+    "Phase 1: ci_coverage_lint module + Step 0.6 wiring + doctrine bullet + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ci_coverage_lint.py -q",
+    "python -m pytest tests/test_ci_coverage_lint_wiring.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase89-ci-commands-reconciliation.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 Python-fingerprint heuristic (python ... / pytest ...); non-Python checks out of scope (covers issue origination case); WARN-only; tag-only workflows skipped; env-setup boilerplate filtered"
+    ],
+    "non_goals": [
+      "full bash AST parsing; cross-workflow dependency graphing; substantiate-time re-assert (deferred follow-on); workflow-comment-annotation exemptions (use plan-side ## CI Coverage Exemptions block instead); auto-suggestion of exemption rationale"
+    ],
+    "exclusions": [
+      "no changes to release.yml, ci.yml, pr-lint.yml; lint consumed by /qor-audit Step 0.6 only; no VETO binding in V1"
+    ]
+  },
+  "originating_remediation": "GH #91",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.59.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-22T23:05:24Z"
+  }
+}
