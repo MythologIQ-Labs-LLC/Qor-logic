@@ -99,4 +99,6 @@ The canonical strings above define the *content* of attribution. This section de
 | CHANGELOG entry | `_Built via [Qor-logic SDLC](url)._` once per `## [X.Y.Z]` header | `changelog_attribution_line()` | Per-version, not per-entry. Reader scans CHANGELOG version-by-version. |
 | GitHub release notes | Once per release | `changelog_attribution_line()` | Same rationale as CHANGELOG. |
 
-Locked by `tests/test_attribution_tiered_usage.py`. Cutoff for CHANGELOG: versions ≥ 0.36.0; older sections grandfathered.
+Locked by `tests/test_attribution_tiered_usage.py`. The Phase-49 enforcement boundary is expressed two ways for two surfaces: CHANGELOG sections key on version (`≥ 0.36.0`); seal-commit walks key on phase number (`≥ 49`) parsed from the commit subject. Same boundary, different artifact identifiers.
+
+**Grandfathered seal commits (Phase 85, GH #96).** The phase 82 (`fb052e4`) and phase 83 (`ce138b2`) seal commits were authored locally with only the compact `Co-Authored-By:` line, missing the `Authored via [Qor-logic SDLC]` line. They predate the `/qor-substantiate` Step 9.5.4 seal-trailer guard. Rewriting published `main` history to backfill the line is rejected as disproportionate; the two phases are a disclosed exception in `tests/test_attribution_tiered_usage.py` (`_GRANDFATHERED_SEAL_PHASES`). From Phase 85 onward, Step 9.5.4 runs `qor.scripts.seal_trailer_check` after the seal commit and ABORTs substantiation if the full trailer is absent, so the omission cannot recur.

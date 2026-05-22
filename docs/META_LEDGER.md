@@ -8503,3 +8503,122 @@ SHA256(content_hash + previous_hash) = `923e18e7b3280c160d309a584f2593740c4795e8
 *Session: SEALED* (Phase 84 feature complete; GH #81 + GH #84 closed)
 *Merkle seal: f38d7085...* (Phase 84 seal on top of Phase 83's bd3e1412...)
 *Open items at this seal: push + PR + merge (operator-authorized -- Step 9.6)*
+
+---
+
+### Entry #223: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-22T15:20:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Verdict**: PASS
+
+**Plan**: docs/plan-qor-phase85-ci-health-fixes.md (iter-1)
+
+**Session**: `2026-05-22T1453-17a082`
+
+**Decision**: Phase 85 plan (GH #96 CI-health hotfix -- canonical-trailer integrity + drift-report scan hoist) cleared on iter-1. Audit conducted under Step 1.a Option B: the adversarial pass was dispatched to an independent `architect-reviewer` subagent with no plan-authorship context, clearing SG-AuthorAuditMomentum-A. All nine passes PASS. Infrastructure Alignment verified the `phase < 49` floor, the inline trailer predicate, the per-term `_iter_scan_files` calls, and the `Step 9.5`/`Step 9.5.5` insertion gap against current code; the Phase 2 scan hoist was verified behavior-preserving for finding content and append order. The Design-notes deviation from `/qor-debug` (exception set vs. floor raise) is sound governance judgment, transparently disclosed -- not specification-drift. Two non-veto advisories: Phase 2 Affected Files omits the `doc_integrity_strict.py` 250-line cap test (file at 209/250, additive change lands ~215-219, under cap); `test_scan_corpus_reads_each_file_once` asserts entry count not read-count (name overclaims; assertion still behavioral).
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `7cc70425e9da2411db7ab151c6e420228a8d7ec111331a00094d80804825a10e`
+
+**Previous Hash**: `f38d7085ba29813a732e303ad11a421b65a642de50567166a16fe7e1f375e320`
+
+**Chain Hash**:
+SHA256(content_hash + previous_hash) = `144c99dd3c9800d46a91ace5371a4f28eb8154977fe667b72854e753523fe7db`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T1453-17a082 (Phase 85 -- audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #224: IMPLEMENTATION -- Phase 85 (CI-health fixes)
+
+**Timestamp**: 2026-05-22T15:50:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Specialist
+
+**Plan**: `docs/plan-qor-phase85-ci-health-fixes.md`
+
+**Session**: `2026-05-22T1453-17a082`
+
+**Scope**: Closes GH #96. **FIX A (canonical-trailer integrity)**: new pure function `qor.scripts.attribution.message_has_full_trailer` (single source of truth for the full-trailer predicate); new `qor/scripts/seal_trailer_check.py` CLI; new `/qor-substantiate` Step 9.5.4 running the guard after the seal commit with ABORT-on-non-zero. `tests/test_attribution_tiered_usage.py` keeps its `phase >= 49` floor and adds `_GRANDFATHERED_SEAL_PHASES = frozenset({82, 83})` + `_seal_phase_in_scope`; the seal test routes through `message_has_full_trailer`; the inaccurate squash-merge comment is corrected. **FIX B/C (drift-report scan hoist)**: new `_scan_corpus` helper in `qor/scripts/doc_integrity_strict.py`; `check_term_drift` and `check_cross_doc_conflicts` materialize the corpus once before the per-term loop, ending the O(terms x files) re-scan.
+
+**Files touched** (10): `qor/scripts/attribution.py` (`message_has_full_trailer` + `import re`), `qor/scripts/seal_trailer_check.py` (NEW), `qor/scripts/doc_integrity_strict.py` (`_scan_corpus` + hoist), `qor/skills/governance/qor-substantiate/SKILL.md` (Step 9.5.4 + Step 9.5 prose), `qor/references/doctrine-attribution.md` (grandfather note + dual-cutoff note), `tests/test_seal_trailer_guard.py` (NEW), `tests/test_doc_integrity_strict_corpus_scan.py` (NEW), `tests/test_attribution_tiered_usage.py`, `docs/SYSTEM_STATE.md` (Phase 85 entry), `docs/META_LEDGER.md` (entries #223-#224).
+
+**Test surface**: TDD red-green observed (3 collection errors before implementation -- `message_has_full_trailer`, `seal_trailer_check`, `_scan_corpus` absent). 13 new tests across 3 files (7 seal-trailer-guard, 5 corpus-scan, 3 `_seal_phase_in_scope`), all passing twice deterministically. The two previously-failing `test_doc_integrity_drift_report_cli.py` tests now pass fast (the 29-test affected-set run completed in ~21s vs the prior 60s-per-test timeout); `test_seal_commits_after_cutoff_have_full_canonical_trailer` now passes (82/83 grandfathered). Full suite: 1723 passed, 1 skipped. The single remaining failure is the README ledger-badge transient (this phase's ledger entries advance the count; `/qor-substantiate` Step 6.5 reconciles the badge at seal) -- the 3 pre-existing GH #96 failures are all resolved.
+
+**Razor compliance**: `seal_trailer_check.py` 70 lines; `attribution.py` 115; `doc_integrity_strict.py` 222 (<=250 cap honored per the audit advisory); all functions <=40 lines.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. Architecture-bearing documentation is the `doctrine-attribution.md` grandfather + dual-cutoff note (authored in-context) and the `docs/SYSTEM_STATE.md` Phase 85 entry.
+
+**Reliability**: intent-lock captured at implement start (`LOCKED: 2026-05-22T1453-17a082`).
+
+**Self-application**: the plan declared `originating_remediation: GH #96`; the audit Self-Application Sub-Pass confirmed the plan trips none of its own or Phase 84's disciplines. Audit conducted under Step 1.a Option B (independent `architect-reviewer` subagent). Two non-veto audit advisories addressed: `doc_integrity_strict.py` verified at 222/250 lines; the corpus test was named honestly (`test_scan_corpus_returns_one_correct_entry_per_file`).
+
+**SSDF Practices**: PW.5.1, PW.7.1, PW.8.1, RV.1.1.
+
+**Mandated next action**: `/qor-substantiate` per `qor/gates/chain.md`.
+
+**Content Hash**: `0bf78a324707b3901528df93d9ac2611401000d0e381ebafd5bc15cd9fe3b8fc`
+**Previous Hash**: `144c99dd3c9800d46a91ace5371a4f28eb8154977fe667b72854e753523fe7db`
+**Chain Hash**: `d04d7d8f698c68e2c9a6c06d16f643cc65a0818dd17dc5058223e41bdd740495`
+
+---
+
+*Chain integrity: VALID*
+*Session: 2026-05-22T1453-17a082 (Phase 85 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #225: SESSION SEAL -- Phase 85 hotfix substantiated: CI-health fixes (v0.57.1, GH #96)
+
+**Timestamp**: 2026-05-22T16:00:00Z
+
+**Phase**: SUBSTANTIATE (Phase 85 hotfix)
+
+**Author**: Judge
+
+**Change class**: hotfix
+
+**Plan**: docs/plan-qor-phase85-ci-health-fixes.md
+
+**Session**: `2026-05-22T1453-17a082`
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Entry ID**: `105a64c79a3e` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes GH #96 -- the three pre-existing CI suite failures surfaced by the Phase 84 cycle and root-caused by `/qor-debug`. **FIX A (canonical-trailer integrity)**: `test_seal_commits_after_cutoff_have_full_canonical_trailer` was red on `main` because the phase 82/83 seal commits were authored locally with only the compact `Co-Authored-By:` line, missing the `Authored via [Qor-logic SDLC]` line. New pure function `qor.scripts.attribution.message_has_full_trailer` is the single source of truth for the full-trailer predicate, consumed by both the doctrine test and the new `qor/scripts/seal_trailer_check.py` CLI. `/qor-substantiate` gains Step 9.5.4, which runs the guard after the seal commit and ABORTs if the full trailer is absent. The test keeps its `phase >= 49` floor and adds `_GRANDFATHERED_SEAL_PHASES = frozenset({82, 83})` -- a precise exception set that discloses the two non-compliant historical commits while preserving strict coverage for every other phase. **FIX B/C (drift-report scan hoist)**: `check_term_drift` and `check_cross_doc_conflicts` in `qor/scripts/doc_integrity_strict.py` called `_iter_scan_files()` inside the per-term loop -- O(terms x files), ~156k tree-walks + re-reads, 68-81s locally, over the `test_doc_integrity_drift_report_cli.py` 60s cap. New `_scan_corpus` helper materializes the corpus once before the term loop; behavior-preserving (same files, scope fence, finding content and append order), ~75x fewer file operations.
+
+**Files touched** (~26): `qor/scripts/attribution.py`, `qor/scripts/seal_trailer_check.py` (NEW), `qor/scripts/doc_integrity_strict.py`, `qor/skills/governance/qor-substantiate/SKILL.md` (Step 9.5.4 + Step 9.5 prose), `qor/references/doctrine-attribution.md`, `tests/test_seal_trailer_guard.py` (NEW), `tests/test_doc_integrity_strict_corpus_scan.py` (NEW), `tests/test_attribution_tiered_usage.py`, `docs/SYSTEM_STATE.md`, `docs/META_LEDGER.md` (entries #223-#225), `CHANGELOG.md` (0.57.1 stamped), `README.md` (badges), `pyproject.toml` (0.57.1), 8 regenerated `qor/dist/` variants.
+
+**Test surface**: TDD red-green observed (3 collection errors before implementation -- `message_has_full_trailer`, `seal_trailer_check`, `_scan_corpus` absent). 13 new tests across 3 files (7 seal-trailer-guard, 5 corpus-scan, 3 `_seal_phase_in_scope`), all passing twice deterministically. Full suite: 1723 passed, 1 skipped. All three GH #96 failures are resolved -- `test_seal_commits_after_cutoff_have_full_canonical_trailer` and both `test_doc_integrity_drift_report_cli.py` tests now pass.
+
+**Razor compliance**: `seal_trailer_check.py` 70 lines; `attribution.py` 115; `doc_integrity_strict.py` 222 (<=250 cap honored); all functions <=40 lines.
+
+**Audit history**: iter-1 PASS (Entry #223, L2). Conducted under `/qor-audit` Step 1.a Option B -- the adversarial pass was dispatched to an independent `architect-reviewer` subagent, clearing SG-AuthorAuditMomentum-A. All nine passes cleared; no VETO this phase.
+
+**Self-application**: the plan declared `originating_remediation: GH #96`, triggering the audit Self-Application Sub-Pass -- confirmed the plan trips none of its own or Phase 84's disciplines. Entry carries an Entry ID. `doc_tier: standard`; architecture-bearing documentation is the `doctrine-attribution.md` grandfather + dual-cutoff note and the `docs/SYSTEM_STATE.md` Phase 85 entry, authored in-context. Phase 85 dogfoods its own FIX A: the new Step 9.5.4 `seal_trailer_check` guard ran against this very seal commit.
+
+**Content Hash (session seal)**: `6950a0f1c7e17e5c11f53a4dc85608857a62d6533f6e1ef5d8d8c05d01d5cffd`
+
+**Previous Hash**: `d04d7d8f698c68e2c9a6c06d16f643cc65a0818dd17dc5058223e41bdd740495`
+
+**Chain Hash (Merkle seal)**: `ea14dcfec97f24e49bbec923a6aacac8ef6797d44ca83fcb0a6a0179c9f6e98e`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 85 hotfix complete; GH #96 closed)
+*Merkle seal: ea14dcfe...* (Phase 85 seal on top of Phase 84's f38d7085...)
+*Open items at this seal: push + PR + merge (operator-authorized -- Step 9.6)*

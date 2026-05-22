@@ -10,6 +10,25 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.57.1] - 2026-05-22
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+
+- **Phase 85 (hotfix, GH #96)**: three CI-health fixes. The
+  `test_seal_commits_after_cutoff_have_full_canonical_trailer` test — red on
+  `main` because the phase 82/83 seal commits were authored without the
+  `Authored via [Qor-logic SDLC]` trailer line — now passes: the two
+  historical commits are disclosed-grandfathered, a new
+  `qor.scripts.attribution.message_has_full_trailer` predicate is the single
+  source of truth for the full trailer, and a new `/qor-substantiate`
+  Step 9.5.4 guard (`qor.scripts.seal_trailer_check`) ABORTs the seal if a
+  seal commit lacks the full trailer, so the omission cannot recur. The
+  `doc_integrity_drift_report` CLI, which re-walked the markdown tree once
+  per glossary term (O(terms x files)), now materializes the corpus once —
+  a ~75x reduction that brings it back well under the test timeout.
+
 ## [0.57.0] - 2026-05-22
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

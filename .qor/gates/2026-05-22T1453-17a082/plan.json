@@ -1,0 +1,42 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-22T1453-17a082",
+  "ts": "2026-05-22T16:41:48Z",
+  "plan_path": "docs/plan-qor-phase85-ci-health-fixes.md",
+  "phases": [
+    "Phase 1: Canonical-trailer integrity (GH #96 FIX A)",
+    "Phase 2: Drift-report scan hoist (GH #96 FIX B/C)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_seal_trailer_guard.py tests/test_attribution_tiered_usage.py -q",
+    "python -m pytest tests/test_doc_integrity_strict_corpus_scan.py tests/test_doc_integrity_drift_report_cli.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase85-ci-health-fixes.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "historical seal commits ce138b2/fb052e4 not rewritten; disclosed-grandfathered",
+      "seal-trailer guard inspects message text only"
+    ],
+    "non_goals": [
+      "no squash-vs-merge policy change",
+      "no other CLI-test optimization",
+      "no test-timeout raise"
+    ],
+    "exclusions": [
+      "scope-fence semantics, glossary parser, finding message text unchanged"
+    ]
+  },
+  "originating_remediation": "GH #96",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.57.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-22T16:41:48Z"
+  }
+}

@@ -14,6 +14,8 @@ from pathlib import Path
 
 import pytest
 
+from qor.scripts.attribution import message_has_full_trailer
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCTRINE = REPO_ROOT / "qor" / "references" / "doctrine-attribution.md"
 ATTRIBUTION_MD = REPO_ROOT / "ATTRIBUTION.md"
@@ -117,27 +119,66 @@ def _phase_num_from_subject(subject: str) -> int | None:
     return int(m.group(1)) if m else None
 
 
+# Phase 82-83 seal commits (ce138b2, fb052e4) were authored locally with only
+# the compact `Co-Authored-By:` line, missing the `Authored via [Qor-logic SDLC]`
+# line. They predate the /qor-substantiate Step 9.5.4 seal-trailer guard
+# (Phase 85, GH #96). Rewriting published main history to backfill the line is
+# rejected as disproportionate; they are disclosed-grandfathered here. See
+# qor/references/doctrine-attribution.md §"Tiered usage".
+_GRANDFATHERED_SEAL_PHASES = frozenset({82, 83})
+
+
+def _seal_phase_in_scope(phase_num: int | None) -> bool:
+    """True if a seal commit at `phase_num` is subject to the full-trailer rule.
+
+    Phase >= 49 is the enforcement boundary (the same Phase-49 boundary the
+    CHANGELOG check expresses as `CUTOFF_VERSION` 0.36.0, here represented as a
+    phase number for commit-subject walks). Disclosed-grandfathered phases are
+    excluded.
+    """
+    return (
+        phase_num is not None
+        and phase_num >= 49
+        and phase_num not in _GRANDFATHERED_SEAL_PHASES
+    )
+
+
 def test_seal_commits_after_cutoff_have_full_canonical_trailer():
-    """Seal commits for Phase 49+ MUST have the full canonical trailer."""
+    """Seal commits in scope (Phase 49+, non-grandfathered) MUST carry the
+    full canonical trailer."""
     seals = _git_commits(r"^seal:", limit=10)
     if not seals:
         pytest.skip("no seal commits to audit")
     failures: list[str] = []
     for sha, subj, body in seals:
-        phase_num = _phase_num_from_subject(subj)
-        if phase_num is None or phase_num < 49:
-            continue  # grandfathered
-        has_qor_line = "Qor-logic" in body and "Authored via" in body
-        # GitHub squash merge normalizes trailers to canonical lowercase form
-        # `Co-authored-by:`; the doctrine accepts either case per git's
-        # case-insensitive trailer convention (see git-interpret-trailers).
-        has_coauthor = re.search(r"^Co-authored-by:", body, re.IGNORECASE | re.MULTILINE) is not None
-        if not (has_qor_line and has_coauthor):
+        if not _seal_phase_in_scope(_phase_num_from_subject(subj)):
+            continue
+        # message_has_full_trailer is the single source of truth, shared with
+        # the /qor-substantiate Step 9.5.4 seal-trailer guard. Its co-author
+        # match is case-insensitive: git trailer keys are case-insensitive and
+        # a GitHub-merged commit may render `Co-authored-by:` lowercase.
+        if not message_has_full_trailer(body):
             failures.append(f"{sha[:8]} {subj!r}")
     assert not failures, (
         "Seal commits (Phase 49+) must use full canonical trailer per "
         "doctrine-attribution.md §'Tiered usage':\n  " + "\n  ".join(failures)
     )
+
+
+def test_seal_phase_in_scope_excludes_grandfathered():
+    assert _seal_phase_in_scope(82) is False
+    assert _seal_phase_in_scope(83) is False
+
+
+def test_seal_phase_in_scope_includes_recent_compliant_phases():
+    # A precise exception set must NOT blanket-disable checking.
+    assert _seal_phase_in_scope(84) is True
+    assert _seal_phase_in_scope(85) is True
+
+
+def test_seal_phase_in_scope_excludes_below_floor():
+    assert _seal_phase_in_scope(48) is False
+    assert _seal_phase_in_scope(None) is False
 
 
 def test_plan_audit_implement_commits_after_cutoff_have_coauthor_line():

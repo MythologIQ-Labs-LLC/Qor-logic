@@ -1,7 +1,7 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-05-22T05:00:00Z
-**Target**: docs/plan-qor-phase84-audit-readiness-guards.md (iter-1)
+**Tribunal Date**: 2026-05-22T15:20:00Z
+**Target**: docs/plan-qor-phase85-ci-health-fixes.md (iter-1)
 **Risk Grade**: L2
 **Auditor**: The Qor-logic Judge
 **Verdict**: PASS
@@ -14,53 +14,45 @@
 
 ### Executive Summary
 
-The plan implements GH #81 (pre-audit readiness short-circuit lint) and GH #84 (inverse-coverage discipline for closed-enum taxonomies) as two pre-audit lint scripts plus thin skill-prose wiring, with detailed prose in doctrine reference files per the GH #92 progressive-disclosure rule. The audit was conducted under Step 1.a Option B (independent reviewer): the adversarial pass was dispatched to an `architect-reviewer` subagent with no plan-authorship context, clearing the SG-AuthorAuditMomentum-A self-audit scope bias. All eight audit passes clear. Every cited path, module, function (`current_phase_plan_path`), dataclass shape (`LintWarning`), schema field (`originating_remediation`), and enum value (`coverage-gap`) resolves against current repository code. The plan survives its own #81 and #84 disciplines under the Self-Application Sub-Pass. The wiring tests are functionality tests, not presence-only, because each anchored-prose assertion is paired with a mandatory strip-and-fail negative test — the exact mitigation `doctrine-test-functionality.md` sanctions. No violations mandate rejection.
+The plan closes GH #96 (3 pre-existing CI suite failures) as a two-phase hotfix: Phase 1 disclosure-grandfathers the two non-compliant historical seal commits and adds a substantiate-time seal-trailer guard; Phase 2 hoists an O(terms x files) directory re-scan out of the per-term loop in `doc_integrity_strict.py`. The audit ran under Step 1.a Option B — the adversarial pass was dispatched to an independent `architect-reviewer` subagent with no plan-authorship context, clearing SG-AuthorAuditMomentum-A. All nine passes clear. Every cited path, function, and skill step was verified against current repository code: the `phase < 49` floor, the inline trailer predicate, the per-term `_iter_scan_files` calls, and the `Step 9.5` / `Step 9.5.5` insertion gap are all confirmed real; the four new files/symbols are correctly declared NEW. The Phase 2 hoist was verified behavior-preserving for both finding content and append order. The plan's deliberate deviation from the `/qor-debug` suggestion (exception set vs. floor raise) is sound governance judgment — the exception set removes exactly the two known-bad inputs while preserving trailer coverage for compliant phases 49-84 — and was transparently disclosed in a Design notes section. No violations mandate rejection.
 
 ### Audit Results
 
 #### Prompt Injection Pass
-**Result**: PASS
-`prompt_injection_canaries` scanned ARCHITECTURE_PLAN.md, META_LEDGER.md, CONCEPT.md, and the plan file. Exit 0 — no canary hits.
+**Result**: PASS — canary scan over ARCHITECTURE_PLAN.md, META_LEDGER.md, CONCEPT.md, and the plan: exit 0, no hits.
 
 #### Security Pass (L3) / OWASP Top 10 Pass
-**Result**: PASS
-The new lint scripts take `--plan` via `argparse` and consume the value as a `Path`, never interpolated into a shell string or `python -c`. Neither new script passes the argv value to `git` (unlike `delivery_branch_lint`), so there is no argument-injection surface. No placeholder auth, no hardcoded secrets, no `shell=True`, no unsafe deserialization. A missing-plan returning exit 0 is the documented #81 intent (an absent plan is not a readiness failure), not a fail-open defect.
+**Result**: PASS — `seal_trailer_check.py` reads the commit message via list-form `git log -1 --format=%B <commit>` argv; no `shell=True`, no `python -c` variable interpolation (SG-Phase47-A honored). `--commit`/`--repo-root` are argparse arguments, not injection surfaces.
 
 #### Ghost UI Pass
-**Result**: PASS (N/A)
-No UI surface. Plan touches lint scripts, skill prose, and doctrine references only.
+**Result**: PASS (N/A) — no UI surface.
 
 #### Section 4 Razor Pass
-**Result**: PASS
-`plan_iteration_status_lint.py` mirrors `plan_grep_lint.py` (120 lines): a frozen dataclass, one `check_plan`, one `main`, module-level regexes — within 40-line functions / 250-line file / depth 3. The `plan_test_lint.py` addition is a separable pass appended after the presence-only scan; the plan describes it as factorable into a helper, so the existing `check_plan` stays within the function-line limit.
+**Result**: PASS — `message_has_full_trailer` ~5 lines; `_scan_corpus` ~6 lines; `seal_trailer_check.py` comparable to the 78-line `install_drift_check.py`; the hoist net-shrinks `check_term_drift`/`check_cross_doc_conflicts`. Advisory: `doc_integrity_strict.py` is 209/250 lines; the additive `_scan_corpus` lands ~215-219 — under cap, but the implementer should watch it and extract if it crosses 250.
 
 #### Self-Application Sub-Pass
-**Result**: PASS
-`originating_remediation` is set, so the plan's own new disciplines were applied to the plan file. (a) #81: the plan carries no `**iteration**:` field, its `## Open Questions` body is `None`, and it has no "Operator Decisions Required Before Audit" section; the trigger strings appear only inside design-narrative prose, never in the line-scoped structural positions the detector inspects — no self-trip. (b) #84: the plan declares no `CANONICAL_*_VALUES` constant or `normalize*` function of its own; the inverse-coverage sub-check is N/A. No self-violation.
+**Result**: PASS — `originating_remediation` set; the plan carries no pre-audit draft marker, no "Operator Decisions Required Before Audit" section, no draft Open Questions, and declares no closed-enum taxonomy. It does not trip Phase 84's or its own disciplines.
 
 #### Test Functionality Pass
-**Result**: PASS
-Every behavior test in both Unit Tests sections invokes the unit and asserts on output: `test_detects_*` / `test_clean_plan_*` / `test_inverse_coverage_*` call `check_plan` and assert on returned-finding fields; `test_main_exits_*` run the CLI as a subprocess and assert `returncode` and stderr. The wiring tests read SKILL.md / doctrine prose, but each is paired with a strip-and-fail negative (`test_*_assertion_fails_when_section_removed`, `test_skill_citations_fail_when_directives_removed`) — the accepted mitigation named at `qor/references/doctrine-test-functionality.md` line 28. Not presence-only.
+**Result**: PASS — all eleven described tests invoke the unit and assert on output. The CLI tests use a real tmp git repo + `python -m` subprocess asserting returncode and stderr; the doc-integrity tests use fixture repos asserting exact finding messages. No presence-only tests. Advisory: `test_scan_corpus_reads_each_file_once` asserts N entries returned, not an instrumented read-count — the name slightly overclaims but the assertion is behavioral.
 
 #### Dependency Pass
-**Result**: PASS
-No third-party packages. `argparse`, `re`, `sys`, `dataclasses`, `pathlib`, `subprocess`, `textwrap` — all stdlib, same import set as the cited template scripts.
+**Result**: PASS — stdlib only (`re`, `argparse`, `subprocess`, `pathlib`); `pytest` already a dev dependency.
 
 #### Infrastructure Alignment Pass
-**Result**: PASS
-`current_phase_plan_path` exists at `qor/scripts/governance_helpers.py:57`. The `LintWarning` dataclass shape (`plan`, `line`, `pattern`, `excerpt`) matches `plan_test_lint.py:21-26` — the plan claims no new field. `coverage-gap` is a real enum value in `qor/gates/schema/audit.schema.json`. The `/qor-audit` Step 0.3 insertion point introduces no numbering collision (existing steps: 0, 0.4, 0.5, 0.6). `qor-plan` Step 5 and the qor-audit Test Functionality Pass both exist as insertion targets. All NEW files are declared NEW in Affected Files blocks.
+**Result**: PASS — verified real: `phase < 49` floor (`test_attribution_tiered_usage.py:128`), inline `has_qor_line`/`has_coauthor` (130-134), `commit_trailer` two-line output (`attribution.py:32-37`), per-term `_iter_scan_files` calls (`doc_integrity_strict.py:65`, `:191`), `Step 9.5`/`Step 9.5.5` with no existing `Step 9.5.4`. `message_has_full_trailer`, `seal_trailer_check.py`, and both new test files confirmed absent (genuinely NEW). The Phase 2 hoist is behavior-preserving: same files in `_iter_scan_files` order, scope fence stays per-term, pre-reading then in-loop skipping yields no finding (identical to skipping the read), `errors="replace"` decode mode matches. Advisory: Phase 2 Affected Files omits `tests/test_doc_integrity_razor_compliance.py` (the 250-line cap test) — a completeness gap, not a mismatch.
 
-#### Filter-Stage Ordering Coherence Pass
-**Result**: PASS (N/A)
-No pipeline-shaped candidate-filter-select function in scope.
+#### Filter-Stage Ordering Coherence
+**Result**: PASS (N/A) — no pipeline-shaped candidate-filter-select function.
 
-#### Macro-Level Architecture Pass / Orphan Detection
-**Result**: PASS
-`plan_iteration_status_lint.py` connects to a build path via the new `/qor-audit` Step 0.3 wiring. The `plan_test_lint.py` change extends an already-wired module (Step 0.6). New test files are pytest-discovered. No orphan, no mixed domains.
+#### Macro-Level Architecture / Orphan Detection
+**Result**: PASS — `seal_trailer_check.py` wired into `/qor-substantiate` Step 9.5.4 (ABORT-on-non-zero); `message_has_full_trailer` correctly homed in `attribution.py` (single source of truth, two callers); `_scan_corpus` private helper beside its callers. No orphans.
 
 #### Feature Test Coverage Pass
-**Result**: PASS (exempt)
-`feature_inventory_touches` is empty. The plan touches governance skills, doctrine references, and pre-audit lint scripts — no `src/` user-facing feature. Exempt per the Feature Test Coverage Pass docs/governance exemption.
+**Result**: PASS (exempt) — `feature_inventory_touches` empty; the plan touches governance skills, scripts, tests, and a doctrine reference, no `src/` feature.
+
+#### Design-notes decision (exception set vs. floor raise)
+**Result**: PASS — keeping the floor at 49 and adding `_GRANDFATHERED_SEAL_PHASES = frozenset({82, 83})` makes CI green (the two failing inputs are skipped; phases 75-81, 84+ stay checked) AND preserves coverage that a floor raise to 85 would discard. Deviating from `/qor-debug` analysis is not `specification-drift` — `/qor-debug` output is analysis, not a binding spec, and the plan transparently disclosed and justified the choice.
 
 ### Violations Found
 
@@ -79,15 +71,11 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 <!-- qor:drift-section -->
 ## Documentation Drift
 
-Non-VETO advisory. These issues would hard-block at /qor-substantiate per `qor/references/doctrine-documentation-integrity.md`. Governor can fix in a follow-on amendment or accept the block at seal time.
-
-- Glossary: Declared term 'SG-PreAuditDraftSubmission-A' has no entry in qor\references\glossary.md.
-
-Note: the declared terms `SG-PreAuditDraftSubmission-A`, `SG-InverseCoverageGapTaxonomy-A`, and `inverse-coverage discipline` should receive glossary entries during `/qor-implement` so the substantiate-time documentation-integrity check does not block the seal.
+(clean)
 
 ### Verdict Hash
 
-SHA256(this_report) = computed at ledger entry #220
+SHA256(this_report) = computed at ledger entry #223
 
 ---
 _This verdict is binding._

@@ -509,15 +509,32 @@ Template: `references/qor-substantiate-templates.md`.
 
   **Next Steps**: Review the staged files and then commit and push when ready.
 
-  Example commit message:
+  Example commit message — the message MUST end with the full
+  `qor.scripts.attribution.commit_trailer()` output (the `Authored via
+  [Qor-logic SDLC]` line AND the `Co-Authored-By:` line). The compact
+  `Co-Authored-By:`-only form is NOT acceptable on a seal commit; Step 9.5.4
+  verifies this.
   ```
   seal: [plan-slug] - Session substantiated
   Merkle seal: [chain-hash]
   Verdict: PASS
   Files: [file-count]
+
+  [full commit_trailer() output: the Authored via line, a blank line,
+   then the Co-Authored-By line]
   ```
 
 REPORT: "Session committed and pushed to [current-branch]"
+
+### Step 9.5.4: Seal-commit trailer verification (Phase 85 wiring; GH #96)
+
+After the seal commit exists (Step 9.5) and before the annotated tag (Step 9.5.5), verify the seal commit message carries the full canonical attribution trailer. Phase 82/83 seal commits shipped with only the compact `Co-Authored-By:` line; this guard makes that omission unrepeatable.
+
+```bash
+python -m qor.scripts.seal_trailer_check --commit HEAD || ABORT
+```
+
+On non-zero exit, ABORT before tagging: the seal commit is missing the `Authored via [Qor-logic SDLC]` line and/or the `Co-Authored-By:` line. Amend the seal commit so its message contains the full `qor.scripts.attribution.commit_trailer()` output, then re-run from Step 9.5. The check delegates to `qor.scripts.attribution.message_has_full_trailer` -- the single source of truth shared with `tests/test_attribution_tiered_usage.py`. Per `qor/references/doctrine-attribution.md` §"Tiered usage".
 
 ### Step 9.5.5: Annotated seal-tag creation (Phase 33 wiring)
 
