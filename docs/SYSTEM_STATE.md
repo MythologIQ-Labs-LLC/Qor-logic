@@ -604,3 +604,25 @@ Feature closing the inline-mechanism half of GH #90 (filed as "Follow-up to #89"
 **V1 boundaries**: enforcement clauses from GH #90's "Inline Enforcement Points" section (warn on scope expansion during implementation; require narrow first slice when planned change touches multiple shared surfaces; treat workspace fragility as audit evidence not background noise) deferred to V2; GitHub-API integration (open PR count; failing check enumeration) deferred; test-matrix growth detection deferred; per-deliverable scope-expansion surface (Phase 92 D4 tier natural extension) deferred.
 
 **Decision**: Phase 94 implemented; audit PASS on iter-1. Targets v0.65.0 (feature → minor bump) at substantiate.
+
+## Phase 95 (v0.66.0 — 2026-05-23): Skill-corpus size-budget lint V1 (GH #92)
+
+Feature closing the meta process-finding from GH #92. The issue documented monotonic corpus growth (91 KB → 282 KB in 6 weeks; 30 SKILL.md files; qor-audit + qor-substantiate at 25% of the corpus; reference fan-out up to 80-100+ KB per audit invocation). The proposed counterweights: progressive disclosure (doctrinally honored already); per-skill size budget; periodic consolidation pass.
+
+**Phase 95 V1 scope**: ship the per-skill size budget detector. V2 reserved for periodic consolidation cadence and historical-growth tracking.
+
+**New module `qor/scripts/skill_size_budget_lint.py`** (~80 LOC): `check_skills(skills_root) -> list[SizeFinding]` walks `qor/skills/**/SKILL.md`, emits one finding per file exceeding the per-skill size threshold. Two thresholds: `WARN_BYTES = 25 * 1024` and `EXCEEDED_BYTES = 40 * 1024`. CLI exits 1 when any EXCEEDED finding is present so V2 can convert to a hard ABORT by removing the substantiate-site `|| true` wrap.
+
+**`/qor-substantiate` Step 4.6.9 NEW**: between merge-velocity 4.6.8 (Phase 93) and doc-integrity 4.7. WARN-only V1 contract.
+
+**New `SG-SkillCorpusGrowth-A` doctrine entry**: catalogs the pattern (monotonic corpus growth; no consolidation counterweight), the GH #92 measurement table (91 KB / 3024 lines at Phase 0 → 282 KB / 6766 lines at Phase 81; ~3.1x bytes, ~2.2x lines in 6 weeks), the V1 detector, and a **reflective note** acknowledging that the lint itself adds ~270 LOC + ~120 doctrine lines + ~20 skill-prose lines to the very corpus it measures. The V1/V2 split is itself a corpus-growth mechanism; V2 work will need to evaluate which doctrine prose is operative vs archival.
+
+**Tests**: 8 + 3 = 11 new tests. `test_skill_size_budget_lint.py`: each threshold transition (below WARN, between WARN/EXCEEDED, above EXCEEDED), non-SKILL.md exclusion, CLI exit codes, and **TWO self-application anchors** — `qor-audit` is in EXCEEDED at 44 KB; `qor-substantiate` is in WARN range (39.8 KB → ~40 KB after this phase's edits; the test accepts either WARN or EXCEEDED to tolerate Phase 95's own skill-prose additions). `test_skill_size_budget_substantiate_wiring.py`: anchored positive + strip-and-fail negative + positional guard (Step 4.6.9 between 4.6.8 and 4.7).
+
+**TDD red-green**: impl GREEN on first pass (no implementation bugs at red-green). All 11 pass twice deterministically. Full suite: 1830 passed, 1 skipped, 0 failed (+11 from Phase 94's 1819).
+
+**V1 boundaries** (declared non_goals): periodic consolidation cadence (V2 extension of `qor-process-review-cycle`); historical-growth tracking from git history (V2 generalization of the GH #92 measurement table); context-load measurement per phase (per-skill reference fan-out); auto-suggest of progressive-disclosure refactor candidates. V1 lint does NOT auto-refactor skills; it is purely an observation surface.
+
+**Dogfooding milestones**: SEVENTH cross-phase exercise of Phase 89's `ci_coverage_lint` (88 → 89 → 90 → 91 → 92 → 93 → 94 → 95). First cross-phase exercise of Phase 94's `workspace_fragility_check`. Phase 95 is the SECOND consecutive lint where the canonical Qor-logic corpus triggers the lint at substantiate-time (same pattern as Phase 94's `dirty_gate_artifact_count`); the dogfooding pattern is now stable across 8 consecutive phases.
+
+**Decision**: Phase 95 implemented; audit PASS on iter-1. Targets v0.66.0 (feature → minor bump) at substantiate. Closes the post-cluster session's three governance backlogs (#89/#90/#92) and the cluster's eighth consecutive phase.
