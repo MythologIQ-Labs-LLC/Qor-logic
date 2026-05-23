@@ -138,6 +138,7 @@ python -m qor.scripts.plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
 python -m qor.scripts.plan_text_consistency_lint --check "$PLAN_PATH" || true
 python -m qor.scripts.delivery_branch_lint --plan "$PLAN_PATH" --repo-root . || true
 python -m qor.scripts.ci_coverage_lint --plan "$PLAN_PATH" --workflows-dir .github/workflows || true
+python -m qor.scripts.workspace_fragility_check --repo-root . || true
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
@@ -145,6 +146,8 @@ python -m qor.scripts.ci_coverage_lint --plan "$PLAN_PATH" --workflows-dir .gith
 **Phase 67 wiring (GH #42)**: `plan_text_consistency_lint` (third lint above) catches the COREFORGE-class drift pattern — same operation specified differently at multiple plan sites (commands, dependencies, paths). WARN-only at audit time; the operator amends drift before the binding Infrastructure Alignment Pass in Step 3 would consume an audit cycle. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PlanTextDrift-A.
 
 **Phase 89 wiring (GH #91)**: `ci_coverage_lint` (fifth lint above) reconciles the plan's `## CI Commands` bullets against the Python-fingerprint `run:` steps discovered in `.github/workflows/*.yml`. Catches the COREFORGE-class credibility failure where a phase seals "all CI green" while a real GitHub Actions job — one the operator simply forgot to enumerate — would fail. WARN-only; tag-only workflows are skipped; environment-setup boilerplate is filtered. The plan may declare a `## CI Coverage Exemptions` block (bullet list with substring patterns) to justify CI jobs that are pre-existing infrastructure not phase-relevant. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-CICoverageDrift-A.
+
+**Phase 94 wiring (GH #90)**: `workspace_fragility_check` (sixth lint above) inspects local workspace signals (untracked file count, dirty gate artifacts whose sessions are not yet sealed, ledger chain-math failures, active local branch count, branch-diff size since divergence from `origin/main`) and surfaces a stabilization-capacity grade (`low` / `medium` / `high`) before the audit consumes a cycle. Companion to Phase 93's macro `merge_velocity_check` (Step 4.6.8): Phase 93 looks at `origin/main`'s recent merge history (BACKWARD); Phase 94 looks at the LOCAL working tree (FORWARD pre-merge). WARN-only V1; CLI exits 1 on `high` so V2 can convert to a hard ABORT by removing the `|| true` wrap. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-MergePaceThrottle-A inline-companion sub-paragraph.
 
 ### Step 1: Identity Activation + Mode Selection
 

@@ -10,6 +10,31 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.65.0] - 2026-05-23
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 94 (feature, GH #90)**: inline workspace-fragility detector V1.
+  Companion to Phase 93's macro merge-velocity check; where Phase 93
+  looks BACKWARD at `origin/main`'s recent merge history at substantiate,
+  Phase 94 looks at the LOCAL working tree FORWARD pre-merge. New
+  `qor.scripts.workspace_fragility_check.assess_workspace_fragility(repo_root)`
+  inspects five local signals: untracked file count, dirty gate
+  artifacts (`.qor/gates/<sid>/` whose session lacks a SESSION SEAL),
+  ledger chain-math failures (excluding Phase 91 grandfathered
+  residuals), active local branch count, branch-diff size since
+  divergence from `origin/main`. Three grades (`low` / `medium` /
+  `high`) with deterministic action mapping (`merge_ok` /
+  `narrow_scope` / `hardening_only`). New `/qor-audit` Step 0.6 SIXTH
+  pre-audit lint line (after `ci_coverage_lint`). WARN-only V1; CLI
+  exits 1 on `high` so V2 can convert to ABORT. Extends
+  `SG-MergePaceThrottle-A` doctrine entry with an "Inline companion"
+  sub-paragraph naming Phase 94's signals and the explicit framing
+  of Phase 90's inline complement to Phase 89's macro throttle.
+  Full suite: 1819 passed (+13).
+
 ## [0.64.0] - 2026-05-23
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
