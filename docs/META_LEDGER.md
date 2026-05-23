@@ -9478,3 +9478,120 @@ SHA256(plan-qor-phase92-definition-of-done.md) = `9550d3451cb3020ca81f20803ae436
 *Session: SEALED* (Phase 92 feature complete; GH #86 contract-layer half closed)
 *Merkle seal: cbb3b37b...* (Phase 92 seal on top of Phase 91's 014013c3...)
 *Open items at this seal: stage artifacts for user review (Review Boundary); GH #86 V2 (D4 empirical-execution check + SEAL body D-tier block + /qor-ideate integration + implement-time author-intent + waiver-friction escalator) reserved for future phase per V1 non_goals*
+
+---
+
+### Entry #248: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-23T05:00:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Plan**: docs/plan-qor-phase93-merge-velocity-throttle.md
+
+**Session**: `2026-05-23T0424-0e82a5`
+
+**Entry ID**: `le_8183fa95992853b5`
+
+**Decision**: Phase 93 plan (GH #89 merge-velocity throttle detector V1) cleared on iter-1. Solo audit per `audit_risk_score: option_b_required: false`. All Step 0.6 pre-audit lints (including the NEW `dod_check` from Phase 92, its first cross-phase application) exit 0. The DoD check caught a real line-wrap drift in the SG-MergePaceThrottle-A waiver `**Follow-up phase**:` reference at plan-audit time — the discipline introduced last phase paid off this phase. Infrastructure Alignment verified `/qor-substantiate` Step 4.6.7 (DoD) + Step 4.7 (doc-integrity) confirmed for Step 4.6.8 insertion between them; SG-DoDImplicit-A / SG-HalfSealedClaim-A / SG-DocSurfaceUncovered-A cross-references available. SG-MergePaceThrottle-A declared NEW. Read-only `git log`-only detector design (no GitHub API) was ruled correct V1 scope; enforcement deferred to V2.
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `420bf216f9ff675d80872933426d49e93cd6bcf8641d9de868ee1b3f6327d405`
+
+**Previous Hash**: `cbb3b37bf05477199e8a8939601d2a55e0e77cdd33bc36478434da8fc4743b5a`
+
+**Chain Hash**: `49190342b8eadf95cfa853a3ff61723a3aafa2d308eadd833c52397812086a69`
+
+---
+
+*Session: 2026-05-23T0424-0e82a5 (Phase 93 -- audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #249: IMPLEMENTATION -- Phase 93 (Merge-velocity throttle detector V1)
+
+**Timestamp**: 2026-05-23T05:05:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+
+**Plan**: docs/plan-qor-phase93-merge-velocity-throttle.md
+
+**Session**: `2026-05-23T0424-0e82a5`
+
+**Entry ID**: `le_e9f2c4daacbcea2f`
+
+**Scope**: Closes the detector half of GH #89 via Option-D-style WARN-only governance gate. New `qor.scripts.merge_velocity_check.assess_merge_velocity` walks `origin/main`'s merge history (offline via `git log --merges`; falls back to HEAD when origin/main absent) and computes a `VelocityAssessment` with three stabilization-capacity grades (healthy / strained / exceeded), repair-density (six keywords: fix/hotfix/repair/regression/rollback/revert), shared-core touch count (operator-declared via `--shared-core-path` repeat flag), and an evidence list naming the thresholds that fired. CLI exits 1 on `exceeded` so V2 can convert to ABORT; V1 wraps in `|| true` at substantiate Step 4.6.8. New SG-MergePaceThrottle-A doctrine entry catalogs the Bicameral originating recurrence.
+
+**Files touched** (9): `qor/scripts/merge_velocity_check.py` (NEW, 224 LOC), `qor/skills/governance/qor-substantiate/SKILL.md` (Step 4.6.8 insertion + wiring paragraph), `qor/references/doctrine-shadow-genome-countermeasures.md` (SG-MergePaceThrottle-A), `tests/test_merge_velocity_check.py` (NEW, 12 tests), `tests/test_merge_velocity_substantiate_wiring.py` (NEW, 3 tests), `docs/plan-qor-phase93-merge-velocity-throttle.md` (NEW), `docs/SYSTEM_STATE.md` (Phase 93 entry), `CHANGELOG.md` (0.64.0 stamped), `pyproject.toml` (0.64.0).
+
+**Test surface**: TDD red-green observed; three implementation bugs caught at red-green and fixed in impl iter 2-4: (a) Windows filename character `:` in repair-subject filenames blocked `git commit` in the scratch-repo fixture (sanitized via regex); (b) `git log --since` early-stop on histories with non-monotonic committer dates dropped valid in-window merges (refactored to walk full `--merges` log, filter dates in Python); (c) `git show --name-only` and `--shortstat` return empty for clean merge commits (workaround: `git diff <sha>^..<sha>`). All 15 tests pass twice deterministically. Full suite: 1806 passed, 1 skipped, 0 failed (+15 from Phase 92's 1791).
+
+**Razor compliance**: `merge_velocity_check.py` 224 lines; `assess_merge_velocity` ~30 lines (main body); `_grade` 7 lines (deterministic threshold logic); zero nested ternaries. Single doctrine bullet; no new doctrine file (per progressive-disclosure — extending the existing countermeasures catalog with one entry).
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. Architecture-bearing documentation is the SG-MergePaceThrottle-A entry and the SYSTEM_STATE Phase 93 entry, authored in-context.
+
+**Reliability**: intent-lock captured at substantiate start (`LOCKED: 2026-05-23T0424-0e82a5`); `VERIFIED`. `secret_scanner` clean. `procedural_fidelity` clean (empty findings).
+
+**Self-application**: `originating_remediation: GH #89`. Phase 93's own plan declares a complete `## Definition of Done` block (Phase 92 discipline); the new `dod_check` lint caught one real drift in the SG entry's waiver `**Follow-up phase**:` line-wrap and was fixed pre-audit. The `test_assess_velocity_on_qor_logic_main` canonical-repo forward-only guard asserts the detector runs on Qor-logic's own main with a valid grade (assertion is grade-in-set, not a specific grade — the value is data-driven and shifts over time; e.g., this session's 6-phase burst will likely return `strained`).
+
+**Content Hash**:
+SHA256(plan-qor-phase93-merge-velocity-throttle.md) = `9e009bcfafcbc356c47dbafd0842f5ee66e6a93264f1977976fc96225093b215`
+
+**Previous Hash**: `49190342b8eadf95cfa853a3ff61723a3aafa2d308eadd833c52397812086a69`
+
+**Chain Hash**: `fd37b19c14f93e5d75d33911645e06b8655028c1443c3b9aeb9318040cde8abf`
+
+---
+
+*Session: 2026-05-23T0424-0e82a5 (Phase 93 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #250: SESSION SEAL -- Phase 93 feature substantiated: merge-velocity throttle detector V1 (v0.64.0, GH #89)
+
+**Timestamp**: 2026-05-23T05:10:00Z
+
+**Phase**: SUBSTANTIATE (Phase 93 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase93-merge-velocity-throttle.md
+
+**Session**: `2026-05-23T0424-0e82a5`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `le_481b372c7d54b5d7` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes the detector half of GH #89. New `qor.scripts.merge_velocity_check` + `/qor-substantiate` Step 4.6.8 + SG-MergePaceThrottle-A doctrine entry. Read-only `git log`-only detector; WARN-only V1 contract; CLI exits 1 on `exceeded` so V2 can convert to ABORT. V2 (enforcement clauses; GitHub-API signals) reserved.
+
+**Files touched** (~12): the 9 above plus `docs/META_LEDGER.md` (entries #248-#250), `.qor/gates/2026-05-23T0424-0e82a5/{plan,audit,implement,substantiate}.json`, `.agent/staging/AUDIT_REPORT.md`.
+
+**Test surface**: 15 new tests (12 detector behavior + 3 wiring); all pass twice deterministically; three real implementation bugs caught at red-green and fixed during impl iteration. Full suite: 1806 passed, 1 skipped.
+
+**Razor compliance**: 224 LOC + 9 wiring/doctrine lines; no new doctrine file.
+
+**Audit history**: iter-1 PASS (Entry #248, L2). Solo audit; all Step 3 passes PASS; Phase 92's new `dod_check` lint caught a real waiver-line-wrap drift in this plan and was fixed pre-audit.
+
+**Self-application**: this phase consumes the discipline introduced by Phase 92 (DoD plan-section + dod_check lint) AND extends the dogfooding pattern with a fifth cross-phase exercise of Phase 89's `ci_coverage_lint`. Phase 93 is also the second phase to carry `D4.d` waivers (after Phase 92's two), exercising the waiver-shape contract the new lint validates.
+
+**Content Hash (session seal)**: `6095ba8ae25e8b66f2ce5a58de03e21100e4718b0f11452171dba4ee784c25ce`
+
+**Previous Hash**: `fd37b19c14f93e5d75d33911645e06b8655028c1443c3b9aeb9318040cde8abf`
+
+**Chain Hash (Merkle seal)**: `69093322a53db505aea910aece224796cbab0284863b815caeebf36958120fc4`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 93 feature complete; GH #89 detector half closed)
+*Merkle seal: 69093322...* (Phase 93 seal on top of Phase 92's cbb3b37b...)
+*Open items at this seal: stage artifacts for user review (Review Boundary); GH #89 V2 (enforcement + GitHub-API signals) reserved for future phase per V1 non_goals*

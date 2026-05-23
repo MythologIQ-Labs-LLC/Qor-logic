@@ -1,0 +1,17 @@
+{
+  "phase": "audit",
+  "session_id": "2026-05-23T0424-0e82a5",
+  "ts": "2026-05-23T04:25:33Z",
+  "target": "docs/plan-qor-phase93-merge-velocity-throttle.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.63.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T04:25:33Z"
+  }
+}
