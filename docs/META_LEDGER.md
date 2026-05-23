@@ -9876,3 +9876,101 @@ SHA256(plan-qor-phase93-merge-velocity-throttle.md) = `9e009bcfafcbc356c47dbafd0
 *Merkle seal: 341b2d7e...* (Phase 96 seal on top of Phase 95's bd5ad5c9...)
 *Open items at this seal: stage artifacts; GH #108 V2 enforcement (Phase 99); cluster Phases 97-100 ahead*
 *Cluster progress: 1 of 5 Tier-1 prompt-surface phases shipped*
+
+---
+
+### Entry #260: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-23T22:48:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase97-skill-registry-per-category-drift.md
+**Session**: `2026-05-23T2247-a2a0d1`
+**Entry ID**: `le_phase97gateTRIBUNAL`
+
+**Decision**: Phase 97 plan (F8 SKILL_REGISTRY per-category drift) cleared on iter-1. Solo audit. All pre-audit lints (plan_text_consistency, ci_coverage_lint, dod_check, skill_size_budget_lint) exit 0. L1 grade justified: registry-only doc edit + additive test; no skill content changes; no binding gate changes. Per-category granularity is the structural countermeasure preventing total-cancellation masking. Reconciliation is additive (two missing rows added; no deletions); honest about the total going from 30 declared to 32 actual after Phase 97 lands. Verdict: PASS.
+
+**Content Hash**: SHA256(phase97-AUDIT_REPORT.md) = `11e29f20f9c375ed1b628beb7ab12d61916692052bb38edef275563c3427a55b`
+**Previous Hash**: `341b2d7e1454091af9fd1daa3a1b1449a6a3e444ee68ff37bb51674a92f04c6c`
+**Chain Hash**: `45c0c474363156cb212f8123b7b5d686994b10474b2d81d6533b5c77610bc14d`
+
+---
+
+*Session: 2026-05-23T2247-a2a0d1 (Phase 97 -- audit PASS)*
+
+---
+
+### Entry #261: IMPLEMENTATION -- Phase 97 (SKILL_REGISTRY per-category drift reconciliation)
+
+**Timestamp**: 2026-05-23T22:55:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase97-skill-registry-per-category-drift.md
+**Session**: `2026-05-23T2247-a2a0d1`
+**Entry ID**: `le_phase97IMPL00000`
+
+**Scope**: Closes F8 prompt-surface review finding. Reconciles `docs/SKILL_REGISTRY.md` per-category counts to match actual .md file counts on disk: sdlc 6 → 7 (adds qor-ideate row), meta 11 → 12 (adds qor-ab-run row); governance (6) and memory (7) confirmed already consistent. Snapshot date updated 2026-04-29 → 2026-05-23. New `tests/test_skill_registry_per_category_currency.py` adds seven per-category currency assertions plus inverse-drift and cross-category guards. Per-category granularity is the structural countermeasure preventing total-cancellation masking — the exact defect class F8 documented.
+
+**Files touched** (6): `docs/SKILL_REGISTRY.md` (snapshot date + sdlc count/row + meta count/row), `tests/test_skill_registry_per_category_currency.py` (NEW 7 tests), `docs/plan-qor-phase97-skill-registry-per-category-drift.md` (NEW), `README.md` (Tests badge 1850 → 1857; Ledger badge 259 → 262), `CHANGELOG.md` (v0.67.0 section retroactively added; backfills Phase 96 omission caught by Phase 97's test_every_tag_has_changelog_section), `pyproject.toml` (0.67.0 → 0.67.1).
+
+**Test surface**: 7 new tests; impl GREEN after TDD red-green confirmed (3 of 7 tests failed before reconciliation — the two per-category currency checks for sdlc/meta + the inverse-drift sweep; all 7 green post-reconciliation). All pass twice deterministically. Full suite: 1856 passed, 1 skipped (+7 from Phase 96's 1849).
+
+**Razor compliance**: ~140 LOC of test + ~6 lines of registry edit. No new module; no doctrine entry (F8 is a registry-currency defect, not a process pattern warranting an SG entry).
+
+**Reliability**: pre-substantiate gates all green; ledger chain verified after entry append.
+
+**Self-application**: F8 is itself a registry-currency finding; Phase 97 reconciles the registry and adds the structural test that would have caught F8 the first time it ran. The TDD red-green sequence was the dogfooding: the new tests failed against the drifted registry and passed only after reconciliation.
+
+**Cluster milestone**: Phase 97 closes the second of five Tier-1 prompt-surface sub-plans. Sequence remaining: 98 (F5+F6 meta-skill examples → references/) → 99 (V2, GH #108 full close) → 100 (F4 Critical Invariants).
+
+**Lesson incorporated**: post-substantiate currency tests (README badges, SYSTEM_STATE, CHANGELOG) re-ran AFTER ledger append, catching three drift omissions in a single regression pass — improvement over Phase 96 where these caught only at CI time.
+
+**Content Hash**: SHA256(plan-qor-phase97-skill-registry-per-category-drift.md) = `7716fabbb7ab22b67a3eb44b0fee4482738200bc0e0e09c51e06acbd1881a21c`
+**Previous Hash**: `45c0c474363156cb212f8123b7b5d686994b10474b2d81d6533b5c77610bc14d`
+**Chain Hash**: `8ae8335c09f29d7a23a747bc8349f1e9fdff0929bacceb776687f94b9a8e77fa`
+
+---
+
+*Session: 2026-05-23T2247-a2a0d1 (Phase 97 -- implementation complete)*
+
+---
+
+### Entry #262: SESSION SEAL -- Phase 97 hotfix substantiated: SKILL_REGISTRY per-category drift reconciliation (v0.67.1, F8)
+
+**Timestamp**: 2026-05-23T23:00:00Z
+**Phase**: SUBSTANTIATE (Phase 97 hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase97-skill-registry-per-category-drift.md
+**Session**: `2026-05-23T2247-a2a0d1`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `le_phase97SEAL000000`
+
+**Scope**: Closes F8 internal prompt-surface review finding (registry per-category drift masked by total cancellation). Registry reconciled (sdlc 7; meta 12; total truth 32); per-category currency test ships as the structural countermeasure.
+
+**Cluster context**: Phase 97 is the SECOND of five Tier-1 prompt-surface sub-plans. Cluster carries V1/V2 split discipline; Phase 97 is the lightest-touch phase (registry-only edit + additive test; L1 risk grade; hotfix bump to v0.67.1).
+
+**Files touched** (~9): the 6 above + META_LEDGER entries #260-#262 + gate artifacts + AUDIT_REPORT.
+
+**Test surface**: 7 new tests; all pass twice deterministically. Full suite: 1856 passed, 1 skipped.
+
+**Razor compliance**: ~140 LOC of test + ~6 lines of registry edit + ~30 lines of CHANGELOG retroactive backfill. No new module, no new doctrine entry.
+
+**Audit history**: iter-1 PASS (Entry #260, L1).
+
+**Self-application**: the new per-category test is the dogfooding shipping-correctness anchor — it failed against the drifted registry (TDD red), passed only after reconciliation (TDD green), and will catch any future drift the first time it runs. Phase 97 closes the F8 defect class structurally, not just situationally.
+
+**Lessons incorporated from Phase 96**: post-substantiate currency tests (README badges, SYSTEM_STATE, CHANGELOG) were re-run AFTER ledger append in Phase 97 — caught three drift omissions in one local regression pass (change_class label, CHANGELOG missing v0.67.0, README test badge stale). Phase 96 caught the equivalent omissions only at CI time. The improvement is process-level discipline, not new code.
+
+**Content Hash (session seal)**: `6ca7408eb61a5f453d3df283106b2ab78d017b390bdfd51297ba6206e64bcfb9`
+**Previous Hash**: `8ae8335c09f29d7a23a747bc8349f1e9fdff0929bacceb776687f94b9a8e77fa`
+**Chain Hash (Merkle seal)**: `aad8f14f078e6e7767d6d517f6ea61bdadd58115300a03c22f95eab549db15a8`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 97 hotfix complete; F8 reconciled with structural countermeasure)
+*Merkle seal: aad8f14f...* (Phase 97 seal on top of Phase 96's 341b2d7e...)
+*Open items at this seal: stage artifacts; cluster Phases 98-100 ahead*
+*Cluster progress: 2 of 5 Tier-1 prompt-surface phases shipped*

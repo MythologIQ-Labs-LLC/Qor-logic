@@ -648,3 +648,25 @@ Feature opening the Tier 1 prompt-surface remediation cluster (meta-memo at `doc
 **Cluster context**: Phase 96 opens the Tier 1 prompt-surface cluster — 1 of 5 sub-plans. Sequence remaining: 97 (F8 SKILL_REGISTRY drift) → 98 (F5+F6 meta-skill examples → references/) → 99 (V2, GH #108 full close) → 100 (F4 Critical Invariants summaries). Key cross-coupling constraint: F4 must follow Phase 99 V2 to avoid amending the freshly-written Critical Invariants block as soon as V2 lands a new binding VETO.
 
 **Decision**: Phase 96 implemented; audit PASS on iter-1. Substantiated as v0.67.0 (feature → minor bump). Opens the Tier 1 prompt-surface cluster.
+
+## Phase 97 (v0.67.1 — 2026-05-23): SKILL_REGISTRY per-category drift reconciliation (F8)
+
+Hotfix closing the F8 internal prompt-surface review finding. The registry at HEAD declared 30 total skills across four categories, which happened to match the actual total only by offset cancellation: sdlc undercounted by 1 (missing qor-ideate), meta undercounted by 1 (missing qor-ab-run), memory was internally consistent. A total-only currency test passed while two categories silently drifted.
+
+**Reconciliation**: snapshot date updated 2026-04-29 → 2026-05-23; sdlc count 6 → 7 with qor-ideate row added; meta count 11 → 12 with qor-ab-run row added; governance (6) and memory (7) unchanged (already correct). The actual total is 32 .md files across the four categories (was 30 declared with offset cancellation).
+
+**New test `tests/test_skill_registry_per_category_currency.py`** (~140 LOC, 7 assertions): per-category currency checks for governance/sdlc/memory/meta; inverse-drift sweep (every actual .md file is referenced by name in its category's table); cross-category drift guard (skill at path X must be listed in category X's table); arithmetic guard (any documented "Total" line must equal sum-of-per-category counts). The per-category granularity is the structural countermeasure preventing total-cancellation masking — F8 cannot recur the same way.
+
+**TDD red-green**: 3 of 7 tests failed against the drifted registry (per-category sdlc + per-category meta + inverse-drift sweep); all 7 green post-reconciliation. The new test would have caught F8 the first time it ran. All pass twice deterministically.
+
+**Lessons incorporated from Phase 96**: post-substantiate currency tests (README badges, SYSTEM_STATE, CHANGELOG) were re-run AFTER appending ledger entries — caught three drift omissions in a single local regression pass (change_class label not in valid set, CHANGELOG missing v0.67.0 section, README test badge stale 1850 → 1857 needed). Phase 96 caught the equivalent omissions only at CI time. The improvement is process discipline, not new code.
+
+**Files touched** (6): `docs/SKILL_REGISTRY.md`, `tests/test_skill_registry_per_category_currency.py` (NEW), `docs/plan-qor-phase97-skill-registry-per-category-drift.md` (NEW), `README.md` (Tests badge + Ledger badge), `CHANGELOG.md` (v0.67.0 retroactive backfill + v0.67.1 section), `pyproject.toml` (0.67.0 → 0.67.1).
+
+**V1 boundaries** (declared non_goals): changing the registry's counting methodology; cross-referencing the registry to dist variant manifests; auto-regenerating registry from disk state (V2 candidate).
+
+**Dogfooding milestone**: F8 is itself a registry-currency finding; Phase 97 reconciles the registry AND adds the structural test that would have caught F8 the first time it ran. The TDD red-green sequence IS the dogfooding shipping-correctness anchor.
+
+**Cluster context**: Phase 97 closes the SECOND of five Tier-1 prompt-surface sub-plans (96 → 97 → 98 → 99 → 100). Cluster progress: 2 of 5 shipped. The lightest-touch phase in the cluster (L1 risk grade; hotfix bump).
+
+**Decision**: Phase 97 implemented; audit PASS on iter-1. Substantiated as v0.67.1 (hotfix → patch bump).

@@ -10,6 +10,37 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.67.0] - 2026-05-23
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 96 (feature, GH #108 partial)**: recon reachability probe V1.
+  Closes GH #108 partially by shipping a visibility-only detector for
+  the grep-shaped-runclaim defect. New
+  `qor.scripts.reachability_probe.check_claim(claim, repo_root, manifest_path)`
+  runs five checks per cited surface: importability (subprocess import),
+  test collection (pytest --collect-only against tests referencing the
+  surface), caller graph (walk production .py files filtering out
+  tests/.agent/.claude/.qor/docs), packaging (substring match against
+  pyproject.toml or operator-passed manifest), interface match (AST
+  parse of module signature vs regex parse of call-site invocation).
+  Each failing check emits a `reachability-*-failed` / `-no-production-caller`
+  / `-packaging-missing` / `-interface-mismatch` finding with
+  `severity="warn"`. New `/qor-deep-audit-recon` Phase 3 Round 0
+  (between after-synthesis checkpoint and existing Phase 3
+  VERIFICATION) invokes the probe WARN-only. CLI exits 0 by default;
+  `--exit-on-any` opts into CI-style enforcement. New
+  `SG-GrepShapedRunclaim-A` doctrine entry carries the COREFORGE Phase
+  371 originating recurrence verbatim. Detailed five-check protocol
+  lives in `qor/references/recon-reachability-probe.md` (progressive
+  disclosure per GH #92 doctrine). Opens the Tier 1 prompt-surface
+  remediation cluster (meta-memo
+  `docs/cluster-memo-prompt-surface-tier1-2026-05-23.md`). V2 (Phase
+  99: `/qor-audit` Step 3 Runtime Contract Walk; binding VETO surface)
+  reserved.
+
 ## [0.66.0] - 2026-05-23
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

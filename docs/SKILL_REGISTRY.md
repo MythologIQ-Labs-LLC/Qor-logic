@@ -1,6 +1,6 @@
 # Qor-logic Skill Registry
 
-**Snapshot**: 2026-04-29
+**Snapshot**: 2026-05-23
 **Authoritative location**: `qor/skills/<category>/<skill>/`
 
 Skills organized by functional category. Path-shown relative to repo root.
@@ -18,12 +18,13 @@ Gate, audit, and compliance authority.
 | qor-governance-compliance | `qor/skills/governance/qor-governance-compliance/` | Active (migrated) |
 | qor-process-review-cycle | `qor/skills/governance/qor-process-review-cycle/` | Active (workflow bundle) |
 
-## sdlc/ (6)
+## sdlc/ (7)
 
-Research → plan → implement → refactor → debug → remediate cycle.
+Ideate → research → plan → implement → refactor → debug → remediate cycle.
 
 | Skill | Path | Status |
 |---|---|---|
+| qor-ideate | `qor/skills/sdlc/qor-ideate/` | Active (governed ideation readiness phase; added Phase 97 reconciliation) |
 | qor-research | `qor/skills/sdlc/qor-research/` | Active |
 | qor-plan | `qor/skills/sdlc/qor-plan/` | Active |
 | qor-implement | `qor/skills/sdlc/qor-implement/` | Active |
@@ -45,12 +46,13 @@ State tracking, documentation, decision logs, session tier selection.
 | track-shadow-genome | `qor/skills/memory/track-shadow-genome.md` | Active (migrated) |
 | qor-docs-technical-writing | `qor/skills/memory/qor-docs-technical-writing/` | Active (migrated) |
 
-## meta/ (11)
+## meta/ (12)
 
-Bootstrapping, help, repo management, meta-tracking, workflow bundles.
+Bootstrapping, help, repo management, meta-tracking, workflow bundles, A/B measurement.
 
 | Skill | Path | Status |
 |---|---|---|
+| qor-ab-run | `qor/skills/meta/qor-ab-run/` | Active (A/B detection-rate measurement; Phase 39 evidence harness; added Phase 97 reconciliation) |
 | qor-bootstrap | `qor/skills/meta/qor-bootstrap/` | Active |
 | qor-help | `qor/skills/meta/qor-help/` | Active |
 | qor-repo-audit | `qor/skills/meta/qor-repo-audit/` | Active |
