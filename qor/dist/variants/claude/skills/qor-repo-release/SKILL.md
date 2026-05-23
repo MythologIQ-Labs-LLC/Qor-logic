@@ -202,6 +202,38 @@ Add META_LEDGER entry:
 
 Calculate and record content hash and chain hash per standard Merkle chain protocol.
 
+### Step 11: Post-PyPI deployment smoke
+
+After PyPI publishes the new `qor-logic` package, verify that the installed
+wheel can deploy its bundled compiled variants into the active agent host
+folders. The package is a distribution artifact; canonical source remains
+`qor/skills/**` plus generated `qor/dist/variants/**`.
+
+```bash
+pip install --upgrade qor-logic
+qor-logic --version
+qor-logic list --available
+qor-logic install --host codex --scope global --dry-run
+qor-logic install --host claude --scope global --dry-run
+qor-logic install --host kilo-code --scope global --dry-run
+qor-logic install --host gemini --scope global --dry-run
+```
+
+If dry-run output is correct, run the real install for the hosts this
+workstation uses:
+
+```bash
+qor-logic install --host codex --scope global
+qor-logic install --host claude --scope global
+qor-logic install --host kilo-code --scope global
+qor-logic install --host gemini --scope global
+```
+
+Use `--scope repo` instead of `--scope global` when updating repo-local host
+folders. Do not manually copy skill files into host folders except for
+emergency debugging; `qor-logic install` reads the packaged
+`qor/dist/variants/<host>/manifest.json` and writes each host-specific layout.
+
 ### Step Z: Write Gate Artifact (Phase 11D wiring)
 
 Persist the structured gate artifact at `.qor/gates/<session_id>/deliver.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
@@ -241,6 +273,7 @@ Schema lives at `qor/gates/schema/deliver.schema.json` (Phase 55 NEW; closes pre
 - **NEVER** commit `[RELEASE] vX.Y.Z` without confirmed preflight PASS (the commit-msg hook enforces this at the git layer)
 - **NEVER** release from a feature branch — must be on `main`
 - **NEVER** tag without pulling latest `main` first
+- **ALWAYS** run the post-PyPI deployment smoke after the package publishes
 - **ALWAYS** use `/qor-document` for release metadata authoring
 - **ALWAYS** run pre-flight twice (before and after metadata authoring)
 - **ALWAYS** use `[RELEASE] vX.Y.Z` commit message format
@@ -262,6 +295,7 @@ Release succeeds when:
 - [ ] User confirmed commit and push
 - [ ] Tag created and pushed
 - [ ] META_LEDGER updated with DELIVER entry
+- [ ] Post-PyPI deployment smoke completed for active agent hosts
 
 ## Integration with S.H.I.E.L.D.
 

@@ -1,0 +1,45 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-23T0335-3cff0e",
+  "ts": "2026-05-23T03:36:50Z",
+  "plan_path": "docs/plan-qor-phase92-definition-of-done.md",
+  "phases": [
+    "Phase 1: dod_record + dod_check + skill wiring + doctrine + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_dod_record.py -q",
+    "python -m pytest tests/test_dod_check.py -q",
+    "python -m pytest tests/test_dod_substantiate_wiring.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase92-definition-of-done.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase92-definition-of-done.md --workflows-dir .github/workflows"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 ships plan-emission + structural substantiate check (Step 4.6.7); WARN-only; enforces declaration presence + waiver rationale, NOT empirical truth (D4 test-name to pytest-output cross-reference deferred to V2); new ## Definition of Done section in /qor-plan; forward-only (no retrofit of prior plans)"
+    ],
+    "non_goals": [
+      "D4 empirical-execution check (V2); ledger SESSION SEAL body D-tier status block (V2); /qor-ideate integration (V2); retroactive DoD section in prior sealed plans; schema-level validation beyond field presence"
+    ],
+    "exclusions": [
+      "no changes to /qor-implement (V1 does not record D4 test-author intent at implement time); existing ## Step Prerequisites Phase 75 block untouched; no new CI workflow"
+    ]
+  },
+  "originating_remediation": "GH #86",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.62.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-23T03:36:50Z"
+  }
+}

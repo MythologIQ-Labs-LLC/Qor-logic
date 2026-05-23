@@ -13,8 +13,8 @@
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-27-blue" alt="Doctrines: 27">
-  <img src="https://img.shields.io/badge/Ledger-244%20entries%20sealed-green" alt="Ledger: 244 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-28-blue" alt="Doctrines: 28">
+  <img src="https://img.shields.io/badge/Ledger-247%20entries%20sealed-green" alt="Ledger: 247 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -78,6 +78,19 @@ qor-logic install --host codex --scope global  # -> ~/.codex/
 # Verify the installation
 qor-logic list --available
 ```
+
+After a PyPI release, upgrade the package first, then deploy the packaged
+compiled variants into each active host:
+
+```bash
+pip install --upgrade qor-logic
+qor-logic install --host codex --scope global --dry-run
+qor-logic install --host codex --scope global
+```
+
+Repeat the install command for `claude`, `kilo-code`, or `gemini` as needed.
+See [operations.md](docs/operations.md#post-pypi-deployment-smoke) for the full
+post-publish smoke checklist.
 
 Supported host layouts:
 

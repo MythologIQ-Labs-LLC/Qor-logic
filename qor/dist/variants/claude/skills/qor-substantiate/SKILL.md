@@ -290,6 +290,17 @@ python -m qor.scripts.procedural_fidelity --session "$SESSION_ID" \
 
 Operator reviews `dist/procedural-fidelity.findings.json` after seal; remediation lands in the next seal cycle. See `qor/references/doctrine-procedural-fidelity.md` for the four-class deviation catalog and remediation workflow.
 
+### Step 4.6.7: Definition of Done check (Phase 92 wiring; GH #86)
+
+WARN-only structural check that the plan's `## Definition of Done` section is well-formed. Per `qor/references/doctrine-definition-of-done.md`, every deliverable declares D1 (vision/spec), D2 (code), D3 (governance), and D4 (empirical verification) acceptance criteria; D4 may instead carry a `D4.d` waiver with rationale and a follow-up phase reference. V1 enforces only the contract's presence; V2 (deferred) will verify the truth of D4 via test-name extraction + pytest-output cross-reference. Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-DoDImplicit-A`.
+
+```bash
+PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
+python -m qor.scripts.dod_check --plan "$PLAN_PATH" || true
+```
+
+`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction (no `python -c "...${VAR}..."` interpolation). V1 contract: WARN-only — findings (`missing-dod-section`, `deliverable-missing-tier`, `waiver-without-rationale`, `waiver-without-followup`) are surfaced in the seal report but do NOT abort substantiate. Operator amends the plan's DoD block in the next seal cycle. V2 may tighten specific categories to fail-closed once adoption matures.
+
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.doc_integrity`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.

@@ -10,6 +10,33 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.63.0] - 2026-05-23
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 92 (feature, GH #86)**: explicit multi-tier Definition of Done
+  as a first-class plan artifact. Every plan now declares per-deliverable
+  D1 (vision/spec), D2 (code), D3 (governance), and D4 (empirical/
+  runtime verification) acceptance criteria in a new `## Definition of
+  Done` section between `## Phase N` and `## CI Commands`. D4 may be
+  replaced with a `D4.d` waiver row carrying a rationale and a
+  `**Follow-up phase**:` reference. New `qor.scripts.dod_record.parse_plan`
+  reads the section into structured records; new
+  `qor.scripts.dod_check.check_plan` runs at `/qor-substantiate` Step
+  4.6.7 (new, between procedural-fidelity 4.6.6 and doc-integrity 4.7),
+  emitting four finding categories — `missing-dod-section`,
+  `deliverable-missing-tier`, `waiver-without-rationale`,
+  `waiver-without-followup` — with V1 `severity="warn"`. WARN-only
+  contract: findings surface in the seal report but do not abort
+  substantiate. New `qor/references/doctrine-definition-of-done.md`
+  doctrine file documents the four-tier contract and waiver protocol.
+  New `SG-DoDImplicit-A` countermeasure-catalog entry. V1 enforces
+  declaration presence; V2 (deferred) will verify D4's truth by
+  cross-referencing named tests against pytest output. Bumps Doctrines
+  badge 27 → 28.
+
 ## [0.62.0] - 2026-05-23
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
