@@ -643,7 +643,7 @@ Template: `references/qor-substantiate-templates.md`.
 ## Constraints
 
 - **NEVER** seal a session with Reality != Promise
-- **NEVER** skip any verification step
+- **NEVER** skip a verification step whose prerequisite is PRESENT. The Phase 75 prerequisite-absent SKIP path (record SKIP in the seal entry + emit `gate_skipped_prerequisite_absent`; see `## Step Prerequisites` block and `SG-HalfSealedClaim-A`) is the only sanctioned exit and applies only when the per-step Prerequisite directive's named module/file is unreachable. A reachable-but-undesired verification step MUST run.
 - **NEVER** seal with Section 4 violations present
 - **NEVER** seal with version mismatch (Target ≤ Current Tag)
 - **ALWAYS** validate version before sealing

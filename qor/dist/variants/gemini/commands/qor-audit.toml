@@ -112,7 +112,7 @@ See `qor/references/doctrine-governance-enforcement.md` §10.4 "Cycle-count esca
 
 ### Step 0.6: Pre-audit lints (Phase 55 wiring)
 
-Run two pre-audit lints against the plan being audited; surface presence-only test descriptions and infrastructure-mismatch citations BEFORE Step 3 evaluates passes. Both are WARN-only (the existing Test Functionality Pass and Infrastructure Alignment Pass at Step 3 issue binding VETOs); the lints catch these classes earlier so the Governor can remediate without consuming an audit cycle.
+Run six pre-audit lints against the plan being audited; surface presence-only test descriptions, infrastructure-mismatch citations, plan-text drift, stale delivery branches, CI-coverage gaps, and workspace-fragility signals BEFORE Step 3 evaluates passes. All are WARN-only (the existing Test Functionality, Infrastructure Alignment, and Filter-Stage passes at Step 3 issue the binding VETOs); the lints catch these classes earlier so the Governor can remediate without consuming an audit cycle. The current ladder runs `plan_test_lint` (Phase 55) + `plan_grep_lint` (Phase 55) + `plan_text_consistency_lint` (Phase 67) + `delivery_branch_lint` (Phase 83) + `ci_coverage_lint` (Phase 89) + `workspace_fragility_check` (Phase 94); future additions extend the same `|| true` WARN-only contract.
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")

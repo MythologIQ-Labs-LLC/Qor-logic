@@ -61,9 +61,10 @@ When a skill prescribes a persona-typed subagent, the skill prose must include a
 Every `<persona>` frontmatter tag in `qor/skills/**/SKILL.md` must either:
 
 1. Be **removed** (it is decorative and prioritizes no edge-case context), OR
-2. Carry a **`<persona-evidence>`** pointer line in the same frontmatter block, referencing an A/B detection-rate artifact (e.g., `docs/phase39-ab-results.md`) or an equivalent measurement. The evidence must declare a measurable outcome delta (detection rate, decision-path adherence, etc.) that the persona contributes beyond a bare stance-directive rewrite.
+2. Carry a **`<persona-evidence>`** pointer line in the same frontmatter block, referencing an A/B detection-rate artifact (e.g., `docs/phase39-ab-results.md`) or an equivalent measurement. The evidence must declare a measurable outcome delta (detection rate, decision-path adherence, etc.) that the persona contributes beyond a bare stance-directive rewrite. OR
+3. Be registered in the **operator-curated load-bearing-pending-evidence list** at `tests/test_persona_sweep.py:LOAD_BEARING_PENDING_EVIDENCE`. This exit is the explicit doctrine acknowledgement that some skills are judged load-bearing by Governor-level rationale (adversarial stance for `qor-audit`; prove-not-improve stance for `qor-substantiate`; etc.) ahead of empirical A/B evidence; the registry is the bookkeeping that converts "judgement" into structural enforcement. A skill registered here MUST still carry a `<persona>` tag (the registry asserts the tag is operative); the obligation to upgrade to exit (2) by adding evidence is preserved as a deferred-work item. Removing the registry is the V2 work that would force every entry to either pass exit (1) or exit (2).
 
-Phase 39 ships initial evidence for `/qor-audit` and `/qor-substantiate` via a seeded-defect A/B harness (`qor/scripts/ab_harness.py` + `qor/scripts/ab_live_run.py`). Additional skills gain evidence as future operator-driven A/B cycles extend the corpus.
+Phase 39 shipped initial evidence for `/qor-audit` and `/qor-substantiate` via a seeded-defect A/B harness (`qor/scripts/ab_harness.py` + `qor/scripts/ab_live_run.py`); the 20 skills currently in the registry await analogous evidence. Additional skills gain exit-(2) evidence as future operator-driven A/B cycles extend the corpus; until then they remain registered under exit (3). The enforcement test `tests/test_persona_sweep.py::test_every_persona_tag_has_evidence_or_is_load_bearing_pending` is the structural gate.
 
 ## 6. Anti-patterns this doctrine prevents
 
