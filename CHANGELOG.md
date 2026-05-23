@@ -10,6 +10,29 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.61.0] - 2026-05-23
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 90 (feature, GH #79)**: skills that invoke `python -m qor.reliability.*`
+  or `python -m qor.scripts.*` gain (C) a WARN-only preflight one-liner at
+  the top of their `## Execution Protocol` (or equivalent protocol-section)
+  and (D) a new `## Environment` block documenting the install contract.
+  The preflight surfaces module-misconfiguration once at skill entry —
+  converting the Phase 75 silent-SKIP cascade into a visible WARN that
+  operators can address (`pip show qor-logic`; `pipx install qor-logic`).
+  WARN-only (not ABORT) so Phase 75 declarative-tolerance remains intact
+  on legitimately non-Python hosts. Applied to 7 skills (qor-audit,
+  qor-process-review-cycle, qor-shadow-process, qor-substantiate,
+  qor-repo-audit, qor-implement, qor-plan). New
+  `SG-SilentSkipMisconfig-A` doctrine entry; new
+  `tests/test_skill_environment_block.py` (7 wiring assertions across
+  affected skills) enforces forward-only structural discipline. V1 ships
+  Options C + D from GH #79; Option A (CLI subcommand dispatch) and
+  Option B (install-time path rewriting) reserved for a future phase.
+
 ## [0.60.0] - 2026-05-22
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

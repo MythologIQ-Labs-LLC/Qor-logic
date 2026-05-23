@@ -31,6 +31,16 @@ min_model_capability: opus
 
 The final phase of the S.H.I.E.L.D. lifecycle. Verify that implementation matches the encoded blueprint (Reality = Promise), then cryptographically seal the session.
 
+## Environment (Phase 90 wiring; GH #79)
+
+This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+
+```bash
+python -c "import qor.reliability"
+```
+
+If that command fails, activate the venv where `pip show qor-logic` resolves, or run `pipx install qor-logic` for a global install. On hosts without Python or where `qor-logic` is not installable (e.g., pure non-Python archetypes), Phase 75 declarative-tolerance applies — the missing-prerequisite gates record SKIP in the seal entry and emit `gate_skipped_prerequisite_absent` events per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-HalfSealedClaim-A`. The Phase 90 preflight at the top of `## Execution Protocol` below surfaces the misconfiguration once at skill entry so the SKIP cascade is operator-visible instead of silent — the visibility layer on top of Phase 75's tolerance contract documented in the next section.
+
 ## Step Prerequisites (Phase 75 wiring; GH #38)
 
 This skill is multi-step; each step declares its prerequisite so non-Python hosts can use `qor-logic substantiate-capability` to identify which steps will run vs skip on their archetype. When a prerequisite is absent the operator records SKIP in the seal entry and emits a `gate_skipped_prerequisite_absent` shadow event (severity 1). See `qor/references/doctrine-shadow-genome-countermeasures.md` SG-HalfSealedClaim-A for the countermeasure rationale.
@@ -53,6 +63,14 @@ This skill is multi-step; each step declares its prerequisite so non-Python host
 Operators run `qor-logic substantiate-capability` before invoking `/qor-substantiate` to confirm which gates will run on their host. Output is a paste-able markdown table for the seal entry body.
 
 ## Execution Protocol
+
+```bash
+# Phase 90 preflight (GH #79): surface qor-logic module misconfiguration
+# once at skill entry. WARN-only -- Phase 75 SKIP fallback still applies.
+if ! python -c "import qor.reliability" 2>/dev/null; then
+  echo "WARN [qor-logic]: modules not importable from $(command -v python). Steps with module: prerequisites will record SKIP per Phase 75. Activate the venv where 'pip show qor-logic' resolves, or 'pipx install qor-logic', to restore the integrity gates." >&2
+fi
+```
 
 ### Step 0: Gate Check (advisory — Phase 8 wiring)
 

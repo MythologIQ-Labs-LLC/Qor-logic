@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-23T0013-0293e5",
+  "ts": "2026-05-23T00:27:55Z",
+  "plan_path": "docs/plan-qor-phase90-skill-preflight-and-environment.md",
+  "version": "0.61.0",
+  "change_class": "feature",
+  "verdict": "PASS",
+  "merkle_seal": "763a5a99880ca03d7a48b35b0957e36046ce80f60465cd41e41f3f0681cffbca",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.61.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T00:27:55Z"
+  }
+}

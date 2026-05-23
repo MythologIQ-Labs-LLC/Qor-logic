@@ -1,0 +1,43 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-23T0013-0293e5",
+  "ts": "2026-05-23T00:14:24Z",
+  "plan_path": "docs/plan-qor-phase90-skill-preflight-and-environment.md",
+  "phases": [
+    "Phase 1: Environment block + preflight one-liner + lint enforcement"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_skill_environment_block.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase90-skill-preflight-and-environment.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase90-skill-preflight-and-environment.md --workflows-dir .github/workflows"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 ships only Options C + D from GH #79; Options A (CLI subcommand dispatch) and B (install-time path rewrite) deferred to future phase; preflight WARN-only (not ABORT) to preserve Phase 75 SKIP behavior on non-Python hosts"
+    ],
+    "non_goals": [
+      "per-invocation preflight (issue literal reading) -- V1 uses per-skill preflight at Execution Protocol entry; new CLI subcommand surface; install-time skill rewriting; changes to Phase 75 SKIP behavior or Step Prerequisites blocks"
+    ],
+    "exclusions": [
+      "no changes to qor.reliability or qor.scripts modules; no changes to qor/installer.py or variant emission; no new CI workflow; reference file qor/skills/governance/qor-audit/references/phase37-subpasses.md not modified (covered transitively by qor-audit/SKILL.md preflight)"
+    ]
+  },
+  "originating_remediation": "GH #79",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.60.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-23T00:14:24Z"
+  }
+}

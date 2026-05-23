@@ -1,37 +1,42 @@
-# AUDIT_REPORT — Phase 89
+# AUDIT_REPORT — Phase 90
 
-**Plan**: docs/plan-qor-phase89-ci-commands-reconciliation.md
-**Session**: 2026-05-22T2305-dc33d5
+**Plan**: docs/plan-qor-phase90-skill-preflight-and-environment.md
+**Session**: 2026-05-23T0013-0293e5
 **Auditor**: Judge (solo; `audit_risk_score` reported `option_b_required: false` — no `*.config.*` citation; fewer than 5 grep-evidence citations)
 
 **Verdict: PASS**
 
 ## Iter-1
 
-### Pre-audit lints (Step 0.6)
+### Pre-audit lints (Step 0.6, 5 lints all clean)
 
 - `plan_test_lint`: exit 0
-- `plan_grep_lint`: exit 0 (after rewording the boundary-test description that initially looked like a `qor.scripts.unrelated` citation)
-- `plan_text_consistency_lint`: exit 0 (after rewording the pytest-form examples in the unit-test descriptions to avoid drift with the `## CI Commands` form)
+- `plan_grep_lint`: exit 0
+- `plan_text_consistency_lint`: exit 0
 - `delivery_branch_lint`: exit 0
+- `ci_coverage_lint` (Phase 89, first cross-phase application): exit 0 (Phase 90's `## CI Commands` covers the full discovered CI surface)
 - `audit_risk_score`: `option_b_required: false`
 
 ### Step 3 passes
 
 - **Prompt Injection Pass**: PASS (`prompt_injection_canaries` exit 0).
-- **Security Pass (L3)**: PASS — no auth, no credentials, no security bypass surface.
-- **OWASP Top 10**: PASS — A03: argv-only invocation, YAML via PyYAML safe-load (already used at `qor/scripts/doc_integrity.py:15` and `qor/scripts/gate_hooks.py:35` and `qor/scripts/gemini_variant.py:17`); no shell=True; A04/A05/A08: WARN-only fail-safe; no secrets; no eval / no unsafe deserialization.
+- **Security Pass (L3)**: PASS — phase touches skill markdown + a new behavior test; no auth, no credentials, no security bypass surface.
+- **OWASP Top 10**: PASS — no new code paths beyond the preflight bash one-liner (argv-only `python -c`); A03/A04/A05/A08 N/A.
 - **Ghost UI Pass**: N/A.
-- **Section 4 Razor Pass**: PASS — one new script + one Step 0.6 wiring line + one doctrine bullet + tests. Alternatives (full bash AST; substantiate-time re-assert) considered and declared non_goals.
-- **Self-Application Sub-Pass**: PASS — plan author = audit author (solo). Mitigated by `test_lint_self_applies_to_phase_89_plan`, which enforces that the lint reports zero WARNs against this very plan (the deterministic shipping-correctness test).
-- **Test Functionality Pass**: PASS — 13 behavior tests cover each classification branch (env-setup filter, doc-only filter, tag-only skip, multiline run, exemption block, exemption-boundary, plan-missing-section, marker form, CLI exit code) plus 2 anchored + strip-and-fail wiring tests. Mirrors Phase 84/87 wiring-test convention.
-- **Dependency Audit**: PASS — PyYAML already in `pyproject.toml` runtime deps (`dependencies = ["jsonschema>=4", "PyYAML>=6"]`); no new external module.
-- **Macro-Level Architecture Pass**: PASS — new script follows the `qor/scripts/*_lint.py` shape (dataclass + check_plan + main with argv-only CLI); Step 0.6 placement aligns with the existing four pre-audit lints; honors GH #92 progressive-disclosure (single doctrine bullet, no new doctrine file).
-- **Feature Test Coverage Pass**: PASS — `Feature Inventory Touches: []` declared explicitly with rationale.
-- **Infrastructure Alignment Pass**: PASS — `.github/workflows/{ci,pr-lint,release}.yml` all exist; PyYAML available; `qor-audit` SKILL.md Step 0.6 confirmed at lines 112-122 of `qor/skills/governance/qor-audit/SKILL.md`; `qor/references/doctrine-shadow-genome-countermeasures.md` exists; `SG-CICoverageDrift-A` declared NEW (extension to the existing doctrine file).
+- **Section 4 Razor Pass**: PASS — 7 skill-prose insertions + 1 doctrine bullet + 1 test file. Per design notes: per-invocation preflight (issue's literal reading) declared a non_goal in favor of per-skill preflight at Execution Protocol entry — one WARN per skill invocation is operatively sufficient.
+- **Self-Application Sub-Pass**: PASS — solo audit; mitigated by `test_each_python_invoking_skill_has_environment_section` enforcing structural sweep across all 7 affected skills plus `test_no_new_skills_invoke_python_qor_without_environment_block` forward-only guard.
+- **Test Functionality Pass**: PASS — 5 behavior tests verify operative properties: section presence, install-contract substrings (`pip show qor-logic` + `pipx install qor-logic`), Phase 75 SKIP-fallback substrings, preflight-WARN-not-ABORT constraint (negative-existence check on `exit 1` and `|| ABORT`), forward-only structural sweep.
+- **Dependency Audit**: PASS — no new module, no new external dependency.
+- **Macro-Level Architecture Pass**: PASS — consistent with existing skill-prose convention; layered above Phase 75's `## Step Prerequisites` blocks; honors GH #92 progressive-disclosure.
+- **Feature Test Coverage Pass**: PASS — `Feature Inventory Touches: []` declared with rationale.
+- **Infrastructure Alignment Pass**: PASS — all 7 affected SKILL.md files exist; `qor/references/doctrine-shadow-genome-countermeasures.md` exists with `SG-HalfSealedClaim-A` present (Phase 75 anchor); `gate_skipped_prerequisite_absent` event appears 8x in `qor-substantiate/SKILL.md` confirming Phase 75 SKIP fallback the Environment block cross-references. `SG-SilentSkipMisconfig-A` declared NEW.
 - **Filter-Stage Ordering Coherence**: N/A.
-- **Orphan Detection**: PASS — script discoverable via `python -m qor.scripts.ci_coverage_lint`; tests under `tests/`; plan file linked via META_LEDGER seal flow.
-- **Documentation Drift**: clean — `SG-CICoverageDrift-A` is the only new glossary anchor; `doc_tier=standard`.
+- **Orphan Detection**: PASS — test file discoverable by pytest; doctrine extension in-place; plan file linked via META_LEDGER seal flow.
+- **Documentation Drift**: clean — `SG-SilentSkipMisconfig-A` is the only new glossary anchor; `doc_tier=standard`.
+
+### Self-application validation of Phase 89 lint
+
+This audit run is the first cross-phase exercise of `ci_coverage_lint` from Phase 89. Phase 90's plan was authored to cover the full discovered Qor-logic CI surface in its `## CI Commands` block; the lint reports zero WARNs on a fresh plan. Phase 89's countermeasure is operative. ✓
 
 ## Next phase
 
