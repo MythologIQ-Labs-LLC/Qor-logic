@@ -1,0 +1,43 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-23T0209-2502b4",
+  "ts": "2026-05-23T02:10:38Z",
+  "plan_path": "docs/plan-qor-phase91-ledger-tolerate-grandfathered.md",
+  "phases": [
+    "Phase 1: find_grandfathered_entries + verify flag + CLI wiring + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ledger_hash_tolerate_grandfathered.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase91-ledger-tolerate-grandfathered.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase91-ledger-tolerate-grandfathered.md --workflows-dir .github/workflows"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 ships only Option D (verify-ledger --tolerate-known-grandfathered flag); flag is OFF by default; tolerated entries must be in duplicate-previous_hash set AND below cutoff (default 207); read-only verifier semantics; ledger content unchanged"
+    ],
+    "non_goals": [
+      "Options A (RECONCILIATION entry append), B (post-anchor pinning at reconciliation entry), C (per-session sub-ledger merge tool) from GH #85 deferred to future phase; no operator-authorization protocol needed in V1 because operation is read-only"
+    ],
+    "exclusions": [
+      "no changes to verify_post_anchor (Phase 66 already handles pre-anchor case); no changes to check_previous_hash_uniqueness (still enforces uniqueness on new entries); no new doctrine file (extends SG-ConcurrentLedgerRace-A per GH #92 progressive-disclosure)"
+    ]
+  },
+  "originating_remediation": "GH #85",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.61.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-23T02:10:38Z"
+  }
+}

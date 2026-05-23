@@ -171,7 +171,54 @@ def _is_monotonic_progression(nibbles: list[int]) -> bool:
     return len(set(diffs)) == 1 and diffs[0] in {1, 15}
 
 
-def verify(ledger_md: Path) -> int:
+def find_grandfathered_entries(
+    ledger_md: Path,
+    cutoff: int = 207,
+) -> frozenset[int]:
+    """Return entry numbers whose previous_hash is shared by 2+ entries AND
+    whose entry number is <= cutoff.
+
+    These are the SG-ConcurrentLedgerRace-A documented residuals (Phase 91
+    wiring; GH #85) -- pre-V1 concurrent-append duplicates explicitly
+    grandfathered by the Phase 76 forbidden-interpretation clause. The
+    cutoff (default 207, matching ``check_previous_hash_uniqueness``'s
+    ``min_entry_num``) is a hard upper bound: post-cutoff entries are not
+    grandfathered even when they share a previous_hash, preserving the
+    forward-only-no-new-grandfathering invariant.
+    """
+    text = ledger_md.read_text(encoding="utf-8")
+    entries: list[tuple[int, str]] = []
+    parts = ENTRY_RE.split(text)
+    for i in range(1, len(parts), 2):
+        num = int(parts[i])
+        body = parts[i + 1] if i + 1 < len(parts) else ""
+        entries.append((num, body))
+
+    # Group entry numbers by previous_hash value.
+    by_prev: dict[str, list[int]] = {}
+    for num, body in entries:
+        ph = PREV_HASH_RE.search(body)
+        if not ph:
+            continue
+        prev_val = ph.group(1) or ph.group(2)
+        by_prev.setdefault(prev_val, []).append(num)
+
+    grandfathered: set[int] = set()
+    for nums in by_prev.values():
+        if len(nums) < 2:
+            continue
+        for n in nums:
+            if n <= cutoff:
+                grandfathered.add(n)
+    return frozenset(grandfathered)
+
+
+def verify(
+    ledger_md: Path,
+    *,
+    tolerate_known_grandfathered: bool = False,
+    grandfather_cutoff: int = 207,
+) -> int:
     """Verify chain integrity of META_LEDGER.md. Returns exit code.
 
     Phase 66 (GH #54) extensions:
@@ -179,11 +226,26 @@ def verify(ledger_md: Path) -> int:
     - Flags placeholder-pattern hashes (see ``is_placeholder_pattern``) as FAIL.
     - Reports downstream entries after a FAIL as TAINTED (depend on failed predecessor).
 
+    Phase 91 (GH #85) extension:
+    - ``tolerate_known_grandfathered=True`` accepts chain-math failures iff the
+      failing entry is in the SG-ConcurrentLedgerRace-A documented residual
+      set (its ``previous_hash`` appears in 2+ entries AND its entry number is
+      ``<= grandfather_cutoff``). Tolerated failures produce a
+      ``DISCLOSED_GRANDFATHERED Entry #N`` line on stdout instead of ``FAIL``
+      on stderr, do NOT contribute to the error count, and do NOT propagate
+      TAINTED to downstream entries. Flag OFF by default; strict mode is the
+      canonical gate.
+
     Output remains backward-compatible: ``OK Entry #N`` / ``FAIL Entry #N`` lines
     are preserved; new ``TAINTED Entry #N`` lines emit after failures; the
     ``Skipped N entries with non-verifiable markup`` summary counts entries
     that have neither canonical Chain Hash nor Session Seal markup.
     """
+    grandfathered = (
+        find_grandfathered_entries(ledger_md, cutoff=grandfather_cutoff)
+        if tolerate_known_grandfathered
+        else frozenset()
+    )
     text = ledger_md.read_text(encoding="utf-8")
     entries = []
     parts = ENTRY_RE.split(text)
@@ -238,6 +300,15 @@ def verify(ledger_md: Path) -> int:
             errors += 1
         elif math_ok:
             print(f"OK   Entry #{num}: chain hash verified")
+        elif num in grandfathered:
+            # Phase 91 (GH #85): SG-ConcurrentLedgerRace-A documented residual.
+            # Operator opted into the --tolerate-known-grandfathered surface;
+            # the chain math fails but the failure matches the known signature.
+            # Do not count as an error and do not propagate taint downstream.
+            print(
+                f"DISCLOSED_GRANDFATHERED Entry #{num}: tolerated "
+                f"SG-ConcurrentLedgerRace-A residual"
+            )
         else:
             print(
                 f"FAIL Entry #{num}: computed {new_expected} != recorded {recorded}",

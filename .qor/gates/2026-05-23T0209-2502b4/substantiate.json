@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-23T0209-2502b4",
+  "ts": "2026-05-23T02:19:38Z",
+  "plan_path": "docs/plan-qor-phase91-ledger-tolerate-grandfathered.md",
+  "version": "0.62.0",
+  "change_class": "feature",
+  "verdict": "PASS",
+  "merkle_seal": "014013c336d9e4421f8bfe5ef81848db04f1d867377848c26a3d17ebf3096c94",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.62.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T02:19:38Z"
+  }
+}

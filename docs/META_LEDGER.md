@@ -9244,3 +9244,120 @@ SHA256(plan-qor-phase90-skill-preflight-and-environment.md) = `a9cac90fa2dc90b85
 *Session: SEALED* (Phase 90 feature complete; GH #79 visible-misconfiguration half closed)
 *Merkle seal: 763a5a99...* (Phase 90 seal on top of Phase 89's 0fd1d98b...)
 *Open items at this seal: stage artifacts for user review (Review Boundary); GH #79 Options A + B reserved for future phase per V1 non_goals*
+
+---
+
+### Entry #242: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-23T02:30:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Plan**: docs/plan-qor-phase91-ledger-tolerate-grandfathered.md
+
+**Session**: `2026-05-23T0209-2502b4`
+
+**Entry ID**: `le_333d010cccd041f9`
+
+**Decision**: Phase 91 plan (GH #85 consumer-blocker half via Option D — verify-ledger tolerance flag) cleared on iter-1. Audit conducted solo per `audit_risk_score` reporting `option_b_required: false`. All five Step 0.6 pre-audit lints exit 0 — including Phase 89's `ci_coverage_lint` on its second cross-phase application (after Phase 90's first), confirming the dogfooding pattern operative across the cluster. All applicable Step 3 passes PASS. Infrastructure Alignment verified `qor/scripts/ledger_hash.py` (verify@174, verify_post_anchor@270, chain_hash@33), `qor/cli.py` verify-ledger subparser at line 159 + dispatcher at line 230 + `_do_verify_ledger` at line 52, `qor.reliability.seal_entry_check.check_previous_hash_uniqueness` `min_entry_num=207` default at line 110, and `SG-ConcurrentLedgerRace-A` doctrine entry at line 273. The critical "flag does not mask novel failures" invariant is anchor-tested explicitly via `test_verify_with_flag_still_fails_on_post_cutoff_chain_mismatch`. Read-only verifier-semantics design (no ledger writes) was ruled the correct V1 scope — operator-authorization protocol design deferred to V2 (Options A/B) where it is structurally needed.
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `81eb90610a4e235e9cb031bcad24ea84878fa21e782e84ba5734ae1bb796257c`
+
+**Previous Hash**: `763a5a99880ca03d7a48b35b0957e36046ce80f60465cd41e41f3f0681cffbca`
+
+**Chain Hash**: `b1057f480de53ba8f12dcdef9324951a93a8ff7be96042643296cf58f9e6c250`
+
+---
+
+*Session: 2026-05-23T0209-2502b4 (Phase 91 -- audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #243: IMPLEMENTATION -- Phase 91 (verify-ledger --tolerate-known-grandfathered stopgap)
+
+**Timestamp**: 2026-05-23T02:35:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+
+**Plan**: docs/plan-qor-phase91-ledger-tolerate-grandfathered.md
+
+**Session**: `2026-05-23T0209-2502b4`
+
+**Entry ID**: `le_efaafa70efd6c089`
+
+**Scope**: Closes the consumer-blocker half of GH #85 via Option D from the issue. New `qor.scripts.ledger_hash.find_grandfathered_entries(ledger_md, cutoff=207) -> frozenset[int]` returns entry numbers whose `previous_hash` is shared by 2+ entries AND whose entry number is `<= cutoff`. `verify()` gains `tolerate_known_grandfathered: bool = False` and `grandfather_cutoff: int = 207` kwargs; when the flag is True, chain-math failures on grandfathered entries emit `DISCLOSED_GRANDFATHERED Entry #N` on stdout (not stderr), do not contribute to the error count, and do NOT propagate TAINTED to downstream entries. `qor-logic verify-ledger` CLI gains `--tolerate-known-grandfathered` (store_true) and `--grandfather-cutoff` (int, default 207) flags. `SG-ConcurrentLedgerRace-A` doctrine entry extended with a "V2 stopgap (Phase 91)" paragraph naming the flag, signature, and explicit deferral of Options A/B to a future phase.
+
+**Files touched** (8): `qor/scripts/ledger_hash.py` (find_grandfathered_entries helper + verify() kwargs), `qor/cli.py` (--tolerate-known-grandfathered + --grandfather-cutoff flags on verify-ledger subparser; propagation in _do_verify_ledger), `qor/references/doctrine-shadow-genome-countermeasures.md` (V2 stopgap paragraph on SG-ConcurrentLedgerRace-A), `tests/test_ledger_hash_tolerate_grandfathered.py` (NEW, 13 behavior tests), `docs/plan-qor-phase91-ledger-tolerate-grandfathered.md` (NEW), `docs/SYSTEM_STATE.md` (Phase 91 entry), `CHANGELOG.md` (0.62.0 stamped), `pyproject.toml` (0.62.0).
+
+**Test surface**: TDD red-green observed (test_ledger_hash_tolerate_grandfathered.py failed at collection — `find_grandfathered_entries` absent — before implementation). 13 new tests total. After helper + verify() extension landed, 11/13 passed; the 2 CLI tests failed pending CLI flag wiring; after CLI wiring, 13/13 pass twice deterministically. Critical guards present: post-cutoff chain mismatches still FAIL even with flag set (does NOT mask novel failures); canonical Qor-logic ledger behavior unchanged with flag both off and on (forward-only guards). Full suite: 1777 passed, 1 skipped, 0 failed.
+
+**Razor compliance**: `find_grandfathered_entries` is 22 lines; `verify()` extension adds 6 lines of guard + 7 lines of `elif num in grandfathered:` branch; CLI adds 8 lines (2 flag defs + propagation). Doctrine extension is one paragraph; no new doctrine file. Per `qor/references/doctrine-token-efficiency.md` and the GH #92 progressive-disclosure lesson.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. Architecture-bearing documentation is the SG-ConcurrentLedgerRace-A V2-stopgap paragraph and the SYSTEM_STATE Phase 91 entry, authored in-context.
+
+**Reliability**: intent-lock captured at substantiate start (`LOCKED: 2026-05-23T0209-2502b4`); `VERIFIED`. `secret_scanner` clean (exit 0). `procedural_fidelity` clean (empty findings).
+
+**Self-application**: `originating_remediation: GH #85`. The phase introduces a verifier flag that COULD be exercised on Qor-logic's own META_LEDGER, which has the documented residual at #109/#111/#113 — but the canonical ledger's chain math verifies clean (each duplicate-previous-hash entry's recorded chain hash matches its own `chain_hash(content, previous)` computation in isolation, so no FAILs to tolerate). Tests `test_canonical_ledger_unchanged_without_flag` and `test_canonical_ledger_clean_with_flag` assert this forward-only invariant: the flag adds zero noise on a clean ledger. The consumer-blocker case (Accountable-App-3.0 per GH #85) has downstream chain-hash mismatches the flag would tolerate; that workspace is the validation target for Phase 91 V1.
+
+**Content Hash**:
+SHA256(plan-qor-phase91-ledger-tolerate-grandfathered.md) = `0d8af4fff33a87048a38cc37ff56e962f796e2c3f3a4b02f7a78434fdcc208ff`
+
+**Previous Hash**: `b1057f480de53ba8f12dcdef9324951a93a8ff7be96042643296cf58f9e6c250`
+
+**Chain Hash**: `2bc36842e3cdfe672719e555ee7b29117ac9d1b1ef469f0ea52c5d314b3ee525`
+
+---
+
+*Session: 2026-05-23T0209-2502b4 (Phase 91 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #244: SESSION SEAL -- Phase 91 feature substantiated: verify-ledger --tolerate-known-grandfathered stopgap (v0.62.0, GH #85)
+
+**Timestamp**: 2026-05-23T02:40:00Z
+
+**Phase**: SUBSTANTIATE (Phase 91 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase91-ledger-tolerate-grandfathered.md
+
+**Session**: `2026-05-23T0209-2502b4`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `le_aa7c92a1036b86d2` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes the consumer-blocker half of GH #85. `qor-logic verify-ledger` gains `--tolerate-known-grandfathered` and `--grandfather-cutoff` flags; new `find_grandfathered_entries(ledger_md, cutoff=207)` helper enumerates the SG-ConcurrentLedgerRace-A residual set (entries with duplicate `previous_hash` below the cutoff); `verify()` honors the flag by emitting `DISCLOSED_GRANDFATHERED` instead of `FAIL` for tolerated entries and suppressing taint propagation. Read-only verifier semantics — the ledger is not modified. Lets consumer workspaces (e.g., Accountable-App-3.0 per GH #85) ship clean `verify-ledger` gates immediately without rewriting past entries. SG-ConcurrentLedgerRace-A doctrine entry extended with V2-stopgap paragraph. Options A (RECONCILIATION entry append), B (post-anchor pinning), and C (per-session sub-ledger merge) deferred to a future phase with operator-authorization protocol design.
+
+**Files touched** (~11): the 8 above plus `docs/META_LEDGER.md` (entries #242-#244), `.qor/gates/2026-05-23T0209-2502b4/{plan,audit,implement,substantiate}.json`, `.agent/staging/AUDIT_REPORT.md`.
+
+**Test surface**: 13 new tests across four categories — signature detection (4), verify() behavior with/without flag including the post-cutoff non-masking guard (5), CLI propagation (2), canonical-ledger forward-only guards (2). All pass twice deterministically. Full suite: 1777 passed, 1 skipped.
+
+**Razor compliance**: `find_grandfathered_entries` 22 lines; verify() extension adds ~13 lines (guard + new elif branch); CLI adds 8 lines; doctrine extension one paragraph; no new doctrine file.
+
+**Audit history**: iter-1 PASS (Entry #242, L2). Solo audit; all Step 3 passes PASS. The critical "flag does not mask novel failures" invariant is anchor-tested explicitly.
+
+**Self-application**: this phase consumes the discipline introduced in the prior cluster phases. Phase 89's `ci_coverage_lint` runs on Phase 91's plan and exits zero (second cross-phase exercise). Phase 90's `## Environment` block discipline is honored vacuously (test file does not invoke `python -m qor.X` so no block is required, but the test layout follows the established convention). Two new canonical-ledger forward-only guards extend Phase 90's pattern (the cluster's structural-sweep canon).
+
+**Content Hash (session seal)**: `2eab9d7384f62f29228a70a4af2fca4aa9ca0ce9e8830cdb22ba10a76e48b4db`
+
+**Previous Hash**: `2bc36842e3cdfe672719e555ee7b29117ac9d1b1ef469f0ea52c5d314b3ee525`
+
+**Chain Hash (Merkle seal)**: `014013c336d9e4421f8bfe5ef81848db04f1d867377848c26a3d17ebf3096c94`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 91 feature complete; GH #85 consumer-blocker half closed)
+*Merkle seal: 014013c3...* (Phase 91 seal on top of Phase 90's 763a5a99...)
+*Open items at this seal: stage artifacts for user review (Review Boundary); GH #85 Options A + B + C reserved for future phase per V1 non_goals*
