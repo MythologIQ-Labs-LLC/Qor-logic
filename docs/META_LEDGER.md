@@ -9127,3 +9127,120 @@ SHA256(plan-qor-phase89-ci-commands-reconciliation.md) = `b98d4ff926a655fa1e7f78
 *Session: SEALED* (Phase 89 feature complete; GH #91 closed at lint layer)
 *Merkle seal: 0fd1d98b...* (Phase 89 seal on top of Phase 88's 5a3a4429...)
 *Open items at this seal: stage artifacts for user review (Review Boundary); substantiate-time re-assert deferred to follow-on phase per V1 non_goals*
+
+---
+
+### Entry #239: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-23T00:30:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Plan**: docs/plan-qor-phase90-skill-preflight-and-environment.md
+
+**Session**: `2026-05-23T0013-0293e5`
+
+**Entry ID**: `le_82c5f14a6c31e837`
+
+**Decision**: Phase 90 plan (GH #79 visible-misconfiguration half via C+D combination) cleared on iter-1. Audit conducted solo per `audit_risk_score` reporting `option_b_required: false` (no `*.config.*` citation; fewer than 5 grep-evidence citations). All five Step 0.6 pre-audit lints exit 0 — including the new Phase 89 `ci_coverage_lint` on its first cross-phase application, confirming the lint operates correctly on a fresh plan that covers the full Qor-logic CI surface. All applicable Step 3 passes PASS. Infrastructure Alignment verified the 7 affected SKILL.md files exist; `SG-HalfSealedClaim-A` Phase 75 anchor present in the doctrine file; `gate_skipped_prerequisite_absent` event appears 8x in qor-substantiate confirming the SKIP fallback the Environment block cross-references. The WARN-only preflight design (not ABORT) was ruled the correct balance: ABORT would break Phase 75 declarative-tolerance on legitimately non-Python hosts; WARN preserves the SKIP path while surfacing the misconfiguration for operators who have an importable interpreter but the wrong venv active.
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `c15bc8c727cf9b1eb9af63c182be57622c0a73dc0ef3c673c0b9175015394078`
+
+**Previous Hash**: `0fd1d98be96eafcba3c0c0ee242ab07ddbd0ac8201c27ab11c81f2694022dfa9`
+
+**Chain Hash**: `cc94d036cf2cccf6e0d42a86f5178c6f19d270fe4dcaaaf93f4e633f85dbf2cb`
+
+---
+
+*Session: 2026-05-23T0013-0293e5 (Phase 90 -- audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #240: IMPLEMENTATION -- Phase 90 (skill preflight + environment contract for Python-dependent invocations)
+
+**Timestamp**: 2026-05-23T00:35:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+
+**Plan**: docs/plan-qor-phase90-skill-preflight-and-environment.md
+
+**Session**: `2026-05-23T0013-0293e5`
+
+**Entry ID**: `le_815dd4a904013cc7`
+
+**Scope**: Closes the visible-misconfiguration half of GH #79. Phase 75 (v0.51.0) gave skills declarative tolerance when `qor-logic` modules are unreachable but the SKIP cascade is indistinguishable from legitimately non-Python hosts; the COREFORGE consumer session (per the issue) encoded that drift into a project-memory rule. Phase 90 ships Options C + D from the issue: (C) WARN-only preflight one-liner at the top of `## Execution Protocol` (or equivalent protocol-section) for each affected skill, and (D) a new `## Environment` block above the protocol documenting the install contract and cross-referencing the Phase 75 SKIP fallback. Applied uniformly to 7 affected skills.
+
+**Files touched** (13): `qor/skills/governance/qor-audit/SKILL.md`, `qor/skills/governance/qor-process-review-cycle/SKILL.md`, `qor/skills/governance/qor-shadow-process/SKILL.md`, `qor/skills/governance/qor-substantiate/SKILL.md`, `qor/skills/meta/qor-repo-audit/SKILL.md`, `qor/skills/sdlc/qor-implement/SKILL.md`, `qor/skills/sdlc/qor-plan/SKILL.md`, `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-SilentSkipMisconfig-A` entry), `tests/test_skill_environment_block.py` (NEW), `docs/plan-qor-phase90-skill-preflight-and-environment.md` (NEW), `docs/SYSTEM_STATE.md` (Phase 90 entry), `CHANGELOG.md` (0.61.0 stamped), `pyproject.toml` (0.61.0).
+
+**Test surface**: TDD red-green observed (5 of 7 tests failed at first run with no Environment block / preflight present; 2 passed vacuously which is the correct behavior for the strip-and-fail-style tests). After insertion of Environment block + preflight across all 7 affected skills, 7/7 tests pass twice deterministically. The detection regex (`python\s+-m\s+qor\.(?:reliability|scripts)\.\w+\b`) requires a CONCRETE submodule name to qualify as an invocation — the Environment block's prose mention of the abstract `python -m qor.reliability.*` pattern does not itself count as an invocation (the `\.\w+\b` clause excludes the `.*` glob wildcard). Full suite: 1764 passed, 1 skipped, 0 failed.
+
+**Razor compliance**: each skill gains ~14 lines (Environment block ~7 lines + preflight ~5 lines + headers). No new doctrine file; single doctrine-bullet extension. Honors GH #92 progressive-disclosure lesson. Cross-skill coverage is enforced by tests, not by repeated doctrine prose.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. SYSTEM_STATE Phase 90 entry, `SG-SilentSkipMisconfig-A` doctrine extension, CHANGELOG 0.61.0 entry all authored in-context. No new glossary terms beyond `SG-SilentSkipMisconfig-A`.
+
+**Reliability**: intent-lock captured at substantiate start (`LOCKED: 2026-05-23T0013-0293e5`); `VERIFIED`. `secret_scanner` clean (exit 0). `procedural_fidelity` clean (empty findings).
+
+**Self-application**: `originating_remediation: GH #79`. The plan's `## CI Commands` block declares the full Qor-logic CI surface so Phase 89's `ci_coverage_lint` reports zero WARNs against the very plan that ships Phase 90 — first cross-phase exercise of Phase 89's countermeasure on a fresh plan. ✓ V1 ships visible-misconfiguration half; full reachability fix (Option A `qor-logic <subcommand>` CLI dispatch) reserved for a future phase pending operator evidence on C+D effectiveness.
+
+**Content Hash**:
+SHA256(plan-qor-phase90-skill-preflight-and-environment.md) = `a9cac90fa2dc90b855f21623d15c36612784fa76075db30eaa121249cc11cd3f`
+
+**Previous Hash**: `cc94d036cf2cccf6e0d42a86f5178c6f19d270fe4dcaaaf93f4e633f85dbf2cb`
+
+**Chain Hash**: `0326240014d5a09edb50da013830e548e4ef04452af40222d799e7698d6ef58b`
+
+---
+
+*Session: 2026-05-23T0013-0293e5 (Phase 90 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #241: SESSION SEAL -- Phase 90 feature substantiated: skill preflight + environment contract for Python-dependent invocations (v0.61.0, GH #79)
+
+**Timestamp**: 2026-05-23T00:40:00Z
+
+**Phase**: SUBSTANTIATE (Phase 90 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase90-skill-preflight-and-environment.md
+
+**Session**: `2026-05-23T0013-0293e5`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `le_5fd78670ff2b97a2` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes the visible-misconfiguration half of GH #79 (V2 follow-up to Phase 75's V1 declarative-tolerance SKIP path). 7 affected skills gain a `## Environment` block (Option D) documenting the install contract — `pip show qor-logic`, `pipx install qor-logic`, Phase 75 SKIP fallback for non-Python hosts — and a WARN-only preflight one-liner (Option C) at the top of their protocol section. The preflight uses `python -c "import qor.reliability"` followed by a WARN message naming the active interpreter and the operator-actionable fix; it does NOT abort, so Phase 75 SKIP behavior remains intact on legitimately non-Python hosts. New `SG-SilentSkipMisconfig-A` doctrine entry catalogs the pattern (silent-SKIP cascade indistinguishable from non-Python-host case), originating incident (COREFORGE consumer session per GH #79), and countermeasure. V1 boundaries: only Options C + D ship; Option A (CLI subcommand dispatch) and Option B (install-time path rewriting) reserved for a future phase. Per-invocation preflight declared a non_goal in favor of per-skill preflight at protocol entry.
+
+**Files touched** (~16): the 13 above plus `docs/META_LEDGER.md` (entries #239-#241), `.qor/gates/2026-05-23T0013-0293e5/{plan,audit,implement,substantiate}.json`, `.agent/staging/AUDIT_REPORT.md`.
+
+**Test surface**: TDD red-green observed (5 of 7 tests failed at first run). After uniform insertion across 7 affected skills, all 7 tests pass twice deterministically. The forward-only structural sweep test (`test_no_new_skills_invoke_python_qor_without_environment_block`) guards against future skill drift. Full suite: 1764 passed, 1 skipped.
+
+**Razor compliance**: each skill gains ~14 lines; no new doctrine file; single doctrine-bullet extension; single new test file. Per `qor/references/doctrine-token-efficiency.md` and the GH #92 progressive-disclosure lesson.
+
+**Audit history**: iter-1 PASS (Entry #239, L2). Solo audit per `audit_risk_score: option_b_required: false`. First audit cycle to exercise the Phase 89 `ci_coverage_lint` across phases — exit 0 on Phase 90's plan, confirming the lint operates correctly on a fresh plan whose CI Commands block covers Qor-logic's full workflow surface.
+
+**Self-application**: this phase consumes the discipline it improves — the test suite for Phase 90 ITSELF is run with the Python interpreter that has `qor.reliability` importable (the install venv), exactly the contract the new Environment blocks now document for operators. The new preflight one-liner would WARN if invoked from a no-venv shell; it does not in CI because the CI test job activates the install. The phase also extends Phase 89's pattern (self-application test for the lint introduced) by adding the cross-skill structural sweep (`test_no_new_skills_invoke_python_qor_without_environment_block`) as the analogous forward-only guard for skill-prose discipline.
+
+**Content Hash (session seal)**: `d2331c20434a826efc0f7ca3eeece4e54fa718159f583dd54710dbf9ff90f4a5`
+
+**Previous Hash**: `0326240014d5a09edb50da013830e548e4ef04452af40222d799e7698d6ef58b`
+
+**Chain Hash (Merkle seal)**: `763a5a99880ca03d7a48b35b0957e36046ce80f60465cd41e41f3f0681cffbca`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 90 feature complete; GH #79 visible-misconfiguration half closed)
+*Merkle seal: 763a5a99...* (Phase 90 seal on top of Phase 89's 0fd1d98b...)
+*Open items at this seal: stage artifacts for user review (Review Boundary); GH #79 Options A + B reserved for future phase per V1 non_goals*

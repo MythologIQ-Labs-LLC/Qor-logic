@@ -30,7 +30,25 @@ min_model_capability: opus
 
 Audit repository against GitHub Gold Standard. Integrates with GitHub API for community profile score when available.
 
+## Environment (Phase 90 wiring; GH #79)
+
+This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+
+```bash
+python -c "import qor.reliability"
+```
+
+If that command fails, activate the venv where `pip show qor-logic` resolves, or run `pipx install qor-logic` for a global install. On hosts without Python or where `qor-logic` is not installable (e.g., pure non-Python archetypes), Phase 75 declarative-tolerance applies — the missing-prerequisite gates record SKIP in the seal entry and emit `gate_skipped_prerequisite_absent` events per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-HalfSealedClaim-A`. The Phase 90 preflight at the top of `## Execution Protocol` below surfaces the misconfiguration once at skill entry so the SKIP cascade is operator-visible instead of silent.
+
 ## Execution Protocol
+
+```bash
+# Phase 90 preflight (GH #79): surface qor-logic module misconfiguration
+# once at skill entry. WARN-only -- Phase 75 SKIP fallback still applies.
+if ! python -c "import qor.reliability" 2>/dev/null; then
+  echo "WARN [qor-logic]: modules not importable from $(command -v python). Steps with module: prerequisites will record SKIP per Phase 75. Activate the venv where 'pip show qor-logic' resolves, or 'pipx install qor-logic', to restore the integrity gates." >&2
+fi
+```
 
 ### Step 0.6: Pre-audit lints (Phase 55 wiring — best-effort)
 
