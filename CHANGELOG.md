@@ -10,6 +10,34 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.62.0] - 2026-05-23
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 91 (feature, GH #85)**: `qor-logic verify-ledger` gains
+  `--tolerate-known-grandfathered` and `--grandfather-cutoff` flags. The
+  tolerance flag accepts chain-math failures iff the failing entries'
+  `previous_hash` appears in the ledger's duplicate-`previous_hash` set
+  AND the failing entry numbers are `<=` the cutoff (default 207,
+  matching `check_previous_hash_uniqueness`'s `min_entry_num`). Lets
+  consumer workspaces with SG-ConcurrentLedgerRace-A residuals (e.g.,
+  the Accountable-App-3.0 case in GH #85) ship clean `verify-ledger`
+  gates without rewriting past entries. Read-only verifier semantics —
+  the ledger is not modified, so no operator-authorization protocol is
+  needed in V1. Flag is OFF by default; strict verifier remains the
+  canonical gate. Tolerated failures emit `DISCLOSED_GRANDFATHERED
+  Entry #N` on stdout, do not contribute to the error count, and do not
+  propagate TAINTED to downstream entries. New
+  `find_grandfathered_entries(ledger_md, cutoff)` helper in
+  `qor.scripts.ledger_hash`. Extends the `SG-ConcurrentLedgerRace-A`
+  doctrine entry with a "V2 stopgap (Phase 91)" paragraph. Real
+  reconciliation that writes new entries (Options A/B from GH #85)
+  reserved for a future phase with operator-authorization protocol
+  design. 13 new behavior tests including two canonical-ledger
+  forward-only guards.
+
 ## [0.61.0] - 2026-05-23
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

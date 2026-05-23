@@ -68,7 +68,11 @@ def _do_verify_ledger(args: argparse.Namespace) -> int:
     if getattr(args, "post_anchor", False):
         boundary = getattr(args, "boundary", None)
         return ledger_hash.verify_post_anchor(ledger_path, boundary_entry=boundary)
-    return ledger_hash.verify(ledger_path)
+    return ledger_hash.verify(
+        ledger_path,
+        tolerate_known_grandfathered=getattr(args, "tolerate_known_grandfathered", False),
+        grandfather_cutoff=getattr(args, "grandfather_cutoff", 207),
+    )
 
 
 def _do_seed(args: argparse.Namespace) -> int:
@@ -168,6 +172,14 @@ def _register_misc(sub) -> None:
     sp_verify.add_argument(
         "--boundary", type=int, default=None,
         help="pin post-anchor boundary at entry N (default: auto-detect)",
+    )
+    sp_verify.add_argument(
+        "--tolerate-known-grandfathered", action="store_true",
+        help="accept chain failures on SG-ConcurrentLedgerRace-A documented residuals (Phase 91, GH #85)",
+    )
+    sp_verify.add_argument(
+        "--grandfather-cutoff", type=int, default=207,
+        help="entry-number upper bound for --tolerate-known-grandfathered (default 207; Phase 76 cutoff)",
     )
     sp_seed = sub.add_parser("seed", help="scaffold governance files in a workspace")
     sp_seed.add_argument("--target", type=Path, default=None)

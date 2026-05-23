@@ -1,7 +1,7 @@
-# AUDIT_REPORT — Phase 90
+# AUDIT_REPORT — Phase 91
 
-**Plan**: docs/plan-qor-phase90-skill-preflight-and-environment.md
-**Session**: 2026-05-23T0013-0293e5
+**Plan**: docs/plan-qor-phase91-ledger-tolerate-grandfathered.md
+**Session**: 2026-05-23T0209-2502b4
 **Auditor**: Judge (solo; `audit_risk_score` reported `option_b_required: false` — no `*.config.*` citation; fewer than 5 grep-evidence citations)
 
 **Verdict: PASS**
@@ -14,29 +14,29 @@
 - `plan_grep_lint`: exit 0
 - `plan_text_consistency_lint`: exit 0
 - `delivery_branch_lint`: exit 0
-- `ci_coverage_lint` (Phase 89, first cross-phase application): exit 0 (Phase 90's `## CI Commands` covers the full discovered CI surface)
+- `ci_coverage_lint` (Phase 89): exit 0 — Phase 91's `## CI Commands` covers the full discovered CI surface (dogfooding pattern continued)
 - `audit_risk_score`: `option_b_required: false`
 
 ### Step 3 passes
 
 - **Prompt Injection Pass**: PASS (`prompt_injection_canaries` exit 0).
-- **Security Pass (L3)**: PASS — phase touches skill markdown + a new behavior test; no auth, no credentials, no security bypass surface.
-- **OWASP Top 10**: PASS — no new code paths beyond the preflight bash one-liner (argv-only `python -c`); A03/A04/A05/A08 N/A.
+- **Security Pass (L3)**: PASS — new CLI flag is read-only; verifier semantics change, ledger content does not. No auth, no credentials, no security bypass surface.
+- **OWASP Top 10**: PASS — A03: argv-only argparse; no `shell=True`; no `python -c "$VAR"` interpolation. A04: WARN-style tolerance; flag OFF by default → strict mode preserved. A05/A08: N/A.
 - **Ghost UI Pass**: N/A.
-- **Section 4 Razor Pass**: PASS — 7 skill-prose insertions + 1 doctrine bullet + 1 test file. Per design notes: per-invocation preflight (issue's literal reading) declared a non_goal in favor of per-skill preflight at Execution Protocol entry — one WARN per skill invocation is operatively sufficient.
-- **Self-Application Sub-Pass**: PASS — solo audit; mitigated by `test_each_python_invoking_skill_has_environment_section` enforcing structural sweep across all 7 affected skills plus `test_no_new_skills_invoke_python_qor_without_environment_block` forward-only guard.
-- **Test Functionality Pass**: PASS — 5 behavior tests verify operative properties: section presence, install-contract substrings (`pip show qor-logic` + `pipx install qor-logic`), Phase 75 SKIP-fallback substrings, preflight-WARN-not-ABORT constraint (negative-existence check on `exit 1` and `|| ABORT`), forward-only structural sweep.
+- **Section 4 Razor Pass**: PASS — one helper function (`find_grandfathered_entries`) + one `verify()` kwarg + 2 CLI flags + doctrine paragraph extension. The critical invariant "flag does not mask novel failures" is anchor-tested explicitly via `test_verify_with_flag_still_fails_on_post_cutoff_chain_mismatch`.
+- **Self-Application Sub-Pass**: PASS — solo audit; mitigated by two canonical-ledger forward-only guards (`test_canonical_ledger_unchanged_without_flag`, `test_canonical_ledger_clean_with_flag`) and the post-cutoff non-masking guard. Phase 91 will be the third phase in the cluster to dogfood its own discipline via canonical-ledger guards.
+- **Test Functionality Pass**: PASS — 12 behavior tests verify operative properties: signature detection (4 tests cover the cutoff boundary, duplicate-set membership, mixed pre/post-cutoff group, unique-previous-hash exclusion); verify behavior (4 tests cover with/without flag, taint suppression, post-cutoff non-masking); CLI propagation (2); canonical-ledger forward-only guards (2). Fixture ledgers reconstruct the SG-ConcurrentLedgerRace-A pattern from GH #85.
 - **Dependency Audit**: PASS — no new module, no new external dependency.
-- **Macro-Level Architecture Pass**: PASS — consistent with existing skill-prose convention; layered above Phase 75's `## Step Prerequisites` blocks; honors GH #92 progressive-disclosure.
-- **Feature Test Coverage Pass**: PASS — `Feature Inventory Touches: []` declared with rationale.
-- **Infrastructure Alignment Pass**: PASS — all 7 affected SKILL.md files exist; `qor/references/doctrine-shadow-genome-countermeasures.md` exists with `SG-HalfSealedClaim-A` present (Phase 75 anchor); `gate_skipped_prerequisite_absent` event appears 8x in `qor-substantiate/SKILL.md` confirming Phase 75 SKIP fallback the Environment block cross-references. `SG-SilentSkipMisconfig-A` declared NEW.
+- **Macro-Level Architecture Pass**: PASS — consistent with existing `qor/scripts/ledger_hash.py` module shape (parallel to `verify_post_anchor`'s Phase 66 tolerance pattern); honors GH #92 progressive-disclosure (extends existing doctrine entry instead of creating a new one).
+- **Feature Test Coverage Pass**: PASS — `Feature Inventory Touches: []` declared with rationale (CLI flag + library arg, not `src/` user feature).
+- **Infrastructure Alignment Pass**: PASS — `qor/scripts/ledger_hash.py` confirmed (verify@174, verify_post_anchor@270, chain_hash@33); `qor/cli.py` verify-ledger subparser confirmed at line 159, dispatcher at line 230, `_do_verify_ledger` at line 52; `qor/reliability/seal_entry_check.py` `check_previous_hash_uniqueness` with `min_entry_num=207` default at line 110 — the 207 default that Phase 91 mirrors. `SG-ConcurrentLedgerRace-A` doctrine entry confirmed at line 273 of `qor/references/doctrine-shadow-genome-countermeasures.md`.
 - **Filter-Stage Ordering Coherence**: N/A.
-- **Orphan Detection**: PASS — test file discoverable by pytest; doctrine extension in-place; plan file linked via META_LEDGER seal flow.
-- **Documentation Drift**: clean — `SG-SilentSkipMisconfig-A` is the only new glossary anchor; `doc_tier=standard`.
+- **Orphan Detection**: PASS — test file under `tests/`, fixture-driven; no orphans.
+- **Documentation Drift**: clean — no new glossary terms; `doc_tier=standard`.
 
-### Self-application validation of Phase 89 lint
+### Dogfooding milestone
 
-This audit run is the first cross-phase exercise of `ci_coverage_lint` from Phase 89. Phase 90's plan was authored to cover the full discovered Qor-logic CI surface in its `## CI Commands` block; the lint reports zero WARNs on a fresh plan. Phase 89's countermeasure is operative. ✓
+This audit is the second cross-phase exercise of Phase 89's `ci_coverage_lint` (after Phase 90's first). Phase 91's `## CI Commands` block covers Qor-logic's full CI surface; lint exit 0. Pattern is stable. Phase 91 also continues the canonical-ledger forward-only guard pattern (Phase 90 introduced via `test_no_new_skills_invoke_python_qor_without_environment_block`; Phase 91 adds two canonical-ledger guards).
 
 ## Next phase
 
