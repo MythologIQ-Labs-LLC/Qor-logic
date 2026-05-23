@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-23T0510-f5f709",
+  "ts": "2026-05-23T05:17:27Z",
+  "plan_path": "docs/plan-qor-phase95-skill-corpus-budget.md",
+  "version": "0.66.0",
+  "change_class": "feature",
+  "verdict": "PASS",
+  "merkle_seal": "bd5ad5c9af76db95ee707a8d1ecf70aedb03edb3dfc83ad492112e790f5ea678",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.66.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T05:17:27Z"
+  }
+}

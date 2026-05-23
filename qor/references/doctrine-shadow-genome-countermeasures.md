@@ -446,3 +446,30 @@ A second recurrence dimension: when a plan introduces a discipline (lint, audit 
 **Inline companion** (Phase 94 wiring; GH #90): GH #90 was filed as the inline mechanism complementing GH #89's macro throttle. Phase 94 adds `qor.scripts.workspace_fragility_check` at `/qor-audit` Step 0.6 as the SIXTH pre-audit lint (after `plan_test_lint`, `plan_grep_lint`, `plan_text_consistency_lint`, `delivery_branch_lint`, `ci_coverage_lint`). Where Phase 93's `merge_velocity_check` looks BACKWARD at `origin/main`'s recent merge history at substantiate, Phase 94's `workspace_fragility_check` looks at the LOCAL working tree FORWARD pre-merge: untracked file count, dirty gate artifacts (`.qor/gates/<sid>/` whose session lacks a SESSION SEAL entry in META_LEDGER), ledger chain-math failures (excluding Phase 91 grandfathered residuals), active local branch count, branch-diff size since divergence from `origin/main`. Three grades (`low` / `medium` / `high`) with deterministic action mapping (`merge_ok` / `narrow_scope` / `hardening_only`). V1 thresholds: `medium` at `untracked_count >= 15` OR `dirty_gate_artifact_count >= 3` OR `active_branch_count >= 10` OR `recent_commit_diff_lines >= 1500`; `high` at `ledger_chain_failure_count > 0` OR `untracked_count >= 50` OR `recent_commit_diff_lines >= 5000`. CLI exits 1 on `high` so V2 can remove the `|| true` wrap and convert to a hard ABORT. WARN-only V1 at audit; V2 (audit-evidence treatment per GH #90's "Inline Enforcement Points" section; scope-expansion detection during /qor-implement; per-deliverable scope guard via Phase 92 D4 tier extension) reserved.
 
 **Cross-reference**: GH #89 (macro) + GH #90 (inline); doctrinally adjacent to `SG-DoDImplicit-A` (Phase 92 — ceremonial gates pass while substantive verification is absent) and `SG-CICoverageDrift-A` (Phase 89 — plan ci_commands not reconciled against actual CI workflows). Same root family: governance gates that detect a class of process pressure the standard PASS/VETO sequence cannot see.
+
+
+---
+
+## SG-SkillCorpusGrowth-A — skill corpus grows monotonically with no consolidation counterweight (Phase 95)
+
+**Pattern**: the canonical SKILL.md corpus has grown monotonically and is now a measurable latency source; the open-issue backlog is overwhelmingly additive — there is no governance counterweight that pays down skill weight. Per-skill SKILL.md files accumulate sub-passes, doctrines, and wiring paragraphs across phases; nothing budgets skill size; no recurring pass consolidates accumulated content. Two distinct slowdown sources both grow with each additive phase: context weight (larger SKILL.md = more tokens per turn = higher per-turn latency) and wall-clock (more sequential steps, sub-passes, file reads, Python shell-outs per invocation).
+
+**Originating measurement** (per GH #92, captured via `git show` across phase anchors):
+
+| Date | Phase | SKILL.md bytes | Lines | Tokens (~chars/4) |
+|------|-------|----------------|-------|-------------------|
+| 2026-04-02 | 0 | 91 KB | 3,024 | ~22.8k |
+| 2026-04-15 | 1 (SSoT) | 124 KB | 4,074 | ~31k |
+| 2026-04-20 | 39b | 214 KB | 5,939 | ~53.6k |
+| 2026-05-01 | 58 | 241 KB | 6,294 | ~60.3k |
+| 2026-05-14 | 81 (HEAD) | 282 KB | 6,766 | ~70.5k |
+
+~3.1x bytes, 2.2x lines in ~6 weeks. Monotonic — never contracted. Concentration: qor-audit (36.7 KB) + qor-substantiate (32.7 KB) = 25% of the corpus at the issue-filing date; reference fan-out for a single qor-audit invocation can read 80-100+ KB of context (SKILL.md + own templates + chained doctrines). At the time of Phase 95 substantiate (this entry), qor-audit has grown to 44 KB and qor-substantiate to 39.8 KB+ — the new lint catches the bloat the first time it runs.
+
+**Countermeasure** (Phase 95 wiring; GH #92): new `qor.scripts.skill_size_budget_lint` walks `qor/skills/**/SKILL.md` and emits one finding per skill exceeding the size thresholds — `skill-over-warn-threshold` at 25 KB; `skill-over-exceeded-threshold` at 40 KB. Wired at `/qor-substantiate` Step 4.6.9 (between merge-velocity 4.6.8 and doc-integrity 4.7) WARN-only. CLI exits 1 when any EXCEEDED finding is present so V2 can convert to a hard ABORT. The lint is a visibility surface; it does NOT auto-refactor skills.
+
+**V2 reserved**: periodic consolidation cadence (extending `qor-process-review-cycle` to sweep skill weight per the issue's "Periodic consolidation pass" proposal); context-load measurement per phase (per-skill reference fan-out); growth-rate analysis from git history (the GH #92 measurement table generalized into a script); auto-suggest of progressive-disclosure refactor candidates.
+
+**Reflective note**: Phase 95 itself adds ~270 LOC of script + ~120 lines of doctrine + ~20 lines of skill-prose wiring to the corpus it measures. The lint contributes to the very bloat it visibilizes. That tension is acknowledged: V1 lands the visibility; V2 consolidation work will need to evaluate which doctrine prose (including possibly this entry's table) is operative vs archival. The cluster's V1/V2 split pattern is itself a corpus-growth mechanism — each V1 phase ships a detector + a doctrine entry + a SKILL.md wiring paragraph. GH #92 is the issue that will eventually require some of those V1 doctrines to retire when V2 evidence shows they are not load-bearing.
+
+**Cross-reference**: GH #92; doctrinally adjacent to `SG-DocsBackloadedToSubstantiate-A` (Phase 79 — documentation lifecycle deferred to seal-time) and `SG-MergePaceThrottle-A` + inline companion (Phase 93/94 — governance gates that detect a class of process pressure). Same root family: process-control measurements surfacing pressures the standard PASS/VETO sequence cannot see.

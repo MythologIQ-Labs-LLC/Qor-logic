@@ -1,0 +1,45 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-23T0510-f5f709",
+  "ts": "2026-05-23T05:11:00Z",
+  "plan_path": "docs/plan-qor-phase95-skill-corpus-budget.md",
+  "phases": [
+    "Phase 1: skill_size_budget_lint + Step 4.6.9 wiring + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_skill_size_budget_lint.py -q",
+    "python -m pytest tests/test_skill_size_budget_substantiate_wiring.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase95-skill-corpus-budget.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase95-skill-corpus-budget.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase95-skill-corpus-budget.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 measurement-only; per-skill SKILL.md size threshold check; no historical-growth tracking; no consolidation cadence"
+    ],
+    "non_goals": [
+      "periodic consolidation cadence; context-load measurement; auto-refactor suggestions; growth-rate analysis from git history"
+    ],
+    "exclusions": [
+      "no changes to existing SKILL.md content; no new CI workflow; existing substantiate gates unchanged in order"
+    ]
+  },
+  "originating_remediation": "GH #92",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.65.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-23T05:11:00Z"
+  }
+}

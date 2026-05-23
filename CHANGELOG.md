@@ -10,6 +10,31 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.66.0] - 2026-05-23
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 95 (feature, GH #92)**: skill-corpus size-budget lint V1.
+  Closes the meta process-finding from GH #92 (skill corpus tripled
+  in 6 weeks; no consolidation counterweight). New
+  `qor.scripts.skill_size_budget_lint.check_skills(skills_root)` walks
+  `qor/skills/**/SKILL.md` and emits one finding per skill exceeding
+  the per-skill size threshold: `skill-over-warn-threshold` at 25 KB
+  and `skill-over-exceeded-threshold` at 40 KB. New `/qor-substantiate`
+  Step 4.6.9 (between merge-velocity 4.6.8 and doc-integrity 4.7)
+  invokes the lint WARN-only. CLI exits 1 when any EXCEEDED finding
+  is present so V2 can convert to a hard ABORT. The lint catches the
+  canonical Qor-logic corpus's own bloat at substantiate-time:
+  `qor-audit` (44 KB) reports EXCEEDED, `qor-substantiate` (~40 KB)
+  reports WARN — dogfooding the discipline the lint introduces. New
+  `SG-SkillCorpusGrowth-A` doctrine entry catalogs the GH #92
+  measurement table (91 KB → 282 KB in 6 weeks) and the reflective
+  acknowledgement that the lint itself contributes to corpus growth.
+  V2 (periodic consolidation cadence; historical-growth tracking;
+  auto-refactor suggestions) reserved for a future phase.
+
 ## [0.65.0] - 2026-05-23
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

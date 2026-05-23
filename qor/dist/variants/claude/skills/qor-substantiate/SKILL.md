@@ -311,6 +311,16 @@ python -m qor.scripts.merge_velocity_check --repo-root . --window-days 7 || true
 
 The CLI exits 0 on `healthy`/`strained` and exits 1 on `exceeded` (the latter is informational in V1 — the `|| true` swallows the non-zero so substantiate continues). V2 may remove the `|| true` to convert `exceeded` into a hard ABORT. Operators may add operator-declared shared-core path patterns via repeat `--shared-core-path` flags so the detector counts shared-surface touches as one of the threshold signals.
 
+### Step 4.6.9: Skill-corpus size-budget lint (Phase 95 wiring; GH #92)
+
+WARN-only per-skill size-budget lint that walks `qor/skills/**/SKILL.md` and surfaces a finding for each SKILL.md exceeding the size thresholds (WARN at 25 KB, EXCEEDED at 40 KB). Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-SkillCorpusGrowth-A`, the canonical SKILL.md corpus grew from 91 KB / 3024 lines (Phase 0) to 282 KB / 6766 lines (Phase 81) in 6 weeks — monotonic, never contracted, with no consolidation counterweight. V1 ships the visibility surface; V2 (periodic consolidation cadence via `qor-process-review-cycle`; historical-growth tracking from git history) reserved.
+
+```bash
+python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills || true
+```
+
+WARN-only V1: the lint emits one finding per oversized SKILL.md but does not abort substantiate. CLI exits 1 when any EXCEEDED finding (>= 40 KB) is present so V2 can convert to a hard ABORT by removing the `|| true` wrap. Operator-actionable: skills exceeding the WARN threshold should be candidates for progressive-disclosure refactor (move sub-pass / step prose to `references/` files); skills exceeding EXCEEDED should be considered overdue for refactor.
+
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.doc_integrity`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.
