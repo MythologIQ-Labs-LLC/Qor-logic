@@ -1,0 +1,45 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-23T2247-a2a0d1",
+  "ts": "2026-05-23T22:47:00Z",
+  "plan_path": "docs/plan-qor-phase97-skill-registry-per-category-drift.md",
+  "phases": [
+    "Phase 1: registry reconciliation + per-category test"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_skill_registry_per_category_currency.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase97-skill-registry-per-category-drift.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase97-skill-registry-per-category-drift.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase97-skill-registry-per-category-drift.md",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 reconciles docs/SKILL_REGISTRY.md per-category counts to match disk; adds per-category currency test; covers four canonical categories (governance, sdlc, memory, meta); custom/ remains structurally separate"
+    ],
+    "non_goals": [
+      "changing the counting methodology; cross-referencing to dist variant manifests; auto-regenerating registry from disk state"
+    ],
+    "exclusions": [
+      "no changes to any SKILL.md content; no changes to existing badge currency tests; no changes to existing Step 0.6 audit lints or Step 4.6.* substantiate gates"
+    ]
+  },
+  "originating_remediation": "F8 (internal prompt-surface review)",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.67.0",
+    "host": "unknown",
+    "model_family": "claude-opus-4-7",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T22:47:00Z"
+  }
+}

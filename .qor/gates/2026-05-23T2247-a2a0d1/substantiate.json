@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-23T2247-a2a0d1",
+  "ts": "2026-05-23T23:00:00Z",
+  "plan_path": "docs/plan-qor-phase97-skill-registry-per-category-drift.md",
+  "version": "0.67.1",
+  "change_class": "hotfix",
+  "verdict": "PASS",
+  "merkle_seal": "aad8f14f078e6e7767d6d517f6ea61bdadd58115300a03c22f95eab549db15a8",
+  "merkle_seal_predecessor": "341b2d7e1454091af9fd1daa3a1b1449a6a3e444ee68ff37bb51674a92f04c6c",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.67.1",
+    "host": "unknown",
+    "model_family": "claude-opus-4-7",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T23:00:00Z"
+  }
+}
