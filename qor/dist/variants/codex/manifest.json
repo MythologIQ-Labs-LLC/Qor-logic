@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-23T18:15:33Z",
+  "generated_ts": "2026-05-23T22:09:41Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -150,7 +150,7 @@
       "id": "qor-deep-audit-recon",
       "source_path": "skills/qor-deep-audit-recon/SKILL.md",
       "install_rel_path": "skills/qor-deep-audit-recon/SKILL.md",
-      "sha256": "23164582f3b7d2f4d6f6b96c85794edf724f377f8e2143ec2b52583ba71922cf"
+      "sha256": "7a6b9c255ffa8637d57e58767bcbad203ab17a262143c681e490a1bda24faede"
     },
     {
       "id": "qor-deep-audit-remediate",

@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-23T2155-170c5c",
+  "ts": "2026-05-23T22:05:00Z",
+  "plan_path": "docs/plan-qor-phase96-recon-reachability-probe.md",
+  "version": "0.67.0",
+  "change_class": "feature",
+  "verdict": "PASS",
+  "merkle_seal": "341b2d7e1454091af9fd1daa3a1b1449a6a3e444ee68ff37bb51674a92f04c6c",
+  "merkle_seal_predecessor": "bd5ad5c9af76db95ee707a8d1ecf70aedb03edb3dfc83ad492112e790f5ea678",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.67.0",
+    "host": "unknown",
+    "model_family": "claude-opus-4-7",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T22:05:00Z"
+  }
+}

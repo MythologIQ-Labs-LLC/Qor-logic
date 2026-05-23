@@ -9780,3 +9780,99 @@ SHA256(plan-qor-phase93-merge-velocity-throttle.md) = `9e009bcfafcbc356c47dbafd0
 *Merkle seal: bd5ad5c9...* (Phase 95 seal on top of Phase 94's 434a4e88...)
 *Open items at this seal: stage artifacts; GH #92 V2 (consolidation cadence + historical-growth tracking + auto-refactor) reserved for future phase per V1 non_goals*
 *Session totals: 8 phases shipped (88-95); 8 issues closed (#80, #91, #79, #85, #86, #89, #90, #92); +91 tests (1739 → 1830); v0.58.0 → v0.66.0; META_LEDGER #232 → #256*
+
+---
+
+### Entry #257: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-23T21:56:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase96-recon-reachability-probe.md
+**Session**: `2026-05-23T2155-170c5c`
+**Entry ID**: `le_phase96gateTRIBUNAL`
+
+**Decision**: Phase 96 plan (GH #108 recon reachability probe V1) cleared on iter-1. Solo audit; all 4 pre-audit lints exit 0 (plan_text_consistency, ci_coverage_lint, dod_check, skill_size_budget_lint). Nine adversarial layers applied: boundaries; V1/V2 split discipline; self-application/dogfooding anchor (zombie-claim fixture exercising all five categories); progressive disclosure (detailed protocol in `qor/references/recon-reachability-probe.md`, SKILL.md retains pointer); Definition of Done (4 deliverables; 2 D4.d waivers each cite follow-up phase); CI Commands coverage (all touched test files listed); Infrastructure Alignment (no claims of touching qor-audit SKILL.md — Phase 99 surface preserved); GH #108 alignment (all 5 reachability checks present; downgrade rule captured; COREFORGE Phase 371 case cited; SG-GrepShapedRunclaim-A ID preserved verbatim); cluster cross-coupling (no F4/F5+F6/F8 collateral). Verdict: PASS.
+
+**Content Hash**: SHA256(phase96-AUDIT_REPORT.md) = `846c663eb0f872d73445b9a066699b3f43d72b2cb6a993daa3d06a4caf827fc0`
+**Previous Hash**: `bd5ad5c9af76db95ee707a8d1ecf70aedb03edb3dfc83ad492112e790f5ea678`
+**Chain Hash**: `58da9a7ddc22bdd46928b597b0c43a39c415109d235eef0a3fdbb7aefe1ab827`
+
+---
+
+*Session: 2026-05-23T2155-170c5c (Phase 96 -- audit PASS)*
+
+---
+
+### Entry #258: IMPLEMENTATION -- Phase 96 (Recon Reachability Probe V1)
+
+**Timestamp**: 2026-05-23T22:00:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase96-recon-reachability-probe.md
+**Session**: `2026-05-23T2155-170c5c`
+**Entry ID**: `le_phase96IMPL00000`
+
+**Scope**: Closes the recon governance-level finding from GH #108 (recon grades surfaces on grep-shaped evidence without proving end-to-end runtime contract) via V1 visibility-only detector. New `qor.scripts.reachability_probe.check_claim(claim, repo_root, manifest_path) -> list[ReachabilityFinding]` runs five checks per claim (importability, test collection, caller graph, packaging, interface match). `/qor-deep-audit-recon` Phase 3 Round 0 NEW (between after-synthesis checkpoint and existing Phase 3 VERIFICATION); WARN-only V1. New `SG-GrepShapedRunclaim-A` doctrine entry carries the COREFORGE Phase 371 originating recurrence + V1 detector + V2-reserved enforcement clause (Phase 99 will fill). Progressive disclosure honored: detailed five-check protocol lives in `qor/references/recon-reachability-probe.md`; SKILL.md gains only Environment block + Round 0 heading + one-paragraph summary + reference pointer.
+
+**Files touched** (9): `qor/scripts/reachability_probe.py` (NEW ~250 LOC), `qor/skills/meta/qor-deep-audit-recon/SKILL.md` (Environment block + Round 0 wiring), `qor/references/recon-reachability-probe.md` (NEW detailed protocol + COREFORGE case study), `qor/references/doctrine-shadow-genome-countermeasures.md` (SG-GrepShapedRunclaim-A), `tests/test_reachability_probe.py` (NEW 14 tests), `tests/test_reachability_probe_recon_wiring.py` (NEW 4 tests), `docs/plan-qor-phase96-recon-reachability-probe.md` (NEW), `README.md` (Tests badge 1832 → 1850), `pyproject.toml` (0.67.0).
+
+**Test surface**: 18 new tests; impl GREEN on first pass after canonical-preflight alignment with Phase 90 Environment-block structural sweep. Dogfooding anchor (`test_probe_self_application_on_broken_fixture_emits_all_five`) constructs a synthetic broken repo and asserts all five reachability categories trigger; the V1 probe catches a zombie-code claim the first time it runs. All pass twice deterministically. Full suite: 1849 passed, 1 skipped (+18 from 1831 collected pre-phase).
+
+**Razor compliance**: ~250 LOC + ~22 wiring/doctrine lines + ~150-line reference file (progressive-disclosure offload, not SKILL.md bloat).
+
+**Reliability**: pre-substantiate gates all green (ledger verify; variant drift; gate-chain completeness; substantiate Step 0.6 pre-audit lints all exit 0 including new Phase 95 size-budget check).
+
+**Self-application**: `originating_remediation: GH #108`. The probe catches grep-shaped runclaims the first time it runs. EIGHTH cross-phase exercise of Phase 89's `ci_coverage_lint`; SECOND cross-phase exercise of Phase 95's `skill_size_budget_lint` (recon SKILL.md remains well under 25 KB after the Round 0 + Environment block additions). Phase 90 Environment-block sweep enforced through structural correction (canonical `python -c "import qor.reliability"` preflight required by the structural test).
+
+**Cluster milestone**: Phase 96 opens the Tier 1 prompt-surface remediation cluster (meta-memo: `docs/cluster-memo-prompt-surface-tier1-2026-05-23.md`). Sequence: 96 (V1) → 97 (F8) → 98 (F5+F6) → 99 (V2, GH #108 close) → 100 (F4). V1/V2 split mirrors Phases 89/90/91/92/93/94/95.
+
+**Content Hash**: SHA256(plan-qor-phase96-recon-reachability-probe.md) = `9ebf0b4fbf0b03a63c024b13d5798e8ebdc50dfd7477e96a7849d4dec23a336d`
+**Previous Hash**: `58da9a7ddc22bdd46928b597b0c43a39c415109d235eef0a3fdbb7aefe1ab827`
+**Chain Hash**: `31a1aef6668f60c7dcfd0ec04ad659dcfabf43743a48248812b38ba3b2cfcd9c`
+
+---
+
+*Session: 2026-05-23T2155-170c5c (Phase 96 -- implementation complete)*
+
+---
+
+### Entry #259: SESSION SEAL -- Phase 96 feature substantiated: recon reachability probe V1 (v0.67.0, GH #108 partial)
+
+**Timestamp**: 2026-05-23T22:05:00Z
+**Phase**: SUBSTANTIATE (Phase 96 feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase96-recon-reachability-probe.md
+**Session**: `2026-05-23T2155-170c5c`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `le_phase96SEAL000000`
+
+**Scope**: Closes partially the recon governance-level finding from GH #108. V1 ships per-claim reachability probe at `/qor-deep-audit-recon` Phase 3 Round 0; five checks; WARN-only. New SG-GrepShapedRunclaim-A doctrine entry. V2 (Phase 99: `/qor-audit` Step 3 Runtime Contract Walk; blocking enforcement) reserved. GH #108 issue remains OPEN — fully closes when Phase 99 V2 lands.
+
+**Cluster context**: Phase 96 opens the Tier 1 prompt-surface remediation cluster per meta-memo `docs/cluster-memo-prompt-surface-tier1-2026-05-23.md`. First of five sub-plans (96 → 97 → 98 → 99 → 100). Cluster carries the same V1/V2 split discipline as the prior 8-phase governance burst (Phases 88-95).
+
+**Files touched** (~12): the 9 above + META_LEDGER entries #257-#259 + gate artifacts + AUDIT_REPORT.
+
+**Test surface**: 18 new tests; all pass twice deterministically. Full suite: 1849 passed, 1 skipped.
+
+**Razor compliance**: ~250 LOC + ~22 wiring/doctrine lines + ~150 line reference file (progressive disclosure).
+
+**Audit history**: iter-1 PASS (Entry #257, L2).
+
+**Self-application**: the probe catches grep-shaped runclaims the first time it runs (synthetic zombie-claim fixture in dogfooding anchor). Eighth cross-phase exercise of Phase 89's ci_coverage_lint. Second cross-phase exercise of Phase 95's skill_size_budget_lint. Phase 90 Environment-block sweep verified on the recon SKILL.md.
+
+**Cross-coupling note for Phase 99**: V2 will extend `SG-GrepShapedRunclaim-A` with the audit-side enforcement clause AND will require operator evidence from V1 false-positive rate before tightening. Operators running `/qor-deep-audit-recon` between Phase 96 seal and Phase 99 plan should capture probe-finding rates to inform V2 thresholds.
+
+**Content Hash (session seal)**: `d5751467de4d8cfc9f1ff447cd30f355bb8ea0111839d0dcd67a295b6fb827d9`
+**Previous Hash**: `31a1aef6668f60c7dcfd0ec04ad659dcfabf43743a48248812b38ba3b2cfcd9c`
+**Chain Hash (Merkle seal)**: `341b2d7e1454091af9fd1daa3a1b1449a6a3e444ee68ff37bb51674a92f04c6c`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 96 feature complete; GH #108 V1 visibility shipped, V2 enforcement reserved for Phase 99)
+*Merkle seal: 341b2d7e...* (Phase 96 seal on top of Phase 95's bd5ad5c9...)
+*Open items at this seal: stage artifacts; GH #108 V2 enforcement (Phase 99); cluster Phases 97-100 ahead*
+*Cluster progress: 1 of 5 Tier-1 prompt-surface phases shipped*
