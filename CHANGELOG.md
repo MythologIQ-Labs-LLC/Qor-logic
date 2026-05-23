@@ -10,6 +10,32 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.64.0] - 2026-05-23
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 93 (feature, GH #89)**: merge-velocity throttle detector V1.
+  New `qor.scripts.merge_velocity_check.assess_merge_velocity(repo_root,
+  window_days, shared_core_paths)` walks `origin/main`'s recent merge
+  history via `git log` (offline-safe; no GitHub API dependency) and
+  computes a `VelocityAssessment` with three stabilization-capacity
+  grades (`healthy` / `strained` / `exceeded`), a `recommended_action`
+  string, and an evidence list naming the thresholds that fired. New
+  `/qor-substantiate` Step 4.6.8 (between DoD check 4.6.7 and
+  doc-integrity 4.7) invokes the detector WARN-only (CLI exits 1 on
+  `exceeded`; `|| true` wrap swallows the non-zero in V1). V1
+  thresholds: `strained` at `prs_merged_in_window >= 10` OR
+  `repair_density >= 0.20`; `exceeded` at `prs_merged_in_window >= 20`
+  AND (`repair_density >= 0.30` OR `shared_core_touch_count >= 10`).
+  Repair-keyword classification covers `fix`, `hotfix`, `repair`,
+  `regression`, `rollback`, `revert`. Operator-declarable shared-core
+  paths via repeat `--shared-core-path` flag (no built-in patterns).
+  New `SG-MergePaceThrottle-A` doctrine entry catalogs the Bicameral
+  originating recurrence. V2 (enforcement, GitHub-API signals) reserved
+  for a future phase.
+
 ## [0.63.0] - 2026-05-23
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

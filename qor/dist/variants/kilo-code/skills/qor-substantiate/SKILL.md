@@ -301,6 +301,16 @@ python -m qor.scripts.dod_check --plan "$PLAN_PATH" || true
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction (no `python -c "...${VAR}..."` interpolation). V1 contract: WARN-only — findings (`missing-dod-section`, `deliverable-missing-tier`, `waiver-without-rationale`, `waiver-without-followup`) are surfaced in the seal report but do NOT abort substantiate. Operator amends the plan's DoD block in the next seal cycle. V2 may tighten specific categories to fail-closed once adoption matures.
 
+### Step 4.6.8: Merge-velocity throttle check (Phase 93 wiring; GH #89)
+
+WARN-only detector that surfaces stabilization-capacity strain from `origin/main`'s recent merge history. Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-MergePaceThrottle-A`, the Bicameral originating recurrence (27 PRs / 14,758 additions / repair cluster #346-#353 / failing e2e on tail PR #354 in a single window) showed that throughput, branch integration, and shared-surface expansion can exceed the rate at which the project can reliably absorb changes. V1 ships the detector only; enforcement (hold-feature-merges, require stabilization-plan) is reserved for V2.
+
+```bash
+python -m qor.scripts.merge_velocity_check --repo-root . --window-days 7 || true
+```
+
+The CLI exits 0 on `healthy`/`strained` and exits 1 on `exceeded` (the latter is informational in V1 — the `|| true` swallows the non-zero so substantiate continues). V2 may remove the `|| true` to convert `exceeded` into a hard ABORT. Operators may add operator-declared shared-core path patterns via repeat `--shared-core-path` flags so the detector counts shared-surface touches as one of the threshold signals.
+
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.doc_integrity`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.

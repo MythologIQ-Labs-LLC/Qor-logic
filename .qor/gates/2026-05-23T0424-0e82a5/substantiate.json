@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-23T0424-0e82a5",
+  "ts": "2026-05-23T04:47:35Z",
+  "plan_path": "docs/plan-qor-phase93-merge-velocity-throttle.md",
+  "version": "0.64.0",
+  "change_class": "feature",
+  "verdict": "PASS",
+  "merkle_seal": "69093322a53db505aea910aece224796cbab0284863b815caeebf36958120fc4",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.64.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T04:47:35Z"
+  }
+}

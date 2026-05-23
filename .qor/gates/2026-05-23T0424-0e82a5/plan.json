@@ -1,0 +1,45 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-23T0424-0e82a5",
+  "ts": "2026-05-23T04:25:32Z",
+  "plan_path": "docs/plan-qor-phase93-merge-velocity-throttle.md",
+  "phases": [
+    "Phase 1: merge_velocity_check + Step 4.6.8 wiring + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_merge_velocity_check.py -q",
+    "python -m pytest tests/test_merge_velocity_substantiate_wiring.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase93-merge-velocity-throttle.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase93-merge-velocity-throttle.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase93-merge-velocity-throttle.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 ships detector only -- assesses merge velocity, additions, repair density, shared-core touches via git log; WARN-only at substantiate Step 4.6.8; shared-core paths operator-declared (no built-in patterns); offline-safe (no GitHub API)"
+    ],
+    "non_goals": [
+      "enforcement (hold feature merges, isolate as unmerged branches, require stabilization plan) deferred to V2; GitHub API integration deferred; test-matrix expansion detection deferred; failing-e2e tail-check signal deferred; cross-PR repair-density clustering deferred"
+    ],
+    "exclusions": [
+      "no changes to /qor-plan; no new CI workflow; no GitHub-API shell calls; existing Step 4.6.5/4.6.6/4.6.7 gates unchanged in order"
+    ]
+  },
+  "originating_remediation": "GH #89",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.63.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-23T04:25:32Z"
+  }
+}

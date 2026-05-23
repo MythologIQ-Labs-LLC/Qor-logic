@@ -1,0 +1,29 @@
+{
+  "phase": "implement",
+  "session_id": "2026-05-23T0424-0e82a5",
+  "ts": "2026-05-23T04:46:12Z",
+  "files_touched": [
+    "qor/scripts/merge_velocity_check.py",
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "qor/references/doctrine-shadow-genome-countermeasures.md",
+    "tests/test_merge_velocity_check.py",
+    "tests/test_merge_velocity_substantiate_wiring.py",
+    "docs/plan-qor-phase93-merge-velocity-throttle.md",
+    "docs/SYSTEM_STATE.md",
+    "CHANGELOG.md",
+    "pyproject.toml"
+  ],
+  "test_summary": {
+    "passed": 1806,
+    "failed": 0,
+    "skipped": 1
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.64.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-23T04:46:12Z"
+  }
+}
