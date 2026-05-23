@@ -1,0 +1,46 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-23T2155-170c5c",
+  "ts": "2026-05-23T21:55:00Z",
+  "plan_path": "docs/plan-qor-phase96-recon-reachability-probe.md",
+  "phases": [
+    "Phase 1: reachability_probe + Phase 3 Round 0 wiring + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_reachability_probe.py -q",
+    "python -m pytest tests/test_reachability_probe_recon_wiring.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase96-recon-reachability-probe.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase96-recon-reachability-probe.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase96-recon-reachability-probe.md",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 visibility-only; per-finding reachability probe with five checks (importability, test collection, caller graph, packaging, interface match); WARN-only at recon Phase 3 Round 0; Python-only (multi-language deferred to V2)"
+    ],
+    "non_goals": [
+      "blocking VETO behavior in /qor-audit (Phase 99 V2 surface); multi-language probe (Rust/TS/JS deferred); auto-rewriting of recon briefs; result caching across runs"
+    ],
+    "exclusions": [
+      "no changes to qor-audit SKILL.md (Phase 99 surface); no changes to qor-deep-audit SKILL.md; no changes to existing Step 0.6 audit lints; existing Step 4.6.5-4.6.9 substantiate gates unchanged in order"
+    ]
+  },
+  "originating_remediation": "GH #108",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.66.0",
+    "host": "unknown",
+    "model_family": "claude-opus-4-7",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T21:55:00Z"
+  }
+}

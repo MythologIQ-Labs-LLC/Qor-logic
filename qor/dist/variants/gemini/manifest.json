@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-23T18:15:33Z",
+  "generated_ts": "2026-05-23T22:09:41Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -114,7 +114,7 @@
       "id": "qor-deep-audit-recon.toml",
       "source_path": "commands/qor-deep-audit-recon.toml",
       "install_rel_path": "commands/qor-deep-audit-recon.toml",
-      "sha256": "e74ca694b532855fd812e582424c0f7db43376fa83097696766ded51bc6bc4fe"
+      "sha256": "b9d4e97efb6e73ea33d55c020d6e27942c29a51ec000e282d5c2fb5a12bf05af"
     },
     {
       "id": "qor-deep-audit-remediate.toml",
