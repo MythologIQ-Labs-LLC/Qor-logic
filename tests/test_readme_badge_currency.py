@@ -67,6 +67,23 @@ def test_readme_agents_badge_matches_agent_count():
     )
 
 
+def test_readme_tests_badge_matches_test_count():
+    """README Tests badge declares the actual test count (strict equality).
+
+    Closes the F7 prompt-surface-review finding: prior to this test, the
+    currency suite covered ledger/skills/agents/doctrines but not the
+    Tests badge, which had silently drifted by 91 tests (declared 1740;
+    actual 1831 at the time of the gap-detection).
+    """
+    from qor.scripts.badge_currency import count_tests, parse_readme_badges
+    actual = count_tests(REPO_ROOT)
+    declared = parse_readme_badges(REPO_ROOT / "README.md")["tests"]
+    assert declared == actual, (
+        f"README Tests badge declares {declared} but actual test count is {actual}. "
+        f"Update README.md."
+    )
+
+
 def test_readme_doctrines_badge_matches_doctrine_count():
     from qor.scripts.badge_currency import count_doctrines, parse_readme_badges
     actual = count_doctrines(REPO_ROOT)
