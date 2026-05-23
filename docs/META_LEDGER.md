@@ -9595,3 +9595,92 @@ SHA256(plan-qor-phase93-merge-velocity-throttle.md) = `9e009bcfafcbc356c47dbafd0
 *Session: SEALED* (Phase 93 feature complete; GH #89 detector half closed)
 *Merkle seal: 69093322...* (Phase 93 seal on top of Phase 92's cbb3b37b...)
 *Open items at this seal: stage artifacts for user review (Review Boundary); GH #89 V2 (enforcement + GitHub-API signals) reserved for future phase per V1 non_goals*
+
+---
+
+### Entry #251: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-23T05:45:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase94-inline-stabilization-capacity.md
+**Session**: `2026-05-23T0455-42aebb`
+**Entry ID**: `le_36f6773e14afcdfb`
+
+**Decision**: Phase 94 plan (GH #90 inline workspace-fragility detector V1; companion to Phase 93's macro merge-velocity) cleared on iter-1. Solo audit; all 6 Step 0.6 pre-audit lints exit 0 (sixth lint = the new fragility check, first time it sees itself). `dod_check` exit 0 (Phase 94 plan declares complete DoD block). Infrastructure Alignment verified `/qor-audit` Step 0.6 ladder; `SG-MergePaceThrottle-A` confirmed as extension target (per GH #90's framing as inline companion to GH #89's macro).
+
+**Content Hash**: SHA256(AUDIT_REPORT.md) = `c5d1d598a7c90776ea363b80d6de1ffd86112ec1a6b308436f841736fc5cd253`
+**Previous Hash**: `69093322a53db505aea910aece224796cbab0284863b815caeebf36958120fc4`
+**Chain Hash**: `dc38b382d7425abe314b457e8b38b71d5bdf85c30dda05f2ca1350eb18ed5792`
+
+---
+
+*Session: 2026-05-23T0455-42aebb (Phase 94 -- audit PASS)*
+
+---
+
+### Entry #252: IMPLEMENTATION -- Phase 94 (Inline workspace-fragility detector V1)
+
+**Timestamp**: 2026-05-23T05:50:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase94-inline-stabilization-capacity.md
+**Session**: `2026-05-23T0455-42aebb`
+**Entry ID**: `le_15606a96c64d32ef`
+
+**Scope**: Closes the inline-mechanism half of GH #90 (filed as Follow-up to #89). New `qor.scripts.workspace_fragility_check.assess_workspace_fragility(repo_root)` inspects five local signals (untracked count; dirty gate artifacts via META_LEDGER session cross-reference; ledger chain failures via Phase 91 `verify(tolerate_known_grandfathered=True)`; active local branches; branch-diff size since divergence from origin/main). Three grades + deterministic action mapping + evidence list naming fired thresholds. `/qor-audit` Step 0.6 ladder grows from 5 → 6 lints (new line after `ci_coverage_lint`). `SG-MergePaceThrottle-A` doctrine extended with an "Inline companion" sub-paragraph per the issue's macro/inline framing.
+
+**Files touched** (9): `qor/scripts/workspace_fragility_check.py` (NEW ~190 LOC), `qor/skills/governance/qor-audit/SKILL.md` (Step 0.6 sixth lint + Phase 94 wiring paragraph), `qor/references/doctrine-shadow-genome-countermeasures.md` (SG-MergePaceThrottle-A inline-companion sub-paragraph), `tests/test_workspace_fragility_check.py` (NEW 10 tests), `tests/test_workspace_fragility_audit_wiring.py` (NEW 3 tests), `docs/plan-qor-phase94-inline-stabilization-capacity.md` (NEW), `docs/SYSTEM_STATE.md` (Phase 94 entry), `CHANGELOG.md` (0.65.0 stamped), `pyproject.toml` (0.65.0).
+
+**Test surface**: TDD red-green observed; impl GREEN on first pass (no implementation bugs caught at red-green — fewer than Phase 93). All 13 pass twice deterministically. Full suite: 1819 passed, 1 skipped, 0 failed (+13).
+
+**Razor compliance**: 190 LOC + 9 wiring/doctrine lines; no new doctrine file (extends Phase 93's SG entry per progressive-disclosure).
+
+**Reliability**: intent-lock VERIFIED; secret_scanner clean; procedural_fidelity empty findings.
+
+**Self-application**: `originating_remediation: GH #90`. Phase 94 plan declares complete DoD block (third consecutive phase). Sixth cross-phase exercise of Phase 89's ci_coverage_lint; second of Phase 92's dod_check.
+
+**Content Hash**: SHA256(plan-qor-phase94-...) = `1f38f21aaa3357d06e683bf3c3bbcca8e8ecbd36f80d26b35c3d8b1bc034916c`
+**Previous Hash**: `dc38b382d7425abe314b457e8b38b71d5bdf85c30dda05f2ca1350eb18ed5792`
+**Chain Hash**: `15676ce5438df77936767fa208715caa5fc9571a4cf3a4e7be260e415f8d8497`
+
+---
+
+*Session: 2026-05-23T0455-42aebb (Phase 94 -- implementation complete)*
+
+---
+
+### Entry #253: SESSION SEAL -- Phase 94 feature substantiated: inline workspace-fragility detector V1 (v0.65.0, GH #90)
+
+**Timestamp**: 2026-05-23T05:55:00Z
+**Phase**: SUBSTANTIATE (Phase 94 feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase94-inline-stabilization-capacity.md
+**Session**: `2026-05-23T0455-42aebb`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `le_0597bf110a73b1de`
+
+**Scope**: Closes the inline-mechanism half of GH #90. Phase 93 (macro merge-velocity at substantiate) + Phase 94 (inline workspace-fragility at audit) together cover the stabilization-capacity governance surface that GH #89/#90 documented. New `qor.scripts.workspace_fragility_check`; `/qor-audit` Step 0.6 sixth lint; `SG-MergePaceThrottle-A` inline-companion sub-paragraph. WARN-only V1; CLI exits 1 on `high` so V2 can convert to ABORT. V2 (enforcement clauses; scope-expansion at /qor-implement; per-deliverable Phase 92 D4 extension) reserved.
+
+**Files touched** (~12): the 9 above plus META_LEDGER entries #251-#253; gate artifacts at `.qor/gates/2026-05-23T0455-42aebb/`; AUDIT_REPORT.md.
+
+**Test surface**: 13 new tests; all pass twice deterministically. Full suite: 1819 passed, 1 skipped.
+
+**Razor compliance**: 190 LOC + 9 wiring/doctrine lines; no new doctrine file.
+
+**Audit history**: iter-1 PASS (Entry #251, L2).
+
+**Self-application**: extends the inline-detector pattern Phase 93 introduced; the new lint joins the existing Step 0.6 ladder rather than spawning a new step.
+
+**Content Hash (session seal)**: `3c542c11e69e1a4ba527d294aa4f07aa9555b12e1c16363452c0df27ca124123`
+**Previous Hash**: `15676ce5438df77936767fa208715caa5fc9571a4cf3a4e7be260e415f8d8497`
+**Chain Hash (Merkle seal)**: `434a4e88fc0cf58b8be6fafdb8923fadb41db4e651c464ba1973da72ac3539b8`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 94 feature complete; GH #90 inline-mechanism half closed)
+*Merkle seal: 434a4e88...* (Phase 94 seal on top of Phase 93's 69093322...)
+*Open items at this seal: stage artifacts; GH #90 V2 (enforcement + GitHub-API signals + scope-expansion detection) reserved for future phase per V1 non_goals*

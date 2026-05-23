@@ -1,0 +1,45 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-23T0455-42aebb",
+  "ts": "2026-05-23T04:56:04Z",
+  "plan_path": "docs/plan-qor-phase94-inline-stabilization-capacity.md",
+  "phases": [
+    "Phase 1: workspace_fragility_check + Step 0.6 wiring + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_workspace_fragility_check.py -q",
+    "python -m pytest tests/test_workspace_fragility_audit_wiring.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase94-inline-stabilization-capacity.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase94-inline-stabilization-capacity.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase94-inline-stabilization-capacity.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "V1 inline detector only; WARN-only at /qor-audit Step 0.6; reuses Phase 93 macro signals by reference; focuses on local workspace pre-merge signals"
+    ],
+    "non_goals": [
+      "enforcement clauses (warn on scope expansion; require narrow first slice; treat fragility as audit evidence) deferred to V2; GitHub-API integration deferred; test-matrix growth detection deferred"
+    ],
+    "exclusions": [
+      "no changes to /qor-plan or /qor-implement; no new CI workflow; existing five pre-audit lints untouched in order"
+    ]
+  },
+  "originating_remediation": "GH #90",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.64.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-23T04:56:04Z"
+  }
+}

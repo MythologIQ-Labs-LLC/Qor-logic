@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-23T0455-42aebb",
+  "ts": "2026-05-23T05:03:50Z",
+  "plan_path": "docs/plan-qor-phase94-inline-stabilization-capacity.md",
+  "version": "0.65.0",
+  "change_class": "feature",
+  "verdict": "PASS",
+  "merkle_seal": "434a4e88fc0cf58b8be6fafdb8923fadb41db4e651c464ba1973da72ac3539b8",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.65.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T05:03:50Z"
+  }
+}
