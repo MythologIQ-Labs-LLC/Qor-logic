@@ -1,0 +1,17 @@
+{
+  "phase": "audit",
+  "session_id": "2026-05-23T0335-3cff0e",
+  "ts": "2026-05-23T03:36:52Z",
+  "target": "docs/plan-qor-phase92-definition-of-done.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.62.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-23T03:36:52Z"
+  }
+}

@@ -264,6 +264,18 @@ Create plan markdown file with specific requirements:
 
 - [test file path] - [what it tests, why important]
 
+## Definition of Done
+
+[Per `qor/references/doctrine-definition-of-done.md` (Phase 92 wiring; GH #86), every deliverable declares D1-D4 acceptance.]
+
+### Deliverable: [name]
+
+- **D1**: [vision / specification statement]
+- **D2**: [code-level acceptance: signature, types, file location]
+- **D3**: [governance acceptance: ledger entry shape, doc surfaces]
+- **D4**: [test name + observed behavior assertion]
+- OR **D4.d**: [waiver rationale]. **Follow-up phase**: [reference]
+
 ## CI Commands
 
 - `<command 1>` — <what it validates>
@@ -271,6 +283,8 @@ Create plan markdown file with specific requirements:
 ```
 
 **Phase 38 B22 contract**: every plan from Phase 38 forward carries a `## CI Commands` section listing the commands the operator runs locally to validate the plan before substantiate. The same list appears in the plan gate artifact's `ci_commands` field (required by `qor/gates/schema/plan.schema.json`). Pre-Phase-38 plans are grandfathered at the test layer; no retroactive migration.
+
+**Phase 92 wiring (GH #86)**: every plan from Phase 92 forward carries a `## Definition of Done` section between `## Phase N` and `## CI Commands`, declaring per-deliverable D1 (vision/spec), D2 (code), D3 (governance), and D4 (empirical/runtime verification) acceptance criteria. D4 may be replaced with a `D4.d` waiver row carrying a rationale and a `**Follow-up phase**:` reference. The Definition of Done is structurally verified at `/qor-substantiate` Step 4.6.7 (WARN-only in V1) per `qor/references/doctrine-definition-of-done.md` and `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-DoDImplicit-A`. V1 enforces declaration presence; V2 (deferred) will verify D4's truth by cross-referencing named tests against pytest output. Pre-Phase-92 plans are grandfathered.
 
 #### Plan Requirements
 

@@ -9361,3 +9361,120 @@ SHA256(plan-qor-phase91-ledger-tolerate-grandfathered.md) = `0d8af4fff33a87048a3
 *Session: SEALED* (Phase 91 feature complete; GH #85 consumer-blocker half closed)
 *Merkle seal: 014013c3...* (Phase 91 seal on top of Phase 90's 763a5a99...)
 *Open items at this seal: stage artifacts for user review (Review Boundary); GH #85 Options A + B + C reserved for future phase per V1 non_goals*
+
+---
+
+### Entry #245: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-23T03:55:00Z
+
+**Phase**: GATE
+
+**Author**: Judge
+
+**Risk Grade**: L2
+
+**Plan**: docs/plan-qor-phase92-definition-of-done.md
+
+**Session**: `2026-05-23T0335-3cff0e`
+
+**Entry ID**: `le_13664343f9ac2413`
+
+**Decision**: Phase 92 plan (GH #86 multi-tier Definition of Done V1 — plan emission + structural substantiate check) cleared on iter-1. Audit conducted solo per `audit_risk_score` reporting `option_b_required: false`. All five Step 0.6 pre-audit lints exit 0 — including the third cross-phase exercise of Phase 89's `ci_coverage_lint` (after Phase 90 + 91), confirming the dogfooding pattern stable across 4 consecutive phases. All applicable Step 3 passes PASS. Infrastructure Alignment verified `qor-substantiate` Step 4.6.6 at line 282 + Step 4.7 at line 293 (Step 4.6.7 fits between); `qor-plan` SKILL.md plan-structure prose exists; `SG-HalfSealedClaim-A`, `SG-DocSurfaceUncovered-A` cross-references present in countermeasures doctrine. `SG-DoDImplicit-A` declared NEW; `doctrine-definition-of-done.md` declared NEW in Affected Files. WARN-only V1 contract was ruled the correct adoption-ramp posture — empirical-execution enforcement (D4 truth check) declared non_goal and reserved for V2 pending operator-evidence on V1 contract adoption.
+
+**Content Hash**:
+SHA256(AUDIT_REPORT.md) = `b593cdf895f67c6034ef84d2e2e4c0ec2f97664ce283502611c5df18b91e8643`
+
+**Previous Hash**: `014013c336d9e4421f8bfe5ef81848db04f1d867377848c26a3d17ebf3096c94`
+
+**Chain Hash**: `20cc0a8edefc33088f5438b1d52faf1c30c57dbe3aba11f64c2d93073c28894f`
+
+---
+
+*Session: 2026-05-23T0335-3cff0e (Phase 92 -- audit PASS, awaiting /qor-implement)*
+
+---
+
+### Entry #246: IMPLEMENTATION -- Phase 92 (Multi-tier Definition of Done V1)
+
+**Timestamp**: 2026-05-23T04:00:00Z
+
+**Phase**: IMPLEMENTATION
+
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+
+**Plan**: docs/plan-qor-phase92-definition-of-done.md
+
+**Session**: `2026-05-23T0335-3cff0e`
+
+**Entry ID**: `le_5abb5d0359486606`
+
+**Scope**: Closes the contract-layer half of GH #86 via the issue's V1 scope. New `qor.scripts.dod_record.parse_plan` reads a plan's `## Definition of Done` section into structured `DodRecord` dataclasses (D1/D2/D3/D4 acceptance criteria per deliverable, or D4.d waiver with rationale + follow-up phase). New `qor.scripts.dod_check.check_plan` runs at `/qor-substantiate` Step 4.6.7 (NEW; between procedural-fidelity 4.6.6 and doc-integrity 4.7); emits findings for missing rows / malformed waivers; V1 severity all `warn`; CLI exits 0 always. New `qor/references/doctrine-definition-of-done.md` documents the four-tier contract and waiver protocol (the 28th doctrine in the corpus). New `SG-DoDImplicit-A` doctrine entry catalogs the lie-shipping pattern from COREFORGE (per GH #86 body). `/qor-plan` SKILL.md plan-structure template gains a `## Definition of Done` section template; pre-Phase-92 plans grandfathered.
+
+**Files touched** (14): `qor/scripts/dod_record.py` (NEW, 138 LOC), `qor/scripts/dod_check.py` (NEW, 122 LOC), `qor/skills/sdlc/qor-plan/SKILL.md` (plan-structure template + Phase 92 wiring paragraph), `qor/skills/governance/qor-substantiate/SKILL.md` (Step 4.6.7 insertion), `qor/references/doctrine-definition-of-done.md` (NEW), `qor/references/doctrine-shadow-genome-countermeasures.md` (SG-DoDImplicit-A), `tests/test_dod_record.py` (NEW), `tests/test_dod_check.py` (NEW), `tests/test_dod_substantiate_wiring.py` (NEW), `docs/plan-qor-phase92-definition-of-done.md` (NEW), `docs/SYSTEM_STATE.md` (Phase 92 entry), `CHANGELOG.md` (0.63.0 stamped), `README.md` (Doctrines badge 27 → 28; Ledger badge 244 → 247), `pyproject.toml` (0.63.0).
+
+**Test surface**: TDD red-green observed (5 of 14 tests failed at first run; two record-parser bugs caught during impl — fenced code block shadowing the real section header in the self-application test; multi-line follow-up reference not matched by the original regex; both fixed in impl iter 2). After fixes, all 14 tests pass twice deterministically. Full suite: 1791 passed, 1 skipped, 0 failed (+14 from Phase 91's 1777).
+
+**Razor compliance**: `dod_record.py` 138 lines; `dod_check.py` 122 lines; new doctrine file ~120 lines (justified per progressive-disclosure — substantive new topic deserves its own home). Step 4.6.7 SKILL.md insertion is ~13 lines including the Phase 92 wiring paragraph. The doctrine extension is one new SG entry; no other doctrine files modified. Per `qor/references/doctrine-token-efficiency.md` and the GH #92 progressive-disclosure lesson.
+
+**Documentation Sync (Step 8.5)**: `doc_tier: standard`. Architecture-bearing documentation is the new `doctrine-definition-of-done.md` file, the `SG-DoDImplicit-A` extension, and the SYSTEM_STATE Phase 92 entry, all authored in-context. CHANGELOG 0.63.0 entry stamped; README Doctrines badge incremented to track the new file (27 → 28).
+
+**Reliability**: intent-lock captured at substantiate start (`LOCKED: 2026-05-23T0335-3cff0e`); `VERIFIED`. `secret_scanner` clean (exit 0). `procedural_fidelity` clean (empty findings). `doc_integrity_strict` clean.
+
+**Self-application**: `originating_remediation: GH #86`. Phase 92's own plan declares a complete `## Definition of Done` block with D1-D4 rows for each of the five V1 deliverables (two of which carry D4.d waivers with rationale + follow-up phase per the new waiver protocol). The `test_check_plan_self_applies_to_phase_92_plan` deterministic shipping-correctness anchor asserts the new lint reports zero findings against Phase 92's own plan — the dogfooding pattern from Phase 89/91 extended to plan-authoring discipline. This is the first phase to eat its own dogfood at plan-authoring time.
+
+**Content Hash**:
+SHA256(plan-qor-phase92-definition-of-done.md) = `9550d3451cb3020ca81f20803ae436054b5e813cd04818ca799a877f3ddeb785`
+
+**Previous Hash**: `20cc0a8edefc33088f5438b1d52faf1c30c57dbe3aba11f64c2d93073c28894f`
+
+**Chain Hash**: `d8eba98bcaf56f2371e413f0f3fbc07da8b1ddf2e4424ae44f7ecf4d80fe21b9`
+
+---
+
+*Session: 2026-05-23T0335-3cff0e (Phase 92 -- implementation complete, awaiting /qor-substantiate)*
+
+---
+
+### Entry #247: SESSION SEAL -- Phase 92 feature substantiated: multi-tier Definition of Done V1 (v0.63.0, GH #86)
+
+**Timestamp**: 2026-05-23T04:05:00Z
+
+**Phase**: SUBSTANTIATE (Phase 92 feature)
+
+**Author**: Judge
+
+**Change class**: feature
+
+**Plan**: docs/plan-qor-phase92-definition-of-done.md
+
+**Session**: `2026-05-23T0335-3cff0e`
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `le_dec7c1cfd8c80c64` (Phase 76 wiring; content-addressable identifier)
+
+**Scope**: Closes the contract-layer half of GH #86. Explicit multi-tier Definition of Done as a first-class plan artifact: every plan from Phase 92 forward declares per-deliverable D1 (vision/spec), D2 (code), D3 (governance), D4 (empirical/runtime verification) acceptance criteria, with optional `D4.d` waiver rows carrying rationale + follow-up phase. New `dod_record.parse_plan` + `dod_check.check_plan` modules; new `/qor-substantiate` Step 4.6.7 (WARN-only); new `doctrine-definition-of-done.md` doctrine file; new `SG-DoDImplicit-A` catalog entry. V1 enforces declaration presence; V2 (deferred) will verify D4 truth via test-name → pytest-output cross-reference. V1 boundaries declared explicitly in plan non_goals: D4 empirical execution; ledger SESSION SEAL body D-tier block; `/qor-ideate` integration; implement-time author-intent capture; waiver-friction escalator.
+
+**Files touched** (~17): the 14 above plus `docs/META_LEDGER.md` (entries #245-#247), `.qor/gates/2026-05-23T0335-3cff0e/{plan,audit,implement,substantiate}.json`, `.agent/staging/AUDIT_REPORT.md`.
+
+**Test surface**: 14 new tests across three files. Red-green TDD observed (two parser bugs caught + fixed during impl iter 2). All 14 pass twice deterministically. Full suite: 1791 passed, 1 skipped.
+
+**Razor compliance**: two new scripts (~260 LOC total) + one new doctrine file (~120 lines) + skill-prose inserts + SG-extension. New doctrine file justified per progressive-disclosure (substantive new topic).
+
+**Audit history**: iter-1 PASS (Entry #245, L2). Solo audit per `audit_risk_score: option_b_required: false`. Third cross-phase exercise of Phase 89's `ci_coverage_lint`; dogfooding pattern stable across 4 consecutive phases (88 → 89 → 90 → 91 → 92).
+
+**Self-application**: this phase consumes the discipline it introduces — Phase 92's own plan declares a complete `## Definition of Done` block; the new `dod_check` lint reports zero findings against the very plan that ships it; the `test_check_plan_self_applies_to_phase_92_plan` test asserts this invariant. The waiver protocol is also dogfooded: two of the five V1 deliverables (the prose-only `/qor-plan` SKILL.md template insertion and the new doctrine file) carry `D4.d` waivers with rationale + follow-up phase references, exercising the waiver shape the check validates.
+
+**Content Hash (session seal)**: `35d280eb047b982fc1f583481e9a9d669daa7ca84e828f3dabc9a5ad3d9b6441`
+
+**Previous Hash**: `d8eba98bcaf56f2371e413f0f3fbc07da8b1ddf2e4424ae44f7ecf4d80fe21b9`
+
+**Chain Hash (Merkle seal)**: `cbb3b37bf05477199e8a8939601d2a55e0e77cdd33bc36478434da8fc4743b5a`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 92 feature complete; GH #86 contract-layer half closed)
+*Merkle seal: cbb3b37b...* (Phase 92 seal on top of Phase 91's 014013c3...)
+*Open items at this seal: stage artifacts for user review (Review Boundary); GH #86 V2 (D4 empirical-execution check + SEAL body D-tier block + /qor-ideate integration + implement-time author-intent + waiver-friction escalator) reserved for future phase per V1 non_goals*
