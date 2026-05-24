@@ -1,0 +1,36 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-24T0500-phase102-p1",
+  "ts": "2026-05-24T18:58:36Z",
+  "plan_path": "docs/plan-qor-phase102-pypi-hardening-p1.md",
+  "phases": [
+    "Phase 1: lockfile + CODEOWNERS + dependency-review + SBOM/evidence + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_requirements_release_lockfile.py -q",
+    "python -m pytest tests/test_pr_dependency_review_workflow.py -q",
+    "python -m pytest tests/test_codeowners.py -q",
+    "python -m pytest tests/test_release_workflow_immutability.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase102-pypi-hardening-p1.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase102-pypi-hardening-p1.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase102-pypi-hardening-p1.md",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "doc_tier_rationale": "Workflow + config additions; tests verify properties; no system-tier doc rewrites.",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.69.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-24T18:58:36Z"
+  }
+}

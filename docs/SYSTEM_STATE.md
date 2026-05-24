@@ -771,3 +771,31 @@ Feature opening the supply-chain hardening cluster (3 sub-plans: 101 → 102 →
 
 **Decision**: Phase 101 implemented; audit PASS on iter-1 (L3 high_risk_target). Substantiated as v0.69.0 (feature → minor bump). First of three phases in the supply-chain hardening cluster.
 
+## Phase 102 (v0.70.0 — 2026-05-24): PyPI Publication Hardening P1 (GH #118 partial)
+
+Feature continuing the supply-chain hardening cluster (101 → 102 → 103 closing GH #118). P1 ships the dependency + evidence layer on top of P0's workflow split.
+
+**Closes 4 more GH #118 acceptance items** (F-2b CODEOWNERS, F-3a dependency-review workflow, F-3b hash-pinned build lockfile, F-4a/F-4c SBOM + evidence bundle). Cluster total: 9 of 13 acceptance items closed across Phases 101+102.
+
+**Hash-pinned build lockfile**: `requirements-release.in` + `requirements-release.txt` (pip-compile 7.5.3 generated; SHA-256 hashes for `build==1.5.0` + 3 transitives `colorama==0.4.6`, `packaging==26.2`, `pyproject-hooks==1.2.0`). Release workflow's build job now runs `pip install --require-hashes -r requirements-release.txt` (replaces bare `pip install build`). Lockfile is under CODEOWNERS protection.
+
+**CODEOWNERS**: `.github/CODEOWNERS` attaches `@Knapp-Kevin` as required reviewer to `/.github/workflows/`, `/.github/CODEOWNERS`, `/pyproject.toml`, `/requirements-release.{in,txt}`, `/qor/reliability/intent_lock.py`, `/qor/scripts/configure_pypi_environment.py`. Single-owner initial; broaden when maintainer team provisioned.
+
+**PR dependency-review workflow**: `.github/workflows/pr-dependency-review.yml` triggers on PRs touching `pyproject.toml`, `requirements-release.txt`, or `.github/workflows/**`. Runs `actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48  # v4.9.0` (SHA-pinned). Fails on `high` severity; comments summary on failure. License-allowlist deferred to a future hygiene phase.
+
+**SBOM + evidence bundle**: Build job adds two new steps: (1) `pip install cyclonedx-bom` (unpinned -- deferred as documented non_goal: SBOM tool is metadata-only, not the released artifact; its transitive set with ~120 lxml wheel hashes would exceed the Razor file budget), (2) `cyclonedx-py environment --of JSON --output-file dist/sbom.json` -- captures build-environment dependency tree. Publish job adds (a) evidence-bundle assembly step producing `dist/evidence.json` with `git_sha`, `tag`, `workflow_run_id`, `workflow_sha`, `lockfile_sha256`, `artifact_sha256sums`, `action_pins` (5 SHAs); (b) post-publish `gh release create` attaching `dist/*.whl`, `dist/*.tar.gz`, `sbom.json`, `evidence.json`, `SHA256SUMS`. Publish job's `permissions.contents` widened `read -> write` for the release-attachment responsibility; `id-token: write` remains scoped to publish job only.
+
+**Test surface**: 17 new tests across 3 new files plus 1 amended file. `tests/test_requirements_release_lockfile.py` (5 tests: presence, SHA-256 hash format, build pin block, transitive coverage, `--require-hashes` consumption). `tests/test_pr_dependency_review_workflow.py` (4 tests: presence, SHA-pinned action with annotation, paths-trigger coverage, fail-on-severity=high). `tests/test_codeowners.py` (5 tests: presence, workflow dir, pyproject + lockfile, intent_lock + env-config, every-rule-has-owner). `tests/test_release_workflow_immutability.py` amended (+3 tests: SBOM step in build, evidence-bundle assembly in publish, gh release create attaches required artifacts). All 17 pass twice deterministically. Full suite: 1910 passed, 1 skipped, 4 deselected.
+
+**Mid-audit amendment**: cyclonedx-bom transitive set (~120 lxml wheel hashes) exceeded Section 4 Razor file budget when initially generated as `requirements-sbom.txt`. Plan amended in-cycle to drop the SBOM-tool lockfile with explicit non_goal rationale (SBOM is metadata about the artifact, not the artifact itself; lower-risk; the producer `build` IS hash-pinned). Post-amendment lints exit 0; audit remains iter-1 PASS.
+
+**Razor compliance**: `release.yml` grew ~73 → ~115 lines (still <250); `pr-dependency-review.yml` ~28 lines; `CODEOWNERS` 11 lines; new test files 70-95 lines each; amended `test_release_workflow_immutability.py` ~200 lines. All within budget.
+
+**L3 high_risk_target audit**: plan declared `high_risk_target: true` with impact_assessment block enumerating 4 named failure modes paired with mitigations (transitive-dep drift, vulnerable-dep via PR, no provenance record, unreviewed workflow/manifest/lockfile changes). SSDF practices PO.4.1, PS.2.1, PS.3.1, PS.3.2, PW.4.1, PW.4.4, RV.1.1 declared. Audit iter-1 PASS across all 9 binding passes.
+
+**Cluster context**: Phase 102 is the SECOND of three sub-plans in the supply-chain hardening cluster — 2 of 3 shipped. Sequence remaining: 103 (P2: post-publish PyPI pull-back + cooling-period doctrine — closes final 2 explicit acceptance items F-4b + F-3c). After Phase 103 seal, GH #118 fully closed.
+
+**Carry-forward**: F-4b post-publish PyPI pull-back + hash compare (Phase 103); F-3c `qor/references/doctrine-dependency-admission.md` cooling-period policy (Phase 103); admin-bypass UI disable (still not API-exposed); Dependabot config for `github-actions` ecosystem; broaden CODEOWNERS reviewer once a maintainer team exists; cyclonedx-bom hash-pinning (deferred non_goal).
+
+**Decision**: Phase 102 implemented; audit PASS on iter-1 (L3 high_risk_target). Substantiated as v0.70.0 (feature → minor bump). Second of three phases in the supply-chain hardening cluster.
+

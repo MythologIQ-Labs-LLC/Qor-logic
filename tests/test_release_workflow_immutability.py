@@ -164,6 +164,64 @@ def test_release_workflow_build_job_allows_pip_cache():
     )
 
 
+def test_release_workflow_build_job_generates_sbom():
+    """Phase 102 (GH #118 P1): build job must produce dist/sbom.json via cyclonedx-py."""
+    workflow = _load(_RELEASE)
+    build_steps = workflow["jobs"]["build"]["steps"]
+    found = False
+    for step in build_steps:
+        run = step.get("run") or ""
+        if "cyclonedx-py" in run and "sbom.json" in run:
+            found = True
+            break
+    assert found, "build job must contain a step that runs cyclonedx-py and emits sbom.json"
+
+
+def test_release_workflow_publish_job_assembles_evidence_bundle():
+    """Phase 102 (GH #118 P1): publish job must assemble dist/evidence.json with
+    git_sha, lockfile_sha256, and artifact_sha256sums fields."""
+    workflow = _load(_RELEASE)
+    publish_steps = workflow["jobs"]["publish"]["steps"]
+    found_step = None
+    for step in publish_steps:
+        run = step.get("run") or ""
+        if "evidence.json" in run and "git_sha" in run:
+            found_step = step
+            break
+    assert found_step is not None, (
+        "publish job must contain a step that writes dist/evidence.json"
+    )
+    run = found_step.get("run") or ""
+    for required_field in ("git_sha", "lockfile_sha256", "artifact_sha256sums", "action_pins"):
+        assert required_field in run, (
+            f"evidence.json assembly must include the {required_field!r} field"
+        )
+
+
+def test_release_workflow_attaches_evidence_to_github_release():
+    """Phase 102 (GH #118 P1): publish job must run `gh release create` attaching
+    dist/*, sbom.json, evidence.json, and SHA256SUMS."""
+    workflow = _load(_RELEASE)
+    publish_steps = workflow["jobs"]["publish"]["steps"]
+    gh_release_step = None
+    for step in publish_steps:
+        run = step.get("run") or ""
+        if "gh release create" in run:
+            gh_release_step = step
+            break
+    assert gh_release_step is not None, (
+        "publish job must run `gh release create` to attach the evidence bundle"
+    )
+    run = gh_release_step.get("run") or ""
+    for required_attachment in ("sbom.json", "evidence.json", "SHA256SUMS"):
+        assert required_attachment in run, (
+            f"gh release create must attach {required_attachment!r}"
+        )
+    # Ensure dist/*.whl and dist/*.tar.gz are also attached (the actual artifacts).
+    assert "dist/*.whl" in run or ".whl" in run, "gh release create must attach .whl files"
+    assert "dist/*.tar.gz" in run or ".tar.gz" in run, "gh release create must attach .tar.gz files"
+
+
 def test_release_workflow_artifact_handoff_with_sha_verify():
     workflow = _load(_RELEASE)
     build_steps = workflow["jobs"]["build"]["steps"]

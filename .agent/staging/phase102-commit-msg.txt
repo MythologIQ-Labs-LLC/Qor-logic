@@ -1,0 +1,30 @@
+seal: phase 102 - PyPI Hardening P1 (v0.70.0, GH #118 P1 close)
+
+Closes 4 more GH #118 acceptance items (F-2b CODEOWNERS, F-3a dependency-
+review, F-3b hash-pinned build lockfile, F-4a/F-4c SBOM + evidence bundle).
+Cluster total: 9 of 13 acceptance items closed (across Phases 101+102).
+
+- requirements-release.{in,txt}: hash-pinned via pip-tools 7.5.3
+  (build==1.5.0 + colorama + packaging + pyproject-hooks, SHA-256 pinned).
+  Build job consumes via 'pip install --require-hashes'.
+- .github/CODEOWNERS: required-reviewer enforcement on workflows,
+  pyproject.toml, lockfile pair, intent_lock, configure_pypi_environment.
+- .github/workflows/pr-dependency-review.yml: actions/dependency-review-
+  action@2031cfc... (v4.9.0, SHA-pinned); fail-on-severity high.
+- release.yml build job adds SBOM step (cyclonedx-py environment).
+- release.yml publish job assembles evidence.json (git_sha, lockfile_sha256,
+  artifact_sha256sums, action_pins) and runs 'gh release create' attaching
+  dist/*.whl, dist/*.tar.gz, sbom.json, evidence.json, SHA256SUMS.
+- 17 new tests + 1 amended test, all green twice deterministically.
+- Full regression: 1911 passed, 1 skipped, 4 deselected.
+- META_LEDGER #276-#278; Merkle seal e4a31810...
+
+Mid-audit plan amendment: cyclonedx-bom hash-pinning deferred as documented
+non_goal (transitive set ~120 lxml wheel hashes would exceed Razor file
+budget; SBOM is metadata, not the released artifact).
+
+Plan: docs/plan-qor-phase102-pypi-hardening-p1.md
+Audit: .agent/staging/phase102-AUDIT_REPORT.md (PASS, L3 iter-1)
+Merkle seal: e4a31810be163e5b48a944a720bacd27316f50f3bdb4ed7ed4c3e3cbcd691716
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

@@ -1,0 +1,10 @@
+# Phase 102 (GH #118 P1): governance for security-critical files.
+# Broaden once a maintainer team is provisioned.
+
+/.github/workflows/                          @Knapp-Kevin
+/.github/CODEOWNERS                          @Knapp-Kevin
+/pyproject.toml                              @Knapp-Kevin
+/requirements-release.in                     @Knapp-Kevin
+/requirements-release.txt                    @Knapp-Kevin
+/qor/reliability/intent_lock.py              @Knapp-Kevin
+/qor/scripts/configure_pypi_environment.py   @Knapp-Kevin

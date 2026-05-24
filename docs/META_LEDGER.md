@@ -10399,4 +10399,114 @@ SHA256(content_hash + previous_hash)
 *Merkle seal: ee7ccae5...* (Phase 101 seal on top of Phase 100's f10b2610...; Entry #272 research bridges the two)
 *Open items at this seal: stage artifacts; Phase 102 (P1) and Phase 103 (P2) ahead; admin-bypass disable UI follow-up; cluster will close GH #118 fully after Phase 103 seal*
 
+---
+
+### Entry #276: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-24T05:20:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L3 (high_risk_target)
+**Plan**: docs/plan-qor-phase102-pypi-hardening-p1.md
+**Session**: `2026-05-24T0500-phase102-p1`
+**Entry ID**: `le_phase102gateTRIBUNAL`
+
+**Decision**: Phase 102 plan (PyPI Hardening P1, GH #118 partial) cleared on iter-1. Solo audit. All pre-audit lints exit 0. L3 grade: security-critical path (release publication, dependency admission, supply-chain evidence chain). Plan declares `high_risk_target: true` with full impact_assessment block (4 named failure modes paired with mitigations; SSDF PO.4.1, PS.2.1, PS.3.1, PS.3.2, PW.4.1, PW.4.4, RV.1.1). All 9 binding passes PASS. Mid-audit amendment: cyclonedx-bom transitive set (~120 lxml wheel hashes) exceeded Section 4 Razor file budget; plan amended in-cycle to drop `requirements-sbom.*` (SBOM tool installed unpinned in CI; metadata-only, not the released artifact) -- documented as explicit non_goal with rationale. Verdict: PASS.
+
+**Content Hash**: SHA256(phase102-AUDIT_REPORT.md) = `1c79c8cc4b0a835d5832939f53f465388cae372c16ef1912c8a04fdd02a6ad28`
+**Previous Hash**: `ee7ccae53d8330a8d69704e59da1086c04b9b06ec9a5207f0ba9a567bb09655e`
+**Chain Hash**: `273dd42a18f636218953e9d1a44533a751de6cfcb08957d1c3cd61e642bfebb2`
+
+---
+
+*Session: 2026-05-24T0500-phase102-p1 (Phase 102 -- audit PASS, L3)*
+
+---
+
+### Entry #277: IMPLEMENTATION -- Phase 102 (PyPI Hardening P1, GH #118 partial)
+
+**Timestamp**: 2026-05-24T05:30:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase102-pypi-hardening-p1.md
+**Session**: `2026-05-24T0500-phase102-p1`
+**Entry ID**: `le_phase102IMPL0000`
+
+**Scope**: Closes GH #118 P1 controls (4 of remaining 8 acceptance items, building on Phase 101's 5): **F-3b** (hash-pinned `requirements-release.txt` generated via `pip-compile --generate-hashes`; pins `build==1.5.0` + 3 transitives `colorama`, `packaging`, `pyproject-hooks`; consumed in the build job via `pip install --require-hashes -r requirements-release.txt`); **F-2b** (`.github/CODEOWNERS` with rules for `/.github/workflows/`, `/pyproject.toml`, `/requirements-release.{in,txt}`, `/qor/reliability/intent_lock.py`, `/qor/scripts/configure_pypi_environment.py`; single owner `@Knapp-Kevin` initial, broaden as team grows); **F-3a** (`.github/workflows/pr-dependency-review.yml` running `actions/dependency-review-action@2031cfc...` SHA-pinned to v4.9.0; fails on `high` severity; triggers on PRs touching pyproject.toml/requirements-release.txt/`.github/workflows/**`); **F-4a/F-4c** (SBOM generation via `cyclonedx-py environment --of JSON` in build job; evidence-bundle assembly in publish job containing `git_sha`, `tag`, `workflow_run_id`, `lockfile_sha256`, `artifact_sha256sums`, `action_pins`; `gh release create` attaches dist/*.whl + dist/*.tar.gz + sbom.json + evidence.json + SHA256SUMS to the GitHub release).
+
+**Plan amendment in-cycle**: `requirements-sbom.txt` (hash-pinned cyclonedx-bom lockfile) dropped after generation revealed ~120 lxml wheel hashes pushing the lockfile past Section 4 Razor file budget. Plan amended to declare `cyclonedx-bom` hash-pinning as explicit non_goal with rationale: SBOM tool produces metadata *about* the released artifact, not the artifact itself; install is lower-risk than the build pipeline producer. P1 hash-pins the producer (`build`); SBOM tool gets a standard `pip install cyclonedx-bom` in CI. Post-amendment lints exit 0.
+
+**Files touched** (12): `.github/workflows/release.yml` (amended -- replace `pip install build` with `--require-hashes` form; add SBOM step; add evidence-bundle assembly; add `gh release create`), `.github/workflows/pr-dependency-review.yml` (NEW), `.github/CODEOWNERS` (NEW), `requirements-release.in` (NEW), `requirements-release.txt` (NEW; hash-pinned via pip-tools 7.5.3), `tests/test_requirements_release_lockfile.py` (NEW; 5 tests), `tests/test_pr_dependency_review_workflow.py` (NEW; 4 tests), `tests/test_codeowners.py` (NEW; 5 tests), `tests/test_release_workflow_immutability.py` (amended; +3 tests: sbom, evidence-bundle, gh-release-attach), `docs/plan-qor-phase102-pypi-hardening-p1.md` (NEW), `pyproject.toml` (0.69.0 -> 0.70.0; feature change_class -> minor SemVer bump), `CHANGELOG.md` (v0.70.0 section), `README.md` (Tests badge 1895 -> 1912; Ledger badge 275 -> 278).
+
+**Action SHA pin added (resolved live)**: actions/dependency-review-action `@2031cfc080254a8a887f58cffee85186f0e49e48  # v4.9.0`. No other Action pins changed from Phase 101.
+
+**Test surface**: 17 new tests (5 + 4 + 5 + 3) across three new files plus one amendment. All pass twice deterministically. Full regression: 1910 passed, 1 skipped, 4 deselected. The badge currency test fails pre-substantiate (expected: README Tests badge declared 1895, actual 1912) and passes after Step 6.5 README bump.
+
+**Evidence-bundle schema** (hand-rolled JSON, not validated against JSON Schema -- documented in audit's non-blocking observation 4):
+```
+{
+  "git_sha": "...",
+  "tag": "v*.*.*",
+  "workflow_run_id": "...",
+  "workflow_sha": "...",
+  "lockfile_sha256": "...",
+  "artifact_sha256sums": "<contents of dist/SHA256SUMS>",
+  "action_pins": { "<action>": "<40-hex-sha>", ... }
+}
+```
+
+**Razor compliance**: `release.yml` ~115 lines (was ~73; +42 for SBOM step + evidence-bundle assembly + gh release create); `pr-dependency-review.yml` ~28 lines; CODEOWNERS 11 lines (incl. comments); `requirements-release.txt` 21 lines; new test files 70-95 lines each; amended `test_release_workflow_immutability.py` ~200 lines. All within 250-line Razor budget.
+
+**publish job permissions change**: `contents: read` -> `contents: write` to enable `gh release create` for the evidence-bundle attachment. This is the minimum privilege needed for the new release-attachment responsibility; `id-token: write` remains scoped to publish job only.
+
+**Self-application**: the plan applies the artifact-ancestry + workflow-ancestry discipline it diagnoses. Lockfile under `--require-hashes` prevents at-install drift; dependency-review-action prevents vulnerable-dep merges at PR time; evidence bundle is the audit-grade record; CODEOWNERS attaches required-reviewer enforcement to the surfaces being hardened. SG-StructureWithoutPolicy-A countermeasure pattern now operative at three independent legs (commit-ancestry from Phase 101 tag-reachable guard; artifact-ancestry from SHA256SUMS handoff; workflow-ancestry from SHA pins + CODEOWNERS + dep-review).
+
+**Cluster cross-coupling**: Phase 102 is the SECOND of a 3-phase cluster closing GH #118 (P0 -> P1 -> P2 -> 101 done, 102 done, 103 ahead). Phase 103 will add the final layer (post-publish PyPI pull-back verification + cooling-period doctrine) closing the final 2 acceptance items. After Phase 103 seal: GH #118 fully closed (9 of 13 closed in P0+P1; remaining 4 -- F-4b post-publish, F-3c doctrine, plus 2 carry-forward items -- close in P2 or carry forward as documented).
+
+**Content Hash**: SHA256(plan-qor-phase102-pypi-hardening-p1.md) = `cd8de50dd43e42400cbe2d26be74306034dd1c0f4b4d4de6b1914a80ebc77088`
+**Previous Hash**: `273dd42a18f636218953e9d1a44533a751de6cfcb08957d1c3cd61e642bfebb2`
+**Chain Hash**: `c2ed1341de56276c6b88e1ee5fa311a94a43aa385207d95c391026282d9f202e`
+
+---
+
+*Session: 2026-05-24T0500-phase102-p1 (Phase 102 -- implementation complete)*
+
+---
+
+### Entry #278: SESSION SEAL -- Phase 102 feature substantiated: PyPI Hardening P1 (v0.70.0, GH #118 P1 close)
+
+**Timestamp**: 2026-05-24T05:40:00Z
+**Phase**: SUBSTANTIATE (Phase 102 feature; cluster middle)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase102-pypi-hardening-p1.md
+**Session**: `2026-05-24T0500-phase102-p1`
+**SSDF Practices**: PO.4.1, PS.2.1, PS.3.1, PS.3.2, PW.4.1, PW.4.4, RV.1.1
+**Entry ID**: `le_phase102SEAL0000`
+
+**Scope**: Closes 4 of the 8 remaining GH #118 acceptance items (F-2b CODEOWNERS, F-3a dependency-review, F-3b hash-pinned build lockfile, F-4a/F-4c SBOM + evidence bundle). Layered on Phase 101's workflow split + SHA pins + environment protection.
+
+**Cluster middle**: Phase 102 is the SECOND of three phases (101 done -> 102 done -> 103 ahead). Sequence shipped so far: P0 workflow-side controls (this cluster's Phase 101) -> P1 dependency + evidence layer (this phase). Phase 103 (P2) ahead: post-publish PyPI pull-back + cooling-period doctrine. After Phase 103 seal, all 4 carry-forward items declared in Phase 101's seal entry close.
+
+**Files touched** (12): `.github/workflows/release.yml` (amended), `.github/workflows/pr-dependency-review.yml` (NEW), `.github/CODEOWNERS` (NEW), `requirements-release.in` (NEW), `requirements-release.txt` (NEW, hash-pinned), `tests/test_requirements_release_lockfile.py` (NEW), `tests/test_pr_dependency_review_workflow.py` (NEW), `tests/test_codeowners.py` (NEW), `tests/test_release_workflow_immutability.py` (amended), `docs/plan-qor-phase102-pypi-hardening-p1.md` (NEW), `pyproject.toml` (0.69.0 -> 0.70.0), `CHANGELOG.md` (v0.70.0 section), `README.md` (Tests + Ledger badges). Plus META_LEDGER entries #276-#278, gate artifacts (plan/audit/implement/substantiate.json), and `.agent/staging/phase102-AUDIT_REPORT.md`.
+
+**Test surface**: 17 new tests + 1 amended file all GREEN twice deterministically. Full regression at seal time: 1910 passed, 1 skipped, 4 deselected (badge currency cleared after Step 6.5 README bump).
+
+**Audit history**: iter-1 PASS (Entry #276, L3 high_risk_target). One mid-audit plan amendment (drop requirements-sbom.* hash-pinning) handled inline with explicit non_goal rationale; re-lint clean.
+
+**Carry-forward to Phase 103**: post-publish PyPI pull-back + hash compare (F-4b); cooling-period doctrine at `qor/references/doctrine-dependency-admission.md` (F-3c). Also still pending across the cluster: admin-bypass UI disable (not API-exposed, manual); Dependabot config for `github-actions` ecosystem; cyclonedx-bom hash-pinning (deferred as documented non_goal).
+
+**Review Boundary**: cycle ends at this seal. No commit, push, tag, or PR has been executed -- all artifacts are staged-local per /qor-auto-dev-1 Review Boundary.
+
+**Content Hash (session seal)**: `7fe7cc1c412eaeb0e785baea8e57adc99518158eee0afed4e79b7ea3cdc58b39`
+**Previous Hash**: `c2ed1341de56276c6b88e1ee5fa311a94a43aa385207d95c391026282d9f202e`
+**Chain Hash (Merkle seal)**: `e4a31810be163e5b48a944a720bacd27316f50f3bdb4ed7ed4c3e3cbcd691716`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 102 feature complete; PyPI Hardening P1 shipped; 9 of 13 GH #118 acceptance items closed across cluster)
+*Merkle seal: e4a31810...* (Phase 102 seal on top of Phase 101's ee7ccae5...)
+*Open items at this seal: stage artifacts; Phase 103 (P2) ahead -- post-publish PyPI pull-back + cooling-period doctrine; admin-bypass UI disable; cyclonedx-bom hash-pinning deferred*
+
 
