@@ -14,6 +14,17 @@ prompt = """
 
 The final phase of the S.H.I.E.L.D. lifecycle. Verify that implementation matches the encoded blueprint (Reality = Promise), then cryptographically seal the session.
 
+## Critical Invariants
+
+The binding contracts /qor-substantiate cannot violate. ABORT halts the seal; the session does not seal until every invariant clears.
+
+1. Step 4.6 reliability gates -> non-zero exit aborts substantiate. The ladder runs: intent-lock (Phase 52), secret-scanner (Phase 53), procedural-fidelity (Phase 58), ci-coverage-lint (Step 4.6.5; Phase 89), dod-check (Step 4.6.7; Phase 92), merge-velocity-check (Step 4.6.8; Phase 93), skill-corpus-size-budget (Step 4.6.9; Phase 95). New gates extend the ladder forward; existing gates are not reordered.
+2. Step 6.5 README badge currency check -> `|| ABORT` on drift.
+3. Step 7.8 gate-chain completeness check -> `|| ABORT` on missing or mis-keyed gate artifacts.
+4. Constraints section at file foot -> binding post-batch-1 contract inventory (verification-step requirement, dist-variant prohibition, load-bearing-gate preservation per the Phase 75 prerequisite-absent SKIP path).
+
+See Step 4.6 (line ~233) for the reliability gate ladder, Step 6.5 (~403) for badge currency, Step 7.8 (~519) for gate-chain completeness, and the Constraints section at file foot (~645) for the post-batch-1 inventory.
+
 ## Environment (Phase 90 wiring; GH #79)
 
 This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:

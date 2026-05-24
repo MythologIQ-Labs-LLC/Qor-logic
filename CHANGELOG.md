@@ -10,6 +10,37 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.68.1] - 2026-05-24
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 100 (hotfix, F4)**: Critical Invariants summary blocks added
+  to qor-audit and qor-substantiate SKILL.md files between `## Purpose`
+  and `## Environment` sections. Each ~10-line block lists the
+  inviolable ABORT/VETO contracts the skill cannot bypass:
+  - qor-audit: 9 binding contracts (Step 0.3 plan-iteration ABORT;
+    Step 3 Prompt Injection Pass ABORT; Step 3 L3/OWASP/Ghost-UI/Razor/
+    self-application VETOs; Step 3 Test Functionality / Filter-Stage /
+    Infrastructure Alignment / Feature Test Declaration VETOs). Block
+    includes a V2 ramp note explicitly clarifying the Phase 99 Runtime
+    Contract Walk is NEW at Step 3 but ships WARN-only (not yet a
+    binding VETO; V2-of-V2 will flip the ramp).
+  - qor-substantiate: 4 binding contracts (Step 4.6.* reliability
+    gates; Step 6.5 README badge currency `|| ABORT`; Step 7.8
+    gate-chain completeness `|| ABORT`; Constraints section at file
+    foot).
+  New `tests/test_governance_skills_carry_critical_invariants_block.py`
+  (4 assertions) is the structural countermeasure: per-skill anchored
+  positives + positional guard (block must precede Environment) +
+  forward-only sweep using binding-gate syntax patterns (`-> VETO`,
+  `-> ABORT`, `|| ABORT`, `**VETO**`, `**ABORT**`, `binding-VETO`,
+  `binding VETO`) so any future governance skill carrying binding
+  gates must also carry an invariants block. Closes the Tier 1
+  prompt-surface cluster (Phases 96-100; meta-memo
+  `docs/cluster-memo-prompt-surface-tier1-2026-05-23.md`).
+
 ## [0.68.0] - 2026-05-24
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
