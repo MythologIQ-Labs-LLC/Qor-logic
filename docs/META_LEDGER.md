@@ -10261,3 +10261,142 @@ SHA256(plan-qor-phase93-merge-velocity-throttle.md) = `9e009bcfafcbc356c47dbafd0
 *Open items at this seal: stage artifacts; cluster complete; V2-of-V2 walk-enforcement-after-evidence reserved for a future phase OUTSIDE this cluster*
 *Cluster progress: 5 of 5 Tier-1 prompt-surface phases shipped; GH #108 closed; cluster complete*
 *Cluster totals: 5 phases (96-100), 47 new tests (1832 -> 1879), 15 new ledger entries (#257-#271), 5 PyPI releases (v0.67.0 -> v0.68.1), 1 GH issue closed (#108), 4 internal F-findings closed (F4, F5+F6, F8)*
+
+---
+
+### Entry #272: RESEARCH BRIEF -- GH #118 PyPI Publication Hardening
+
+**Timestamp**: 2026-05-24T04:30:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+
+**Scope**: Reconnaissance of supply-chain controls for `qor-logic` PyPI trusted publishing against the thirteen acceptance items in GitHub issue #118 (publication authority, workflow immutability, dependency admission, release evidence, IOC review).
+
+**Brief**: `docs/research-brief-gh118-pypi-hardening-2026-05-24.md`
+
+**Content Hash**:
+```
+SHA256(docs/research-brief-gh118-pypi-hardening-2026-05-24.md)
+= f511c15cf0d2c56c505190efc2aa19ab3c51bd0dacbfb60cad8359ac9e08df56
+```
+
+**Previous Hash**: `f10b2610c23f5fb33f74af5e0159a006ca2fa5e193b18fdb4bce30b6427fb68b`
+
+**Chain Hash**:
+```
+SHA256(content_hash + previous_hash)
+= 9237a994c039c7f72f383d63a0b42dc48c533fff7c33709041582849b4dc6aa0
+```
+
+**Decision**: 12 of 13 acceptance items DRIFT; IOC sweep clean (5/5 PASS). Two HIGH-severity gaps: third-party Actions tag-pinned not SHA-pinned (with `pypa/gh-action-pypi-publish@release/v1` on a mutable branch ref), and a fully unpinned dependency chain with no lockfile. The `pypi` GitHub environment exists since 2026-04-16 with zero protection rules and admin-bypass enabled -- structure-without-policy. Existing release-ancestry guard (`release.yml:26-32`) and intent_lock (`qor/reliability/intent_lock.py`) confirmed in place and to be preserved as the commit-ancestry reference implementation; issue #118 demands the artifact-ancestry and workflow-ancestry legs on top. SHADOW_GENOME updated with new `SG-StructureWithoutPolicy-A` candidate pattern (second observed instance after Phase 52 gate-chain bypass).
+
+**Recommendations (advisory; routing is Governor's call)**: P0 -- SHA-pin Actions, attach `pypi` environment protection rules, split build/publish jobs with artifact handoff and hash verification. P1 -- hash-pinned `requirements-release.txt`, CODEOWNERS, SBOM + evidence bundle, dependency-review workflow. P2 -- post-publish PyPI pull-back verification, cooling-period doctrine. Next phase: `/qor-plan` for a phased remediation rollout (recommend grouping P0 controls into a single phase, P1 into a follow-up phase).
+
+---
+
+*Chain integrity: VALID*
+*Session: RESEARCH OPEN* (GH #118 reconnaissance complete; awaiting `/qor-plan`)
+*Merkle seal: 9237a994...* (Entry #272 on top of Phase 100's f10b2610...)
+*Open items: GH #118 (12 acceptance items DRIFT; brief published)*
+
+---
+
+### Entry #273: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-24T04:45:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L3 (high_risk_target)
+**Plan**: docs/plan-qor-phase101-pypi-hardening-p0.md
+**Session**: `2026-05-24T0430-gh118-research`
+**Entry ID**: `le_phase101gateTRIBUNAL`
+
+**Decision**: Phase 101 plan (PyPI Hardening P0, GH #118 partial) cleared on iter-1. Solo audit. All pre-audit lints exit 0 (plan_text_consistency_lint, ci_coverage_lint, dod_check). L3 grade: security-critical path (release publication, OIDC token mint). Plan declares `high_risk_target: true` with full impact_assessment block (3 named failure modes paired with mitigations; SSDF PO.4.1, PO.5.1, PS.2.1, PS.3.1). All 9 binding passes PASS: Prompt Injection, L3 contracts, OWASP Top-10 (A01-A10 reviewed; SHA-pinning is direct A06 mitigation; split job is A04 defense-in-depth), Ghost-UI / Razor / self-application, Test Functionality (workflow structural tests verify policy properties of declarative config -- the structure IS the behavior), Filter-Stage, Infrastructure Alignment (all referenced Actions, gh-api endpoints, modules grep-verified live), Feature Test Declaration (every D-deliverable declares its test). Runtime Contract Walk V2 WARN-only per Phase 99 ramp, no VETO contribution. Three non-blocking observations recorded: workflow integration tests need `act`/runner harness (out of scope), admin-bypass not API-exposed (UI follow-up), single-reviewer initial protection (broaden as team grows). Verdict: PASS.
+
+**Content Hash**: SHA256(phase101-AUDIT_REPORT.md) = `e79f09d706ce27aef241bb7f8df96ff3c4a1010ffba0c0d936474091c67bb589`
+**Previous Hash**: `9237a994c039c7f72f383d63a0b42dc48c533fff7c33709041582849b4dc6aa0`
+**Chain Hash**: `fe74fa22eb3fc509c2e1a122b03d8b1bb48a05e645c9b9f41f35719d69422be1`
+
+---
+
+*Session: 2026-05-24T0430-gh118-research (Phase 101 -- audit PASS, L3)*
+
+---
+
+### Entry #274: IMPLEMENTATION -- Phase 101 (PyPI Hardening P0, GH #118 partial)
+
+**Timestamp**: 2026-05-24T05:00:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase101-pypi-hardening-p0.md
+**Session**: `2026-05-24T0430-gh118-research`
+**Entry ID**: `le_phase101IMPL0000`
+
+**Scope**: Closes GH #118 P0 controls (5 of 13 acceptance items). `.github/workflows/release.yml` split from a single `build-and-publish` job into separate `build` (unprivileged, `contents: read`) and `publish` (privileged, `id-token: write`, `environment: pypi`, `needs: build`) jobs. Build job runs `python -m build`, generates `dist/SHA256SUMS` via `sha256sum`, uploads `release-dist` artifact (retention 7 days). Publish job downloads the artifact, runs `sha256sum -c SHA256SUMS` for integrity verification, then invokes `pypa/gh-action-pypi-publish`. The existing tag-ancestry guard (`git merge-base --is-ancestor`) runs in BOTH jobs (early-fail in build, enforcement-gate in publish) -- load-bearing-gate preservation per qor-substantiate Constraints. All third-party Actions across `release.yml`, `ci.yml`, `pr-lint.yml` SHA-pinned (worst prior pin: `pypa/gh-action-pypi-publish@release/v1`, a mutable branch ref). New idempotent script `qor/scripts/configure_pypi_environment.py` configures the GitHub `pypi` environment via `gh api` PUT (required-reviewer + tag-only deployment policy + prevent_self_review). Script invoked once live during the cycle: post-state verified (`protection_rule_count` 0 -> 2; reviewer = Knapp-Kevin; deployment branch policy = `v*.*.*` tag refs only). `can_admins_bypass` remains `true` -- not API-exposed for environment PUT; documented P1 UI follow-up.
+
+**Files touched** (10): `.github/workflows/release.yml` (full split rewrite), `.github/workflows/ci.yml` (SHA-pin substitutions across 3 jobs), `.github/workflows/pr-lint.yml` (SHA-pin substitutions), `qor/scripts/configure_pypi_environment.py` (NEW), `tests/test_release_workflow_immutability.py` (NEW 8 tests), `tests/test_configure_pypi_environment.py` (NEW 7 tests), `tests/test_release_workflow_guard.py` (amended; added `test_tag_ancestry_guard_present_in_both_jobs`), `docs/plan-qor-phase101-pypi-hardening-p0.md` (NEW), `pyproject.toml` (0.68.1 -> 0.69.0; feature change_class -> minor SemVer bump), `CHANGELOG.md` (v0.69.0 section), `README.md` (Tests badge 1879 -> 1895; Ledger badge 271 -> 275).
+
+**Action SHA pins (resolved live 2026-05-24 via `gh api repos/.../git/ref/tags/<tag>`)**: actions/checkout `@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1`; actions/setup-python `@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0`; actions/upload-artifact `@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2`; actions/download-artifact `@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4.3.0`; pypa/gh-action-pypi-publish `@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # v1.14.0`. Major versions preserved (no v4-to-v5/v6 churn in this phase; that is a separate decision).
+
+**Test surface**: 16 new tests across two new files plus one amendment; impl GREEN first attempt. All tests run twice deterministically per CLAUDE.md test discipline. Full regression: 1895 passed, 1 skipped, 4 deselected. The two pre-fix failures (`test_skill_doctrine::test_plans_declare_change_class` rejected the initial `**change_class**: minor` declaration -- corrected to `feature` per doctrine enum hotfix|feature|breaking; `test_readme_badge_currency` failures resolved by post-substantiate badge bumps).
+
+**Environment configuration (live mutation, operator-approved)**: `python -m qor.scripts.configure_pypi_environment --repo MythologIQ-Labs-LLC/Qor-logic --reviewer-id 205245245 --reviewer-type User` executed once. PUT to `repos/.../environments/pypi` and POST to `.../environments/pypi/deployment-branch-policies` both returned 200. Verified post-state: `protection_rule_count == 2` (required_reviewers + branch_policy), `prevent_self_review == true`, single `v*.*.*` tag policy attached. Closes F-1a from research brief.
+
+**Razor compliance**: `release.yml` ~73 lines (was ~40); `configure_pypi_environment.py` ~85 lines, longest function `main` ~30 lines, `build_put_body` ~13 lines; new test files ~200 lines each within the 250-line target. No nesting >3 levels.
+
+**Self-application**: the plan adds workflow-immutability tests that themselves validate the workflow-immutability discipline. SG-StructureWithoutPolicy-A countermeasure pattern (research brief Section 6) applied at the design level: environment now has both structure AND policy. Two-job split is the SG-AdjacentState-A defense pattern from prior phases (separate the producer from the privileged consumer; verify across the boundary).
+
+**Cluster cross-coupling**: Phase 101 is the FIRST of a 3-phase cluster closing GH #118 (P0 -> P1 -> P2 -> 102 -> 103). This phase ships the workflow-side controls (5 acceptance items closed). Phase 102 will add the dependency + evidence layer (4 items: requirements-release.txt hash-pinned, CODEOWNERS, SBOM + GH release evidence bundle, dependency-review workflow). Phase 103 will add post-publish verification + cooling-period doctrine (2 items). After Phase 103 seal, all 13 acceptance items closed and GH #118 may be marked closed.
+
+**Content Hash**: SHA256(plan-qor-phase101-pypi-hardening-p0.md) = `9ea43f5fcfab9af672aa0a0f7d4f7a2eb4cca19ccb5b426501663a96958460c6`
+**Previous Hash**: `fe74fa22eb3fc509c2e1a122b03d8b1bb48a05e645c9b9f41f35719d69422be1`
+**Chain Hash**: `d491eabcf6e9ae96a13c76274a67997c0eceff8b91642c517c8768b1c3698801`
+
+---
+
+*Session: 2026-05-24T0430-gh118-research (Phase 101 -- implementation complete)*
+
+---
+
+### Entry #275: SESSION SEAL -- Phase 101 feature substantiated: PyPI Hardening P0 (v0.69.0, GH #118 P0 close)
+
+**Timestamp**: 2026-05-24T05:10:00Z
+**Phase**: SUBSTANTIATE (Phase 101 feature; cluster start)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase101-pypi-hardening-p0.md
+**Session**: `2026-05-24T0430-gh118-research`
+**SSDF Practices**: PO.4.1, PO.5.1, PS.2.1, PS.3.1
+**Entry ID**: `le_phase101SEAL0000`
+
+**Scope**: Closes 5 of 13 GH #118 acceptance items (F-1a, F-1b, F-1c, F-2a, F-2c). Release workflow split into unprivileged build + privileged publish jobs with in-band SHA256SUMS handoff. All third-party Actions SHA-pinned across release.yml, ci.yml, pr-lint.yml. `id-token: write` scoped to publish job only. `pypi` GitHub environment now backed by required-reviewer + tag-only deployment policy + prevent-self-review (configured live via new `configure_pypi_environment.py` script). Tag-ancestry guard preserved and replicated to both jobs as load-bearing-gate defense-in-depth.
+
+**Cluster start**: Phase 101 is the FIRST of three phases (101 -> 102 -> 103) closing GH #118. Sequence will ship workflow-side controls (this phase), then dependency + evidence layer (102), then post-publish verification + doctrine (103). After three seals: GH #118 fully closed.
+
+**Files touched** (10): `.github/workflows/release.yml`, `.github/workflows/ci.yml`, `.github/workflows/pr-lint.yml`, `qor/scripts/configure_pypi_environment.py` (NEW), `tests/test_release_workflow_immutability.py` (NEW), `tests/test_configure_pypi_environment.py` (NEW), `tests/test_release_workflow_guard.py` (amended), `docs/plan-qor-phase101-pypi-hardening-p0.md` (NEW), `pyproject.toml` (0.68.1 -> 0.69.0), `CHANGELOG.md` (v0.69.0 section), `README.md` (Tests + Ledger badges). Plus META_LEDGER entries #272-#275, gate artifacts (research/audit), and `.agent/staging/phase101-AUDIT_REPORT.md`.
+
+**Test surface**: 16 new tests + 1 amended test all GREEN twice deterministically. Full regression at seal time: 1895 passed, 1 skipped, 4 deselected (5m25s).
+
+**Audit history**: iter-1 PASS (Entry #273, L3 high_risk_target).
+
+**Live mutation verified**: `gh api repos/.../environments/pypi` post-state confirms `protection_rule_count == 2`, `reviewer_logins == ["Knapp-Kevin"]`, `prevent_self_review == true`, `deployment_branch_policy.custom_branch_policies == true`, single `v*.*.*` tag policy. The `pypi` environment now ENFORCES (was: declared but empty -- SG-StructureWithoutPolicy-A pattern documented in research brief, second observed instance; structure-without-policy gap closed at the surface where the policy attaches).
+
+**Self-application**: the plan applies the structure-AND-policy discipline it diagnoses. Workflow tests assert the policy properties that the workflow itself enforces. configure_pypi_environment.py uses list-form argv + typed argparse + stdin JSON (SG-ArgInjectionBlindSpot-A countermeasure pattern applied prophylactically).
+
+**Carry-forward to Phase 102**: admin-bypass disable (UI follow-up; not API-exposed); Dependabot config for github-actions ecosystem; CODEOWNERS for the new workflow surface area + the new script.
+
+**Review Boundary**: cycle ends at this seal. No commit, push, tag, or PR has been executed -- all artifacts are staged-local per /qor-auto-dev-1 Review Boundary. Operator runs `git add` + commit + push when ready. Recommended commit message + PR body are staged at `.agent/staging/phase101-commit-msg.txt` and `.agent/staging/pr101-body.md` (to be authored).
+
+**Content Hash (session seal)**: `9dad50211782c05db79a1cfc6f6e615aa93ff7b6ea27438468c99c96b7c597e1`
+**Previous Hash**: `d491eabcf6e9ae96a13c76274a67997c0eceff8b91642c517c8768b1c3698801`
+**Chain Hash (Merkle seal)**: `ee7ccae53d8330a8d69704e59da1086c04b9b06ec9a5207f0ba9a567bb09655e`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 101 feature complete; PyPI Hardening P0 shipped; 5 of 13 GH #118 acceptance items closed)
+*Merkle seal: ee7ccae5...* (Phase 101 seal on top of Phase 100's f10b2610...; Entry #272 research bridges the two)
+*Open items at this seal: stage artifacts; Phase 102 (P1) and Phase 103 (P2) ahead; admin-bypass disable UI follow-up; cluster will close GH #118 fully after Phase 103 seal*
+
+

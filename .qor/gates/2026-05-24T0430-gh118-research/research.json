@@ -1,0 +1,136 @@
+{
+  "phase": "research",
+  "session_id": "2026-05-24T0430-gh118-research",
+  "ts": "2026-05-24T05:24:55Z",
+  "questions": [
+    "Which of issue #118's thirteen acceptance items are currently met vs DRIFT?",
+    "Are any of the listed IOCs present?",
+    "What is the existing release-ancestry verification logic the issue references, and where does it live?",
+    "What is the actual protection-rule state of the GitHub pypi environment?",
+    "Are third-party Actions SHA-pinned in the release/CI/lint workflows?",
+    "Does a lockfile or any deterministic-install mechanism exist for the publish job?"
+  ],
+  "findings": [
+    {
+      "id": "F-1a",
+      "category": "publication-authority",
+      "status": "DRIFT",
+      "severity": "HIGH",
+      "summary": "pypi environment has empty protection_rules and admin-bypass enabled"
+    },
+    {
+      "id": "F-1b",
+      "category": "publication-authority",
+      "status": "DRIFT",
+      "severity": "MEDIUM",
+      "summary": "id-token: write at workflow level rather than publish job"
+    },
+    {
+      "id": "F-1c",
+      "category": "publication-authority",
+      "status": "DRIFT",
+      "severity": "MEDIUM",
+      "summary": "Build and publish in single job; no artifact handoff or hash verification"
+    },
+    {
+      "id": "F-2a",
+      "category": "workflow-immutability",
+      "status": "DRIFT",
+      "severity": "HIGH",
+      "summary": "Third-party Actions tag-pinned not SHA-pinned; pypa publish on a branch ref"
+    },
+    {
+      "id": "F-2b",
+      "category": "workflow-immutability",
+      "status": "DRIFT",
+      "severity": "MEDIUM",
+      "summary": "No CODEOWNERS file"
+    },
+    {
+      "id": "F-2c",
+      "category": "workflow-immutability",
+      "status": "DRIFT",
+      "severity": "MEDIUM",
+      "summary": "Publish job uses pip cache (untrusted cache surface)"
+    },
+    {
+      "id": "F-3a",
+      "category": "dependency-admission",
+      "status": "DRIFT",
+      "severity": "MEDIUM",
+      "summary": "No dependency-review workflow"
+    },
+    {
+      "id": "F-3b",
+      "category": "dependency-admission",
+      "status": "DRIFT",
+      "severity": "HIGH",
+      "summary": "No lockfile; runtime deps range-pinned; pip install build unpinned"
+    },
+    {
+      "id": "F-3c",
+      "category": "dependency-admission",
+      "status": "DRIFT",
+      "severity": "LOW",
+      "summary": "No cooling-period policy documented"
+    },
+    {
+      "id": "F-4a",
+      "category": "release-evidence",
+      "status": "DRIFT",
+      "severity": "MEDIUM",
+      "summary": "No SBOM/artifact-hash/evidence-bundle production"
+    },
+    {
+      "id": "F-4b",
+      "category": "release-evidence",
+      "status": "DRIFT",
+      "severity": "MEDIUM",
+      "summary": "No post-publish verification"
+    },
+    {
+      "id": "F-4c",
+      "category": "release-evidence",
+      "status": "DRIFT",
+      "severity": "LOW",
+      "summary": "No persisted record of workflow SHA, action SHAs, lockfile hashes"
+    },
+    {
+      "id": "F-5",
+      "category": "ioc-review",
+      "status": "PASS",
+      "severity": "INFO",
+      "summary": "All IOCs absent"
+    },
+    {
+      "id": "F-6",
+      "category": "reference-implementation",
+      "status": "MATCH",
+      "severity": "INFO",
+      "summary": "Existing release-ancestry guard and intent_lock confirmed in place; preserve as commit-ancestry reference"
+    }
+  ],
+  "sources": [
+    ".github/workflows/release.yml",
+    ".github/workflows/ci.yml",
+    ".github/workflows/pr-lint.yml",
+    "pyproject.toml",
+    "qor/reliability/intent_lock.py",
+    "tests/test_substantiate_tag_push_timing.py",
+    "tests/test_release_workflow_guard.py",
+    "docs/META_LEDGER.md",
+    "docs/ARCHITECTURE_PLAN.md",
+    "docs/SHADOW_GENOME.md",
+    "gh issue view 118",
+    "gh api repos/MythologIQ-Labs-LLC/Qor-logic/environments"
+  ],
+  "brief_path": "docs/research-brief-gh118-pypi-hardening-2026-05-24.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.68.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-24T05:24:55Z"
+  }
+}

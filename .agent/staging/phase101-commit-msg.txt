@@ -1,0 +1,28 @@
+seal: phase 101 - PyPI Hardening P0 (v0.69.0, GH #118 partial close)
+
+Closes 5 of 13 GH #118 acceptance items (F-1a, F-1b, F-1c, F-2a, F-2c).
+
+- release.yml split into unprivileged build + privileged publish jobs
+  with in-band SHA256SUMS artifact handoff; id-token: write scoped to
+  publish job only; no cache on publish; tag-ancestry guard runs in
+  both jobs.
+- All third-party Actions SHA-pinned across release.yml, ci.yml,
+  pr-lint.yml (worst prior pin was pypa/gh-action-pypi-publish@release/v1
+  branch ref).
+- pypi GitHub environment now backed by required-reviewer + tag-only
+  deployment policy + prevent-self-review via new
+  qor/scripts/configure_pypi_environment.py (invoked once live during
+  cycle; post-state verified).
+- 16 new tests + 1 amended test, all green twice deterministically.
+- Full regression: 1894 passed, 1 skipped, 4 deselected.
+- META_LEDGER #272-#275; Merkle seal ee7ccae5...
+
+First of three-phase supply-chain hardening cluster. Phases 102 (P1) +
+103 (P2) ahead; will close remaining 8 acceptance items.
+
+Plan: docs/plan-qor-phase101-pypi-hardening-p0.md
+Audit: .agent/staging/phase101-AUDIT_REPORT.md (PASS, L3 iter-1)
+Research: docs/research-brief-gh118-pypi-hardening-2026-05-24.md
+Merkle seal: ee7ccae53d8330a8d69704e59da1086c04b9b06ec9a5207f0ba9a567bb09655e
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
