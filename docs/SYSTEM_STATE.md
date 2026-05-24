@@ -670,3 +670,29 @@ Hotfix closing the F8 internal prompt-surface review finding. The registry at HE
 **Cluster context**: Phase 97 closes the SECOND of five Tier-1 prompt-surface sub-plans (96 → 97 → 98 → 99 → 100). Cluster progress: 2 of 5 shipped. The lightest-touch phase in the cluster (L1 risk grade; hotfix bump).
 
 **Decision**: Phase 97 implemented; audit PASS on iter-1. Substantiated as v0.67.1 (hotfix → patch bump).
+
+## Phase 98 (v0.67.2 — 2026-05-24): Meta-skill examples → references/ (F5+F6)
+
+Hotfix closing F5+F6 internal prompt-surface review finding. Two meta skills (`qor-meta-log-decision`, `qor-meta-track-shadow`) carried sizable `## Examples` sections (three numbered concrete invocation examples each, in fenced code blocks) that loaded into every skill invocation. Per the `SG-SkillCorpusGrowth-A` progressive-disclosure doctrine, this example prose belongs in per-skill `references/` files with a pointer in SKILL.md, not loaded inline.
+
+**Moves**:
+- `qor-meta-log-decision`: ~90 lines (Architecture L2 / Security L3 / Scope Change L2) moved from SKILL.md (lines 292-382) to `references/example-decision-entries.md`; SKILL.md retains a short pointer paragraph.
+- `qor-meta-track-shadow`: ~65 lines (SG-001 Dependency Bloat / SG-002 Premature Optimization / SG-003 Hallucination) moved from SKILL.md (lines 156-219) to `references/example-shadow-genome-events.md`; SKILL.md retains a short pointer paragraph.
+
+**Decision Point closed at plan-authoring time**: the operator-deferred question about the "stranded Entry #6 fragment" at `qor-meta-log-decision/SKILL.md:437` resolved during file inspection. The fragment is inside the `## Meta-Ledger File Structure` fenced code block (lines 386-451) as deliberate artifact-format example content, NOT stranded. The research brief misread the structure. No edit needed; the File Structure section remains intact in SKILL.md as integral artifact-format documentation.
+
+**New test `tests/test_meta_skill_examples_progressive_disclosure.py`** (~80 LOC, 6 assertions): three per migrated skill — SKILL.md cites the references file by path, reference file exists at HEAD, reference file preserves all three example identifiers (Example 1/2/3 headings or SG-001/SG-002/SG-003 IDs). Catches the inline-examples regression: if a future edit removes the pointer or inlines the examples back into SKILL.md, the test fails.
+
+**TDD red-green**: impl GREEN on first pass. All 6 pass twice deterministically. Full suite: 1862 passed, 1 skipped (+6 from Phase 97's 1856).
+
+**Skill-size impact** (per Phase 95 `skill_size_budget_lint`): qor-meta-log-decision reduces from ~16.4 KB to ~13.7 KB (still well under WARN 25 KB); qor-meta-track-shadow reduces from ~12.3 KB to ~10.4 KB. Neither was at risk pre-move; this phase is hygiene, not size-budget repair. The standing Phase 95 EXCEEDED findings on qor-audit + qor-substantiate persist unchanged.
+
+**Lessons recurring across cluster**: CHANGELOG section authored AFTER tag push misses the structural test until the next phase runs. Phase 98 retroactively backfills v0.67.1 (Phase 97's omission) plus adds v0.67.2 for itself. Phase 96 → Phase 97 had the same pattern (Phase 97 backfilled v0.67.0 missed by Phase 96). Captured as a recurring pattern; possible V2 work in a separate phase: tighten the changelog-tag-coverage test to also walk pyproject.toml and assert any declared version has a CHANGELOG section regardless of tag presence.
+
+**V1 boundaries** (declared non_goals): rewriting example content; auto-generating examples from real entries; extending treatment to other meta skills; merging into shared examples doc.
+
+**Dogfooding milestone**: F5+F6 is itself a progressive-disclosure finding; Phase 98 applies the discipline (move prose to references/) AND adds the structural test catching regression. The new test is the dogfooding shipping-correctness anchor.
+
+**Cluster context**: Phase 98 closes the THIRD of five Tier-1 prompt-surface sub-plans. Cluster progress: 3 of 5 shipped. Sequence remaining: 99 (V2, GH #108 full close, feature → v0.68.0) → 100 (F4 Critical Invariants, hotfix → v0.68.1).
+
+**Decision**: Phase 98 implemented; audit PASS on iter-1. Substantiated as v0.67.2 (hotfix → patch bump).

@@ -9974,3 +9974,99 @@ SHA256(plan-qor-phase93-merge-velocity-throttle.md) = `9e009bcfafcbc356c47dbafd0
 *Merkle seal: aad8f14f...* (Phase 97 seal on top of Phase 96's 341b2d7e...)
 *Open items at this seal: stage artifacts; cluster Phases 98-100 ahead*
 *Cluster progress: 2 of 5 Tier-1 prompt-surface phases shipped*
+
+---
+
+### Entry #263: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-24T03:06:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase98-meta-skill-examples-to-references.md
+**Session**: `2026-05-24T0305-53a75c`
+**Entry ID**: `le_phase98gateTRIBUNAL`
+
+**Decision**: Phase 98 plan (F5+F6 meta-skill examples → references/) cleared on iter-1. Solo audit. All pre-audit lints exit 0. L1 grade: prose move; no skill behavior change; no binding gate change. Decision Point for "stranded Entry #6" closed honestly in plan-authoring time: fragment is part of the `## Meta-Ledger File Structure` example code block, not stranded; research brief misread the structure. Scope conservative: moves Examples only, leaves File Structure inline. Structural countermeasure (6 assertions) prevents regression. Verdict: PASS.
+
+**Content Hash**: SHA256(phase98-AUDIT_REPORT.md) = `c2e19b7be07207b81afc9a7080256666c41702eb7d5f0ed82fba71836b190266`
+**Previous Hash**: `aad8f14f078e6e7767d6d517f6ea61bdadd58115300a03c22f95eab549db15a8`
+**Chain Hash**: `4b126c88ada625e99df5fde4942c9a2669ca2fba7bcd4a0b04fa35b8f7413e9d`
+
+---
+
+*Session: 2026-05-24T0305-53a75c (Phase 98 -- audit PASS)*
+
+---
+
+### Entry #264: IMPLEMENTATION -- Phase 98 (Meta-skill examples → references/)
+
+**Timestamp**: 2026-05-24T03:15:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase98-meta-skill-examples-to-references.md
+**Session**: `2026-05-24T0305-53a75c`
+**Entry ID**: `le_phase98IMPL00000`
+
+**Scope**: Closes F5+F6 internal prompt-surface review finding. Moves `## Examples` sections from two meta-skill SKILL.md files into per-skill `references/` files per the progressive-disclosure doctrine (`SG-SkillCorpusGrowth-A`). `qor-meta-log-decision`: ~90 lines (Architecture L2, Security L3, Scope Change L2) → `references/example-decision-entries.md`. `qor-meta-track-shadow`: ~65 lines (SG-001 Dependency Bloat, SG-002 Premature Optimization, SG-003 Hallucination) → `references/example-shadow-genome-events.md`. Each SKILL.md retains a short pointer paragraph + reference link. No skill behavior change. The Decision Point for the "stranded Entry #6 fragment" closed during plan-authoring: fragment is inside the `## Meta-Ledger File Structure` fenced code block as deliberate artifact-format example content, not stranded; research brief misread the structure; File Structure section remains intact.
+
+**Files touched** (9): `qor/skills/meta/qor-meta-log-decision/SKILL.md` (Examples → pointer), `qor/skills/meta/qor-meta-log-decision/references/example-decision-entries.md` (NEW, verbatim move + framing), `qor/skills/meta/qor-meta-track-shadow/SKILL.md` (Examples → pointer), `qor/skills/meta/qor-meta-track-shadow/references/example-shadow-genome-events.md` (NEW, verbatim move + framing), `tests/test_meta_skill_examples_progressive_disclosure.py` (NEW 6 tests), `docs/plan-qor-phase98-meta-skill-examples-to-references.md` (NEW), `README.md` (Tests badge 1857 → 1863; Ledger badge 262 → 265), `CHANGELOG.md` (v0.67.1 retroactive backfill + v0.67.2 section), `pyproject.toml` (0.67.1 → 0.67.2).
+
+**Test surface**: 6 new tests; impl GREEN on first pass. All pass twice deterministically. Full suite: 1862 passed, 1 skipped (+6 from Phase 97's 1856, minus 0 — the example moves don't break any existing test because the SKILL.md content semantics are unchanged from the operator's perspective).
+
+**Razor compliance**: ~155 lines moved (not added; net SKILL.md reduction); ~6 lines pointer prose added back to each SKILL.md; 2 new references files (~150 lines each verbatim content); ~80 LOC test. Net corpus change: roughly even — content moved from SKILL.md to references/ doesn't reduce total bytes, but it reduces context-load weight per skill invocation (the SKILL.md is what the host loads; references/ is operator-pull-only).
+
+**Reliability**: pre-substantiate gates all green; ledger chain verified after entry append; CHANGELOG retroactively backfilled with v0.67.1 (Phase 97 omission caught by Phase 98's `test_every_tag_has_changelog_section`) AND v0.67.2 added for this phase — the same omission pattern Phase 97 caught in Phase 96 (CHANGELOG section authored AFTER tag push misses the structural test). Phase 98 captures this as a recurring pattern across the cluster's hotfix phases.
+
+**Self-application**: F5+F6 is itself a progressive-disclosure finding; Phase 98 applies the discipline (move prose to references/) AND adds the structural test that catches regression. The dogfooding shipping-correctness anchor is the new `test_meta_skill_examples_progressive_disclosure.py` — six assertions covering the pointer-present + file-exists + content-preserved invariants across both migrated skills.
+
+**Cluster milestone**: Phase 98 closes the third of five Tier-1 prompt-surface sub-plans. Sequence remaining: 99 (V2, GH #108 full close) → 100 (F4 Critical Invariants). Phase 99 is the binding-VETO surface (returns to feature class, minor bump v0.68.0); Phase 100 returns to hotfix (Critical Invariants summaries).
+
+**Lesson recurring**: post-substantiate currency tests (CHANGELOG specifically) reliably catch missing CHANGELOG sections one phase late, because the test walks git tags (which only exist post-merge). The catch-up pattern is: Phase N+1 retroactively backfills Phase N's CHANGELOG section while also adding Phase N+1's own. A future improvement (V2 candidate for a separate phase): tighten the test to read pyproject.toml version and assert that the version matches a CHANGELOG section, catching the omission in the same commit instead of one phase later.
+
+**Content Hash**: SHA256(plan-qor-phase98-meta-skill-examples-to-references.md) = `5f039fc9693ac60a49ab57391702c7bcf4f777164831a67bbef80f9f109b679d`
+**Previous Hash**: `4b126c88ada625e99df5fde4942c9a2669ca2fba7bcd4a0b04fa35b8f7413e9d`
+**Chain Hash**: `26edb5faa43045500c62ab42b9d7eaf4e6e1e2d9b57b78de553603540ea9a873`
+
+---
+
+*Session: 2026-05-24T0305-53a75c (Phase 98 -- implementation complete)*
+
+---
+
+### Entry #265: SESSION SEAL -- Phase 98 hotfix substantiated: meta-skill examples → references/ (v0.67.2, F5+F6)
+
+**Timestamp**: 2026-05-24T03:20:00Z
+**Phase**: SUBSTANTIATE (Phase 98 hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase98-meta-skill-examples-to-references.md
+**Session**: `2026-05-24T0305-53a75c`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `le_phase98SEAL000000`
+
+**Scope**: Closes F5+F6 internal prompt-surface review finding. Two meta-skill `## Examples` sections moved to per-skill `references/`; SKILL.md retains progressive-disclosure pointer. Six-assertion structural test ships as the regression countermeasure. Decision Point for "stranded Entry #6" closed honestly: research brief misread the structure; fragment is part of artifact-format example, not stranded.
+
+**Cluster context**: Phase 98 is the THIRD of five Tier-1 prompt-surface sub-plans. Cluster carries V1/V2 split discipline; Phases 96/99 (feature, GH #108); Phases 97/98/100 (hotfix, internal F-findings).
+
+**Files touched** (~12): the 9 above + META_LEDGER entries #263-#265 + gate artifacts + AUDIT_REPORT.
+
+**Test surface**: 6 new tests; all pass twice deterministically. Full suite: 1862 passed, 1 skipped.
+
+**Audit history**: iter-1 PASS (Entry #263, L1).
+
+**Self-application**: the new structural test is the dogfooding shipping-correctness anchor — it asserts both migrated skills carry the pointer + the reference file exists + all three example IDs are preserved.
+
+**Recurring lesson captured**: CHANGELOG omission one phase late is now confirmed as a cluster-wide pattern (Phase 96 missed v0.67.0, caught by Phase 97; Phase 97 missed v0.67.1, caught by Phase 98). Possible V2 work (separate phase): tighten `test_every_tag_has_changelog_section` to also walk pyproject.toml and assert any declared version has a CHANGELOG section regardless of whether a tag exists.
+
+**Content Hash (session seal)**: `2c94ec275438b3338a73f6e660bfb3deec3cd8f58a4da1e3cb5142904a29f57e`
+**Previous Hash**: `26edb5faa43045500c62ab42b9d7eaf4e6e1e2d9b57b78de553603540ea9a873`
+**Chain Hash (Merkle seal)**: `dcd13709dcfa09600e389b09670567308a6ee18380752b22dcba3a9efd4f943f`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 98 hotfix complete; F5+F6 progressive-disclosure applied to two meta skills with structural countermeasure)
+*Merkle seal: dcd13709...* (Phase 98 seal on top of Phase 97's aad8f14f...)
+*Open items at this seal: stage artifacts; cluster Phases 99-100 ahead*
+*Cluster progress: 3 of 5 Tier-1 prompt-surface phases shipped*

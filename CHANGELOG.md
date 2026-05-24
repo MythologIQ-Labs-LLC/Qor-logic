@@ -10,6 +10,58 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.67.2] - 2026-05-24
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+
+- **Phase 98 (hotfix, F5+F6)**: meta-skill `## Examples` blocks moved
+  out of inline SKILL.md prose into per-skill `references/` files per
+  the progressive-disclosure doctrine (`SG-SkillCorpusGrowth-A`).
+  `qor/skills/meta/qor-meta-log-decision/SKILL.md` Examples section
+  (~90 lines: Architecture L2, Security L3, Scope Change L2) moved to
+  `qor/skills/meta/qor-meta-log-decision/references/example-decision-entries.md`.
+  `qor/skills/meta/qor-meta-track-shadow/SKILL.md` Examples section
+  (~65 lines: Dependency Bloat SG-001, Premature Optimization SG-002,
+  Hallucination SG-003) moved to
+  `qor/skills/meta/qor-meta-track-shadow/references/example-shadow-genome-events.md`.
+  Each SKILL.md retains a short pointer paragraph + reference link.
+  No skill behavior change. New
+  `tests/test_meta_skill_examples_progressive_disclosure.py` (6
+  assertions) is the structural countermeasure preventing regression
+  (pointer present, reference file exists, all three example IDs
+  preserved per skill). Decision Point for the "stranded Entry #6
+  fragment" at `qor-meta-log-decision/SKILL.md:437` closed during plan
+  authoring: fragment is inside the `## Meta-Ledger File Structure`
+  example code block (deliberate artifact-format documentation), not
+  stranded; research brief misread the structure.
+
+## [0.67.1] - 2026-05-23
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+
+- **Phase 97 (hotfix, F8)**: SKILL_REGISTRY per-category drift
+  reconciliation. `docs/SKILL_REGISTRY.md` declared 30 total skills
+  which matched the actual total only by offset cancellation (sdlc
+  undercounted by 1, meta undercounted by 1, memory internally
+  consistent). A total-only currency test passed while two categories
+  silently drifted. Reconciled: snapshot date 2026-04-29 → 2026-05-23;
+  sdlc count 6 → 7 with `qor-ideate` row added; meta count 11 → 12
+  with `qor-ab-run` row added; governance (6) and memory (7) unchanged
+  (already correct). Actual total is 32 .md files across the four
+  categories. New `tests/test_skill_registry_per_category_currency.py`
+  (~140 LOC, 7 assertions) is the structural countermeasure: per-
+  category currency checks for governance/sdlc/memory/meta plus
+  inverse-drift sweep, cross-category drift guard, and arithmetic
+  guard for any documented total. The per-category granularity
+  prevents total-cancellation masking; F8 cannot recur the same way.
+  CHANGELOG retroactively backfilled with v0.67.0 (Phase 96
+  CHANGELOG omission caught by Phase 97's
+  `test_every_tag_has_changelog_section`).
+
 ## [0.67.0] - 2026-05-23
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
