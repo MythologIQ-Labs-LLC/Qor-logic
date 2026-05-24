@@ -10,6 +10,34 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.68.0] - 2026-05-24
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 99 (feature, GH #108 full close)**: audit-side Runtime
+  Contract Walk V2. Closes GH #108 fully (V1 recon-side probe shipped
+  Phase 96; V2 audit-side walk ships now). New
+  `qor.scripts.runtime_contract_walk.walk_plan(plan_path, repo_root) -> list[WalkFinding]`
+  walks the import graph one hop in each direction for each Python
+  module path cited in a plan being audited. Forward walk: cited
+  module's own imports all parse via subprocess `python -c "import X"`.
+  Backward walk: at least one production caller (non-test, non-scratch,
+  non-doc) exists and parses cleanly with `ast.parse`. Wired into
+  `/qor-audit` Step 3 Infrastructure Alignment Pass as a new sub-check
+  after the existing grep-verify block. WARN-only ramp in V2 (CLI
+  exits 0 by default; `--exit-on-any` opts into hard fail; audit-site
+  invocation uses `|| true`) because no Phase 96 V1 operator evidence
+  has accumulated in same-session cluster. A future V2-of-V2 phase
+  will gather V1 evidence, tune walk thresholds, and convert to hard
+  VETO with `runtime-contract-mismatch` category. `SG-GrepShapedRunclaim-A`
+  doctrine entry's "V2 reserved" paragraph replaced with the shipped
+  V2 implementation. Progressive disclosure: detailed two-direction
+  protocol lives in `qor/references/audit-runtime-contract-walk.md`;
+  qor-audit/SKILL.md gains only a one-paragraph summary + reference
+  pointer.
+
 ## [0.67.2] - 2026-05-24
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

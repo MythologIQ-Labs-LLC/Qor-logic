@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-24T03:07:49Z",
+  "generated_ts": "2026-05-24T03:29:51Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -120,7 +120,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "969c208ca1989cc308e275e1530457d90fb211d53639f9375631c81cbd59cda1"
+      "sha256": "233793a78246f3dcf46c0cd979aa30911dd1d3c7ba4ae800ebb487074c762703"
     },
     {
       "id": "qor-bootstrap",
@@ -228,7 +228,7 @@
       "id": "qor-meta-log-decision",
       "source_path": "skills/qor-meta-log-decision/references/example-decision-entries.md",
       "install_rel_path": "skills/qor-meta-log-decision/references/example-decision-entries.md",
-      "sha256": "f249ae9b90b941c627d004757566a77443e41869bba3e924a0513f2885657fec"
+      "sha256": "5de427bf2e021a53315ec5b2e26a33642f9419f04411404252b59cc5eb39415c"
     },
     {
       "id": "qor-meta-log-decision",
@@ -246,7 +246,7 @@
       "id": "qor-meta-track-shadow",
       "source_path": "skills/qor-meta-track-shadow/references/example-shadow-genome-events.md",
       "install_rel_path": "skills/qor-meta-track-shadow/references/example-shadow-genome-events.md",
-      "sha256": "95f2eb99253b22dddbc67f62dcf1817c8a9a6dd27d19de8a387a57687e298aa9"
+      "sha256": "d656dda47b766064b63bad91932659a1a084dd5a2b6b63b7ba242cb0cd858d49"
     },
     {
       "id": "qor-meta-track-shadow",

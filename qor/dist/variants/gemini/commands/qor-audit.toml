@@ -400,6 +400,12 @@ For each plan claim in scope, verify against current code:
 
 **Any violation -> VETO with `infrastructure-mismatch` category**. **Required next action:** amend the plan to reflect actual infrastructure OR add the missing infrastructure as an explicit Phase Affected File. No implicit dependencies.
 
+**Phase 99 wiring (GH #108 V2 — Runtime Contract Walk)**: After the grep-verify checks above, run the Runtime Contract Walk against the plan to catch runtime-contract drift that grep cannot see — module imports that don't resolve at runtime, callers whose own imports fail to parse, etc. The walk runs one hop forward (callees: cited module's own imports must parse) and one hop backward (callers: at least one production caller must parse) for each Python module path cited in the plan. WARN-only in V2; a future V2-of-V2 phase converts to hard VETO once operator evidence on Phase 96 V1 false-positive rate is in. See `qor/references/audit-runtime-contract-walk.md` for the detailed two-direction protocol and `SG-GrepShapedRunclaim-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` for the binding doctrine.
+
+```bash
+python -m qor.scripts.runtime_contract_walk --plan <plan-path> || true
+```
+
 **Phase 72 wiring (GH #56; SG-CitationDrift-A countermeasure)** -- iter-N>1 full re-walk: on iterations after the first (iter-N>1), the Judge re-walks the **FULL Locked Decision set**, not the diff-from-iter-N-1. Every sealed-infrastructure citation (migration name, function signature, file:line, schema, env var, edge-function path) is grep-verified against current code, including LDs that were not modified in this iteration. Citations that lack the inline grep-evidence statement required by `/qor-plan` Step 2 Infrastructure Citation Inventory trigger immediate VETO with `infrastructure-mismatch` category -- regardless of whether the LD was amended in the current iteration. This closes the drift surface where an unverified citation in an unchanged LD propagates across iterations without re-challenge.
 
 See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-InfrastructureMismatch` (Phase 37) and `SG-CitationDrift-A` (Phase 72) for the countermeasure catalog entries.

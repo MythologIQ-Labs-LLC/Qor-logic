@@ -696,3 +696,25 @@ Hotfix closing F5+F6 internal prompt-surface review finding. Two meta skills (`q
 **Cluster context**: Phase 98 closes the THIRD of five Tier-1 prompt-surface sub-plans. Cluster progress: 3 of 5 shipped. Sequence remaining: 99 (V2, GH #108 full close, feature → v0.68.0) → 100 (F4 Critical Invariants, hotfix → v0.68.1).
 
 **Decision**: Phase 98 implemented; audit PASS on iter-1. Substantiated as v0.67.2 (hotfix → patch bump).
+
+## Phase 99 (v0.68.0 — 2026-05-24): Runtime Contract Walk V2 — GH #108 full close
+
+Feature closing GH #108 fully. V1 (Phase 96) shipped the recon-side five-check `reachability_probe`; V2 ships the audit-side `runtime_contract_walk` at `/qor-audit` Step 3 Infrastructure Alignment Pass. The walk runs one hop forward (callees: cited module's own imports must parse via subprocess `python -c "import X"`) and one hop backward (callers: at least one production caller must parse via `ast.parse`) for each Python module path cited in a plan being audited. Walk + probe together close the GH #108 governance-level finding across two lifecycle phases.
+
+**WARN-only ramp**: V2 ships WARN-only despite touching a binding-VETO surface because no Phase 96 V1 operator-evidence has accumulated in this same-session cluster. CLI exits 0 by default; `--exit-on-any` opts into hard fail; the audit-site invocation uses `|| true` wrap. A future V2-of-V2 phase will gather V1 operator-evidence on false-positive rate, tune walk thresholds, remove the `|| true` wrap, and convert to hard VETO with `runtime-contract-mismatch` category. The honest framing is captured in `SG-GrepShapedRunclaim-A` doctrine (now updated from "V2 reserved" to "V2 shipped") and the new `qor/references/audit-runtime-contract-walk.md` reference file.
+
+**Progressive disclosure honored**: full two-direction protocol + WARN-ramp rationale + examples live in `qor/references/audit-runtime-contract-walk.md`. qor-audit/SKILL.md gains only a one-paragraph summary + reference pointer + bash invocation block (~500 chars). The standing Phase 95 EXCEEDED finding on qor-audit (43.5 KB) is not materially worsened.
+
+**Tests**: 9 + 3 = 12 new tests. `test_runtime_contract_walk.py`: forward+backward walk pass/fail per direction, graceful skip on unresolvable module, CLI exit modes (default WARN-only, --exit-on-any), positive dogfooding on Phase 99 plan's own module. `test_runtime_contract_walk_audit_wiring.py`: anchored positive on the Phase 99 wiring paragraph; WARN-only-ramp assertion (`|| true` present, not hard VETO); progressive-disclosure sweep. All pass twice deterministically. Full suite: 1875 passed, 1 skipped (+12).
+
+**TDD red-green**: impl GREEN after one fixture-choice iteration. Initial `walk_backward` positive test used `qor.scripts.ci_coverage_lint` which has zero .py importers (it's invoked via `python -m` from .yml workflows only); changed to `qor.scripts.ledger_hash` which is imported by `qor/cli_handlers/compliance.py`. The TDD bug was instructive: the walk correctly catches "no production caller" for modules whose only callers are workflow files — this is a valid signal, just not what the test was probing.
+
+**V1 boundaries** (declared non_goals): multi-language walk (Rust/TS/JS deferred); hard VETO at first rollout (V2-of-V2); replacing the existing grep-verify Infrastructure Alignment checks (the walk complements them); auto-rewriting plans on walk failure.
+
+**Walk vs probe distinction**: Phase 96 V1 `reachability_probe` runs five checks per recon claim at recon Phase 3 Round 0 — operator-actioned, before plan authoring. Phase 99 V2 `runtime_contract_walk` runs two-direction import graph walk per plan-cited module at audit Step 3 — Judge-actioned, after plan, before implement. Different mechanisms for different lifecycle phases. Both close GH #108 from different angles.
+
+**Dogfooding milestones**: GH #108 V2 closes the issue with the structural countermeasure operative on the same surface that introduced it. NINTH cross-phase exercise of Phase 89's `ci_coverage_lint`. THIRD cross-phase exercise of Phase 95's `skill_size_budget_lint`. The walk's positive dogfooding test (Phase 99 plan walks clean against own cited module) is the cluster's standard shipping-correctness anchor pattern.
+
+**Cluster context**: Phase 99 is the FOURTH of five Tier-1 prompt-surface sub-plans. GH #108 closes here. Cluster progress: 4 of 5 shipped. Sequence remaining: 100 (F4 Critical Invariants summaries; hotfix → v0.68.1). The F4-after-V2 sequencing constraint from the meta-memo is now operative: Phase 100 will include the freshly-landed V2 walk-VETO in the qor-audit Critical Invariants summary block from authoring time, avoiding the amendment cycle the meta-memo warned about.
+
+**Decision**: Phase 99 implemented; audit PASS on iter-1. Substantiated as v0.68.0 (feature → minor bump). GH #108 fully closed (V1 + V2 both shipped).
