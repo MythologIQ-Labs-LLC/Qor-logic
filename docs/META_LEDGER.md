@@ -10070,3 +10070,97 @@ SHA256(plan-qor-phase93-merge-velocity-throttle.md) = `9e009bcfafcbc356c47dbafd0
 *Merkle seal: dcd13709...* (Phase 98 seal on top of Phase 97's aad8f14f...)
 *Open items at this seal: stage artifacts; cluster Phases 99-100 ahead*
 *Cluster progress: 3 of 5 Tier-1 prompt-surface phases shipped*
+
+---
+
+### Entry #266: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-24T03:27:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase99-audit-runtime-contract-walk.md
+**Session**: `2026-05-24T0326-afbbe4`
+**Entry ID**: `le_phase99gateTRIBUNAL`
+
+**Decision**: Phase 99 plan (GH #108 V2 audit-side Runtime Contract Walk) cleared on iter-1. Solo audit. All pre-audit lints exit 0 after one DoD line-wrap fix (the `**Follow-up phase**:` reference must not break across lines for dod_check parsing). L2 grade justified: touches binding-VETO surface (Step 3 Infrastructure Alignment Pass) even though V2 ships WARN-only ramp pending V1 operator evidence (same-session cluster, no Phase 96 evidence accumulated yet). Walk mechanism distinct from Phase 96 V1 probe — different lifecycle phase (audit vs recon), different mechanism (import graph walk vs five-check probe). Progressive disclosure honored: full protocol in `qor/references/audit-runtime-contract-walk.md`; qor-audit/SKILL.md gains one-paragraph summary + pointer (~500 chars; standing Phase 95 EXCEEDED finding on this skill not materially worsened). Self-application anchor: Phase 99 plan walks clean against its own module references (positive dogfooding); synthetic broken plan fixture exercises both walk directions (negative dogfooding). Verdict: PASS.
+
+**Content Hash**: SHA256(phase99-AUDIT_REPORT.md) = `22307f2b404a9a72b1465d4e628b23153fae6c966a1fb47bf5c22ad51053878c`
+**Previous Hash**: `dcd13709dcfa09600e389b09670567308a6ee18380752b22dcba3a9efd4f943f`
+**Chain Hash**: `d39415128e42d12f7028347b02a170f0af8ad57bc3dbed45338d2b6cd69c8d26`
+
+---
+
+*Session: 2026-05-24T0326-afbbe4 (Phase 99 -- audit PASS)*
+
+---
+
+### Entry #267: IMPLEMENTATION -- Phase 99 (Runtime Contract Walk V2, GH #108 full close)
+
+**Timestamp**: 2026-05-24T03:40:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase99-audit-runtime-contract-walk.md
+**Session**: `2026-05-24T0326-afbbe4`
+**Entry ID**: `le_phase99IMPL00000`
+
+**Scope**: Closes GH #108 fully. V1 (Phase 96) shipped the recon-side five-check `reachability_probe` at `/qor-deep-audit-recon` Phase 3 Round 0; V2 ships the audit-side `runtime_contract_walk` at `/qor-audit` Step 3 Infrastructure Alignment Pass. Walk runs one hop forward (callees: cited module's own imports must parse via subprocess) and one hop backward (callers: at least one production caller must parse via `ast.parse`) for each Python module path cited in a plan being audited. WARN-only V2 ramp (`--exit-on-any` opt-in; audit-site wrap `|| true`) pending Phase 96 V1 operator-evidence on false-positive rate; V2-of-V2 phase will tune and convert to hard VETO. Progressive disclosure: full protocol in references file; SKILL.md retains pointer only.
+
+**Files touched** (10): `qor/scripts/runtime_contract_walk.py` (NEW ~190 LOC), `qor/skills/governance/qor-audit/SKILL.md` (Phase 99 wiring paragraph + bash invocation block added after existing Infrastructure Alignment block), `qor/references/audit-runtime-contract-walk.md` (NEW detailed protocol + WARN-ramp rationale), `qor/references/doctrine-shadow-genome-countermeasures.md` (`SG-GrepShapedRunclaim-A` "V2 reserved" → "V2 shipped" replacement), `tests/test_runtime_contract_walk.py` (NEW 9 tests), `tests/test_runtime_contract_walk_audit_wiring.py` (NEW 3 tests), `docs/plan-qor-phase99-audit-runtime-contract-walk.md` (NEW), `README.md` (Tests badge 1863 → 1875; Ledger badge 265 → 268), `CHANGELOG.md` (v0.68.0 section), `pyproject.toml` (0.67.2 → 0.68.0).
+
+**Test surface**: 12 new tests; impl GREEN after one TDD red-green iteration (the `walk_backward` test initially used `qor.scripts.ci_coverage_lint` which is invoked via `python -m` from .yml workflows but has zero .py importers — changed fixture to `qor.scripts.ledger_hash` which is imported by `qor/cli_handlers/compliance.py`). All 12 pass twice deterministically. Full suite: 1875 passed, 1 skipped (+12 from Phase 98's 1862, plus +1 for Phase 97's existing test_skill_doctrine that now passes against the v0.68.0 plan).
+
+**Razor compliance**: ~190 LOC walk module + ~3 wiring lines in SKILL.md + ~140 line reference file + ~5 line doctrine sub-paragraph replacement + ~80 LOC test + ~50 LOC wiring test.
+
+**Reliability**: pre-substantiate gates all green; ledger chain verified after entry append; CHANGELOG kept in sync this phase (no retroactive backfill needed — Phase 98's CHANGELOG already added v0.67.2 for itself); per-category currency tests + system_state coverage tests + change_class doctrine all pass.
+
+**Self-application**: GH #108 V2 is itself the structural countermeasure for the V1 finding class. Phase 99 ships V2 AND adds tests that exercise the walk against (a) the Phase 99 plan itself (positive dogfooding: clean walk), (b) synthetic broken fixtures (negative dogfooding: both directions emit findings). NINTH cross-phase exercise of Phase 89's `ci_coverage_lint`; THIRD cross-phase exercise of Phase 95's `skill_size_budget_lint` (qor-audit SKILL.md remains at standing EXCEEDED ~44 KB, not materially worsened by ~500 chars of Phase 99 wiring).
+
+**Cluster milestone**: Phase 99 closes the FOURTH of five Tier-1 prompt-surface sub-plans. GH #108 fully closed (V1 + V2 both shipped). Sequence remaining: 100 (F4 Critical Invariants summaries; hotfix → v0.68.1). Phase 100 will leverage the freshly-landed V2 enforcement clause when authoring the qor-audit Critical Invariants block — the F4-after-V2 sequencing constraint from the meta-memo is now operative.
+
+**WARN-ramp design discipline**: V2 ships WARN-only despite touching a binding-VETO surface. The honest framing is in the SG-GrepShapedRunclaim-A doctrine extension and the reference file's "WARN ramp rationale" section. The cluster discipline (Phases 89-95) is to ship visibility first, evidence-gather second, enforce third. Phase 99 lands the V2 mechanism (visibility); V2-of-V2 later will gather + enforce.
+
+**Content Hash**: SHA256(plan-qor-phase99-audit-runtime-contract-walk.md) = `29c33bd89281b1a258ba80a718d9c1e4466c974c866430201139011b9372095e`
+**Previous Hash**: `d39415128e42d12f7028347b02a170f0af8ad57bc3dbed45338d2b6cd69c8d26`
+**Chain Hash**: `ca0f2feae4b95bab900472352279b1b597d664da705a779ab87b66632024c9e7`
+
+---
+
+*Session: 2026-05-24T0326-afbbe4 (Phase 99 -- implementation complete)*
+
+---
+
+### Entry #268: SESSION SEAL -- Phase 99 feature substantiated: Runtime Contract Walk V2 (v0.68.0, GH #108 full close)
+
+**Timestamp**: 2026-05-24T03:45:00Z
+**Phase**: SUBSTANTIATE (Phase 99 feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase99-audit-runtime-contract-walk.md
+**Session**: `2026-05-24T0326-afbbe4`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `le_phase99SEAL000000`
+
+**Scope**: Closes GH #108 fully. V2 audit-side import-graph walk shipped at `/qor-audit` Step 3 Infrastructure Alignment Pass; WARN-only ramp pending V1 operator-evidence. `SG-GrepShapedRunclaim-A` doctrine entry's "V2 reserved" line replaced with shipped V2 implementation paragraph.
+
+**Cluster context**: Phase 99 is the FOURTH of five Tier-1 prompt-surface sub-plans. GH #108 closes on this seal (V1 + V2 both live). Cluster progress: 4 of 5 shipped. Phase 100 (F4) follows with the cross-coupling constraint operative: the freshly-landed V2 VETO must be included in the qor-audit Critical Invariants block from authoring time.
+
+**Files touched** (~13): the 10 above + META_LEDGER entries #266-#268 + gate artifacts + AUDIT_REPORT.
+
+**Test surface**: 12 new tests; all pass twice deterministically. Full suite: 1875 passed, 1 skipped.
+
+**Audit history**: iter-1 PASS (Entry #266, L2).
+
+**Self-application**: the walk catches grep-shaped runclaims at audit time AND the Phase 99 plan walks clean against its own cited module (positive dogfooding); synthetic broken fixture exercises both walk directions (negative dogfooding).
+
+**Content Hash (session seal)**: `2ee9c8b607cbfe5ca351b3aeb84cc0cbf28fe59f61089c8e44920c637a90f497`
+**Previous Hash**: `ca0f2feae4b95bab900472352279b1b597d664da705a779ab87b66632024c9e7`
+**Chain Hash (Merkle seal)**: `f068b7a44d8c3a05456813dd2a0a79e88ce6d9bd75157fe1e47359fb5ec5bf2c`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 99 feature complete; GH #108 fully closed with V1+V2 shipped)
+*Merkle seal: f068b7a4...* (Phase 99 seal on top of Phase 98's dcd13709...)
+*Open items at this seal: stage artifacts; cluster Phase 100 ahead; V2-of-V2 walk-enforcement-after-evidence reserved for future phase*
+*Cluster progress: 4 of 5 Tier-1 prompt-surface phases shipped; GH #108 closed*

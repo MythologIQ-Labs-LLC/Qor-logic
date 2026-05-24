@@ -1,0 +1,32 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-24T0326-afbbe4",
+  "ts": "2026-05-24T03:26:00Z",
+  "plan_path": "docs/plan-qor-phase99-audit-runtime-contract-walk.md",
+  "phases": ["Phase 1: runtime_contract_walk + Step 3 wiring + tests"],
+  "ci_commands": [
+    "python -m pytest tests/test_runtime_contract_walk.py -q",
+    "python -m pytest tests/test_runtime_contract_walk_audit_wiring.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase99-audit-runtime-contract-walk.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase99-audit-runtime-contract-walk.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase99-audit-runtime-contract-walk.md",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills",
+    "python -m qor.scripts.runtime_contract_walk --plan docs/plan-qor-phase99-audit-runtime-contract-walk.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": ["V2 audit-side import-graph walk; WARN-only ramp pending V1 operator evidence; Python-only"],
+    "non_goals": ["multi-language walk; hard VETO at first rollout; replacing grep-verify checks; auto-rewriting plans"],
+    "exclusions": ["no Phase 96 reachability_probe changes; no Step 0.6 lint changes; no Step 4.6.* changes; no Environment block changes beyond canonical preflight where applicable"]
+  },
+  "originating_remediation": "GH #108",
+  "feature_inventory_touches": [],
+  "ai_provenance": {"system": "Qor-logic", "version": "0.67.2", "host": "unknown", "model_family": "claude-opus-4-7", "human_oversight": "pass", "ts": "2026-05-24T03:26:00Z"}
+}
