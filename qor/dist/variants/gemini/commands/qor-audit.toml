@@ -14,6 +14,24 @@ prompt = """
 
 Adversarial audit of the Governor's blueprint to generate a binding PASS/VETO verdict. No implementation may proceed without passing this tribunal.
 
+## Critical Invariants
+
+The binding contracts /qor-audit cannot violate. ABORT halts the skill at Step 0; VETO returns the work to /qor-plan or /qor-remediate.
+
+1. Step 0.3 plan-iteration lint failure -> ABORT.
+2. Step 3 Prompt Injection Pass failure -> ABORT.
+3. Step 3 L3 Risk Grade VETO conditions (security, financial, compliance, fundamental-rights surfaces).
+4. Step 3 OWASP Top-10 violation -> VETO.
+5. Step 3 Ghost-UI / Razor / self-application violation -> VETO.
+6. Step 3 Test Functionality Pass violation -> VETO (Phase 79).
+7. Step 3 Filter-Stage Pass violation -> VETO.
+8. Step 3 Infrastructure Alignment Pass grep-verify violation -> VETO with `infrastructure-mismatch` category.
+9. Step 3 Feature Test Declaration Pass violation -> VETO with `feature-test-undeclared` category (Phase 79).
+
+**V2 ramp note** (Phase 99 wiring; GH #108): the Runtime Contract Walk at Step 3 Infrastructure Alignment Pass is NEW but ships WARN-only in V2 (audit-site wrap `|| true`); it is NOT yet on the binding-VETO list above. A V2-of-V2 phase will gather Phase 96 V1 operator-evidence on false-positive rate, then flip the walk's WARN to hard VETO with `runtime-contract-mismatch` category and add it to the inviolable list. See `qor/references/audit-runtime-contract-walk.md` for the walk protocol and `SG-GrepShapedRunclaim-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` for the binding doctrine.
+
+See Step 0.3 (line ~80) for plan-iteration ABORT, Step 3 (line ~209) for the binding-VETO inventory and per-pass detail, and the Constraints section at file foot for the post-batch-1 contract inventory.
+
 ## Environment (Phase 90 wiring; GH #79)
 
 This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:

@@ -10164,3 +10164,100 @@ SHA256(plan-qor-phase93-merge-velocity-throttle.md) = `9e009bcfafcbc356c47dbafd0
 *Merkle seal: f068b7a4...* (Phase 99 seal on top of Phase 98's dcd13709...)
 *Open items at this seal: stage artifacts; cluster Phase 100 ahead; V2-of-V2 walk-enforcement-after-evidence reserved for future phase*
 *Cluster progress: 4 of 5 Tier-1 prompt-surface phases shipped; GH #108 closed*
+
+---
+
+### Entry #269: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-24T03:44:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase100-critical-invariants-summaries.md
+**Session**: `2026-05-24T0343-fa327d`
+**Entry ID**: `le_phase100gateTRIBUNAL`
+
+**Decision**: Phase 100 plan (F4 Critical Invariants summaries) cleared on iter-1. Solo audit. All pre-audit lints exit 0. L1 grade: additive prose summary; no behavior change. Cross-coupling constraint correctly operative: qor-audit invariants block represents the Phase 99 V2 Runtime Contract Walk as a NEW Step 3 sub-pass but explicitly NOT a binding VETO (WARN-only ramp framing captured from authoring time, avoiding amendment cycle the meta-memo warned about). Forward-only sweep test catches future F4-class drift. Verdict: PASS.
+
+**Content Hash**: SHA256(phase100-AUDIT_REPORT.md) = `616441a4bb9a299f63bff734009f4279021370a146d41d4bb4a60c84d4d99439`
+**Previous Hash**: `f068b7a44d8c3a05456813dd2a0a79e88ce6d9bd75157fe1e47359fb5ec5bf2c`
+**Chain Hash**: `689eeecb789dd50cc6b2b754eed885fa098fc4a1224e0a210588b4719125c0f1`
+
+---
+
+*Session: 2026-05-24T0343-fa327d (Phase 100 -- audit PASS)*
+
+---
+
+### Entry #270: IMPLEMENTATION -- Phase 100 (Critical Invariants summaries, F4)
+
+**Timestamp**: 2026-05-24T03:50:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase100-critical-invariants-summaries.md
+**Session**: `2026-05-24T0343-fa327d`
+**Entry ID**: `le_phase100IMPL0000`
+
+**Scope**: Closes F4 internal prompt-surface review finding. Two binding-gate governance skills (qor-audit, qor-substantiate) gain a top-level `## Critical Invariants` summary block between `## Purpose` and `## Environment`. qor-audit: 9 inviolable contracts (Step 0.3 plan-iteration ABORT; Step 3 Prompt Injection Pass ABORT; Step 3 L3 / OWASP / Ghost-UI / Razor / self-application VETOs; Step 3 Test Functionality / Filter-Stage / Infrastructure Alignment / Feature Test Declaration VETOs) plus an explicit V2 ramp note clarifying the Phase 99 Runtime Contract Walk is NEW but WARN-only (not yet binding). qor-substantiate: 4 inviolable contracts (Step 4.6.* reliability gate ladder; Step 6.5 README badge currency `|| ABORT`; Step 7.8 gate-chain completeness `|| ABORT`; Constraints section at file foot). New structural test sweeps `qor/skills/governance/*/SKILL.md` for binding-gate syntax patterns; any matching skill must carry the invariants block.
+
+**Files touched** (7): `qor/skills/governance/qor-audit/SKILL.md` (Critical Invariants block + V2 ramp note + cross-references), `qor/skills/governance/qor-substantiate/SKILL.md` (Critical Invariants block + cross-references), `tests/test_governance_skills_carry_critical_invariants_block.py` (NEW 4 tests), `docs/plan-qor-phase100-critical-invariants-summaries.md` (NEW), `README.md` (Tests badge 1875 → 1879; Ledger badge 268 → 271), `CHANGELOG.md` (v0.68.1 section), `pyproject.toml` (0.68.0 → 0.68.1).
+
+**Test surface**: 4 new tests; impl GREEN after one TDD red-green iteration on the sweep test pattern (initial sweep used unscoped `VETO`/`ABORT` keyword match which caught two unrelated governance skills with enum references; tightened to binding-gate syntax patterns `-> VETO`, `-> ABORT`, `|| ABORT`, `**VETO**`, `**ABORT**`, `binding-VETO`, `binding VETO`). All 4 pass twice deterministically. Full suite: 1879 passed, 1 skipped (+4).
+
+**Razor compliance**: ~16 lines per skill (block + cross-reference paragraph) = ~32 LOC of skill prose total + ~80 LOC structural test. No new module; no doctrine entry (F4 is a prompt-surface clarity finding, not a process pattern warranting an SG entry).
+
+**Cross-coupling constraint operative (meta-memo)**: F4 explicitly sequenced AFTER Phase 99 V2 so the qor-audit invariants block can correctly frame the Runtime Contract Walk as NEW at Step 3 but WARN-only. The block lists 9 binding VETOs at Step 3 and a separate V2 ramp note for the walk; no amendment cycle needed when V2-of-V2 eventually flips the ramp (the future amendment will be additive: append item 10 to the list and adjust the V2 ramp note).
+
+**Self-application**: F4 is itself a prompt-surface clarity finding; Phase 100 applies the discipline (summary block at top) AND adds the structural test catching future drift. TDD red-green sequence: initial sweep was too broad, tightened to true binding-gate syntax patterns. Forward-only sweep is the structural countermeasure.
+
+**Cluster milestone**: Phase 100 closes the FIFTH and FINAL Tier-1 prompt-surface sub-plan. Cluster complete. Sequence shipped (96 → 97 → 98 → 99 → 100): GH #108 V1 + F8 + F5+F6 + GH #108 V2 + F4. Cluster total: 5 phases, 5 PRs (#113/#114/#115/#116/#117), 5 releases (v0.67.0/0.67.1/0.67.2/0.68.0/0.68.1), 47 new tests (18+7+6+12+4), 15 new ledger entries (#257-#271), GH #108 fully closed.
+
+**Lessons across cluster** (recurring patterns documented in entries #261/#264/#267): (1) post-substantiate currency tests (README badges, SYSTEM_STATE, CHANGELOG) must re-run AFTER ledger append, not just after implementation — caught omissions one phase late in Phases 96/97/98; Phase 99 onward applied the discipline successfully. (2) CHANGELOG sections must be added in the same commit as the pyproject.toml version bump, not deferred — the test_every_tag_has_changelog_section only catches the omission AFTER tag push (one phase later). (3) Structural sweep tests need binding-gate syntax patterns, not raw keyword matches, to avoid false positives on enum references etc. (4) The cluster's V1/V2 split pattern shipped 5 detectors + 5 doctrine/test additions over Phases 88-95; the Tier 1 cluster (96-100) added 2 new mechanisms (recon probe, audit walk) + 3 structural-hygiene phases — the pattern is now confirmed across 13 consecutive phases.
+
+**Content Hash**: SHA256(plan-qor-phase100-critical-invariants-summaries.md) = `1f69e0e01751d5135b04c3c3b99742cc6774dbcad10c04cec9c86d978e35c4a1`
+**Previous Hash**: `689eeecb789dd50cc6b2b754eed885fa098fc4a1224e0a210588b4719125c0f1`
+**Chain Hash**: `81122e66acf64c1a4259d6747b15f7647357bfe4e0baf28b73bb3fd8ab6bd39d`
+
+---
+
+*Session: 2026-05-24T0343-fa327d (Phase 100 -- implementation complete)*
+
+---
+
+### Entry #271: SESSION SEAL -- Phase 100 hotfix substantiated: Critical Invariants summaries (v0.68.1, F4 + cluster close)
+
+**Timestamp**: 2026-05-24T03:55:00Z
+**Phase**: SUBSTANTIATE (Phase 100 hotfix; cluster final phase)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase100-critical-invariants-summaries.md
+**Session**: `2026-05-24T0343-fa327d`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `le_phase100SEAL0000`
+
+**Scope**: Closes F4 internal prompt-surface review finding AND closes the Tier 1 prompt-surface remediation cluster. Critical Invariants summary blocks ship on qor-audit + qor-substantiate; 4 structural tests prevent regression including a forward-only sweep with binding-gate syntax patterns.
+
+**Cluster final summary**: Phase 100 is the FIFTH and FINAL Tier-1 prompt-surface sub-plan per the cluster meta-memo (`docs/cluster-memo-prompt-surface-tier1-2026-05-23.md`). Sequence shipped (96 -> 97 -> 98 -> 99 -> 100): GH #108 V1 (visibility) + F8 (registry per-category) + F5+F6 (meta-skill examples to references/) + GH #108 V2 (audit-side walk; GH #108 full close) + F4 (Critical Invariants). Cluster totals: 5 phases, 5 PRs (#113/#114/#115/#116/#117), 5 releases (v0.67.0 / v0.67.1 / v0.67.2 / v0.68.0 / v0.68.1), +47 tests (18+7+6+12+4 = 47 new tests; full suite 1879 passed at cluster close), 15 new ledger entries (#257-#271), 2 PyPI minor bumps + 3 patch releases, GH #108 fully closed.
+
+**Files touched** (~10): the 7 above + META_LEDGER entries #269-#271 + gate artifacts + AUDIT_REPORT.
+
+**Test surface**: 4 new tests; all pass twice deterministically. Full suite: 1879 passed, 1 skipped.
+
+**Audit history**: iter-1 PASS (Entry #269, L1).
+
+**Self-application**: F4 is itself a prompt-surface clarity finding; Phase 100 applies the discipline AND adds the structural countermeasure. TDD red-green caught a too-broad sweep pattern; tightened to binding-gate syntax for accurate detection. Forward-only sweep is the structural anchor.
+
+**Cluster cross-coupling honored**: Phase 100 follows Phase 99 V2 per the meta-memo, allowing the qor-audit invariants block to correctly represent the Runtime Contract Walk as a NEW Step 3 sub-pass that is NOT yet binding (WARN-only ramp). The amendment cycle the meta-memo warned about is avoided.
+
+**Content Hash (session seal)**: `374c2dfcc19bd7803097230a978e6bc99b480102837609ae74fc394b06d10a8e`
+**Previous Hash**: `81122e66acf64c1a4259d6747b15f7647357bfe4e0baf28b73bb3fd8ab6bd39d`
+**Chain Hash (Merkle seal)**: `f10b2610c23f5fb33f74af5e0159a006ca2fa5e193b18fdb4bce30b6427fb68b`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 100 hotfix complete; Tier 1 prompt-surface cluster CLOSED)
+*Merkle seal: f10b2610...* (Phase 100 seal on top of Phase 99's f068b7a4...)
+*Open items at this seal: stage artifacts; cluster complete; V2-of-V2 walk-enforcement-after-evidence reserved for a future phase OUTSIDE this cluster*
+*Cluster progress: 5 of 5 Tier-1 prompt-surface phases shipped; GH #108 closed; cluster complete*
+*Cluster totals: 5 phases (96-100), 47 new tests (1832 -> 1879), 15 new ledger entries (#257-#271), 5 PyPI releases (v0.67.0 -> v0.68.1), 1 GH issue closed (#108), 4 internal F-findings closed (F4, F5+F6, F8)*

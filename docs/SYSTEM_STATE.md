@@ -718,3 +718,31 @@ Feature closing GH #108 fully. V1 (Phase 96) shipped the recon-side five-check `
 **Cluster context**: Phase 99 is the FOURTH of five Tier-1 prompt-surface sub-plans. GH #108 closes here. Cluster progress: 4 of 5 shipped. Sequence remaining: 100 (F4 Critical Invariants summaries; hotfix → v0.68.1). The F4-after-V2 sequencing constraint from the meta-memo is now operative: Phase 100 will include the freshly-landed V2 walk-VETO in the qor-audit Critical Invariants summary block from authoring time, avoiding the amendment cycle the meta-memo warned about.
 
 **Decision**: Phase 99 implemented; audit PASS on iter-1. Substantiated as v0.68.0 (feature → minor bump). GH #108 fully closed (V1 + V2 both shipped).
+
+## Phase 100 (v0.68.1 — 2026-05-24): Critical Invariants summaries — Tier 1 cluster close (F4)
+
+Hotfix closing F4 internal prompt-surface review finding AND closing the Tier 1 prompt-surface remediation cluster. Two binding-gate governance skills (qor-audit, qor-substantiate) gain a top-level `## Critical Invariants` summary block between `## Purpose` and `## Environment`.
+
+**qor-audit invariants** (9 binding contracts): Step 0.3 plan-iteration ABORT; Step 3 Prompt Injection Pass ABORT; Step 3 L3 / OWASP / Ghost-UI / Razor / self-application VETOs; Step 3 Test Functionality / Filter-Stage / Infrastructure Alignment / Feature Test Declaration VETOs. Plus an explicit V2 ramp note clarifying the Phase 99 Runtime Contract Walk is NEW at Step 3 but ships WARN-only (not yet a binding VETO; V2-of-V2 will flip the ramp).
+
+**qor-substantiate invariants** (4 binding contracts): Step 4.6.* reliability gate ladder (intent-lock, secret-scanner, procedural-fidelity, ci-coverage, dod-check, merge-velocity, skill-corpus-budget); Step 6.5 README badge currency `|| ABORT`; Step 7.8 gate-chain completeness `|| ABORT`; Constraints section at file foot.
+
+**New test `tests/test_governance_skills_carry_critical_invariants_block.py`** (~80 LOC, 4 assertions): per-skill anchored positives (qor-audit + qor-substantiate); positional guard (block must precede Environment); forward-only sweep using binding-gate syntax patterns (`-> VETO`, `-> ABORT`, `|| ABORT`, `**VETO**`, `**ABORT**`, `binding-VETO`, `binding VETO`) so any future governance skill carrying binding gates must also carry an invariants block.
+
+**TDD red-green**: impl GREEN after one sweep-pattern iteration. Initial sweep used unscoped `VETO`/`ABORT` keyword match which caught two unrelated governance skills with `ai_provenance.HumanOversight.VETO` enum references; tightened to binding-gate syntax patterns for accurate detection. All 4 pass twice deterministically. Full suite: 1879 passed, 1 skipped (+4).
+
+**Cross-coupling constraint honored** (per meta-memo): Phase 100 sequenced AFTER Phase 99 V2 so the qor-audit invariants block correctly frames the Runtime Contract Walk as NEW at Step 3 but WARN-only. The amendment cycle the meta-memo warned about is avoided — future amendment (when V2-of-V2 flips the ramp) will be additive: append item 10 to the list and adjust the V2 ramp note.
+
+**Razor compliance**: ~16 lines per skill (block + cross-reference paragraph) = ~32 LOC of skill prose total + ~80 LOC structural test. No new module; no doctrine entry (F4 is a prompt-surface clarity finding, not a process pattern).
+
+**Cluster milestone (FINAL)**: Phase 100 closes the Tier 1 prompt-surface remediation cluster. Sequence shipped (96 → 97 → 98 → 99 → 100): GH #108 V1 (visibility) + F8 (registry per-category) + F5+F6 (meta-skill examples to references/) + GH #108 V2 (audit-side walk; GH #108 full close) + F4 (Critical Invariants). Cluster totals: **5 phases**, **5 PRs** (#113/#114/#115/#116/#117), **5 releases** (v0.67.0 / v0.67.1 / v0.67.2 / v0.68.0 / v0.68.1), **+47 tests** (18+7+6+12+4 = 47 new tests; full suite 1879 passed at cluster close), **15 new ledger entries** (#257-#271), **1 GH issue closed** (#108), **4 internal F-findings closed** (F4 + F5+F6 + F8 — Entry #6 fragment Decision Point resolved honestly during Phase 98 plan-authoring rather than requiring an edit).
+
+**Lessons captured across cluster**:
+1. Post-substantiate currency tests (README badges, SYSTEM_STATE, CHANGELOG) must re-run AFTER ledger append, not just after implementation. Caught omissions one phase late in Phases 96/97/98; discipline applied successfully Phases 99 onward.
+2. CHANGELOG sections must be added in the same commit as the pyproject.toml version bump, not deferred. The `test_every_tag_has_changelog_section` only catches the omission AFTER tag push (one phase later). Possible V2 candidate for a future hygiene phase: tighten the test to walk pyproject.toml as well.
+3. Structural sweep tests need binding-gate syntax patterns, not raw keyword matches, to avoid false positives on enum references.
+4. The cluster's V1/V2 split pattern (visibility-first, evidence-second, enforce-third) shipped 13 consecutive phases (88-100); the pattern is now confirmed across the post-cluster session and Tier 1 prompt-surface cluster. V2 audit-side enforcement (Phase 99) honest about WARN-only ramp pending V1 operator evidence.
+
+**V2-of-V2 reserved for future phase OUTSIDE this cluster**: gather Phase 96 V1 (`reachability_probe`) operator-evidence on false-positive rate, tune Phase 99 V2 (`runtime_contract_walk`) thresholds, remove the `|| true` wrap at qor-audit Step 3, and convert the walk to a hard VETO with `runtime-contract-mismatch` category. When that lands, the qor-audit Critical Invariants block will need item 10 appended and the V2 ramp note updated.
+
+**Decision**: Phase 100 implemented; audit PASS on iter-1. Substantiated as v0.68.1 (hotfix → patch bump). **Tier 1 prompt-surface cluster CLOSED.**

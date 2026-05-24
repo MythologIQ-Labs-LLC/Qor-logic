@@ -1,0 +1,30 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-24T0343-fa327d",
+  "ts": "2026-05-24T03:43:00Z",
+  "plan_path": "docs/plan-qor-phase100-critical-invariants-summaries.md",
+  "phases": ["Phase 1: invariants blocks + structural sweep"],
+  "ci_commands": [
+    "python -m pytest tests/test_governance_skills_carry_critical_invariants_block.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase100-critical-invariants-summaries.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase100-critical-invariants-summaries.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase100-critical-invariants-summaries.md",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": ["V1 adds top-level Critical Invariants block to qor-audit + qor-substantiate between Purpose and Environment; ~10 lines per skill; forward-only sweep test"],
+    "non_goals": ["rewriting ABORT/VETO logic; adding new invariants; extending to non-governance skills; reformatting Constraints sections"],
+    "exclusions": ["no step-level prose changes; no Step 0.6/4.6.*/3 semantic changes; Phase 99 V2 walk correctly omitted from binding-VETO list (WARN-only ramp)"]
+  },
+  "originating_remediation": "F4 (internal prompt-surface review)",
+  "feature_inventory_touches": [],
+  "ai_provenance": {"system": "Qor-logic", "version": "0.68.0", "host": "unknown", "model_family": "claude-opus-4-7", "human_oversight": "pass", "ts": "2026-05-24T03:43:00Z"}
+}
