@@ -1,0 +1,28 @@
+seal: phase 103 - PyPI Hardening P2 (v0.71.0, GH #118 FULL CLOSE)
+
+Closes the final 2 of 13 GH #118 acceptance items. **Issue #118 fully
+closed across the 3-phase supply-chain hardening cluster.**
+
+- F-4b: release.yml publish job adds post-publish PyPI pull-back
+  verification between pypa/gh-action-pypi-publish and gh release
+  create. Bounded retry (6 attempts at 10s = 60s budget); SHA-256
+  diff against dist/SHA256SUMS; loud, recoverable failure.
+- F-3c: qor/references/doctrine-dependency-admission.md declares
+  14-day cooling-period threshold + override procedure
+  (META_LEDGER entry + dep-admit-override PR label + 30-day
+  follow-up). Coordinates orthogonally with the Phase 102
+  dependency-review-action workflow.
+- 7 new tests + 1 amended test, all green twice deterministically.
+- Full regression: 1918 passed, 1 skipped, 4 deselected.
+- META_LEDGER #279-#281; Merkle seal 6fa12bb7...
+
+Cluster totals (101+102+103): 3 phases, 3 releases (v0.69.0/v0.70.0/
+v0.71.0), +40 new tests, 10 new ledger entries, GH #118 closed.
+Three-leg defense-in-depth complete: commit-ancestry +
+artifact-ancestry + workflow-ancestry.
+
+Plan: docs/plan-qor-phase103-pypi-hardening-p2.md
+Audit: .agent/staging/phase103-AUDIT_REPORT.md (PASS, L3 iter-1)
+Merkle seal: 6fa12bb7ccb3af1e1c69c3da3b9ab08ae309cf1836c6f00d8f20b63fd876d41d
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

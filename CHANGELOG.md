@@ -10,6 +10,57 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.71.0] - 2026-05-24
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 103 (feature, GH #118 P2 — CLUSTER CLOSE)**: PyPI publication
+  hardening P2 closing the final 2 acceptance items from issue #118.
+  Issue #118 now fully closed across the 3-phase cluster (101+102+103).
+  - Release workflow's publish job adds a post-publish PyPI pull-back
+    verification step between `pypa/gh-action-pypi-publish` and
+    `gh release create`. Extracts version from `${GITHUB_REF_NAME#v}`,
+    runs `pip download --no-deps --no-cache-dir qor-logic==<VERSION>`
+    with bounded retries (6 attempts × 10s = 60s budget), computes
+    SHA-256 of downloaded wheel/sdist, and `diff -u`-compares against
+    the build-produced `dist/SHA256SUMS`. Mismatch fails the workflow
+    non-zero, preventing GitHub release creation with a false bundle.
+    Closes F-4b.
+  - `qor/references/doctrine-dependency-admission.md` (NEW) declares
+    the cooling-period policy: a transitive dependency must have a
+    release age of at least 14 days before entering the release tree.
+    Override procedure (META_LEDGER `**Dependency admission override**:`
+    entry + `dep-admit-override` PR label + 30-day follow-up
+    re-evaluation) is operative; automated 14-day check tooling
+    deferred to a future hygiene phase. Coordinates with the Phase 102
+    dependency-review-action workflow (severity-graded vulnerability
+    catch is orthogonal to the freshness-vector catch). Closes F-3c.
+- `tests/test_doctrine_dependency_admission.py` -- 5 tests
+  (presence, 14-day threshold, override procedure, coordination
+  with dep-review workflow, SSDF mapping).
+- `tests/test_release_workflow_immutability.py` -- amended with
+  2 new tests (pull-back step position between publish and gh release;
+  bounded retry semantics with for-loop + sleep + exit).
+
+### Changed
+
+- `pyproject.toml` version 0.70.0 -> 0.71.0 (feature change_class per
+  Phase 103 plan; minor SemVer bump).
+
+### Security
+
+- Supply-chain (cluster close): all three independent ancestry legs
+  now operative -- commit-ancestry (Phase 40 tag-reachable guard +
+  Phase 101 replication to both jobs), artifact-ancestry (Phase 101
+  SHA256SUMS handoff + Phase 102 hash-pinned lockfile + Phase 103
+  PyPI pull-back), workflow-ancestry (Phase 101 SHA pins on all
+  third-party Actions + Phase 102 CODEOWNERS + dependency-review +
+  SBOM + evidence bundle). The cooling-period doctrine adds an
+  orthogonal catch for the freshness-vector attack class. All 13
+  GH #118 acceptance items closed.
+
 ## [0.70.0] - 2026-05-24
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

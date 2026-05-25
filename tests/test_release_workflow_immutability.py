@@ -222,6 +222,80 @@ def test_release_workflow_attaches_evidence_to_github_release():
     assert "dist/*.tar.gz" in run or ".tar.gz" in run, "gh release create must attach .tar.gz files"
 
 
+def test_release_workflow_publish_job_verifies_via_pypi_pullback():
+    """Phase 103 (GH #118 P2): publish job runs `pip download` from PyPI and
+    compares SHA-256 sums against dist/SHA256SUMS after the publish step and
+    before `gh release create`."""
+    workflow = _load(_RELEASE)
+    publish_steps = workflow["jobs"]["publish"]["steps"]
+    publish_idx = None
+    pullback_idx = None
+    gh_release_idx = None
+    for idx, step in enumerate(publish_steps):
+        uses = step.get("uses", "")
+        run = step.get("run") or ""
+        if uses.startswith("pypa/gh-action-pypi-publish"):
+            publish_idx = idx
+        if "pip download" in run and "qor-logic" in run and "sha256sum" in run:
+            pullback_idx = idx
+        if "gh release create" in run:
+            gh_release_idx = idx
+    assert publish_idx is not None, "pypa publish step must be present"
+    assert pullback_idx is not None, (
+        "publish job must run a PyPI pull-back verification step "
+        "(`pip download` qor-logic, then sha256sum compare)"
+    )
+    assert gh_release_idx is not None, "gh release create step must be present"
+    assert publish_idx < pullback_idx < gh_release_idx, (
+        f"order must be publish ({publish_idx}) -> pullback ({pullback_idx}) "
+        f"-> gh release create ({gh_release_idx})"
+    )
+
+
+def test_pypi_pullback_step_has_bounded_retry():
+    """The pull-back step must use bounded retries (no infinite loop)."""
+    workflow = _load(_RELEASE)
+    publish_steps = workflow["jobs"]["publish"]["steps"]
+    pullback_step = None
+    for step in publish_steps:
+        run = step.get("run") or ""
+        if "pip download" in run and "qor-logic" in run:
+            pullback_step = step
+            break
+    assert pullback_step is not None, "pull-back step must exist"
+    run = pullback_step.get("run") or ""
+    # Bounded retry: must contain a fixed iteration count + a sleep + an exit on max
+    assert "for i in 1 2 3" in run or "for i in 1 2 3 4 5 6" in run, (
+        "pull-back step must use a bounded for-loop (not infinite while-true)"
+    )
+    assert "sleep" in run, (
+        "pull-back step must sleep between retry attempts"
+    )
+    assert "exit 1" in run, (
+        "pull-back step must exit non-zero on max-retry exhaustion"
+    )
+
+
+def test_pypi_pullback_step_fetches_wheel_and_sdist():
+    """The pull-back must verify both artifact types, not pip's default choice."""
+    workflow = _load(_RELEASE)
+    publish_steps = workflow["jobs"]["publish"]["steps"]
+    pullback_step = None
+    for step in publish_steps:
+        run = step.get("run") or ""
+        if "pip download" in run and "qor-logic" in run:
+            pullback_step = step
+            break
+    assert pullback_step is not None, "pull-back step must exist"
+    run = pullback_step.get("run") or ""
+    assert "--only-binary=:all:" in run, (
+        "pull-back step must explicitly download the wheel artifact"
+    )
+    assert "--no-binary=:all:" in run, (
+        "pull-back step must explicitly download the sdist artifact"
+    )
+
+
 def test_release_workflow_artifact_handoff_with_sha_verify():
     workflow = _load(_RELEASE)
     build_steps = workflow["jobs"]["build"]["steps"]

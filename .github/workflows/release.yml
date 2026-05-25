@@ -101,6 +101,36 @@ jobs:
           EOF
           cat dist/evidence.json
       - uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # v1.14.0
+      - name: Verify published artifact via PyPI pull-back
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "Verifying qor-logic==${VERSION} via PyPI pull-back"
+          for i in 1 2 3 4 5 6; do
+            rm -rf /tmp/pypi-verify
+            mkdir -p /tmp/pypi-verify
+            if pip download --no-deps --dest=/tmp/pypi-verify --no-cache-dir \
+                --only-binary=:all: "qor-logic==${VERSION}" 2>&1 \
+                && pip download --no-deps --dest=/tmp/pypi-verify --no-cache-dir \
+                --no-binary=:all: "qor-logic==${VERSION}" 2>&1; then
+              echo "PyPI pull-back succeeded on attempt ${i}"
+              break
+            fi
+            if [ "$i" = "6" ]; then
+              echo "::error::PyPI pull-back failed after 6 attempts (60s); aborting"
+              exit 1
+            fi
+            sleep 10
+          done
+          cd /tmp/pypi-verify
+          sha256sum *.whl *.tar.gz > /tmp/pypi-pullback-sums
+          grep -E '\.whl$|\.tar\.gz$' "${GITHUB_WORKSPACE}/dist/SHA256SUMS" \
+              > /tmp/expected-sums
+          if ! diff -u <(sort /tmp/expected-sums) <(sort /tmp/pypi-pullback-sums); then
+            echo "::error::PyPI pull-back SHA mismatch -- published artifact differs from locally-built artifact"
+            exit 1
+          fi
+          echo "Pull-back verification PASS"
       - name: Attach evidence bundle to GitHub release
         env:
           GH_TOKEN: ${{ github.token }}

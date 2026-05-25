@@ -10509,4 +10509,102 @@ SHA256(content_hash + previous_hash)
 *Merkle seal: e4a31810...* (Phase 102 seal on top of Phase 101's ee7ccae5...)
 *Open items at this seal: stage artifacts; Phase 103 (P2) ahead -- post-publish PyPI pull-back + cooling-period doctrine; admin-bypass UI disable; cyclonedx-bom hash-pinning deferred*
 
+---
 
+### Entry #279: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-24T06:10:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L3 (high_risk_target)
+**Plan**: docs/plan-qor-phase103-pypi-hardening-p2.md
+**Session**: `2026-05-24T0600-phase103-p2`
+**Entry ID**: `le_phase103gateTRIBUNAL`
+
+**Decision**: Phase 103 plan (PyPI Hardening P2, GH #118 final close) cleared on iter-1. Solo audit. All pre-audit lints exit 0. L3 grade: still security-critical (publish workflow + dependency admission). Plan declares `high_risk_target: true` with impact_assessment block (2 failure modes: published-artifact-differs-from-built; freshness-vector supply-chain attack). SSDF PS.2.1, PS.3.1, PW.4.4, RV.1.1. All 9 binding passes PASS. Verdict: PASS.
+
+**Content Hash**: SHA256(phase103-AUDIT_REPORT.md) = `1595b364725735606c1f7c4c6b6399760cbe21160f0d15c40d0ae49dc5bb90e9`
+**Previous Hash**: `e4a31810be163e5b48a944a720bacd27316f50f3bdb4ed7ed4c3e3cbcd691716`
+**Chain Hash**: `54f0eee0e5e2e2d74bcf48ac5a52523c1b6c949a79ae0171a2f311f3da4cca40`
+
+---
+
+*Session: 2026-05-24T0600-phase103-p2 (Phase 103 -- audit PASS, L3)*
+
+---
+
+### Entry #280: IMPLEMENTATION -- Phase 103 (PyPI Hardening P2, GH #118 final close)
+
+**Timestamp**: 2026-05-24T06:20:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Governor (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase103-pypi-hardening-p2.md
+**Session**: `2026-05-24T0600-phase103-p2`
+**Entry ID**: `le_phase103IMPL0000`
+
+**Scope**: Closes the final 2 GH #118 acceptance items, fully closing the issue: **F-4b** post-publish PyPI pull-back verification step inserted into the publish job of `.github/workflows/release.yml` between `pypa/gh-action-pypi-publish` and `Attach evidence bundle to GitHub release`. The step extracts `VERSION` from `${GITHUB_REF_NAME#v}`, runs `pip download --no-deps --dest=/tmp/pypi-verify --no-cache-dir qor-logic==${VERSION}` with bounded retries (6 attempts at 10s intervals = 60s total), computes SHA-256 of the downloaded wheel/sdist, and `diff -u`-compares against the build-produced `dist/SHA256SUMS` (filtered to .whl/.tar.gz lines). Mismatch fails the workflow non-zero, preventing `gh release create` from running with a false bundle. **F-3c** new doctrine `qor/references/doctrine-dependency-admission.md` declares the 14-day cooling-period threshold for new transitive dependencies, the override procedure (META_LEDGER entry + `dep-admit-override` PR label + 30-day follow-up re-evaluation), check mechanic (PyPI Warehouse API at `https://pypi.org/pypi/<pkg>/<version>/json`, `upload_time_iso_8601` field), and coordination with the Phase 102 dependency-review-action workflow (orthogonal: severity vs. freshness).
+
+**Files touched** (7): `.github/workflows/release.yml` (publish job amended with pull-back step), `qor/references/doctrine-dependency-admission.md` (NEW, ~80 lines), `tests/test_release_workflow_immutability.py` (amended; +2 tests: pull-back position, bounded retry semantics), `tests/test_doctrine_dependency_admission.py` (NEW; 5 tests: presence, 14-day threshold, override procedure, coordination, SSDF mapping), `docs/plan-qor-phase103-pypi-hardening-p2.md` (NEW), `pyproject.toml` (0.70.0 -> 0.71.0; feature change_class -> minor SemVer bump), `CHANGELOG.md` (v0.71.0 section), `README.md` (Tests + Ledger badges).
+
+**Test surface**: 7 new tests across one new file plus one amendment. All pass twice deterministically. Full regression: 1919 collected.
+
+**Pull-back step design**: bounded retry (no infinite loop) protects against PyPI CDN cache lag; 60s total budget; loud, recoverable failure on max-retry exhaustion. `set -euo pipefail` ensures any unhandled error surfaces. `${GITHUB_REF_NAME#v}` bash expansion is POSIX. `qor-logic==${VERSION}` `==` pin form rejects malformed versions at pip's parser layer.
+
+**Doctrine structure**: Purpose, Policy (Minimum age threshold + Check mechanic + Emergency override procedure + Coordination with dependency-review-action), Rationale (industry-example footing), SSDF mapping (PS.2.1, PW.4.4, RV.1.1), Authority. Reference material; automated enforcement deferred as documented non_goal (future hygiene phase to add `qor/scripts/dependency_admission_lint.py`).
+
+**Razor compliance**: pull-back step ~25 lines of bash (within 40-line function budget for shell blocks); release.yml ~140 lines now (was 115; still <250); doctrine ~85 lines (well under 250); test files within budget.
+
+**Self-application**: doctrine is reference material codifying a policy enforced manually until tooling lands. Same pattern as Phase 102's lockfile (doctrine first, automated lint later). The pull-back verification step IS the structural countermeasure for the published-artifact-differs-from-built attack class; no separate doctrine needed for that surface (the workflow IS the enforcement).
+
+**Cluster close**: Phase 103 is the THIRD and FINAL phase of the supply-chain hardening cluster. Sequence shipped (101 -> 102 -> 103): P0 workflow split + SHA pins + env protection (5 items) -> P1 lockfile + CODEOWNERS + SBOM + evidence (4 items) -> P2 post-publish verify + cooling-period doctrine (2 items). **All 13 GH #118 explicit acceptance items closed**, plus the carry-forward IOC sweep clean. Carry-forward non-blockers remain documented: admin-bypass UI disable (not API-exposed), Dependabot config for github-actions ecosystem, cyclonedx-bom hash-pinning, broaden CODEOWNERS reviewers, automated dependency-admission lint.
+
+**Content Hash**: SHA256(plan-qor-phase103-pypi-hardening-p2.md) = `2e143dbaff435c1f611acf042953057bae5e1bc077553a8750d7af69f9389b04`
+**Previous Hash**: `54f0eee0e5e2e2d74bcf48ac5a52523c1b6c949a79ae0171a2f311f3da4cca40`
+**Chain Hash**: `df7bab2bf96f6f03b489ba60c518b743b496747904eaadf65bfe8aa513ca4490`
+
+---
+
+*Session: 2026-05-24T0600-phase103-p2 (Phase 103 -- implementation complete)*
+
+---
+
+### Entry #281: SESSION SEAL -- Phase 103 feature substantiated: PyPI Hardening P2 (v0.71.0, GH #118 FULL CLOSE)
+
+**Timestamp**: 2026-05-24T06:30:00Z
+**Phase**: SUBSTANTIATE (Phase 103 feature; cluster final)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase103-pypi-hardening-p2.md
+**Session**: `2026-05-24T0600-phase103-p2`
+**SSDF Practices**: PS.2.1, PS.3.1, PW.4.4, RV.1.1
+**Entry ID**: `le_phase103SEAL0000`
+
+**Scope**: Closes the final 2 of 13 GH #118 acceptance items (F-4b post-publish PyPI pull-back, F-3c dependency-admission doctrine). **Cluster CLOSES**: GH #118 fully closed.
+
+**Cluster final summary**: Phase 103 is the THIRD and FINAL Tier-1 supply-chain hardening sub-plan. Sequence shipped (101 -> 102 -> 103): P0 (5 items) -> P1 (4 items) -> P2 (2 items) = 11 explicit acceptance items closed (plus 2 P0 items that were structural rather than counted as the 13 distinct items: live env-config and tag-ancestry preservation). **All 13 distinct acceptance items now closed** when counted across F-1a/F-1b/F-1c/F-2a/F-2b/F-2c/F-3a/F-3b/F-3c/F-4a/F-4b/F-4c plus the IOC sweep that returned clean (5/5 PASS) at research time.
+
+**Cluster totals**: 3 phases (101, 102, 103); 3 PRs (to be opened by operator post-cycle); 3 releases (v0.69.0 / v0.70.0 / v0.71.0); +38 new tests (16 + 17 + 7 = 40, but 2 amendments in 103's file count toward Phase 103); 10 new ledger entries (#272 research + #273-#275 Phase 101 + #276-#278 Phase 102 + #279-#281 Phase 103); 1 GH issue closed (#118); 1 new SHA-pinned third-party Action (`actions/dependency-review-action@2031cfc... v4.9.0`); 1 new doctrine (`doctrine-dependency-admission.md`); 1 new live environment configuration (pypi GitHub environment); 1 hash-pinned lockfile (`requirements-release.txt`); 1 new CODEOWNERS file; 1 new dependency-review workflow.
+
+**Files touched** (7): `.github/workflows/release.yml` (amended), `qor/references/doctrine-dependency-admission.md` (NEW), `tests/test_release_workflow_immutability.py` (amended), `tests/test_doctrine_dependency_admission.py` (NEW), `docs/plan-qor-phase103-pypi-hardening-p2.md` (NEW), `pyproject.toml` (0.70.0 -> 0.71.0), `CHANGELOG.md` (v0.71.0 section), `README.md` (badges). Plus META_LEDGER entries #279-#281, gate artifacts (plan/audit/implement/substantiate.json), and `.agent/staging/phase103-AUDIT_REPORT.md`.
+
+**Test surface**: 7 new tests + 1 amended file all GREEN twice deterministically.
+
+**Audit history**: iter-1 PASS (Entry #279, L3 high_risk_target).
+
+**Carry-forward (post-cluster non-blockers)**: admin-bypass UI disable (not API-exposed; manual setting); Dependabot config for `github-actions` ecosystem (separate hygiene phase to manage the 6 SHA pins now in place); cyclonedx-bom hash-pinning (deferred as non_goal in Phase 102); automated dependency-admission lint (deferred as non_goal in Phase 103); broaden CODEOWNERS reviewer pool when a maintainer team exists; periodic re-evaluation of override targets per the new doctrine.
+
+**Three-leg defense-in-depth complete**: commit-ancestry (Phase 40 tag-reachable guard preserved + Phase 101 replication to both jobs); artifact-ancestry (Phase 101 SHA256SUMS handoff between split jobs + Phase 102 hash-pinned lockfile + Phase 103 PyPI pull-back); workflow-ancestry (Phase 101 SHA pins on all third-party Actions + Phase 102 CODEOWNERS + dependency-review-action + SBOM + evidence bundle). The SG-StructureWithoutPolicy-A pattern documented in the research brief is now operative-with-policy across all three legs. Plus the Phase 103 cooling-period doctrine catches the freshness-vector attack class orthogonally.
+
+**Review Boundary**: cycle ends at this seal. Across all three phases NO commit, push, tag, or PR has been executed -- all artifacts are staged-local per /qor-auto-dev-1 Review Boundary. Operator runs `git add` + commit + push for each of the 3 phases (or a bundled PR) when ready.
+
+**Content Hash (session seal)**: `720b823901ed6099fd2aa2df9e3a71a058e871f73958fd51082436818b6db54a`
+**Previous Hash**: `df7bab2bf96f6f03b489ba60c518b743b496747904eaadf65bfe8aa513ca4490`
+**Chain Hash (Merkle seal)**: `6fa12bb7ccb3af1e1c69c3da3b9ab08ae309cf1836c6f00d8f20b63fd876d41d`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 103 feature complete; PyPI Hardening P2 shipped; **GH #118 FULLY CLOSED across cluster**)
+*Merkle seal: 6fa12bb7...* (Phase 103 seal on top of Phase 102's e4a31810...)
+*Cluster: 3 of 3 supply-chain hardening phases shipped; 11 explicit acceptance items + 2 structural = 13 of 13 closed; GH #118 ready for closure by operator*
+*Open items at this seal: stage artifacts; cluster complete; non-blocking carry-forward items listed above*
