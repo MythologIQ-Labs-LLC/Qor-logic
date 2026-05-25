@@ -27,6 +27,7 @@ referenced_by:
   - qor/skills/memory/track-shadow-genome.md
   - qor/skills/meta/qor-meta-log-decision/SKILL.md
   - qor/skills/meta/qor-meta-track-shadow/SKILL.md
+  - qor/skills/meta/qor-meta-track-shadow/references/example-shadow-genome-events.md
   - CONTRIBUTING.md
   - docs/architecture.md
   - docs/lifecycle.md
@@ -155,6 +156,7 @@ referenced_by:
   - qor/skills/governance/qor-audit/references/qor-audit-templates.md
   - qor/skills/meta/qor-help/SKILL.md
   - qor/skills/meta/qor-meta-track-shadow/SKILL.md
+  - qor/skills/meta/qor-meta-track-shadow/references/example-shadow-genome-events.md
   - qor/skills/memory/track-shadow-genome.md
   - docs/architecture.md
   - docs/lifecycle.md
@@ -175,6 +177,7 @@ referenced_by:
   - qor/references/doctrine-procedural-fidelity.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
   - qor/references/ql-substantiate-templates.md
+  - qor/references/doctrine-definition-of-done.md
   - qor/skills/governance/qor-substantiate/references/qor-substantiate-templates.md
   - docs/lifecycle.md
 introduced_in_plan: phase28-documentation-integrity
@@ -745,6 +748,13 @@ term: gate_skipped_prerequisite_absent
 definition: 'Shadow Process Genome event_type (severity 1 default) emitted when an operator skips a /qor-substantiate step whose declared prerequisite is absent on the host archetype (e.g., Step 7.5 version bump on a non-Python host without pyproject.toml). Catches the SG-HalfSealedClaim-A pattern. Schema enum entry added at Phase 75.'
 home: qor/gates/schema/shadow_event.schema.json
 referenced_by:
+  - qor/skills/sdlc/qor-implement/SKILL.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/meta/qor-deep-audit-recon/SKILL.md
+  - qor/skills/meta/qor-repo-audit/SKILL.md
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/governance/qor-process-review-cycle/SKILL.md
+  - qor/skills/governance/qor-shadow-process/SKILL.md
   - qor/skills/governance/qor-substantiate/SKILL.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
 introduced_in_plan: phase75-skill-capability-declaration
@@ -756,6 +766,13 @@ definition: 'Shadow-genome pattern: /qor-substantiate runs against a host whose 
 home: qor/references/doctrine-shadow-genome-countermeasures.md
 referenced_by:
   - qor/scripts/substantiate_capability.py
+  - qor/skills/sdlc/qor-implement/SKILL.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/meta/qor-deep-audit-recon/SKILL.md
+  - qor/skills/meta/qor-repo-audit/SKILL.md
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/governance/qor-process-review-cycle/SKILL.md
+  - qor/skills/governance/qor-shadow-process/SKILL.md
   - qor/skills/governance/qor-substantiate/SKILL.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
@@ -867,4 +884,37 @@ referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
   - qor/scripts/plan_test_lint.py
 introduced_in_plan: phase84-audit-readiness-guards
+```
+
+```yaml
+term: dependency-admission-lint
+definition: 'Operator- and CI-invokable Python script (qor/scripts/dependency_admission_lint.py) that walks the requirements-release.txt lockfile diff against a base ref, queries the PyPI Warehouse JSON API for each new or version-bumped entry''s upload_time_iso_8601, and reports any admission younger than the 14-day cooling-period threshold absent a matching `**Dependency admission override**:` entry in docs/META_LEDGER.md. Exit codes 0/1/2 (clean / violations present / network failure). Wired WARN-only in .github/workflows/pr-dependency-review.yml. Phase 105 wiring; consumes the Phase 103 doctrine-dependency-admission contract.'
+home: qor/references/doctrine-dependency-admission.md
+referenced_by:
+  - qor/scripts/dependency_admission_lint.py
+  - qor/scripts/_dep_admit_common.py
+  - qor/references/doctrine-dependency-admission.md
+  - .github/workflows/pr-dependency-review.yml
+introduced_in_plan: phase105-dependency-admission-tooling
+```
+
+```yaml
+term: dep-admit-override-tracker
+definition: 'Operator-invokable Python script (qor/scripts/dep_admit_override_tracker.py) that scans docs/META_LEDGER.md for `**Dependency admission override**:` lines and emits a markdown (or CSV) table listing overrides due for 30-day re-evaluation per the Phase 103 doctrine. Supports --filter due|pending|all, --since YYYY-MM-DD, and --follow-up-days N. Pure informational tool (always exit 0); operator runs on their own cadence. Phase 105 wiring.'
+home: qor/references/doctrine-dependency-admission.md
+referenced_by:
+  - qor/scripts/dep_admit_override_tracker.py
+  - qor/scripts/_dep_admit_common.py
+  - qor/references/doctrine-dependency-admission.md
+introduced_in_plan: phase105-dependency-admission-tooling
+```
+
+```yaml
+term: PyPI Warehouse upload-time query
+definition: 'The HTTPS endpoint pattern `https://pypi.org/pypi/<package>/<version>/json` published by the PyPI Warehouse project (warehouse.pypa.io). The response carries `urls[0].upload_time_iso_8601` (the wheel/sdist upload timestamp), which the Phase 105 dependency-admission-lint consumes to compute upload age in days. Queried via urllib.request stdlib with bounded retry (3 attempts at 5s intervals = 15s budget per package); no API key required.'
+home: qor/references/doctrine-dependency-admission.md
+referenced_by:
+  - qor/scripts/dependency_admission_lint.py
+  - qor/references/doctrine-dependency-admission.md
+introduced_in_plan: phase105-dependency-admission-tooling
 ```

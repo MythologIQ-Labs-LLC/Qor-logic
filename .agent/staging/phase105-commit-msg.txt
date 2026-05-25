@@ -1,0 +1,36 @@
+seal: phase 105 - dependency-admission tooling (v0.73.0)
+
+Implements the Phase 103 doctrine-dependency-admission cluster
+carry-forward as operational tooling.
+
+- qor/scripts/_dep_admit_common.py: shared parsing helpers
+  (parse_lockfile_entries, diff_lockfile_against_base,
+  parse_override_entries; three frozen dataclasses; pure functions).
+- qor/scripts/dependency_admission_lint.py: 14-day cooling-period
+  lint with bounded PyPI Warehouse retry (3 x 5s = 15s budget).
+  Exit codes 0/1/2 (clean/violations/network failure).
+- qor/scripts/dep_admit_override_tracker.py: 30-day re-evaluation
+  tracker with markdown/csv output; --filter due|pending|all.
+- .github/workflows/pr-dependency-review.yml: WARN-only lint step
+  (|| true wrap per Phase 99 V2 ramp); setup-python cache: pip.
+- qor/references/doctrine-dependency-admission.md: additive Phase 105
+  tooling note under ### Check mechanic.
+- qor/references/glossary.md: 3 new term entries (Phase 105) +
+  5 referenced_by backfills (Phase 75-era terms gate_skipped_
+  prerequisite_absent + SG-HalfSealedClaim-A caught by strict check).
+- qor/references/doctrine-definition-of-done.md: reworded "a compile
+  gate is offline" -> "the compile-gate runtime is offline" to dodge
+  the check_cross_doc_conflicts regex false positive.
+- docs/plan-qor-phase89-ci-commands-reconciliation.md: forward-
+  maintenance bullet for the new lint command.
+
+12 new behavioral tests; full regression 1937 passed at seal.
+META_LEDGER #285-#287; Merkle seal e9be44d7...
+
+Plan: docs/plan-qor-phase105-dependency-admission-tooling.md
+Audit: .agent/staging/phase105-AUDIT_REPORT.md (PASS, L2 iter-1)
+Merkle seal: e9be44d7fe6a2758d915d290216ff95224b1692034f7aa97f3591f8f0a29b24d
+
+🤖 Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

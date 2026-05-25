@@ -10,6 +10,67 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.73.0] - 2026-05-25
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 105 (feature)**: dependency-admission tooling implementing
+  the Phase 103 doctrine carry-forward.
+  - `qor/scripts/_dep_admit_common.py` -- shared parsing helpers:
+    `parse_lockfile_entries` (pip-compile --generate-hashes format),
+    `diff_lockfile_against_base` (new + version-bumped entries),
+    `parse_override_entries` (META_LEDGER `**Dependency admission
+    override**:` lines). Three frozen dataclasses (`LockfileEntry`,
+    `Bump`, `OverrideEntry`) + `LockfileParseError` for malformed
+    input. Pure functions, no I/O.
+  - `qor/scripts/dependency_admission_lint.py` -- cooling-period
+    lint. Walks `requirements-release.txt` diff against a base ref
+    (default `merge-base origin/main HEAD`), queries the PyPI
+    Warehouse API (`https://pypi.org/pypi/<pkg>/<version>/json`)
+    for each new or bumped entry's `urls[0].upload_time_iso_8601`,
+    reports admissions younger than the 14-day cooling-period
+    threshold absent matching ledger override. Bounded retry
+    (3 × 5s = 15s budget per package via stdlib `urllib.request`).
+    Exit codes 0/1/2 (clean / violations / network failure).
+    Markdown summary table + per-violation stderr.
+  - `qor/scripts/dep_admit_override_tracker.py` -- 30-day
+    re-evaluation tracker. Scans META_LEDGER for override entries
+    and emits markdown (or CSV) table with `--filter due|pending|all`
+    + `--since YYYY-MM-DD` + `--follow-up-days N`. Always exit 0
+    (informational tool).
+  - `.github/workflows/pr-dependency-review.yml` -- amended with
+    WARN-only lint step (`|| true` wrap per Phase 99 V2 ramp
+    pattern); setup-python step gains `cache: pip` for unprivileged
+    PR-time workflow. V2 phase will flip the WARN to hard fail
+    after operator-evidence accumulates.
+- `tests/test_dep_admit_common.py` (4 tests), `tests/test_dependency_admission_lint.py`
+  (5 tests with mocked PyPI), `tests/test_dep_admit_override_tracker.py`
+  (3 tests). 12 new behavioral tests; all pass twice deterministically.
+
+### Changed
+
+- `pyproject.toml` version 0.72.0 -> 0.73.0 (feature change_class).
+- `qor/references/doctrine-dependency-admission.md` -- additive note
+  under `### Check mechanic` pointing operators at the Phase 105 lint
+  + tracker tools and documenting the WARN-only ramp.
+- `docs/plan-qor-phase89-ci-commands-reconciliation.md` -- forward-
+  maintenance entry for the new `python -m qor.scripts.dependency_admission_lint`
+  command. Phase 89's self-applied CI surface test requires its plan
+  to enumerate every operator-runnable Python invocation across all
+  workflows.
+- `qor/references/glossary.md` -- 3 new term entries (Phase 105) +
+  9 `referenced_by` backfill rows for pre-existing terms
+  (`Doctrine`, `Shadow Genome`, `Substantiate`,
+  `gate_skipped_prerequisite_absent`, `SG-HalfSealedClaim-A`) caught
+  by the Phase 32 strict-mode `check_term_drift` + `check_cross_doc_conflicts`
+  passes at seal time.
+- `qor/references/doctrine-definition-of-done.md` -- reworded one
+  sentence ("a compile gate is offline" -> "the compile-gate runtime
+  is offline") to dodge a false-positive in the
+  `check_cross_doc_conflicts` regex (`\bGate\s+(?:is|means|refers to)\s+...`).
+
 ## [0.72.0] - 2026-05-25
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

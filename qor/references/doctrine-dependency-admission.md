@@ -46,6 +46,8 @@ of Phase 103; a future hygiene phase may add a lint
 `requirements-release.txt` and the diff against the previous
 `merge-base origin/main HEAD` to detect within-window admissions.
 
+**Phase 105 tooling (V1, WARN-only)**: `python -m qor.scripts.dependency_admission_lint --base <ref>` runs the cooling-period check against the lockfile diff (queries `https://pypi.org/pypi/<pkg>/<version>/json` for `urls[0].upload_time_iso_8601`, bounded retry of 3 × 5s); `python -m qor.scripts.dep_admit_override_tracker` lists `**Dependency admission override**:` ledger entries due for 30-day re-evaluation. The lint runs WARN-only in `.github/workflows/pr-dependency-review.yml` on PRs touching `requirements-release.txt` (the step exits non-zero on violations but is wrapped with `|| true` so the workflow stays green). V2 will flip the WARN to hard fail once operator-evidence on false-positive rate accumulates.
+
 ### Emergency override procedure
 
 A documented exception path exists for cases where a bump within
