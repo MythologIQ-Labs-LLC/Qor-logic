@@ -10,6 +10,64 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.72.0] - 2026-05-25
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+
+- **Phase 104 (hotfix)**: release publish-step bug. The Phase 101 build
+  job placed `SHA256SUMS` into `dist/`; Phase 102 added `sbom.json` and
+  `evidence.json` into `dist/`. `pypa/gh-action-pypi-publish` uploads
+  every file in its `packages-dir` (default `dist/`), so the published
+  workflow failed with `InvalidDistribution: Unknown distribution
+  format: 'SHA256SUMS'`. Tags v0.69.0/v0.70.0/v0.71.0 were pushed and
+  their workflows failed at the publish step; nothing reached PyPI.
+  - Fix: insert a `Prepare publish-only directory` step that creates a
+    sibling `dist-publish/` containing only `*.whl` and `*.tar.gz`;
+    point pypa-publish at `dist-publish/` via `with.packages-dir`.
+    Downstream evidence-assembly + pull-back + `gh release create`
+    steps continue to operate on `dist/` (which still contains the
+    auxiliary files).
+  - The failed v0.69.0/v0.70.0/v0.71.0 tags remain on the remote as
+    historical artifacts. PyPI is unaffected (nothing was uploaded).
+    This v0.72.0 release ships the cumulative cluster work from Phases
+    101-103 plus the Phase 104 fix.
+
+### Added
+
+- `.github/dependabot.yml` -- carry-forward from the closed hygiene
+  PR #122; folded into this hotfix so it ships under a plan + Merkle
+  seal (clears the PR-citation lint requirement). Manages:
+  - `github-actions` ecosystem (weekly Monday checks; preserves the
+    `# vX.Y.Z` annotation comments added in Phase 101; grouped
+    minor+patch updates to reduce PR noise)
+  - `pip` ecosystem (weekly Monday checks for the hash-pinned
+    `requirements-release.txt` lockfile added in Phase 102)
+- `tests/test_dependabot_config.py` (3 tests: presence, both
+  ecosystems covered, supported schedule intervals)
+- `tests/test_release_workflow_immutability.py` amended with 2 new
+  tests asserting the separate `packages-dir` pattern + the prepare
+  step excludes known non-distribution files.
+
+### Changed
+
+- `pyproject.toml` version 0.71.0 -> 0.72.0. Hotfix change_class
+  normally implies a patch bump, but v0.69.0/v0.70.0/v0.71.0 tags
+  exist as historical artifacts with failed publish workflows; v0.72.0
+  takes the next available minor to avoid claimed-but-unpublished
+  version confusion on PyPI.
+
+### Security
+
+- `pypi` GitHub environment: `can_admins_bypass: false` set via
+  `gh api PUT` (the GitHub Environments API has since added support
+  for this field; closes the Phase 101 carry-forward UI follow-up).
+- `pypi` environment: `prevent_self_review: false` set to resolve
+  the single-maintainer deadlock (Knapp-Kevin is the only reviewer
+  and also the deployment creator). Required-reviewer rule + tag-only
+  branch policy + admin-bypass-disabled remain operative.
+
 ## [0.71.0] - 2026-05-24
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

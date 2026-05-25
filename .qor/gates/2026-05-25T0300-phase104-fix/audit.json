@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-05-25T0300-phase104-fix",
+  "ts": "2026-05-25T03:13:45Z",
+  "target": "Phase 104: Release publish-step fix (v0.72.0 hotfix)",
+  "plan_path": "docs/plan-qor-phase104-release-publish-fix.md",
+  "target_content_hash": "c42d0d623407f9026a793d6af56975571e3491b8eefbe7c48b14f460d8f5f011",
+  "report_path": ".agent/staging/phase104-AUDIT_REPORT.md",
+  "verdict": "PASS",
+  "iteration": 1,
+  "risk_grade": "L3",
+  "high_risk_target": true,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.71.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-05-25T03:13:45Z"
+  }
+}

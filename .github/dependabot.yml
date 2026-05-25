@@ -1,0 +1,48 @@
+# Dependabot configuration for qor-logic.
+#
+# Manages updates to:
+#   - GitHub Actions (SHA-pinned per Phase 101; Dependabot preserves the
+#     `# vX.Y.Z` annotation comments when bumping SHAs)
+#   - Python build-time dependencies in requirements-release.txt
+#     (hash-pinned per Phase 102; Dependabot regenerates hashes)
+#
+# Dependency review workflow (Phase 102, pr-dependency-review.yml) catches
+# severity-graded vulnerabilities on these bumps; the cooling-period
+# doctrine (Phase 103, doctrine-dependency-admission.md) catches the
+# freshness vector on transitive dependency updates.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      actions-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "deps(actions):"
+      include: "scope"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "deps(pip):"
+      include: "scope"

@@ -296,6 +296,55 @@ def test_pypi_pullback_step_fetches_wheel_and_sdist():
     )
 
 
+def test_release_workflow_publish_uses_separate_packages_dir():
+    """Phase 104: pypa-publish must point at a separate `packages-dir`
+    that contains only wheel + sdist (not at `dist/` which carries
+    SHA256SUMS, sbom.json, evidence.json)."""
+    workflow = _load(_RELEASE)
+    publish_steps = workflow["jobs"]["publish"]["steps"]
+    pypa_step = next(
+        (s for s in publish_steps if s.get("uses", "").startswith("pypa/gh-action-pypi-publish")),
+        None,
+    )
+    assert pypa_step is not None, "pypa-publish step must exist"
+    with_kwargs = pypa_step.get("with") or {}
+    packages_dir = with_kwargs.get("packages-dir")
+    assert packages_dir not in (None, "", "dist/", "dist"), (
+        f"pypa-publish must declare packages-dir distinct from 'dist/'; "
+        f"got {packages_dir!r}. The dist/ directory carries non-distribution "
+        f"files (SHA256SUMS, sbom.json, evidence.json) that twine rejects."
+    )
+
+
+def test_release_workflow_publish_only_dir_excludes_non_dist_files():
+    """Phase 104: the prepare-publish step must copy ONLY *.whl and
+    *.tar.gz; it must NOT copy SHA256SUMS, sbom.json, or evidence.json."""
+    workflow = _load(_RELEASE)
+    publish_steps = workflow["jobs"]["publish"]["steps"]
+    prepare_step = None
+    for step in publish_steps:
+        run = step.get("run") or ""
+        if "mkdir" in run and "dist-publish" in run and "cp dist/" in run:
+            prepare_step = step
+            break
+    assert prepare_step is not None, (
+        "publish job must contain a Prepare publish-only directory step "
+        "that creates dist-publish/ and copies wheel+sdist into it"
+    )
+    run = prepare_step.get("run") or ""
+    assert "*.whl" in run, "prepare step must copy *.whl files"
+    assert "*.tar.gz" in run, "prepare step must copy *.tar.gz files"
+    copy_line = next(
+        (ln for ln in run.splitlines() if "cp dist/" in ln and "dist-publish" in ln),
+        "",
+    )
+    for forbidden in ("SHA256SUMS", "sbom.json", "evidence.json"):
+        assert forbidden not in copy_line, (
+            f"prepare step copies forbidden non-dist file {forbidden!r} into dist-publish/; "
+            f"line: {copy_line!r}"
+        )
+
+
 def test_release_workflow_artifact_handoff_with_sha_verify():
     workflow = _load(_RELEASE)
     build_steps = workflow["jobs"]["build"]["steps"]

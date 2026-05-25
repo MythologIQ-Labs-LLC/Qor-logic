@@ -100,7 +100,15 @@ jobs:
           }
           EOF
           cat dist/evidence.json
+      - name: Prepare publish-only directory (Phase 104 fix)
+        run: |
+          set -euo pipefail
+          mkdir -p dist-publish
+          cp dist/*.whl dist/*.tar.gz dist-publish/
+          ls -la dist-publish/
       - uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # v1.14.0
+        with:
+          packages-dir: dist-publish/
       - name: Verify published artifact via PyPI pull-back
         run: |
           set -euo pipefail
