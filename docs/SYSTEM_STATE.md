@@ -822,3 +822,30 @@ Feature closing the supply-chain hardening cluster. Final 2 GH #118 acceptance i
 **Carry-forward (post-cluster non-blockers)**: admin-bypass UI disable (not API-exposed; one-time manual setting); Dependabot config for `github-actions` ecosystem (separate hygiene phase to manage the 6 SHA pins now in place); cyclonedx-bom hash-pinning (deferred as non_goal in Phase 102 — would require ~120 lxml wheel hashes); automated dependency-admission lint (deferred as non_goal in Phase 103); broaden CODEOWNERS reviewer pool when a maintainer team exists; periodic re-evaluation of dep-admit-override targets per the new doctrine.
 
 **Decision**: Phase 103 implemented; audit PASS on iter-1 (L3 high_risk_target). Substantiated as v0.71.0 (feature → minor bump). **Tier 1 supply-chain hardening cluster CLOSED. GH #118 fully closed.**
+
+## Phase 104 (v0.72.0 — 2026-05-25): Release publish-step fix + Dependabot carry-forward (cluster recovery)
+
+Hotfix recovering the cluster's failed first-attempt publish. The Phase 101 build job placed `SHA256SUMS` into `dist/`; Phase 102 added `sbom.json` and `evidence.json` into `dist/`. `pypa/gh-action-pypi-publish` uploads every file in its `packages-dir` (default `dist/`), so the three pushed tags (v0.69.0/v0.70.0/v0.71.0) all failed at the publish step with `InvalidDistribution: Unknown distribution format: 'SHA256SUMS'`. Nothing reached PyPI. Phase 104 fixes the bug and ships the cumulative cluster work as v0.72.0.
+
+**Fix**: insert a `Prepare publish-only directory` step in the publish job that creates a sibling `dist-publish/` directory and copies only `*.whl` and `*.tar.gz` from `dist/`. Point `pypa/gh-action-pypi-publish` at `dist-publish/` via `with.packages-dir: dist-publish/`. Downstream evidence-assembly + pull-back + `gh release create` steps continue to operate on `dist/` (which still contains the auxiliary files). The separation imposes the missing policy: `dist/` is the assembly directory, `dist-publish/` is the delivery directory. Files added to `dist/` by future phases never leak into the publish payload.
+
+**Dependabot carry-forward**: `.github/dependabot.yml` (v2) authored as standalone hygiene PR #122 but closed because the PR-citation-lint requires a plan file path + Merkle seal, neither of which a standalone hygiene PR carried. Folded into this hotfix to attach it to Phase 104's plan + seal. Manages `github-actions` ecosystem (weekly Monday checks; preserves the `# vX.Y.Z` annotation comments added in Phase 101; grouped minor+patch updates) and `pip` ecosystem (weekly Monday checks for the hash-pinned `requirements-release.txt` lockfile).
+
+**Operator decisions logged (pre-Phase-104)**:
+- `can_admins_bypass: false` set on pypi env via `gh api PUT` (closes Phase 101 carry-forward F-1a UI follow-up; GitHub API has since added the field).
+- `prevent_self_review: false` set on pypi env to resolve the single-maintainer deadlock. Required-reviewer rule + tag-only policy + admin-bypass-disabled remain operative.
+
+**Version bump rationale**: hotfix change_class normally implies a patch bump (0.71.0 → 0.71.1), but the v0.69.0/v0.70.0/v0.71.0 tags exist as historical artifacts with failed publish workflows. To avoid claimed-but-unpublished version confusion on PyPI, this hotfix takes the next available minor (0.72.0) and ships the cumulative cluster work in one published release. CHANGELOG `[0.72.0]` documents the v0.69-v0.71 publish-step bug + the Phase 104 fix.
+
+**Test surface**: 5 new tests. `test_release_workflow_publish_uses_separate_packages_dir` + `test_release_workflow_publish_only_dir_excludes_non_dist_files` (amended onto Phase 101's structural assertions). `test_dependabot_config_file_exists` + `test_dependabot_config_covers_actions_and_pip_ecosystems` + `test_dependabot_config_uses_supported_schedule_intervals` (new file). All 5 pass twice deterministically.
+
+**SG-StructureWithoutPolicy-A third instance**: the bug was the third observed instance of the structure-without-policy pattern (Phase 52 gate-chain bypass + Phase 101 pypi env protection-rules-empty + Phase 104 dist directory unfiltered). The pattern is hereby a candidate for formal SG promotion in the next Shadow Genome doctrine update.
+
+**Cluster aftermath**: Phase 101-103 cluster delivered all 13 GH #118 acceptance items but had this publish-step bug. Phase 104 is the structural fix. After v0.72.0 publishes successfully:
+- PyPI: 0.68.1 → 0.72.0 (v0.69-v0.71 skipped on PyPI; tags remain on remote)
+- GH #118: already closed
+- Dependabot: will start producing PRs for the 6 SHA-pinned Actions + the hash-pinned lockfile
+
+**Carry-forward (post-cluster, post-Phase-104)**: broaden CODEOWNERS reviewer pool once a maintainer team is provisioned; cyclonedx-bom hash-pinning (deferred non_goal in Phase 102); automated dependency-admission lint (deferred non_goal in Phase 103); periodic re-evaluation of dep-admit-override targets per the Phase 103 doctrine; consider deleting the v0.69.0/v0.70.0/v0.71.0 remote tags if their presence becomes confusing for downstream consumers.
+
+**Decision**: Phase 104 implemented; audit PASS on iter-1 (L3 high_risk_target). Substantiated as v0.72.0 (hotfix → minor bump for cluster-publish recovery). **Cluster fully recovered.**

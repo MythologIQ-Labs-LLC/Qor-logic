@@ -1,0 +1,39 @@
+seal: phase 104 - release publish-step fix + Dependabot (v0.72.0 hotfix)
+
+Recovers the failed v0.69.0/v0.70.0/v0.71.0 publish attempts as a
+single successful v0.72.0 release.
+
+Bug: Phase 101 build job placed SHA256SUMS into dist/; Phase 102 added
+sbom.json and evidence.json into dist/. pypa/gh-action-pypi-publish
+uploads every file in packages-dir (default dist/), so all three
+released tags failed with 'InvalidDistribution: Unknown distribution
+format: SHA256SUMS'. Nothing reached PyPI.
+
+Fix:
+- Insert 'Prepare publish-only directory' step in publish job that
+  creates dist-publish/ and copies only *.whl + *.tar.gz from dist/.
+- Point pypa-publish at dist-publish/ via with.packages-dir.
+- Downstream evidence-assembly + pull-back + gh release create
+  steps continue to operate on dist/.
+
+Carry-forward folded in:
+- .github/dependabot.yml (from closed PR #122; weekly checks for
+  github-actions + pip ecosystems; preserves SHA-pin annotations).
+
+Operator decisions logged (pre-Phase-104):
+- can_admins_bypass: false on pypi env (API now supports this).
+- prevent_self_review: false on pypi env (single-maintainer
+  deadlock; required-reviewer + tag policy + admin-bypass-disabled
+  remain operative).
+
+- 5 new tests; full regression: 1923 passed, 2 skipped, 4 deselected.
+- META_LEDGER #282-#284; Merkle seal 34a86f66...
+- Version bump 0.71.0 -> 0.72.0 (skips 0.69-0.71 on PyPI).
+
+Plan: docs/plan-qor-phase104-release-publish-fix.md
+Audit: .agent/staging/phase104-AUDIT_REPORT.md (PASS, L3 iter-1)
+Merkle seal: 34a86f66128ca7f8e150fecf58e0602e451350be601c73f94ae50a40b1fcbd55
+
+🤖 Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

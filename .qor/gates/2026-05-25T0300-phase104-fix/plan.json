@@ -1,0 +1,34 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-25T0300-phase104-fix",
+  "ts": "2026-05-25T03:13:46Z",
+  "plan_path": "docs/plan-qor-phase104-release-publish-fix.md",
+  "phases": [
+    "Phase 1: release.yml fix + Dependabot config + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_release_workflow_immutability.py -q",
+    "python -m pytest tests/test_dependabot_config.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase104-release-publish-fix.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase104-release-publish-fix.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase104-release-publish-fix.md",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "doc_tier_rationale": "Workflow edit + carry-forward; tests verify properties.",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.71.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-25T03:13:46Z"
+  }
+}
