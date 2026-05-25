@@ -10,6 +10,63 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.69.0] - 2026-05-24
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 101 (feature, GH #118 P0)**: PyPI publication hardening
+  closing 5 of 13 acceptance items from issue #118.
+  - `.github/workflows/release.yml` split into two jobs: unprivileged
+    `build` (`contents: read`, allowed to use pip cache) and privileged
+    `publish` (`id-token: write`, `environment: pypi`, `needs: build`,
+    no cache). Build job generates `dist/SHA256SUMS` and uploads
+    `release-dist` artifact; publish job downloads and verifies SHAs
+    via `sha256sum -c` before invoking `pypa/gh-action-pypi-publish`.
+  - All third-party Actions across `release.yml`, `ci.yml`, and
+    `pr-lint.yml` SHA-pinned to full commit hashes with `# vX.Y.Z`
+    annotation comments. Worst prior pin was a mutable branch ref
+    (`pypa/gh-action-pypi-publish@release/v1`).
+  - GitHub `pypi` environment now backed by required-reviewer +
+    tag-only deployment-branch policy + prevent-self-review
+    (configured live via new `qor/scripts/configure_pypi_environment.py`
+    idempotent script). Closes F-1a "structure-without-policy" gap
+    where the environment existed since 2026-04-16 but had zero
+    protection rules.
+  - Tag-ancestry guard (`git merge-base --is-ancestor origin/main`)
+    preserved and replicated to both jobs as defense-in-depth.
+- `qor/scripts/configure_pypi_environment.py` -- idempotent
+  gh-api wrapper exposing `build_put_body()` (pure factory) and
+  `build_branch_policy_body()` for unit testing. Supports `--dry-run`.
+- `tests/test_release_workflow_immutability.py` -- 8 structural tests:
+  SHA-pinning across all three workflow files, build/publish split,
+  id-token scoping, cache-isolation asymmetry, artifact-handoff with
+  SHA verification.
+- `tests/test_configure_pypi_environment.py` -- 7 unit tests on the
+  PUT-body factory (reviewer requirement, tag-only policy,
+  idempotency, input validation).
+- `tests/test_release_workflow_guard.py` -- amended with
+  `test_tag_ancestry_guard_present_in_both_jobs` to lock in the
+  load-bearing-gate replication.
+
+### Changed
+
+- `pyproject.toml` version 0.68.1 -> 0.69.0 (feature change_class
+  per Phase 101 plan; minor SemVer bump).
+
+### Security
+
+- Supply-chain: workflow Actions no longer pinned to mutable tag or
+  branch refs; OIDC token mint capability scoped to the single publish
+  job; privileged publish job consumes no restorable cache state and
+  verifies artifact integrity before publication.
+- Research brief `docs/research-brief-gh118-pypi-hardening-2026-05-24.md`
+  catalogued 12 of 13 acceptance items as DRIFT prior to this phase;
+  IOC sweep returned clean (no `setup_bun.js`, `bun_environment.js`,
+  or `transformers.pyz`). Cluster Phases 102 (P1) and 103 (P2) will
+  close the remaining 8 items.
+
 ## [0.68.1] - 2026-05-24
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

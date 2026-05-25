@@ -1209,4 +1209,28 @@ Forward-only Affected-Files scoping omits artifact-reading dependents. Candidate
 
 ---
 
+## 2026-05-24 -- Supply-chain Gap Inventory (GH #118 Scope)
+
+**Date**: 2026-05-24
+
+**Surface**: PyPI trusted publishing for `qor-logic`
+
+### Findings
+
+Reconnaissance against issue #118 acceptance criteria confirmed twelve of thirteen items DRIFT from desired state. IOC sweep (`setup_bun.js`, `bun_environment.js`, `transformers.pyz`) returned clean. The `pypi` GitHub environment was created 2026-04-16T14:49:42Z but never had protection rules attached -- `"protection_rules": []`, `"can_admins_bypass": true`. Workflow declares `environment: pypi` but enforces nothing, so the declaration buys no policy. Third-party Actions are tag-pinned across all three workflows (`actions/checkout@v4`, `actions/setup-python@v5`, `pypa/gh-action-pypi-publish@release/v1`); the publish action is on a branch ref, the worst of the three. `id-token: write` is workflow-level not job-level. No lockfile exists; runtime deps are `>=4`/`>=6` unbounded; `pip install build` is unpinned. No SBOM, no artifact-hash recording, no post-publish verification.
+
+### Root Cause Analysis
+
+Same anti-pattern shape that drove Phase 52 (gate-chain completeness): a *structure* was created (the `pypi` environment, the `environment:` reference in the workflow) but the *policy* the structure was supposed to enforce was never attached. The presence of the structure created the appearance of protection without the substance. Separately, the publish workflow grew incrementally from a simple build-and-publish single job; SHA-pinning, lockfiles, evidence production, and split jobs are each individually low-effort but collectively never reached the "must-do" threshold because no incident forced the issue. The existing release-ancestry guard (`merge-base --is-ancestor`) provides commit-ancestry integrity but does nothing for artifact-ancestry or workflow-ancestry, and its presence may have created a false sense of completeness.
+
+### Pattern to Avoid
+
+When introducing a GitHub-side structure (Environment, Branch Protection rule, CODEOWNERS) that is meant to gate a workflow, the workflow change that *references* the structure must not merge until the structure has its protective rules attached and verified via `gh api`. "We created the environment" is not the same as "the environment protects." For supply-chain controls specifically, treat commit-ancestry, artifact-ancestry, and workflow-ancestry as three independent legs; verifying one does not imply the others.
+
+### Pattern ID
+
+Structure-without-policy. Candidate SG family entry if it recurs: `SG-StructureWithoutPolicy-A` -- a workflow declares an Environment/CODEOWNERS/Branch Protection reference, but the referenced structure has no enforced rules. Second observed instance of this shape (first was the gate-chain bypass that drove Phase 52); promote to a structured countermeasure on third occurrence.
+
+---
+
 *Shadow integrity: ACTIVE*
