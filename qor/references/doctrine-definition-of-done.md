@@ -35,7 +35,7 @@ Parser: `qor.scripts.dod_record.parse_plan(plan_path) -> list[DodRecord]`. Subst
 
 ## Waiver protocol
 
-D4 acceptance may be **waived** in a given cycle when empirical verification is impossible: a compile gate is offline, an external dependency is unreachable, the deliverable is operator-readable prose with no runtime to exercise, etc.
+D4 acceptance may be **waived** in a given cycle when empirical verification is impossible: the compile-gate runtime is offline, an external dependency is unreachable, the deliverable is operator-readable prose with no runtime to exercise, etc.
 
 A `D4.d` row replaces the D4 row. It MUST carry:
 

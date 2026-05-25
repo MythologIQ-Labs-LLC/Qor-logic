@@ -303,3 +303,4 @@ CI surface in `## CI Commands` below to satisfy
 - `python -m qor.reliability.gate_chain_completeness --phase-min 52` — ci.yml `gate-chain-completeness` job step.
 - `python qor/scripts/pr_citation_lint.py` — pr-lint.yml `lint` job step (non-doc-only PRs).
 - `python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase89-ci-commands-reconciliation.md` — plan-internal text-consistency.
+- `python -m qor.scripts.dependency_admission_lint --base <ref>` — Phase 105 pr-dependency-review.yml WARN-only step (forward-maintenance: command introduced after Phase 89 seal; the self-applied test discipline requires Phase 89's CI Commands list to enumerate every operator-runnable Python invocation across all workflows).

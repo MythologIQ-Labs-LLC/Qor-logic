@@ -1,0 +1,50 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-25T0400-phase105-deps",
+  "ts": "2026-05-25T18:26:54Z",
+  "plan_path": "docs/plan-qor-phase105-dependency-admission-tooling.md",
+  "phases": [
+    "Phase 1: shared helper + lint + tracker + CI wiring + doctrine note + tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_dep_admit_common.py -q",
+    "python -m pytest tests/test_dependency_admission_lint.py -q",
+    "python -m pytest tests/test_dep_admit_override_tracker.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase105-dependency-admission-tooling.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase105-dependency-admission-tooling.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase105-dependency-admission-tooling.md",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "doc_tier_rationale": "Standard tier: introduces 3 new terms (dependency-admission-lint, dep-admit-override-tracker, PyPI Warehouse upload-time query) all homed in qor/references/doctrine-dependency-admission.md. Declares boundaries with limitations + non_goals + exclusions. No system-tier doc rewrites.",
+  "terms": [
+    {
+      "term": "dependency-admission-lint",
+      "home": "qor/references/doctrine-dependency-admission.md"
+    },
+    {
+      "term": "dep-admit-override-tracker",
+      "home": "qor/references/doctrine-dependency-admission.md"
+    },
+    {
+      "term": "PyPI Warehouse upload-time query",
+      "home": "qor/references/doctrine-dependency-admission.md"
+    }
+  ],
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.72.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-25T18:26:54Z"
+  }
+}
