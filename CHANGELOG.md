@@ -10,6 +10,72 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.70.0] - 2026-05-24
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 102 (feature, GH #118 P1)**: PyPI publication hardening P1
+  closing 4 more acceptance items from issue #118 (9 of 13 closed
+  across the cluster so far).
+  - `requirements-release.in` + `requirements-release.txt` -- new
+    hash-pinned build lockfile (`build==1.5.0` + 3 transitives,
+    SHA-256 pinned via pip-tools). Release workflow's build job now
+    runs `pip install --require-hashes -r requirements-release.txt`
+    instead of bare `pip install build`.
+  - `.github/CODEOWNERS` -- governance for security-critical files
+    (workflows, pyproject.toml, lockfile pair, intent_lock,
+    configure_pypi_environment). Single owner `@Knapp-Kevin` initial;
+    broaden as team grows.
+  - `.github/workflows/pr-dependency-review.yml` -- runs
+    `actions/dependency-review-action@2031cfc...` (v4.9.0, SHA-pinned)
+    on PRs touching dependency-bearing files; fails on `high` severity;
+    comments summary on failure.
+  - Release workflow now generates an SBOM via `cyclonedx-py
+    environment --of JSON` (in the build job; `cyclonedx-bom` installed
+    unpinned -- hash-pinning deferred as documented non_goal; its
+    transitive set, especially lxml, would exceed the Razor file
+    budget). SBOM travels with the `release-dist` artifact.
+  - Publish job assembles `dist/evidence.json` containing `git_sha`,
+    `tag`, `workflow_run_id`, `workflow_sha`, `lockfile_sha256`,
+    `artifact_sha256sums`, and `action_pins`. After publishing,
+    `gh release create` attaches `dist/*.whl`, `dist/*.tar.gz`,
+    `sbom.json`, `evidence.json`, and `SHA256SUMS` to the GitHub
+    release. Closes F-4a (SBOM + evidence) and F-4c (record workflow +
+    action SHAs + lockfile hashes).
+- `tests/test_requirements_release_lockfile.py` -- 5 tests (lockfile
+  presence, SHA-256 hash format, build pin, transitive coverage,
+  build job consumes `--require-hashes`).
+- `tests/test_pr_dependency_review_workflow.py` -- 4 tests (file
+  exists, action SHA-pinned with annotation, triggers cover
+  pyproject/lockfile/workflows, fails on high severity).
+- `tests/test_codeowners.py` -- 5 tests (file exists, workflow dir
+  rule, pyproject + lockfile rules, intent_lock + env-config rules,
+  every rule has an owner).
+- `tests/test_release_workflow_immutability.py` -- amended with 3
+  new tests (SBOM step in build, evidence-bundle assembly in publish,
+  `gh release create` attaches the required artifacts).
+
+### Changed
+
+- `pyproject.toml` version 0.69.0 -> 0.70.0 (feature change_class per
+  Phase 102 plan; minor SemVer bump).
+- Publish job's `permissions.contents` `read` -> `write` to enable
+  `gh release create` for the evidence-bundle attachment.
+  `id-token: write` remains scoped to publish job only.
+
+### Security
+
+- Supply-chain: hash-pinned build lockfile prevents transitive-dep
+  drift at install time; dependency-review-action catches vulnerable
+  or high-severity dependencies entering via PR; SBOM + evidence
+  bundle provide audit-grade provenance attached to every GitHub
+  release. CODEOWNERS attaches required-reviewer enforcement at the
+  surfaces being hardened. Phase 101's structure-AND-policy discipline
+  extended to all three independent ancestry legs (commit-ancestry,
+  artifact-ancestry, workflow-ancestry).
+
 ## [0.69.0] - 2026-05-24
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

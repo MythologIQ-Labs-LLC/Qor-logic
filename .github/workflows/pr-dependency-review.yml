@@ -1,0 +1,29 @@
+name: PR Dependency Review
+
+# Phase 102 (GH #118 P1): catches vulnerable or banned-severity dependencies
+# entering via PRs that touch dependency-bearing files. Fails on `high` severity.
+
+on:
+  pull_request:
+    paths:
+      - "pyproject.toml"
+      - "requirements-release.txt"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-dependency-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+      - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48  # v4.9.0
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure

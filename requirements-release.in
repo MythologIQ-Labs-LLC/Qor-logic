@@ -1,0 +1,5 @@
+# Phase 102 (GH #118 P1): top-level build-time dependencies for the release workflow.
+# Generate the locked counterpart with:
+#   pip-compile --generate-hashes --output-file=requirements-release.txt requirements-release.in
+# Both files are governed by CODEOWNERS.
+build
