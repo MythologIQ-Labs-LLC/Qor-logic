@@ -224,8 +224,8 @@ def test_release_workflow_attaches_evidence_to_github_release():
 
 def test_release_workflow_publish_job_verifies_via_pypi_pullback():
     """Phase 103 (GH #118 P2): publish job runs `pip download` from PyPI and
-    `sha256sum -c` against dist/SHA256SUMS after the publish step and before
-    `gh release create`."""
+    compares SHA-256 sums against dist/SHA256SUMS after the publish step and
+    before `gh release create`."""
     workflow = _load(_RELEASE)
     publish_steps = workflow["jobs"]["publish"]["steps"]
     publish_idx = None
@@ -273,6 +273,26 @@ def test_pypi_pullback_step_has_bounded_retry():
     )
     assert "exit 1" in run, (
         "pull-back step must exit non-zero on max-retry exhaustion"
+    )
+
+
+def test_pypi_pullback_step_fetches_wheel_and_sdist():
+    """The pull-back must verify both artifact types, not pip's default choice."""
+    workflow = _load(_RELEASE)
+    publish_steps = workflow["jobs"]["publish"]["steps"]
+    pullback_step = None
+    for step in publish_steps:
+        run = step.get("run") or ""
+        if "pip download" in run and "qor-logic" in run:
+            pullback_step = step
+            break
+    assert pullback_step is not None, "pull-back step must exist"
+    run = pullback_step.get("run") or ""
+    assert "--only-binary=:all:" in run, (
+        "pull-back step must explicitly download the wheel artifact"
+    )
+    assert "--no-binary=:all:" in run, (
+        "pull-back step must explicitly download the sdist artifact"
     )
 
 
