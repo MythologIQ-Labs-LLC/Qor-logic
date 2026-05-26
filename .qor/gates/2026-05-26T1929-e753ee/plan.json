@@ -1,0 +1,27 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-26T1929-e753ee",
+  "ts": "2026-05-26T19:33:41Z",
+  "plan_path": "docs/plan-qor-phase108-sbom-lockfile-hotfix.md",
+  "change_class": "hotfix",
+  "doc_tier": "minimal",
+  "high_risk_target": false,
+  "phases": [
+    "Lock the transitive (requirements-sbom.txt)",
+    "Version + changelog + ledger entries"
+  ],
+  "ci_commands": [
+    "pip install pip-tools",
+    "python -m pytest tests/test_requirements_sbom_lockfile.py -v",
+    "python -m qor.scripts.badge_currency --repo-root . --ledger docs/META_LEDGER.md",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.75.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-26T19:33:41Z"
+  }
+}

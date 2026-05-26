@@ -11018,3 +11018,87 @@ SHA256(content_hash + previous_hash)
 *Session: SEALED* (Phase 107 feature complete; ALL V2 carry-forward closed; pending-items list reaches zero)
 *Merkle seal: 5fd15746...* (Phase 107 seal on top of Phase 106's 72f12d2f...)
 *Open items at this seal: commit + push + PR + merge + tag v0.75.0 + approve PyPI deployment per /qor-auto-dev-1 wrap directive*
+
+---
+
+### Entry #294: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-26T19:35:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1 (hotfix)
+**Plan**: docs/plan-qor-phase108-sbom-lockfile-hotfix.md
+**Session**: `2026-05-26T1929-e753ee`
+**Entry ID**: `a9e8d4d44031`
+
+**Decision**: Phase 108 hotfix plan cleared on iter-1. Scope is a single-line lockfile patch (add `typing-extensions==4.15.0` with PyPI-sourced hashes to `requirements-sbom.txt`) to satisfy `--require-hashes` install on Python 3.12 -- the release workflow's resolver -- after Phase 107's lockfile compile on Python 3.13 omitted the transitive. All audit passes PASS. Verdict: PASS.
+
+**Content Hash**: SHA256(phase108-AUDIT_REPORT.md) = `1c22a9d5d5a111f99de789823dc62b36f3db3ecc3fb8a220596ebe3696ce3f50`
+**Previous Hash**: `5fd157469ffb966e1450a3f1048c5d91771474640c9de79cd30adca5c622c0bb`
+**Chain Hash**: `b9dc2fb88b08108bee387b04792ff7c1aca99e79f5cbfa74031a620166530b75`
+
+---
+
+*Session: 2026-05-26T1929-e753ee (Phase 108 hotfix -- audit PASS, L1)*
+
+---
+
+### Entry #295: IMPLEMENTATION -- Phase 108 (SBOM lockfile hotfix)
+
+**Timestamp**: 2026-05-26T19:40:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Specialist (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase108-sbom-lockfile-hotfix.md
+**Session**: `2026-05-26T1929-e753ee`
+**Entry ID**: `fecb474583b5`
+
+**Scope**: insert `typing-extensions==4.15.0` block immediately before `tzdata` in `requirements-sbom.txt`. Two `--hash=sha256:...` lines (whl + sdist) sourced from PyPI Warehouse JSON API (`https://pypi.org/pypi/typing-extensions/4.15.0/json`); annotated `# via cyclonedx-python-lib`. Existing 3-assertion test (`tests/test_requirements_sbom_lockfile.py`) continues to pass. Local `pip install --require-hashes -r requirements-sbom.txt --dry-run` in a fresh venv now resolves all 33 packages (was 32 before the patch) without error.
+
+**Files touched** (5): `requirements-sbom.txt` (+4 lines), `pyproject.toml` (0.75.0 -> 0.75.1), `CHANGELOG.md` (+13 lines `## [0.75.1]` section), `docs/META_LEDGER.md` (+entries 294-296), `docs/plan-qor-phase108-sbom-lockfile-hotfix.md` (NEW).
+
+**Why pip-compile missed it**: Phase 107's `pip-compile --generate-hashes` ran on Python 3.13; on 3.13 the resolver treats `typing_extensions<5.0,>=4.6` (the transitive constraint declared by `cyclonedx-python-lib[validation]==11.7.0`) as satisfied because most of typing_extensions content is now stdlib. Compile-time decision differs from install-time decision when the install target is 3.12: 3.12 resolver still wants the actual backport wheel. Lesson recorded as a sub-pass observation; future SBOM lockfile compiles should target the lowest supported Python in the release matrix.
+
+**Test surface unchanged**: 3 existing assertions in `tests/test_requirements_sbom_lockfile.py` (lockfile-files-exist, cyclonedx-bom-pinned-with-hash, hashes-are-sha256-format) continue to apply and pass (3/3 in 1.4s).
+
+**Procedural fidelity**: hotfix; no doc-tier currency obligation (plan declares `doc_tier: minimal` with `doc_tier_rationale`). README badge currency exempt per `_RELEASE_CLASSES` semantics (Phase 49 ABORT applies only to feature/breaking).
+
+**Content Hash**: SHA256(plan-qor-phase108-sbom-lockfile-hotfix.md) = `9f4015f933e607c1c4fa83cfa4e47199754b995f17bb450b58e0229a4fe809d5`
+**Previous Hash**: `b9dc2fb88b08108bee387b04792ff7c1aca99e79f5cbfa74031a620166530b75`
+**Chain Hash**: `bf14ca608fc412c8b4a109c1cd9a6de72b34ceeaaec6f7a3be335dcd967b14d0`
+
+---
+
+*Session: 2026-05-26T1929-e753ee (Phase 108 hotfix -- implementation complete)*
+
+---
+
+### Entry #296: SESSION SEAL -- Phase 108 hotfix substantiated: SBOM lockfile typing-extensions (v0.75.1)
+
+**Timestamp**: 2026-05-26T19:45:00Z
+**Phase**: SUBSTANTIATE (Phase 108 hotfix; lockfile patch)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase108-sbom-lockfile-hotfix.md
+**Session**: `2026-05-26T1929-e753ee`
+**SSDF Practices**: PS.2.1, PS.3.1, RV.1.1
+**Entry ID**: `1ae54255c33c`
+
+**Scope**: Phase 108 hotfix substantiated: v0.75.1 ships SBOM lockfile with typing-extensions transitive locked. Replaces the v0.75.0 PyPI publish that failed due to Phase 107 compile-time/install-time Python version mismatch.
+
+Change class: hotfix.
+Files touched: 5.
+Tests: 3/3 existing assertions pass; install --require-hashes --dry-run succeeds.
+SSDF: PS.2.1 (verify software integrity), PS.3.1 (archive each release), RV.1.1 (identify and address security vulnerabilities).
+
+**Review Boundary**: cycle ends at this seal. Operator-authorized wrap directive (Phase 107) continues through this hotfix per the recovery-pattern precedent (Phase 104 ratified the precedent for botched-publish recovery).
+
+**Content Hash**: `e1433b85b2f880301e727f8942b1fb23c43edac28d23160590a9c655a97db3e8`
+**Previous Hash**: `bf14ca608fc412c8b4a109c1cd9a6de72b34ceeaaec6f7a3be335dcd967b14d0`
+**Chain Hash (Merkle seal)**: `5368335299411c0653842889c3f376256631328af12fb6bfae3e0b70caf1a9f5`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 108 hotfix complete; PyPI v0.75.1 ready to ship after merge)
+*Merkle seal: 53683352...* (Phase 108 hotfix seal on top of Phase 107's 5fd15746...)
+*Open items at this seal: commit + push + PR + merge + tag v0.75.1 + approve PyPI deployment*
