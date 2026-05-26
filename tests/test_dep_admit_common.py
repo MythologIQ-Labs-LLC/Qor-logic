@@ -173,3 +173,55 @@ def test_parse_pyproject_exact_pins_returns_empty_for_no_exact_pins():
         """)
     pins = common.parse_pyproject_exact_pins(text)
     assert pins == []
+
+
+# --- Phase 107 D-107.3: range-pin lower-bound coverage -----------------------
+
+
+def test_parse_pyproject_range_pins_extracts_lower_bound():
+    """`>=X.Y.Z` and `~=X.Y.Z` return lower-bound version; `<` / unbounded skipped."""
+    text = textwrap.dedent("""\
+        [project]
+        name = "demo"
+        version = "0.1.0"
+        dependencies = [
+            "ge-pkg>=1.2.3",
+            "compat-pkg~=4.5.6",
+            "upper-only<2.0",
+            "unbounded",
+            "exact==9.9.9",
+        ]
+        """)
+    pins = common.parse_pyproject_range_pins(text)
+    by_name = {p.name: p for p in pins}
+
+    assert "ge-pkg" in by_name
+    assert by_name["ge-pkg"].version == "1.2.3"
+    assert "compat-pkg" in by_name
+    assert by_name["compat-pkg"].version == "4.5.6"
+    # < only: no lower bound -> skipped
+    assert "upper-only" not in by_name
+    # unbounded -> skipped
+    assert "unbounded" not in by_name
+    # exact pins handled by parse_pyproject_exact_pins; not this parser's job
+    assert "exact" not in by_name
+
+
+def test_parse_pyproject_range_pins_handles_combined_specifiers():
+    """`>=X.Y,<Z.0` returns the lower bound only (the `>=` part)."""
+    text = textwrap.dedent("""\
+        [project]
+        name = "demo"
+        version = "0.1.0"
+        dependencies = [
+            "combined>=1.0,<2.0",
+            "tilde~=3.4",
+        ]
+        """)
+    pins = common.parse_pyproject_range_pins(text)
+    by_name = {p.name: p for p in pins}
+
+    assert "combined" in by_name
+    assert by_name["combined"].version == "1.0"
+    assert "tilde" in by_name
+    assert by_name["tilde"].version == "3.4"

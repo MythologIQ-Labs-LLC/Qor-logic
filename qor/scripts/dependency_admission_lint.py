@@ -133,12 +133,17 @@ def run_lint(
     bumps = list(common.diff_lockfile_against_base(current, base))
 
     if current_pyproject_text is not None:
-        current_pins = common.parse_pyproject_exact_pins(current_pyproject_text)
-        base_pins = (
-            common.parse_pyproject_exact_pins(base_pyproject_text)
-            if base_pyproject_text is not None
-            else []
+        # Phase 106: exact-pin coverage. Phase 107: range-pin lower-bound coverage.
+        current_pins = (
+            common.parse_pyproject_exact_pins(current_pyproject_text)
+            + common.parse_pyproject_range_pins(current_pyproject_text)
         )
+        base_pins = []
+        if base_pyproject_text is not None:
+            base_pins = (
+                common.parse_pyproject_exact_pins(base_pyproject_text)
+                + common.parse_pyproject_range_pins(base_pyproject_text)
+            )
         pyproject_bumps = common.diff_lockfile_against_base(current_pins, base_pins)
         existing_keys = {(b.name, b.new_version) for b in bumps}
         for pb in pyproject_bumps:

@@ -296,6 +296,50 @@ def test_pypi_pullback_step_fetches_wheel_and_sdist():
     )
 
 
+def test_release_workflow_build_job_installs_sbom_tool_hash_pinned():
+    """Phase 107 D-107.2: build job installs cyclonedx-bom via --require-hashes,
+    not bare pip install."""
+    workflow = _load(_RELEASE)
+    build_steps = workflow["jobs"]["build"]["steps"]
+    found = False
+    for step in build_steps:
+        run = step.get("run") or ""
+        if "pip install" in run and "--require-hashes" in run and "requirements-sbom.txt" in run:
+            found = True
+            break
+    assert found, (
+        "build job must install SBOM tool via "
+        "'pip install --require-hashes -r requirements-sbom.txt'"
+    )
+    # Defense-in-depth: no bare `pip install cyclonedx-bom`
+    for step in build_steps:
+        run = step.get("run") or ""
+        if re.search(r"^\s*pip install cyclonedx-bom\b", run, re.MULTILINE):
+            raise AssertionError(
+                "bare 'pip install cyclonedx-bom' detected; must use --require-hashes form"
+            )
+
+
+def test_release_workflow_sbom_step_runs_cyclonedx_after_install():
+    """Phase 107: cyclonedx-py invocation runs after the hash-pinned install."""
+    workflow = _load(_RELEASE)
+    build_steps = workflow["jobs"]["build"]["steps"]
+    install_idx = None
+    sbom_idx = None
+    for idx, step in enumerate(build_steps):
+        run = step.get("run") or ""
+        if "requirements-sbom.txt" in run and "--require-hashes" in run:
+            install_idx = idx
+        if "cyclonedx-py" in run and "sbom.json" in run:
+            sbom_idx = idx
+    assert install_idx is not None, "SBOM install step required"
+    assert sbom_idx is not None, "cyclonedx-py invocation step required"
+    if install_idx != sbom_idx:
+        assert install_idx < sbom_idx, (
+            f"install (idx {install_idx}) must precede cyclonedx-py (idx {sbom_idx})"
+        )
+
+
 def test_release_workflow_publish_uses_separate_packages_dir():
     """Phase 104: pypa-publish must point at a separate `packages-dir`
     that contains only wheel + sdist (not at `dist/` which carries

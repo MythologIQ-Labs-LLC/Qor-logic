@@ -61,6 +61,28 @@ def test_workflow_triggers_on_dependency_paths():
     )
 
 
+def test_lint_step_does_not_have_or_true_wrap():
+    """Phase 107 D-107.1: the cooling-period lint step exits non-zero on violation."""
+    text = _WORKFLOW.read_text(encoding="utf-8")
+    # The lint step is the one containing 'dependency_admission_lint'
+    lines = text.splitlines()
+    in_lint_step = False
+    lint_step_lines: list[str] = []
+    for line in lines:
+        if "dependency_admission_lint" in line:
+            in_lint_step = True
+        if in_lint_step:
+            lint_step_lines.append(line)
+            # Step boundary heuristic: next step starts at the next "- name:" at same indent
+            if line.strip().startswith("- ") and "dependency_admission_lint" not in line and "name:" in line:
+                break
+    block = "\n".join(lint_step_lines)
+    assert "|| true" not in block, (
+        "Phase 107 flipped the WARN→hard-fail; the cooling-period lint step must "
+        "exit non-zero on violations. Found `|| true` wrap still present:\n" + block
+    )
+
+
 def test_workflow_fails_on_high_severity():
     workflow = _load()
     steps = workflow["jobs"]["dependency-review"]["steps"]

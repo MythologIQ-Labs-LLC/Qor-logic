@@ -34,9 +34,9 @@ jobs:
       - name: Install build (hash-pinned)
         run: pip install --require-hashes -r requirements-release.txt
       - run: python -m build
-      - name: Install SBOM tool and generate SBOM
+      - name: Install SBOM tool (hash-pinned) and generate SBOM
         run: |
-          pip install cyclonedx-bom
+          pip install --require-hashes -r requirements-sbom.txt
           cyclonedx-py environment --of JSON --output-file dist/sbom.json
       - name: Generate SHA256SUMS
         run: |

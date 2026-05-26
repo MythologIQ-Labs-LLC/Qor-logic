@@ -72,6 +72,21 @@ Phase lifecycle indexed by GitHub-native machinery, not a parallel doc.
 - **Tag annotation**: annotated tag created at substantiation per §4; the tag's
   annotation message links back to the PR number or commit SHA.
 
+### 6.1 CODEOWNERS operational mode (Phase 107 wiring)
+
+`.github/CODEOWNERS` (Phase 102) carries `@Knapp-Kevin` as the sole owner of security-critical files (workflows, pyproject.toml, lockfiles, intent_lock, env-config scripts). This **solo-owner mode** is the project's chosen operational mode for the current maintainer configuration, not an interim placeholder.
+
+The solo-owner state is the right scope for solo-maintained governance repositories: enforced approval-before-merge on security-critical files, single source of truth for review responsibility, and zero coordination overhead. Expanding the reviewer pool changes the operational contract, not just a configuration value.
+
+**Expansion triggers** (any of the following changes the operational mode and warrants a CODEOWNERS amendment in a dedicated phase):
+
+1. A second maintainer joins the project with security-critical-file review authority.
+2. The project federates with other Qor-logic deployments, requiring cross-deployment review coordination.
+3. A compliance audit (e.g., SOC 2, supply-chain certification) requires demonstrated reviewer separation.
+4. Operator-initiated formalization of a maintainer team, even absent triggers 1-3.
+
+Until one of these conditions is met, the solo-owner state is the chosen operational mode. The Phase 101 / 102 carry-forward "broaden CODEOWNERS reviewer pool" is closed by this doctrine note (not deferred indefinitely; closed as a documented operational decision).
+
 ## 7. Session Rotation
 
 `/qor-substantiate` Step Z calls `session.rotate()` after writing the

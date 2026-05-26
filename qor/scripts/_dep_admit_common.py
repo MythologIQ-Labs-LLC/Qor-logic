@@ -156,6 +156,9 @@ def parse_override_entries(ledger_text: str) -> list[OverrideEntry]:
 _PYPROJECT_EXACT_PIN_RE = re.compile(
     r"^([a-zA-Z0-9][a-zA-Z0-9._-]*)\s*==\s*([0-9][^\s;,]*)\s*$"
 )
+_PYPROJECT_RANGE_PIN_RE = re.compile(
+    r"^([a-zA-Z0-9][a-zA-Z0-9._-]*)\s*(?:>=|~=)\s*([0-9][^\s;,]*)"
+)
 
 
 def parse_pyproject_exact_pins(text: str) -> list[LockfileEntry]:
@@ -178,6 +181,46 @@ def parse_pyproject_exact_pins(text: str) -> list[LockfileEntry]:
     for deps in deps_lists:
         for entry in deps:
             m = _PYPROJECT_EXACT_PIN_RE.match(str(entry).strip())
+            if m:
+                pins.append(
+                    LockfileEntry(
+                        name=m.group(1).lower(),
+                        version=m.group(2),
+                        hashes=(),
+                    )
+                )
+    return pins
+
+
+def parse_pyproject_range_pins(text: str) -> list[LockfileEntry]:
+    """Phase 107 D-107.3: extract lower-bound version from `>=` and `~=` range pins.
+
+    Returns LockfileEntry instances carrying the lower-bound version as `version`
+    (the earliest version pip could resolve to). `<`, `!=`, and unbounded
+    specifiers are skipped because they don't carry a meaningful lower-bound for
+    cooling-period attention. Combined specifiers (`>=1.0,<2.0`) match the
+    `>=` portion only.
+
+    Pairs with parse_pyproject_exact_pins (Phase 106) which handles `==`.
+    The two parsers are orthogonal: a single entry hits at most one of them.
+    """
+    data = tomllib.loads(text)
+    project = data.get("project") or {}
+    deps_lists: list[list[str]] = []
+    base = project.get("dependencies") or []
+    if isinstance(base, list):
+        deps_lists.append(base)
+    for group in (project.get("optional-dependencies") or {}).values():
+        if isinstance(group, list):
+            deps_lists.append(group)
+    pins: list[LockfileEntry] = []
+    for deps in deps_lists:
+        for entry in deps:
+            text_e = str(entry).strip()
+            # Skip if exact-pin form (parse_pyproject_exact_pins handles those)
+            if _PYPROJECT_EXACT_PIN_RE.match(text_e):
+                continue
+            m = _PYPROJECT_RANGE_PIN_RE.match(text_e)
             if m:
                 pins.append(
                     LockfileEntry(
