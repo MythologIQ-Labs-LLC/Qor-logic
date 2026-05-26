@@ -1,0 +1,35 @@
+fix: phase 108 - SBOM lockfile typing-extensions transitive (v0.75.1 hotfix)
+
+Phase 107's `requirements-sbom.txt` was compiled by `pip-compile` on
+Python 3.13 where the resolver treated `typing_extensions<5.0,>=4.6`
+(transitive of `cyclonedx-python-lib[validation]==11.7.0`) as
+satisfied by stdlib. The release workflow runs on Python 3.12 where
+the resolver still pulls the backport wheel, so the build job's
+`pip install --require-hashes -r requirements-sbom.txt` step failed
+with "all requirements must have their versions pinned with ==.
+These do not: typing_extensions<5.0,>=4.6 ...".
+
+v0.75.0 git tag is live but PyPI publish was skipped (build job
+FAILED -> publish job SKIPPED). Pattern matches Phase 104 botched-
+publish recovery: ship the corrected lockfile as a hotfix bump
+because PyPI versions are immutable once claimed.
+
+Single-line patch: add `typing-extensions==4.15.0` block before
+`tzdata` in requirements-sbom.txt with both --hash lines (whl +
+sdist) sourced from PyPI Warehouse JSON API.
+
+- pyproject.toml: 0.75.0 -> 0.75.1
+- requirements-sbom.txt: +4 lines (33 packages now)
+- CHANGELOG.md: ## [0.75.1] section under ### Fixed
+- README badge: Ledger 293 -> 296
+- META_LEDGER #294-#296 (audit, impl, seal); Merkle seal 53683352...
+- 3/3 existing lockfile tests pass; install --require-hashes
+  --dry-run succeeds in a fresh venv.
+
+Plan: docs/plan-qor-phase108-sbom-lockfile-hotfix.md
+Audit: .agent/staging/phase108-AUDIT_REPORT.md (PASS, L1 hotfix iter-1)
+Merkle seal: 5368335299411c0653842889c3f376256631328af12fb6bfae3e0b70caf1a9f5
+
+Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

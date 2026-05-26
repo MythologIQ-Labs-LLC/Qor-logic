@@ -10,6 +10,21 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.75.1] - 2026-05-26
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+
+- **Phase 108 (hotfix)**: lock `typing-extensions==4.15.0` into
+  `requirements-sbom.txt` to satisfy `--require-hashes` install on
+  Python 3.12 (the release workflow's resolver). Phase 107's
+  `pip-compile` ran on Python 3.13 where the resolver treated
+  `typing_extensions<5.0,>=4.6` (transitive of
+  `cyclonedx-python-lib[validation]==11.7.0`) as satisfied by stdlib;
+  3.12 still requires the backport package. v0.75.0 PyPI publish was
+  blocked by this; v0.75.1 ships the corrected lockfile.
+
 ## [0.75.0] - 2026-05-26
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
