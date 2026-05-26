@@ -103,11 +103,9 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 - Range-pin lower-bound coverage closes the freshness-vector admission
   gap where a `>=X.Y.Z` constraint could allow a within-window
   install without lint visibility.
-
-### Phase 107 closes the V2 carry-forward list
-
-After Phase 107 seals, the project's V2 carry-forward list is **zero
-items**. Future cycles begin from a clean carry-forward surface.
+- After Phase 107 seals, the project's V2 carry-forward list reaches
+  **zero items**. Future cycles begin from a clean carry-forward
+  surface.
 
 ## [0.74.0] - 2026-05-26
 
