@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import dataclasses
 import re
+import tomllib
 from datetime import datetime, timezone
 
 
@@ -150,6 +151,42 @@ def parse_override_entries(ledger_text: str) -> list[OverrideEntry]:
                 )
             )
     return overrides
+
+
+_PYPROJECT_EXACT_PIN_RE = re.compile(
+    r"^([a-zA-Z0-9][a-zA-Z0-9._-]*)\s*==\s*([0-9][^\s;,]*)\s*$"
+)
+
+
+def parse_pyproject_exact_pins(text: str) -> list[LockfileEntry]:
+    """Extract `package==X.Y.Z` exact pins from pyproject [project].dependencies
+    and [project.optional-dependencies].*. Range / unbounded forms skipped.
+
+    Returned LockfileEntry instances carry hashes=() because pyproject deps are
+    not hash-pinned at this layer (the lockfile layer carries hashes).
+    """
+    data = tomllib.loads(text)
+    project = data.get("project") or {}
+    deps_lists: list[list[str]] = []
+    base = project.get("dependencies") or []
+    if isinstance(base, list):
+        deps_lists.append(base)
+    for group in (project.get("optional-dependencies") or {}).values():
+        if isinstance(group, list):
+            deps_lists.append(group)
+    pins: list[LockfileEntry] = []
+    for deps in deps_lists:
+        for entry in deps:
+            m = _PYPROJECT_EXACT_PIN_RE.match(str(entry).strip())
+            if m:
+                pins.append(
+                    LockfileEntry(
+                        name=m.group(1).lower(),
+                        version=m.group(2),
+                        hashes=(),
+                    )
+                )
+    return pins
 
 
 def _parse_iso_utc(value: str) -> datetime:

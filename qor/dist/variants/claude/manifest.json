@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-24T03:46:38Z",
+  "generated_ts": "2026-05-26T04:59:02Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -324,7 +324,7 @@
       "id": "qor-repo-release",
       "source_path": "skills/qor-repo-release/SKILL.md",
       "install_rel_path": "skills/qor-repo-release/SKILL.md",
-      "sha256": "dec8102db1c1156cca2ee062450ac355ef0d4cc4cf3a32640db64e46c9c36d04"
+      "sha256": "177ad36488b47cdc11175def195e4812c49bea610b17e10ad5d604b7bf180636"
     },
     {
       "id": "qor-repo-scaffold",
@@ -390,7 +390,7 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "1b3cbe83fc3c200186e86b800a861b6c5c298280290d5b741ffa8dd7fbd89a63"
+      "sha256": "b1ef23d26a73041386a22eb0a683992bbbbb0ca09ef5bd94640d729b9a72f1df"
     },
     {
       "id": "qor-tone",

@@ -173,3 +173,121 @@ def test_lint_handles_pre_phase102_base_with_no_lockfile(monkeypatch, fixed_now)
     assert len(result.bumps) == 1
     assert result.bumps[0].name == "build"
     assert result.bumps[0].old_version is None
+
+
+# --- Phase 106: PR-label override + pyproject coverage -----------------------
+
+
+def test_lint_pr_label_override_clears_within_window(monkeypatch, fixed_now):
+    """`dep-admit-override` label on the PR clears a within-window admission."""
+    base_lockfile = ""
+    current_lockfile = "fresh-pkg==9.9.9 \\\n    --hash=sha256:" + "c" * 64 + "\n"
+    upload_time = (fixed_now - timedelta(days=5)).isoformat().replace("+00:00", "Z")
+
+    monkeypatch.setattr(
+        lint.urllib.request, "urlopen",
+        _mock_urlopen({
+            "https://pypi.org/pypi/fresh-pkg/9.9.9/json": _make_pypi_response(upload_time),
+        }),
+    )
+
+    # Simulate CI context with the override label present.
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+    monkeypatch.setenv("GITHUB_REPOSITORY", "MythologIQ-Labs-LLC/Qor-logic")
+    monkeypatch.setenv("GITHUB_REF", "refs/pull/123/merge")
+
+    class _MockGhResult:
+        returncode = 0
+        stdout = '{"labels": [{"name": "dep-admit-override"}]}'
+        stderr = ""
+
+    def _mock_subprocess_run(argv, **kwargs):
+        assert argv[0] == "gh"
+        assert "pr" in argv and "view" in argv
+        return _MockGhResult()
+
+    monkeypatch.setattr(lint.subprocess, "run", _mock_subprocess_run)
+
+    result = lint.run_lint(
+        current_lockfile_text=current_lockfile,
+        base_lockfile_text=base_lockfile,
+        ledger_text="",
+    )
+
+    assert result.exit_code == 0
+    assert result.violations == []
+    assert any(b.name == "fresh-pkg" and b.status == "override" for b in result.bumps)
+
+
+def test_lint_pr_label_query_fails_open_to_ledger_only(monkeypatch, fixed_now, capsys):
+    """gh CLI failure -> stderr fallback note + lint continues with ledger-only check."""
+    base_lockfile = ""
+    current_lockfile = "fresh-pkg==9.9.9 \\\n    --hash=sha256:" + "c" * 64 + "\n"
+    upload_time = (fixed_now - timedelta(days=5)).isoformat().replace("+00:00", "Z")
+
+    monkeypatch.setattr(
+        lint.urllib.request, "urlopen",
+        _mock_urlopen({
+            "https://pypi.org/pypi/fresh-pkg/9.9.9/json": _make_pypi_response(upload_time),
+        }),
+    )
+
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+    monkeypatch.setenv("GITHUB_REPOSITORY", "MythologIQ-Labs-LLC/Qor-logic")
+    monkeypatch.setenv("GITHUB_REF", "refs/pull/123/merge")
+
+    def _mock_subprocess_failure(argv, **kwargs):
+        raise lint.subprocess.CalledProcessError(returncode=1, cmd=argv, stderr="network glitch")
+
+    monkeypatch.setattr(lint.subprocess, "run", _mock_subprocess_failure)
+
+    result = lint.run_lint(
+        current_lockfile_text=current_lockfile,
+        base_lockfile_text=base_lockfile,
+        ledger_text="",  # no ledger override
+    )
+
+    # Lint continues with META_LEDGER-only check; no override -> violation
+    assert result.exit_code == 1
+    assert len(result.violations) == 1
+
+    captured = capsys.readouterr()
+    assert "PR label query failed" in captured.err
+    assert "META_LEDGER" in captured.err
+
+
+def test_lint_pyproject_exact_pin_within_window_triggers_violation(monkeypatch, fixed_now):
+    """Synthetic pyproject diff with a within-window `==`-pinned entry -> exit 1."""
+    upload_time = (fixed_now - timedelta(days=3)).isoformat().replace("+00:00", "Z")
+    monkeypatch.setattr(
+        lint.urllib.request, "urlopen",
+        _mock_urlopen({
+            "https://pypi.org/pypi/freshlib/2.0.0/json": _make_pypi_response(upload_time),
+        }),
+    )
+
+    current_pyproject = textwrap.dedent("""\
+        [project]
+        name = "demo"
+        version = "1.0"
+        dependencies = ["freshlib==2.0.0"]
+        """)
+    base_pyproject = textwrap.dedent("""\
+        [project]
+        name = "demo"
+        version = "1.0"
+        dependencies = []
+        """)
+
+    result = lint.run_lint(
+        current_lockfile_text="",
+        base_lockfile_text="",
+        ledger_text="",
+        current_pyproject_text=current_pyproject,
+        base_pyproject_text=base_pyproject,
+    )
+
+    assert result.exit_code == 1
+    assert len(result.violations) == 1
+    assert result.violations[0].name == "freshlib"
+    assert result.violations[0].new_version == "2.0.0"

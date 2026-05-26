@@ -13,6 +13,8 @@ from __future__ import annotations
 import argparse
 import dataclasses
 import json
+import os
+import re
 import subprocess
 import sys
 import time
@@ -29,6 +31,8 @@ DEFAULT_RETRIES = 3
 DEFAULT_RETRY_DELAY = 5
 DEFAULT_TIMEOUT = 5
 _USER_AGENT = "qor-logic/dependency-admission-lint"
+_OVERRIDE_LABEL = "dep-admit-override"
+_PR_REF_RE = re.compile(r"refs/pull/(\d+)/")
 
 
 @dataclasses.dataclass(frozen=True)
@@ -75,23 +79,76 @@ def _fetch_pypi_upload_time(
     raise NetworkError(f"PyPI query failed after {retries} attempts: {last_err}")
 
 
+def _query_pr_labels(skip: bool = False) -> set[str] | None:
+    """Return set of PR label names when in CI context, else None.
+
+    Fails open: any error returns None (caller treats as 'no label override
+    available') and emits a stderr fallback note. Network failure must NOT
+    introduce a spurious within-window violation when the operator did the
+    right thing via META_LEDGER override entry.
+    """
+    if skip:
+        return None
+    event = os.environ.get("GITHUB_EVENT_NAME", "")
+    repo = os.environ.get("GITHUB_REPOSITORY", "")
+    ref = os.environ.get("GITHUB_REF", "")
+    if event != "pull_request" or not repo:
+        return None
+    m = _PR_REF_RE.search(ref)
+    if not m:
+        return None
+    pr_num = m.group(1)
+    try:
+        out = subprocess.run(
+            ["gh", "pr", "view", pr_num, "--repo", repo, "--json", "labels"],
+            capture_output=True, text=True, check=True, timeout=10,
+        )
+        data = json.loads(out.stdout)
+        return {lbl["name"] for lbl in data.get("labels", [])}
+    except (subprocess.SubprocessError, FileNotFoundError, json.JSONDecodeError, KeyError, OSError) as e:
+        print(
+            f"WARN: PR label query failed; falling back to META_LEDGER-only override check: {e}",
+            file=sys.stderr,
+        )
+        return None
+
+
 def run_lint(
     *,
     current_lockfile_text: str,
     base_lockfile_text: str | None,
     ledger_text: str,
     threshold_days: int = DEFAULT_THRESHOLD_DAYS,
+    current_pyproject_text: str | None = None,
+    base_pyproject_text: str | None = None,
+    skip_pr_labels: bool = False,
 ) -> LintResult:
-    """Pure function entry point: returns LintResult, no I/O beyond PyPI HTTP."""
+    """Pure function entry point: returns LintResult, no I/O beyond PyPI HTTP + gh CLI."""
     current = common.parse_lockfile_entries(current_lockfile_text)
     base = (
         common.parse_lockfile_entries(base_lockfile_text)
         if base_lockfile_text is not None
         else []
     )
-    bumps = common.diff_lockfile_against_base(current, base)
+    bumps = list(common.diff_lockfile_against_base(current, base))
+
+    if current_pyproject_text is not None:
+        current_pins = common.parse_pyproject_exact_pins(current_pyproject_text)
+        base_pins = (
+            common.parse_pyproject_exact_pins(base_pyproject_text)
+            if base_pyproject_text is not None
+            else []
+        )
+        pyproject_bumps = common.diff_lockfile_against_base(current_pins, base_pins)
+        existing_keys = {(b.name, b.new_version) for b in bumps}
+        for pb in pyproject_bumps:
+            if (pb.name, pb.new_version) not in existing_keys:
+                bumps.append(pb)
+
     overrides = common.parse_override_entries(ledger_text)
     override_keys = {(o.package, o.version) for o in overrides}
+    pr_labels = _query_pr_labels(skip=skip_pr_labels)
+    label_override_active = pr_labels is not None and _OVERRIDE_LABEL in pr_labels
 
     now = _now_utc()
     reports: list[BumpReport] = []
@@ -107,7 +164,7 @@ def run_lint(
         age_days = (now - upload_time).days
         if age_days >= threshold_days:
             status = "clean"
-        elif (bump.name, bump.new_version) in override_keys:
+        elif (bump.name, bump.new_version) in override_keys or label_override_active:
             status = "override"
         else:
             status = "violation"

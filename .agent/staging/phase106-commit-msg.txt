@@ -1,0 +1,29 @@
+seal: phase 106 - dep-admit lint V1.1 extensions (v0.74.0)
+
+Closes 3 of 5 Phase 105 V2 carry-forward items.
+
+- PR-label override (dep-admit-override) detection in CI mode via
+  `gh pr view --json labels`. Fails open to META_LEDGER-only on any
+  gh error. New --skip-pr-labels flag for local testing.
+- pyproject.toml exact-pin (==X.Y.Z) coverage via stdlib tomllib.
+  Range / unbounded specifiers skipped (not knowable until install).
+- Session ID convention lint at /qor-substantiate Step 4.6.
+  Non-blocking stderr WARN when .qor/session/current doesn't match
+  SESSION_ID_PATTERN. Always exits 0.
+
+- 9 new behavioral tests; full regression 1946 collected at seal.
+- All gates PASS: doc_integrity strict, badge currency, seal entry
+  check, gate-chain completeness (48 sessions).
+- META_LEDGER #288-#290; Merkle seal 72f12d2f...
+
+Remaining Phase 105 V2 carry-forward (legitimate blockers):
+- WARN→hard-fail flip on cooling-period lint (needs operator-evidence)
+- Broaden CODEOWNERS reviewer pool (needs maintainer team)
+
+Plan: docs/plan-qor-phase106-dep-admit-lint-extensions.md
+Audit: .agent/staging/phase106-AUDIT_REPORT.md (PASS, L2 iter-1)
+Merkle seal: 72f12d2f7ff3ec2e20a1aec38efe2e74e5faf0d6383db84253deadadecdde1ed
+
+🤖 Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

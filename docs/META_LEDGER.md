@@ -10806,3 +10806,111 @@ SHA256(content_hash + previous_hash)
 *Session: SEALED* (Phase 105 feature complete; dependency-admission tooling shipped; Phase 103 doctrine now has operational lint + tracker)
 *Merkle seal: e9be44d7...* (Phase 105 seal on top of Phase 104's 34a86f66...)
 *Open items at this seal: stage artifacts; commit; push; tag v0.73.0; approve PyPI deployment*
+
+---
+
+### Entry #288: GATE TRIBUNAL
+
+**Timestamp**: 2026-05-25T20:40:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase106-dep-admit-lint-extensions.md
+**Session**: `2026-05-25T2035-c8f105`
+**Entry ID**: `d09e59cfde58`
+
+**Decision**: Phase 106 plan (dependency-admission lint V1.1 extensions, v0.74.0 feature) cleared on iter-1. Solo audit. All Step 0.6 pre-audit lints exit 0 (plan_text_consistency, plan_test, plan_grep, ci_coverage, dod_check). Prompt Injection Pass clean. L2 grade: tooling extension on top of the Phase 105 surface; no new security-critical path. All adversarial passes PASS: Security (no creds/auth/secrets; gh CLI uses default GITHUB_TOKEN; PyPI Warehouse is unauthenticated public API), OWASP Top-10 (A03 list-form argv; A04 fail-open deliberate per documented rationale + META_LEDGER remains binding-authority override signal; A05/A08/A09 clean), Razor (`_query_pr_labels` ~22 lines, `parse_pyproject_exact_pins` ~25 lines, `session_id_lint.lint` ~12 lines; files all <250), Self-Application Sub-Pass (plan adds zero third-party deps, vacuously applies cooling-period discipline it extends; Phase 105 argument carries forward), Test Functionality (8 tests each invoke the unit and assert on output), Dependency Audit (stdlib only: tomllib + subprocess + urllib.request; gh CLI is a shell tool not a Python dep), Macro Architecture (unidirectional layering with no cycles; session_id_lint depends only on session module's existing SESSION_ID_PATTERN constant), Infrastructure Alignment (all citations grep-verified: gh CLI --json labels, GitHub Actions PR env vars, refs/pull/<n>/merge format, PEP 621 pyproject sections, tomllib stdlib, _dep_admit_common.LockfileEntry from Phase 105, SESSION_ID_PATTERN at qor/scripts/session.py:27, /qor-substantiate Step 4.6 wiring point), Orphan Detection (all files trace to entry points). Ghost UI / Live-Progress / Filter-Stage Coherence: N/A. Documentation Drift advisory: clean (3 new terms homed in existing doctrines that will receive additive notes per the plan). Phase 68 Option B (independent reviewer) deferred for iter-1; same rationale as Phase 105 audit (plan emerged from operator multiple-choice dialogue; L2 risk; sealed Phase 105 doctrine is external anchor).
+
+**Non-blocking observations**: solo-audit SG-007 risk documented; WARN-only ramps on both extensions match Phase 99 pattern; gh CLI fails-open semantics deliberate (network failure must not flip an operator-correct ledger-overridden admission to spurious violation).
+
+**Content Hash**: SHA256(phase106-AUDIT_REPORT.md) = `98b0627c15b72d0ec47b90101bf7d78ab21547b2b81012b5b378babeae058366`
+**Previous Hash**: `e9be44d7fe6a2758d915d290216ff95224b1692034f7aa97f3591f8f0a29b24d`
+**Chain Hash**: `85b663d0b35e5d840fefc30f2202dd34e99257fea081590c28eb25d91a81d725`
+
+---
+
+*Session: 2026-05-25T2035-c8f105 (Phase 106 -- audit PASS, L2)*
+
+---
+
+### Entry #289: IMPLEMENTATION -- Phase 106 (dependency-admission lint V1.1 extensions)
+
+**Timestamp**: 2026-05-25T20:55:00Z
+**Phase**: IMPLEMENTATION
+**Author**: Specialist (Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic))
+**Plan**: docs/plan-qor-phase106-dep-admit-lint-extensions.md
+**Session**: `2026-05-25T2035-c8f105`
+**Entry ID**: `008a0e3be559`
+
+**Scope**: Three V1.1 extensions to the Phase 105 dependency-admission lint surface. (1) **D-106.1 PR-label override** -- `qor/scripts/dependency_admission_lint.py` amended with `_query_pr_labels(skip)` helper (~25 lines): detects CI context via `GITHUB_EVENT_NAME == 'pull_request'` + `GITHUB_REPOSITORY` + PR number from `GITHUB_REF` regex; shells out to `gh pr view <n> --repo <owner>/<name> --json labels` with `check=True, timeout=10`; treats presence of `dep-admit-override` label as override signal. Fails open on any subprocess / FileNotFoundError / JSONDecodeError / KeyError / OSError -- emits stderr fallback note and returns None (caller treats as no-label-override-available). New `--skip-pr-labels` flag for local testing. (2) **D-106.2 pyproject.toml exact-pin coverage** -- new `parse_pyproject_exact_pins(text)` in `_dep_admit_common.py` (~30 lines): uses `tomllib.loads` (stdlib, Python 3.11+) to extract `[project] dependencies` and `[project.optional-dependencies]` entries matching PEP 440 exact-pin regex (`package==X.Y.Z`); range pins (`>=`, `~=`, `<`, etc.) and unbounded specifiers skipped. Lint's `run_lint()` signature gains `current_pyproject_text` + `base_pyproject_text` params; pyproject bumps union with lockfile bumps before the PyPI query loop. (3) **D-106.3 Session ID convention lint** -- new `qor/scripts/session_id_lint.py` (~45 lines): pure `lint(marker_path)` returning `(conforming, msg)`; argparse `main()` always exits 0; emits stderr WARN when `.qor/session/current` doesn't match `SESSION_ID_PATTERN`. Wired into `/qor-substantiate` Step 4.6 with `|| true` belt-and-suspenders.
+
+**Files touched** (10): `qor/scripts/_dep_admit_common.py` (amended: `tomllib` import + `parse_pyproject_exact_pins` + `_PYPROJECT_EXACT_PIN_RE`); `qor/scripts/dependency_admission_lint.py` (amended: `os` + `re` imports + `_query_pr_labels` + `_PR_REF_RE` + `_OVERRIDE_LABEL` + `run_lint` signature extensions for pyproject + label override integration); `qor/scripts/session_id_lint.py` (NEW); `tests/test_dep_admit_common.py` (+3 tests); `tests/test_dependency_admission_lint.py` (+3 tests); `tests/test_session_id_lint.py` (NEW, 3 tests); `qor/skills/governance/qor-substantiate/SKILL.md` (Step 4.6 wires the session_id_lint with `|| true` non-blocking); `qor/references/doctrine-dependency-admission.md` (amended: Phase 106 V1.1 extensions note under `### Check mechanic`); `qor/references/doctrine-governance-enforcement.md` (NEW §7.1 "Session ID convention" subsection); `qor/references/glossary.md` (3 new term entries: PR-label override, pyproject exact-pin admission, session ID convention lint); `docs/plan-qor-phase89-ci-commands-reconciliation.md` (forward-maintenance bullet for `python -m qor.scripts.session_id_lint`); `docs/plan-qor-phase106-dep-admit-lint-extensions.md` (NEW; this plan).
+
+**Test surface**: 8 new behavioral tests + 1 bonus marker-missing test (9 total). All invoke the unit and assert on output -- exit codes, override status, stderr content, dataclass fields. Network and gh CLI calls mocked via monkeypatch. All pass twice deterministically (18 total counted across the 3 test files including pre-existing Phase 105 tests; 18/18 green). Targeted critical-gate run: 117 passed across 16 critical suites (substantiate wiring, workflow budget, ci coverage, skill doctrine, changelog format, release workflow immutability, dependabot, codeowners, attribution).
+
+**TDD red-green**: tests authored FIRST. session_id_lint test red at collection (`ImportError: cannot import name 'session_id_lint'`); pyproject tests red at runtime (`AttributeError: no parse_pyproject_exact_pins`). All 18 green first attempt after implementation. Second pass confirmed determinism.
+
+**Razor compliance**: all functions <40 lines (`_query_pr_labels` 24, `parse_pyproject_exact_pins` 24, `session_id_lint.lint` 13, `session_id_lint.main` 9). File totals: `_dep_admit_common.py` 167 lines (was ~110), `dependency_admission_lint.py` 213 lines (was ~155), `session_id_lint.py` 46 lines (NEW). All well under 250. Max nesting depth: 2 (existing retry loop). No nested ternaries introduced.
+
+**Self-application discipline (Phase 68 sub-pass)**: plan declares `originating_remediation: Phase 105 V2 carry-forward (3 of 5 items)`. Discipline extended is the cooling-period admission check. Implementation adds zero new third-party dependencies (stdlib only: `tomllib`, `subprocess`, `urllib.request`, `os`, `re`, `json`, `argparse`, `dataclasses`, `pathlib`, `sys`). gh CLI is a shell tool, not a Python dependency. Vacuously satisfied. Phase 105 self-application argument carries forward.
+
+**Intent lock**: captured at session `2026-05-25T2035-c8f105` (compliant 6-hex slug per the new convention being introduced) against plan_hash + audit_hash + HEAD commit a51af47. The new session ID convention lint will WARN on non-conforming markers but is non-blocking; this session's own marker conforms and verifies clean.
+
+**SG-StructureWithoutPolicy-A follow-through (third independent surface)**: Phase 103 declared the cooling-period structure (META_LEDGER override + PR label + 30-day re-eval). Phase 105 shipped the META_LEDGER signal + the 30-day tracker. Phase 106 closes the PR label signal — all three components of the documented override procedure now have operational enforcement / detection. The pattern is now a complete countermeasure across the structure → declaration → enforcement chain at this surface.
+
+**Carry-forward (unchanged)**: WARN→hard-fail flip on cooling-period lint (needs operator-evidence from V1.1 first runs); broaden CODEOWNERS reviewer pool (needs maintainer team); `cyclonedx-bom` hash-pinning (Razor file-budget); future V2 extensions (calendar/GH-issue integration for tracker).
+
+**Content Hash**: SHA256(plan-qor-phase106-dep-admit-lint-extensions.md) = `7a40f6707f63eeba71df0e08cdb177ae3db4fffeebb0a485b8375cee563aee4a`
+**Previous Hash**: `85b663d0b35e5d840fefc30f2202dd34e99257fea081590c28eb25d91a81d725`
+**Chain Hash**: `bfc9abc27cebf387e3507e5747ae9a826d27b4bff76ec231341c011e8e1a4da5`
+
+---
+
+*Session: 2026-05-25T2035-c8f105 (Phase 106 -- implementation complete)*
+
+---
+
+### Entry #290: SESSION SEAL -- Phase 106 feature substantiated: dependency-admission lint V1.1 extensions (v0.74.0)
+
+**Timestamp**: 2026-05-26T01:30:00Z
+**Phase**: SUBSTANTIATE (Phase 106 feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase106-dep-admit-lint-extensions.md
+**Session**: `2026-05-25T2035-c8f105`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `7418bde60fda`
+
+**Scope**: Three V1.1 extensions ship on top of Phase 105's V1 dependency-admission lint surface. (1) PR-label override (`dep-admit-override` GitHub PR label as supplementary signal; CI detection via standard Actions env vars; gh CLI shell-out; fails open to META_LEDGER-only on any error). (2) pyproject.toml exact-pin coverage (PEP 440 `==X.Y.Z` form in `[project] dependencies` + `[project.optional-dependencies]`; tomllib stdlib parsing; range / unbounded specifiers skipped). (3) Session ID convention lint at `/qor-substantiate` Step 4.6 (non-blocking stderr WARN when `.qor/session/current` doesn't match SESSION_ID_PATTERN; always exits 0). All three close Phase 105 V2 carry-forward items 2 + 3 + 6.
+
+**Cluster context**: Phase 105 V2 carry-forward had 5 items. Phase 106 ships 3 of 5. Remaining 2 have legitimate blockers (operator-evidence accumulation for WARN→hard-fail flip; maintainer-team provisioning for CODEOWNERS broadening) and remain explicit carry-forward; not gated on Phase 106.
+
+**Files touched** (13): `qor/scripts/_dep_admit_common.py` (amended; +`parse_pyproject_exact_pins` + `tomllib` import), `qor/scripts/dependency_admission_lint.py` (amended; +`_query_pr_labels` + `--skip-pr-labels` flag + `run_lint` signature extensions for pyproject + label override integration), `qor/scripts/session_id_lint.py` (NEW), `tests/test_dep_admit_common.py` (+3 tests), `tests/test_dependency_admission_lint.py` (+3 tests), `tests/test_session_id_lint.py` (NEW; 3 tests), `qor/skills/governance/qor-substantiate/SKILL.md` (Step 4.6 wires session_id_lint with `|| true` non-blocking), `qor/references/doctrine-dependency-admission.md` (Phase 106 V1.1 extensions note), `qor/references/doctrine-governance-enforcement.md` (NEW §7.1 "Session ID convention" subsection), `qor/references/glossary.md` (3 new term entries), `docs/plan-qor-phase89-ci-commands-reconciliation.md` (forward-maintenance bullet for `python -m qor.scripts.session_id_lint`), `docs/plan-qor-phase106-dep-admit-lint-extensions.md` (NEW), `pyproject.toml` (0.73.0 → 0.74.0), `CHANGELOG.md` (v0.74.0 section), `README.md` (Tests 1937 → 1946; Ledger 287 → 290), `docs/SYSTEM_STATE.md` (Phase 106 section).
+
+**Test surface**: 9 new tests (3 + 3 + 3 across 1 new + 2 amended files). All invoke the unit and assert on output. Network and gh CLI calls mocked via monkeypatch. 18/18 pass twice deterministically (Phase 105 + 106 tests in the 3 dep-admit test files). Critical-gate suite at impl time: 117/119 (2 README badge currency failures resolved at seal-time). Full regression at seal: 1946 collected.
+
+**Audit history**: iter-1 PASS (Entry #288, L2). Author-audit momentum risk per Phase 68 SG-007 acknowledged; Option B deferred for iter-1 with rationale (plan emerged from operator multiple-choice dialogue on all 3 material decisions; L2 risk; Phase 105 is external sealed anchor).
+
+**Phase 106 conventions self-applied at this seal**:
+- Session ID `2026-05-25T2035-c8f105` is the first conforming 6-hex slug; session_id_lint is silent (no WARN).
+- The new session_id_lint step at qor-substantiate Step 4.6 ran for the first time during this seal cycle (exit 0).
+- doc_integrity strict passes cleanly with the 3 new glossary terms wired to their `referenced_by` paths.
+
+**Strict doc-integrity remediation status**: clean. The 3 new glossary terms (`PR-label override`, `pyproject exact-pin admission`, `session ID convention lint`) added in Phase 106 carry complete `referenced_by` lists pointing at the files that use them. No drift surfaced at substantiate.
+
+**SG-StructureWithoutPolicy-A countermeasure progress**: at the dependency-admission surface, the pattern is now fully closed across the structure → declaration → enforcement chain. Phase 103 declared the 3-component override procedure (META_LEDGER + PR label + 30-day re-eval). Phase 105 shipped the META_LEDGER signal + 30-day tracker. Phase 106 closes the PR label signal. The doctrine's three documented components all have operational tooling.
+
+**Carry-forward (unchanged)**: WARN→hard-fail flip on cooling-period lint (needs operator-evidence from V1.1 first PR runs); broaden CODEOWNERS reviewer pool (needs maintainer team); `cyclonedx-bom` hash-pinning (Razor file-budget concern); future V2 (calendar/GH-issue integration; broaden cooling-period to non-exact pyproject specifiers).
+
+**Review Boundary**: cycle ends at this seal. Operator handles `git add` + commit + push + PR + tag from the staged artifacts. No remote mutation by this skill.
+
+**Content Hash (session seal)**: `7dbc5b1fb39e862bbd84bb80d74dedac1e15381b5cd3a0f5765139c8529c9327`
+**Previous Hash**: `bfc9abc27cebf387e3507e5747ae9a826d27b4bff76ec231341c011e8e1a4da5`
+**Chain Hash (Merkle seal)**: `72f12d2f7ff3ec2e20a1aec38efe2e74e5faf0d6383db84253deadadecdde1ed`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 106 feature complete; dependency-admission lint V1.1 shipped)
+*Merkle seal: 72f12d2f...* (Phase 106 seal on top of Phase 105's e9be44d7...)
+*Open items at this seal: stage artifacts; commit; push; tag v0.74.0; approve PyPI deployment*

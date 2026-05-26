@@ -274,6 +274,11 @@ python -m qor.reliability.skill_admission qor-substantiate || ABORT
 
 # Verify all /qor-* handoff references across skills resolve to real skills.
 python -m qor.reliability.gate_skill_matrix || ABORT
+
+# Phase 106 wiring: WARN-only session ID convention lint. Non-blocking;
+# stderr WARN when the active session ID doesn't match SESSION_ID_PATTERN
+# (catches the fall-through-to-'default' fragmentation pattern).
+python -m qor.scripts.session_id_lint || true
 ```
 
 Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit, re-admit, or fix broken handoff) and re-run substantiation.

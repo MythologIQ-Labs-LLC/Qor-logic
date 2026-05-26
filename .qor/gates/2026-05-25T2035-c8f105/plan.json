@@ -1,0 +1,52 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-25T2035-c8f105",
+  "ts": "2026-05-25T23:40:07Z",
+  "plan_path": "docs/plan-qor-phase106-dep-admit-lint-extensions.md",
+  "phases": [
+    "Phase 1: parser extension + lint extensions + session lint + tests"
+  ],
+  "ci_commands": [
+    "python -m qor.scripts.dependency_admission_lint --base <ref>",
+    "python -m qor.scripts.session_id_lint",
+    "python -m pytest tests/test_dep_admit_common.py -q",
+    "python -m pytest tests/test_dependency_admission_lint.py -q",
+    "python -m pytest tests/test_session_id_lint.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase106-dep-admit-lint-extensions.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase106-dep-admit-lint-extensions.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase106-dep-admit-lint-extensions.md",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "doc_tier_rationale": "Standard tier: 3 new terms (PR-label override, pyproject exact-pin admission, session ID convention lint) homed in existing doctrines; boundaries declared (limitations, non_goals, exclusions); additive notes to two doctrines + glossary updates.",
+  "terms": [
+    {
+      "term": "PR-label override",
+      "home": "qor/references/doctrine-dependency-admission.md"
+    },
+    {
+      "term": "pyproject exact-pin admission",
+      "home": "qor/references/doctrine-dependency-admission.md"
+    },
+    {
+      "term": "session ID convention lint",
+      "home": "qor/references/doctrine-governance-enforcement.md"
+    }
+  ],
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.73.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-25T23:40:07Z"
+  }
+}
