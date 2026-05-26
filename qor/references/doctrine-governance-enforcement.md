@@ -99,6 +99,30 @@ plan-time would invalidate downstream gate checks within a single phase if
 the plan needs to be re-authored after audit VETO. Rotation belongs strictly
 at end-of-phase seal.
 
+### 7.1 Session ID convention (Phase 106 wiring)
+
+Session IDs are the directory key under `.qor/gates/<sid>/` and the value
+written to `.qor/session/current`. The canonical format is enforced by
+`qor.scripts.session.SESSION_ID_PATTERN`:
+
+```
+^\d{4}-\d{2}-\d{2}T\d{4}-[0-9a-f]{6}$
+```
+
+Example: `2026-05-25T2035-c8f105`.
+
+When a session ID doesn't match this pattern, `qor.scripts.session.current()`
+returns `None` and downstream tooling falls through to the string `"default"`,
+fragmenting event provenance (intent_lock, procedural_fidelity, override
+events) under a shared default session. The fall-through is operationally
+benign (skill execution continues) but produces lost archaeology.
+
+`qor.scripts.session_id_lint` (Phase 106) emits a non-blocking stderr WARN
+at `/qor-substantiate` Step 4.6 when the active marker doesn't match the
+pattern, naming the canonical format and pointing operators at
+`session.rotate()` for compliant generation. The lint always exits 0; the
+WARN is a visibility signal, not a seal-block.
+
 ## 8. Install Currency
 
 Source truth lives under `qor/skills/` in the repo. The operator runs

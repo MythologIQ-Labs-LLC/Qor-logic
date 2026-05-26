@@ -10,6 +10,83 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.74.0] - 2026-05-26
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 106 (feature)**: dependency-admission lint V1.1 extensions
+  on top of Phase 105's V1 surface.
+  - **PR-label override** (`dep-admit-override` label): the lint now
+    detects CI context (`GITHUB_EVENT_NAME=pull_request` +
+    `GITHUB_REPOSITORY` + PR number from `GITHUB_REF`) and shells out
+    to `gh pr view <n> --repo <owner>/<name> --json labels`. Presence
+    of `dep-admit-override` clears within-window admissions. Fails
+    open: any gh non-zero exit emits a stderr fallback note and falls
+    back to META_LEDGER-only override check. New `--skip-pr-labels`
+    flag for local testing. META_LEDGER `**Dependency admission
+    override**:` entries remain binding-authority; PR label is
+    supplementary.
+  - **pyproject.toml exact-pin coverage**: new
+    `parse_pyproject_exact_pins(text)` in `_dep_admit_common.py` uses
+    stdlib `tomllib` to extract `[project] dependencies` and
+    `[project.optional-dependencies]` entries matching PEP 440
+    exact-pin form (`package==X.Y.Z`). Range pins (`>=4`, `~=2.1`)
+    and unbounded specifiers are skipped because the resolved version
+    is not knowable until install time. The lint diff loop unions
+    pyproject bumps with lockfile bumps before the PyPI query loop.
+  - **Session ID convention lint**: new
+    `qor/scripts/session_id_lint.py` (~46 lines) emits a non-blocking
+    stderr WARN at `/qor-substantiate` Step 4.6 when the active
+    `.qor/session/current` marker doesn't match
+    `qor.scripts.session.SESSION_ID_PATTERN` (canonical 6-hex slug
+    format `\d{4}-\d{2}-\d{2}T\d{4}-[0-9a-f]{6}$`). Always exits 0;
+    the WARN names the canonical format and points operators at
+    `session.rotate()` for compliant generation. Closes the
+    fall-through-to-default pattern where event provenance fragments
+    across sessions.
+- `tests/test_dep_admit_common.py` -- amended with 3 tests for
+  pyproject exact-pin parsing.
+- `tests/test_dependency_admission_lint.py` -- amended with 3 tests
+  for PR-label override (success + fails-open) and pyproject
+  within-window violation.
+- `tests/test_session_id_lint.py` -- NEW, 3 tests (WARN on
+  mismatch, silent on match, silent on missing marker).
+- `qor/references/doctrine-dependency-admission.md` -- additive
+  Phase 106 V1.1 extensions note under `### Check mechanic`.
+- `qor/references/doctrine-governance-enforcement.md` -- new §7.1
+  "Session ID convention" subsection documenting the canonical
+  format + the `session_id_lint` WARN surface.
+- `qor/references/glossary.md` -- 3 new term entries (`PR-label
+  override`, `pyproject exact-pin admission`, `session ID
+  convention lint`).
+- `docs/plan-qor-phase89-ci-commands-reconciliation.md` -- forward-
+  maintenance bullet for the new `python -m qor.scripts.session_id_lint`
+  command (the self-applied CI surface test requires Phase 89's plan
+  to enumerate every operator-runnable Python invocation across all
+  workflows).
+
+### Changed
+
+- `pyproject.toml` version 0.73.0 -> 0.74.0 (feature change_class).
+- `qor/skills/governance/qor-substantiate/SKILL.md` Step 4.6 -- adds
+  a 4th line invoking `python -m qor.scripts.session_id_lint` with
+  `|| true` belt-and-suspenders (the script already exits 0
+  unconditionally; the wrap documents intent for future readers).
+
+### Security
+
+- No new security-critical paths. The new PR-label query shells out
+  to `gh` with list-form argv (no shell=True; SG-Phase47-A
+  countermeasure honored); GitHub-controlled `GITHUB_REF` is regex-
+  parsed for the PR number (digit-only capture). The
+  `tomllib` parser is the stdlib safe TOML reader (no code execution).
+  Fails-open semantics on the PR label query are deliberate and
+  documented in the plan: a failed network query must not introduce
+  a spurious within-window violation when the operator has done the
+  right thing via META_LEDGER override entry.
+
 ## [0.73.0] - 2026-05-25
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

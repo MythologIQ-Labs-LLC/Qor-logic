@@ -108,3 +108,68 @@ def test_parse_override_entries_extracts_package_version_justification():
     assert by_pkg["requests"].version == "2.32.0"
     assert by_pkg["requests"].upload_age_days == 7
     assert by_pkg["requests"].entry_ts == datetime(2026, 5, 22, 8, 0, 0, tzinfo=timezone.utc)
+
+
+# --- Phase 106: parse_pyproject_exact_pins ------------------------------------
+
+
+def test_parse_pyproject_exact_pins_extracts_pinned_entries():
+    """Exact-pin (`==X.Y.Z`) entries returned; range / unbounded forms skipped."""
+    text = textwrap.dedent("""\
+        [project]
+        name = "demo"
+        version = "0.1.0"
+        dependencies = [
+            "pinned-pkg==1.2.3",
+            "ranged-pkg>=4",
+            "unbounded-pkg",
+            "another-pin==9.9.9",
+        ]
+        """)
+    pins = common.parse_pyproject_exact_pins(text)
+    by_name = {p.name: p for p in pins}
+
+    assert "pinned-pkg" in by_name
+    assert by_name["pinned-pkg"].version == "1.2.3"
+    assert by_name["pinned-pkg"].hashes == ()
+    assert "another-pin" in by_name
+    assert by_name["another-pin"].version == "9.9.9"
+    # Range / unbounded skipped
+    assert "ranged-pkg" not in by_name
+    assert "unbounded-pkg" not in by_name
+
+
+def test_parse_pyproject_exact_pins_handles_optional_dependencies():
+    """`[project.optional-dependencies]` groups are also scanned."""
+    text = textwrap.dedent("""\
+        [project]
+        name = "demo"
+        version = "0.1.0"
+        dependencies = ["base-pin==1.0.0"]
+
+        [project.optional-dependencies]
+        dev = ["dev-pin==2.0.0", "dev-range>=3"]
+        test = ["test-pin==4.5.6"]
+        """)
+    pins = common.parse_pyproject_exact_pins(text)
+    by_name = {p.name: p for p in pins}
+
+    assert "base-pin" in by_name
+    assert "dev-pin" in by_name and by_name["dev-pin"].version == "2.0.0"
+    assert "test-pin" in by_name and by_name["test-pin"].version == "4.5.6"
+    assert "dev-range" not in by_name
+
+
+def test_parse_pyproject_exact_pins_returns_empty_for_no_exact_pins():
+    """qor-logic's own pyproject (range-only deps) yields empty list."""
+    text = textwrap.dedent("""\
+        [project]
+        name = "qor-logic"
+        version = "0.74.0"
+        dependencies = ["jsonschema>=4", "PyYAML>=6"]
+
+        [project.optional-dependencies]
+        dev = ["pytest>=8"]
+        """)
+    pins = common.parse_pyproject_exact_pins(text)
+    assert pins == []

@@ -918,3 +918,37 @@ referenced_by:
   - qor/references/doctrine-dependency-admission.md
 introduced_in_plan: phase105-dependency-admission-tooling
 ```
+
+```yaml
+term: PR-label override
+definition: 'A supplementary override signal for the Phase 105 dependency-admission cooling-period check: the presence of the `dep-admit-override` GitHub PR label on the active PR. Detected at lint runtime via `gh pr view <n> --repo <owner>/<name> --json labels` when CI context env vars (`GITHUB_EVENT_NAME=pull_request` + `GITHUB_REPOSITORY` + `GITHUB_REF=refs/pull/<n>/merge`) are set. Fails open: any gh non-zero exit logs a stderr fallback and falls back to META_LEDGER-only override check. `--skip-pr-labels` flag bypasses for local testing. Phase 106 wiring; supplementary to the META_LEDGER `**Dependency admission override**:` entry which remains binding-authority.'
+home: qor/references/doctrine-dependency-admission.md
+referenced_by:
+  - qor/scripts/dependency_admission_lint.py
+  - qor/references/doctrine-dependency-admission.md
+  - .github/workflows/pr-dependency-review.yml
+introduced_in_plan: phase106-dep-admit-lint-extensions
+```
+
+```yaml
+term: pyproject exact-pin admission
+definition: 'A package admitted into the release dependency tree via an explicit PEP 440 exact-pin (`package==X.Y.Z`) entry in `[project] dependencies` or `[project.optional-dependencies]` of `pyproject.toml`. The Phase 106 cooling-period lint walks both lockfile diffs AND pyproject exact-pin diffs, applying the 14-day threshold to either. Range pins (`>=4`, `~=2.1`) and unbounded specifiers are skipped because the resolved version is not knowable until install time. Exact pins represent explicit admission decisions and are the right scope for cooling-period attention.'
+home: qor/references/doctrine-dependency-admission.md
+referenced_by:
+  - qor/scripts/_dep_admit_common.py
+  - qor/scripts/dependency_admission_lint.py
+  - qor/references/doctrine-dependency-admission.md
+introduced_in_plan: phase106-dep-admit-lint-extensions
+```
+
+```yaml
+term: session ID convention lint
+definition: 'A non-blocking stderr-WARN lint wired into /qor-substantiate Step 4.6 (Phase 106). When the active `.qor/session/current` marker doesn''t match `qor.scripts.session.SESSION_ID_PATTERN` (canonical 6-hex slug format `\d{4}-\d{2}-\d{2}T\d{4}-[0-9a-f]{6}$`), the lint emits a stderr WARN naming the canonical format and pointing operators at `session.rotate()` for compliant generation. Always exits 0; the WARN is a visibility signal, not a seal-block. Closes the fall-through-to-default pattern where event provenance fragments across sessions because the operator-supplied marker doesn''t match the pattern.'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/scripts/session_id_lint.py
+  - qor/scripts/session.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/references/doctrine-governance-enforcement.md
+introduced_in_plan: phase106-dep-admit-lint-extensions
+```
