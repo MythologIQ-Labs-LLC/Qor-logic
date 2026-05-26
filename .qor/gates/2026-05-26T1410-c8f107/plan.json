@@ -1,0 +1,59 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-26T1410-c8f107",
+  "ts": "2026-05-26T18:34:33Z",
+  "plan_path": "docs/plan-qor-phase107-carry-forward-close.md",
+  "phases": [
+    "Phase 1: cooling-period flip + SBOM lockfile + range-pin + emit-issue + CODEOWNERS doctrine + tests"
+  ],
+  "ci_commands": [
+    "python -m qor.scripts.dependency_admission_lint --base <ref>",
+    "python -m pytest tests/test_requirements_sbom_lockfile.py -q",
+    "python -m pytest tests/test_codeowners_doctrine.py -q",
+    "python -m pytest tests/test_release_workflow_immutability.py -q",
+    "python -m pytest tests/test_pr_dependency_review_workflow.py -q",
+    "python -m pytest tests/test_dep_admit_common.py -q",
+    "python -m pytest tests/test_dependency_admission_lint.py -q",
+    "python -m pytest tests/test_dep_admit_override_tracker.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52",
+    "python qor/scripts/pr_citation_lint.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase107-carry-forward-close.md",
+    "python -m qor.scripts.ci_coverage_lint --plan docs/plan-qor-phase107-carry-forward-close.md --workflows-dir .github/workflows",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase107-carry-forward-close.md",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "doc_tier_rationale": "Standard tier: 4 new terms homed in existing doctrines; additive prose; no system-tier rewrites.",
+  "terms": [
+    {
+      "term": "range-pin lower-bound check",
+      "home": "qor/references/doctrine-dependency-admission.md"
+    },
+    {
+      "term": "SBOM hash-pinned lockfile",
+      "home": "qor/references/doctrine-dependency-admission.md"
+    },
+    {
+      "term": "override rollup issue",
+      "home": "qor/references/doctrine-dependency-admission.md"
+    },
+    {
+      "term": "CODEOWNERS operational mode",
+      "home": "qor/references/doctrine-governance-enforcement.md"
+    }
+  ],
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.74.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-26T18:34:33Z"
+  }
+}

@@ -291,3 +291,43 @@ def test_lint_pyproject_exact_pin_within_window_triggers_violation(monkeypatch, 
     assert len(result.violations) == 1
     assert result.violations[0].name == "freshlib"
     assert result.violations[0].new_version == "2.0.0"
+
+
+# --- Phase 107 D-107.3: range-pin lower-bound coverage in run_lint ----------
+
+
+def test_lint_pyproject_range_pin_within_window_triggers_violation(monkeypatch, fixed_now):
+    """`>=X.Y.Z` lower bound within 14 days -> violation."""
+    upload_time = (fixed_now - timedelta(days=3)).isoformat().replace("+00:00", "Z")
+    monkeypatch.setattr(
+        lint.urllib.request, "urlopen",
+        _mock_urlopen({
+            "https://pypi.org/pypi/freshrange/3.0.0/json": _make_pypi_response(upload_time),
+        }),
+    )
+
+    current_pyproject = textwrap.dedent("""\
+        [project]
+        name = "demo"
+        version = "1.0"
+        dependencies = ["freshrange>=3.0.0"]
+        """)
+    base_pyproject = textwrap.dedent("""\
+        [project]
+        name = "demo"
+        version = "1.0"
+        dependencies = []
+        """)
+
+    result = lint.run_lint(
+        current_lockfile_text="",
+        base_lockfile_text="",
+        ledger_text="",
+        current_pyproject_text=current_pyproject,
+        base_pyproject_text=base_pyproject,
+    )
+
+    assert result.exit_code == 1
+    assert len(result.violations) == 1
+    assert result.violations[0].name == "freshrange"
+    assert result.violations[0].new_version == "3.0.0"
