@@ -12,6 +12,8 @@ file is the user-facing narrative.
 
 ## [0.76.0] - 2026-05-29
 
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
 ### Added
 
 - **Phase 109 (feature)**: governance artifact health gate. New

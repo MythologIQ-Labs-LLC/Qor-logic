@@ -1,0 +1,58 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-29T0037-f4806e",
+  "ts": "2026-05-29T00:38:38Z",
+  "plan_path": "docs/plan-qor-phase109-governance-artifact-health.md",
+  "change_class": "feature",
+  "doc_tier": "system",
+  "high_risk_target": true,
+  "phases": [
+    "Governance health checker",
+    "Prompt enforcement",
+    "Status, CI, and variant drift"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_governance_health.py -q",
+    "python -m pytest tests/test_governance_prompt_health_coverage.py -q",
+    "python -m pytest tests/test_prompt_resilience_lint.py tests/test_skill_prerequisite_coverage.py -q",
+    "python -m pytest tests/test_qor_status_governance_health.py tests/test_cli_governance_health.py -q",
+    "python -m pytest tests/test_variant_drift_governance_health.py -q",
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase109-governance-artifact-health.md",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase109-governance-artifact-health.md",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md"
+  ],
+  "impact_assessment": {
+    "purpose": "Prevent any /qor-* prompt from inventing an ungoverned continuation path when required governance artifacts are missing, damaged, or incomplete.",
+    "affected_stakeholders": [
+      "Qor-logic operators",
+      "downstream Qor-governed projects",
+      "reviewers relying on META_LEDGER and gate artifacts",
+      "future agents consuming the skill corpus"
+    ],
+    "identified_risks": [
+      "R1: a prompt may continue after a missing file by substituting assumptions",
+      "R2: a damaged ledger or malformed governance file may be treated as absent and overwritten",
+      "R3: a seeded placeholder may be accepted as meaningful project governance",
+      "R4: generated variant skills may drift from source skill recovery rules"
+    ],
+    "mitigations": [
+      "M1: add one reusable governance-health checker with explicit statuses",
+      "M2: permit seed only for missing scaffold in uninitialized or recoverable scaffold cases; damaged existing artifacts block and route to repair",
+      "M3: add prompt lint coverage so governance reads require a health preflight or a justified fail-fast marker",
+      "M4: run variant drift and prompt-resilience tests in CI"
+    ],
+    "residual_risks": [
+      "Heuristic completeness checks may not catch every stale value inside a syntactically valid artifact; mitigated by an extensible health registry and treating GOVERNANCE_INDEX.md as the future freshness surface."
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.75.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-29T00:38:38Z"
+  }
+}
