@@ -377,6 +377,10 @@ A test is **presence-only** when its assertion is solely about artifact existenc
 
 **Required next action:** Governor: amend plan to replace presence-only tests with functionality tests (invoke the unit, assert against output), re-run `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md`, this is a **Plan-text** ground.
 
+**Test-source lint (Phase 116; GH #170, WARN-first):** complement the plan-text check above with a scan of actual test source for the same anti-pattern (a test that reads a SKILL.md and asserts only substring membership):
+`python -m qor.scripts.prose_test_lint --tests-dir tests || true`
+WARN-first (the `|| true` swallows the non-zero); `--enforce` is reserved for a graduated V2 once the false-positive rate is measured. Per `qor/references/doctrine-verification-closure-integrity.md` Prose-Behavior Test Lint.
+
 **Closed-enum taxonomy coverage (Phase 84 wiring; GH #84)**: when the plan declares a closed-enum taxonomy — a `CANONICAL_*_VALUES` constant paired with a `normalize*` function — the test list MUST assert BOTH directions: forward (every alias-map key normalizes into the canonical set) AND inverse (every non-gated canonical value is reachable via at least one identity-mapping). A taxonomy with only forward coverage can define a canonical bucket that `normalize*` never produces, so downstream consumers querying that bucket get zero rows. **Missing inverse coverage -> VETO with `coverage-gap` category.** Per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline and `SG-InverseCoverageGapTaxonomy-A`.
 
 #### Dependency Audit

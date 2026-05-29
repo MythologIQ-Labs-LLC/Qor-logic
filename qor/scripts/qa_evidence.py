@@ -88,6 +88,42 @@ def run_sast(paths: tuple[str, ...] = ("qor",), backend: str = "bandit") -> dict
     return sast_scan.scan(list(paths), backend=backend)
 
 
+def coverage_pillar(total_pct: float, *, min_pct: float = 80.0) -> dict:
+    """Coverage pillar (Phase 116; #168): pass at/above threshold, else fail."""
+    return {"status": "pass" if total_pct >= min_pct else "fail", "metric": float(total_pct)}
+
+
+def run_coverage(data_file: str = ".coverage", min_pct: float = 80.0) -> dict:
+    """Read an existing coverage data file -> coverage pillar; skip when absent.
+
+    Does NOT re-run the suite (Phase 75 graceful-skip when no data present).
+    """
+    if not Path(data_file).exists():
+        return {"status": "skip", "note": f"no coverage data at {data_file}"}
+    import io
+    import coverage
+
+    cov = coverage.Coverage(data_file=data_file)
+    cov.load()
+    total = cov.report(file=io.StringIO())
+    return coverage_pillar(float(total), min_pct=min_pct)
+
+
+def run_stability(plan_path: str, repo_root: str = ".") -> dict:
+    """Stability pillar (Phase 116; #169): re-walk the plan's runtime contract at
+    seal time, reusing ``runtime_contract_walk`` (#108). Skip when the plan is absent.
+    """
+    from qor.scripts import runtime_contract_walk
+
+    if not Path(plan_path).exists():
+        return {"status": "skip", "note": "plan absent"}
+    findings = runtime_contract_walk.walk_plan(Path(plan_path), Path(repo_root))
+    if findings:
+        return {"status": "fail", "metric": float(len(findings)),
+                "note": f"{len(findings)} runtime-contract finding(s)"}
+    return {"status": "pass", "metric": 0.0}
+
+
 def write(
     session_id: str | None = None,
     regression_summary: IndexSummary | None = None,
