@@ -28,3 +28,16 @@ Both the FEATURE_INDEX regression ABORT and the close guard sit on the seal cont
 - `ac_close_guard`: WARN-only by default, `--enforce` reserved for V2.
 
 When `gh` is unavailable the close guard records a skip (Phase 75 prerequisite-absent semantics), never a crash.
+
+## Pillar evidence sources (Phase 116; #168, #169, #170)
+
+The four qa.json pillars draw on consolidated existing surfaces, not parallel tooling:
+
+- **coverage** (#168): `qa_evidence.run_coverage` reads an existing coverage data file (`coverage` package) and emits a `metric` (pct) vs a configurable `min_pct` threshold. No data file present -> `skip` (never a fabricated number).
+- **stability** (#169): `qa_evidence.run_stability` re-invokes `runtime_contract_walk.walk_plan` (#108) at seal time to attest the plan's runtime contract still holds; findings -> `fail`, none -> `pass`, plan absent -> `skip`. Reuses the existing walk; no new smoke check.
+- **security** (#167): see the SAST Backend section above.
+- **regression** (#155/#40): the FEATURE_INDEX tally.
+
+## Prose-Behavior Test Lint (#170)
+
+`qor.scripts.prose_test_lint` scans `tests/*.py` source (AST) and flags tests whose only assertion is substring membership in a SKILL.md — the presence-not-behavior anti-pattern that shipped in #56/#58/#83 and that the plan-text `plan_test_lint` could not catch. Heuristic: a test function that reads a SKILL.md AND contains an `assert "<literal>" in <...>` is flagged. WARN-first when wired into `/qor-audit` Test Functionality Pass; `--enforce` reserved for a graduated V2. Enforces the `doctrine-test-functionality.md` acceptance question at the test-source level.

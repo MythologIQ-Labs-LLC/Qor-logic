@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.83.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 116 (#168, #169, #170)**: VCI completion. qa.json `coverage` pillar (`qa_evidence.run_coverage`, reads coverage data + threshold, skip when absent) and `stability` pillar (`qa_evidence.run_stability`, re-walks the runtime contract via `runtime_contract_walk` #108 at seal time) -- all four pillars now real. New `qor.scripts.prose_test_lint`: AST scan flagging presence-only test assertions (substring-in-SKILL.md), wired WARN-first into `/qor-audit` Test Functionality Pass (the #56/#58/#83 anti-pattern; the lint surfaces 40 pre-existing instances).
+
 ## [0.82.0] - 2026-05-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
