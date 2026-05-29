@@ -1,0 +1,29 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-29T0252-f6486c",
+  "ts": "2026-05-29T02:54:27Z",
+  "plan_path": "docs/plan-qor-phase113-shadow-genome-graph.md",
+  "change_class": "feature",
+  "doc_tier": "system",
+  "high_risk_target": false,
+  "phases": [
+    "Shadow Genome Graph library",
+    "doctrine + glossary"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_shadow_genome_graph.py -q",
+    "python -m pytest tests/test_shadow_genome_graph_doctrine.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase113-shadow-genome-graph.md",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase113-shadow-genome-graph.md",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.79.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-29T02:54:27Z"
+  }
+}

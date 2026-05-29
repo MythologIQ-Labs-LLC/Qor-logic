@@ -11296,3 +11296,51 @@ Change class: feature. Tests: 2006 passed / 0 failed / 2 skipped (full suite, af
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 112; v0.79.0 staged in stacked PR, held for operator review)
 
+
+---
+
+### Entry #305: GATE TRIBUNAL -- Phase 113 plan PASS
+
+**Timestamp**: 2026-05-29T02:56:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Plan**: docs/plan-qor-phase113-shadow-genome-graph.md
+**Session**: `2026-05-29T0252-f6486c`
+
+**Content Hash**: `90ae597604baba7f8aaa9614451832ca6a6006c98627dfe777ae1827d33a4dfd`
+**Previous Hash**: `10f836e716408adfafdfb2e9e18a6be80a477b29f8173a64f231ea8c6df90ef9`
+**Chain Hash**: `1d15137de302ecd9fd7c36c3f84ac039b12b3297e807500bd1529540f1689121`
+
+**Decision**: Phase 113 (#139 Shadow Genome causal-graph: Python core layer = typed nodes/edges + trace_chain/snapshot/query over append-only JSONL; dashboard/trust-levels/federation explicitly DECLINED for qor-logic per honest fit assessment LD2) cleared all adversarial passes. Stdlib-only standalone library; no gate-path coupling. No binding-VETO. Gate OPEN for /qor-implement.
+
+
+---
+
+### Entry #306: SESSION SEAL -- Phase 113 Shadow Genome causal-graph layer (v0.80.0)
+
+**Timestamp**: 2026-05-29T03:00:56Z
+**Phase**: SUBSTANTIATE (Phase 113; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase113-shadow-genome-graph.md
+**Session**: `2026-05-29T0252-f6486c`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1
+**Entry ID**: `8d43f8de9e46`
+
+**Scope**: Phase 113 implemented (#139): qor.scripts.shadow_genome_graph core causal layer (typed nodes/edges + trace_chain/snapshot/query over append-only JSONL, deterministic ids, CLI) + doctrine-shadow-genome-graph.md + 2 glossary terms. Dashboard/trust-levels/federation DECLINED for qor-logic per honest fit assessment (no in-repo consumer). Also fixed test_cli_governance_health healthy fixture for the Phase 112 REQUIRED_ARTIFACTS addition.
+
+Change class: feature. Tests: 2021 passed / 0 failed / 2 skipped (full suite, after fixture fix); 10 new Phase 113 tests. Audit PASS iter-1 (L1).
+
+**Review Boundary**: HONORED. Local seal only; PR opened (stacked on phase/112), no merge/tag/push/publish (operator holds all releases this run).
+
+**Content Hash**: `7620e8799f3cf4b7db366bdbc73848376fcdb0ee127f75aec2b700e659920b83`
+**Previous Hash**: `1d15137de302ecd9fd7c36c3f84ac039b12b3297e807500bd1529540f1689121`
+**Chain Hash (Merkle seal)**: `66d696b3f2b31393eaaa5259e5b6ca970b11a7e6edcd7c11cacec3dadc8fb82f`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 113; v0.80.0 staged in stacked PR, held for operator review)
+

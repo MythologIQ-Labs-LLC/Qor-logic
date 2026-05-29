@@ -1049,3 +1049,20 @@ referenced_by:
   - qor/scripts/governance_index.py
 introduced_in_plan: phase112-governance-index
 ```
+
+```yaml
+term: Shadow Genome Graph
+definition: 'A Python causal-graph layer (qor.scripts.shadow_genome_graph) over qor-logic''s append-only shadow-event model: typed nodes (checkpoint/state/failure/governance) linked by typed edges (produced/occurred_during/triggered_by/applies_to), persisted as append-only JSONL with deterministic sequence ids, enabling root-cause traceback.'
+home: qor/references/doctrine-shadow-genome-graph.md
+referenced_by:
+  - qor/scripts/shadow_genome_graph.py
+introduced_in_plan: phase113-shadow-genome-graph
+```
+```yaml
+term: Causal Chain
+definition: 'A path returned by ShadowGenomeGraph.trace_chain(node_id) walking inbound edges from a node back to its root(s); cycle-safe and depth-limited. The unit of root-cause traceback over governance events.'
+home: qor/references/doctrine-shadow-genome-graph.md
+referenced_by:
+  - qor/scripts/shadow_genome_graph.py
+introduced_in_plan: phase113-shadow-genome-graph
+```
