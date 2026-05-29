@@ -10,6 +10,22 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.79.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 112 (#140)**: Hierarchical Governance Index. New
+  `docs/GOVERNANCE_INDEX.md` — a 6-tier (Canonical / Doctrine / Active /
+  Per-Plan / Reference / Archived) freshness map of every governance artifact,
+  scaffolded by seed and joined to the Phase 109 governance-health registry.
+  New WARN-only drift checker `python -m qor.scripts.governance_index`
+  (stale-Tier-1 / unregistered-doc / missing-index), `doctrine-governance-index.md`,
+  three glossary terms, and a `/qor-status` drift surface. The repo dogfoods its
+  own index. Full Tier 3->6 / 4->6 archival enforcement, `/qor-validate`
+  cross-check, and a hard `/qor-implement` block on stale Tier 1 are deferred to V2.
+
 ## [0.78.0] - 2026-05-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

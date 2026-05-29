@@ -1,0 +1,40 @@
+{
+  "phase": "implement",
+  "session_id": "2026-05-29T0237-9aeca3",
+  "ts": "2026-05-29T02:51:41Z",
+  "files_touched": [
+    "qor/templates/GOVERNANCE_INDEX.md",
+    "docs/GOVERNANCE_INDEX.md",
+    "qor/seed.py",
+    "qor/scripts/governance_health.py",
+    "qor/scripts/governance_index.py",
+    "qor/cli.py",
+    "qor/references/doctrine-governance-index.md",
+    "qor/references/glossary.md",
+    "qor/skills/memory/qor-status/SKILL.md",
+    "CHANGELOG.md",
+    "README.md",
+    "docs/META_LEDGER.md",
+    "pyproject.toml",
+    "tests/test_governance_index_seed.py",
+    "tests/test_governance_index.py",
+    "tests/test_governance_index_doctrine.py",
+    "tests/test_governance_health.py",
+    "tests/test_seed_scaffold.py",
+    "qor/dist/variants/** (regenerated)"
+  ],
+  "commits": [],
+  "test_summary": {
+    "passed": 2006,
+    "failed": 0,
+    "skipped": 2
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.79.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-29T02:51:41Z"
+  }
+}

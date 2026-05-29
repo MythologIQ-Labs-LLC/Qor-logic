@@ -28,6 +28,7 @@ SEED_TARGETS: tuple[SeedTarget, ...] = (
     SeedTarget("docs/ARCHITECTURE_PLAN.md", "ARCHITECTURE_PLAN.md", "file"),
     SeedTarget("docs/CONCEPT.md", "CONCEPT.md", "file"),
     SeedTarget("docs/SYSTEM_STATE.md", "SYSTEM_STATE.md", "file"),
+    SeedTarget("docs/GOVERNANCE_INDEX.md", "GOVERNANCE_INDEX.md", "file"),
     SeedTarget(".agent/staging/.gitkeep", None, "gitkeep"),
     SeedTarget(".qor/gates/.gitkeep", None, "gitkeep"),
     SeedTarget(".qor/session/.gitkeep", None, "gitkeep"),

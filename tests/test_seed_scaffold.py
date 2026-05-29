@@ -13,6 +13,7 @@ EXPECTED_FILES = [
     "docs/ARCHITECTURE_PLAN.md",
     "docs/CONCEPT.md",
     "docs/SYSTEM_STATE.md",
+    "docs/GOVERNANCE_INDEX.md",
     ".agent/staging/.gitkeep",
     ".qor/gates/.gitkeep",
     ".qor/session/.gitkeep",

@@ -1,0 +1,27 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-29T0237-9aeca3",
+  "ts": "2026-05-29T02:51:41Z",
+  "verdict": "PASS",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [
+      "qor/cli.py",
+      "CHANGELOG.md",
+      "README.md",
+      "pyproject.toml"
+    ],
+    "matches": 15
+  },
+  "merkle_seal": "10f836e716408adfafdfb2e9e18a6be80a477b29f8173a64f231ea8c6df90ef9",
+  "content_hash": "fb39340a2deba7dc973e4c0f5112ed59091c28137dd437c613f77b5b32e052b0",
+  "ledger_entry": 304,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.79.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-05-29T02:51:41Z"
+  }
+}

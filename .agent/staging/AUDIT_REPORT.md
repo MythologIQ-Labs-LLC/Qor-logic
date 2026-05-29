@@ -1,8 +1,8 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-05-29T02:30:00Z
-**Target**: docs/plan-qor-phase111-skill-active-env.md (Phase 111 - skill_active env-var leakage fix)
-**Risk Grade**: L1
+**Tribunal Date**: 2026-05-29T02:40:00Z
+**Target**: docs/plan-qor-phase112-governance-index.md (Phase 112 - Hierarchical Governance Index)
+**Risk Grade**: L2
 **Auditor**: The Qor-logic Judge (solo; `audit_risk_score` reports `option_b_required: false`)
 
 ---
@@ -15,45 +15,42 @@
 
 ### Executive Summary
 
-Phase 111 fixes the `QOR_SKILL_ACTIVE` shell-prefix leakage (#138) at the qor-logic layer: a `skill_active` context manager + an optional `skill=` param on `write_gate_artifact` (backward compatible), an authoritative newest-gate-mtime active-phase reporter, and a doctrine note. The provenance-binding contract is unchanged — only how the env var is set/cleared. No binding-VETO condition met; gate OPEN for `/qor-implement`.
+Phase 112 introduces `docs/GOVERNANCE_INDEX.md` (6-tier governance-artifact freshness map) as a seeded canonical artifact, a WARN-only drift checker (`governance_index`), the supporting doctrine + glossary, and a `/qor-status` drift surface. It builds on Phase 109's governance-health registry (realizing that phase's "future freshness surface"). The four proposal open-questions are resolved by evidence/convention (Locked Decisions). Full Tier 3->6 archival enforcement + validate cross-check + hard `/qor-implement` block are explicitly deferred to V2. No binding-VETO condition met; gate OPEN for `/qor-implement`.
 
 ### Audit Results
 
 #### Prompt Injection Pass
 **Result**: PASS — canary scan clean.
 
-#### Security Pass (L3)
-**Result**: PASS — no auth/credentials/secrets. The change strengthens, not weakens, provenance hygiene by restoring prior env state deterministically.
-
-#### OWASP Top 10 Pass
-**Result**: PASS — A03: no shell execution; the context manager mutates `os.environ` in-process and restores it. A04: no fail-open — the provenance check still raises on mismatch; the context manager only sets the matching value for the wrapped scope.
+#### Security Pass (L3) / OWASP Top 10
+**Result**: PASS — no auth/credentials/secrets; the checker parses Markdown via regex (no `eval`/`exec`/`yaml.load`/`pickle`); CLI argv-only, no `shell=True`. A04: WARN-only, fail-soft by design (V1); no fail-open on a security control.
 
 #### Ghost UI Pass
 **Result**: PASS (N/A).
 
 #### Section 4 Razor Pass
-**Result**: PASS — `skill_active` is ~8 lines; the reporter is a small read; both under limits.
+**Result**: PASS — checker decomposes into parse / tier-freshness / unregistered-scan helpers, each under limits; template is data.
 
 #### Test Functionality Pass
-**Result**: PASS — tests invoke the context manager / `write_gate_artifact(skill=)` / reporter and assert on post-call env state, raised/avoided ProvenanceError, and the returned phase. Not presence-only.
+**Result**: PASS — tests invoke `seed`, `check_index_drift`, and the doctrine/glossary parsers and assert on returned findings / set membership / parsed structure. Not presence-only.
 
 #### Dependency Pass
-**Result**: PASS — stdlib only (`os`, `contextlib`, `json`, `pathlib`).
+**Result**: PASS — stdlib only (re, pathlib, datetime parse of an ISO date string). No new third-party dependency.
 
 #### Macro-Level Architecture Pass
-**Result**: PASS — context manager lives with the provenance gate it serves; reporter is a standalone read module; no cycles.
+**Result**: PASS — `governance_index` sits beside `governance_health`; the seed coupling reuses `seed.scaffold_file_targets()` so the Phase 109 anti-drift invariant is preserved (LD5); no cycles.
 
 #### Feature Test Coverage Pass
 **Result**: PASS (exempt) — no `src/`; `feature_inventory_touches` empty.
 
 #### Infrastructure Alignment Pass
-**Result**: PASS — `gate_chain.write_gate_artifact` (line 183) and `shadow_process.append_event` (line 68) exist; `.qor/gates/<sid>/*.json` artifact layout exists; NEW module + tests declared.
+**Result**: PASS — `qor/seed.py` (`SEED_TARGETS`, `scaffold_file_targets`), `qor/scripts/governance_health.py` (`REQUIRED_ARTIFACTS`, `SCAFFOLD_OWNED`), `qor/skills/memory/qor-status/SKILL.md` Step 4, and `qor/references/glossary.md` all exist. NEW files (template, checker, doctrine, repo index, four test modules) declared. The plan dogfoods the repo's own `docs/GOVERNANCE_INDEX.md` so adding it to `REQUIRED_ARTIFACTS` does not make `governance_health` report it MISSING for this repo.
 
 #### Filter-Stage Ordering Coherence
-**Result**: PASS — `skill_active` set-before-yield, restore-in-finally is the correct ordering; the reporter's read has no inversion.
+**Result**: PASS — checker stages (parse -> freshness compare -> unregistered scan) are independent; no precondition inversion.
 
 #### Orphan Pass
-**Result**: PASS — `skill_active` is exported from `gate_chain` and used by `write_gate_artifact`; `active_phase` has a CLI entrypoint + test importer.
+**Result**: PASS — checker has a CLI + test importers; template consumed by seed; doctrine cited by glossary homes + qor-status surface.
 
 ### Documentation Drift
 
