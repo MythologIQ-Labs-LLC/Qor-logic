@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.82.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 115 (#167)**: VCI security pillar via SAST. New `qor.scripts.sast_scan` with a tool-agnostic backend interface (default bandit, pure-Python; semgrep pluggable later) feeding the qa.json `security` pillar (`qa_evidence.run_sast`). Degrades to `skip` when the backend is absent (Phase 75 prerequisite-absent semantics); a HIGH finding fails the pillar and the overall qa verdict. bandit declared as an optional `sast` extra. Doctrine updated with the SAST Backend contract.
+
 ## [0.81.0] - 2026-05-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

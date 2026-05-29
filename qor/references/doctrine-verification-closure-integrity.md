@@ -11,6 +11,8 @@ Counter-control for the half-measure pattern (`SG-HalfMeasureClosure`, umbrella 
 
 Four pillars: `regression`, `security`, `stability`, `coverage`. Each is `{status: pass|fail|skip, evidence?, metric?, note?}`. `verdict` is FAIL iff any pillar is `fail`; `skip` is visible per-pillar but does not fail the verdict.
 
+- **SAST Backend** (Phase 115; #167): the `security` pillar's evidence source. `qor.scripts.sast_scan` is tool-agnostic — a backend is a callable `(paths) -> list[normalized finding dict]`; the default is **bandit** (pure-Python, low supply-chain surface), and a future semgrep backend normalizes into the same shape. When the backend tool is absent the pillar is `status: "skip"` with a note (Phase 75 prerequisite-absent semantics) — never a crash, never a false pass. A finding at/above the `fail_on` severity (default HIGH) sets the pillar `fail`, which fails the overall qa verdict.
+
 Partial coverage is explicit, never silent: a pillar not wired to real evidence emits `status: "skip"` with a `note` naming its follow-on. (Spine slice: `regression` is real, derived from `feature_index_verify.tally`; `security`/`stability`/`coverage` are skip+note pending their follow-ons.) This is the anti-half-measure invariant in artifact form.
 
 ## Met-or-split rule (close guard)

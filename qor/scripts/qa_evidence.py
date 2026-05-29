@@ -77,6 +77,17 @@ def build_payload(
     return payload
 
 
+def run_sast(paths: tuple[str, ...] = ("qor",), backend: str = "bandit") -> dict:
+    """Convenience: run the SAST sub-check and return a security-pillar dict.
+
+    Degrades to ``{"status": "skip", ...}`` when the backend tool is absent
+    (Phase 115; GH #167). Pass the result as ``build_payload(security=...)``.
+    """
+    from qor.scripts import sast_scan
+
+    return sast_scan.scan(list(paths), backend=backend)
+
+
 def write(
     session_id: str | None = None,
     regression_summary: IndexSummary | None = None,
