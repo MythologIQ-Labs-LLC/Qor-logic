@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qor-logic.mythologiq/schemas/gates/qa.schema.json",
+  "title": "QA Evidence Gate Artifact",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["phase", "ts", "session_id", "verdict", "pillars"],
+  "properties": {
+    "phase": { "const": "qa" },
+    "ts": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+    "session_id": { "type": "string", "minLength": 3 },
+    "verdict": { "type": "string", "enum": ["PASS", "FAIL"] },
+    "pillars": {
+      "type": "object",
+      "required": ["regression", "security", "stability", "coverage"],
+      "additionalProperties": false,
+      "properties": {
+        "regression": { "$ref": "#/$defs/pillar" },
+        "security": { "$ref": "#/$defs/pillar" },
+        "stability": { "$ref": "#/$defs/pillar" },
+        "coverage": { "$ref": "#/$defs/pillar" }
+      }
+    },
+    "ai_provenance": { "$ref": "_provenance.schema.json" }
+  },
+  "$defs": {
+    "pillar": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "type": "string", "enum": ["pass", "fail", "skip"] },
+        "evidence": { "type": "string", "description": "Path to evidence (log/report), not inlined" },
+        "metric": { "type": "number", "description": "Optional scalar e.g. coverage pct or fail count" },
+        "note": { "type": "string", "maxLength": 200 }
+      }
+    }
+  }
+}

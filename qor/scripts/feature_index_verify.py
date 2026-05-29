@@ -10,8 +10,10 @@ Stdlib-only.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import re
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -121,3 +123,47 @@ def read_seal_snapshot(repo_root: str | Path, sid: str) -> dict[str, str]:
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def main(argv: list[str] | None = None) -> int:
+    """FEATURE_INDEX regression ABORT (Phase 114; GH #155/#40).
+
+    Exits non-zero when an outside-scope ``verified -> unverified`` regression is
+    detected against the prior-seal snapshot. ``--warn-only`` downgrades to a
+    print-and-pass (the graduated-rollout escape, mirroring the WARN-only
+    convention of dod_check / ci_coverage_lint). A missing FEATURE_INDEX is a
+    skip (rc 0), never a crash.
+    """
+    parser = argparse.ArgumentParser(prog="qor.scripts.feature_index_verify")
+    parser.add_argument("--repo-root", default=".")
+    parser.add_argument("--index-path", default="docs/FEATURE_INDEX.md")
+    parser.add_argument("--snapshot", default=None,
+                        help="session id of a prior-seal snapshot to diff against")
+    parser.add_argument("--warn-only", action="store_true",
+                        help="print regressions but exit 0 (graduated rollout)")
+    args = parser.parse_args(argv)
+
+    prior = read_seal_snapshot(args.repo_root, args.snapshot) if args.snapshot else None
+    summary = tally(args.repo_root, args.index_path, prior)
+
+    if summary.missing_index:
+        print(f"feature_index: skip (no {args.index_path})")
+        return 0
+
+    print(
+        f"feature_index: total={summary.total} verified={summary.verified} "
+        f"unverified={summary.unverified} n/a={summary.n_a}"
+    )
+    if summary.newly_unverified:
+        for fid in summary.newly_unverified:
+            print(f"  REGRESSION [verified->unverified] {fid}")
+        if args.warn_only:
+            print("feature_index: WARN-only; not aborting")
+            return 0
+        print("feature_index: ABORT (outside-scope regression)")
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

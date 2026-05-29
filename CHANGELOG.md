@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.81.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 114 (#166, #158)**: Verification & Closure Integrity (spine slice). New `qa.json` evidence gate artifact (`qor/gates/schema/qa.schema.json` + `qor.scripts.qa_evidence`; `qa` registered phase) with four pillars (regression real, security/stability/coverage explicit skip+note). The deferred FEATURE_INDEX regression ABORT now ships (`feature_index_verify` CLI, `--warn-only`). New acceptance-criteria close guard (`qor.scripts.ac_close_guard`, WARN-first): met-ness from the qa.json verdict, unmet criteria must be split into a filed follow-on. New `doctrine-verification-closure-integrity.md`; consolidates into the existing substantiate FEATURE_INDEX pass rather than a parallel gate. Deferred to tracked follow-ons (#167-#170): SAST, coverage pillar, seal-time runtime-contract re-walk, prose-not-behavior test-source lint.
+
 ## [0.80.0] - 2026-05-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

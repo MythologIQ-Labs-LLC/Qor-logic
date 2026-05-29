@@ -371,8 +371,17 @@ When `FEATURE_INDEX.md` exists in the repo, verify every declared feature after 
    `**Feature Inventory**: Total: N / verified: V / unverified: U / n/a: A`
 5. List newly unverified entries (regression from prior seal) with explicit names:
    `**Newly unverified**: FX091, FX093, ...`
+6. Run the regression ABORT (Phase 114; GH #155/#40):
+   `python -m qor.scripts.feature_index_verify --snapshot <prior-seal-session-id> --warn-only`
+   Non-zero exit aborts on an outside-scope `verified->unverified` regression; `--warn-only` downgrades to print-and-pass for graduated rollout until the false-positive rate is measured.
 
-Repos without `FEATURE_INDEX.md` record a single-line note (`**Feature Inventory**: not adopted`) in the seal entry and skip the verification pass. V1 (this phase): operator reviews the surfaced counts manually; the ABORT-on-outside-scope-regression helper is deferred to a follow-on phase. Per `qor/references/doctrine-feature-inventory.md`.
+Repos without `FEATURE_INDEX.md` record a single-line note (`**Feature Inventory**: not adopted`) in the seal entry and skip the verification pass. The outside-scope-regression ABORT now ships as `qor.scripts.feature_index_verify` (previously deferred). Per `qor/references/doctrine-feature-inventory.md` and `qor/references/doctrine-verification-closure-integrity.md`.
+
+#### Acceptance-criteria close guard (Phase 114; GH #158, WARN-first)
+
+Before composing the PR body (Step 9.6), run the close guard over the issues this seal will close:
+`python -m qor.scripts.ac_close_guard --pr-body-file <planned-pr-body> --qa-session <session-id>`
+It parses each `Closes #N` target's acceptance-criteria checklist and WARNs when an unmet criterion has no linked follow-on, or when the `qa.json` evidence verdict is not PASS. V1 is WARN-first (exit 0); `--enforce` is reserved for a graduated V2. Issues without a machine-checkable checklist are allowed with a warning. Contract + the QA evidence artifact: `qor/references/doctrine-verification-closure-integrity.md`.
 
 ### Step 6.5: Documentation Currency Check (Phase 31 wiring)
 

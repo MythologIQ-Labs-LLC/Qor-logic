@@ -11344,3 +11344,31 @@ Change class: feature. Tests: 2021 passed / 0 failed / 2 skipped (full suite, af
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 113; v0.80.0 staged in stacked PR, held for operator review)
 
+
+---
+
+### Entry #307: SESSION SEAL -- Phase 114 Verification & Closure Integrity (spine slice) (v0.81.0)
+
+**Timestamp**: 2026-05-29T17:44:24Z
+**Phase**: SUBSTANTIATE (Phase 114; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase114-verification-closure-integrity.md
+**Session**: `2026-05-29T1744-f70ec2`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `f5e9caab0489`
+
+**Scope**: Phase 114 implemented (#166, #158): qa.json evidence artifact (schema + qor.scripts.qa_evidence; 'qa' registered in validate_gate_artifact.PHASES; 4 pillars, regression real via feature_index tally, others explicit skip+note); FEATURE_INDEX regression ABORT (feature_index_verify CLI, --warn-only) -- completes the #155/#40 deferral; acceptance-criteria close guard (qor.scripts.ac_close_guard, WARN-first, met-ness from qa.json verdict + unmet->follow-on); doctrine-verification-closure-integrity.md; consolidated into the existing substantiate FEATURE_INDEX pass (removed the 'deferred' language) + lean close-guard subsection. Deferred to tracked follow-ons #167-#170 (SAST, coverage, runtime re-walk, prose lint). Reframe honored: no parallel QA skill authored.
+
+Change class: feature. Tests: 2047 passed / 0 failed / 2 skipped (full suite); 22 new behavioral tests across qa_evidence/feature_index_abort/ac_close_guard/vci_wiring, run twice (deterministic). Audit PASS (L3 solo; option_b not required).
+
+**Review Boundary**: HONORED. Local seal only; no push / no PR / no tag-push (operator holds releases).
+
+**Content Hash**: `fe42ab1ea2752140e28e31914167aca260f09e76f48e8812f87e9119a2212c2d`
+**Previous Hash**: `66d696b3f2b31393eaaa5259e5b6ca970b11a7e6edcd7c11cacec3dadc8fb82f`
+**Chain Hash (Merkle seal)**: `bd0431f3dd2ea85cf49f427c12f9b141063e858bc0a5175b5bd8d1a187511be4`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 114; v0.81.0 local, held for operator review)

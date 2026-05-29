@@ -1,0 +1,28 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-29T1744-f70ec2",
+  "ts": "2026-05-29T17:44:24Z",
+  "plan_path": "docs/plan-qor-phase114-verification-closure-integrity.md",
+  "phases": [
+    "qa.json evidence artifact",
+    "FEATURE_INDEX regression ABORT",
+    "acceptance-criteria close guard",
+    "wiring + doctrine"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qa_evidence.py tests/test_feature_index_abort.py tests/test_ac_close_guard.py tests/test_vci_wiring.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase114-verification-closure-integrity.md",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase114-verification-closure-integrity.md",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md"
+  ],
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "unknown",
+    "host": "unknown",
+    "model_family": "claude-opus-4-8",
+    "human_oversight": "absent",
+    "ts": "2026-05-29T17:44:24Z"
+  }
+}
