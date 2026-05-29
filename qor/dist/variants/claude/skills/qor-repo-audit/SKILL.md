@@ -26,6 +26,11 @@ min_model_capability: opus
   <output>Gap report with compliance score and GitHub API metrics</output>
 </skill>
 
+## Governance Health Preflight
+
+<!-- qor:governance-health-preflight -->
+Run `qor-logic governance-health --profile skill-entry` before reading governance artifacts. If any finding is `DAMAGED` or `INCOMPLETE`, do not continue: report the finding's `path`, `reason`, and `legal_next`. Only `UNINITIALIZED` or scaffold-owned `MISSING` may be resolved by `qor-logic seed` (interactive: offer Y/N; autonomous: seed silently). `DAMAGED` and `INCOMPLETE` always route to `/qor-remediate` or section completion -- never to seed or bootstrap.
+
 ## Purpose
 
 Audit repository against GitHub Gold Standard. Integrates with GitHub API for community profile score when available.

@@ -16,6 +16,11 @@ gate_writes: ""
 # /qor-status - Quick Lifecycle Check
 
 <!-- qor:tone-aware-section -->
+## Governance Health Preflight
+
+<!-- qor:governance-health-preflight -->
+Run `qor-logic governance-health --profile skill-entry` before reading governance artifacts. If any finding is `DAMAGED` or `INCOMPLETE`, do not continue: report the finding's `path`, `reason`, and `legal_next`. Only `UNINITIALIZED` or scaffold-owned `MISSING` may be resolved by `qor-logic seed` (interactive: offer Y/N; autonomous: seed silently). `DAMAGED` and `INCOMPLETE` always route to `/qor-remediate` or section completion -- never to seed or bootstrap.
+
 ## Output rendering by tone
 
 This skill reads `.qorlogic/config.json` for the `tone` field at runtime (or honors an active `/qor-tone` session override). Resolution order is session override > config > `technical` default (canonical lookup described in `qor/references/doctrine-communication-tiers.md` under "How skills read the tone value").
@@ -44,6 +49,31 @@ No technical jargon. No governance tags or pattern IDs. No long identifier strin
 Quick, low-token diagnostic of project health. Read-minimal by design.
 
 ## Execution (Decision Tree)
+
+### Step 0: Governance health gate (Phase 109)
+
+Before the existence-only tree, classify governance health and let it override
+lifecycle routing:
+
+```
+Run: qor-logic governance-health --profile skill-entry
+state, next_action = qor.scripts.governance_health.recommended_next(findings)
+
+IF state == "DAMAGED":
+  STATE = "DAMAGED"
+  NEXT  = next_action   # /qor-remediate -- never /qor-plan or /qor-implement
+  DONE (output immediately)
+
+IF state == "INCOMPLETE":
+  STATE = "INCOMPLETE"
+  NEXT  = next_action   # complete the named artifact sections; not "ready"
+  DONE
+```
+
+`DAMAGED` and `INCOMPLETE` are blocking: report the finding's `path`, `reason`,
+and `legal_next` and stop here. Only when the gate returns `OK`,
+`UNINITIALIZED`, or `MISSING` does the existence tree below run (a healthy or
+seedable workspace continues to ordinary lifecycle routing).
 
 ### Step 1: Existence Checks Only
 

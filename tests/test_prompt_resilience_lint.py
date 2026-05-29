@@ -134,3 +134,30 @@ def test_all_project_skills_pass_lint():
     assert not all_errors, (
         "Prompt resilience violations:\n  " + "\n  ".join(all_errors)
     )
+
+
+# --- Phase 109: governance-health blocking-terms coverage ---------------------
+
+def _blocking_terms_violations(text: str) -> list[str]:
+    """Return reasons the text fails to define DAMAGED and INCOMPLETE as
+    blocking (no ungoverned path forward). Empty list == compliant."""
+    low = text.lower()
+    violations: list[str] = []
+    if "damaged" not in low:
+        violations.append("DAMAGED status not defined")
+    if "incomplete" not in low:
+        violations.append("INCOMPLETE status not defined")
+    if not re.search(r"(damaged|incomplete)[^.]{0,160}\b(block|never seed|never seeded|/qor-remediate)", low):
+        violations.append("no blocking clause tying damaged/incomplete to repair-only")
+    if not re.search(r"never[^.\n]{0,40}\b(seed|bootstrap)", low):
+        violations.append("no 'never seed/bootstrap' clause")
+    return violations
+
+
+def test_damaged_and_incomplete_are_blocking_terms():
+    base = Path(__file__).resolve().parent.parent / "qor" / "references"
+    doctrine = (base / "doctrine-prompt-resilience.md").read_text(encoding="utf-8")
+    recovery = (base / "skill-recovery-pattern.md").read_text(encoding="utf-8")
+    assert _blocking_terms_violations(doctrine + "\n" + recovery) == []
+    omitting = "DAMAGED means the file exists. INCOMPLETE means it is a placeholder."
+    assert _blocking_terms_violations(omitting) != []

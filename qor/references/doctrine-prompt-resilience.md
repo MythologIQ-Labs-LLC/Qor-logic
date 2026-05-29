@@ -66,12 +66,48 @@ The lint recognizes four markers. Their canonical templates live in
 - `<!-- qor:break-the-glass reason="..." -->` -- autonomous skill, emergency
   surface when auto-heal itself fails; emits `EMERGENCY:` message and aborts.
 
+## Governance Artifact Health (Phase 109)
+
+**Governance Artifact Health** is the classification of every required
+governance artifact into exactly one status before a skill reads or routes from
+it. The checker `qor.scripts.governance_health` returns, per artifact, a status
+and the single legal next action:
+
+| Status | Meaning | Legal next | Blocking? |
+|--------|---------|-----------|-----------|
+| `OK` | passes the checks the invoking skill requires | continue lifecycle | no |
+| `UNINITIALIZED` | no ledger and no project DNA | `/qor-bootstrap` (or `qor-logic seed` in autonomous mode) | yes, until seeded |
+| `MISSING` | initialized workspace, required artifact absent | `qor-logic seed` for scaffold-owned files; otherwise `/qor-remediate` | yes, until repaired |
+| `DAMAGED` | exists but fails parse, structure, or ledger-chain verification | `/qor-remediate` | **yes, always** |
+| `INCOMPLETE` | exists but is an unfilled placeholder / has unresolved markers / lacks required sections | complete the named sections | **yes, always** |
+
+An **Ungoverned Path Forward** is any continuation a prompt invents when a
+required artifact is not `OK` -- synthesizing a plan, audit, implementation, or
+seal from assumptions instead of surfacing the checker's `legal_next`. It is
+always invalid. A preflight failure can never be converted into governed work by
+assumption.
+
+Decision contract:
+
+- `UNINITIALIZED` and scaffold-owned `MISSING` are the **only** states a skill may
+  resolve with `qor-logic seed` (interactive: offer Y/N; autonomous: seed
+  silently). Non-scaffold `MISSING` routes to `/qor-remediate`.
+- `DAMAGED` and `INCOMPLETE` are **blocking** and never seed/bootstrap-repairable.
+  They block forward progress for every skill except one whose sole purpose is
+  repair (`/qor-remediate`). Seeding or bootstrapping over a `DAMAGED` artifact
+  risks overwriting authoritative content (R2) and is forbidden.
+
 ## Enforcement
 
 - `tests/test_prompt_resilience_lint.py` walks `qor/skills/**/*.md`, reads
-  the autonomy mode, and enforces mode-specific rules.
+  the autonomy mode, and enforces mode-specific rules. It also asserts the
+  doctrine and recovery-pattern files define both `DAMAGED` and `INCOMPLETE`
+  as blocking (no ungoverned path forward).
 - `tests/test_skill_prerequisite_coverage.py` locks the autonomy inventory
   and asserts every ABORT/INTERDICTION site has the correct marker.
+- `tests/test_governance_prompt_health_coverage.py` maps every source skill's
+  governance-artifact reads to a `qor:governance-health-preflight` marker or a
+  justified `qor:governance-health-exempt` exemption.
 
 See `qor/references/skill-recovery-pattern.md` for the canonical templates
-authors paste into skill bodies.
+authors paste into skill bodies, including the governance-health preflight.

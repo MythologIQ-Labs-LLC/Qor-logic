@@ -10,6 +10,23 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.76.0] - 2026-05-29
+
+### Added
+
+- **Phase 109 (feature)**: governance artifact health gate. New
+  `qor.scripts.governance_health` classifies the required governance
+  artifacts as `OK` / `UNINITIALIZED` / `MISSING` / `DAMAGED` /
+  `INCOMPLETE`, each with its single legal next action; exposed as
+  `qor-logic governance-health` (exit 0/1/2). 17 governance-reading source
+  skills gained a `qor:governance-health-preflight` marker (with
+  `qor-bootstrap` and `qor-remediate` justified-exempt); `/qor-status`
+  gained a Step 0 health gate that surfaces `DAMAGED`/`INCOMPLETE` before
+  lifecycle routing. New doctrine terms: Governance Artifact Health,
+  Ungoverned Path Forward, Governance Repair Mode. `DAMAGED` and
+  `INCOMPLETE` are blocking and route to `/qor-remediate` or section
+  completion -- never to seed or bootstrap.
+
 ## [0.75.1] - 2026-05-26
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

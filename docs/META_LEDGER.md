@@ -11102,3 +11102,53 @@ SSDF: PS.2.1 (verify software integrity), PS.3.1 (archive each release), RV.1.1 
 *Session: SEALED* (Phase 108 hotfix complete; PyPI v0.75.1 ready to ship after merge)
 *Merkle seal: 53683352...* (Phase 108 hotfix seal on top of Phase 107's 5fd15746...)
 *Open items at this seal: commit + push + PR + merge + tag v0.75.1 + approve PyPI deployment*
+
+---
+
+### Entry #297: GATE TRIBUNAL -- Phase 109 plan PASS
+
+**Timestamp**: 2026-05-29T00:41:30Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Plan**: docs/plan-qor-phase109-governance-artifact-health.md
+**Session**: `2026-05-29T0037-f4806e`
+
+**Content Hash**: `dc875b80538aa96072bcf04b299469fe6ab51bb53da35bdc4b9c8e2c9f26d005`
+**Previous Hash**: `5368335299411c0653842889c3f376256631328af12fb6bfae3e0b70caf1a9f5`
+**Chain Hash**: `1cc6fcf8cbb9579a820ad609c90af6b96e41731bdd54f0d2cfb379489b348f90`
+
+**Decision**: Phase 109 governance-artifact-health plan cleared all adversarial passes (prompt-injection, security L3, OWASP, ghost-UI, razor, test-functionality, dependency, macro-architecture, feature-test, infrastructure-alignment, filter-stage ordering, orphan). high_risk_target with complete impact_assessment; no binding-VETO condition met. Gate OPEN for /qor-implement.
+
+
+---
+
+### Entry #298: SESSION SEAL -- Phase 109 governance artifact health gate (v0.76.0)
+
+**Timestamp**: 2026-05-29T01:18:19Z
+**Phase**: SUBSTANTIATE (Phase 109; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase109-governance-artifact-health.md
+**Session**: `2026-05-29T0037-f4806e`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `7c5636438a3f`
+
+**Scope**: Phase 109 implemented: reusable `qor.scripts.governance_health` classifier (OK/UNINITIALIZED/MISSING/DAMAGED/INCOMPLETE + legal_next), `qor-logic governance-health` CLI (exit 0/1/2), 17 source-skill `qor:governance-health-preflight` markers (2 justified-exempt: qor-bootstrap inverse-guard, qor-remediate repair), `/qor-status` Step 0 health gate, doctrine + glossary terms (Governance Artifact Health, Ungoverned Path Forward, Governance Repair Mode), and regenerated variants.
+
+Change class: feature. Tests: 1976 passed / 0 failed / 2 skipped (full suite). New Phase 109 tests: 29. Audit PASS iter-1 (L2; high_risk_target with full impact_assessment).
+Reality check: all planned files present; UNPLANNED (documented): README.md badge-currency update (required by the release-class badge gate).
+LD1: GOVERNANCE_INDEX.md out of scope (Refs #140). LD3: scaffold-owned set pinned to seed.SEED_TARGETS.
+
+**Review Boundary**: HONORED. Local seal only. No commit, tag, push, PR, or merge performed this cycle; publish actions handed off to the operator.
+
+**Content Hash**: `42590a9d38c1ae0e8433b700e1e19dfa1ef63c74622746678f5e02cc47074fd7`
+**Previous Hash**: `1cc6fcf8cbb9579a820ad609c90af6b96e41731bdd54f0d2cfb379489b348f90`
+**Chain Hash (Merkle seal)**: `35684eee4086c776071744431a848c1ba46f1f7626c95e5c3ff4f7b62a707c32`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 109 governance-artifact-health; v0.76.0 ready to publish after operator review)
+

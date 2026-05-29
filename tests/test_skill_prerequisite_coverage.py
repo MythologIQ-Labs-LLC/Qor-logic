@@ -121,3 +121,37 @@ def test_every_skill_file_declares_autonomy_or_defaults_interactive():
         assert autonomy in ("autonomous", "interactive"), (
             f"{skill_md}: invalid autonomy={autonomy!r}"
         )
+
+
+# --- Phase 109: recovery prompts never offer seed for damaged/incomplete ------
+
+import re  # noqa: E402
+
+
+def _recovery_blocks(text: str) -> list[str]:
+    """Text following each qor:recovery-prompt marker up to the next H2."""
+    blocks = []
+    for m in re.finditer(r"<!--\s*qor:recovery-prompt\s*-->", text):
+        tail = text[m.end():]
+        stop = re.search(r"\n## ", tail)
+        blocks.append(tail[: stop.start() if stop else 1200])
+    return blocks
+
+
+def _offers_seed_for_unhealthy(block: str) -> bool:
+    low = block.lower()
+    mentions_seed = "qor-logic seed" in low or "bootstrap" in low
+    targets_unhealthy = "damaged" in low or "incomplete" in low
+    return mentions_seed and targets_unhealthy
+
+
+def test_interactive_recovery_only_mentions_seed_for_missing_scaffold():
+    offenders = []
+    for skill_md in _skills_root().rglob("SKILL.md"):
+        text = skill_md.read_text(encoding="utf-8")
+        for block in _recovery_blocks(text):
+            if _offers_seed_for_unhealthy(block):
+                offenders.append(skill_md.as_posix())
+    assert offenders == [], f"recovery prompts offer seed/bootstrap for damaged/incomplete: {offenders}"
+    bad = "<!-- qor:recovery-prompt -->\nIf the ledger is DAMAGED, run `qor-logic seed` to repair it.\n## Next"
+    assert any(_offers_seed_for_unhealthy(b) for b in _recovery_blocks(bad))
