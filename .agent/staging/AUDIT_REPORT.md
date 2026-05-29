@@ -1,8 +1,8 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-05-29T00:41:30Z
-**Target**: docs/plan-qor-phase109-governance-artifact-health.md (Phase 109 - Governance artifact health gate)
-**Risk Grade**: L2
+**Tribunal Date**: 2026-05-29T02:12:00Z
+**Target**: docs/plan-qor-phase110-affected-files-contract.md (Phase 110 - SG-AffectedFilesContract-A countermeasure suite)
+**Risk Grade**: L1
 **Auditor**: The Qor-logic Judge (solo; `audit_risk_score` reports `option_b_required: false`)
 
 ---
@@ -15,56 +15,45 @@
 
 ### Executive Summary
 
-The Phase 109 plan introduces one reusable governance-health checker, a prompt-preflight enforcement layer, and status/CLI/variant-drift surfaces, all to enforce the invariant that no `/qor-*` prompt may synthesize an ungoverned continuation path when required governance artifacts are missing, damaged, or incomplete. The plan declares `high_risk_target: true` with a complete five-field `impact_assessment`, carries an empty `feature_inventory_touches` (governance/tooling only, no `src/` surface), and lists ten CI commands plus a CI-coverage-exemptions block. Every cited filesystem path either exists in the current tree or is explicitly declared NEW in Affected Files. All adversarial passes clear; no binding-VETO condition is met. Gate is OPEN for `/qor-implement`.
+Phase 110 anchors the `SG-AffectedFilesContract-A` failure family (#136) and ships its countermeasures: two WARN-only pre-audit lints (#133 signature-widening caller enumeration, #134 struct-field persistence cascade), three new `audit_risk_score` Option-B signals (#135), and a `/qor-plan` Step 5 checklist bullet (#137). All changes are advisory governance tooling — no binding audit pass is altered. Plan transcribes five well-specified issues. No binding-VETO condition met; gate OPEN for `/qor-implement`.
 
 ### Audit Results
 
 #### Prompt Injection Pass
-**Result**: PASS
-`prompt_injection_canaries` over ARCHITECTURE_PLAN.md, META_LEDGER.md, CONCEPT.md, and the plan returned no canary hits (exit 0).
+**Result**: PASS — `prompt_injection_canaries` clean over the four governance reads.
 
 #### Security Pass (L3)
-**Result**: PASS
-No placeholder auth, hardcoded credentials, bypassed checks, or mock-auth returns. The checker is fail-closed: DAMAGED and INCOMPLETE block forward motion and never return seed/bootstrap as legal repair (plan D-109.1 D2).
+**Result**: PASS — no auth, credentials, or secrets; lints are read-only grep/regex over files.
 
 #### OWASP Top 10 Pass
-**Result**: PASS
-- A03 Injection: CLI and module invocations consume argv only; no `shell=True` planned; SG-Phase47-A honored by argv construction.
-- A04 Insecure Design: no fail-open; missing/damaged/incomplete are blocking by design.
-- A05 Misconfiguration: no hardcoded secrets.
-- A08 Integrity: classifier parses JSON/Markdown; implementation must use `json.load` and safe Markdown parsing (no `pickle`/`eval`/`yaml.load` without SafeLoader). Plan-level commitment present; enforced at implement.
+**Result**: PASS — A03: lints consume argv + regex, no `shell=True`; A08: SQL/struct "parsing" is literal-regex, no `eval`/`exec`/deserialization. No new attack surface.
 
 #### Ghost UI Pass
-**Result**: PASS (N/A) — no UI surface.
+**Result**: PASS (N/A) — no UI.
 
 #### Section 4 Razor Pass
-**Result**: PASS
-The checker API (`ArtifactStatus`, `ArtifactFinding`, `check_governance_health`) is small and composable. Implementation must keep `check_governance_health` and helpers under 40 lines/function and the module under 250 lines; classification decomposes naturally into per-artifact helpers.
+**Result**: PASS — new modules sized ~150-300 LOC; implementation must keep functions <=40 lines and decompose detectors into helpers. Shared `_lint_utils.find_callers` reduces duplication (a Razor win flagged by #135).
 
 #### Test Functionality Pass
-**Result**: PASS
-All planned tests invoke the unit and assert on its output (status enum, `legal_next`, lint violations). The Phase 2 doctrine-term test was sharpened during this cycle to invoke a checker against a compliant file and an omitting fixture, satisfying the SG-035 acceptance question ("if behavior were silently broken but the artifact still existed, would the test fail?" -> yes).
+**Result**: PASS — every planned test invokes the unit (lint/parser/detector) and asserts on its returned findings/flags. The doctrine test invokes a parser checking entry presence + bidirectional cross-refs, not a bare substring. Survives the SG-035 acceptance question.
 
 #### Dependency Pass
-**Result**: PASS — no new third-party dependencies; standard library only (enum, dataclasses, pathlib, json).
+**Result**: PASS — standard library only (re, pathlib, subprocess/argv). No new third-party dependency.
 
 #### Macro-Level Architecture Pass
-**Result**: PASS
-`qor/scripts/governance_health.py` sits alongside existing checker modules; no cyclic dependencies; single source of truth for the required-artifact registry (LD3 pins the scaffold-owned subset to `qor.seed.SEED_TARGETS`).
+**Result**: PASS — new lints live in `qor/scripts/` beside existing pre-audit lints; `_lint_utils.py` centralizes the shared caller-finder; no cyclic dependencies.
 
 #### Feature Test Coverage Pass
-**Result**: PASS (exempt) — plan does not touch `src/`; `feature_inventory_touches` is empty and justified.
+**Result**: PASS (exempt) — plan does not touch `src/`; `feature_inventory_touches` empty and justified.
 
 #### Infrastructure Alignment Pass
-**Result**: PASS
-Every cited path verified: `qor/seed.py`, `qor/cli.py`, `qor/references/{doctrine-prompt-resilience,skill-recovery-pattern,doctrine-governance-enforcement,glossary}.md`, `docs/SYSTEM_STATE.md`, the three variant skill trees (`claude`/`codex`/`kilo-code`; `gemini` has no `skills/` tree, matching the plan's enumeration), and the AMENDED tests all exist. NEW files (`governance_health.py`, five test modules) are declared in Affected Files. The conditional `GOVERNANCE_INDEX.md` references were resolved out of scope (LD1). Runtime Contract Walk WARNs that `governance_health.py` is not yet present — expected for a NEW file; WARN-only, not on the binding-VETO list.
+**Result**: PASS — cited surfaces verified: `plan_grep_lint.py` (template), `audit_risk_score.py`, `doctrine-shadow-genome-countermeasures.md`, `qor-plan`/`qor-audit` `SKILL.md` Step 5 / Step 0.6, and the two in-repo sibling SG entries (`SG-CitationDrift-A`, `SG-AuthorAuditMomentum-A`). The plan correctly adapts `SG-EnumerationVerificationGap-A` to a prose-only cross-reference (it is a COREFORGE consumer-repo entry, absent here) — no phantom back-edit promised. NEW files declared in Affected Files.
 
 #### Filter-Stage Ordering Coherence
-**Result**: PASS
-The classifier has a precondition chain (existence -> parse/structural -> completeness): a file must exist before it can be parsed, and parse-clean before completeness is meaningful. The plan's status semantics encode this order (MISSING precedes DAMAGED precedes INCOMPLETE precedes OK); implementation must execute that topological order.
+**Result**: PASS — lint pipelines (parse -> grep -> cross-check -> warn) are linear with no precondition inversion.
 
 #### Orphan Pass
-**Result**: PASS — `governance_health.py` is reachable from `qor/cli.py`, the `qor-status` skill, the module entrypoint, and the test modules.
+**Result**: PASS — new modules are wired into `/qor-audit` Step 0.6, imported by their test modules, and `_lint_utils` is consumed by both the lint and `audit_risk_score`.
 
 ### Documentation Drift
 

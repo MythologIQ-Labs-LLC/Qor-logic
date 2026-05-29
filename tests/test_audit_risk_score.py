@@ -96,3 +96,81 @@ def test_cli_reports_no_risk_for_clean_plan(tmp_path):
     proc = _run_cli(plan)
     assert proc.returncode == 0
     assert "option_b_required: false" in proc.stdout
+
+
+# --- Phase 110 (#135): SG-AffectedFilesContract-A cascade signals ------------
+
+def _repo_with_n_callers(tmp_path, fn, n):
+    src = tmp_path / "src"
+    src.mkdir(exist_ok=True)
+    for i in range(n):
+        (src / f"c{i}.rs").write_text(f"fn caller{i}() {{ {fn}(a, b); }}\n", encoding="utf-8")
+
+
+def test_signature_widening_3plus_callers_flags_option_b(tmp_path):
+    fn = "persist_distraction_block_state"
+    _repo_with_n_callers(tmp_path, fn, 3)
+    plan = _write_plan(tmp_path, f"# Plan\n\nWiden `{fn}` to add an arg.\n")
+    a = score_plan(plan, repo_root=tmp_path)
+    assert "signature-widening-cascade" in a.flags
+    assert a.option_b_required is True
+
+
+def test_signature_widening_2_callers_does_not_flag(tmp_path):
+    fn = "persist_distraction_block_state"
+    _repo_with_n_callers(tmp_path, fn, 2)
+    plan = _write_plan(tmp_path, f"# Plan\n\nWiden `{fn}` to add an arg.\n")
+    a = score_plan(plan, repo_root=tmp_path)
+    assert "signature-widening-cascade" not in a.flags
+
+
+def test_struct_field_addition_with_persistence_flags(tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "model.rs").write_text("#[derive(FromRow)]\nstruct BlockState { id: String }\n", encoding="utf-8")
+    plan = _write_plan(tmp_path, "# Plan\n\nWiden `BlockState` to add field `enforcement_active`.\n")
+    a = score_plan(plan, repo_root=tmp_path)
+    assert "struct-field-cross-persistence-boundary" in a.flags
+    assert a.option_b_required is True
+
+
+def test_struct_field_addition_no_persistence_does_not_flag(tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "model.rs").write_text("struct BlockState { id: String }\n", encoding="utf-8")  # no FromRow, no CREATE TABLE
+    plan = _write_plan(tmp_path, "# Plan\n\nWiden `BlockState` to add field `enforcement_active`.\n")
+    a = score_plan(plan, repo_root=tmp_path)
+    assert "struct-field-cross-persistence-boundary" not in a.flags
+
+
+def test_scope_narrowing_in_multi_entrypoint_file_flags(tmp_path):
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "commands.rs").write_text(
+        "pub fn alice_start_deep_work_session() {}\n"
+        "pub fn alice_stop_deep_work_session() {}\n"
+        "pub fn alice_start_deep_work() {}\n"
+        "pub fn alice_stop_deep_work() {}\n",
+        encoding="utf-8",
+    )
+    plan = _write_plan(
+        tmp_path,
+        "# Plan\n\nUpdate `alice_start_deep_work_session` and `alice_stop_deep_work_session`.\n\n"
+        "### Affected Files\n\n- `src/commands.rs` - MODIFY\n",
+    )
+    a = score_plan(plan, repo_root=tmp_path)
+    assert "scope-narrowing-prose-in-multi-entrypoint-file" in a.flags
+
+
+def test_no_new_signals_preserves_existing_behavior(tmp_path):
+    plan = _write_plan(tmp_path, "# Plan\n\nAdd a pure helper. No cascades.\n")
+    a = score_plan(plan, repo_root=tmp_path)
+    assert a.flags == ()
+    assert a.option_b_required is False
+
+
+def test_repo_root_default_to_cwd(tmp_path):
+    # API compatibility: score_plan(plan) callable without repo_root.
+    plan = _write_plan(tmp_path, "# Plan\n\nAdd a pure helper.\n")
+    a = score_plan(plan)
+    assert a.option_b_required is False
