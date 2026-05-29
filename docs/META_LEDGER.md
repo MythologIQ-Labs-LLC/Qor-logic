@@ -11372,3 +11372,31 @@ Change class: feature. Tests: 2047 passed / 0 failed / 2 skipped (full suite); 2
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 114; v0.81.0 local, held for operator review)
+
+---
+
+### Entry #308: SESSION SEAL -- Phase 115 VCI security pillar SAST (v0.82.0)
+
+**Timestamp**: 2026-05-29T18:10:33Z
+**Phase**: SUBSTANTIATE (Phase 115; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase115-vci-security-sast.md
+**Session**: `2026-05-29T1810-0c2583`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PW.1.1, PW.4.1, PW.5.1
+**Entry ID**: `5030baf4fd1b`
+
+**Scope**: Phase 115 implemented (#167): tool-agnostic SAST sub-check (qor.scripts.sast_scan; default bandit backend, graceful skip when absent, semgrep pluggable) feeding the qa.json security pillar via qa_evidence.run_sast; bandit declared as optional [sast] extra; doctrine SAST Backend contract. Fills the one net-new security gap (#167); secret-scan/SBOM/OWASP already live. Follow-ons #168-#170 remain.
+
+Change class: feature. Tests: 2058 passed / 0 failed / 3 skipped (full suite); 12 new behavioral tests (integration test skips without bandit). Audit PASS (L2 solo).
+
+**Review Boundary**: HONORED. Local seal only; no push / no PR / no tag-push.
+
+**Content Hash**: `8357f8a85c09be9d0cbcbba1fc4c7211eeeb711ade0f99c5f9b76eeb7af904d6`
+**Previous Hash**: `bd0431f3dd2ea85cf49f427c12f9b141063e858bc0a5175b5bd8d1a187511be4`
+**Chain Hash (Merkle seal)**: `5a17f0947130afc1088dd3adb122af05f9e2f671316b32ca3c286b57a67d9e90`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 115; v0.82.0 local, held for operator review)
