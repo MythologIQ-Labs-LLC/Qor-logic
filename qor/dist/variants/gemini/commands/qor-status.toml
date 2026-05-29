@@ -148,6 +148,19 @@ Full verification deferred to `/qor-validate`.
 **Next**: [NEXT]
 ```
 
+### Governance Index drift (Phase 112; #140)
+
+After the status table, surface a one-line Governance Index drift indicator by
+running `qor-logic governance-index --repo-root .`:
+
+```
+Governance Index: Last Reviewed <date> · <N> drift finding(s)
+```
+
+A non-zero `stale-tier1` count is a Tier 1 drift bug (the index is itself Tier 1).
+WARN-only in V1: report it; a hard `/qor-implement` block on stale Tier 1 is
+deferred to V2. Per `qor/references/doctrine-governance-index.md`.
+
 ## Token Budget
 
 - Skill load: ~1.5KB

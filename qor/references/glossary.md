@@ -1022,3 +1022,30 @@ referenced_by:
   - qor/scripts/governance_health.py
 introduced_in_plan: phase109-governance-artifact-health
 ```
+
+```yaml
+term: Governance Index
+definition: 'The single authoritative map (docs/GOVERNANCE_INDEX.md) of every governance artifact in a Qor project, each assigned to exactly one of six freshness tiers. A Tier 1 canonical doc itself, so a stale index fails the next cycle''s Tier 1 freshness check.'
+home: qor/references/doctrine-governance-index.md
+referenced_by:
+  - qor/scripts/governance_index.py
+  - qor/templates/GOVERNANCE_INDEX.md
+  - qor/skills/memory/qor-status/SKILL.md
+introduced_in_plan: phase112-governance-index
+```
+```yaml
+term: Governance Freshness Tier
+definition: 'One of six tiers (1 Canonical Source, 2 Doctrine & Policy, 3 Active Initiative, 4 Per-Plan Artifact, 5 Reference Material, 6 Archived) classifying a governance artifact by its freshness contract and drift signal.'
+home: qor/references/doctrine-governance-index.md
+referenced_by:
+  - qor/scripts/governance_index.py
+introduced_in_plan: phase112-governance-index
+```
+```yaml
+term: Governance Index Drift
+definition: 'Divergence between the Governance Index and reality. The Phase 112 WARN-only checker detects stale-tier1 (Last Reviewed predates the latest sealed ledger entry), unregistered (a governance doc named in no tier table), and missing-index states.'
+home: qor/references/doctrine-governance-index.md
+referenced_by:
+  - qor/scripts/governance_index.py
+introduced_in_plan: phase112-governance-index
+```

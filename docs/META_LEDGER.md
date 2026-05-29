@@ -11248,3 +11248,51 @@ Change class: feature. Tests: 2002 passed / 0 failed / 2 skipped (full suite, af
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 111; v0.78.0 staged in PR #stacked, held for operator review)
 
+
+---
+
+### Entry #303: GATE TRIBUNAL -- Phase 112 plan PASS
+
+**Timestamp**: 2026-05-29T02:40:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Plan**: docs/plan-qor-phase112-governance-index.md
+**Session**: `2026-05-29T0237-9aeca3`
+
+**Content Hash**: `4d5aafebe047cc01399e2e56b652cfc60f1fd8a6ae972d28b4b3a56bb0b74432`
+**Previous Hash**: `340b682c194add31b8670987836b9caef4eaa1f0c7a081fb49c4dcc641b58987`
+**Chain Hash**: `3b1781aa5e29640679bab891662ae5c20ce28794c495f63114d69d1d5f10b6a6`
+
+**Decision**: Phase 112 (#140 Hierarchical Governance Index: docs/GOVERNANCE_INDEX.md 6-tier scaffold + governance_index WARN-only drift checker + doctrine/glossary + qor-status surface; builds on Phase 109 registry) cleared all adversarial passes. Open questions resolved by convention (LD1-LD5); V2 archival/validate/hard-block deferred. Stdlib-only; Phase 109 anti-drift invariant preserved. No binding-VETO. Gate OPEN for /qor-implement.
+
+
+---
+
+### Entry #304: SESSION SEAL -- Phase 112 Hierarchical Governance Index (v0.79.0)
+
+**Timestamp**: 2026-05-29T02:50:43Z
+**Phase**: SUBSTANTIATE (Phase 112; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase112-governance-index.md
+**Session**: `2026-05-29T0237-9aeca3`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1
+**Entry ID**: `4aaf98748bee`
+
+**Scope**: Phase 112 implemented (#140): docs/GOVERNANCE_INDEX.md 6-tier scaffold (template + seed target + repo dogfood) + governance_index WARN-only drift checker + qor-logic governance-index CLI + doctrine-governance-index.md + 3 glossary terms + /qor-status drift surface (CLI form). Joins Phase 109 governance-health registry. V2 archival/validate/hard-block deferred.
+
+Change class: feature. Tests: 2006 passed / 0 failed / 2 skipped (full suite, after CLI-form fix); 10 new Phase 112 tests. Audit PASS iter-1 (L2). Repo's own governance index is drift-clean.
+
+**Review Boundary**: HONORED. Local seal only; PR opened (stacked on phase/111), no merge/tag/push/publish (operator holds all releases this run).
+
+**Content Hash**: `fb39340a2deba7dc973e4c0f5112ed59091c28137dd437c613f77b5b32e052b0`
+**Previous Hash**: `3b1781aa5e29640679bab891662ae5c20ce28794c495f63114d69d1d5f10b6a6`
+**Chain Hash (Merkle seal)**: `10f836e716408adfafdfb2e9e18a6be80a477b29f8173a64f231ea8c6df90ef9`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 112; v0.79.0 staged in stacked PR, held for operator review)
+

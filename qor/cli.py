@@ -91,6 +91,13 @@ def _do_governance_health(args: argparse.Namespace) -> int:
     return gh.main(["--repo-root", args.repo_root, "--profile", args.profile])
 
 
+def _do_governance_index(args: argparse.Namespace) -> int:
+    """Detect governance index drift; exit 0 clean / 1 drift (Phase 112; WARN-only)."""
+    from qor.scripts import governance_index as gi
+
+    return gi.main(["--repo-root", args.repo_root])
+
+
 def _do_capabilities(args: argparse.Namespace) -> int:
     """Phase 58: governance capability surface."""
     import json as _json
@@ -193,6 +200,8 @@ def _register_misc(sub) -> None:
     sp_gh = sub.add_parser("governance-health", help="classify governance artifact health (Phase 109)")
     sp_gh.add_argument("--repo-root", default=".", help="workspace root to inspect")
     sp_gh.add_argument("--profile", default="skill-entry", help="named required-artifact set")
+    sp_gi = sub.add_parser("governance-index", help="detect governance index drift (Phase 112)")
+    sp_gi.add_argument("--repo-root", default=".", help="workspace root to inspect")
 
 
 def _register_capabilities(sub) -> argparse.ArgumentParser:
@@ -252,6 +261,7 @@ def _dispatch(args: argparse.Namespace) -> int | None:
         "verify-ledger": lambda: _do_verify_ledger(args),
         "seed": lambda: _do_seed(args),
         "governance-health": lambda: _do_governance_health(args),
+        "governance-index": lambda: _do_governance_index(args),
         "capabilities": lambda: _do_capabilities(args),
         "substantiate-capability": lambda: args.func(args),
     }

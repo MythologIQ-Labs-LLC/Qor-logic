@@ -48,6 +48,7 @@ REQUIRED_ARTIFACTS: tuple[str, ...] = (
     "docs/SHADOW_GENOME.md",
     "docs/BACKLOG.md",
     "docs/FEATURE_INDEX.md",
+    "docs/GOVERNANCE_INDEX.md",
 )
 
 # Scaffold-owned (seed-repairable) artifacts, pinned to seed's file targets so
