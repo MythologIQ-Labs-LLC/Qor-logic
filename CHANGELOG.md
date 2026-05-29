@@ -12,6 +12,8 @@ file is the user-facing narrative.
 
 ## [0.77.0] - 2026-05-29
 
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
 ### Added
 
 - **Phase 110 (feature)**: `SG-AffectedFilesContract-A` countermeasure suite.
