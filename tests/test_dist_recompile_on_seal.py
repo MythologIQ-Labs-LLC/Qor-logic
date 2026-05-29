@@ -16,7 +16,7 @@ SKILL_PATH = (
 
 def test_step_85_section_present():
     body = SKILL_PATH.read_text(encoding="utf-8")
-    assert "### Step 8.5:" in body, "Step 8.5 (Dist Recompile) section missing"
+    assert "### Step 8.5:" in body, "Step 8.5 (Dist Recompile) section missing"  # prose-lint: ok=prompt-contract: section header
 
 
 def test_step_85_invokes_dist_compile():

@@ -42,8 +42,8 @@ def test_qor_ideate_skill_frontmatter_declares_required_fields():
 
 def test_qor_ideate_skill_declares_permitted_tools_list():
     body = SKILL_PATH.read_text(encoding="utf-8")
-    assert "permitted_tools:" in body
-    assert "permitted_subagents:" in body
+    assert "permitted_tools:" in body  # prose-lint: ok=prompt-contract: frontmatter field label
+    assert "permitted_subagents:" in body  # prose-lint: ok=prompt-contract: frontmatter field label
 
 
 def test_qor_ideate_dialogue_protocol_reference_exists():

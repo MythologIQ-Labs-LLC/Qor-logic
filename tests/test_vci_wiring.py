@@ -9,6 +9,7 @@ removal of the deferred-language), not mere prose presence.
 """
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,14 +19,16 @@ DOCTRINE = ROOT / "qor" / "references" / "doctrine-verification-closure-integrit
 
 def test_substantiate_invokes_feature_index_abort():
     text = SUBSTANTIATE.read_text(encoding="utf-8")
-    assert "qor.scripts.feature_index_verify" in text
+    assert importlib.util.find_spec("qor.scripts.feature_index_verify") is not None
+    assert "qor.scripts.feature_index_verify" in text  # prose-lint: ok=prompt-citation paired with existence check
     # the deferred-language must be gone from the FEATURE_INDEX pass
     assert "ABORT-on-outside-scope-regression helper is deferred" not in text
 
 
 def test_substantiate_references_close_guard():
     text = SUBSTANTIATE.read_text(encoding="utf-8")
-    assert "qor.scripts.ac_close_guard" in text
+    assert importlib.util.find_spec("qor.scripts.ac_close_guard") is not None
+    assert "qor.scripts.ac_close_guard" in text  # prose-lint: ok=prompt-citation paired with existence check
 
 
 def test_doctrine_defines_terms_and_rules():

@@ -12,6 +12,7 @@ import pathlib
 import re
 
 
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 _SKILLS_ROOT = pathlib.Path("qor/skills")
 
 # Skills affirmatively evaluated as load-bearing by doctrine judgment.
@@ -98,7 +99,8 @@ def test_decorative_targets_removed():
 def test_qor_debug_references_context_discipline_doctrine():
     """R4: qor-debug constraint cites doctrine §4."""
     text = pathlib.Path("qor/skills/sdlc/qor-debug/SKILL.md").read_text(encoding="utf-8")
-    assert "doctrine-context-discipline" in text
+    assert "doctrine-context-discipline" in text  # prose-lint: ok=prompt-citation paired with existence check
+    assert (REPO_ROOT / "qor" / "references" / "doctrine-context-discipline.md").exists()
     assert "§4" in text or "Section 4" in text or "Subagent invocation rule" in text
 
 
@@ -106,9 +108,10 @@ def test_qor_document_disambiguates_persona_and_agent():
     """R5: qor-document splits Identity Activation stance from subagent pairing."""
     text = pathlib.Path("qor/skills/memory/qor-document/SKILL.md").read_text(encoding="utf-8")
     # Two distinct sentences: one for main-thread stance, one for subagent pairing
-    assert "Identity Activation stance" in text
-    assert "Subagent pairing" in text
+    assert "Identity Activation stance" in text  # prose-lint: ok=prompt-contract: persona stance prose, not a file
+    assert "Subagent pairing" in text  # prose-lint: ok=prompt-contract: structure prose, not a file
     # Must explicitly cite the doctrine distinction
-    assert "doctrine-context-discipline" in text
+    assert "doctrine-context-discipline" in text  # prose-lint: ok=prompt-citation paired with existence check
+    assert (REPO_ROOT / "qor" / "references" / "doctrine-context-discipline.md").exists()
 
 
