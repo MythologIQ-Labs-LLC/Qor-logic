@@ -60,6 +60,7 @@ PHASES = [
     "validate",
     "remediate",
     "deliver",
+    "qa",
 ]
 
 
