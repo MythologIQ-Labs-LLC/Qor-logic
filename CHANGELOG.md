@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.84.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 117 (#174)**: Hardened `qor.scripts.prose_test_lint` and graduated it to an enforced `/qor-audit` gate. The heuristic now flags only assertions whose membership comparator traces to a SKILL.md read (incl. module-level path constants), eliminating a ~20% false-positive rate; added an inline `# prose-lint: ok=<reason>` allowlist. Drove the suite to zero unexplained findings (39 exempted-with-reason; convertible findings gained `find_spec`/`.exists()` behavioral assertions). `--enforce` now VETOs in the Test Functionality Pass; `tests/test_prose_lint_floor.py` locks the floor.
+
 ## [0.83.0] - 2026-05-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

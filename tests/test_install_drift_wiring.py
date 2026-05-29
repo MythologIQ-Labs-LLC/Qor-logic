@@ -21,7 +21,7 @@ GLOSSARY = REPO_ROOT / "qor" / "references" / "glossary.md"
 
 def test_plan_skill_has_install_drift_step_0_2():
     body = QOR_PLAN_SKILL.read_text(encoding="utf-8")
-    assert "### Step 0.2" in body, (
+    assert "### Step 0.2" in body, (  # prose-lint: ok=prompt-contract: section header
         "/qor-plan SKILL.md must define Step 0.2 (Phase 32 wiring)"
     )
     # Body must reference the check module

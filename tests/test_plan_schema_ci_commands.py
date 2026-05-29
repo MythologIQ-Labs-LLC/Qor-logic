@@ -54,7 +54,7 @@ def test_plan_schema_accepts_valid_ci_commands():
 def test_qor_plan_skill_template_has_ci_commands_section():
     prose = _SKILL.read_text(encoding="utf-8")
     assert "## CI Commands" in prose or "CI Commands" in prose
-    assert "ci_commands" in prose
+    assert "ci_commands" in prose  # prose-lint: ok=prompt-contract: plan-template field label
 
 
 def test_pre_phase_38_plans_grandfathered():

@@ -9,6 +9,7 @@ test_audit_drift_auto_invoked.py::test_audit_template_has_drift_marker.
 """
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -19,8 +20,9 @@ DOCTRINE = REPO_ROOT / "qor/references/doctrine-shadow-genome-countermeasures.md
 
 def test_skill_step3_points_to_consumer_trace_subpass():
     text = SKILL.read_text(encoding="utf-8")
-    assert "phase37-subpasses.md" in text, "Step 3 must reference the sub-passes file"
-    assert "consumer-trace" in text, "Step 3 must name the consumer-trace sub-check"
+    assert "phase37-subpasses.md" in text, "Step 3 must reference the sub-passes file"  # prose-lint: ok=prompt-citation paired with existence check
+    assert (REPO_ROOT / "qor" / "skills" / "governance" / "qor-audit" / "references" / "phase37-subpasses.md").exists()
+    assert "consumer-trace" in text, "Step 3 must name the consumer-trace sub-check"  # prose-lint: ok=prompt-contract: concept term in the prompt, not a file
 
 
 def test_consumer_trace_procedure_documented():
@@ -35,9 +37,10 @@ def test_consumer_trace_procedure_documented():
 
 def test_skill_step0_6_runs_delivery_branch_lint():
     text = SKILL.read_text(encoding="utf-8")
-    assert "qor.scripts.delivery_branch_lint" in text, (
+    assert "qor.scripts.delivery_branch_lint" in text, (  # prose-lint: ok=prompt-citation paired with existence check
         "Step 0.6 must invoke the delivery_branch_lint pre-audit lint"
     )
+    assert importlib.util.find_spec("qor.scripts.delivery_branch_lint") is not None
 
 
 def test_delivery_branch_procedure_documented():

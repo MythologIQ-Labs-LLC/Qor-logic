@@ -6,7 +6,7 @@ SKILL = Path("qor/skills/governance/qor-substantiate/SKILL.md")
 
 def test_skill_md_contains_step_prerequisites_table():
     text = SKILL.read_text(encoding="utf-8")
-    assert "## Step Prerequisites" in text, "SKILL.md must add Step Prerequisites section"
+    assert "## Step Prerequisites" in text, "SKILL.md must add Step Prerequisites section"  # prose-lint: ok=prompt-contract: section header
     expected = ["4.6", "4.6.5", "4.6.6", "4.7", "6.5", "6.8", "7.4", "7.5", "7.6", "7.7", "7.8", "8.5"]
     section_start = text.index("## Step Prerequisites")
     next_h2 = text.find("\n## ", section_start + 5)

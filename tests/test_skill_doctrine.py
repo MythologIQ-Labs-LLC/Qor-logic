@@ -292,8 +292,12 @@ def test_shadow_process_skill_documents_attribution():
 
 def test_shadow_process_skill_documents_both_log_files():
     text = SHADOW_PROCESS_SKILL.read_text(encoding="utf-8")
-    assert "PROCESS_SHADOW_GENOME.md" in text, "Must reference LOCAL log file"
-    assert "PROCESS_SHADOW_GENOME_UPSTREAM.md" in text, "Must reference UPSTREAM log file"
+    local_log = REPO_ROOT / "docs" / "PROCESS_SHADOW_GENOME.md"
+    upstream_log = REPO_ROOT / "docs" / "PROCESS_SHADOW_GENOME_UPSTREAM.md"
+    assert local_log.exists(), f"documented LOCAL log file missing: {local_log}"
+    assert upstream_log.exists(), f"documented UPSTREAM log file missing: {upstream_log}"
+    assert "PROCESS_SHADOW_GENOME.md" in text, "Must reference LOCAL log file"  # prose-lint: ok=prompt-citation paired with existence check
+    assert "PROCESS_SHADOW_GENOME_UPSTREAM.md" in text, "Must reference UPSTREAM log file"  # prose-lint: ok=prompt-citation paired with existence check
 
 
 def test_shadow_tracking_skills_reference_attribution_doctrine():

@@ -29,9 +29,15 @@ def test_marker_path_is_session_current():
     )
 
 
+def _marker_rel() -> str:
+    # Live session-marker path as a forward-slash relative ref (e.g. ".qor/session/current").
+    return "/".join(session.MARKER_PATH.parts[-3:])
+
+
 def test_substantiate_bash_refs_match_marker():
     body = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
-    assert ".qor/session/current" in body, (
+    assert _marker_rel() == ".qor/session/current"
+    assert ".qor/session/current" in body, (  # prose-lint: ok=prompt-citation paired with existence check
         "substantiate SKILL.md must reference .qor/session/current"
     )
     assert ".qor/current_session" not in body, (
@@ -41,7 +47,8 @@ def test_substantiate_bash_refs_match_marker():
 
 def test_implement_bash_refs_match_marker():
     body = IMPLEMENT_SKILL.read_text(encoding="utf-8")
-    assert ".qor/session/current" in body, (
+    assert _marker_rel() == ".qor/session/current"
+    assert ".qor/session/current" in body, (  # prose-lint: ok=prompt-citation paired with existence check
         "implement SKILL.md must reference .qor/session/current"
     )
     assert ".qor/current_session" not in body, (

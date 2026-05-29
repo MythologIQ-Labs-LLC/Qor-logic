@@ -40,4 +40,10 @@ The four qa.json pillars draw on consolidated existing surfaces, not parallel to
 
 ## Prose-Behavior Test Lint (#170)
 
-`qor.scripts.prose_test_lint` scans `tests/*.py` source (AST) and flags tests whose only assertion is substring membership in a SKILL.md — the presence-not-behavior anti-pattern that shipped in #56/#58/#83 and that the plan-text `plan_test_lint` could not catch. Heuristic: a test function that reads a SKILL.md AND contains an `assert "<literal>" in <...>` is flagged. WARN-first when wired into `/qor-audit` Test Functionality Pass; `--enforce` reserved for a graduated V2. Enforces the `doctrine-test-functionality.md` acceptance question at the test-source level.
+`qor.scripts.prose_test_lint` scans `tests/*.py` source (AST) and flags tests whose only assertion is substring membership in a SKILL.md — the presence-not-behavior anti-pattern that shipped in #56/#58/#83 and that the plan-text `plan_test_lint` could not catch. Enforces the `doctrine-test-functionality.md` acceptance question at the test-source level.
+
+**Hardened heuristic (Phase 117; #174):** a finding is raised only when an `assert "<literal>" in <X>` has `<X>` tracing to a SKILL.md read — a var assigned from a `.read_text()` whose path mentions `SKILL.md` (including module-level path constants like `SUBSTANTIATE_SKILL = .../SKILL.md`), or an inline SKILL.md read. This eliminates false positives where `<X>` is subprocess stderr, a non-SKILL.md source file, or an emitted dict, even when the function mentions `SKILL.md`. (V1's broad heuristic over-flagged ~20%.)
+
+**Allowlist:** an assertion carrying a trailing `# prose-lint: ok=<reason>` (non-empty reason) is recorded as *exempted*, not *unexplained*. Legitimate prose-contract checks on prompt structure/instructions (section headers, agent directives, frontmatter field labels, persona framing, documented shell commands) are exempted with a stated reason. Convertible findings (the prompt cites a real module/file) keep the citation assert (allowlisted) AND add a behavioral check (`find_spec(...)` / `Path(...).exists()` / compare to the live constant).
+
+**ENFORCED (Phase 117):** wired into `/qor-audit` Test Functionality Pass with `--enforce` — a non-zero exit (any UNEXPLAINED finding) VETOs. `tests/test_prose_lint_floor.py` locks the suite at zero unexplained. Exempted-with-reason findings do not VETO.

@@ -27,6 +27,6 @@ def test_step_6_6_seeds_feature_index_with_phase73_cross_reference():
 
 def test_success_criteria_lists_feature_index_seed():
     text = SKILL.read_text(encoding="utf-8")
-    assert "FEATURE_INDEX.md exists with seed scaffold" in text, (
+    assert "FEATURE_INDEX.md exists with seed scaffold" in text, (  # prose-lint: ok=prompt-contract: success-criteria prose line
         "Success Criteria must list FEATURE_INDEX.md seed scaffold bullet"
     )

@@ -11428,3 +11428,31 @@ Change class: feature. Tests: full suite green; 11 new behavioral tests. Audit P
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 116; v0.83.0 local, held for operator review)
+
+---
+
+### Entry #310: SESSION SEAL -- Phase 117 prose_test_lint harden+enforce (v0.84.0)
+
+**Timestamp**: 2026-05-29T19:45:48Z
+**Phase**: SUBSTANTIATE (Phase 117; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase117-prose-lint-harden.md
+**Session**: `2026-05-29T1945-573751`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `40e4dea22b10`
+
+**Scope**: Phase 117 implemented (#174): hardened qor.scripts.prose_test_lint (comparator must trace to SKILL.md read incl module-level path constants; ~20% false-positive rate eliminated) + inline # prose-lint: ok=<reason> allowlist; drove suite to 0 UNEXPLAINED (39 exempted-with-reason; convertible findings gained find_spec/.exists() behavioral asserts across 18 test files); graduated to --enforce in /qor-audit Test Functionality Pass (VETO on unexplained); floor locked by tests/test_prose_lint_floor.py. NOTE: staged pyproject.toml (the Phase 116 seal omitted it; main pyproject was 0.82.0 vs sealed 0.83.0 -- see handoff).
+
+Change class: feature. Tests: full suite green; new lint/floor tests. Audit PASS (L2 solo).
+
+**Review Boundary**: HONORED. Local seal only; no push / no PR / no tag-push.
+
+**Content Hash**: `8ef270d48bb8097d053fee43bcdfe99128b3560eab72e172599b773d6ee4d16d`
+**Previous Hash**: `9d605895c922c633e5c15e5528fa95fbb7c14f78cad226b43785a01aece53cd8`
+**Chain Hash (Merkle seal)**: `ae508c2df7dbdee4efe410104c6bade45690d197e1884f247370e01e12919f3e`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 117; v0.84.0 local, held for operator review)

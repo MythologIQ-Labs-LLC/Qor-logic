@@ -1,6 +1,7 @@
 """Tests for audit gate emission of findings_categories (Phase 37 B20b)."""
 from __future__ import annotations
 
+import importlib.util
 import pathlib
 import pytest
 
@@ -65,13 +66,16 @@ def test_schema_rejects_unknown_category():
 def test_qor_audit_skill_names_findings_categories_slot():
     prose = _QOR_AUDIT_SKILL.read_text(encoding="utf-8")
     assert "findings_categories" in prose, \
-        "/qor-audit skill must reference findings_categories field"
+        "/qor-audit skill must reference findings_categories field"  # prose-lint: ok=prompt-contract: schema slot name
 
 
 def test_qor_audit_skill_names_unmapped_category_error():
     prose = _QOR_AUDIT_SKILL.read_text(encoding="utf-8")
+    assert importlib.util.find_spec("qor.scripts.findings_signature") is not None
+    from qor.scripts.findings_signature import UnmappedCategoryError
+    assert issubclass(UnmappedCategoryError, ValueError)
     assert "UnmappedCategoryError" in prose, \
-        "/qor-audit skill must cite UnmappedCategoryError discipline"
+        "/qor-audit skill must cite UnmappedCategoryError discipline"  # prose-lint: ok=prompt-citation paired with existence check
 
 
 def test_qor_audit_template_has_findings_categories_slot():

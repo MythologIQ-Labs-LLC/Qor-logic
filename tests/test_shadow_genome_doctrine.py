@@ -87,9 +87,10 @@ def test_doctrine_documents_sg032_batch_split_countermeasure():
 
 def test_qor_plan_skill_cites_countermeasures_doctrine():
     text = QOR_PLAN_SKILL.read_text(encoding="utf-8")
-    assert "doctrine-shadow-genome-countermeasures.md" in text, (
+    assert "doctrine-shadow-genome-countermeasures.md" in text, (  # prose-lint: ok=prompt-citation paired with existence check
         "qor-plan/SKILL.md must cite the countermeasures doctrine"
     )
+    assert (REPO_ROOT / "qor" / "references" / "doctrine-shadow-genome-countermeasures.md").exists()
 
 
 # ----- SG-033 static analysis -----
@@ -167,9 +168,10 @@ STEP_EXTENSIONS = (
 
 def test_qor_audit_skill_cites_countermeasures_doctrine():
     text = QOR_AUDIT_SKILL.read_text(encoding="utf-8")
-    assert "doctrine-shadow-genome-countermeasures.md" in text, (
+    assert "doctrine-shadow-genome-countermeasures.md" in text, (  # prose-lint: ok=prompt-citation paired with existence check
         "qor-audit/SKILL.md must cite the countermeasures doctrine in its adversarial sweep"
     )
+    assert (REPO_ROOT / "qor" / "references" / "doctrine-shadow-genome-countermeasures.md").exists()
 
 
 def test_qor_plan_step_extensions_reference_exists():
@@ -178,9 +180,10 @@ def test_qor_plan_step_extensions_reference_exists():
     assert "Step 0.5" in body
     assert "Step 1.a" in body
     skill = QOR_PLAN_SKILL.read_text(encoding="utf-8")
-    assert "qor/skills/sdlc/qor-plan/references/step-extensions.md" in skill, (
+    assert "qor/skills/sdlc/qor-plan/references/step-extensions.md" in skill, (  # prose-lint: ok=prompt-citation paired with existence check
         "qor-plan/SKILL.md must cite step-extensions.md"
     )
+    assert (REPO_ROOT / "qor" / "skills" / "sdlc" / "qor-plan" / "references" / "step-extensions.md").exists()
 
 
 def test_step_extensions_content_moved_not_copied():

@@ -21,7 +21,7 @@ AUDIT_TEMPLATE = (
 def test_audit_skill_has_drift_invocation_block():
     body = AUDIT_SKILL.read_text(encoding="utf-8")
     # Find the Documentation Drift section
-    assert "Documentation Drift" in body, "Audit SKILL must declare Documentation Drift section"
+    assert "Documentation Drift" in body, "Audit SKILL must declare Documentation Drift section"  # prose-lint: ok=prompt-contract: named prompt section
     # Scan for a python fence referencing render_drift_section
     py_fences = re.findall(r"```python\s*\n(.*?)\n```", body, re.DOTALL)
     found = any("render_drift_section" in fence for fence in py_fences)

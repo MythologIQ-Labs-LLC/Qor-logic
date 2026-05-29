@@ -26,7 +26,7 @@ def test_owasp_doctrine_has_categories():
 
 def test_audit_skill_has_owasp_pass():
     body = AUDIT_SKILL_PATH.read_text(encoding="utf-8")
-    assert "OWASP Top 10 Pass" in body
+    assert "OWASP Top 10 Pass" in body  # prose-lint: ok=prompt-contract: named prompt pass
 
 
 def test_cedar_policies_exist():

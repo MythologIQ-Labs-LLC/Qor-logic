@@ -105,4 +105,4 @@ def test_lint_passes_when_phase_plan_skill_invokes_lint(tmp_path):
     """).strip(), encoding="utf-8")
 
     body = (plan_dir / "SKILL.md").read_text(encoding="utf-8")
-    assert "python -m qor.scripts.model_pinning_lint" in body
+    assert "python -m qor.scripts.model_pinning_lint" in body  # prose-lint: ok=prompt-contract: synthetic fixture round-trip

@@ -16,13 +16,13 @@ def test_skill_file_exists():
 
 def test_skill_declares_task_tool_orchestration():
     prose = _SKILL.read_text(encoding="utf-8")
-    assert "Task" in prose
+    assert "Task" in prose  # prose-lint: ok=prompt-contract: Task-tool orchestration
     assert "parallel" in prose.lower()
 
 
 def test_skill_references_corpus_manifest():
     prose = _SKILL.read_text(encoding="utf-8")
-    assert "MANIFEST.json" in prose
+    assert "MANIFEST.json" in prose  # prose-lint: ok=prompt-contract: documented corpus artifact
 
 
 def test_skill_references_4_variant_files():
@@ -38,7 +38,7 @@ def test_skill_references_4_variant_files():
 
 def test_skill_declares_subagent_type_general():
     prose = _SKILL.read_text(encoding="utf-8")
-    assert '"general"' in prose
+    assert '"general"' in prose  # prose-lint: ok=prompt-contract: subagent-type label
     # And cites the doctrine rule
     assert "doctrine" in prose.lower() and ("§4" in prose or "section 4" in prose.lower())
 
@@ -50,7 +50,7 @@ def test_skill_declares_5_replications():
 
 def test_skill_writes_results_artifact_path():
     prose = _SKILL.read_text(encoding="utf-8")
-    assert "docs/phase39-ab-results.md" in prose
+    assert "docs/phase39-ab-results.md" in prose  # prose-lint: ok=prompt-contract: skill-written output path
 
 
 def test_subagent_prompt_template_has_placeholders():
@@ -63,7 +63,7 @@ def test_skill_discloses_measurement_scope():
     """O1 from Pass 1 audit: subagent receives variant block only, not full skill body."""
     prose = _SKILL.read_text(encoding="utf-8")
     assert "Measurement scope" in prose or "scope" in prose.lower()
-    assert "NOT" in prose  # must declare what's NOT in the subagent prompt
+    assert "NOT" in prose  # prose-lint: ok=prompt-contract: scope-disclosure word
 
 
 def test_skill_records_model_identity():
@@ -74,9 +74,9 @@ def test_skill_records_model_identity():
 
 def test_skill_has_constraints_section():
     prose = _SKILL.read_text(encoding="utf-8")
-    assert "## Constraints" in prose
+    assert "## Constraints" in prose  # prose-lint: ok=prompt-contract: section header
 
 
 def test_skill_has_next_step_section():
     prose = _SKILL.read_text(encoding="utf-8")
-    assert "## Next Step" in prose
+    assert "## Next Step" in prose  # prose-lint: ok=prompt-contract: section header
