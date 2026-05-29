@@ -1,0 +1,27 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-05-29T0252-f6486c",
+  "ts": "2026-05-29T03:01:38Z",
+  "verdict": "PASS",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [
+      "tests/test_cli_governance_health.py",
+      "CHANGELOG.md",
+      "README.md",
+      "pyproject.toml"
+    ],
+    "matches": 6
+  },
+  "merkle_seal": "66d696b3f2b31393eaaa5259e5b6ca970b11a7e6edcd7c11cacec3dadc8fb82f",
+  "content_hash": "7620e8799f3cf4b7db366bdbc73848376fcdb0ee127f75aec2b700e659920b83",
+  "ledger_entry": 306,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.80.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-05-29T03:01:38Z"
+  }
+}

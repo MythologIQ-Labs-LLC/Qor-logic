@@ -16,6 +16,7 @@ _HEALTHY = {
     "SHADOW_GENOME.md": "# Shadow Genome\n\nNo open failures.\n",
     "BACKLOG.md": "# Backlog\n\nNo open blockers.\n",
     "FEATURE_INDEX.md": "# Feature Index\n\nNo user-facing features yet.\n",
+    "GOVERNANCE_INDEX.md": "# Governance Index\n\nLast Reviewed 2026-01-01. Tier 1 canonical docs mapped.\n",
 }
 
 

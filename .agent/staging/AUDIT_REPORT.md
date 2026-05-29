@@ -1,8 +1,8 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-05-29T02:40:00Z
-**Target**: docs/plan-qor-phase112-governance-index.md (Phase 112 - Hierarchical Governance Index)
-**Risk Grade**: L2
+**Tribunal Date**: 2026-05-29T02:56:00Z
+**Target**: docs/plan-qor-phase113-shadow-genome-graph.md (Phase 113 - Shadow Genome causal-graph layer)
+**Risk Grade**: L1
 **Auditor**: The Qor-logic Judge (solo; `audit_risk_score` reports `option_b_required: false`)
 
 ---
@@ -15,7 +15,7 @@
 
 ### Executive Summary
 
-Phase 112 introduces `docs/GOVERNANCE_INDEX.md` (6-tier governance-artifact freshness map) as a seeded canonical artifact, a WARN-only drift checker (`governance_index`), the supporting doctrine + glossary, and a `/qor-status` drift surface. It builds on Phase 109's governance-health registry (realizing that phase's "future freshness surface"). The four proposal open-questions are resolved by evidence/convention (Locked Decisions). Full Tier 3->6 archival enforcement + validate cross-check + hard `/qor-implement` block are explicitly deferred to V2. No binding-VETO condition met; gate OPEN for `/qor-implement`.
+Phase 113 ports the fitting core of the #139 causal-graph proposal to Python: a `shadow_genome_graph` library (typed nodes + typed edges + `trace_chain`/`snapshot`/`query` over append-only JSONL, deterministic ids) plus doctrine + glossary. The plan's Locked Decisions make an explicit, honest fit assessment: the core causal layer is built (it delivers operator/skill root-cause traceback), while the dashboard API, CBT/KBT/IBT trust-level transitions, and federation gossip are DECLINED for qor-logic with rationale (no in-repo consumer). This is the operator-authorized "accept it may not fully translate" outcome, scoped precisely. No binding-VETO condition met; gate OPEN for `/qor-implement`.
 
 ### Audit Results
 
@@ -23,34 +23,34 @@ Phase 112 introduces `docs/GOVERNANCE_INDEX.md` (6-tier governance-artifact fres
 **Result**: PASS — canary scan clean.
 
 #### Security Pass (L3) / OWASP Top 10
-**Result**: PASS — no auth/credentials/secrets; the checker parses Markdown via regex (no `eval`/`exec`/`yaml.load`/`pickle`); CLI argv-only, no `shell=True`. A04: WARN-only, fail-soft by design (V1); no fail-open on a security control.
+**Result**: PASS — no auth/credentials/secrets. JSONL persistence uses `json` (no `pickle`/`eval`); CLI argv-only, no `shell=True`. Append-only + immutable nodes; no fail-open security control.
 
 #### Ghost UI Pass
-**Result**: PASS (N/A).
+**Result**: PASS (N/A) — the proposal's dashboard UI is explicitly declined (LD2); no UI is introduced.
 
 #### Section 4 Razor Pass
-**Result**: PASS — checker decomposes into parse / tier-freshness / unregistered-scan helpers, each under limits; template is data.
+**Result**: PASS — `trace_chain` (BFS with visited-set cycle guard + depth limit), `add_node`/`add_edge`, `snapshot`, `query` each decompose under limits; the adjacency index is a plain dict.
 
 #### Test Functionality Pass
-**Result**: PASS — tests invoke `seed`, `check_index_drift`, and the doctrine/glossary parsers and assert on returned findings / set membership / parsed structure. Not presence-only.
+**Result**: PASS — tests invoke `add_node`/`add_edge`/`trace_chain`/`snapshot`/`query` and assert on returned ids, paths, counts, filtered nodes, and a persistence round-trip. Not presence-only.
 
 #### Dependency Pass
-**Result**: PASS — stdlib only (re, pathlib, datetime parse of an ISO date string). No new third-party dependency.
+**Result**: PASS — stdlib only (json, enum, dataclasses, pathlib, os). No graph-DB dependency (a deliberate scope choice).
 
 #### Macro-Level Architecture Pass
-**Result**: PASS — `governance_index` sits beside `governance_health`; the seed coupling reuses `seed.scaffold_file_targets()` so the Phase 109 anti-drift invariant is preserved (LD5); no cycles.
+**Result**: PASS — a standalone library in `qor/scripts/`; no coupling into the gate-write path (V1 is operator/skill-invoked, not auto-instrumented), so no cyclic dependency or hidden side effects.
 
 #### Feature Test Coverage Pass
 **Result**: PASS (exempt) — no `src/`; `feature_inventory_touches` empty.
 
 #### Infrastructure Alignment Pass
-**Result**: PASS — `qor/seed.py` (`SEED_TARGETS`, `scaffold_file_targets`), `qor/scripts/governance_health.py` (`REQUIRED_ARTIFACTS`, `SCAFFOLD_OWNED`), `qor/skills/memory/qor-status/SKILL.md` Step 4, and `qor/references/glossary.md` all exist. NEW files (template, checker, doctrine, repo index, four test modules) declared. The plan dogfoods the repo's own `docs/GOVERNANCE_INDEX.md` so adding it to `REQUIRED_ARTIFACTS` does not make `governance_health` report it MISSING for this repo.
+**Result**: PASS — builds on qor-logic's existing append-only shadow-event JSONL model (`shadow_process`); `QOR_GENOME_PATH` env knob mirrors existing env-config conventions; `qor/references/glossary.md` exists. NEW files (library, doctrine, two test modules) declared. The declined surfaces (dashboard/trust-level/federation) reference no qor-logic infrastructure, consistent with LD2.
 
 #### Filter-Stage Ordering Coherence
-**Result**: PASS — checker stages (parse -> freshness compare -> unregistered scan) are independent; no precondition inversion.
+**Result**: PASS — `trace_chain` visits inbound edges with a visited set before recursing; no precondition inversion; cycle termination proven by the visited guard.
 
 #### Orphan Pass
-**Result**: PASS — checker has a CLI + test importers; template consumed by seed; doctrine cited by glossary homes + qor-status surface.
+**Result**: PASS — library has a CLI entrypoint + test importers; doctrine cited by glossary homes.
 
 ### Documentation Drift
 

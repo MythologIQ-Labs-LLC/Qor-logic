@@ -10,6 +10,24 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.80.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 113 (#139)**: Shadow Genome causal-graph layer (core only). New
+  `qor.scripts.shadow_genome_graph` — typed nodes (checkpoint/state/failure/
+  governance) + typed edges (produced/occurred_during/triggered_by/applies_to)
+  over append-only JSONL with deterministic ids; `trace_chain` (cycle-safe,
+  depth-limited), `snapshot`, `query`, and a CLI — giving operators and
+  `/qor-debug`/`/qor-remediate` root-cause traceback. New
+  `doctrine-shadow-genome-graph.md` + two glossary terms. Per the honest
+  qor-logic fit assessment, the proposal's governance dashboard API, CBT/KBT/IBT
+  trust-level transitions, and cross-module federation are **declined** for
+  qor-logic (they realize their advantage in a consuming product/UI this repo
+  does not have); strictly append-only, no retention automation in V1.
+
 ## [0.79.0] - 2026-05-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
