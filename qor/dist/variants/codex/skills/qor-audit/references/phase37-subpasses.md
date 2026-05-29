@@ -57,7 +57,7 @@ procedure:
 1. **Resolve `pr_target`.** Read the plan's `pr_target` value. When absent,
    the plan targets the default branch and this sub-check is a no-op.
 2. **Confirm the branch exists on the remote.** The Step 0.6 pre-audit lint
-   `python -m qor.scripts.delivery_branch_lint --plan "$PLAN_PATH"
+   `qor-logic scripts delivery_branch_lint --plan "$PLAN_PATH"
    --repo-root .` runs `git ls-remote --heads origin <pr_target>` and reports
    a missing branch. (`pr_target` is allowlist-validated before reaching git;
    an invalid value is itself a finding.)

@@ -1,14 +1,29 @@
-# AUDIT REPORT
+# AUDIT REPORT — Phase 118 (Module reachability CLI dispatch, GH #150)
 
-**Tribunal Date**: 2026-05-29T19:45:48Z
-**Target**: docs/plan-qor-phase117-prose-lint-harden.md (Phase 117 - prose_test_lint harden + allowlist + convert + enforce)
-**Risk Grade**: L2
-**Auditor**: The Qor-logic Judge (solo; `audit_risk_score` reports `option_b_required: false`)
+**Target**: docs/plan-qor-phase118-module-reachability-cli-dispatch.md
+**Verdict**: PASS
+**Risk Grade**: L2 (governance-reliability surface; additive, no L3 security/financial/fundamental-rights surface)
+**Mode**: solo (Phase 87 audit_risk_score: option_b_required=false)
 
----
+## Passes
+- Prompt Injection: PASS (canaries exit 0 across ARCHITECTURE_PLAN/META_LEDGER/CONCEPT/plan)
+- Security L3: PASS (no placeholder auth/secrets/bypass)
+- OWASP Top-10: PASS (A03: list-form subprocess.run, no shell=True, f-string family prefix confines target to qor.reliability/qor.scripts)
+- Ghost UI / Live-Progress: N/A (no UI)
+- Section 4 Razor: PASS (_do_module_dispatch / _register_module_dispatch ~5 lines each; <40)
+- Test Functionality: PASS (5 dispatch tests invoke unit + assert output/exit; the 1 substring test is a prompt-contract assertion per established Phase 117 pattern, annotate ok=prompt-contract at implement)
+- Dependency: PASS (stdlib subprocess/sys only; no new deps)
+- Macro Architecture: PASS (additive subparser in existing cli.py pattern)
+- Feature Test Coverage: PASS (2 Feature Inventory rows cite test_cli_module_dispatch.py with behavioral descriptors)
+- Infrastructure Alignment: PASS (grep-verified: argparse imported; _build_parser/_dispatch/add_subparsers present; qor.reliability.skill_admission + qor.scripts.active_phase resolve; test_install_sync_with_source variant-sync tests exist; subprocess declared NEW import)
+- Filter-Stage Ordering: N/A (no pipeline shape)
+- Orphan Detection: PASS (test file connects via pytest; no orphan src)
 
-## VERDICT: PASS
+## Documentation Drift
+None material. doc_tier=standard; terms_introduced home cites existing doctrine file.
 
-**Verdict: PASS**
+## Process Pattern Advisory
+No repeated-VETO pattern detected.
 
-Pre-audit lints rc=0. TDD honored. Lint hardened (comparator must trace to SKILL.md read incl module-level path constants; killed ~20% false-positive rate); inline allowlist added; suite driven to 0 UNEXPLAINED (39 exempted-with-reason; convertible findings got find_spec/.exists() behavioral asserts); graduated to --enforce in qor-audit; floor locked by test_prose_lint_floor.py.
+## Next Action
+PASS -> /qor-implement

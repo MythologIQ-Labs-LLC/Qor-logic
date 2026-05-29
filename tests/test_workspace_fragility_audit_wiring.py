@@ -29,7 +29,7 @@ def test_step_0_6_invokes_workspace_fragility_check():
     text = AUDIT_SKILL.read_text(encoding="utf-8")
     section = _section(text, r"Step 0\.6")
     assert section
-    assert "qor.scripts.workspace_fragility_check" in section, (
+    assert ("qor.scripts.workspace_fragility_check" in section or "qor-logic scripts workspace_fragility_check" in section), (
         "Step 0.6 missing workspace_fragility_check invocation"
     )
     assert "|| true" in section, "Step 0.6 missing WARN-only guard"
@@ -41,7 +41,7 @@ def test_step_0_6_section_removed_breaks_assertion():
     assert section
     stripped = text.replace(section, "")
     section_after = _section(stripped, r"Step 0\.6")
-    assert "qor.scripts.workspace_fragility_check" not in section_after
+    assert ("qor.scripts.workspace_fragility_check" not in section_after and "qor-logic scripts workspace_fragility_check" not in section_after)
 
 
 def test_step_0_6_fragility_check_appears_after_ci_coverage_lint():

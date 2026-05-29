@@ -26,7 +26,7 @@ NOT for code defects — those route to `/qor-debug`. This is for PROCESS issues
 
 ## Environment (Phase 90 wiring; GH #79)
 
-This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+This skill invokes integrity gates via `qor-logic reliability <module>` / `qor-logic scripts <module>`, which run the module through the CLI's own interpreter and so resolve from any shell. The bare `python -m qor.reliability.<module>` / `python -m qor.scripts.<module>` form remains a valid in-venv fallback. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
 
 ```bash
 python -c "import qor.reliability"
@@ -53,7 +53,7 @@ Run the threshold checker. This applies stale expiry (sev 1-2 only after 90 days
 If the threshold is breached, `.qor/remediate-pending` exists with aggregated event ids. If not, the sweep summary still shows recent activity.
 
 ```bash
-python -m qor.scripts.check_shadow_threshold
+qor-logic scripts check_shadow_threshold
 ```
 
 **CHECKPOINT — after-shadow-sweep**: Surface (a) total unaddressed severity, (b) breached/under threshold, (c) event-type distribution, (d) whether `.qor/remediate-pending` exists. Prompt: continue to remediate / scope-down (focus on subset) / stop with summary.

@@ -20,12 +20,15 @@ SKILLS_ROOT = REPO_ROOT / "qor" / "skills"
 # modules (the surface GH #79 targets). Skills not matching this need no
 # Environment block; skills matching this MUST carry one.
 #
-# Requires a specific submodule (`\.\w+`) so the contract-documentation
-# string "python -m qor.reliability.*" in the Environment block prose
-# (which describes the invocation pattern abstractly) does not itself
-# count as an invocation that demands a preflight before it.
+# Phase 118 (GH #150): accept BOTH the legacy in-venv module form
+# (`python -m qor.reliability.<mod>`) AND the qor-logic dispatch form
+# (`qor-logic reliability <mod>`) introduced by Option A. Each alternative
+# requires a concrete submodule (`\.\w+` / trailing `\w+`) so the abstract
+# Environment-block prose ("python -m qor.reliability.*",
+# "qor-logic reliability <module>") does not itself count as an invocation.
 _PYTHON_QOR_INVOCATION_RE = re.compile(
     r"python\s+-m\s+qor\.(?:reliability|scripts)\.\w+\b"
+    r"|qor-logic\s+(?:reliability|scripts)\s+\w+\b"
 )
 
 
@@ -190,6 +193,26 @@ def test_preflight_is_warn_only_not_abort():
     assert not failures, (
         "Phase 90 preflight must be WARN-only (Phase 75 SKIP fallback preserved):\n  "
         + "\n  ".join(failures)
+    )
+
+
+_DISPATCH_FORM_RE = re.compile(r"qor-logic\s+(?:reliability|scripts)\s+\w+\b")
+
+
+def test_migrated_skills_use_dispatch_form():
+    """Phase 118 (GH #150): the migration must have landed -- at least 5 skills
+    invoke an integrity gate via the `qor-logic reliability/scripts <mod>`
+    dispatch form, not merely the legacy `python -m` form. Counts only real
+    invocations (trailing `\\w+`), so the `<module>` placeholder prose in the
+    Environment block is excluded. Reads each SKILL.md (prompt-contract test).
+    """
+    dispatch_skills = [
+        p for p in SKILLS_ROOT.rglob("SKILL.md")
+        if _DISPATCH_FORM_RE.search(p.read_text(encoding="utf-8"))
+    ]
+    assert len(dispatch_skills) >= 5, (  # prose-lint: ok=prompt-contract: migration-landed coverage floor
+        f"expected >=5 skills using the qor-logic dispatch form, found "
+        f"{len(dispatch_skills)}: {[str(s.relative_to(REPO_ROOT)) for s in dispatch_skills]}"
     )
 
 

@@ -37,7 +37,7 @@ STEP_7_4_RE = r"^### Step 7\.4: SSDF tag emission"
 
 def test_step_7_4_invokes_ssdf_tagger_module_form():
     body = _read()
-    assert _proximity(body, STEP_7_4_RE, r"python -m qor\.scripts\.ssdf_tagger", span=2500)
+    assert _proximity(body, STEP_7_4_RE, r"(?:python -m qor\.scripts\.ssdf_tagger|qor-logic scripts ssdf_tagger)", span=2500)
     assert _proximity(body, STEP_7_4_RE, r"--change-class", span=2500)
 
 

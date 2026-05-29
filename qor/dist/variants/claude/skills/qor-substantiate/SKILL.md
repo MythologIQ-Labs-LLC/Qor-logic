@@ -49,7 +49,7 @@ See Step 4.6 (line ~233) for the reliability gate ladder, Step 6.5 (~403) for ba
 
 ## Environment (Phase 90 wiring; GH #79)
 
-This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+This skill invokes integrity gates via `qor-logic reliability <module>` / `qor-logic scripts <module>`, which run the module through the CLI's own interpreter and so resolve from any shell. The bare `python -m qor.reliability.<module>` / `python -m qor.scripts.<module>` form remains a valid in-venv fallback. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
 
 ```bash
 python -c "import qor.reliability"
@@ -272,18 +272,18 @@ SESSION_ID=$(python -c "from qor.scripts.session import current; print(current()
 
 # Re-verify the intent lock captured at /qor-implement Step 5.5.
 # Fails if plan, audit, or HEAD commit drifted since capture.
-python -m qor.reliability.intent_lock verify --session "$SESSION_ID" || ABORT
+qor-logic reliability intent_lock verify --session "$SESSION_ID" || ABORT
 
 # Verify current skill is registered and frontmatter is well-formed.
-python -m qor.reliability.skill_admission qor-substantiate || ABORT
+qor-logic reliability skill_admission qor-substantiate || ABORT
 
 # Verify all /qor-* handoff references across skills resolve to real skills.
-python -m qor.reliability.gate_skill_matrix || ABORT
+qor-logic reliability gate_skill_matrix || ABORT
 
 # Phase 106 wiring: WARN-only session ID convention lint. Non-blocking;
 # stderr WARN when the active session ID doesn't match SESSION_ID_PATTERN
 # (catches the fall-through-to-'default' fragmentation pattern).
-python -m qor.scripts.session_id_lint || true
+qor-logic scripts session_id_lint || true
 ```
 
 Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit, re-admit, or fix broken handoff) and re-run substantiation.
@@ -295,7 +295,7 @@ Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit
 Pre-seal scan over staged content. ABORTs on any detected secret. Closes OWASP LLM Top 10 LLM06 (Sensitive Information Disclosure) and NIST AI 600-1 §2.10. Drives the previously dormant `has_hardcoded_secrets` Cedar attribute (rule on books since Phase 23).
 
 ```bash
-python -m qor.scripts.secret_scanner --staged --out dist/secrets.findings.json || ABORT
+qor-logic scripts secret_scanner --staged --out dist/secrets.findings.json || ABORT
 ```
 
 ABORT semantics on non-zero exit: operator must remediate detected secrets (remove from staging, redact, or add to allowlist when literal-match false-positive) before re-running substantiation. Findings JSON written to `dist/secrets.findings.json` in gitleaks v8 schema for downstream tool compatibility.
@@ -305,7 +305,7 @@ ABORT semantics on non-zero exit: operator must remediate detected secrets (remo
 Static-analysis pass over the implement-gate `files_touched` set. WARN-only posture: deviations append severity-2 events to the Process Shadow Genome but do NOT abort substantiate. Catches the doc-surface coverage gap (skill / script / doctrine / schema changes without at least one update to `docs/SYSTEM_STATE.md`, `docs/operations.md`, `docs/architecture.md`, or `docs/lifecycle.md`).
 
 ```bash
-python -m qor.scripts.procedural_fidelity --session "$SESSION_ID" \
+qor-logic scripts procedural_fidelity --session "$SESSION_ID" \
   --out dist/procedural-fidelity.findings.json
 ```
 
@@ -317,7 +317,7 @@ WARN-only structural check that the plan's `## Definition of Done` section is we
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
-python -m qor.scripts.dod_check --plan "$PLAN_PATH" || true
+qor-logic scripts dod_check --plan "$PLAN_PATH" || true
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction (no `python -c "...${VAR}..."` interpolation). V1 contract: WARN-only — findings (`missing-dod-section`, `deliverable-missing-tier`, `waiver-without-rationale`, `waiver-without-followup`) are surfaced in the seal report but do NOT abort substantiate. Operator amends the plan's DoD block in the next seal cycle. V2 may tighten specific categories to fail-closed once adoption matures.
@@ -327,7 +327,7 @@ python -m qor.scripts.dod_check --plan "$PLAN_PATH" || true
 WARN-only detector that surfaces stabilization-capacity strain from `origin/main`'s recent merge history. Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-MergePaceThrottle-A`, the Bicameral originating recurrence (27 PRs / 14,758 additions / repair cluster #346-#353 / failing e2e on tail PR #354 in a single window) showed that throughput, branch integration, and shared-surface expansion can exceed the rate at which the project can reliably absorb changes. V1 ships the detector only; enforcement (hold-feature-merges, require stabilization-plan) is reserved for V2.
 
 ```bash
-python -m qor.scripts.merge_velocity_check --repo-root . --window-days 7 || true
+qor-logic scripts merge_velocity_check --repo-root . --window-days 7 || true
 ```
 
 The CLI exits 0 on `healthy`/`strained` and exits 1 on `exceeded` (the latter is informational in V1 — the `|| true` swallows the non-zero so substantiate continues). V2 may remove the `|| true` to convert `exceeded` into a hard ABORT. Operators may add operator-declared shared-core path patterns via repeat `--shared-core-path` flags so the detector counts shared-surface touches as one of the threshold signals.
@@ -337,7 +337,7 @@ The CLI exits 0 on `healthy`/`strained` and exits 1 on `exceeded` (the latter is
 WARN-only per-skill size-budget lint that walks `qor/skills/**/SKILL.md` and surfaces a finding for each SKILL.md exceeding the size thresholds (WARN at 25 KB, EXCEEDED at 40 KB). Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-SkillCorpusGrowth-A`, the canonical SKILL.md corpus grew from 91 KB / 3024 lines (Phase 0) to 282 KB / 6766 lines (Phase 81) in 6 weeks — monotonic, never contracted, with no consolidation counterweight. V1 ships the visibility surface; V2 (periodic consolidation cadence via `qor-process-review-cycle`; historical-growth tracking from git history) reserved.
 
 ```bash
-python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills || true
+qor-logic scripts skill_size_budget_lint --skills-root qor/skills || true
 ```
 
 WARN-only V1: the lint emits one finding per oversized SKILL.md but does not abort substantiate. CLI exits 1 when any EXCEEDED finding (>= 40 KB) is present so V2 can convert to a hard ABORT by removing the `|| true` wrap. Operator-actionable: skills exceeding the WARN threshold should be candidates for progressive-disclosure refactor (move sub-pass / step prose to `references/` files); skills exceeding EXCEEDED should be considered overdue for refactor.
@@ -389,7 +389,7 @@ When `FEATURE_INDEX.md` exists in the repo, verify every declared feature after 
 5. List newly unverified entries (regression from prior seal) with explicit names:
    `**Newly unverified**: FX091, FX093, ...`
 6. Run the regression ABORT (Phase 114; GH #155/#40):
-   `python -m qor.scripts.feature_index_verify --snapshot <prior-seal-session-id> --warn-only`
+   `qor-logic scripts feature_index_verify --snapshot <prior-seal-session-id> --warn-only`
    Non-zero exit aborts on an outside-scope `verified->unverified` regression; `--warn-only` downgrades to print-and-pass for graduated rollout until the false-positive rate is measured.
 
 Repos without `FEATURE_INDEX.md` record a single-line note (`**Feature Inventory**: not adopted`) in the seal entry and skip the verification pass. The outside-scope-regression ABORT now ships as `qor.scripts.feature_index_verify` (previously deferred). Per `qor/references/doctrine-feature-inventory.md` and `qor/references/doctrine-verification-closure-integrity.md`.
@@ -397,7 +397,7 @@ Repos without `FEATURE_INDEX.md` record a single-line note (`**Feature Inventory
 #### Acceptance-criteria close guard (Phase 114; GH #158, WARN-first)
 
 Before composing the PR body (Step 9.6), run the close guard over the issues this seal will close:
-`python -m qor.scripts.ac_close_guard --pr-body-file <planned-pr-body> --qa-session <session-id>`
+`qor-logic scripts ac_close_guard --pr-body-file <planned-pr-body> --qa-session <session-id>`
 It parses each `Closes #N` target's acceptance-criteria checklist and WARNs when an unmet criterion has no linked follow-on, or when the `qa.json` evidence verdict is not PASS. V1 is WARN-first (exit 0); `--enforce` is reserved for a graduated V2. Issues without a machine-checkable checklist are allowed with a warning. Contract + the QA evidence artifact: `qor/references/doctrine-verification-closure-integrity.md`.
 
 ### Step 6.5: Documentation Currency Check (Phase 31 wiring)
@@ -427,7 +427,7 @@ Phase 33 addition: when `plan_artifact.change_class` is `feature` or `breaking`,
 
 ```bash
 if [[ "${CHANGE_CLASS}" == "feature" || "${CHANGE_CLASS}" == "breaking" ]]; then
-  python -m qor.scripts.badge_currency \
+  qor-logic scripts badge_currency \
     --repo-root . \
     --ledger docs/META_LEDGER.md \
     || { echo "ABORT: README badge currency mismatch — update Tests/Ledger/Skills/Agents/Doctrines counts to match truth before re-running /qor-substantiate"; exit 1; }
@@ -461,7 +461,7 @@ validate_sha256(previous_hash, label="previous_hash")
 validate_sha256(chain_hash,    label="chain_hash")
 ```
 
-Any raised `ValueError` or `RuntimeError` from missing toolkit or invalid hash strings ABORTs substantiation. Operator fixes the underlying cause (install the seal-critical helper modules, regenerate the affected hash via `python -m qor.scripts.ledger_hash hash <path>`, or amend the fabricated value to a real digest) and re-runs `/qor-substantiate`. Per `qor/references/doctrine-governance-enforcement.md` (Seal Hash Integrity Gate subsection).
+Any raised `ValueError` or `RuntimeError` from missing toolkit or invalid hash strings ABORTs substantiation. Operator fixes the underlying cause (install the seal-critical helper modules, regenerate the affected hash via `qor-logic scripts ledger_hash hash <path>`, or amend the fabricated value to a real digest) and re-runs `/qor-substantiate`. Per `qor/references/doctrine-governance-enforcement.md` (Seal Hash Integrity Gate subsection).
 
 ### Step 7: Final Merkle Seal
 
@@ -484,7 +484,7 @@ Closes G-1 from `docs/compliance-re-evaluation-2026-04-29.md`. Computes NIST SSD
 # interpolation; SG-Phase47-A countermeasure). $CHANGE_CLASS is consumed only
 # as an argv argument and argparse-validated against {feature, breaking, hotfix}.
 CHANGE_CLASS=$(python -c "from qor.scripts.governance_helpers import parse_change_class, current_phase_plan_path; print(parse_change_class(current_phase_plan_path()))")
-SSDF_LINE=$(python -m qor.scripts.ssdf_tagger --change-class "$CHANGE_CLASS" --base-ref origin/main --repo-root .)
+SSDF_LINE=$(qor-logic scripts ssdf_tagger --change-class "$CHANGE_CLASS" --base-ref origin/main --repo-root .)
 ```
 
 Operator pastes `$SSDF_LINE` into the SESSION SEAL entry body before Step 7 computes content_hash. Per `qor/references/doctrine-nist-ssdf-alignment.md` §"Phase 52 wiring (forward-only emission)".
@@ -533,7 +533,7 @@ Closes SG-AdjacentState-A (Phase 46's sixth instance: substantiate sealed at v0.
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
 
-python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan "$PLAN_PATH" || ABORT
+qor-logic reliability seal_entry_check --ledger docs/META_LEDGER.md --plan "$PLAN_PATH" || ABORT
 ```
 
 The `python -c` source is hardcoded — no shell variable is interpolated into the Python literal — so the OWASP A03 injection vector is closed by construction. `current_phase_plan_path()` (`qor/scripts/governance_helpers.py:57-67`) reads the git branch name and globs `docs/plan-qor-phase{NN}*.md`. The helper resolves phase number from the plan path internally and reads the latest entry's chain hash directly from the ledger; no caller-supplied Merkle seal expectation. Argv-form invocation throughout. ABORT on non-zero exit leaves the session unsealed; operator amends the ledger (or re-runs Step 7) and re-runs `/qor-substantiate`.
@@ -543,7 +543,7 @@ The `python -c` source is hardcoded — no shell variable is interpolated into t
 Closes the skill-protocol bypass surface. Walks SESSION SEAL entries with phase >= 52 in `docs/META_LEDGER.md`; for each, asserts `.qor/gates/<sid>/{plan,audit,implement,substantiate}.json` all exist. ABORTs seal on any gap. Phase ≤ 51 entries grandfathered.
 
 ```bash
-QOR_SKILL_ACTIVE=substantiate python -m qor.reliability.gate_chain_completeness \
+QOR_SKILL_ACTIVE=substantiate qor-logic reliability gate_chain_completeness \
   --repo-root . \
   --phase-min 52 \
   || { echo "ABORT: gate-chain completeness violated; bypass would be invisible to ledger math"; exit 1; }
@@ -561,10 +561,10 @@ Preserve only the final AUDIT_REPORT.md (or archive it).
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.dist_compile`. See Step Prerequisites table; operators on hosts where the prerequisite is absent record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event.
 
-Rebuild variant outputs so seal cannot complete with dist drift against source skills. Closes the gap where Phase 28/29 operators manually ran `python -m qor.scripts.dist_compile` between implementation and seal.
+Rebuild variant outputs so seal cannot complete with dist drift against source skills. Closes the gap where Phase 28/29 operators manually ran `qor-logic scripts dist_compile` between implementation and seal.
 
 ```bash
-python -m qor.scripts.dist_compile
+qor-logic scripts dist_compile
 ```
 
 On non-zero exit, ABORT substantiation; operator must resolve compile errors and re-run seal.
@@ -610,7 +610,7 @@ REPORT: "Session committed and pushed to [current-branch]"
 After the seal commit exists (Step 9.5) and before the annotated tag (Step 9.5.5), verify the seal commit message carries the full canonical attribution trailer. Phase 82/83 seal commits shipped with only the compact `Co-Authored-By:` line; this guard makes that omission unrepeatable.
 
 ```bash
-python -m qor.scripts.seal_trailer_check --commit HEAD || ABORT
+qor-logic scripts seal_trailer_check --commit HEAD || ABORT
 ```
 
 On non-zero exit, ABORT before tagging: the seal commit is missing the `Authored via [Qor-logic SDLC]` line and/or the `Co-Authored-By:` line. Amend the seal commit so its message contains the full `qor.scripts.attribution.commit_trailer()` output, then re-run from Step 9.5. The check delegates to `qor.scripts.attribution.message_has_full_trailer` -- the single source of truth shared with `tests/test_attribution_tiered_usage.py`. Per `qor/references/doctrine-attribution.md` §"Tiered usage".
@@ -683,7 +683,7 @@ Template: `references/qor-substantiate-templates.md`.
 - **ALWAYS** verify chain integrity before sealing
 - **ALWAYS** call `governance_helpers.bump_version` at Step 7.5 and `governance_helpers.create_seal_tag` at Step 9.5.5 (after the seal commit); never author tags manually and never tag at Step 7.5 (SG-Phase33-A: tagging before commit targets the pre-seal HEAD, producing off-by-one tags).
 - **NEVER** push the seal tag before the seal commit is reachable from `origin/main` (GH #98): tag creation is Step 9.5.5 (pre-merge), tag push is Step 9.7 (post-merge). Pushing the tag with the branch fails `release.yml`'s `build-and-publish` guard and blocks the seal PR.
-- **ALWAYS** run `python -m qor.scripts.dist_compile` at Step 8.5 so variant outputs are rebuilt on seal; prevents dist drift.
+- **ALWAYS** run `qor-logic scripts dist_compile` at Step 8.5 so variant outputs are rebuilt on seal; prevents dist drift.
 - **ALWAYS** call `session.rotate()` at Step Z after writing `substantiate.json`; prior session directory preserved for archaeology.
 
 ## Success Criteria

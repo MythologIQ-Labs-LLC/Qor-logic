@@ -11452,7 +11452,28 @@ Change class: feature. Tests: full suite green; new lint/floor tests. Audit PASS
 **Previous Hash**: `9d605895c922c633e5c15e5528fa95fbb7c14f78cad226b43785a01aece53cd8`
 **Chain Hash (Merkle seal)**: `ae508c2df7dbdee4efe410104c6bade45690d197e1884f247370e01e12919f3e`
 
+### Entry #311: SESSION SEAL -- Phase 118 module reachability CLI dispatch (v0.85.0)
+
+**Timestamp**: 2026-05-29T22:05:53Z
+**Phase**: SUBSTANTIATE (Phase 118; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase118-module-reachability-cli-dispatch.md
+**Session**: `2026-05-29T1946-183804`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `7c785631ffaf`
+
+**Scope**: Phase 118 implemented (#150): added qor-logic reliability <module> / qor-logic scripts <module> CLI dispatch (qor/cli.py _register_module_dispatch + _do_module_dispatch) that runs the target qor.reliability/qor.scripts module via the CLI's own sys.executable, resolving regardless of active shell/venv (Option A for GH #79/#38 module-reachability). Migrated 45 invocation lines across 9 canonical skill files to the dispatch form (hybrid: python -m retained as documented in-venv fallback); recompiled all dist variants. Updated Phase 90 Environment-block regex + ~14 wiring/coupling tests + plan_grep_lint + doctrine §138 + glossary to accept either form. New tests/test_cli_module_dispatch.py (6 behavioral: venv-inactive resolution, arg/exit-code passthrough, family-prefix isolation).
+
+Change class: feature. Tests: 2086 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: HONORED. Local seal only; no push / no PR / no tag-push.
+
+**Content Hash**: `4ac87cb884f3a954f315fcabb5700db33a1bcec64795b3dc0b96fca7ee5849bb`
+**Previous Hash**: `ae508c2df7dbdee4efe410104c6bade45690d197e1884f247370e01e12919f3e`
+**Chain Hash (Merkle seal)**: `32894e858c4d15087b388c741928386b22db35b9a1f819c76823fd61e79883b4`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 117; v0.84.0 local, held for operator review)
+*Session: SEALED* (Phase 118; v0.85.0 local, held for operator review)

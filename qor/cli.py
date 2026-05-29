@@ -230,6 +230,35 @@ def _register_compliance_policy(sub) -> tuple[argparse.ArgumentParser, argparse.
     return sp_compliance, sp_policy
 
 
+def _register_module_dispatch(sub) -> None:
+    """Register `reliability`/`scripts` subcommands that run a qor.<family>.<module>
+    via the CLI's own interpreter (GH #150). Resolves regardless of which python
+    is active on PATH; bare `python -m qor.<family>.<module>` remains valid in-venv.
+    """
+    for family in ("reliability", "scripts"):
+        sp = sub.add_parser(
+            family,
+            help=f"run a qor.{family}.<module> via the CLI's own interpreter",
+        )
+        sp.add_argument("module", help=f"module name under qor.{family}")
+        sp.add_argument(
+            "args", nargs=argparse.REMAINDER,
+            help="arguments passed through to the module verbatim",
+        )
+
+
+def _do_module_dispatch(family: str, args: argparse.Namespace) -> int:
+    """Invoke qor.<family>.<module> through sys.executable, inheriting stdio and
+    propagating the child's exit code. List-form argv (no shell) and the f-string
+    family prefix confine targets to qor.reliability/qor.scripts."""
+    import subprocess
+    import sys
+
+    target = f"qor.{family}.{args.module}"
+    completed = subprocess.run([sys.executable, "-m", target, *args.args])
+    return completed.returncode
+
+
 def _build_parser() -> tuple[argparse.ArgumentParser, dict[str, argparse.ArgumentParser]]:
     parser = argparse.ArgumentParser(
         prog="qor-logic",
@@ -240,6 +269,7 @@ def _build_parser() -> tuple[argparse.ArgumentParser, dict[str, argparse.Argumen
     _register_install_family(sub)
     _register_misc(sub)
     _register_capabilities(sub)
+    _register_module_dispatch(sub)
     sp_compliance, sp_policy = _register_compliance_policy(sub)
     from qor.cli_handlers import release as release_handlers
     sp_release = release_handlers.register(sub)
@@ -264,6 +294,8 @@ def _dispatch(args: argparse.Namespace) -> int | None:
         "governance-index": lambda: _do_governance_index(args),
         "capabilities": lambda: _do_capabilities(args),
         "substantiate-capability": lambda: args.func(args),
+        "reliability": lambda: _do_module_dispatch(args.command, args),
+        "scripts": lambda: _do_module_dispatch(args.command, args),
     }
     if args.command in direct:
         return direct[args.command]()

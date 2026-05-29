@@ -1066,3 +1066,13 @@ referenced_by:
   - qor/scripts/shadow_genome_graph.py
 introduced_in_plan: phase113-shadow-genome-graph
 ```
+```yaml
+term: module dispatch subcommand
+definition: 'The qor-logic reliability <module> / qor-logic scripts <module> CLI subcommands (Phase 118; GH #150) that run a qor.reliability/qor.scripts module through the CLI''s own sys.executable, resolving the module regardless of which python is active on PATH. The bare python -m qor.<family>.<module> form remains the valid in-venv equivalent and fallback.'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/cli.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+introduced_in_plan: phase118-module-reachability-cli-dispatch
+```

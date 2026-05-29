@@ -1,0 +1,47 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-29T1946-183804",
+  "ts": "2026-05-29T21:33:21Z",
+  "plan_path": "docs/plan-qor-phase118-module-reachability-cli-dispatch.md",
+  "phases": [
+    "CLI dispatch + tests",
+    "Skill migration (hybrid) + recompile + coupling tests",
+    "Doctrine 138 + version 0.85.0"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_cli_module_dispatch.py -q",
+    "python -m pytest tests/test_skill_environment_block.py tests/test_install_sync_with_source.py -q",
+    "python -m qor.scripts.dist_compile",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "module dispatch subcommand",
+      "home": "qor/references/doctrine-governance-enforcement.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "dispatch resolves via CLI sys.executable; no module allowlist"
+    ],
+    "non_goals": [
+      "removing python -m fallback",
+      "upgrading global qor-logic"
+    ],
+    "exclusions": [
+      ".claude/skills installed copies",
+      "qor/dist/variants generated files"
+    ]
+  },
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.84.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-29T21:33:21Z"
+  }
+}

@@ -38,7 +38,7 @@ Translate the gated blueprint into maintainable reality using strict Section 4 S
 
 ## Environment (Phase 90 wiring; GH #79)
 
-This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+This skill invokes integrity gates via `qor-logic reliability <module>` / `qor-logic scripts <module>`, which run the module through the CLI's own interpreter and so resolve from any shell. The bare `python -m qor.reliability.<module>` / `python -m qor.scripts.<module>` form remains a valid in-venv fallback. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
 
 ```bash
 python -c "import qor.reliability"
@@ -192,7 +192,7 @@ PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_
 # Resolve session_id via the canonical helper (reads .qor/session/current AND
 # validates against SESSION_ID_PATTERN per Phase 23 LOW-2 / Phase 50 doctrine)
 SESSION_ID=$(python -c "from qor.scripts.session import current; print(current() or 'default')")
-python -m qor.reliability.intent_lock capture \
+qor-logic reliability intent_lock capture \
   --session "$SESSION_ID" \
   --plan "$PLAN_PATH" \
   --audit .agent/staging/AUDIT_REPORT.md

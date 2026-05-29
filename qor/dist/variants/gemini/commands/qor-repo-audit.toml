@@ -21,7 +21,7 @@ Audit repository against GitHub Gold Standard. Integrates with GitHub API for co
 
 ## Environment (Phase 90 wiring; GH #79)
 
-This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+This skill invokes integrity gates via `qor-logic reliability <module>` / `qor-logic scripts <module>`, which run the module through the CLI's own interpreter and so resolve from any shell. The bare `python -m qor.reliability.<module>` / `python -m qor.scripts.<module>` form remains a valid in-venv fallback. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
 
 ```bash
 python -c "import qor.reliability"
@@ -46,8 +46,8 @@ If a current-phase plan file is discoverable, run the pre-audit lints against it
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path() or '')" 2>/dev/null || echo "")
 if [ -n "$PLAN_PATH" ] && [ -f "$PLAN_PATH" ]; then
-  python -m qor.scripts.plan_test_lint --plan "$PLAN_PATH" || true
-  python -m qor.scripts.plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
+  qor-logic scripts plan_test_lint --plan "$PLAN_PATH" || true
+  qor-logic scripts plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
 fi
 ```
 

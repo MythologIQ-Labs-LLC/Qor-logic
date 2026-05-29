@@ -56,7 +56,7 @@ See Step 0.3 (line ~80) for plan-iteration ABORT, Step 3 (line ~209) for the bin
 
 ## Environment (Phase 90 wiring; GH #79)
 
-This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+This skill invokes integrity gates via `qor-logic reliability <module>` / `qor-logic scripts <module>`, which run the module through the CLI's own interpreter and so resolve from any shell. The bare `python -m qor.reliability.<module>` / `python -m qor.scripts.<module>` form remains a valid in-venv fallback. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
 
 ```bash
 python -c "import qor.reliability"
@@ -102,7 +102,7 @@ Before the cycle-count and lint steps, detect whether the plan declares itself n
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
-python -m qor.scripts.plan_iteration_status_lint --plan "$PLAN_PATH" || ABORT
+qor-logic scripts plan_iteration_status_lint --plan "$PLAN_PATH" || ABORT
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. The lint exits non-zero when the plan carries any of: an `**iteration**:` value containing `draft` / `pre-audit`; an "Operator Decisions Required Before Audit" section; or an Open Questions bullet ending "Operator confirms before audit". On non-zero exit, abort BEFORE Step 1 identity activation and BEFORE any adversarial pass — print the lint's guidance, skip the remaining steps, and do NOT emit an audit gate artifact (no cycle consumed). The Governor resolves the operator-decision items, bumps the plan past its pre-audit state, and re-runs `/qor-audit`.
@@ -156,14 +156,14 @@ Run six pre-audit lints against the plan being audited; surface presence-only te
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
-python -m qor.scripts.plan_test_lint --plan "$PLAN_PATH" || true
-python -m qor.scripts.plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
-python -m qor.scripts.plan_text_consistency_lint --check "$PLAN_PATH" || true
-python -m qor.scripts.delivery_branch_lint --plan "$PLAN_PATH" --repo-root . || true
-python -m qor.scripts.ci_coverage_lint --plan "$PLAN_PATH" --workflows-dir .github/workflows || true
-python -m qor.scripts.workspace_fragility_check --repo-root . || true
-python -m qor.scripts.plan_signature_widening_caller_lint --plan "$PLAN_PATH" --repo-root . || true
-python -m qor.scripts.plan_data_round_trip_lint --plan "$PLAN_PATH" --repo-root . || true
+qor-logic scripts plan_test_lint --plan "$PLAN_PATH" || true
+qor-logic scripts plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
+qor-logic scripts plan_text_consistency_lint --check "$PLAN_PATH" || true
+qor-logic scripts delivery_branch_lint --plan "$PLAN_PATH" --repo-root . || true
+qor-logic scripts ci_coverage_lint --plan "$PLAN_PATH" --workflows-dir .github/workflows || true
+qor-logic scripts workspace_fragility_check --repo-root . || true
+qor-logic scripts plan_signature_widening_caller_lint --plan "$PLAN_PATH" --repo-root . || true
+qor-logic scripts plan_data_round_trip_lint --plan "$PLAN_PATH" --repo-root . || true
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
@@ -210,7 +210,7 @@ Operator selects Option A by default when the harness supports Codex plugin; Opt
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
-python -m qor.scripts.audit_risk_score --plan "$PLAN_PATH"
+qor-logic scripts audit_risk_score --plan "$PLAN_PATH"
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. When `audit_risk_score` reports `option_b_required: true`, Option B is **mandatory** for this audit — the auditing agent MUST run an independent reviewer (architect-reviewer subagent or fresh-context audit), not a solo audit, regardless of the Option A/B operator default above. This makes Option B proactive: dispatched on the iteration where the author-momentum risk first appears, not reactively after a VETO. The operator may override the mandate only with explicit written justification recorded in the audit report. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AuthorAuditMomentum-A.
@@ -243,7 +243,7 @@ Scan operator-authored governance markdown read in Step 2 for prompt-injection c
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
-python -m qor.scripts.prompt_injection_canaries \
+qor-logic scripts prompt_injection_canaries \
   --files docs/ARCHITECTURE_PLAN.md docs/META_LEDGER.md docs/CONCEPT.md "${PLAN_PATH}" \
   || ABORT
 ```
@@ -378,7 +378,7 @@ A test is **presence-only** when its assertion is solely about artifact existenc
 **Required next action:** Governor: amend plan to replace presence-only tests with functionality tests (invoke the unit, assert against output), re-run `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md`, this is a **Plan-text** ground.
 
 **Test-source lint (Phase 117; GH #174, ENFORCED):** complement the plan-text check above with a scan of actual test source for the same anti-pattern (a test that reads a SKILL.md and asserts only substring membership):
-`python -m qor.scripts.prose_test_lint --tests-dir tests --enforce`
+`qor-logic scripts prose_test_lint --tests-dir tests --enforce`
 **Non-zero exit -> VETO with `test-failure` category.** Graduated from WARN-first (Phase 116) to enforced (Phase 117) after the heuristic was hardened (comparator must trace to the SKILL.md read) and the suite was driven to zero UNEXPLAINED findings. A new presence-only assertion must be converted to a behavioral check or carry an explicit `# prose-lint: ok=<reason>` allowlist comment; only UNEXPLAINED findings VETO (exempted-with-reason do not). Per `qor/references/doctrine-verification-closure-integrity.md` Prose-Behavior Test Lint.
 
 **Closed-enum taxonomy coverage (Phase 84 wiring; GH #84)**: when the plan declares a closed-enum taxonomy — a `CANONICAL_*_VALUES` constant paired with a `normalize*` function — the test list MUST assert BOTH directions: forward (every alias-map key normalizes into the canonical set) AND inverse (every non-gated canonical value is reachable via at least one identity-mapping). A taxonomy with only forward coverage can define a canonical bucket that `normalize*` never produces, so downstream consumers querying that bucket get zero rows. **Missing inverse coverage -> VETO with `coverage-gap` category.** Per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline and `SG-InverseCoverageGapTaxonomy-A`.
@@ -451,7 +451,7 @@ For each plan claim in scope, verify against current code:
 **Phase 99 wiring (GH #108 V2 — Runtime Contract Walk)**: After the grep-verify checks above, run the Runtime Contract Walk against the plan to catch runtime-contract drift that grep cannot see — module imports that don't resolve at runtime, callers whose own imports fail to parse, etc. The walk runs one hop forward (callees: cited module's own imports must parse) and one hop backward (callers: at least one production caller must parse) for each Python module path cited in the plan. WARN-only in V2; a future V2-of-V2 phase converts to hard VETO once operator evidence on Phase 96 V1 false-positive rate is in. See `qor/references/audit-runtime-contract-walk.md` for the detailed two-direction protocol and `SG-GrepShapedRunclaim-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` for the binding doctrine.
 
 ```bash
-python -m qor.scripts.runtime_contract_walk --plan <plan-path> || true
+qor-logic scripts runtime_contract_walk --plan <plan-path> || true
 ```
 
 **Phase 72 wiring (GH #56; SG-CitationDrift-A countermeasure)** -- iter-N>1 full re-walk: on iterations after the first (iter-N>1), the Judge re-walks the **FULL Locked Decision set**, not the diff-from-iter-N-1. Every sealed-infrastructure citation (migration name, function signature, file:line, schema, env var, edge-function path) is grep-verified against current code, including LDs that were not modified in this iteration. Citations that lack the inline grep-evidence statement required by `/qor-plan` Step 2 Infrastructure Citation Inventory trigger immediate VETO with `infrastructure-mismatch` category -- regardless of whether the LD was amended in the current iteration. This closes the drift surface where an unverified citation in an unchanged LD propagates across iterations without re-challenge.

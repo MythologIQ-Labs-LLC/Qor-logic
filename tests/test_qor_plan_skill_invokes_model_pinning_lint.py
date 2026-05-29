@@ -54,7 +54,13 @@ def test_skills_with_pinning_keys_are_covered_by_pinning_lint_invocation():
 
     invokers = [
         s for s in plan_skills
-        if "python -m qor.scripts.model_pinning_lint" in s.read_text(encoding="utf-8")
+        if any(
+            form in s.read_text(encoding="utf-8")
+            for form in (
+                "python -m qor.scripts.model_pinning_lint",
+                "qor-logic scripts model_pinning_lint",
+            )
+        )
     ]
     assert invokers, (
         f"At least one phase: plan skill MUST invoke model_pinning_lint to cover "

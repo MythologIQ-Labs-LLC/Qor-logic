@@ -35,7 +35,7 @@ def test_step_4_6_8_invokes_merge_velocity_check():
     text = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
     section = _section(text, r"Step 4\.6\.8")
     assert section, "qor-substantiate SKILL.md has no '### Step 4.6.8' section"
-    assert "qor.scripts.merge_velocity_check" in section, (
+    assert ("qor.scripts.merge_velocity_check" in section or "qor-logic scripts merge_velocity_check" in section), (
         "Step 4.6.8 missing the merge_velocity_check invocation"
     )
     assert "|| true" in section, (
@@ -49,7 +49,7 @@ def test_step_4_6_8_section_removed_breaks_assertion():
     assert section
     stripped = text.replace(section, "")
     section_after = _section(stripped, r"Step 4\.6\.8")
-    assert "qor.scripts.merge_velocity_check" not in section_after
+    assert ("qor.scripts.merge_velocity_check" not in section_after and "qor-logic scripts merge_velocity_check" not in section_after)
 
 
 def test_step_4_6_8_positioned_between_4_6_7_and_4_7():

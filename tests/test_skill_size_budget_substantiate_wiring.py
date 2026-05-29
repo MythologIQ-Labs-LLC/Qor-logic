@@ -31,7 +31,7 @@ def test_step_4_6_9_invokes_skill_size_budget_lint():
     text = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
     section = _section(text, r"Step 4\.6\.9")
     assert section
-    assert "qor.scripts.skill_size_budget_lint" in section
+    assert ("qor.scripts.skill_size_budget_lint" in section or "qor-logic scripts skill_size_budget_lint" in section)
     assert "|| true" in section
 
 
@@ -41,7 +41,7 @@ def test_step_4_6_9_section_removed_breaks_assertion():
     assert section
     stripped = text.replace(section, "")
     section_after = _section(stripped, r"Step 4\.6\.9")
-    assert "qor.scripts.skill_size_budget_lint" not in section_after
+    assert ("qor.scripts.skill_size_budget_lint" not in section_after and "qor-logic scripts skill_size_budget_lint" not in section_after)
 
 
 def test_step_4_6_9_positioned_between_4_6_8_and_4_7():

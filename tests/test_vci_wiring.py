@@ -28,7 +28,7 @@ def test_substantiate_invokes_feature_index_abort():
 def test_substantiate_references_close_guard():
     text = SUBSTANTIATE.read_text(encoding="utf-8")
     assert importlib.util.find_spec("qor.scripts.ac_close_guard") is not None
-    assert "qor.scripts.ac_close_guard" in text  # prose-lint: ok=prompt-citation paired with existence check
+    assert ("qor.scripts.ac_close_guard" in text or "qor-logic scripts ac_close_guard" in text)  # prose-lint: ok=prompt-citation paired with existence check
 
 
 def test_doctrine_defines_terms_and_rules():
