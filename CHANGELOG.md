@@ -10,6 +10,23 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.77.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+
+- **Phase 110 (feature)**: `SG-AffectedFilesContract-A` countermeasure suite.
+  New pre-audit lints `plan_signature_widening_caller_lint` (#133, caller-graph
+  cascade) and `plan_data_round_trip_lint` (#134, struct-field persistence
+  cascade), both WARN-only and wired into `/qor-audit` Step 0.6; three new
+  `audit_risk_score` Option-B signals (#135) with a `--repo-root` flag; the
+  `SG-AffectedFilesContract-A` doctrine entry with bidirectional sibling
+  cross-references (#136); and a `/qor-plan` Step 5 cascade-discipline checklist
+  bullet (#137). Shared `qor/scripts/_lint_utils.find_callers` centralizes
+  caller discovery. Escape hatches: `<!-- signature-widening-exempt: <fn> -->`,
+  `<!-- transient-field: Struct.field reason: ... -->`.
+
 ## [0.76.0] - 2026-05-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

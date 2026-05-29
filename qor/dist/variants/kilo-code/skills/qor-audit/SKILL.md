@@ -162,9 +162,13 @@ python -m qor.scripts.plan_text_consistency_lint --check "$PLAN_PATH" || true
 python -m qor.scripts.delivery_branch_lint --plan "$PLAN_PATH" --repo-root . || true
 python -m qor.scripts.ci_coverage_lint --plan "$PLAN_PATH" --workflows-dir .github/workflows || true
 python -m qor.scripts.workspace_fragility_check --repo-root . || true
+python -m qor.scripts.plan_signature_widening_caller_lint --plan "$PLAN_PATH" --repo-root . || true
+python -m qor.scripts.plan_data_round_trip_lint --plan "$PLAN_PATH" --repo-root . || true
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
+
+**Phase 110 wiring (GH #133 + #134)**: `plan_signature_widening_caller_lint` and `plan_data_round_trip_lint` (the last two lints above) catch the SG-AffectedFilesContract-A cascade family — caller files unenumerated on a signature widening, and persistence-layer touchpoints unenumerated on a struct-field addition — before the binding Step 3 passes consume an audit cycle. WARN-only V1 (`|| true`); escape hatches `<!-- signature-widening-exempt: <fn> -->` and `<!-- transient-field: Struct.field reason: ... -->`. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AffectedFilesContract-A.
 
 **Phase 67 wiring (GH #42)**: `plan_text_consistency_lint` (third lint above) catches the COREFORGE-class drift pattern — same operation specified differently at multiple plan sites (commands, dependencies, paths). WARN-only at audit time; the operator amends drift before the binding Infrastructure Alignment Pass in Step 3 would consume an audit cycle. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PlanTextDrift-A.
 

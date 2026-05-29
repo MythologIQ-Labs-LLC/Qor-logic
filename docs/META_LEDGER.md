@@ -11152,3 +11152,51 @@ LD1: GOVERNANCE_INDEX.md out of scope (Refs #140). LD3: scaffold-owned set pinne
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 109 governance-artifact-health; v0.76.0 ready to publish after operator review)
 
+
+---
+
+### Entry #299: GATE TRIBUNAL -- Phase 110 plan PASS
+
+**Timestamp**: 2026-05-29T02:12:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Plan**: docs/plan-qor-phase110-affected-files-contract.md
+**Session**: `2026-05-29T0208-234fbf`
+
+**Content Hash**: `3e856bafd3d90da147ad45a6061e19701f1022ad7d57bc591fc00db93555631c`
+**Previous Hash**: `35684eee4086c776071744431a848c1ba46f1f7626c95e5c3ff4f7b62a707c32`
+**Chain Hash**: `5b6426dcf3811600b6188ff05ed67b7673a1c5aeec603d9b5a2b0f20aebcea14`
+
+**Decision**: Phase 110 (SG-AffectedFilesContract-A countermeasure suite: doctrine #136 + lints #133/#134 + audit_risk_score signals #135 + qor-plan bullet #137) cleared all adversarial passes. Advisory WARN-only governance tooling; stdlib-only; tests functional; infra verified (SG-EnumerationVerificationGap-A correctly adapted to prose-only cross-ref). No binding-VETO. Gate OPEN for /qor-implement.
+
+
+---
+
+### Entry #300: SESSION SEAL -- Phase 110 SG-AffectedFilesContract-A countermeasure suite (v0.77.0)
+
+**Timestamp**: 2026-05-29T02:23:55Z
+**Phase**: SUBSTANTIATE (Phase 110; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase110-affected-files-contract.md
+**Session**: `2026-05-29T0208-234fbf`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `24ee42bbec29`
+
+**Scope**: Phase 110 implemented: SG-AffectedFilesContract-A doctrine (#136) + plan_signature_widening_caller_lint (#133) + plan_data_round_trip_lint (#134) + audit_risk_score cascade signals (#135) + qor-plan Step 5 bullet (#137); both lints wired into /qor-audit Step 0.6; variants regenerated.
+
+Change class: feature. Tests: 1997 passed / 0 failed / 2 skipped (full suite); 31 new Phase 110 tests. Audit PASS iter-1 (L1). SG-EnumerationVerificationGap-A adapted to prose-only cross-ref (consumer-repo entry absent here).
+
+**Review Boundary**: HONORED. Local seal only; PR opened, no merge/tag/push/publish (operator holds all releases this run).
+
+**Content Hash**: `67ec1682054ffde62eee012fb87e3565b5bb4fd64221d58f59d6d6b5f0a67504`
+**Previous Hash**: `5b6426dcf3811600b6188ff05ed67b7673a1c5aeec603d9b5a2b0f20aebcea14`
+**Chain Hash (Merkle seal)**: `569c877d7524f57b8360cc6253140f8ad20272dd6d41043fc8f0853309008781`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 110; v0.77.0 staged in PR, held for operator review)
+

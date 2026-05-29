@@ -266,7 +266,7 @@ The doctrine catalogs all 8 unraveling points (Premature Solutioning, Language D
 
 **Countermeasure P2** (`/qor-audit` Step 3 Infrastructure Alignment Pass, iter-N>1 sub-section): on iterations after the first, the Judge re-walks the **full Locked Decision set** and grep-verifies every sealed-infrastructure citation, not just the diff-from-iter-N-1. Missing inline grep-evidence triggers immediate VETO with `infrastructure-mismatch` category, regardless of whether the LD was amended in the current iteration.
 
-**Cross-reference**: Issue #56; SG-PlanTextDrift-A (Phase 67, Issue #42; same-iteration text-drift pattern -- distinct from this cross-iteration variant); SG-AuthorAuditMomentum-A (Phase 68; independent-reviewer countermeasure that exposed the iter-3 mismatch). Lint-extension complement (P4 -- heuristic plan_grep_lint hook for sealed-infrastructure citation patterns) deferred to a future phase.
+**Cross-reference**: Issue #56; SG-PlanTextDrift-A (Phase 67, Issue #42; same-iteration text-drift pattern -- distinct from this cross-iteration variant); SG-AuthorAuditMomentum-A (Phase 68; independent-reviewer countermeasure that exposed the iter-3 mismatch); SG-AffectedFilesContract-A (Phase 110; sibling Affected-Files-as-contract family — same "declared scope is the contract" root). Lint-extension complement (P4 -- heuristic plan_grep_lint hook for sealed-infrastructure citation patterns) deferred to a future phase.
 
 ---
 
@@ -351,7 +351,31 @@ A second recurrence dimension: when a plan introduces a discipline (lint, audit 
 - **Self-Application Sub-Pass** in `/qor-audit` Step 3 (GH #44): when the plan's `originating_remediation` field is set (Phase 68 schema declaration in `qor/gates/schema/plan.schema.json`), the auditor manually applies the to-be-introduced discipline against the plan's own content. VETO category: `specification-drift` when self-application detects the targeted pattern.
 - **Risk-score auto-dispatch** in `/qor-audit` Step 1 (Phase 87; GH #82): `qor.scripts.audit_risk_score` scores the plan under audit for author-momentum risk and, when it reports `option_b_required: true`, makes Option B mandatory for that audit. This makes the Phase 68 Option B proactive — auto-mandated on the iteration where a config-fabrication or high-citation-surface risk signal first appears, rather than reactively dispatched by operator discretion after a VETO. V1 scores the two mechanically-deterministic signals (a cited `*.config.*` file; >=5 grep-evidence statements). Originating recurrence: consumer-repo session 2026-05-18–19, where Option B caught 4 binding SG-007-family defects across 4 audit iterations that solo audits would have passed (`SG-AuthorMomentumConfigFabrication-A`, `SG-OverPromiseInvariant-A`, `SG-AuthorMomentumTestSeedFabrication-A`).
 
-**Cross-reference**: SG-007 (predecessor narrative); Issue #44, Issue #50, Issue #82; FailSafe + COREFORGE empirical evidence.
+**Cross-reference**: SG-007 (predecessor narrative); Issue #44, Issue #50, Issue #82; SG-AffectedFilesContract-A (Phase 110; the cascade family whose Option-B auto-dispatch this entry's risk-score mechanism was extended to cover); FailSafe + COREFORGE empirical evidence.
+
+---
+
+## SG-AffectedFilesContract-A — prose promises not file-anchored in Affected Files are by construction unfulfilled (Phase 110)
+
+**Pattern**: A plan's `### Affected Files` list is the binding declaration of what changes. Prose elsewhere in the plan (Boundaries, Driver, Phase Notes, Citation Inventory) that asserts behavior whose implementing files are not enumerated in any phase's Affected Files entry is by construction NOT part of the phase — the file scope is the contract. Common sub-leaves: test-module wiring missing, mechanism-citation files missing, call-graph enumeration missing on signature widening (the **Signature-Widening Cascade**), persistence-layer cascade missing on struct-field addition (the **Persistence Cascade**), frontend-IPC type updates missing on schema changes.
+
+**Originating recurrence**: COREFORGE Phase 399 (consumer-ledger META_LEDGER #435 / #436 / #437; SHADOW_GENOME 2026-05-27 iter-1 + iter-2). Four same-family defects across one audit cycle:
+
+- iter-1 F1 (orphan-file): test files declared with no parent-module wiring enumerated.
+- iter-1 F2 (specification-drift): a boundary claimed a `tauri-plugin-shell` elevation request that no Affected Files entry implemented.
+- iter-2 F3 (specification-drift): signature widening cascaded to 2 unenumerated cross-file callers.
+- iter-3 pre-audit F4 (orchestrator self-detected): signature widening cascaded to a persistence schema (no schema column, no INSERT/SELECT update).
+
+The iter-4 design pivot to a runtime-probe eliminated F3+F4 by removing the signature-widening cascade entirely — empirically demonstrating that the cleaner design emerges when the discipline is applied at plan-author time.
+
+**Countermeasures** (Phase 110 wiring):
+
+- `plan_signature_widening_caller_lint` (Issue #133): catches the call-graph sub-leaf at `/qor-audit` Step 0.6 pre-lint time. WARN-only V1.
+- `plan_data_round_trip_lint` (Issue #134): catches the persistence-cascade sub-leaf. WARN-only V1.
+- `audit_risk_score` Option-B trigger extension (Issue #135): auto-mandates an independent reviewer when a plan trips the `signature-widening-cascade` or `struct-field-cross-persistence-boundary` heuristics.
+- `/qor-plan` Step 5 review checklist item (Issue #137): operator-visible discipline at plan-author time complementing the auditor-side lints.
+
+**Cross-reference**: `SG-EnumerationVerificationGap-A` (consumer-repo implement-phase complement, Phase 373 — not present in this repo); `SG-CitationDrift-A` (unchanged-LD complement); `SG-AuthorAuditMomentum-A` (meta-driver); Issues #133, #134, #135, #137 (countermeasure implementations).
 
 ---
 
