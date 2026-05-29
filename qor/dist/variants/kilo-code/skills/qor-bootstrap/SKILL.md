@@ -22,6 +22,10 @@ gate_writes: ""
   <output>docs/CONCEPT.md, docs/ARCHITECTURE_PLAN.md, docs/META_LEDGER.md, docs/BACKLOG.md</output>
 </skill>
 
+## Governance Health Preflight
+
+<!-- qor:governance-health-exempt reason="bootstrap is the chain originator (inverse guard); it creates the ledger and project DNA when the workspace is UNINITIALIZED, so it cannot precondition on a health check that would route back to bootstrap" -->
+
 ## Purpose
 
 Physically seeds the Merkle-chain DNA and scaffolding for a new dataset. This is the **genesis** of the S.H.I.E.L.D. lifecycle.

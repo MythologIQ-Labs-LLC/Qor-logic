@@ -35,6 +35,17 @@ SEED_TARGETS: tuple[SeedTarget, ...] = (
 )
 
 
+def scaffold_file_targets() -> frozenset[str]:
+    """Relative paths of the file-mode scaffold targets (the seed-repairable set).
+
+    Exposed so the governance-health checker's scaffold-owned registry stays
+    pinned to this list and the two cannot drift (Phase 109 LD3). Only ``file``
+    mode targets are seed-repairable; gitkeep/gitignore modes are not governance
+    artifacts.
+    """
+    return frozenset(t.rel_path for t in SEED_TARGETS if t.mode == "file")
+
+
 def _read_template(name: str) -> str:
     path = Path(str(_resources.asset("templates"))) / name
     return path.read_text(encoding="utf-8")

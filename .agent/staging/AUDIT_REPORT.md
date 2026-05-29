@@ -1,37 +1,90 @@
-# AUDIT_REPORT — Phase 95
+# AUDIT REPORT
 
-**Plan**: docs/plan-qor-phase95-skill-corpus-budget.md
-**Session**: 2026-05-23T0510-f5f709
-**Auditor**: Judge (solo; audit_risk_score: option_b_required: false)
+**Tribunal Date**: 2026-05-29T00:41:30Z
+**Target**: docs/plan-qor-phase109-governance-artifact-health.md (Phase 109 - Governance artifact health gate)
+**Risk Grade**: L2
+**Auditor**: The Qor-logic Judge (solo; `audit_risk_score` reports `option_b_required: false`)
+
+---
+
+## VERDICT: PASS
 
 **Verdict: PASS**
 
-## Iter-1
+---
 
-### Pre-audit lints (6 lints + dod_check all clean)
+### Executive Summary
 
-All 6 Step 0.6 lints exit 0 (including the new Phase 94 `workspace_fragility_check` on its first cross-phase application; `dod_check` exit 0). 
+The Phase 109 plan introduces one reusable governance-health checker, a prompt-preflight enforcement layer, and status/CLI/variant-drift surfaces, all to enforce the invariant that no `/qor-*` prompt may synthesize an ungoverned continuation path when required governance artifacts are missing, damaged, or incomplete. The plan declares `high_risk_target: true` with a complete five-field `impact_assessment`, carries an empty `feature_inventory_touches` (governance/tooling only, no `src/` surface), and lists ten CI commands plus a CI-coverage-exemptions block. Every cited filesystem path either exists in the current tree or is explicitly declared NEW in Affected Files. All adversarial passes clear; no binding-VETO condition is met. Gate is OPEN for `/qor-implement`.
 
-### Step 3 passes
+### Audit Results
 
-- Prompt Injection: PASS
-- Security L3: PASS
-- OWASP Top 10: PASS — argv-only, no eval, no shell=True
-- Section 4 Razor: PASS — one new lint script + one Step 4.6.9 wiring + one SG entry + 2 test files. V1 measurement-only; consolidation cadence + historical tracking deferred to V2.
-- Self-Application: PASS — TWO canonical-corpus dogfooding anchors (`test_check_canonical_corpus_includes_qor_audit_finding` + `test_check_canonical_corpus_qor_substantiate_in_warn_range`).
-- Test Functionality: PASS — 8 + 3 = 11 behavior tests verifying operative properties (threshold transitions, CLI exit codes, structural placement).
-- Dependency Audit: PASS
-- Macro-Level Architecture: PASS — module shape mirrors Phase 93/94 detectors; Step 4.6.9 placement extends the substantiate 4.6.X ladder.
-- Feature Test Coverage: PASS
-- Infrastructure Alignment: PASS — `/qor-substantiate` Step 4.6.8 (Phase 93) + Step 4.7 confirmed for Step 4.6.9 insertion between them. `SG-MergePaceThrottle-A` (with Phase 94 inline-companion extension) is the most recent SG entry; Phase 95 SG comes after.
-- Filter-Stage / Orphan / Doc-drift: PASS
+#### Prompt Injection Pass
+**Result**: PASS
+`prompt_injection_canaries` over ARCHITECTURE_PLAN.md, META_LEDGER.md, CONCEPT.md, and the plan returned no canary hits (exit 0).
 
-### Dogfooding milestone
+#### Security Pass (L3)
+**Result**: PASS
+No placeholder auth, hardcoded credentials, bypassed checks, or mock-auth returns. The checker is fail-closed: DAMAGED and INCOMPLETE block forward motion and never return seed/bootstrap as legal repair (plan D-109.1 D2).
 
-Seventh cross-phase exercise of Phase 89's `ci_coverage_lint` (88→89→90→91→92→93→94→95). First cross-phase exercise of Phase 94's `workspace_fragility_check`. Phase 95 introduces the second consecutive lint where the canonical Qor-logic corpus itself triggers the lint at substantiate-time — same pattern as Phase 94's `dirty_gate_artifact_count` measurement.
+#### OWASP Top 10 Pass
+**Result**: PASS
+- A03 Injection: CLI and module invocations consume argv only; no `shell=True` planned; SG-Phase47-A honored by argv construction.
+- A04 Insecure Design: no fail-open; missing/damaged/incomplete are blocking by design.
+- A05 Misconfiguration: no hardcoded secrets.
+- A08 Integrity: classifier parses JSON/Markdown; implementation must use `json.load` and safe Markdown parsing (no `pickle`/`eval`/`yaml.load` without SafeLoader). Plan-level commitment present; enforced at implement.
 
-**Reflective tension** (documented in plan design notes + SG entry): Phase 95 itself adds ~270 LOC + ~120 lines of doctrine to the corpus it measures. V1 lands visibility; V2 consolidation cadence will need to evaluate which doctrine prose is operative vs archival.
+#### Ghost UI Pass
+**Result**: PASS (N/A) — no UI surface.
 
-## Next phase
+#### Section 4 Razor Pass
+**Result**: PASS
+The checker API (`ArtifactStatus`, `ArtifactFinding`, `check_governance_health`) is small and composable. Implementation must keep `check_governance_health` and helpers under 40 lines/function and the module under 250 lines; classification decomposes naturally into per-artifact helpers.
 
-`/qor-implement`
+#### Test Functionality Pass
+**Result**: PASS
+All planned tests invoke the unit and assert on its output (status enum, `legal_next`, lint violations). The Phase 2 doctrine-term test was sharpened during this cycle to invoke a checker against a compliant file and an omitting fixture, satisfying the SG-035 acceptance question ("if behavior were silently broken but the artifact still existed, would the test fail?" -> yes).
+
+#### Dependency Pass
+**Result**: PASS — no new third-party dependencies; standard library only (enum, dataclasses, pathlib, json).
+
+#### Macro-Level Architecture Pass
+**Result**: PASS
+`qor/scripts/governance_health.py` sits alongside existing checker modules; no cyclic dependencies; single source of truth for the required-artifact registry (LD3 pins the scaffold-owned subset to `qor.seed.SEED_TARGETS`).
+
+#### Feature Test Coverage Pass
+**Result**: PASS (exempt) — plan does not touch `src/`; `feature_inventory_touches` is empty and justified.
+
+#### Infrastructure Alignment Pass
+**Result**: PASS
+Every cited path verified: `qor/seed.py`, `qor/cli.py`, `qor/references/{doctrine-prompt-resilience,skill-recovery-pattern,doctrine-governance-enforcement,glossary}.md`, `docs/SYSTEM_STATE.md`, the three variant skill trees (`claude`/`codex`/`kilo-code`; `gemini` has no `skills/` tree, matching the plan's enumeration), and the AMENDED tests all exist. NEW files (`governance_health.py`, five test modules) are declared in Affected Files. The conditional `GOVERNANCE_INDEX.md` references were resolved out of scope (LD1). Runtime Contract Walk WARNs that `governance_health.py` is not yet present — expected for a NEW file; WARN-only, not on the binding-VETO list.
+
+#### Filter-Stage Ordering Coherence
+**Result**: PASS
+The classifier has a precondition chain (existence -> parse/structural -> completeness): a file must exist before it can be parsed, and parse-clean before completeness is meaningful. The plan's status semantics encode this order (MISSING precedes DAMAGED precedes INCOMPLETE precedes OK); implementation must execute that topological order.
+
+#### Orphan Pass
+**Result**: PASS — `governance_health.py` is reachable from `qor/cli.py`, the `qor-status` skill, the module entrypoint, and the test modules.
+
+### Documentation Drift
+
+<!-- qor:drift-section -->
+(clean)
+
+### Violations Found
+
+None.
+
+## Process Pattern Advisory
+
+<!-- qor:veto-pattern-advisory -->
+
+No repeated-VETO pattern detected in the last 2 sealed phases.
+
+### Verdict Hash
+
+SHA256(this_report) = (recorded in META_LEDGER GATE TRIBUNAL entry)
+
+---
+_This verdict is binding._
+_Gate OPEN. The Specialist may proceed with `/qor-implement`._

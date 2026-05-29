@@ -84,6 +84,13 @@ def _do_seed(args: argparse.Namespace) -> int:
     return 0
 
 
+def _do_governance_health(args: argparse.Namespace) -> int:
+    """Classify governance artifact health; exit 0/1/2 per the Phase 109 contract."""
+    from qor.scripts import governance_health as gh
+
+    return gh.main(["--repo-root", args.repo_root, "--profile", args.profile])
+
+
 def _do_capabilities(args: argparse.Namespace) -> int:
     """Phase 58: governance capability surface."""
     import json as _json
@@ -183,6 +190,9 @@ def _register_misc(sub) -> None:
     )
     sp_seed = sub.add_parser("seed", help="scaffold governance files in a workspace")
     sp_seed.add_argument("--target", type=Path, default=None)
+    sp_gh = sub.add_parser("governance-health", help="classify governance artifact health (Phase 109)")
+    sp_gh.add_argument("--repo-root", default=".", help="workspace root to inspect")
+    sp_gh.add_argument("--profile", default="skill-entry", help="named required-artifact set")
 
 
 def _register_capabilities(sub) -> argparse.ArgumentParser:
@@ -241,6 +251,7 @@ def _dispatch(args: argparse.Namespace) -> int | None:
         "compile": lambda: _do_compile(args),
         "verify-ledger": lambda: _do_verify_ledger(args),
         "seed": lambda: _do_seed(args),
+        "governance-health": lambda: _do_governance_health(args),
         "capabilities": lambda: _do_capabilities(args),
         "substantiate-capability": lambda: args.func(args),
     }

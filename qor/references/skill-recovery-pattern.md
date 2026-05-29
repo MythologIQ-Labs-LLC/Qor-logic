@@ -47,6 +47,39 @@ Run `qor-logic seed` automatically (idempotent). Do not prompt the user. Continu
 If auto-heal itself fails or leaves the artifact malformed: emit "EMERGENCY: <artifact-path> could not be auto-created. Manual intervention required. Check filesystem permissions and re-run 'qor-logic seed'." Abort.
 ```
 
+## Governance-health preflight (Phase 109)
+
+Every source skill that reads, writes, or routes based on governance artifacts
+(`docs/META_LEDGER.md`, `docs/CONCEPT.md`, `docs/ARCHITECTURE_PLAN.md`,
+`docs/SYSTEM_STATE.md`, `docs/BACKLOG.md`, `docs/FEATURE_INDEX.md`,
+`docs/GOVERNANCE_INDEX.md`, `.qor/gates/`, `.agent/staging/`) MUST carry the
+preflight marker unless it has a justified exemption. The preflight runs the
+health checker BEFORE the governance read and refuses to invent an
+ungoverned path forward on `DAMAGED` / `INCOMPLETE`.
+
+Interactive and autonomous skills share one preflight marker:
+
+```markdown
+<!-- qor:governance-health-preflight -->
+Run `qor-logic governance-health --profile skill-entry` before reading governance artifacts. If any finding is `DAMAGED` or `INCOMPLETE`, do not continue: report the finding's `path`, `reason`, and `legal_next`. Only `UNINITIALIZED` or scaffold-owned `MISSING` may be resolved by `qor-logic seed` (interactive: offer Y/N; autonomous: seed silently). `DAMAGED` and `INCOMPLETE` always route to `/qor-remediate` or section completion -- never to seed or bootstrap.
+```
+
+Skills that mention a governance path only in documentation, examples, or as the
+bootstrap skill's inverse guard declare an exemption instead:
+
+```markdown
+<!-- qor:governance-health-exempt reason="documentation-only reference; no live governance read" -->
+```
+
+The `reason` string is mandatory; an exemption without one is a lint failure.
+
+**Governance Repair Mode**: when the preflight reports a `DAMAGED` or
+`INCOMPLETE` finding, the skill enters Governance Repair Mode -- forward
+lifecycle motion is blocked and the only legal next action is `/qor-remediate`
+(damaged) or completing the named artifact sections (incomplete). Seeding or
+bootstrapping over the unhealthy artifact is forbidden. Only `/qor-remediate`
+itself is exempt, since its sole purpose is to operate on the unhealthy state.
+
 ## Marker reference
 
 | Marker | Used in | Purpose |
@@ -56,6 +89,8 @@ If auto-heal itself fails or leaves the artifact malformed: emit "EMERGENCY: <ar
 | `<!-- qor:auto-heal -->` | autonomous | silent `qor-logic seed` on missing prereq |
 | `<!-- qor:break-the-glass reason="..." -->` | autonomous | emergency surface when auto-heal fails |
 | `<!-- qor:allow-pause reason="..." -->` | interactive | justifies a banned phrase appearing legitimately (e.g., user-facing risky action confirmation) |
+| `<!-- qor:governance-health-preflight -->` | both | runs the health checker before a governance read; blocks on DAMAGED/INCOMPLETE |
+| `<!-- qor:governance-health-exempt reason="..." -->` | both | justifies a governance-path mention that is not a live read |
 
 ## Enforcement
 

@@ -993,3 +993,32 @@ referenced_by:
   - qor/references/doctrine-governance-enforcement.md
 introduced_in_plan: phase107-carry-forward-close
 ```
+
+```yaml
+term: Governance Artifact Health
+definition: 'The classification of every required governance artifact into exactly one status (OK, UNINITIALIZED, MISSING, DAMAGED, INCOMPLETE) by qor.scripts.governance_health before a skill reads or routes from it. Each finding carries the single legal next action. DAMAGED and INCOMPLETE are always blocking and never seed/bootstrap-repairable.'
+home: qor/references/doctrine-prompt-resilience.md
+referenced_by:
+  - qor/scripts/governance_health.py
+  - qor/skills/memory/qor-status/SKILL.md
+  - qor/references/skill-recovery-pattern.md
+introduced_in_plan: phase109-governance-artifact-health
+```
+```yaml
+term: Ungoverned Path Forward
+definition: 'Any continuation a prompt invents when a required governance artifact is not OK -- synthesizing a plan, audit, implementation, or seal from assumptions instead of surfacing the health checker''s legal_next. Always invalid; a preflight failure can never be converted into governed work by assumption.'
+home: qor/references/doctrine-prompt-resilience.md
+referenced_by:
+  - qor/scripts/governance_health.py
+  - qor/references/doctrine-governance-enforcement.md
+introduced_in_plan: phase109-governance-artifact-health
+```
+```yaml
+term: Governance Repair Mode
+definition: 'The state a skill enters when governance health is DAMAGED or INCOMPLETE: forward lifecycle motion is blocked and the only legal next action is repair (/qor-remediate) or completing the named artifact sections. Seeding or bootstrapping over the unhealthy artifact is forbidden. Only the repair skill itself is exempt from blocking, since its sole purpose is to operate on the unhealthy state.'
+home: qor/references/skill-recovery-pattern.md
+referenced_by:
+  - qor/references/doctrine-prompt-resilience.md
+  - qor/scripts/governance_health.py
+introduced_in_plan: phase109-governance-artifact-health
+```

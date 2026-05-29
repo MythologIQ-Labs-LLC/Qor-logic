@@ -27,6 +27,11 @@ min_model_capability: opus
   <output>Source code in src/, tests in tests/</output>
 </skill>
 
+## Governance Health Preflight
+
+<!-- qor:governance-health-preflight -->
+Run `qor-logic governance-health --profile skill-entry` before reading governance artifacts. If any finding is `DAMAGED` or `INCOMPLETE`, do not continue: report the finding's `path`, `reason`, and `legal_next`. Only `UNINITIALIZED` or scaffold-owned `MISSING` may be resolved by `qor-logic seed` (interactive: offer Y/N; autonomous: seed silently). `DAMAGED` and `INCOMPLETE` always route to `/qor-remediate` or section completion -- never to seed or bootstrap.
+
 ## Purpose
 
 Translate the gated blueprint into maintainable reality using strict Section 4 Simplicity Razor constraints and TDD-Light methodology.

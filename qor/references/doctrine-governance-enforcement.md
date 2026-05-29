@@ -326,3 +326,13 @@ Contract:
 - Placeholder-pattern hashes (ascending hex, repeating bigrams, FailSafe-class fabrication shapes, low-entropy runs) are flagged as FAIL with the offending field named. The conventional all-zeros previous_hash for genesis entries is exempted.
 
 Maps to NIST AI RMF MAP-3.1 (trust anchor integrity), OWASP LLM Top 10 LLM06 (Sensitive Information Disclosure: prevent unwarranted OK signals on poisoned chains), and EU AI Act Art. 12 (record-keeping continuity through documented anchor events). The two modes close the GH #54 / GH #55 pair: #54's blind spot where Session-Seal-only entries and placeholder-pattern hashes silently passed; #55's false-positive where raw-verifier failures on disclosed pre-anchor entries blocked release on otherwise-clean post-anchor surfaces.
+
+## 15. No ungoverned path forward (Phase 109)
+
+A skill may proceed only after its required governance artifacts classify as healthy, or after it has taken an explicitly governed recovery branch. The checker `qor.scripts.governance_health` is the single classifier; `/qor-status` consults it before lifecycle routing and every governance-reading skill runs the `qor:governance-health-preflight` before reading.
+
+- `UNINITIALIZED` and scaffold-owned `MISSING` are the only states a skill may resolve with `qor-logic seed`.
+- `DAMAGED` and `INCOMPLETE` are blocking and route to `/qor-remediate` or section completion -- never to seed or bootstrap (overwriting authoritative content is the failure this closes).
+- Inventing an Ungoverned Path Forward (synthesizing a plan, audit, implementation, or seal from assumptions when an artifact is not OK) is invalid.
+
+Maps to NIST AI RMF MAP-3.1 (trust anchor integrity) and EU AI Act Art. 12 (record-keeping integrity). Enforced by `tests/test_governance_prompt_health_coverage.py`, `tests/test_prompt_resilience_lint.py`, and `tests/test_governance_health.py`.

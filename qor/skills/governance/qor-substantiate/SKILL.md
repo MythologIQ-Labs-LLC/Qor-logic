@@ -27,6 +27,11 @@ min_model_capability: opus
   <output>Updated META_LEDGER.md with final seal, SYSTEM_STATE.md snapshot</output>
 </skill>
 
+## Governance Health Preflight
+
+<!-- qor:governance-health-preflight -->
+Run `qor-logic governance-health --profile skill-entry` before reading governance artifacts. If any finding is `DAMAGED` or `INCOMPLETE`, do not continue: report the finding's `path`, `reason`, and `legal_next`. Only `UNINITIALIZED` or scaffold-owned `MISSING` may be resolved by `qor-logic seed` (interactive: offer Y/N; autonomous: seed silently). `DAMAGED` and `INCOMPLETE` always route to `/qor-remediate` or section completion -- never to seed or bootstrap.
+
 ## Purpose
 
 The final phase of the S.H.I.E.L.D. lifecycle. Verify that implementation matches the encoded blueprint (Reality = Promise), then cryptographically seal the session.

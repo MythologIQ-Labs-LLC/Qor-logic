@@ -947,3 +947,17 @@ Feature closing ALL five V2 carry-forward items accumulated across Phases 101-10
 **Operator-directive Review Boundary override**: per the `/qor-auto-dev-1` wrap directive, the default stage-artifacts-only Review Boundary was explicitly overridden to include commit + push + PR + merge + tag + PyPI deployment within this cycle. The orchestrator handles those remote actions after this seal as part of the wrap; substantiate writes the seal entry as the cryptographic anchor before they execute. The override is logged in the seal entry text for chain-of-custody.
 
 **Decision**: Phase 107 implemented; audit PASS on iter-1 (L3 high_risk_target). Substantiated as v0.75.0 (feature → minor bump). **V2 carry-forward list reaches zero; session wrapped per operator directive.**
+
+---
+
+## Phase 109: Governance artifact health gate
+
+**New surface**: `qor.scripts.governance_health` classifies the required governance artifacts (`META_LEDGER`, `CONCEPT`, `ARCHITECTURE_PLAN`, `SYSTEM_STATE`, `SHADOW_GENOME`, `BACKLOG`, `FEATURE_INDEX`) as OK / UNINITIALIZED / MISSING / DAMAGED / INCOMPLETE, each with its single legal next action. Exposed as `qor-logic governance-health` (CLI) and `python -m qor.scripts.governance_health` (exit 0 OK / 1 MISSING|INCOMPLETE|UNINITIALIZED / 2 DAMAGED).
+
+**Enforcement**: 17 governance-reading source skills carry `qor:governance-health-preflight`; `qor-bootstrap` (inverse guard) and `qor-remediate` (repair) carry justified `qor:governance-health-exempt` markers. Markers are preserved into all three skill variants (claude/codex/kilo-code). `/qor-status` gains a Step 0 health gate that surfaces DAMAGED/INCOMPLETE before lifecycle routing.
+
+**Scaffold-owned set** is pinned to `qor.seed.SEED_TARGETS` file targets so the seed list and the required-artifact list cannot drift (LD3). `docs/GOVERNANCE_INDEX.md` is explicitly out of scope (LD1); the registry is extensible for a future Governance Index phase.
+
+**Doctrine**: `doctrine-prompt-resilience.md` defines Governance Artifact Health and Ungoverned Path Forward; `skill-recovery-pattern.md` defines Governance Repair Mode and the preflight snippet; `doctrine-governance-enforcement.md` §15 records the no-ungoverned-path-forward invariant; glossary gains the three terms.
+
+**TDD**: test files authored first (governance_health, prompt-health-coverage, qor-status routing, CLI exit codes, variant drift); RED confirmed before implementation; GREEN and determinism verified.
