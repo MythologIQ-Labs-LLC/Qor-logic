@@ -97,6 +97,18 @@ Decision contract:
   repair (`/qor-remediate`). Seeding or bootstrapping over a `DAMAGED` artifact
   risks overwriting authoritative content (R2) and is forbidden.
 
+## Skill-active env management (Phase 111; #138)
+
+Scripts must self-manage the `QOR_SKILL_ACTIVE` provenance env var via
+`gate_chain.skill_active(<phase>)` (or the `skill=<phase>` parameter on
+`gate_chain.write_gate_artifact`) rather than relying on a leak-prone inline
+shell prefix (`QOR_SKILL_ACTIVE=plan python ...`). The context manager sets the
+var for the wrapped scope and restores the prior value on exit, so a status
+surface that reads `$QOR_SKILL_ACTIVE` cannot observe a stale phase between
+subprocess calls. Status surfaces should read the authoritative active-phase
+reporter `python -m qor.scripts.active_phase` (newest gate-artifact `phase`),
+not the ambient env var.
+
 ## Enforcement
 
 - `tests/test_prompt_resilience_lint.py` walks `qor/skills/**/*.md`, reads

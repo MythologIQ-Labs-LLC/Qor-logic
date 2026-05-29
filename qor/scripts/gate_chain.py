@@ -7,6 +7,7 @@ the prompt to the user.
 """
 from __future__ import annotations
 
+import contextlib
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -180,11 +181,31 @@ def read_phase_artifact(phase: str, session_id: str | None = None) -> dict:
     return _json.loads(path.read_text(encoding="utf-8"))
 
 
+@contextlib.contextmanager
+def skill_active(skill_name: str):
+    """Set ``QOR_SKILL_ACTIVE`` for the duration of the block, then restore the
+    prior value (or unset it if it was unset). Phase 111 (#138): replaces the
+    leak-prone inline shell prefix ``QOR_SKILL_ACTIVE=<phase> python ...`` so a
+    status-line reading ``$QOR_SKILL_ACTIVE`` cannot observe a stale phase
+    between subprocess calls. Cross-platform (mutates ``os.environ`` in-process).
+    """
+    prev = os.environ.get("QOR_SKILL_ACTIVE")
+    os.environ["QOR_SKILL_ACTIVE"] = skill_name
+    try:
+        yield
+    finally:
+        if prev is None:
+            os.environ.pop("QOR_SKILL_ACTIVE", None)
+        else:
+            os.environ["QOR_SKILL_ACTIVE"] = prev
+
+
 def write_gate_artifact(
     phase: str,
     payload: dict,
     session_id: str | None = None,
     ai_provenance: dict | None = None,
+    skill: str | None = None,
 ) -> "Path":
     """Write a gate artifact to .qor/gates/<session_id>/<phase>.json after schema validation.
 
@@ -203,7 +224,16 @@ def write_gate_artifact(
     QOR_GATE_PROVENANCE_OPTIONAL=1 env bypasses the check (test-only;
     autouse fixture in tests/conftest.py sets it). Closes the bypass surface
     where any caller could write gate artifacts without skill provenance.
+
+    Phase 111 (#138): pass ``skill=<phase>`` to self-manage ``QOR_SKILL_ACTIVE``
+    via ``skill_active`` instead of requiring a (leak-prone) shell prefix.
+    Backward compatible: when ``skill`` is None the ambient-env path is used.
     """
+    if skill is not None:
+        with skill_active(skill):
+            return write_gate_artifact(
+                phase, payload, session_id=session_id, ai_provenance=ai_provenance, skill=None
+            )
     if not os.environ.get("QOR_GATE_PROVENANCE_OPTIONAL"):
         active = os.environ.get("QOR_SKILL_ACTIVE")
         if active is None:

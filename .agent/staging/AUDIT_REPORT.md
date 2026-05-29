@@ -1,7 +1,7 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-05-29T02:12:00Z
-**Target**: docs/plan-qor-phase110-affected-files-contract.md (Phase 110 - SG-AffectedFilesContract-A countermeasure suite)
+**Tribunal Date**: 2026-05-29T02:30:00Z
+**Target**: docs/plan-qor-phase111-skill-active-env.md (Phase 111 - skill_active env-var leakage fix)
 **Risk Grade**: L1
 **Auditor**: The Qor-logic Judge (solo; `audit_risk_score` reports `option_b_required: false`)
 
@@ -15,45 +15,45 @@
 
 ### Executive Summary
 
-Phase 110 anchors the `SG-AffectedFilesContract-A` failure family (#136) and ships its countermeasures: two WARN-only pre-audit lints (#133 signature-widening caller enumeration, #134 struct-field persistence cascade), three new `audit_risk_score` Option-B signals (#135), and a `/qor-plan` Step 5 checklist bullet (#137). All changes are advisory governance tooling — no binding audit pass is altered. Plan transcribes five well-specified issues. No binding-VETO condition met; gate OPEN for `/qor-implement`.
+Phase 111 fixes the `QOR_SKILL_ACTIVE` shell-prefix leakage (#138) at the qor-logic layer: a `skill_active` context manager + an optional `skill=` param on `write_gate_artifact` (backward compatible), an authoritative newest-gate-mtime active-phase reporter, and a doctrine note. The provenance-binding contract is unchanged — only how the env var is set/cleared. No binding-VETO condition met; gate OPEN for `/qor-implement`.
 
 ### Audit Results
 
 #### Prompt Injection Pass
-**Result**: PASS — `prompt_injection_canaries` clean over the four governance reads.
+**Result**: PASS — canary scan clean.
 
 #### Security Pass (L3)
-**Result**: PASS — no auth, credentials, or secrets; lints are read-only grep/regex over files.
+**Result**: PASS — no auth/credentials/secrets. The change strengthens, not weakens, provenance hygiene by restoring prior env state deterministically.
 
 #### OWASP Top 10 Pass
-**Result**: PASS — A03: lints consume argv + regex, no `shell=True`; A08: SQL/struct "parsing" is literal-regex, no `eval`/`exec`/deserialization. No new attack surface.
+**Result**: PASS — A03: no shell execution; the context manager mutates `os.environ` in-process and restores it. A04: no fail-open — the provenance check still raises on mismatch; the context manager only sets the matching value for the wrapped scope.
 
 #### Ghost UI Pass
-**Result**: PASS (N/A) — no UI.
+**Result**: PASS (N/A).
 
 #### Section 4 Razor Pass
-**Result**: PASS — new modules sized ~150-300 LOC; implementation must keep functions <=40 lines and decompose detectors into helpers. Shared `_lint_utils.find_callers` reduces duplication (a Razor win flagged by #135).
+**Result**: PASS — `skill_active` is ~8 lines; the reporter is a small read; both under limits.
 
 #### Test Functionality Pass
-**Result**: PASS — every planned test invokes the unit (lint/parser/detector) and asserts on its returned findings/flags. The doctrine test invokes a parser checking entry presence + bidirectional cross-refs, not a bare substring. Survives the SG-035 acceptance question.
+**Result**: PASS — tests invoke the context manager / `write_gate_artifact(skill=)` / reporter and assert on post-call env state, raised/avoided ProvenanceError, and the returned phase. Not presence-only.
 
 #### Dependency Pass
-**Result**: PASS — standard library only (re, pathlib, subprocess/argv). No new third-party dependency.
+**Result**: PASS — stdlib only (`os`, `contextlib`, `json`, `pathlib`).
 
 #### Macro-Level Architecture Pass
-**Result**: PASS — new lints live in `qor/scripts/` beside existing pre-audit lints; `_lint_utils.py` centralizes the shared caller-finder; no cyclic dependencies.
+**Result**: PASS — context manager lives with the provenance gate it serves; reporter is a standalone read module; no cycles.
 
 #### Feature Test Coverage Pass
-**Result**: PASS (exempt) — plan does not touch `src/`; `feature_inventory_touches` empty and justified.
+**Result**: PASS (exempt) — no `src/`; `feature_inventory_touches` empty.
 
 #### Infrastructure Alignment Pass
-**Result**: PASS — cited surfaces verified: `plan_grep_lint.py` (template), `audit_risk_score.py`, `doctrine-shadow-genome-countermeasures.md`, `qor-plan`/`qor-audit` `SKILL.md` Step 5 / Step 0.6, and the two in-repo sibling SG entries (`SG-CitationDrift-A`, `SG-AuthorAuditMomentum-A`). The plan correctly adapts `SG-EnumerationVerificationGap-A` to a prose-only cross-reference (it is a COREFORGE consumer-repo entry, absent here) — no phantom back-edit promised. NEW files declared in Affected Files.
+**Result**: PASS — `gate_chain.write_gate_artifact` (line 183) and `shadow_process.append_event` (line 68) exist; `.qor/gates/<sid>/*.json` artifact layout exists; NEW module + tests declared.
 
 #### Filter-Stage Ordering Coherence
-**Result**: PASS — lint pipelines (parse -> grep -> cross-check -> warn) are linear with no precondition inversion.
+**Result**: PASS — `skill_active` set-before-yield, restore-in-finally is the correct ordering; the reporter's read has no inversion.
 
 #### Orphan Pass
-**Result**: PASS — new modules are wired into `/qor-audit` Step 0.6, imported by their test modules, and `_lint_utils` is consumed by both the lint and `audit_risk_score`.
+**Result**: PASS — `skill_active` is exported from `gate_chain` and used by `write_gate_artifact`; `active_phase` has a CLI entrypoint + test importer.
 
 ### Documentation Drift
 

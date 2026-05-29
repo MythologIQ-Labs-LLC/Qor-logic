@@ -10,6 +10,21 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.78.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+
+- **Phase 111 (#138)**: `QOR_SKILL_ACTIVE` env-var leakage. Added
+  `gate_chain.skill_active(<phase>)` context manager and a `skill=` parameter on
+  `write_gate_artifact` so scripts self-manage the provenance env var (set for
+  the wrapped scope, prior value restored on exit) instead of a leak-prone inline
+  shell prefix that could strand a stale phase on a status surface. Added the
+  authoritative active-phase reporter `python -m qor.scripts.active_phase`
+  (newest gate-artifact `phase`) as a non-leaking status source. Backward
+  compatible (ambient-env path unchanged when `skill` is omitted).
+
 ## [0.77.0] - 2026-05-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

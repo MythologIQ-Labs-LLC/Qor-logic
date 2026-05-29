@@ -1,0 +1,31 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-29T0226-3f59a3",
+  "ts": "2026-05-29T02:27:25Z",
+  "plan_path": "docs/plan-qor-phase111-skill-active-env.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "high_risk_target": false,
+  "phases": [
+    "skill_active context manager",
+    "active-phase reporter",
+    "doctrine note"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_skill_active_env.py -q",
+    "python -m pytest tests/test_active_phase_reporter.py -q",
+    "python -m pytest tests/test_gate_chain_provenance.py tests/test_gate_chain_phase52_provenance_still_enforced.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase111-skill-active-env.md",
+    "python -m qor.scripts.dod_check --plan docs/plan-qor-phase111-skill-active-env.md",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.77.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-05-29T02:27:25Z"
+  }
+}
