@@ -11200,3 +11200,51 @@ Change class: feature. Tests: 1997 passed / 0 failed / 2 skipped (full suite); 3
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 110; v0.77.0 staged in PR, held for operator review)
 
+
+---
+
+### Entry #301: GATE TRIBUNAL -- Phase 111 plan PASS
+
+**Timestamp**: 2026-05-29T02:30:00Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Plan**: docs/plan-qor-phase111-skill-active-env.md
+**Session**: `2026-05-29T0226-3f59a3`
+
+**Content Hash**: `458e4afd5b867258a1e5313fffbcd7bf8653b428ec6d3562a934e0ddbc66ea56`
+**Previous Hash**: `569c877d7524f57b8360cc6253140f8ad20272dd6d41043fc8f0853309008781`
+**Chain Hash**: `f9d9f5cc81faede9c852bf3b81016cb03d7895c2b803749933b8886f25516cb9`
+
+**Decision**: Phase 111 (#138 skill_active env-var leakage fix: context manager + write_gate_artifact skill= param + authoritative active-phase reporter + doctrine note) cleared all adversarial passes. Backward-compatible; provenance contract unchanged; stdlib-only. No binding-VETO. Gate OPEN for /qor-implement.
+
+
+---
+
+### Entry #302: SESSION SEAL -- Phase 111 skill_active env-var leakage fix (v0.78.0)
+
+**Timestamp**: 2026-05-29T02:34:58Z
+**Phase**: SUBSTANTIATE (Phase 111; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase111-skill-active-env.md
+**Session**: `2026-05-29T0226-3f59a3`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1
+**Entry ID**: `63eb4505339d`
+
+**Scope**: Phase 111 implemented (#138): gate_chain.skill_active context manager + write_gate_artifact skill= param (backward compatible) + qor.scripts.active_phase authoritative reporter + doctrine note. Also corrected the [0.77.0] CHANGELOG section's missing _Built via_ attribution line (inherited from Phase 110 stamp).
+
+Change class: feature. Tests: 2002 passed / 0 failed / 2 skipped (full suite, after fixes); 6 new Phase 111 tests + provenance regression green. Audit PASS iter-1 (L1).
+
+**Review Boundary**: HONORED. Local seal only; PR opened, no merge/tag/push/publish (operator holds all releases this run). Branch stacked on phase/110.
+
+**Content Hash**: `f5eba1b67017e1156a161dc608dac8dab3af904b9577a28089cc69824c715b52`
+**Previous Hash**: `f9d9f5cc81faede9c852bf3b81016cb03d7895c2b803749933b8886f25516cb9`
+**Chain Hash (Merkle seal)**: `340b682c194add31b8670987836b9caef4eaa1f0c7a081fb49c4dcc641b58987`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 111; v0.78.0 staged in PR #stacked, held for operator review)
+
