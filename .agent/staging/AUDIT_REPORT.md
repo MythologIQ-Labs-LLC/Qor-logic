@@ -1,29 +1,22 @@
-# AUDIT REPORT — Phase 118 (Module reachability CLI dispatch, GH #150)
+# AUDIT REPORT — Phase 119 (META_LEDGER reconcile tool, GH #148)
 
-**Target**: docs/plan-qor-phase118-module-reachability-cli-dispatch.md
+**Target**: docs/plan-qor-phase119-ledger-reconcile-tool.md
 **Verdict**: PASS
-**Risk Grade**: L2 (governance-reliability surface; additive, no L3 security/financial/fundamental-rights surface)
+**Risk Grade**: L2 (governance chain-integrity surface; controlled, operator-authorized, forward-only, visible attestation — not an L3 security bypass)
 **Mode**: solo (Phase 87 audit_risk_score: option_b_required=false)
 
 ## Passes
-- Prompt Injection: PASS (canaries exit 0 across ARCHITECTURE_PLAN/META_LEDGER/CONCEPT/plan)
-- Security L3: PASS (no placeholder auth/secrets/bypass)
-- OWASP Top-10: PASS (A03: list-form subprocess.run, no shell=True, f-string family prefix confines target to qor.reliability/qor.scripts)
-- Ghost UI / Live-Progress: N/A (no UI)
-- Section 4 Razor: PASS (_do_module_dispatch / _register_module_dispatch ~5 lines each; <40)
-- Test Functionality: PASS (5 dispatch tests invoke unit + assert output/exit; the 1 substring test is a prompt-contract assertion per established Phase 117 pattern, annotate ok=prompt-contract at implement)
-- Dependency: PASS (stdlib subprocess/sys only; no new deps)
-- Macro Architecture: PASS (additive subparser in existing cli.py pattern)
-- Feature Test Coverage: PASS (2 Feature Inventory rows cite test_cli_module_dispatch.py with behavioral descriptors)
-- Infrastructure Alignment: PASS (grep-verified: argparse imported; _build_parser/_dispatch/add_subparsers present; qor.reliability.skill_admission + qor.scripts.active_phase resolve; test_install_sync_with_source variant-sync tests exist; subprocess declared NEW import)
-- Filter-Stage Ordering: N/A (no pipeline shape)
-- Orphan Detection: PASS (test file connects via pytest; no orphan src)
-
-## Documentation Drift
-None material. doc_tier=standard; terms_introduced home cites existing doctrine file.
-
-## Process Pattern Advisory
-No repeated-VETO pattern detected.
+- Prompt Injection: PASS (canaries exit 0)
+- Security L3: PASS (no auth/secret/bypass). Chain-integrity analysis: reconcile does NOT disable verification — it appends an operator-authorized, hash-chained, permanent RECONCILIATION attestation; non-attested failures still FAIL; sealed entries never rewritten (forward-only). HARDENING REQUIRED (self-applied, SG-007): verify must honor attestation ONLY for entries that are genuinely duplicate-previous_hash residual, so a RECONCILIATION entry cannot launder content tampering. Implement adds test_reconciliation_does_not_launder_content_tampering.
+- OWASP: PASS (A03 no shell/list-form paths; A08 json.load not pickle/yaml)
+- Ghost UI / Live-Progress: N/A
+- Section 4 Razor: PASS (core split into detect/build/append; <40 lines each)
+- Test Functionality: PASS (all tests invoke units + assert output/exit/byte-equality; doctrine test reads file + checks co-occurrence — annotate prose-lint ok)
+- Dependency: PASS (stdlib only)
+- Macro Architecture: PASS (new qor/scripts/reconcile.py + cli_handlers/reconcile.py mirrors compliance/release register/dispatch)
+- Feature Test Coverage: PASS (2 Feature Inventory rows with behavioral descriptors)
+- Infrastructure Alignment: PASS (grep-verified: find_grandfathered_entries, chain_hash, content_hash, entry_id.derive_entry_id, ledger_fragment.next_entry_number, cli_handlers.compliance.register/dispatch all exist; grandfathered/race test files exist; canonical META_LEDGER verifies clean strict so reconcile correctly targets consumer/synthetic ledgers)
+- Filter-Stage / Orphan: N/A / PASS
 
 ## Next Action
-PASS -> /qor-implement
+PASS -> /qor-implement (apply the duplicate-residual-gating hardening + its test)

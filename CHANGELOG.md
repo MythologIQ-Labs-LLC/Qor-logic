@@ -10,7 +10,16 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.86.0] - 2026-05-30
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 119 (#148)**: `qor-logic reconcile propose|authorize` — real, forward-only META_LEDGER reconciliation superseding the Phase 91 `--tolerate-known-grandfathered` stopgap. Two-stage operator-authorized flow (mirroring Phase 36 B19): `propose` writes a pending proposal of the duplicate-`previous_hash` residual (read-only); `authorize --proposal <path>` appends a `RECONCILIATION` entry attesting the residual. `verify-ledger` reports `DISCLOSED_RECONCILED` for the attested set without the `--tolerate` flag — but only for genuine duplicate-`previous_hash` members, so an attestation cannot launder content tampering. Sealed entries are never renumbered or rewritten. Doctrine SG-ConcurrentLedgerRace-A updated with the V2 real fix.
+
 ## [0.85.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
 - **Phase 118 (#150)**: `qor-logic reliability <module>` / `qor-logic scripts <module>` CLI dispatch (Option A for module reachability). The dispatch runs the named `qor.reliability`/`qor.scripts` module through the CLI's own `sys.executable`, so integrity gates resolve from any shell regardless of which `python`/venv is active. Canonical skill prompts now invoke gates via the dispatch form; the bare `python -m qor.<family>.<module>` form is retained as the documented in-venv fallback (hybrid migration).

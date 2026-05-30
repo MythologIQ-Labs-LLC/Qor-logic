@@ -11473,7 +11473,28 @@ Change class: feature. Tests: 2086 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `ae508c2df7dbdee4efe410104c6bade45690d197e1884f247370e01e12919f3e`
 **Chain Hash (Merkle seal)**: `32894e858c4d15087b388c741928386b22db35b9a1f819c76823fd61e79883b4`
 
+### Entry #312: SESSION SEAL -- Phase 119 META_LEDGER reconcile tool (v0.86.0)
+
+**Timestamp**: 2026-05-30T05:26:01Z
+**Phase**: SUBSTANTIATE (Phase 119; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase119-ledger-reconcile-tool.md
+**Session**: `2026-05-29T2323-426095`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1
+**Entry ID**: `1e77c4f9c061`
+
+**Scope**: Phase 119 implemented (#148): qor-logic reconcile propose|authorize -- real forward-only META_LEDGER reconciliation superseding the Phase 91 --tolerate-known-grandfathered stopgap. qor/scripts/reconcile.py (detect_residual, build_proposal, append_reconciliation_entry) + qor/cli_handlers/reconcile.py (two-stage propose->authorize, --proposal arg = sole operator signal, mirroring Phase 36 B19). ledger_hash.verify() recognizes RECONCILIATION entries: DISCLOSED_RECONCILED for the attested duplicate-previous_hash residual WITHOUT the --tolerate flag, gated to genuine duplicate-previous_hash members (security: cannot launder content tampering). Forward-only: sealed entries never renumbered/rewritten. Doctrine SG-ConcurrentLedgerRace-A + governance-enforcement updated; 2 glossary terms. New tests/test_reconcile.py + test_ledger_hash_reconciliation.py + test_cli_reconcile.py (corpus: #85 #16a/b,#17a/b,#18a/b duplicate-previous_hash interleave). Also fixed phase-118 CHANGELOG [0.85.0] missing _Built via_ attribution line.
+
+Change class: feature. Tests: 2101 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: HONORED. Local seal only; no push / no PR / no tag-push.
+
+**Content Hash**: `75dfe4f59c88ef55602dc863ecacdfc3c24c73066268134d7b69183d8501f761`
+**Previous Hash**: `32894e858c4d15087b388c741928386b22db35b9a1f819c76823fd61e79883b4`
+**Chain Hash (Merkle seal)**: `7e87318074a0bf4b41f6b01a66d3b03cd8c2dc5fdd32ff807c297b89caddb3d2`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 118; v0.85.0 local, held for operator review)
+*Session: SEALED* (Phase 119; v0.86.0 local, held for operator review)

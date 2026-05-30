@@ -192,6 +192,15 @@ Qor-logic is `pip install`-able. Every governance skill must run successfully fr
 
 **Why**: these three rules collectively close the installed-mode breakage family (SG-Phase35-A). Before Phase 35, every `pip install qor-logic` user received a package whose skills silently failed at every governance-helper import. The repo's own CI always ran from repo root, so the assumption held and no test caught it. The Phase 35 structural + runtime test pair is the mechanical guarantee that future skill authoring cannot reintroduce the family.
 
+### Ledger reconciliation (forward-only; Phase 119, GH #148)
+
+A duplicate-`previous_hash` residual (the SG-ConcurrentLedgerRace-A pattern: two entries claiming the same `previous_hash` from a concurrent pre-V1 append) is repaired with `qor-logic reconcile`, never by editing sealed entries. Two stages, mirroring the Phase 36 B19 pending->authorized contract:
+
+1. `qor-logic reconcile propose --ledger <path>` — read-only; detects the residual and writes a pending proposal artifact. Mutates nothing.
+2. `qor-logic reconcile authorize --proposal <path> --ledger <path>` — appends a forward-only **RECONCILIATION** entry whose `**Reconciled Entries**:` line attests the residual set. The explicit `--proposal <path>` arg is the sole operator-authorization signal (no heuristic proposal discovery).
+
+`verify-ledger` honors a RECONCILIATION attestation only for entries that are genuine duplicate-`previous_hash` members (so it cannot launder content tampering), reporting `DISCLOSED_RECONCILED` for the attested set without the `--tolerate-known-grandfathered` flag. Sealed entries are never renumbered or rewritten — the RECONCILIATION entry is appended. See `qor/references/doctrine-shadow-genome-countermeasures.md` SG-ConcurrentLedgerRace-A "V2 real fix".
+
 **Anti-pattern**: do not paper over the invariant with try/except `ImportError` ladders that fall back to `sys.path.insert`. The invariant is that the skill is invocable from any CWD; silent fallback masks the breakage instead of preventing it.
 
 ## 10. Process Remediation Lifecycle (Phase 36 wiring)

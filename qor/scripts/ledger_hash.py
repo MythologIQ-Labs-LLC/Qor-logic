@@ -116,6 +116,12 @@ SESSION_SEAL_RE = re.compile(
     + r"=\s*`([0-9a-f]{64})`"
 )
 
+# Phase 119 (GH #148): a RECONCILIATION entry's machine-parseable attestation
+# line, e.g. `**Reconciled Entries**: #16, #17, #18`. verify() honors the
+# attestation only for entries that are genuinely duplicate-previous_hash
+# members (so it cannot launder content tampering of a unique entry).
+RECONCILED_ENTRIES_RE = re.compile(r"\*\*Reconciled Entries\*\*:\s*([#0-9,\s]+)")
+
 
 def is_placeholder_pattern(value: str) -> bool:
     """Return True if a 64-hex string matches an obvious-fabrication pattern.
@@ -213,6 +219,37 @@ def find_grandfathered_entries(
     return frozenset(grandfathered)
 
 
+def _duplicate_previous_hash_members(entries: list[tuple[int, str]]) -> set[int]:
+    """Entry numbers sharing a previous_hash with >=1 other entry (no cutoff).
+    The genuine duplicate-previous_hash residual a RECONCILIATION entry may
+    attest. Used to gate reconciliation toleration so a unique-previous_hash
+    tampered entry cannot be laundered by an attestation."""
+    by_prev: dict[str, list[int]] = {}
+    for num, body in entries:
+        ph = PREV_HASH_RE.search(body)
+        if not ph:
+            continue
+        by_prev.setdefault(ph.group(1) or ph.group(2), []).append(num)
+    members: set[int] = set()
+    for nums in by_prev.values():
+        if len(nums) >= 2:
+            members.update(nums)
+    return members
+
+
+def _attested_reconciled(entries: list[tuple[int, str]]) -> set[int]:
+    """Union of entry numbers named on `**Reconciled Entries**:` lines across
+    all RECONCILIATION entries in the ledger."""
+    attested: set[int] = set()
+    for _num, body in entries:
+        m = RECONCILED_ENTRIES_RE.search(body)
+        if not m:
+            continue
+        for tok in re.findall(r"#(\d+)", m.group(1)):
+            attested.add(int(tok))
+    return attested
+
+
 def verify(
     ledger_md: Path,
     *,
@@ -253,6 +290,11 @@ def verify(
         num = int(parts[i])
         body = parts[i + 1] if i + 1 < len(parts) else ""
         entries.append((num, body))
+
+    # Phase 119 (GH #148): entries attested by an in-chain RECONCILIATION entry
+    # are tolerated WITHOUT the --tolerate-known-grandfathered flag, but only
+    # when they are genuine duplicate-previous_hash members (security gate).
+    reconciled = _attested_reconciled(entries) & _duplicate_previous_hash_members(entries)
 
     errors = 0
     skipped = 0
@@ -308,6 +350,13 @@ def verify(
             print(
                 f"DISCLOSED_GRANDFATHERED Entry #{num}: tolerated "
                 f"SG-ConcurrentLedgerRace-A residual"
+            )
+        elif num in reconciled:
+            # Phase 119 (GH #148): in-chain RECONCILIATION attestation of a
+            # genuine duplicate-previous_hash residual. Honored without the
+            # --tolerate flag; no error, no taint propagation.
+            print(
+                f"DISCLOSED_RECONCILED Entry #{num}: attested by RECONCILIATION entry"
             )
         else:
             print(

@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-05-30T05:06:59Z","version":"0.85.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-05-29T2323-426095","target":"docs/plan-qor-phase119-ledger-reconcile-tool.md","ts":"2026-05-30T05:06:59Z","verdict":"PASS"}

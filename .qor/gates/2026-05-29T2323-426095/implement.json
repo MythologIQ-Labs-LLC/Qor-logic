@@ -1,0 +1,39 @@
+{
+  "phase": "implement",
+  "session_id": "2026-05-29T2323-426095",
+  "ts": "2026-05-30T05:21:08Z",
+  "files_touched": [
+    ".agent/staging/AUDIT_REPORT.md",
+    "CHANGELOG.md",
+    "README.md",
+    "docs/PROCESS_SHADOW_GENOME_UPSTREAM.md",
+    "docs/plan-qor-phase119-ledger-reconcile-tool.md",
+    "qor/cli.py",
+    "qor/cli_handlers/reconcile.py",
+    "qor/dist/manifest.json",
+    "qor/dist/variants/claude/manifest.json",
+    "qor/dist/variants/codex/manifest.json",
+    "qor/dist/variants/gemini/manifest.json",
+    "qor/dist/variants/kilo-code/manifest.json",
+    "qor/references/doctrine-governance-enforcement.md",
+    "qor/references/doctrine-shadow-genome-countermeasures.md",
+    "qor/scripts/ledger_hash.py",
+    "qor/scripts/reconcile.py",
+    "tests/test_cli_reconcile.py",
+    "tests/test_ledger_hash_reconciliation.py",
+    "tests/test_reconcile.py"
+  ],
+  "test_summary": {
+    "passed": 2104,
+    "failed": 0,
+    "skipped": 3
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.85.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-30T05:21:08Z"
+  }
+}

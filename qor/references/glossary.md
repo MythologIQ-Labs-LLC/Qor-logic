@@ -1076,3 +1076,21 @@ referenced_by:
   - qor/skills/sdlc/qor-plan/SKILL.md
 introduced_in_plan: phase118-module-reachability-cli-dispatch
 ```
+```yaml
+term: RECONCILIATION entry
+definition: 'A forward-only META_LEDGER entry (Phase 119; GH #148) appended by `qor-logic reconcile authorize` that attests a duplicate-previous_hash residual set on a `**Reconciled Entries**:` line. verify-ledger reports DISCLOSED_RECONCILED for the attested set (gated to genuine duplicate-previous_hash members so it cannot launder content tampering) without the --tolerate-known-grandfathered flag. Sealed entries are never renumbered or rewritten.'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/scripts/reconcile.py
+  - qor/scripts/ledger_hash.py
+introduced_in_plan: phase119-ledger-reconcile-tool
+```
+```yaml
+term: reconcile command
+definition: 'The `qor-logic reconcile propose|authorize` CLI (Phase 119; GH #148). Two-stage operator-authorized, forward-only META_LEDGER reconciliation mirroring the Phase 36 B19 pending->authorized contract: `propose` writes a pending proposal of the duplicate-previous_hash residual (read-only); `authorize --proposal <path>` appends a RECONCILIATION entry. The explicit --proposal path is the sole operator-authorization signal.'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/cli_handlers/reconcile.py
+  - qor/cli.py
+introduced_in_plan: phase119-ledger-reconcile-tool
+```
