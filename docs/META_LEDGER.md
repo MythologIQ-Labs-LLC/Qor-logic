@@ -11494,7 +11494,28 @@ Change class: feature. Tests: 2101 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `32894e858c4d15087b388c741928386b22db35b9a1f819c76823fd61e79883b4`
 **Chain Hash (Merkle seal)**: `7e87318074a0bf4b41f6b01a66d3b03cd8c2dc5fdd32ff807c297b89caddb3d2`
 
+### Entry #313: SESSION SEAL -- Phase 120 governance-index enforcement (v0.87.0)
+
+**Timestamp**: 2026-05-30T07:07:21Z
+**Phase**: SUBSTANTIATE (Phase 120; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase120-governance-index-enforcement.md
+**Session**: `2026-05-30T0642-1e5c9b`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1
+**Entry ID**: `1071c9517a5b`
+
+**Scope**: Phase 120 implemented (#148->#149): Governance Index enforcement -- wired GOVERNANCE_INDEX into /qor-substantiate Step 4.7.5 (fail-closed: governance_index.enforce_at_seal auto-advances Last Reviewed to the seal date, then ABORTs on unregistered or tier3-unarchived) and /qor-validate Step 4.6 (cross_check_index_against_ledger, read-only: stale-tier1 + tier3-unarchived). Closes #140's deferred enforcement half. New qor/scripts/governance_index.py functions (advance_last_reviewed, enforce_at_seal, cross_check_index_against_ledger, tier3-unarchived finding) + CLI flags --advance-last-reviewed/--enforce/--cross-check-ledger; absent index -> Phase 75 disclosed-skip. Doctrine-governance-index.md flipped V2-deferred -> shipped (only /qor-implement stale-Tier1 block + auto row-mutation remain deferred). 3 new glossary terms. 11 new behavioral+wiring tests. Dogfooded: this seal advanced the canonical index Last Reviewed to 2026-05-30.
+
+Change class: feature. Tests: 2115 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: HONORED. Local seal only; no push / no PR / no tag-push.
+
+**Content Hash**: `091355079a9f21433646d5edc2c39b7e1ada810856da90cdf62ca79ec44d886d`
+**Previous Hash**: `7e87318074a0bf4b41f6b01a66d3b03cd8c2dc5fdd32ff807c297b89caddb3d2`
+**Chain Hash (Merkle seal)**: `423653f67ca485f493706da18d7203c5cea0599e00f23519b2e3e080a4f3aead`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 119; v0.86.0 local, held for operator review)
+*Session: SEALED* (Phase 120; v0.87.0 local, held for operator review)

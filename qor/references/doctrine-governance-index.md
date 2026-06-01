@@ -48,10 +48,9 @@ Every cycle that writes governance SHOULD:
 4. Move Tier 4 -> Tier 6 at seal (archive plan + its phase reports).
 5. Refresh `Last Reviewed`.
 
-**V2 (deferred)**: automated Tier 3->6 / Tier 4->6 archival at `/qor-substantiate`,
-the `/qor-validate` ledger-cross-check (every substantiate/deliver entry pairs
-with an archive transition), and a hard `/qor-implement` block on stale Tier 1.
-V1 is the scaffold + WARN-only visibility surface.
+**V2 (Phase 120; GH #149) — shipped enforcement**: `/qor-substantiate` Step 4.7.5 makes the index self-policing — it **auto-advances `Last Reviewed`** to the seal date (clearing `stale-tier1` by construction) and then **fail-closes** (`|| ABORT`) on residual drift: `unregistered` (a governance doc in no tier — rule 2) and the forward-guard `tier3-unarchived` (a Tier 3 "Active Initiative" row naming a `phase <N>` already SESSION-SEALed — rules 3/4 as a detection guard rather than auto-mutation). `/qor-validate` runs `cross_check_index_against_ledger` (read-only): `stale-tier1` (Last Reviewed vs latest sealed entry) + `tier3-unarchived`. Both use `qor-logic governance-index` (`--advance-last-reviewed`/`--enforce`/`--cross-check-ledger`); absent index records a Phase 75 disclosed-skip (`gate_skipped_prerequisite_absent`) rather than aborting. Implementation: `qor/scripts/governance_index.py` (`advance_last_reviewed`, `enforce_at_seal`, `cross_check_index_against_ledger`).
+
+**Still deferred**: a hard `/qor-implement` block on stale Tier 1, and automatic Tier 3->6 / Tier 4->6 *row mutation* (the shipped V2 detects unarchived rows but does not rewrite tier tables). V1 remains the scaffold + WARN-only `/qor-status` visibility surface (`check_index_drift`, untouched).
 
 Maps to NIST AI RMF MAP-3.1 (trust anchor integrity) and EU AI Act Art. 12
 (record-keeping integrity). Originating proposal: GH #140 (FailSafe 21-stale-doc

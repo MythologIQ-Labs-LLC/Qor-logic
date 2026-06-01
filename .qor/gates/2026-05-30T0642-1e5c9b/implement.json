@@ -1,0 +1,50 @@
+{
+  "phase": "implement",
+  "session_id": "2026-05-30T0642-1e5c9b",
+  "ts": "2026-05-30T07:08:16Z",
+  "files_touched": [
+    ".agent/staging/AUDIT_REPORT.md",
+    "CHANGELOG.md",
+    "README.md",
+    "docs/GOVERNANCE_INDEX.md",
+    "docs/META_LEDGER.md",
+    "docs/PROCESS_SHADOW_GENOME_UPSTREAM.md",
+    "docs/plan-qor-phase120-governance-index-enforcement.md",
+    "pyproject.toml",
+    "qor/cli.py",
+    "qor/dist/manifest.json",
+    "qor/dist/variants/claude/manifest.json",
+    "qor/dist/variants/claude/skills/qor-substantiate/SKILL.md",
+    "qor/dist/variants/claude/skills/qor-validate/SKILL.md",
+    "qor/dist/variants/codex/manifest.json",
+    "qor/dist/variants/codex/skills/qor-substantiate/SKILL.md",
+    "qor/dist/variants/codex/skills/qor-validate/SKILL.md",
+    "qor/dist/variants/gemini/commands/qor-substantiate.toml",
+    "qor/dist/variants/gemini/commands/qor-validate.toml",
+    "qor/dist/variants/gemini/manifest.json",
+    "qor/dist/variants/kilo-code/manifest.json",
+    "qor/dist/variants/kilo-code/skills/qor-substantiate/SKILL.md",
+    "qor/dist/variants/kilo-code/skills/qor-validate/SKILL.md",
+    "qor/references/doctrine-governance-index.md",
+    "qor/references/glossary.md",
+    "qor/scripts/governance_index.py",
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "qor/skills/governance/qor-validate/SKILL.md",
+    "tests/test_governance_index_enforcement.py",
+    "tests/test_governance_index_substantiate_wiring.py",
+    "tests/test_governance_index_validate_wiring.py"
+  ],
+  "test_summary": {
+    "passed": 2115,
+    "failed": 0,
+    "skipped": 3
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.87.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-30T07:08:16Z"
+  }
+}

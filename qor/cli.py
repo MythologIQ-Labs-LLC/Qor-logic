@@ -92,10 +92,17 @@ def _do_governance_health(args: argparse.Namespace) -> int:
 
 
 def _do_governance_index(args: argparse.Namespace) -> int:
-    """Detect governance index drift; exit 0 clean / 1 drift (Phase 112; WARN-only)."""
+    """Detect drift (Phase 112 WARN) or enforce/cross-check (Phase 120, GH #149)."""
     from qor.scripts import governance_index as gi
 
-    return gi.main(["--repo-root", args.repo_root])
+    argv = ["--repo-root", args.repo_root]
+    if getattr(args, "advance_last_reviewed", None):
+        argv += ["--advance-last-reviewed", args.advance_last_reviewed]
+    if getattr(args, "enforce", False):
+        argv.append("--enforce")
+    if getattr(args, "cross_check_ledger", False):
+        argv.append("--cross-check-ledger")
+    return gi.main(argv)
 
 
 def _do_capabilities(args: argparse.Namespace) -> int:
@@ -200,8 +207,14 @@ def _register_misc(sub) -> None:
     sp_gh = sub.add_parser("governance-health", help="classify governance artifact health (Phase 109)")
     sp_gh.add_argument("--repo-root", default=".", help="workspace root to inspect")
     sp_gh.add_argument("--profile", default="skill-entry", help="named required-artifact set")
-    sp_gi = sub.add_parser("governance-index", help="detect governance index drift (Phase 112)")
+    sp_gi = sub.add_parser("governance-index", help="detect drift (Phase 112) / enforce + cross-check (Phase 120)")
     sp_gi.add_argument("--repo-root", default=".", help="workspace root to inspect")
+    sp_gi.add_argument("--advance-last-reviewed", metavar="DATE", default=None,
+                       help="rewrite Last Reviewed to DATE (YYYY-MM-DD)")
+    sp_gi.add_argument("--enforce", action="store_true",
+                       help="fail-closed substantiate enforcement (needs --advance-last-reviewed)")
+    sp_gi.add_argument("--cross-check-ledger", action="store_true",
+                       help="read-only validate cross-check against the ledger")
 
 
 def _register_capabilities(sub) -> argparse.ArgumentParser:

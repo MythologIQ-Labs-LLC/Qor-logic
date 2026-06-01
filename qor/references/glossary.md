@@ -757,6 +757,7 @@ referenced_by:
   - qor/skills/governance/qor-shadow-process/SKILL.md
   - qor/skills/governance/qor-substantiate/SKILL.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
+  - qor/references/doctrine-governance-index.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
 
@@ -1031,6 +1032,8 @@ referenced_by:
   - qor/scripts/governance_index.py
   - qor/templates/GOVERNANCE_INDEX.md
   - qor/skills/memory/qor-status/SKILL.md
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-validate/SKILL.md
 introduced_in_plan: phase112-governance-index
 ```
 ```yaml
@@ -1093,4 +1096,14 @@ referenced_by:
   - qor/cli_handlers/reconcile.py
   - qor/cli.py
 introduced_in_plan: phase119-ledger-reconcile-tool
+```
+```yaml
+term: governance index enforcement
+definition: 'The Phase 120 (GH #149) self-policing layer over docs/GOVERNANCE_INDEX.md. /qor-substantiate Step 4.7.5 auto-advances Last Reviewed to the seal date then fail-closes (|| ABORT) on residual drift (unregistered doc / tier3-unarchived sealed phase); /qor-validate runs the read-only cross_check_index_against_ledger (stale-tier1 + tier3-unarchived). Absent index -> Phase 75 disclosed-skip. Implemented in qor/scripts/governance_index.py (advance_last_reviewed, enforce_at_seal, cross_check_index_against_ledger).'
+home: qor/references/doctrine-governance-index.md
+referenced_by:
+  - qor/scripts/governance_index.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-validate/SKILL.md
+introduced_in_plan: phase120-governance-index-enforcement
 ```

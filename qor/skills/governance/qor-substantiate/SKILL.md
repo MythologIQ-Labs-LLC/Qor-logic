@@ -67,6 +67,7 @@ This skill is multi-step; each step declares its prerequisite so non-Python host
 | 4.6.5 secret_scanner | module:qor.scripts.secret_scanner | OWASP LLM06 / NIST AI 600-1 §2.10 |
 | 4.6.6 procedural_fidelity | module:qor.scripts.procedural_fidelity | WARN-only doc-surface coverage gap |
 | 4.7 doc_integrity (strict) | module:qor.scripts.doc_integrity | tier-driven glossary + orphan + term-drift checks |
+| 4.7.5 governance_index enforce | module:qor.scripts.governance_index | Phase 120 fail-closed index enforcement (advance Last-Reviewed + unregistered/tier3-unarchived) |
 | 6.5 doc currency + badge currency | module:qor.scripts.doc_integrity_strict | release-class badge ABORT (Phase 49) |
 | 6.8 seal hash integrity gate | module:qor.scripts.hash_guard | Phase 64 fail-closed gate |
 | 7.4 SSDF tagger | module:qor.scripts.ssdf_tagger | NIST SP 800-218A practice tag emission |
@@ -358,6 +359,19 @@ doc_integrity.run_all_checks_from_plan(plan_artifact, repo_root=".", strict=True
 ```
 
 Any raised `ValueError` ABORTs substantiation. Operator fixes (update glossary / adjust declared terms / raise tier) and re-runs. No retry-with-waiver path.
+
+### Step 4.7.5: Governance Index enforcement (Phase 120 wiring; GH #149)
+
+**Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.governance_index` + `file:docs/GOVERNANCE_INDEX.md`. See Step Prerequisites table; on hosts where the index is absent the gate records SKIP in the seal entry and emits a `gate_skipped_prerequisite_absent` shadow event (the CLI prints a `SKIP` line and exits 0 — disclosed-skip).
+
+Makes the Hierarchical Governance Index self-policing (closes #140's deferred enforcement half). The gate auto-advances `Last Reviewed` to the seal date (clearing `stale-tier1` by construction) and then **fail-closes** on residual drift: `unregistered` (a governance doc named in no tier — operator registers it) and `tier3-unarchived` (a Tier 3 "Active Initiative" row naming a `phase <N>` already SESSION-SEALed — archive it to Tier 6). Per `qor/references/doctrine-governance-index.md` "V2 (Phase 120; GH #149) -- shipped enforcement".
+
+```bash
+SEAL_DATE=$(python -c "from datetime import datetime, timezone; print(datetime.now(timezone.utc).strftime('%Y-%m-%d'))")
+qor-logic governance-index --advance-last-reviewed "$SEAL_DATE" --enforce --repo-root . || ABORT
+```
+
+On non-zero exit (residual `unregistered` / `tier3-unarchived`), ABORT: the operator registers the new doc to a tier or archives the sealed Tier 3 row, then re-runs `/qor-substantiate`. The advanced `docs/GOVERNANCE_INDEX.md` is staged with the seal commit.
 
 ### Step 5: Section 4 Razor Final Check
 

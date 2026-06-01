@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-30T05:26:48Z",
+  "generated_ts": "2026-05-30T07:07:40Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -252,7 +252,7 @@
       "id": "qor-substantiate.toml",
       "source_path": "commands/qor-substantiate.toml",
       "install_rel_path": "commands/qor-substantiate.toml",
-      "sha256": "3c99d9cbc85005a90bdf8c70570b5aae66a2cf60361d326241516885b519eb90"
+      "sha256": "8ed72eb18d9bb6968e37e8fdef53865837f520d39d936e8248690a5c7ad895f7"
     },
     {
       "id": "qor-tone.toml",
@@ -264,7 +264,7 @@
       "id": "qor-validate.toml",
       "source_path": "commands/qor-validate.toml",
       "install_rel_path": "commands/qor-validate.toml",
-      "sha256": "c4030e5eb3ecd1e4cd2a0ef09eb3c65fe77d4d45bd9edeb4059b4c6ef894b9f3"
+      "sha256": "d9e8c0be498e2f4866414c8fe98675022660bf6cd63a9f008980deaefcf58846"
     },
     {
       "id": "track-shadow-genome.toml",

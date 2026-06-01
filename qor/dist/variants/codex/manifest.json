@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-05-30T05:26:47Z",
+  "generated_ts": "2026-05-30T07:07:40Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -390,7 +390,7 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "0a403eb9dba17653e063902966238e828c9c341269d9eeb9ce9c4e611b14c0a9"
+      "sha256": "aff3e0b33d2a9d90f52ea77ccaf832c983655633e25b6cb8e2a61e2fe2275f2b"
     },
     {
       "id": "qor-tone",
@@ -408,7 +408,7 @@
       "id": "qor-validate",
       "source_path": "skills/qor-validate/SKILL.md",
       "install_rel_path": "skills/qor-validate/SKILL.md",
-      "sha256": "5539c2ba7dd9294f5306ea395d6980eec3ad6686d3cd397045116702805eef23"
+      "sha256": "b5bd84906b7e3c9846433eef10d02f3e039e9eeec39bff5f5214ee19b6937211"
     },
     {
       "id": "track-shadow-genome.md",

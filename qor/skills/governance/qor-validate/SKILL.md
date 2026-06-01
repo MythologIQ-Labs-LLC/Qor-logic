@@ -105,6 +105,16 @@ Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `
 
 Both modes recognize Session Seal markup (`**Session Seal**: ... = \`<hex>\``) as a chain-hash source (Phase 66; closes the GH #54 blind spot where Session-Seal-only entries were skipped) and flag placeholder-pattern hashes (ascending hex, repeating bigrams, low entropy) as FAIL.
 
+### Step 4.6: Governance Index ledger cross-check (Phase 120 wiring; GH #149)
+
+Read-only cross-check of `docs/GOVERNANCE_INDEX.md` against the ledger chain (closes #140's deferred `/qor-validate` cross-check). Reports `stale-tier1` (the index's `Last Reviewed` predates the latest sealed entry) and `tier3-unarchived` (a Tier 3 "Active Initiative" row names a `phase <N>` already SESSION-SEALed). Folds into the validation verdict; an absent index prints a `SKIP` line (Phase 75 disclosed-skip) rather than failing.
+
+```bash
+qor-logic governance-index --cross-check-ledger --repo-root .
+```
+
+Non-zero exit signals governance-index drift the operator resolves (refresh `Last Reviewed` via the next `/qor-substantiate`, or archive the sealed Tier 3 row). Per `qor/references/doctrine-governance-index.md` "V2 (Phase 120; GH #149) -- shipped enforcement".
+
 ### Step 5: Generate Report
 
 #### If Chain Valid:
