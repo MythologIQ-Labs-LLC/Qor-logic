@@ -11536,7 +11536,28 @@ Change class: feature. Tests: 2127 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `423653f67ca485f493706da18d7203c5cea0599e00f23519b2e3e080a4f3aead`
 **Chain Hash (Merkle seal)**: `ac720e6a355c71cd4e45dca5071beddd600827e3cf58199ebd6345ff56ee08cc`
 
+### Entry #315: SESSION SEAL -- Phase 122 seal-time regression gate fail-closed (v0.89.0)
+
+**Timestamp**: 2026-06-01T23:42:18Z
+**Phase**: SUBSTANTIATE (Phase 122; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase122-seal-regression-gate.md
+**Session**: `2026-06-01T2317-5e8be1`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1, PW.9.1
+**Entry ID**: `b5342cec1ab2`
+
+**Scope**: Phase 122 implemented (#155): Seal-time feature-regression gate flipped fail-closed. Phase 114's qor.scripts.feature_index_verify (outside-scope verified->unverified detector vs a prior-seal snapshot) already returned exit 1 but was wired into /qor-substantiate Step 6 with --warn-only; Step 6 now runs it || ABORT so a regression blocks the PASS seal. Added a per-seal logged escape --override that emits a gate_override shadow event (details.gate=feature_index_verify) -- the explicit logged override the #155 AC requires. Snapshot baseline + detection unchanged; absent FEATURE_INDEX disclosed-skips. Doctrine-feature-inventory.md updated. 8 new behavioral+wiring tests. Mid-cycle course-correction: original plan proposed a duplicate feature_regression_gate module + git baseline; Infrastructure Alignment caught the existing module, plan rewritten to the minimal flip. Also fixed two latent phase-121 regressions: [0.88.0] CHANGELOG attribution line + the VCI qor.scripts.feature_index_verify module citation.
+
+Change class: feature. Tests: 2135 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo; re-plan after Infrastructure Alignment caught a duplicate-module draft).
+
+**Review Boundary**: Operator authorized push + PR post-seal (GH #155).
+
+**Content Hash**: `398de35b11cc8bc4f2381a2ecb086f6a4983191673adc49c0aeb1e8a71303eed`
+**Previous Hash**: `ac720e6a355c71cd4e45dca5071beddd600827e3cf58199ebd6345ff56ee08cc`
+**Chain Hash (Merkle seal)**: `da710312d60f049973c3e3edc8093d31981ce299ccd0370d34969c3155a4e970`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 121; v0.88.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 122; v0.89.0 local; operator authorized push + PR)

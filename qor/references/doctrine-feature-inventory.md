@@ -56,3 +56,9 @@ The artifact is optional at the framework level (a host repo may not have adopte
 A "every src/ change needs a `.spec.ts`" CI rule catches *change-time* gaps. It does not catch *baseline* gaps: features that shipped in earlier releases without a test, or features whose tests rotted into presence-only. The feature index is the canonical surface against which baseline gaps become visible at every seal.
 
 Source incidents: GH #40 (FailSafe v5 baseline coverage gap) and GH #41 (per-feature TDD upstream of #40).
+
+## Seal regression gate: fail-closed (Phase 122; GH #155)
+
+Phase 114 shipped `qor.scripts.feature_index_verify` (the outside-scope `verified -> unverified` regression detector vs a prior-seal snapshot) but wired it into `/qor-substantiate` Step 6 with `--warn-only` (print-and-pass) for graduated rollout. Phase 122 closes GH #155's acceptance criteria by making the seal wiring **fail-closed**: Step 6 now runs `qor-logic scripts feature_index_verify --snapshot <prior-seal-session-id> --repo-root . || ABORT` (no `--warn-only`), so an outside-scope regression blocks the PASS seal.
+
+The explicit logged escape is `--override`: it emits a `gate_override` shadow event (`details.gate = feature_index_verify`, `details.regressions = [...]`) and exits 0, so an intentionally-accepted regression is recorded rather than silently passed. The snapshot baseline (`.qor/feature_index_snapshots/<sid>.json`) and detection logic are unchanged; absent `FEATURE_INDEX.md` still disclosed-skips (`feature_index: skip`, exit 0).
