@@ -11515,7 +11515,28 @@ Change class: feature. Tests: 2115 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `7e87318074a0bf4b41f6b01a66d3b03cd8c2dc5fdd32ff807c297b89caddb3d2`
 **Chain Hash (Merkle seal)**: `423653f67ca485f493706da18d7203c5cea0599e00f23519b2e3e080a4f3aead`
 
+### Entry #314: SESSION SEAL -- Phase 121 runtime-principal fidelity + Data-API access-control (v0.88.0)
+
+**Timestamp**: 2026-06-01T23:14:03Z
+**Phase**: SUBSTANTIATE (Phase 121; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase121-runtime-principal-fidelity.md
+**Session**: `2026-06-01T2250-540aa1`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1, PW.9.1
+**Entry ID**: `4a0923984fbd`
+
+**Scope**: Phase 121 implemented (#177): Runtime-principal fidelity + Data-API access-control enforcement. Closes the privileged-principal false-PASS class -- tests run under service_role / a SECURITY DEFINER RPC bypass RLS + table GRANTs, so a feature broken for its authenticated/anon caller seals green. /qor-substantiate Step 4 adds a runtime-principal fidelity gate (fail-closed unless an explicit disclosed coverage-gap note is recorded) and Step 4.6.10 invokes the new qor.scripts.data_api_acl_lint (|| ABORT): static SQL-migration scan flagging missing-grant (API-schema CREATE TABLE with no GRANT to authenticated/anon) and definer-view (view without security_invoker = true); security-definer-fn advisory. Escapes -- qor:service-role-only / -- qor:definer-view-intended; absent migrations -> Phase 75 disclosed-skip. /qor-audit Security Pass gains the plan-level Data-API access-control checklist. New reference doctrine-runtime-principal-fidelity.md + 2 glossary terms. 15 new behavioral+wiring tests. Also fixed phase-120 seal commit trailer (b4ec643->9c37435 canonical Authored-via trailer) and README Tests/Doctrines badges.
+
+Change class: feature. Tests: 2127 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal (GH #177).
+
+**Content Hash**: `4ad2328866c7905edd407142100033493b2ea8feceab98d8545417f40aafc4cb`
+**Previous Hash**: `423653f67ca485f493706da18d7203c5cea0599e00f23519b2e3e080a4f3aead`
+**Chain Hash (Merkle seal)**: `ac720e6a355c71cd4e45dca5071beddd600827e3cf58199ebd6345ff56ee08cc`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 120; v0.87.0 local, held for operator review)
+*Session: SEALED* (Phase 121; v0.88.0 local; operator authorized push + PR)

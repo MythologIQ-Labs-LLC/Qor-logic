@@ -251,6 +251,14 @@ Scan for critical security issues:
 - [ ] No `// security: disabled for testing`
 ```
 
+**Data-API access-control checklist (Phase 121 wiring; GH #177)** — plan-level review of any DB surface the plan introduces (the deterministic SQL scan runs at `/qor-substantiate` Step 4.6.10, where migrations exist; here the Judge reviews declared intent):
+
+- [ ] Every API-exposed `CREATE TABLE` the plan introduces commits to explicit `GRANT`s to its runtime roles (platform defaults are not assumable and have changed)
+- [ ] `SECURITY DEFINER` functions and definer-rights (non-`security_invoker`) views over RLS-bearing tables are flagged and access-scoped (a definer-rights view bypasses base-table RLS for any reader)
+- [ ] A feature whose runtime caller is authenticated/anon but whose tests construct a privileged (service-role) client is insufficient proof of the access path
+
+Per `qor/references/doctrine-runtime-principal-fidelity.md`.
+
 **Any violation -> VETO with L3 flag**
 
 **Required next action:** `/qor-debug` (treat as code-logic defect per `qor/references/doctrine-audit-report-language.md`). If the violation is a plan-text gap rather than a runtime defect, the directive becomes: Governor: amend plan text, re-run `/qor-audit`.
