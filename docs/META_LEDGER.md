@@ -11809,7 +11809,28 @@ Change class: feature. Tests: 2243 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `b4494770252a2240f8014a0927c8ffd1face1e4a1ce68625c8bbd8c2606ae9ed`
 **Chain Hash (Merkle seal)**: `44c37c2369f1349a330aef47c64cbd786241c99e50c77c79a12a645591dff91e`
 
+### Entry #328: SESSION SEAL -- Phase 135 pre-1.0 skill-corpus consolidation: qor-audit + qor-substantiate progressive disclosure (v0.102.0)
+
+**Timestamp**: 2026-06-02T15:54:01Z
+**Phase**: SUBSTANTIATE (Phase 135; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase135-skill-corpus-consolidation.md
+**Session**: `2026-06-02T1457-3003a3`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `8c598c0c3f41`
+
+**Scope**: Phase 135 implemented (pre-1.0 skill-corpus consolidation): brought the two EXCEEDED governance skills back under the Phase 95 skill_size_budget_lint 40 KB budget via pure progressive disclosure. qor-audit/SKILL.md (52.7 KB -> 40.6 KB) and qor-substantiate/SKILL.md (49.0 KB -> 40.8 KB) relocate multi-paragraph Phase-NN-wiring / Per-SG-X / originating-recurrence RATIONALE to references/ files (new: qor-audit/references/pre-audit-lints.md, qor-substantiate/references/seal-gate-ladder.md + release-and-tag-timing.md; appended: adversarial-mode.md, phase37-subpasses.md) while preserving every Critical Invariant, Step header, gate command, and VETO/ABORT checklist inline. No skill behavior changes; corpus now reports zero EXCEEDED findings (both WARN-tier). New glossary referenced_by entries register the relocated terms. Locked by tests/test_skill_corpus_consolidation.py (spine-preserved + under-budget + moved-not-deleted + admission); the old EXCEEDED dogfood anchor in test_skill_size_budget_lint updated to WARN. README Tests badge 2246 -> 2317. Audit PASS (L1 solo). Full suite 2314 passed / 0 failed / 3 skipped.
+
+Change class: feature. Tests: 2314 passed / 0 failed / 3 skipped (full suite). Audit PASS (L1 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `a7f0cbb509e35421698b4891b191f3be20d1d3d7ec427cca4c4aa2a1a14e17bf`
+**Previous Hash**: `44c37c2369f1349a330aef47c64cbd786241c99e50c77c79a12a645591dff91e`
+**Chain Hash (Merkle seal)**: `afa61529fd4c94c388c724e9822a22fb7247722775473003772b74c729571d0b`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 134; v0.101.0 local; #147 cluster concluded; operator authorized push + PR)
+*Session: SEALED* (Phase 135; v0.102.0 local; skill corpus under budget; operator authorized push + PR)

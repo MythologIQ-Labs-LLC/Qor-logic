@@ -1,0 +1,36 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T1457-3003a3",
+  "ts": "2026-06-02T15:10:42Z",
+  "plan_path": "docs/plan-qor-phase135-skill-corpus-consolidation.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: Extract qor-audit rationale to references",
+    "Phase 2: Extract qor-substantiate rationale to references",
+    "Phase 3: Cross-skill integrity"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_skill_corpus_consolidation.py -q",
+    "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills",
+    "python -m qor.reliability.skill_admission qor-audit",
+    "python -m qor.reliability.gate_skill_matrix",
+    "python -m pytest -q"
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "n/a",
+      "operation": "MODIFIED",
+      "test_path": "tests/test_skill_corpus_consolidation.py",
+      "test_descriptor": "invoking skill_size_budget_lint over qor/skills returns findings whose EXCEEDED set excludes both SKILL.md files; the consolidated text retains every Critical-Invariant contract, Step header, and gate-command token; each extracted reference file carries a verbatim relocated sentence; skill_admission returns exit 0 for each skill"
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.101.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T15:10:42Z"
+  }
+}

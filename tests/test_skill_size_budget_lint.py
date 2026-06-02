@@ -75,9 +75,9 @@ def test_main_cli_exits_one_when_any_exceeded(tmp_path):
 
 
 def test_check_canonical_corpus_includes_qor_audit_finding():
-    """Dogfooding anchor: qor-audit/SKILL.md is currently 44 KB → EXCEEDED.
-    The V1 lint must catch this the first time it runs on the canonical
-    corpus."""
+    """Dogfooding anchor: qor-audit/SKILL.md was EXCEEDED (44 KB) until Phase
+    135 brought it under 40 KB via progressive disclosure. The lint must still
+    surface it as a finding, now in the WARN range (still > 25 KB)."""
     findings = check_skills(SKILLS_ROOT)
     audit_findings = [
         f for f in findings if "qor-audit" in f.skill_path
@@ -86,8 +86,8 @@ def test_check_canonical_corpus_includes_qor_audit_finding():
         f"expected qor-audit/SKILL.md in findings; got skills: "
         f"{[f.skill_path for f in findings]}"
     )
-    assert audit_findings[0].category == "skill-over-exceeded-threshold", (
-        f"expected qor-audit in EXCEEDED; got category={audit_findings[0].category}"
+    assert audit_findings[0].category == "skill-over-warn-threshold", (
+        f"expected qor-audit in WARN range post-Phase-135; got category={audit_findings[0].category}"
     )
 
 

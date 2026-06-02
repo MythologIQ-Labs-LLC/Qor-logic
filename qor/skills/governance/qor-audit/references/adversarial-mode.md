@@ -78,6 +78,77 @@ The actual `subprocess` / tool-call invocation that delivers the input contract 
 
 Until then, `should_run_adversarial_mode()` returns `False` in all observable test environments, and audit runs in solo mode with the shortfall logged.
 
+## External-reviewer subprocess bridge (Phase 123 wiring; GH #160)
+
+When an external reviewer is configured (`.qorlogic/config.json` ->
+`external_reviewer.command`), `/qor-audit` Step 1 dispatches the reviewer-input
+contract to it via `external_reviewer.run_external_review` and ingests its
+verdict. The bridge runs the operator-configured command list-form (no shell),
+passes the reviewer-input JSON on stdin, validates the returned JSON against the
+output contract, and degrades to a `fallback` outcome on any failure — so a
+missing/broken reviewer never blocks the audit; it proceeds solo with the logged
+capability shortfall. The Phase 87 author-momentum auto-dispatch mandate is
+unchanged.
+
+## Option B — independent reviewer codification (Phase 68 wiring; GH #50)
+
+The SKILL.md code block runs Option A: Codex-plugin-driven Claude+Codex
+adversarial pairing when the harness exposes it. **Option B** is the fallback
+(and explicit choice) when Option A is unavailable OR when the auditor was also
+the plan's author. Per SG-007 (self-audit verification scope bias) and the
+recurring "author-audit momentum" pattern: when the same LLM agent authors a
+plan and then audits it, the audit inherits the author's search-path momentum —
+the locations the author did not check during planning are the same locations
+the author will not check during audit. Independent reviewers with no
+plan-authorship context naturally check different sources.
+
+Operator dispatch protocol for Option B (any of the following clears
+author-context):
+
+- **Fresh-context audit**: re-run `/qor-audit` in a new session (different
+  `.qor/session/current`) so the LLM running the audit has no carryover from
+  plan authorship.
+- **Architect-reviewer subagent**: invoke an `architect-reviewer` (or
+  `code-reviewer`) subagent for the audit pass; the subagent receives only the
+  plan content, not the plan-authoring conversation.
+- **Second operator**: dispatch the audit to a second human (or human+LLM)
+  operator who did not participate in plan authorship.
+
+Operator selects Option A by default when the harness supports Codex plugin;
+Option B otherwise. Selecting Option B mid-cycle is also valid when the operator
+notices that prior audit iterations missed defects the author would not have
+searched for (cross-reference: SG-007 empirical results — sub-plan 01 audit
+chain found 4 self-audit defects + 3 additional independent-reviewer defects;
+sub-plan 02a found 10/9/12 with independent review from iter 1 including critical
+`pg_notify` durability hallucination).
+
+## Author-momentum risk auto-dispatch (Phase 87 wiring; GH #82)
+
+Before the adversarial passes, `/qor-audit` Step 1 scores the plan under audit
+for SG-007 author-momentum risk via `qor-logic scripts audit_risk_score --plan
+<plan>`. When `audit_risk_score` reports `option_b_required: true`, Option B is
+**mandatory** for this audit — the auditing agent MUST run an independent
+reviewer (architect-reviewer subagent or fresh-context audit), not a solo audit,
+regardless of the Option A/B operator default above. This makes Option B
+proactive: dispatched on the iteration where the author-momentum risk first
+appears, not reactively after a VETO. The operator may override the mandate only
+with explicit written justification recorded in the audit report. Per
+`qor/references/doctrine-shadow-genome-countermeasures.md`
+SG-AuthorAuditMomentum-A.
+
+## Self-Application Sub-Pass pattern origin (Phase 68 wiring; GH #44)
+
+The Step 3 Self-Application Sub-Pass (run when the plan's `originating_remediation`
+field is set) traces to **SG-007 (self-audit verification scope bias)** and the
+recurring "author-audit momentum" anti-pattern — when the same agent that
+authored a plan also audits it, the audit inherits the author's search-path
+momentum and misses precisely the locations the author would also not check. The
+concrete recurrence is documented in the COREFORGE 3-VETO meta-cycle: META_LEDGER
+#200/#201/#203 (consumer ledger) where the plan authoring
+`plan_text_consistency_lint` itself exhibited the very text-drift pattern the
+lint targets. The originating Failure Entry #26 ratified self-application as the
+framework countermeasure.
+
 ## See also
 
 - `qor/scripts/qor_audit_runtime.py` — `should_run_adversarial_mode`, `emit_capability_shortfall`
