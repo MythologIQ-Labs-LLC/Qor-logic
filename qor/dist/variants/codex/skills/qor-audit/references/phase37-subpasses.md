@@ -22,9 +22,17 @@ performs the **consumer-trace** procedure:
 1. **Identify the entry point.** Locate the file the plan names as the surface
    it fixes (the component, page, route handler, or CLI entry the defect is
    observed at).
-2. **Grep the reachability.** Search for the cited symbol's identifier within
-   that entry-point file and its transitive import graph. The cited symbol
-   must be reached from the entry point.
+2. **Trace the reachability (runnable since Phase 126; GH #157).** Run the
+   executable consumer-trace instead of a manual grep:
+
+   ```bash
+   qor-logic scripts citation_consumer_trace --entry <surface-file> --symbol <cited-symbol> --repo-root .
+   ```
+
+   `qor.scripts.citation_consumer_trace` greps the entry-point file for the
+   cited symbol and follows the file's transitive in-repo import graph. Exit 1
+   means the symbol is not reached (dead code or wrong symbol cited); a missing
+   entry file prints `SKIP` and exits 0.
 3. **Verdict.** If the cited symbol is not reached from the entry point, the
    symbol is either dead code or the wrong symbol was cited. Record an
    `infrastructure-mismatch` finding.

@@ -1,21 +1,21 @@
-# AUDIT REPORT — Phase 125 (Citation-drift enforcement lint, GH #152)
+# AUDIT REPORT — Phase 126 (Citation consumer-trace executable check, GH #157)
 
-**Target**: docs/plan-qor-phase125-citation-drift-enforcement.md
+**Target**: docs/plan-qor-phase126-citation-consumer-trace.md
 **Verdict**: PASS
-**Risk Grade**: L2 (pre-audit governance-lint surface; WARN-only, LD-region-scoped; the binding VETO remains the P2 audit re-walk)
+**Risk Grade**: L2 (audit-pass tooling; read-only lexical trace; operator-supplied inputs)
 **Mode**: solo (audit_risk_score: option_b_required=false)
-**Session**: 2026-06-02T0521-4c17b9
+**Session**: 2026-06-02T0534-f24468
 
 ## Passes
 
 - **Prompt Injection**: PASS.
-- **Security L3 / OWASP**: PASS. Pure regex over plan text; no subprocess, no eval, no file writes. The migration/file:line/git-show regexes are bounded literals.
-- **Section 4 Razor**: PASS. One pure function `check_citation_evidence(text)` + a small `_ld_blocks` helper; merged into existing `check_plan`. No added nesting.
-- **Self-Application** (originating_remediation=GH #152): PASS. The lint enforces grep-evidence for sealed citations; this plan declares no Locked-Decision region, so the lint is a no-op on it (self-applies clean — a CI command asserts this). Not a violation; the discipline isn't claimed by this plan.
-- **Test Functionality**: PASS. Behavioral tests invoke `check_citation_evidence`/`check_plan` and assert on emitted findings (flagged vs `[]`), including the over-flag guard (`test_no_finding_without_ld_region`) and the attribution-12g cross-iteration regression. These replace the AC5 text-presence assertions.
-- **Over-flag risk (SG-PlanTextDrift / prose-lint lesson)**: ADDRESSED. The LD-region scoping means ordinary plans (no `Locked Decision`/`Citation Inventory` heading) produce zero findings — the explicit `test_no_finding_without_ld_region` guards the false-positive floor. Note: `main` stays WARN-only (returns 0); findings surface in stdout / `check_plan` return (the plan's exit-code test is replaced by an output assertion to match the WARN-only contract).
-- **Feature Test Coverage**: PASS (MODIFIED row, behavioral descriptor).
-- **Dependency / Macro / Orphan / Ghost-UI / Infrastructure**: PASS / N/A. `plan_grep_lint` exists (Phase 55) and runs at audit Step 0.6; the extension rides the existing invocation.
+- **Security L3 / OWASP**: PASS with one binding implement constraint. The trace reads files and follows imports; `resolve_imports` MUST bound resolved paths to `repo_root` (reject `..`-escapes / absolute paths outside the tree) so a crafted relative import can't read arbitrary filesystem locations. Inputs (`--entry`, `--symbol`) are operator-supplied CLI args (trusted). No subprocess, no eval, no writes. `\bsymbol\b` is regex-escaped before use.
+- **Section 4 Razor**: PASS. `resolve_imports` (pure parse) + `trace_reachable` (BFS w/ visited-set + depth bound) + `main`; BFS under 40 lines.
+- **Self-Application** (originating_remediation=GH #157): PASS. The check verifies a cited symbol is reachable from an entry point; the plan's CI command self-applies it to a real reachable symbol (`_do_governance_index` from `qor/cli.py`). Proven by behavior (positive + negative fixtures), not prose.
+- **Test Functionality**: PASS. Positive (in-file + transitive-import reachable), negative (orphan unreachable -> finding), skip (missing entry), cycle-termination, and import-resolution-filtering tests all invoke the unit and assert outputs/exit codes.
+- **Feature Test Coverage**: PASS (NEW row, behavioral descriptor with positive/negative).
+- **Dependency / Macro / Orphan / Ghost-UI**: PASS / N/A. Stdlib `re`/`pathlib`; new module in `qor/scripts`; audit reference invokes it.
+- **Infrastructure Alignment**: PASS. `phase37-subpasses.md` consumer-trace sub-check exists (Phase 83); `findings_signature` exists; the new module is declared NEW. The wiring replaces the manual-grep step with the runnable command.
 
 ## Process Pattern Advisory
 
@@ -24,4 +24,4 @@ No repeated-VETO pattern detected.
 
 ## Next action
 
-PASS -> `/qor-implement`.
+PASS -> `/qor-implement` (repo-root path-bound constraint binding).

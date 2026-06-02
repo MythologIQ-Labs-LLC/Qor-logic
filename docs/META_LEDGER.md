@@ -11620,7 +11620,28 @@ Change class: feature. Tests: 2160 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `b42f2cab6bc14ddb697a651f10efe82119cf620886d3904b2c3b90c4eb6c6318`
 **Chain Hash (Merkle seal)**: `5b80bcc4bb229d19c2ff4cf549b638cb29b4f5da9b501713b189ca3dda6a22e1`
 
+### Entry #319: SESSION SEAL -- Phase 126 citation consumer-trace executable check (v0.93.0)
+
+**Timestamp**: 2026-06-02T07:25:48Z
+**Phase**: SUBSTANTIATE (Phase 126; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase126-citation-consumer-trace.md
+**Session**: `2026-06-02T0534-f24468`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `dbb0e34c956a`
+
+**Scope**: Phase 126 implemented (#157): Citation consumer-trace executable check. New qor.scripts.citation_consumer_trace implements the Phase 83 reachability sub-check as a runnable grep-recursive trace -- trace_reachable greps an entry-point file for a cited symbol and follows its transitive in-repo import graph (Python + JS/TS, repo-root-bounded via _under_root, depth + visited-set guarded against cycles). /qor-audit Phase 37 consumer-trace Step 2 now invokes `citation_consumer_trace --entry <surface> --symbol <name>` (exit 1 => infrastructure-mismatch) instead of a manual grep; missing entry -> SKIP exit 0. Ships #157's executable check + 9 positive/negative behavioral fixtures + wiring test that PR #83 left prose-only (sibling of the already-executable delivery_branch_lint).
+
+Change class: feature. Tests: 2170 passed / 0 failed / 3 skipped (full suite; merge_velocity live-git flake re-run clean). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `07f26e935eff3f96d38aa57baf763cfd401b27cca4d22073d4889a0c3f9529ba`
+**Previous Hash**: `5b80bcc4bb229d19c2ff4cf549b638cb29b4f5da9b501713b189ca3dda6a22e1`
+**Chain Hash (Merkle seal)**: `b5f3329e8119c504da801f3cb80ca60653f2dfa4c68a66fcb4a143505eda5a03`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 125; v0.92.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 126; v0.93.0 local; operator authorized push + PR)
