@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.92.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 125 (#152)**: Citation-drift enforcement. Extended `qor.scripts.plan_grep_lint` with `check_citation_evidence`, which flags sealed-infrastructure citations (git-show ref / migration filename / `file:line`) inside a plan's Locked-Decision / Citation-Inventory region when the block carries no paired grep-evidence statement (`git show ... | grep ... -> observed`). LD-region-scoped so ordinary plans produce zero findings; runs WARN-only at `/qor-audit` Step 0.6 (the binding VETO remains the P2 iter-N>1 re-walk). Ships SG-CitationDrift-A AC4 + behavioral AC5/AC6 (incl. the attribution-12g cross-iteration regression) that PR #67 left as prose-only.
+
 ## [0.91.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -88,6 +88,63 @@ def check_plan(plan_path: Path, repo_root: Path) -> list[LintWarning]:
                     reason="skill path does not exist",
                 ))
 
+    warnings.extend(check_citation_evidence(text, plan=str(plan_path)))
+    return warnings
+
+
+# --- Citation-drift enforcement (Phase 125; GH #152 / SG-CitationDrift-A P1) ---
+# A grep-evidence statement: a `grep` invocation completed with `-> <observed text>`.
+_EVIDENCE_RE = re.compile(r"grep\b.*->")
+# Sealed-infrastructure citation kinds (high-confidence, low false-positive).
+_GIT_SHOW_RE = re.compile(r"git show\s+\S+:\S+")
+_MIGRATION_RE = re.compile(r"\b\d{8,}[_-][\w-]+\.sql\b")
+_FILE_LINE_RE = re.compile(r"\b[\w./-]+\.(?:py|ts|tsx|sql|rs|go|js):\d+\b")
+# The check runs ONLY inside these regions so plans that don't use the
+# Locked-Decision discipline produce zero findings (no over-flag).
+_LD_HEADING_RE = re.compile(r"^#+\s.*(locked decision|citation inventory)", re.IGNORECASE)
+_ANY_HEADING_RE = re.compile(r"^#+\s")
+
+
+def _ld_blocks(text: str) -> list[tuple[int, str]]:
+    """Return (start_line, block_text) for each Locked-Decision / Citation-Inventory
+    region: from its heading up to (not including) the next heading."""
+    lines = text.splitlines()
+    blocks: list[tuple[int, str]] = []
+    i = 0
+    while i < len(lines):
+        if _LD_HEADING_RE.match(lines[i]):
+            start = i
+            j = i + 1
+            while j < len(lines) and not _ANY_HEADING_RE.match(lines[j]):
+                j += 1
+            blocks.append((start + 1, "\n".join(lines[start:j])))
+            i = j
+        else:
+            i += 1
+    return blocks
+
+
+def _sealed_citations(block: str) -> list[str]:
+    found: list[str] = []
+    for rx in (_GIT_SHOW_RE, _MIGRATION_RE, _FILE_LINE_RE):
+        found.extend(m.group(0) for m in rx.finditer(block))
+    return found
+
+
+def check_citation_evidence(text: str, plan: str = "<plan>") -> list[LintWarning]:
+    """Flag sealed-infrastructure citations inside a Locked-Decision block when
+    the block carries no grep-evidence statement. No-op when the plan declares
+    no LD / Citation-Inventory region. Per SG-CitationDrift-A countermeasure P1."""
+    warnings: list[LintWarning] = []
+    for start_line, block in _ld_blocks(text):
+        if _EVIDENCE_RE.search(block):
+            continue
+        for citation in _sealed_citations(block):
+            warnings.append(LintWarning(
+                plan=plan, line=start_line, citation=citation,
+                reason="sealed-infrastructure citation in a Locked-Decision block "
+                       "lacks paired grep-evidence (git show ... | grep ... -> observed)",
+            ))
     return warnings
 
 

@@ -11599,7 +11599,28 @@ Change class: feature. Tests: 2153 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `bc182f16e7b05a12c5ea79ee348dbc55d20cec69dee9b837bec8667f027753f6`
 **Chain Hash (Merkle seal)**: `b42f2cab6bc14ddb697a651f10efe82119cf620886d3904b2c3b90c4eb6c6318`
 
+### Entry #318: SESSION SEAL -- Phase 125 citation-drift enforcement lint (v0.92.0)
+
+**Timestamp**: 2026-06-02T05:29:22Z
+**Phase**: SUBSTANTIATE (Phase 125; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase125-citation-drift-enforcement.md
+**Session**: `2026-06-02T0521-4c17b9`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `72029a9a2102`
+
+**Scope**: Phase 125 implemented (#152): Citation-drift enforcement. Extended qor.scripts.plan_grep_lint with check_citation_evidence -- flags sealed-infrastructure citations (git-show ref / migration filename / file:line) inside a plan's Locked-Decision / Citation-Inventory region when the block carries no paired grep-evidence statement. LD-region-scoped (zero findings on plans not using the discipline; explicit no-over-flag test). Runs WARN-only at /qor-audit Step 0.6 via the existing plan_grep_lint invocation; the binding VETO remains the P2 iter-N>1 re-walk. Ships SG-CitationDrift-A AC4 + behavioral AC5/AC6 (incl. the attribution-12g cross-iteration regression) that PR #67 left prose-only. Doctrine SG-CitationDrift-A P1 marked enforced. 7 new behavioral tests.
+
+Change class: feature. Tests: 2160 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `7eb0287feaa6bd951d3846b4a59933f0047bea1608788ebe517b304b48072044`
+**Previous Hash**: `b42f2cab6bc14ddb697a651f10efe82119cf620886d3904b2c3b90c4eb6c6318`
+**Chain Hash (Merkle seal)**: `5b80bcc4bb229d19c2ff4cf549b638cb29b4f5da9b501713b189ca3dda6a22e1`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 124; v0.91.0 local; operator authorized push + PR + PyPI)
+*Session: SEALED* (Phase 125; v0.92.0 local; operator authorized push + PR)
