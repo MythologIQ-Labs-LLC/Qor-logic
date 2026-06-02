@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-06-02T07:15:24Z","version":"0.92.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-06-02T0534-f24468","target":"docs/plan-qor-phase126-citation-consumer-trace.md","ts":"2026-06-02T07:15:24Z","verdict":"PASS"}

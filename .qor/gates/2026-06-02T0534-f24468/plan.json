@@ -1,0 +1,25 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T0534-f24468",
+  "ts": "2026-06-02T07:14:54Z",
+  "plan_path": "docs/plan-qor-phase126-citation-consumer-trace.md",
+  "phases": [
+    "Phase 1: Reachability primitive + CLI",
+    "Phase 2: Wire into Phase 37 pass"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_citation_consumer_trace.py tests/test_citation_consumer_trace_wiring.py -q",
+    "python -m qor.cli scripts citation_consumer_trace --repo-root . --entry qor/cli.py --symbol _do_governance_index",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "originating_remediation": "GH #157",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.92.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T07:14:54Z"
+  }
+}

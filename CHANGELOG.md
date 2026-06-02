@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.93.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 126 (#157)**: Citation consumer-trace executable check. New `qor.scripts.citation_consumer_trace` implements the Phase 83 reachability sub-check as a runnable grep-recursive trace: `trace_reachable` greps an entry-point file for a cited symbol and follows its transitive in-repo import graph (Python + JS/TS, repo-root-bounded, depth+visited guarded). `/qor-audit` Phase 37 consumer-trace Step 2 now invokes `citation_consumer_trace --entry <surface> --symbol <name>` (exit 1 => infrastructure-mismatch) instead of a manual grep. Ships #157's executable check + positive/negative behavioral fixtures that PR #83 left prose-only.
+
 ## [0.92.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
