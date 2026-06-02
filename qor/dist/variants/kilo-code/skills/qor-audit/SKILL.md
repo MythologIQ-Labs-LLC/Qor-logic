@@ -52,7 +52,7 @@ The binding contracts /qor-audit cannot violate. ABORT halts the skill at Step 0
 
 **V2 ramp note** (Phase 99 wiring; GH #108): the Runtime Contract Walk at Step 3 Infrastructure Alignment Pass is NEW but ships WARN-only in V2 (audit-site wrap `|| true`); it is NOT yet on the binding-VETO list above. A V2-of-V2 phase will gather Phase 96 V1 operator-evidence on false-positive rate, then flip the walk's WARN to hard VETO with `runtime-contract-mismatch` category and add it to the inviolable list. See `qor/references/audit-runtime-contract-walk.md` for the walk protocol and `SG-GrepShapedRunclaim-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` for the binding doctrine.
 
-See Step 0.3 (line ~80) for plan-iteration ABORT, Step 3 (line ~209) for the binding-VETO inventory and per-pass detail, and the Constraints section at file foot for the post-batch-1 contract inventory.
+See Step 0.3 for plan-iteration ABORT, Step 3 for the binding-VETO inventory and per-pass detail, and the Constraints section at file foot for the post-batch-1 contract inventory.
 
 ## Environment (Phase 90 wiring; GH #79)
 
@@ -92,9 +92,7 @@ elif not result.valid:
     runtime.emit_gate_override(f"user override: plan invalid ({result.errors})", sid)
 ```
 
-Override is permitted (advisory gate) but logged as severity-1 event in the Process Shadow Genome.
-
-**Phase 54 wiring**: when `runtime.emit_gate_override` (which delegates to `gate_chain.emit_gate_override`) raises `OverrideFrictionRequired`, prompt the operator for a written justification (>=50 chars) and re-call `emit_gate_override` with `justification=<text>`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-1.1 + `qor/references/doctrine-eu-ai-act.md` Art. 14.
+Override is permitted (advisory gate) but logged as a severity-1 event in the Process Shadow Genome. **Phase 54 wiring**: when `emit_gate_override` raises `OverrideFrictionRequired`, prompt the operator for a written justification (>=50 chars) and re-call with `justification=<text>`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-1.1 + `qor/references/doctrine-eu-ai-act.md` Art. 14.
 
 ### Step 0.3: Pre-audit readiness short-circuit (Phase 84 wiring; GH #81)
 
@@ -105,13 +103,11 @@ PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_
 qor-logic scripts plan_iteration_status_lint --plan "$PLAN_PATH" || ABORT
 ```
 
-`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. The lint exits non-zero when the plan carries any of: an `**iteration**:` value containing `draft` / `pre-audit`; an "Operator Decisions Required Before Audit" section; or an Open Questions bullet ending "Operator confirms before audit". On non-zero exit, abort BEFORE Step 1 identity activation and BEFORE any adversarial pass — print the lint's guidance, skip the remaining steps, and do NOT emit an audit gate artifact (no cycle consumed). The Governor resolves the operator-decision items, bumps the plan past its pre-audit state, and re-runs `/qor-audit`.
-
-Unlike the Step 0.6 pre-audit lints (WARN-only), this lint is a hard short-circuit: a plan that declares itself not-ready is not a candidate for adversarial review. Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-PreAuditDraftSubmission-A`.
+`PLAN_PATH` is argv-only (SG-Phase47-A). The lint exits non-zero when the plan carries a `**iteration**:` value containing `draft`/`pre-audit`, an "Operator Decisions Required Before Audit" section, or an Open Questions bullet ending "Operator confirms before audit". On non-zero exit, abort BEFORE Step 1 and any adversarial pass — print the guidance, skip remaining steps, and do NOT emit an audit gate artifact (no cycle consumed); the Governor resolves the items and re-runs. Unlike the Step 0.6 lints (WARN-only) this is a hard short-circuit: a not-ready plan is not a candidate for adversarial review. Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-PreAuditDraftSubmission-A`.
 
 ### Step 0.4: Unchanged-plan short-circuit (Phase 67 wiring - GH #45)
 
-After the prior-artifact gate check passes, detect whether the operator invoked `/qor-audit` on a byte-identical plan re-run (no amendment since the prior VETO). When the content hash matches the prior audit's recorded `target_content_hash`, the same plan will produce the same verdict; the cycle is wasted and inflates the cycle-count escalator (§10.4) prematurely.
+Detect a byte-identical plan re-run (no amendment since the prior VETO): when the content hash matches the prior audit's `target_content_hash`, the same plan produces the same verdict, wasting the cycle and inflating the cycle-count escalator (§10.4).
 
 ```python
 from qor.scripts.qor_audit_runtime import check_unchanged_plan_short_circuit
@@ -170,17 +166,7 @@ qor-logic scripts plan_feature_tdd_lint --plan "$PLAN_PATH" --repo-root . || tru
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
 
-**Phase 110 wiring (GH #133 + #134)**: `plan_signature_widening_caller_lint` and `plan_data_round_trip_lint` (the last two lints above) catch the SG-AffectedFilesContract-A cascade family — caller files unenumerated on a signature widening, and persistence-layer touchpoints unenumerated on a struct-field addition — before the binding Step 3 passes consume an audit cycle. WARN-only V1 (`|| true`); escape hatches `<!-- signature-widening-exempt: <fn> -->` and `<!-- transient-field: Struct.field reason: ... -->`. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AffectedFilesContract-A.
-
-**Phase 67 wiring (GH #42)**: `plan_text_consistency_lint` (third lint above) catches the COREFORGE-class drift pattern — same operation specified differently at multiple plan sites (commands, dependencies, paths). WARN-only at audit time; the operator amends drift before the binding Infrastructure Alignment Pass in Step 3 would consume an audit cycle. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PlanTextDrift-A.
-
-**Phase 89 wiring (GH #91)**: `ci_coverage_lint` (fifth lint above) reconciles the plan's `## CI Commands` bullets against the Python-fingerprint `run:` steps discovered in `.github/workflows/*.yml`. Catches the COREFORGE-class credibility failure where a phase seals "all CI green" while a real GitHub Actions job — one the operator simply forgot to enumerate — would fail. WARN-only; tag-only workflows are skipped; environment-setup boilerplate is filtered. The plan may declare a `## CI Coverage Exemptions` block (bullet list with substring patterns) to justify CI jobs that are pre-existing infrastructure not phase-relevant. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-CICoverageDrift-A.
-
-**Phase 130 wiring (GH #159)**: `plan_feature_tdd_lint` (the last lint above) mechanically enforces the plan-time half of `doctrine-feature-tdd.md`: for each `## Feature Inventory Touches` row whose `operation` is `NEW`/`MODIFIED` (a src-touch), it requires a real `test_path` + a behavioral `test_descriptor` (failing-test-first), and flags a plan that touches `src/` with no FIT block. `n/a-justified` rows + docs-only plans are exempt. WARN-only; the binding VETO stays the Step 3 Feature Test Coverage Pass.
-
-**Phase 127 wiring (GH #156)**: `plan_live_progress_lint` (the last lint above) is the mechanical SG-FakeProgress-A detector: it scans the target repo's frontend source for the fake-jump (`0%`->`100%` with no intermediate width write), missing-event-subscription, and error-without-dismiss patterns the Ghost-UI Live-Progress sub-rule describes. WARN-only at this layer; the binding VETO remains the Step 3 Ghost-UI pass (`ghost-ui` category, `live-progress-fake` sub-tag, now a `findings_categories` enum value). Backend-only repos produce zero findings. Escape: `// qor:live-progress-ok`. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-FakeProgress-A.
-
-**Phase 94 wiring (GH #90)**: `workspace_fragility_check` (sixth lint above) inspects local workspace signals (untracked file count, dirty gate artifacts whose sessions are not yet sealed, ledger chain-math failures, active local branch count, branch-diff size since divergence from `origin/main`) and surfaces a stabilization-capacity grade (`low` / `medium` / `high`) before the audit consumes a cycle. Companion to Phase 93's macro `merge_velocity_check` (Step 4.6.8): Phase 93 looks at `origin/main`'s recent merge history (BACKWARD); Phase 94 looks at the LOCAL working tree (FORWARD pre-merge). WARN-only V1; CLI exits 1 on `high` so V2 can convert to a hard ABORT by removing the `|| true` wrap. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-MergePaceThrottle-A inline-companion sub-paragraph.
+Per-lint wiring rationale (which recurrence each lint closes, escape hatches, WARN/VETO posture) lives in `references/pre-audit-lints.md` (progressive disclosure per GH #92). All ten are WARN-only; the binding VETOs remain the Step 3 passes.
 
 ### Step 1: Identity Activation + Mode Selection
 
@@ -215,26 +201,16 @@ else:  # "fallback": no reviewer configured, or it errored / timed out / returne
     mode = "solo"
 ```
 
-The bridge runs the operator-configured command list-form (no shell), passes the reviewer-input JSON on stdin, validates the returned JSON against the output contract, and degrades to a `fallback` outcome on any failure — so a missing/broken reviewer never blocks the audit; it proceeds solo with the logged shortfall. The Phase 87 author-momentum auto-dispatch mandate is unchanged.
-
-**Phase 68 wiring (GH #50) — Option B: independent reviewer codification.** The pre-Phase-68 block above runs Option A: Codex-plugin-driven Claude+Codex adversarial pairing when the harness exposes it. **Option B** is the fallback (and explicit choice) when Option A is unavailable OR when the auditor was also the plan's author. Per SG-007 (self-audit verification scope bias) and the recurring "author-audit momentum" pattern: when the same LLM agent authors a plan and then audits it, the audit inherits the author's search-path momentum — the locations the author did not check during planning are the same locations the author will not check during audit. Independent reviewers with no plan-authorship context naturally check different sources.
-
-Operator dispatch protocol for Option B (any of the following clears author-context):
-
-- **Fresh-context audit**: re-run `/qor-audit` in a new session (different `.qor/session/current`) so the LLM running the audit has no carryover from plan authorship.
-- **Architect-reviewer subagent**: invoke an `architect-reviewer` (or `code-reviewer`) subagent for the audit pass; the subagent receives only the plan content, not the plan-authoring conversation.
-- **Second operator**: dispatch the audit to a second human (or human+LLM) operator who did not participate in plan authorship.
-
-Operator selects Option A by default when the harness supports Codex plugin; Option B otherwise. Selecting Option B mid-cycle is also valid when the operator notices that prior audit iterations missed defects the author would not have searched for (cross-reference: SG-007 empirical results — sub-plan 01 audit chain found 4 self-audit defects + 3 additional independent-reviewer defects; sub-plan 02a found 10/9/12 with independent review from iter 1 including critical `pg_notify` durability hallucination).
-
-**Phase 87 wiring (GH #82) — author-momentum risk auto-dispatch.** Before the adversarial passes, score the plan under audit for SG-007 author-momentum risk:
+**Author-momentum risk auto-dispatch (Phase 87 wiring; GH #82).** Before the adversarial passes, score the plan under audit for SG-007 author-momentum risk:
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
 qor-logic scripts audit_risk_score --plan "$PLAN_PATH"
 ```
 
-`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. When `audit_risk_score` reports `option_b_required: true`, Option B is **mandatory** for this audit — the auditing agent MUST run an independent reviewer (architect-reviewer subagent or fresh-context audit), not a solo audit, regardless of the Option A/B operator default above. This makes Option B proactive: dispatched on the iteration where the author-momentum risk first appears, not reactively after a VETO. The operator may override the mandate only with explicit written justification recorded in the audit report. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AuthorAuditMomentum-A.
+`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. When `audit_risk_score` reports `option_b_required: true`, **Option B independent review is mandatory** for this audit — the auditing agent MUST run a fresh-context audit or an `architect-reviewer`/`code-reviewer` subagent (which receives only the plan content), NOT a solo audit, regardless of operator default. The operator may override the mandate only with explicit written justification in the audit report.
+
+The external-reviewer bridge contract, the full Option A/Option B dispatch protocol (fresh-context / subagent / second-operator), and the SG-007 author-momentum rationale + empirical results live in `references/adversarial-mode.md` (progressive disclosure per GH #92). Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AuthorAuditMomentum-A.
 
 Your role is to find violations, not to help. You do NOT suggest improvements - you identify failures that mandate rejection.
 
@@ -289,11 +265,11 @@ Scan for critical security issues:
 - [ ] No `// security: disabled for testing`
 ```
 
-**Data-API access-control checklist (Phase 121 wiring; GH #177)** — plan-level review of any DB surface the plan introduces (the deterministic SQL scan runs at `/qor-substantiate` Step 4.6.10, where migrations exist; here the Judge reviews declared intent):
+**Data-API access-control checklist (Phase 121 wiring; GH #177)** — plan-level review of declared DB intent (the deterministic SQL scan runs at `/qor-substantiate` Step 4.6.10):
 
-- [ ] Every API-exposed `CREATE TABLE` the plan introduces commits to explicit `GRANT`s to its runtime roles (platform defaults are not assumable and have changed)
-- [ ] `SECURITY DEFINER` functions and definer-rights (non-`security_invoker`) views over RLS-bearing tables are flagged and access-scoped (a definer-rights view bypasses base-table RLS for any reader)
-- [ ] A feature whose runtime caller is authenticated/anon but whose tests construct a privileged (service-role) client is insufficient proof of the access path
+- [ ] Every API-exposed `CREATE TABLE` commits to explicit `GRANT`s to its runtime roles (platform defaults are not assumable)
+- [ ] `SECURITY DEFINER` functions and definer-rights (non-`security_invoker`) views over RLS-bearing tables are flagged and access-scoped
+- [ ] A feature whose runtime caller is authenticated/anon but whose tests use a service-role client is insufficient proof of the access path
 
 Per `qor/references/doctrine-runtime-principal-fidelity.md`.
 
@@ -309,12 +285,11 @@ Evaluate proposed changes against applicable OWASP Top 10 (2021) categories:
 - A05 Security Misconfiguration: no hardcoded secrets; temp files use secure permissions
 - A08 Software/Data Integrity: no unsafe deserialization (pickle, eval, exec, yaml.load without SafeLoader)
 
-Reference: docs/security-audit-2026-04-16.md for baseline findings.
-Reference: qor/references/doctrine-shadow-genome-countermeasures.md for SG patterns.
+Reference: `docs/security-audit-2026-04-16.md` (baseline) + `qor/references/doctrine-shadow-genome-countermeasures.md` (SG patterns).
 
 **Any violation -> VETO with OWASP category tag**
 
-**Required next action:** per `qor/references/doctrine-audit-report-language.md` -- A08 (unsafe deserialization, safe-load commitment gaps) classifies as **Plan-text** -> Governor: amend plan text, re-run `/qor-audit`. A03 (runtime injection), A04 (insecure design defect at runtime) classify as **Code-logic defect** -> `/qor-debug`.
+**Required next action:** per `qor/references/doctrine-audit-report-language.md` -- A08 (unsafe deserialization) is **Plan-text** -> Governor amends plan text, re-runs `/qor-audit`; A03/A04 (runtime injection / insecure-design defect) are **Code-logic defect** -> `/qor-debug`.
 
 #### Ghost UI Pass
 
@@ -346,7 +321,7 @@ For every UI element with progress semantics (progress bar, spinner, phase indic
 - [ ] Error UI surfaces an explicit dismiss/retry control; modal does NOT trap the operator on a terminal error state
 ```
 
-**Any violation -> VETO with `ghost-ui` category, sub-tag `live-progress-fake`**. The sub-tag is prose-only (no `findings_categories` schema enum addition); the existing `ghost-ui` enum value absorbs the new sub-rule. **Required next action:** the implementing surface MUST subscribe to the backing progress event stream and re-render on each event; per-phase intermediate states are required. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-FakeProgress-A.
+**Any violation -> VETO with `ghost-ui` category, sub-tag `live-progress-fake`** (prose-only sub-tag; the existing `ghost-ui` enum value absorbs it). **Required next action:** the implementing surface MUST subscribe to the backing progress event stream and re-render on each event. Rationale + SG-FakeProgress-A: `references/phase37-subpasses.md`.
 
 #### Section 4 Razor Pass
 
@@ -363,7 +338,7 @@ Verify KISS compliance in proposed design:
 | Nested ternaries   | 0     | [count]            | [OK/FAIL] |
 ```
 
-**Any violation -> VETO**. **Required next action:** `/qor-refactor` (file-internal logic shape is its domain). Per `qor/gates/delegation-table.md`, never inline a refactor process inside an audit report — name the skill.
+**Any violation -> VETO**. **Required next action:** `/qor-refactor` (file-internal logic shape is its domain). Per `qor/gates/delegation-table.md`, name the skill — never inline a refactor.
 
 #### Self-Application Sub-Pass (Phase 68 wiring - GH #44)
 
@@ -384,7 +359,7 @@ if remediation:
     pass
 ```
 
-Pattern origin: **SG-007 (self-audit verification scope bias)** and the recurring "author-audit momentum" anti-pattern — when the same agent that authored a plan also audits it, the audit inherits the author's search-path momentum and misses precisely the locations the author would also not check. The concrete recurrence is documented in the COREFORGE 3-VETO meta-cycle: META_LEDGER #200/#201/#203 (consumer ledger) where the plan authoring `plan_text_consistency_lint` itself exhibited the very text-drift pattern the lint targets. The originating Failure Entry #26 ratified self-application as the framework countermeasure.
+Pattern origin (SG-007 self-audit verification scope bias + the COREFORGE 3-VETO meta-cycle) lives in `references/adversarial-mode.md`.
 
 **Any violation surfaced by self-application -> VETO with `specification-drift` category.** **Required next action:** Governor: amend plan to remove the self-violation, then re-run `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md`, this is a **Plan-text** ground.
 
@@ -408,9 +383,9 @@ A test is **presence-only** when its assertion is solely about artifact existenc
 
 **Test-source lint (Phase 117; GH #174, ENFORCED):** complement the plan-text check above with a scan of actual test source for the same anti-pattern (a test that reads a SKILL.md and asserts only substring membership):
 `qor-logic scripts prose_test_lint --tests-dir tests --enforce`
-**Non-zero exit -> VETO with `test-failure` category.** Graduated from WARN-first (Phase 116) to enforced (Phase 117) after the heuristic was hardened (comparator must trace to the SKILL.md read) and the suite was driven to zero UNEXPLAINED findings. A new presence-only assertion must be converted to a behavioral check or carry an explicit `# prose-lint: ok=<reason>` allowlist comment; only UNEXPLAINED findings VETO (exempted-with-reason do not). Per `qor/references/doctrine-verification-closure-integrity.md` Prose-Behavior Test Lint.
+**Non-zero exit -> VETO with `test-failure` category.** A new presence-only assertion must be converted to a behavioral check or carry an explicit `# prose-lint: ok=<reason>` allowlist comment; only UNEXPLAINED findings VETO (exempted-with-reason do not). Per `qor/references/doctrine-verification-closure-integrity.md` Prose-Behavior Test Lint.
 
-**Closed-enum taxonomy coverage (Phase 84 wiring; GH #84)**: when the plan declares a closed-enum taxonomy — a `CANONICAL_*_VALUES` constant paired with a `normalize*` function — the test list MUST assert BOTH directions: forward (every alias-map key normalizes into the canonical set) AND inverse (every non-gated canonical value is reachable via at least one identity-mapping). A taxonomy with only forward coverage can define a canonical bucket that `normalize*` never produces, so downstream consumers querying that bucket get zero rows. **Missing inverse coverage -> VETO with `coverage-gap` category.** Per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline and `SG-InverseCoverageGapTaxonomy-A`.
+**Closed-enum taxonomy coverage (Phase 84 wiring; GH #84)**: when the plan declares a closed-enum taxonomy (a `CANONICAL_*_VALUES` constant paired with a `normalize*` function), the test list MUST assert BOTH forward (every alias-map key normalizes into the canonical set) AND inverse (every non-gated canonical value is reachable via at least one identity-mapping) coverage — forward-only coverage can define a bucket `normalize*` never produces. **Missing inverse coverage -> VETO with `coverage-gap` category.** Per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline and `SG-InverseCoverageGapTaxonomy-A`.
 
 #### Dependency Audit
 
@@ -472,42 +447,22 @@ For each plan claim in scope, verify against current code:
 - [ ] Every referenced `event_type` appears in `qor/gates/schema/shadow_event.schema.json` enum OR is explicitly declared NEW in the plan
 - [ ] Every cross-module function signature (`module.func(args)`) exists in current source OR is explicitly declared NEW in Affected Files
 - [ ] Every skill reference (`/qor-X` Step N) matches the actual current skill structure
-- [ ] Every cited **third-party SDK** method/property exists in installed type declarations (`node_modules/<package>/dist/*.d.ts` for JS/TS; `pip show <pkg>` + module inspection for Python; `Cargo.toml` + `cargo doc` for Rust) OR is explicitly quoted from official documentation with citation (URL + quoted text). Every cited **behavioral-semantics claim** (Postgres durability/concurrency/transaction semantics, lock lifecycle, trigger side-effects, supabase-js method behavior, auth-schema mutability, managed-schema constraints) includes inline citation to upstream docs (URL + quoted text), upstream source (file:line), or in-repo precedent demonstrating the claimed behavior. Phase 74 wiring (GH #49); closes SG-006 + SG-010 surface.
+- [ ] Every cited **third-party SDK** method/property exists in installed type declarations OR is quoted from official documentation with citation; every cited **behavioral-semantics claim** (DB durability/concurrency, lock lifecycle, trigger side-effects, SDK method behavior, managed-schema constraints) carries inline citation to upstream docs/source or in-repo precedent. Phase 74 wiring (GH #49); closes SG-006 + SG-010 (per-language verification paths in `references/phase37-subpasses.md`).
 ```
 
 **Any violation -> VETO with `infrastructure-mismatch` category**. **Required next action:** amend the plan to reflect actual infrastructure OR add the missing infrastructure as an explicit Phase Affected File. No implicit dependencies.
 
-**Phase 99 wiring (GH #108 V2 — Runtime Contract Walk)**: After the grep-verify checks above, run the Runtime Contract Walk against the plan to catch runtime-contract drift that grep cannot see — module imports that don't resolve at runtime, callers whose own imports fail to parse, etc. The walk runs one hop forward (callees: cited module's own imports must parse) and one hop backward (callers: at least one production caller must parse) for each Python module path cited in the plan. WARN-only in V2; a future V2-of-V2 phase converts to hard VETO once operator evidence on Phase 96 V1 false-positive rate is in. See `qor/references/audit-runtime-contract-walk.md` for the detailed two-direction protocol and `SG-GrepShapedRunclaim-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` for the binding doctrine.
+**Phase 99 wiring (GH #108 V2 — Runtime Contract Walk)**: After the grep-verify checks above, run the Runtime Contract Walk to catch runtime-contract drift grep cannot see (imports that don't resolve, callers whose imports fail to parse). WARN-only in V2.
 
 ```bash
 qor-logic scripts runtime_contract_walk --plan <plan-path> || true
 ```
 
-**Phase 72 wiring (GH #56; SG-CitationDrift-A countermeasure)** -- iter-N>1 full re-walk: on iterations after the first (iter-N>1), the Judge re-walks the **FULL Locked Decision set**, not the diff-from-iter-N-1. Every sealed-infrastructure citation (migration name, function signature, file:line, schema, env var, edge-function path) is grep-verified against current code, including LDs that were not modified in this iteration. Citations that lack the inline grep-evidence statement required by `/qor-plan` Step 2 Infrastructure Citation Inventory trigger immediate VETO with `infrastructure-mismatch` category -- regardless of whether the LD was amended in the current iteration. This closes the drift surface where an unverified citation in an unchanged LD propagates across iterations without re-challenge.
-
-See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-InfrastructureMismatch` (Phase 37) and `SG-CitationDrift-A` (Phase 72) for the countermeasure catalog entries.
-
-**Phase 83 wiring (GH #83 + GH #87)** -- two extended sub-passes run as part of this pass; the full procedures live in `qor/skills/governance/qor-audit/references/phase37-subpasses.md` (progressive disclosure per GH #92):
-
-- **Citation consumer-trace**: for every cited code symbol in an LD that claims to fix a defect at a named entry-point surface, verify the cited symbol is reachable from that entry point. An unreached citation (dead code, or the wrong symbol cited) is an `infrastructure-mismatch` VETO.
-- **Delivery-Branch Currency**: when the plan declares a `pr_target`, verify the branch exists on the remote (the Step 0.6 `delivery_branch_lint` reports a missing branch), is still open for merges (operator confirmation -- not git-derivable), and that cited infrastructure resolves against `pr_target` specifically. A stale delivery premise is an `infrastructure-mismatch` VETO.
+Two further binding sub-passes run as part of this pass, with full procedures + rationale in `references/phase37-subpasses.md` (progressive disclosure per GH #92): the **Phase 72 iter-N>1 full re-walk** of the entire Locked Decision set (not the iter-N-1 diff; any sealed-infrastructure citation lacking inline grep-evidence -> `infrastructure-mismatch` VETO, even in an unchanged LD), and the **Phase 83 citation consumer-trace + Delivery-Branch Currency** sub-passes (an unreached citation or a stale `pr_target` -> `infrastructure-mismatch` VETO). See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-InfrastructureMismatch`, `SG-CitationDrift-A`, `SG-GrepShapedRunclaim-A`, and `SG-DeliveryBranchDrift-A`.
 
 #### Filter-Stage Ordering Coherence (Phase 78 wiring; GH #47)
 
-For any function or method with a pipeline shape -- candidate set -> multiple filter stages -> selection -- the Judge constructs the **pipeline stage dependency graph** and verifies the code executes a topological sort of that graph. Catches the COREFORGE-class composition defect from META_LEDGER #209: stage-by-stage correctness review (Wave 2 multi-agent or single-reviewer audit) passes each filter individually, but `validate()` is invoked elsewhere instead of as the first stage of `decide()`; invalid manifests with low cost score dominate selection over valid candidates. Per GH #47.
-
-Heuristic for V1 (operator-judgment-based): a pipeline shape is present when the audited code uses any of:
-- Rust functional chains: `.filter(...).filter(...).map(...)` over a candidate iterator
-- Sequential `let after_X = filter_X(after_prev)` blocks composing a candidate set into a winner
-- Python chained `filter(predicate, ...)` or comprehension stacks producing a selection
-- TypeScript `.filter().filter().reduce()` over a candidate array
-
-For each pipeline so identified, the Judge runs the 4-step **filter-stage ordering coherence** procedure:
-
-1. **Identify each filter stage's preconditions** -- what invariants must hold on inputs for the stage's logic to be sound (e.g., "manifest has passed schema validation"; "user has an authenticated session"; "row is owned by current tenant").
-2. **Identify each filter stage's invariants** -- what the stage enforces on outputs (e.g., "candidate's `tier` matches request"; "candidate's `cost_score` is in [0, 1]"; "candidate is non-quarantined").
-3. **Construct the dependency graph** -- stage N depends on stage M iff M enforces an invariant that N's correctness *assumes*. If a filter references a struct field that is also referenced inside a separate validation / `check` / `verify` / `is_valid` function, raise the question: "did that validation run before this filter?"
-4. **Verify the actual code order is a topological sort** of the dependency graph. Any inversion -- stage N runs before stage M where N depends on M -- is a defect.
+For any function or method with a pipeline shape -- candidate set -> multiple filter stages -> selection -- verify the code executes a topological sort of the filter-stage dependency graph: a stage may not run before a stage that enforces a precondition it assumes (the canonical defect: `validate()` invoked elsewhere instead of as the first stage of `decide()`, so invalid candidates dominate selection). The pipeline-shape heuristic (Rust/Python/TS chain forms) and the 4-step coherence procedure (preconditions -> output invariants -> dependency graph -> topo-sort check) live in `references/phase37-subpasses.md`.
 
 ```markdown
 ### Filter-Stage Ordering Coherence Audit
@@ -521,9 +476,7 @@ For each pipeline-shaped function in the implementation:
 - [ ] Code execution order is a topological sort of the graph (no inversions)
 ```
 
-**Any inversion -> VETO with `composition` category, sub-tag `filter-order-inversion`** (or `infrastructure-mismatch` when the missing precondition is an external-state assumption). **Required next action:** amend the implementation to invoke the missing precondition stage before the dependent filter, OR amend the plan to declare the precondition is enforced upstream of the pipeline entry (with citation). Doctrinal precedent: this is structurally analogous to read-before-write checks in static analyzers, lifted to the pipeline-stage abstraction.
-
-See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-FilterOrderInversion-A` for the originating COREFORGE recurrence (skill_forge dispatcher tier -> classification -> vendor -> cost without validator-first) and the operator-fix regression test (`test_dispatch_skips_invalid_skill_and_selects_valid_candidate`).
+**Any inversion -> VETO with `composition` category, sub-tag `filter-order-inversion`** (or `infrastructure-mismatch` when the missing precondition is an external-state assumption). **Required next action:** amend the implementation to invoke the missing precondition stage before the dependent filter, OR amend the plan to declare the precondition is enforced upstream of the pipeline entry (with citation). Originating recurrence + `SG-FilterOrderInversion-A`: `references/phase37-subpasses.md`.
 
 #### Orphan Detection
 
@@ -543,7 +496,7 @@ Verify all proposed files connect to build path:
 
 #### Documentation Drift (Phase 28 wiring)
 
-Non-VETO advisory. After orphan detection, render a `## Documentation Drift` section into the audit report when the plan's declared `doc_tier` / `terms` / `boundaries` diverge from the repo's glossary and topology. Per `qor/references/doctrine-documentation-integrity.md`, these same divergences hard-block at `/qor-substantiate`; the audit advisory lets the Governor fix drift in a single pass before seal.
+Non-VETO advisory. After orphan detection, render a `## Documentation Drift` section when the plan's declared `doc_tier` / `terms` / `boundaries` diverge from the repo glossary/topology. Per `qor/references/doctrine-documentation-integrity.md` these divergences hard-block at `/qor-substantiate`; the advisory lets the Governor fix drift before seal.
 
 ```python
 from qor.scripts import doc_integrity, gate_chain
@@ -561,13 +514,11 @@ Create `.agent/staging/AUDIT_REPORT.md` using template from `references/qor-audi
 
 #### Step 4.1: Capture `reviews-remediate` operator signal (Phase 36 B19 wiring)
 
-If the operator invoked `/qor-audit` with skill arg of the form `reviews-remediate:<path>`, capture the path. When writing the audit gate artifact payload (Step 4.2 via `gate_chain.write_gate_artifact`), include the `reviews_remediate_gate` field set to that path. Absence of the arg → field is `null` (or omitted). The field is declared in `qor/gates/schema/audit.schema.json` as optional.
-
-This signal is the ONLY trigger for the two-stage addressed flip in `/qor-remediate` Step 6. Operator invokes this variant of audit ONLY when reviewing a remediation proposal; an ordinary plan audit never sets the field.
+If the operator invoked `/qor-audit` with skill arg `reviews-remediate:<path>`, capture the path into the audit gate payload's optional `reviews_remediate_gate` field (else `null`). This signal is the ONLY trigger for the two-stage addressed flip in `/qor-remediate` Step 6; an ordinary plan audit never sets it.
 
 #### Step 4.2: Review-pass flip (Phase 36 B19 wiring)
 
-After the audit report is written and before the ledger update, if the audit's `reviews_remediate_gate` field is set and the verdict is PASS, invoke the two-stage flip:
+After the report is written and before the ledger update, if `reviews_remediate_gate` is set and verdict is PASS, invoke the two-stage flip:
 
 ```python
 import json
@@ -585,9 +536,7 @@ if verdict == "PASS" and reviews_gate:
     )
 ```
 
-`mark_addressed` re-verifies the audit artifact before flipping; any mismatch raises `ReviewAttestationError`. PASS audits without the `reviews_remediate_gate` field never touch event state.
-
-See `qor/references/doctrine-governance-enforcement.md` §10.1 "Two-stage remediation flip."
+`mark_addressed` re-verifies the audit artifact before flipping (mismatch raises `ReviewAttestationError`); PASS audits without the field never touch event state. See `qor/references/doctrine-governance-enforcement.md` §10.1 "Two-stage remediation flip."
 
 ### Step 5: Update Ledger
 
@@ -597,7 +546,7 @@ Template: `references/qor-audit-templates.md`.
 
 ### Step 6: Shadow Genome (If VETO)
 
-If verdict is VETO, document in `docs/SHADOW_GENOME.md` using template from `references/qor-audit-templates.md`. Note: narrative entries in `SHADOW_GENOME.md` are out of scope for the collector and attribution classification (see `qor/references/doctrine-shadow-attribution.md` §6).
+If verdict is VETO, document in `docs/SHADOW_GENOME.md` using the template in `references/qor-audit-templates.md`. Narrative entries there are out of scope for the collector + attribution classification (`qor/references/doctrine-shadow-attribution.md` §6).
 
 ### Step 7: Final Report
 
@@ -614,13 +563,11 @@ advisory_body = render_advisory_text(result)
 # reads "No repeated-VETO pattern detected in the last 2 sealed phases."
 ```
 
-When `result.detected` is True, the pattern has also been appended to the Process Shadow Genome as a severity-3 `repeated_veto_pattern` event (via `maybe_emit_pattern_event` inside `check()` when `session_id` is passed). The advisory is non-blocking; the current-audit verdict stands on its own merits.
-
-Report verdict, risk grade, and next action. Template: `references/qor-audit-templates.md`.
+When `result.detected` is True, `check()` also appends a severity-3 `repeated_veto_pattern` event to the Process Shadow Genome. The advisory is non-blocking; the verdict stands on its own merits. Report verdict, risk grade, and next action. Template: `references/qor-audit-templates.md`.
 
 ### Step Z: Write Gate Artifact (Phase 29 wiring)
 
-Persist the structured gate artifact at `.qor/gates/<session_id>/audit.json` so `/qor-implement` (and any other downstream phase) can read it via `gate_chain.check_prior_artifact`. Previously missing; Phase 29 closes the chain link.
+Persist the structured gate artifact at `.qor/gates/<session_id>/audit.json` so `/qor-implement` can read it via `gate_chain.check_prior_artifact`.
 
 ```python
 from qor.scripts import gate_chain, shadow_process, ai_provenance
@@ -645,7 +592,7 @@ gate_chain.write_gate_artifact(
 )
 ```
 
-Schema at `qor/gates/schema/audit.schema.json` validates before write. A schema violation raises `ValueError` the operator must resolve before proceeding; no silent fallback. Per Phase 54: every gate-writing skill calls `ai_provenance.build_manifest` with the operator's verdict mapped to `HumanOversight` (PASS / VETO); closes EU AI Act Art. 14 oversight-signal surface.
+Schema at `qor/gates/schema/audit.schema.json` validates before write; a violation raises `ValueError` (no silent fallback). Per Phase 54 the verdict maps to `HumanOversight` (PASS / VETO) for EU AI Act Art. 14.
 
 **Phase 37 B20b — `findings_categories` mapping discipline**: each VETO finding maps deterministically to one value in the closed 12-value enum. Audit-pass → category map:
 
@@ -689,13 +636,7 @@ Audit succeeds when:
 
 ## Integration with Qor-logic
 
-This skill implements:
-
-- **Gate Tribunal**: Adversarial audit before implementation proceeds
-- **Binary Verdict**: Only PASS or VETO, no conditional approval
-- **Shadow Genome Integration**: Records failures to prevent repetition
-- **Hash Chain Continuation**: Updates META_LEDGER with cryptographic linkage
-- **Multi-Pass Audit**: Security, Ghost UI, Razor, Dependency, Orphan, Macro-Level
+Gate Tribunal: a multi-pass adversarial audit (Security, Ghost UI, Razor, Dependency, Orphan, Macro-Level) issuing a binary PASS/VETO verdict, recording failures to the Shadow Genome and continuing the META_LEDGER hash chain.
 
 ---
 

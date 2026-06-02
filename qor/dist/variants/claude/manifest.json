@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-06-02T14:56:35Z",
+  "generated_ts": "2026-06-02T15:56:19Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -102,13 +102,19 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/references/adversarial-mode.md",
       "install_rel_path": "skills/qor-audit/references/adversarial-mode.md",
-      "sha256": "27aff6a273045cc46677715280fc3fcacb21e67cfd605612572393d47d44e482"
+      "sha256": "95c778a0ee6d01744737e54fd66b444bcb63cbe8b5a978987605b6f528e7f200"
     },
     {
       "id": "qor-audit",
       "source_path": "skills/qor-audit/references/phase37-subpasses.md",
       "install_rel_path": "skills/qor-audit/references/phase37-subpasses.md",
-      "sha256": "01b8f7b4f02224bdaa39d4df157dbbe738158e3730131c07875e7fdeb2b2d404"
+      "sha256": "ecfa79081e7da6b55d6f0824c1e0c4e0d8ab5117d8bcef1c1a58d5e41e0e9aa1"
+    },
+    {
+      "id": "qor-audit",
+      "source_path": "skills/qor-audit/references/pre-audit-lints.md",
+      "install_rel_path": "skills/qor-audit/references/pre-audit-lints.md",
+      "sha256": "ad3883e459090b48e9b932bfc18280e472e8991c56b8dfcf5c080645df731984"
     },
     {
       "id": "qor-audit",
@@ -120,7 +126,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "fb24f701e5314c0b2fa8354d28e65e315ab9d76b2449aba00e2beac874534eb7"
+      "sha256": "60aa1134699786ae7a26c96cb66ffa2ca63fa2e2a81de67e96e416d258d03991"
     },
     {
       "id": "qor-bootstrap",
@@ -388,9 +394,21 @@
     },
     {
       "id": "qor-substantiate",
+      "source_path": "skills/qor-substantiate/references/release-and-tag-timing.md",
+      "install_rel_path": "skills/qor-substantiate/references/release-and-tag-timing.md",
+      "sha256": "763efba292d81403ab353770423b0f50db77c951b5870a7d4c3928ba98a17925"
+    },
+    {
+      "id": "qor-substantiate",
+      "source_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
+      "install_rel_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
+      "sha256": "b351d3f89f6079300e2decb2d13c7fa0b3bd145160e26c15cbea91f078937018"
+    },
+    {
+      "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "8b5dfec700d0894507ba168d61c55ccc4fd9d452cd3625a0e26458a543afb8d5"
+      "sha256": "fb1c60ce8339ba6641fcad44f2cfd0552034d1c8dfd1a92349bc40f7e6ee2ff1"
     },
     {
       "id": "qor-tone",

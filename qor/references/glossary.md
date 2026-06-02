@@ -154,6 +154,7 @@ referenced_by:
   - qor/skills/governance/qor-validate/SKILL.md
   - qor/skills/governance/qor-process-review-cycle/SKILL.md
   - qor/skills/governance/qor-audit/references/qor-audit-templates.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
   - qor/skills/meta/qor-help/SKILL.md
   - qor/skills/meta/qor-meta-track-shadow/SKILL.md
   - qor/skills/meta/qor-meta-track-shadow/references/example-shadow-genome-events.md
@@ -533,6 +534,7 @@ referenced_by:
   - qor/scripts/procedural_fidelity.py
   - qor/skills/governance/qor-substantiate/SKILL.md
   - tests/test_system_state_phase_coverage.py
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
 introduced_in_plan: phase58-procedural-fidelity-and-tech-debt-wrapup
 ```
 
@@ -635,6 +637,7 @@ home: qor/skills/sdlc/qor-plan/SKILL.md
 referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
 introduced_in_plan: phase72-sg-citation-drift-countermeasure
 ```
 
@@ -645,6 +648,7 @@ home: qor/skills/sdlc/qor-plan/SKILL.md
 referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
 introduced_in_plan: phase72-sg-citation-drift-countermeasure
 ```
 
@@ -660,6 +664,7 @@ referenced_by:
   - qor/references/doctrine-feature-tdd.md
   - qor/skills/meta/qor-bootstrap/SKILL.md
   - qor/skills/meta/qor-bootstrap/references/qor-bootstrap-templates.md
+  - qor/skills/governance/qor-audit/references/pre-audit-lints.md
 introduced_in_plan: phase73-feature-inventory-tdd
 ```
 
@@ -673,6 +678,7 @@ referenced_by:
   - qor/skills/sdlc/qor-implement/SKILL.md
   - qor/skills/meta/qor-bootstrap/SKILL.md
   - qor/skills/meta/qor-bootstrap/references/qor-bootstrap-templates.md
+  - qor/skills/governance/qor-audit/references/pre-audit-lints.md
 introduced_in_plan: phase73-feature-inventory-tdd
 ```
 
@@ -721,6 +727,7 @@ definition: 'A sub-rule under /qor-audit Step 3 Ghost UI Pass (Phase 74 wiring, 
 home: qor/skills/governance/qor-audit/SKILL.md
 referenced_by:
   - qor/references/doctrine-shadow-genome-countermeasures.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
 introduced_in_plan: phase74-audit-pass-extensions
 ```
 
@@ -730,6 +737,8 @@ definition: 'Shadow-genome pattern: UI element with progress semantics animates 
 home: qor/references/doctrine-shadow-genome-countermeasures.md
 referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
+  - qor/skills/governance/qor-audit/references/pre-audit-lints.md
 introduced_in_plan: phase74-audit-pass-extensions
 ```
 
@@ -759,6 +768,7 @@ referenced_by:
   - qor/references/doctrine-shadow-genome-countermeasures.md
   - qor/references/doctrine-governance-index.md
   - qor/references/doctrine-runtime-principal-fidelity.md
+  - qor/skills/governance/qor-substantiate/references/release-and-tag-timing.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
 
@@ -824,6 +834,7 @@ definition: 'Shadow-genome pattern: a pipeline-shaped function composes filter s
 home: qor/references/doctrine-shadow-genome-countermeasures.md
 referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
 introduced_in_plan: phase78-filter-stage-ordering
 ```
 
@@ -1035,6 +1046,7 @@ referenced_by:
   - qor/skills/memory/qor-status/SKILL.md
   - qor/skills/governance/qor-substantiate/SKILL.md
   - qor/skills/governance/qor-validate/SKILL.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
 introduced_in_plan: phase112-governance-index
 ```
 ```yaml
@@ -1124,6 +1136,7 @@ referenced_by:
   - qor/scripts/data_api_acl_lint.py
   - qor/skills/governance/qor-substantiate/SKILL.md
   - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
 introduced_in_plan: phase121-runtime-principal-fidelity
 ```
 ```yaml

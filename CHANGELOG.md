@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.102.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 135 (pre-1.0 consolidation)**: brought the two governance skills over the Phase 95 `skill_size_budget_lint` 40 KB EXCEEDED budget back under it via pure progressive disclosure. `qor-audit/SKILL.md` (52.7 KB -> 40.6 KB) and `qor-substantiate/SKILL.md` (49.0 KB -> 40.8 KB) relocate multi-paragraph "Phase NN wiring / Per SG-X / originating-recurrence" rationale to `references/` files (new: `qor-audit/references/pre-audit-lints.md`, `qor-substantiate/references/seal-gate-ladder.md` + `release-and-tag-timing.md`; appended: `adversarial-mode.md`, `phase37-subpasses.md`) while preserving every Critical Invariant, Step header, gate command, and VETO/ABORT checklist inline. No skill behavior changes; the corpus now reports zero EXCEEDED findings. Locked by `tests/test_skill_corpus_consolidation.py` (spine-preserved + under-budget + moved-not-deleted + admission).
+
 ## [0.101.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
