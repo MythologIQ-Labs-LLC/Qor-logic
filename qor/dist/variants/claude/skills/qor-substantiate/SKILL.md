@@ -326,15 +326,15 @@ qor-logic scripts dod_check --plan "$PLAN_PATH" || true
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction (no `python -c "...${VAR}..."` interpolation). V1 contract: WARN-only — findings (`missing-dod-section`, `deliverable-missing-tier`, `waiver-without-rationale`, `waiver-without-followup`) are surfaced in the seal report but do NOT abort substantiate. Operator amends the plan's DoD block in the next seal cycle. V2 may tighten specific categories to fail-closed once adoption matures.
 
-### Step 4.6.8: Merge-velocity throttle check (Phase 93 wiring; GH #89)
+### Step 4.6.8: Merge-velocity throttle check (Phase 93 wiring; GH #89; fail-closed since Phase 129, GH #153)
 
-WARN-only detector that surfaces stabilization-capacity strain from `origin/main`'s recent merge history. Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-MergePaceThrottle-A`, the Bicameral originating recurrence (27 PRs / 14,758 additions / repair cluster #346-#353 / failing e2e on tail PR #354 in a single window) showed that throughput, branch integration, and shared-surface expansion can exceed the rate at which the project can reliably absorb changes. V1 ships the detector only; enforcement (hold-feature-merges, require stabilization-plan) is reserved for V2.
+Fail-closed throttle on stabilization-capacity strain from `origin/main`'s recent merge history. Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-MergePaceThrottle-A`, the Bicameral originating recurrence (27 PRs / 14,758 additions / repair cluster #346-#353 / failing e2e on tail PR #354 in a single window) showed that throughput, branch integration, and shared-surface expansion can exceed the rate at which the project can reliably absorb changes.
 
 ```bash
-qor-logic scripts merge_velocity_check --repo-root . --window-days 7 || true
+qor-logic scripts merge_velocity_check --repo-root . --window-days 7 || ABORT
 ```
 
-The CLI exits 0 on `healthy`/`strained` and exits 1 on `exceeded` (the latter is informational in V1 — the `|| true` swallows the non-zero so substantiate continues). V2 may remove the `|| true` to convert `exceeded` into a hard ABORT. Operators may add operator-declared shared-core path patterns via repeat `--shared-core-path` flags so the detector counts shared-surface touches as one of the threshold signals.
+The CLI exits 0 on `healthy`/`strained` and exits 1 on `exceeded`, which now ABORTs the seal (Phase 129 removed the `|| true`). To seal anyway during a deliberate high-velocity window, re-run with `--override`: it emits a logged `gate_override` shadow event (`details.gate = merge_velocity_check`) and passes — the explicit operator-authorized escape the #153 AC requires. Operators may add `--shared-core-path` patterns so shared-surface touches count toward the threshold.
 
 ### Step 4.6.9: Skill-corpus size-budget lint (Phase 95 wiring; GH #92)
 

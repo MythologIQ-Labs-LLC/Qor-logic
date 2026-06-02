@@ -39,8 +39,35 @@ class FragilityAssessment:
     active_branch_count: int
     recent_commit_diff_lines: int
     workspace_fragility: str  # 'low' | 'medium' | 'high'
-    recommended_action: str   # 'merge_ok' | 'narrow_scope' | 'hardening_only'
+    stabilization_capacity: str   # Phase 129 (#154): merge_velocity vocab mirror
+    shared_surface_risk: str      # Phase 129 (#154): 'low' | 'medium' | 'high'
+    recommended_action: str   # 'merge_ok' | 'narrow_scope' | 'hardening_only' | 'branch_only'
     evidence: tuple[str, ...]
+
+
+# Phase 129 (#154): restore #90's dropped contract.
+_CAPACITY_FROM_GRADE = {"low": "healthy", "medium": "strained", "high": "exceeded"}
+
+
+def _capacity_for(grade: str) -> str:
+    """Re-express the fragility grade in merge_velocity's stabilization vocab."""
+    return _CAPACITY_FROM_GRADE.get(grade, "healthy")
+
+
+def _shared_surface_risk(active_branch_count: int, recent_commit_diff_lines: int) -> str:
+    """Shared-surface churn proxy from concurrent branches + recent diff size."""
+    if active_branch_count >= 10 or recent_commit_diff_lines >= 1500:
+        return "high"
+    if active_branch_count >= 5 or recent_commit_diff_lines >= 750:
+        return "medium"
+    return "low"
+
+
+def _recommended_action(grade: str, shared_surface_risk: str) -> str:
+    """`branch_only` (isolate) when shared-surface risk is high; else grade-based."""
+    if shared_surface_risk == "high":
+        return "branch_only"
+    return _ACTION_FROM_GRADE[grade]
 
 
 _ACTION_FROM_GRADE = {
@@ -183,6 +210,7 @@ def assess_workspace_fragility(repo_root: Path) -> FragilityAssessment:
     branches = _active_branch_count(repo_root)
     diff_lines = _recent_commit_diff_lines(repo_root)
     grade = _grade(untracked, dirty_gates, ledger_failures, branches, diff_lines)
+    ssr = _shared_surface_risk(branches, diff_lines)
     return FragilityAssessment(
         untracked_count=untracked,
         dirty_gate_artifact_count=dirty_gates,
@@ -190,7 +218,9 @@ def assess_workspace_fragility(repo_root: Path) -> FragilityAssessment:
         active_branch_count=branches,
         recent_commit_diff_lines=diff_lines,
         workspace_fragility=grade,
-        recommended_action=_ACTION_FROM_GRADE[grade],
+        stabilization_capacity=_capacity_for(grade),
+        shared_surface_risk=ssr,
+        recommended_action=_recommended_action(grade, ssr),
         evidence=_build_evidence(untracked, dirty_gates, ledger_failures, branches, diff_lines),
     )
 

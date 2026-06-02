@@ -11683,7 +11683,28 @@ Change class: feature. Tests: 2189 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `58075e27e2fdd2f6b759eaa6ccfbc19eca6e8b019017ff6d1c15b350dc98be5a`
 **Chain Hash (Merkle seal)**: `6803569baaf15276311223d32a27515a4fe478eadec68c4d013845ef57d9c4e9`
 
+### Entry #322: SESSION SEAL -- Phase 129 merge-throttle enforcement + wiring (v0.96.0)
+
+**Timestamp**: 2026-06-02T13:24:47Z
+**Phase**: SUBSTANTIATE (Phase 129; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase129-merge-throttle-enforcement.md
+**Session**: `2026-06-02T1249-0720c2`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `3334581714e6`
+
+**Scope**: Phase 129 implemented (#153 + #154 combined; SG-MergePaceThrottle-A): merge-throttle enforcement + full wiring. #153: merge_velocity_check gained --override (logged gate_override on exceeded); /qor-substantiate Step 4.6.8 flipped || true -> || ABORT so an exceeded grade holds the seal unless overridden. #154: workspace_fragility_check FragilityAssessment regained the dropped stabilization_capacity + shared_surface_risk fields and the branch_only recommended action (when shared_surface_risk==high), and is now wired into /qor-plan (Step 0.4) + /qor-implement (Step 0.6) as WARN-only stabilization/scope checkpoints. Doctrine SG-MergePaceThrottle-A marked enforcer-shipped. 9 new behavioral tests (merge_velocity grade mocked to avoid the live-git flake). Dogfooded: this seal's own merge-velocity grade was 'strained' (20 PRs/7d, low repair-density) -> exit 0, not exceeded, so the new fail-closed gate passed without override -- the enforcer correctly separated high-but-healthy from exceeded.
+
+Change class: feature. Tests: 2198 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `2e9eaf810de419e388a107983d868d1990d3b216182f76051d27c46edc388999`
+**Previous Hash**: `6803569baaf15276311223d32a27515a4fe478eadec68c4d013845ef57d9c4e9`
+**Chain Hash (Merkle seal)**: `be0e3e01c88de71108dd66a25bd7ea082ee433db45d2e45ba7d9c17729df62f8`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 128; v0.95.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 129; v0.96.0 local; operator authorized push + PR)

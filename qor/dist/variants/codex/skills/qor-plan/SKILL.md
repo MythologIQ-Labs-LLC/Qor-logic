@@ -136,6 +136,16 @@ qor-logic scripts model_pinning_lint --repo-root . || true
 
 Reads `QOR_MODEL_FAMILY` env (set by harness when available) and walks `qor/skills/**/SKILL.md` for `model_compatibility` + `min_model_capability` frontmatter. Emits stderr warnings for any skill whose declared minimum exceeds the current model's tier (`haiku < sonnet < opus`). Per `qor/references/doctrine-ai-rmf.md` §MANAGE-3.1.
 
+### Step 0.4: Stabilization-capacity checkpoint (Phase 129 wiring; GH #154)
+
+Surface the local workspace's stabilization capacity before planning new scope, so a fragile/over-extended workspace is visible at plan time (not just at audit). WARN-only.
+
+```bash
+qor-logic scripts workspace_fragility_check --repo-root . || true
+```
+
+Reports `workspace_fragility` (low/medium/high), `stabilization_capacity` (healthy/strained/exceeded), `shared_surface_risk`, and a `recommended_action` (`merge_ok` / `narrow_scope` / `hardening_only` / `branch_only`). On `high` / `branch_only`, prefer narrowing this plan's scope or isolating the branch over adding new surface. Companion to the substantiate Step 4.6.8 merge-velocity gate (backward-looking); this is the forward-looking pre-plan signal. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-MergePaceThrottle-A.
+
 ### Step 0.5: Phase branch creation (Phase 13 wiring)
 
 See `qor/skills/sdlc/qor-plan/references/step-extensions.md` for the full protocol.

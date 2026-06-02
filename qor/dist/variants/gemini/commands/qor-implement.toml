@@ -69,6 +69,16 @@ Override is permitted (advisory gate) but logged as severity-1 `gate_override` e
 
 **Phase 54 wiring**: when `gate_chain.emit_gate_override` raises `OverrideFrictionRequired`, prompt the operator for a written justification (>=50 chars) and re-call `emit_gate_override` with `justification=<text>`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-1.1 + `qor/references/doctrine-eu-ai-act.md` Art. 14.
 
+### Step 0.6: Impl-phase scope-boundary warning (Phase 129 wiring; GH #154)
+
+Before building, surface the workspace stabilization-capacity signal so implementation stays within the absorbable scope. WARN-only.
+
+```bash
+qor-logic scripts workspace_fragility_check --repo-root . || true
+```
+
+When `recommended_action` is `narrow_scope`, `hardening_only`, or `branch_only` (high `shared_surface_risk`), keep this pass inside the approved blueprint scope — do not broaden the feature or touch additional shared surface. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-MergePaceThrottle-A.
+
 ### Step 1: Identity Activation
 
 You are now operating as **The Qor-logic Specialist**.
