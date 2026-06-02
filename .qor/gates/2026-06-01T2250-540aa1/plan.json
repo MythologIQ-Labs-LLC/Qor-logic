@@ -1,0 +1,36 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-01T2250-540aa1",
+  "ts": "2026-06-01T22:50:19Z",
+  "plan_path": "docs/plan-qor-phase121-runtime-principal-fidelity.md",
+  "phases": [
+    "Phase 1: Data-API access-control lint (qor/scripts/data_api_acl_lint.py)",
+    "Phase 2: Skill wiring + variant recompile",
+    "Phase 3: Doctrine + reference + glossary"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_data_api_acl_lint.py tests/test_runtime_principal_wiring.py -q",
+    "python -m qor.cli scripts data_api_acl_lint --repo-root .",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "runtime-principal fidelity",
+      "home": "qor/references/doctrine-runtime-principal-fidelity.md"
+    },
+    {
+      "term": "Data-API access-control lint",
+      "home": "qor/references/doctrine-runtime-principal-fidelity.md"
+    }
+  ],
+  "originating_remediation": "GH #177",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.87.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-01T22:50:19Z"
+  }
+}

@@ -50,6 +50,7 @@ This skill is multi-step; each step declares its prerequisite so non-Python host
 | 4.6.5 secret_scanner | module:qor.scripts.secret_scanner | OWASP LLM06 / NIST AI 600-1 §2.10 |
 | 4.6.6 procedural_fidelity | module:qor.scripts.procedural_fidelity | WARN-only doc-surface coverage gap |
 | 4.7 doc_integrity (strict) | module:qor.scripts.doc_integrity | tier-driven glossary + orphan + term-drift checks |
+| 4.6.10 data_api_acl_lint | module:qor.scripts.data_api_acl_lint | Phase 121 fail-closed Data-API grant/definer-view scan (#177); absent migrations -> disclosed-skip |
 | 4.7.5 governance_index enforce | module:qor.scripts.governance_index | Phase 120 fail-closed index enforcement (advance Last-Reviewed + unregistered/tier3-unarchived) |
 | 6.5 doc currency + badge currency | module:qor.scripts.doc_integrity_strict | release-class badge ABORT (Phase 49) |
 | 6.8 seal hash integrity gate | module:qor.scripts.hash_guard | Phase 64 fail-closed gate |
@@ -175,6 +176,8 @@ Read: Test files
 Template: `references/qor-substantiate-templates.md`.
 
 **Presence-only seal gate**: substantiation refuses to seal if any test added in the current phase is presence-only for the unit it claims to verify. Operator runs the acceptance question — "If the unit's behavior were silently broken but the artifact still existed, would this test fail?" — against each new test in the phase. Any "no" answer ABORTs seal. The operator amends the test to invoke the unit and assert against its output, then re-runs `/qor-substantiate`. Per `qor/references/doctrine-test-functionality.md` and SG-035 ("doctrine-content test unanchored").
+
+**Runtime-principal fidelity gate (Phase 121 wiring; GH #177)**: for any feature whose acceptance includes a DB read/write reachable by a non-privileged caller (authenticated/anon), confirm at least one test exercises that path under the real caller role. If the path is proven only under `service_role` or a `SECURITY DEFINER` RPC (which bypass RLS + table GRANTs), ABORT the seal — UNLESS the operator records an explicit coverage-gap note in the seal entry ("data path verified only under service_role; authenticated/RLS path deferred to manual QA") and emits a `gate_skipped_prerequisite_absent` shadow event. A service-role-only proof must not silently satisfy an authenticated path. Per `qor/references/doctrine-runtime-principal-fidelity.md`.
 
 #### Visual Silence Verification (if frontend)
 ```
@@ -325,6 +328,18 @@ qor-logic scripts skill_size_budget_lint --skills-root qor/skills || true
 ```
 
 WARN-only V1: the lint emits one finding per oversized SKILL.md but does not abort substantiate. CLI exits 1 when any EXCEEDED finding (>= 40 KB) is present so V2 can convert to a hard ABORT by removing the `|| true` wrap. Operator-actionable: skills exceeding the WARN threshold should be candidates for progressive-disclosure refactor (move sub-pass / step prose to `references/` files); skills exceeding EXCEEDED should be considered overdue for refactor.
+
+### Step 4.6.10: Data-API access-control lint (Phase 121 wiring; GH #177)
+
+**Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.data_api_acl_lint`. See Step Prerequisites table; on hosts/repos with no SQL migrations the lint prints a `SKIP:` line and exits 0 (disclosed-skip — record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event).
+
+Static scan over the target repo's SQL migrations. Fail-closed on blocking findings (`missing-grant` — an API-schema `CREATE TABLE` with no `GRANT` to authenticated/anon and no service-role-only marker; `definer-view` — a view without `security_invoker = true`). `security-definer-fn` is advisory. Closes the privileged-principal false-PASS surface from GH #177 (a feature broken for its authenticated caller sealing green because tests ran under `service_role`).
+
+```bash
+qor-logic scripts data_api_acl_lint --repo-root . || ABORT
+```
+
+Escapes: `-- qor:service-role-only` (intentional service-role-only table) and `-- qor:definer-view-intended reason: ...` (intentional definer view). Full contract: `qor/references/doctrine-runtime-principal-fidelity.md`.
 
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
 

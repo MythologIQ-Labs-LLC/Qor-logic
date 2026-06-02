@@ -758,6 +758,7 @@ referenced_by:
   - qor/skills/governance/qor-substantiate/SKILL.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
   - qor/references/doctrine-governance-index.md
+  - qor/references/doctrine-runtime-principal-fidelity.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
 
@@ -1106,4 +1107,22 @@ referenced_by:
   - qor/skills/governance/qor-substantiate/SKILL.md
   - qor/skills/governance/qor-validate/SKILL.md
 introduced_in_plan: phase120-governance-index-enforcement
+```
+```yaml
+term: runtime-principal fidelity
+definition: 'The property (Phase 121; GH #177) that a feature DB access path is proven under the principal that calls it at runtime (authenticated/anon), not only under a privileged principal (service_role or a SECURITY DEFINER function running as owner). qor-substantiate Step 4 fail-closes the seal when a non-privileged path is proven only under service_role, unless the operator records an explicit disclosed coverage-gap note.'
+home: qor/references/doctrine-runtime-principal-fidelity.md
+referenced_by:
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase121-runtime-principal-fidelity
+```
+```yaml
+term: Data-API access-control lint
+definition: 'qor.scripts.data_api_acl_lint (Phase 121; GH #177): a static SQL-migration scan invoked fail-closed at qor-substantiate Step 4.6.10 (|| ABORT). Flags missing-grant (API-schema CREATE TABLE with no GRANT to authenticated/anon and no service-role-only marker) and definer-view (view without security_invoker = true) as blocking; security-definer-fn is advisory. Absent migrations -> Phase 75 disclosed-skip. Escapes: -- qor:service-role-only and -- qor:definer-view-intended.'
+home: qor/references/doctrine-runtime-principal-fidelity.md
+referenced_by:
+  - qor/scripts/data_api_acl_lint.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-audit/SKILL.md
+introduced_in_plan: phase121-runtime-principal-fidelity
 ```
