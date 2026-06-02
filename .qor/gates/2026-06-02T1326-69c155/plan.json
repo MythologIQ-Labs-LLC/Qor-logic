@@ -1,0 +1,25 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T1326-69c155",
+  "ts": "2026-06-02T13:28:23Z",
+  "plan_path": "docs/plan-qor-phase130-feature-tdd-lint.md",
+  "phases": [
+    "Phase 1: Lint logic + CLI",
+    "Phase 2: Audit wiring"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_feature_tdd_lint.py -q",
+    "python -m qor.cli scripts plan_feature_tdd_lint --plan docs/plan-qor-phase130-feature-tdd-lint.md --repo-root .",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "originating_remediation": "GH #159",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.96.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T13:28:23Z"
+  }
+}

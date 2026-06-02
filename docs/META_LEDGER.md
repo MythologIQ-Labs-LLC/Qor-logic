@@ -11704,7 +11704,28 @@ Change class: feature. Tests: 2198 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `6803569baaf15276311223d32a27515a4fe478eadec68c4d013845ef57d9c4e9`
 **Chain Hash (Merkle seal)**: `be0e3e01c88de71108dd66a25bd7ea082ee433db45d2e45ba7d9c17729df62f8`
 
+### Entry #323: SESSION SEAL -- Phase 130 per-feature TDD lint (v0.97.0)
+
+**Timestamp**: 2026-06-02T13:34:29Z
+**Phase**: SUBSTANTIATE (Phase 130; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase130-feature-tdd-lint.md
+**Session**: `2026-06-02T1326-69c155`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `150ad65e63b0`
+
+**Scope**: Phase 130 implemented (#159): Per-feature TDD mechanical lint. New qor.scripts.plan_feature_tdd_lint parses a plan's ## Feature Inventory Touches block and flags NEW/MODIFIED feature rows lacking a failing-test declaration (no real test_path -> missing-failing-test; presence-only test_descriptor -> presence-only-feature-test) plus a plan touching src/ with no FIT block (undeclared-feature-tdd). n/a-justified rows + docs-only plans exempt. Label-based row parser (separator-agnostic). Wired WARN-only into /qor-audit Step 0.6; binding VETO stays the Step 3 Feature Test Coverage Pass. Ships #41's deferred V2 enforcement lint that the plan.schema.json feature_inventory_touches note flagged as operator-discipline-only. 10 new behavioral tests.
+
+Change class: feature. Tests: 2208 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `d420458e5ba57005072c057e74cfa16d23ac27eb1f9590673451bd752aa6657a`
+**Previous Hash**: `be0e3e01c88de71108dd66a25bd7ea082ee433db45d2e45ba7d9c17729df62f8`
+**Chain Hash (Merkle seal)**: `4ea3ac1acae6eb3f153861efeb9888eed647a7fd19f464aedb76181bc794b6d6`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 129; v0.96.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 130; v0.97.0 local; operator authorized push + PR)

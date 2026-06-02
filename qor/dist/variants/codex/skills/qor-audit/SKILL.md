@@ -165,6 +165,7 @@ qor-logic scripts workspace_fragility_check --repo-root . || true
 qor-logic scripts plan_signature_widening_caller_lint --plan "$PLAN_PATH" --repo-root . || true
 qor-logic scripts plan_data_round_trip_lint --plan "$PLAN_PATH" --repo-root . || true
 qor-logic scripts plan_live_progress_lint --repo-root . || true
+qor-logic scripts plan_feature_tdd_lint --plan "$PLAN_PATH" --repo-root . || true
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
@@ -174,6 +175,8 @@ qor-logic scripts plan_live_progress_lint --repo-root . || true
 **Phase 67 wiring (GH #42)**: `plan_text_consistency_lint` (third lint above) catches the COREFORGE-class drift pattern — same operation specified differently at multiple plan sites (commands, dependencies, paths). WARN-only at audit time; the operator amends drift before the binding Infrastructure Alignment Pass in Step 3 would consume an audit cycle. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PlanTextDrift-A.
 
 **Phase 89 wiring (GH #91)**: `ci_coverage_lint` (fifth lint above) reconciles the plan's `## CI Commands` bullets against the Python-fingerprint `run:` steps discovered in `.github/workflows/*.yml`. Catches the COREFORGE-class credibility failure where a phase seals "all CI green" while a real GitHub Actions job — one the operator simply forgot to enumerate — would fail. WARN-only; tag-only workflows are skipped; environment-setup boilerplate is filtered. The plan may declare a `## CI Coverage Exemptions` block (bullet list with substring patterns) to justify CI jobs that are pre-existing infrastructure not phase-relevant. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-CICoverageDrift-A.
+
+**Phase 130 wiring (GH #159)**: `plan_feature_tdd_lint` (the last lint above) mechanically enforces the plan-time half of `doctrine-feature-tdd.md`: for each `## Feature Inventory Touches` row whose `operation` is `NEW`/`MODIFIED` (a src-touch), it requires a real `test_path` + a behavioral `test_descriptor` (failing-test-first), and flags a plan that touches `src/` with no FIT block. `n/a-justified` rows + docs-only plans are exempt. WARN-only; the binding VETO stays the Step 3 Feature Test Coverage Pass.
 
 **Phase 127 wiring (GH #156)**: `plan_live_progress_lint` (the last lint above) is the mechanical SG-FakeProgress-A detector: it scans the target repo's frontend source for the fake-jump (`0%`->`100%` with no intermediate width write), missing-event-subscription, and error-without-dismiss patterns the Ghost-UI Live-Progress sub-rule describes. WARN-only at this layer; the binding VETO remains the Step 3 Ghost-UI pass (`ghost-ui` category, `live-progress-fake` sub-tag, now a `findings_categories` enum value). Backend-only repos produce zero findings. Escape: `// qor:live-progress-ok`. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-FakeProgress-A.
 
