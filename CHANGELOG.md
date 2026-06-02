@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.102.1] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 136 (hotfix)**: corrected a pre-existing structural defect in `qor-substantiate/SKILL.md` where the entire `### Step Z` gate-write body (including `session.rotate()`) was pasted inside the Step 4.5 "Skill File Integrity Check" required-sections list. Step 4.5 is now a clean section-name checklist; the gate-artifact write is a standalone `### Step Z` placed before Step 7.8 (so gate-chain completeness can verify this phase's `substantiate.json`); and `session.rotate()` moved to a final `### Step 9.8: Session Rotation` (rotating at Step 4.5 would have repointed `.qor/session/current` mid-seal and broken `SESSION_ID` for Steps 7.x-9.x). No code or gate behavior changed -- only the operator-facing skill prose. Locked by `tests/test_substantiate_stepz_structure.py` (char-offset ordering: write before 7.8, rotate after 7.8).
+
 ## [0.102.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
