@@ -1,0 +1,21 @@
+{
+  "phase": "implement",
+  "session_id": "2026-06-01T2343-9febd5",
+  "ts": "2026-06-02T03:42:07Z",
+  "files_touched": [
+    "qor/scripts/external_reviewer.py",
+    "tests/test_external_reviewer.py",
+    "tests/test_external_reviewer_wiring.py",
+    "qor/skills/governance/qor-audit/SKILL.md",
+    "qor/skills/governance/qor-audit/references/adversarial-mode.md",
+    "README.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.89.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T03:42:07Z"
+  }
+}

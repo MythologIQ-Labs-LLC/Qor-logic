@@ -1,6 +1,6 @@
 # qor-audit — Adversarial Mode (Codex Plugin)
 
-**Status**: Contract-only specification. Full Codex-plugin invocation wiring is reserved for the harness profile (`qor/platform/profiles/claude-code-with-codex.md`).
+**Status**: Subprocess bridge implemented (Phase 123; GH #160). `qor.scripts.external_reviewer` dispatches this input/output contract to an operator-configured external reviewer. The command is resolved from `.qorlogic/config.json` -> `external_reviewer.command` (an argv list, **operator-trusted**); it is executed list-form (no shell), the reviewer-input JSON is passed on stdin, and the returned JSON is contract-validated before use. Any failure (no command configured, nonzero exit, timeout, invalid output) degrades to a graceful `fallback` outcome and the audit proceeds in-harness (solo) with a logged `capability_shortfall`. The Codex-plugin path (`should_run_adversarial_mode`) remains the harness-native trigger; the bridge is the general external-process mechanism.
 
 ## Trigger
 

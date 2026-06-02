@@ -177,7 +177,22 @@ else:
     mode = "solo"
 ```
 
-Adversarial mode contract (input/output schemas) lives in `qor/skills/governance/qor-audit/references/adversarial-mode.md` (TBD — wiring placeholder; full Codex integration is future work).
+Adversarial mode contract (input/output schemas) lives in `qor/skills/governance/qor-audit/references/adversarial-mode.md`.
+
+**External-reviewer subprocess bridge (Phase 123 wiring; GH #160).** When an external reviewer is configured (`.qorlogic/config.json` -> `external_reviewer.command`), dispatch the reviewer-input contract to it via the bridge and ingest its verdict:
+
+```python
+from qor.scripts import external_reviewer
+outcome = external_reviewer.run_external_review(review_input, Path(".qorlogic/config.json"))
+if outcome.status == "ok":
+    # Synthesize outcome.review["critiques"] into the audit as additional findings.
+    mode = "adversarial"
+else:  # "fallback": no reviewer configured, or it errored / timed out / returned invalid output
+    runtime.emit_capability_shortfall("external-reviewer", sid)
+    mode = "solo"
+```
+
+The bridge runs the operator-configured command list-form (no shell), passes the reviewer-input JSON on stdin, validates the returned JSON against the output contract, and degrades to a `fallback` outcome on any failure — so a missing/broken reviewer never blocks the audit; it proceeds solo with the logged shortfall. The Phase 87 author-momentum auto-dispatch mandate is unchanged.
 
 **Phase 68 wiring (GH #50) — Option B: independent reviewer codification.** The pre-Phase-68 block above runs Option A: Codex-plugin-driven Claude+Codex adversarial pairing when the harness exposes it. **Option B** is the fallback (and explicit choice) when Option A is unavailable OR when the auditor was also the plan's author. Per SG-007 (self-audit verification scope bias) and the recurring "author-audit momentum" pattern: when the same LLM agent authors a plan and then audits it, the audit inherits the author's search-path momentum — the locations the author did not check during planning are the same locations the author will not check during audit. Independent reviewers with no plan-authorship context naturally check different sources.
 

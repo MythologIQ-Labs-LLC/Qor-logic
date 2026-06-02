@@ -1126,3 +1126,12 @@ referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
 introduced_in_plan: phase121-runtime-principal-fidelity
 ```
+```yaml
+term: external-reviewer bridge
+definition: 'qor.scripts.external_reviewer (Phase 123; GH #160): the subprocess bridge that dispatches the #50 adversarial-mode reviewer I/O contract to an operator-configured external reviewer (.qorlogic/config.json -> external_reviewer.command, argv) over stdin/stdout JSON, validates the returned verdict, and degrades to a graceful in-harness fallback (logged capability_shortfall) on any failure. Flips adversarial-mode.md from contract-only to shipped.'
+home: qor/skills/governance/qor-audit/references/adversarial-mode.md
+referenced_by:
+  - qor/scripts/external_reviewer.py
+  - qor/skills/governance/qor-audit/SKILL.md
+introduced_in_plan: phase123-external-reviewer-bridge
+```
