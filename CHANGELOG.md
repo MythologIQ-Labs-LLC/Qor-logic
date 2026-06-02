@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.101.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 134 (#164, #151)**: #147 cluster conclusion. **#164**: shipped Shadow Genome graph **export** (`ShadowGenomeGraph.to_dict/to_json/to_dot` + `export` CLI subcommand) and recorded a per-capability roadmap decision (`docs/shadow-genome-graph-roadmap.md`) deferring dashboard-API / trust-transition / federation / retention to post-1.0 with rationale. **#151**: recorded the Option-(c) determination that `qor-compliance` is FailSafe-owned/absent from Qor-logic (the in-repo compliance skill is `qor-governance-compliance`, fixed in Phase 81); no duplicate created. Both closed; the half-measure-closures cluster (#147) is fully resolved.
+
 ## [0.100.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

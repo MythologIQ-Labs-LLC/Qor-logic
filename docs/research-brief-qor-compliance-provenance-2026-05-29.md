@@ -56,3 +56,13 @@ The half-measure audit flagged #77 as a "partial-surface closure" (one of two na
 ---
 
 _Research complete. Findings are advisory — the close/redirect decision remains with the operator. Note: the META_LEDGER RESEARCH entry and research gate artifact were intentionally held to avoid interleaving with the staged-but-uncommitted Phase 118 (#150) seal (Entry #311); they can be written once #150 is committed or research is run as its own session._
+
+## Decision (GH #151 closed, 2026-06-02)
+
+**Resolution: Option (c) — not actionable in this repository.** Confirmed at Phase 134 (operator-directed, this session): `qor-compliance` does not exist in Qor-logic source, `qor/dist`, or `qor/dist/manifest.json` (grep re-verified); it is a FailSafe-extension proprietary skill. The canonical compliance skill *in this repo* is `qor-governance-compliance`, whose F244/FX359 provenance was already fixed in Phase 81 (PR #78, v0.55.1). Therefore:
+
+- Neither AC branch (a) retire nor (b) value-add-fix applies — Qor-logic does not own the artifact.
+- No `qor-compliance` skill is created here: doing so would duplicate `qor-governance-compliance`, violating the issue's own "no duplicate coverage" guarantee.
+- The F244/FX359 provenance fix for `qor-compliance` belongs to FailSafe's own skills bundle (upstream).
+
+No duplicate coverage exists between the two compliance skills (only one, `qor-governance-compliance`, is in-repo). GH #151 is closed on this determination.
