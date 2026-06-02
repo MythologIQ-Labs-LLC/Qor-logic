@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-06-02T07:26:05Z",
+  "generated_ts": "2026-06-02T07:47:17Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -96,7 +96,7 @@
       "id": "qor-audit.toml",
       "source_path": "commands/qor-audit.toml",
       "install_rel_path": "commands/qor-audit.toml",
-      "sha256": "d62e6a3b2f2ac30c1e3f7783b07094f6081bd9f7880c4bb6df76c2f5e895aea8"
+      "sha256": "0ea817ec3a86136dad34ce5285963ad5758d23f4971097400d35211ebbfd45f5"
     },
     {
       "id": "qor-bootstrap.toml",

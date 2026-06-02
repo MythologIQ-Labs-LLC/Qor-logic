@@ -11641,7 +11641,28 @@ Change class: feature. Tests: 2170 passed / 0 failed / 3 skipped (full suite; me
 **Previous Hash**: `5b80bcc4bb229d19c2ff4cf549b638cb29b4f5da9b501713b189ca3dda6a22e1`
 **Chain Hash (Merkle seal)**: `b5f3329e8119c504da801f3cb80ca60653f2dfa4c68a66fcb4a143505eda5a03`
 
+### Entry #320: SESSION SEAL -- Phase 127 live-progress detector (v0.94.0)
+
+**Timestamp**: 2026-06-02T07:46:57Z
+**Phase**: SUBSTANTIATE (Phase 127; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase127-live-progress-lint.md
+**Session**: `2026-06-02T0730-38d2ca`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `b87aa309bf46`
+
+**Scope**: Phase 127 implemented (#156): LiveProgressInvariant detector. New qor.scripts.plan_live_progress_lint mechanically detects SG-FakeProgress-A patterns in a target repo's frontend source -- fake-jump (0%->100% with no intermediate width write), missing event-stream subscription, error-without-dismiss -- replacing the hand-only Ghost-UI Live-Progress checklist. Promoted live-progress-fake from prose sub-tag to a findings_categories schema enum value + findings_signature._VALID_CATEGORIES mirror. Wired WARN-only into /qor-audit Step 0.6; backend-only repos produce zero findings; escape // qor:live-progress-ok. Ships #156 AC2 (enum) + AC3 (detector + 11 behavioral tests) that PR #69 left prose-only. Note: this branch also carries operator commit 366328c (docs: S.H.I.E.L.D. backronym correction + SHIELD_SELF_AUDIT.md), made concurrently and composed cleanly (doc-only, no overlap with the phase-127 code).
+
+Change class: feature. Tests: 2181 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `5cf0e3edffa5064a128dfc5b67b4ae454dcca8d2e1f39264db1df15ae430e960`
+**Previous Hash**: `b5f3329e8119c504da801f3cb80ca60653f2dfa4c68a66fcb4a143505eda5a03`
+**Chain Hash (Merkle seal)**: `58075e27e2fdd2f6b759eaa6ccfbc19eca6e8b019017ff6d1c15b350dc98be5a`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 126; v0.93.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 127; v0.94.0 local; operator authorized push + PR)

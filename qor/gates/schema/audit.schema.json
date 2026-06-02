@@ -42,7 +42,8 @@
           "coverage-gap",
           "infrastructure-mismatch",
           "prompt-injection",
-          "feature-test-undeclared"
+          "feature-test-undeclared",
+          "live-progress-fake"
         ]
       }
     },

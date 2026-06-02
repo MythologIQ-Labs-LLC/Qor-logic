@@ -40,6 +40,7 @@ _VALID_CATEGORIES = frozenset({
     "coverage-gap",
     "infrastructure-mismatch",
     "prompt-injection",
+    "live-progress-fake",
 })
 
 
