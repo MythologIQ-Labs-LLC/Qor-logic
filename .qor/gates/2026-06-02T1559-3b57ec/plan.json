@@ -1,0 +1,33 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T1559-3b57ec",
+  "ts": "2026-06-02T16:07:48Z",
+  "plan_path": "docs/plan-qor-phase136-substantiate-stepz-restructure.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: Restructure the skill + regression test"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_substantiate_stepz_structure.py -q",
+    "python -m qor.reliability.skill_admission qor-substantiate",
+    "python -m pytest tests/test_skill_corpus_consolidation.py tests/test_skill_prose_cites_ai_provenance.py tests/test_session_marker_path_unified.py -q",
+    "python -m pytest -q"
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "n/a",
+      "operation": "MODIFIED",
+      "test_path": "tests/test_substantiate_stepz_structure.py",
+      "test_descriptor": "compares char offsets: offset('### Step Z') < offset('### Step 7.8') and offset('session.rotate()') > offset('### Step 7.8'); slices Step 4.5 region and asserts no python fence + no write_gate_artifact token"
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.102.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T16:07:48Z"
+  }
+}

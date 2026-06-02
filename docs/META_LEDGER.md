@@ -11830,7 +11830,28 @@ Change class: feature. Tests: 2314 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `44c37c2369f1349a330aef47c64cbd786241c99e50c77c79a12a645591dff91e`
 **Chain Hash (Merkle seal)**: `afa61529fd4c94c388c724e9822a22fb7247722775473003772b74c729571d0b`
 
+### Entry #329: SESSION SEAL -- Phase 136 qor-substantiate Step 4.5 / Step Z restructure (v0.102.1)
+
+**Timestamp**: 2026-06-02T16:18:12Z
+**Phase**: SUBSTANTIATE (Phase 136; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase136-substantiate-stepz-restructure.md
+**Session**: `2026-06-02T1559-3b57ec`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `c40077d0414c`
+
+**Scope**: Phase 136 implemented (hotfix; structural correctness): fixed the pre-existing defect in qor/skills/governance/qor-substantiate/SKILL.md where the entire Step Z gate-write body (write_gate_artifact + build_manifest + session.rotate) was pasted INSIDE the Step 4.5 Skill-File-Integrity required-sections list, splitting that list. Fix: Step 4.5 restored to a clean section-name checklist; the gate-artifact write extracted to a standalone '### Step Z: Write Gate Artifact' placed BEFORE Step 7.8 (gate-chain completeness verifies this phase's substantiate.json, so the write must precede it); session.rotate() moved to a final '### Step 9.8: Session Rotation' after Step 9.7 (rotating at Step 4.5 would repoint .qor/session/current mid-seal and break SESSION_ID for Steps 7.x-9.x). No code/gate behavior change -- only operator prose relocated; dist variants recompiled. New regression test test_substantiate_stepz_structure.py pins the ordering via character-offset comparisons (Step Z before 7.8; session.rotate after 7.8; Step 4.5 region free of embedded code fence). substantiate SKILL.md stays under the 40 KB budget (40.8 KB). Audit PASS (L1 solo). Full suite 2323 passed / 0 failed / 3 skipped. README Tests badge 2317 -> 2323.
+
+Change class: hotfix. Tests: 2323 passed / 0 failed / 3 skipped (full suite). Audit PASS (L1 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `306893d36f2eba35b2e56d3c738e9116b343b55a6f4ae133328182ec0c401116`
+**Previous Hash**: `afa61529fd4c94c388c724e9822a22fb7247722775473003772b74c729571d0b`
+**Chain Hash (Merkle seal)**: `927bc482cde6b5d865521f88eda68c7451fff210f12a2dfdeef4908a4ea7f04b`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 135; v0.102.0 local; skill corpus under budget; operator authorized push + PR)
+*Session: SEALED* (Phase 136; v0.102.1 local; substantiate skill restructured; operator authorized push + PR)

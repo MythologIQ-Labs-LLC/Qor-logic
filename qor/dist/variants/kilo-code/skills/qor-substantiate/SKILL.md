@@ -210,41 +210,7 @@ If any skill files (`.claude/commands/qor-*.md`) were modified during this sessi
 
 1. List modified skill files from git diff
 2. For each modified skill:
-   - Verify it still has required sections: `<skill>` block, `## Execution Protocol`, `### Step Z: Write Gate Artifact (Phase 11D wiring)
-
-Persist the structured gate artifact at `.qor/gates/<session_id>/substantiate.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
-
-```python
-from qor.scripts import gate_chain, shadow_process, ai_provenance
-
-# Build payload conforming to qor/gates/schema/substantiate.schema.json
-payload = {
-    "ts": shadow_process.now_iso(),
-    # ... phase-specific required fields (see schema)
-}
-manifest = ai_provenance.build_manifest(
-    "substantiate",
-    human_oversight=(
-        ai_provenance.HumanOversight.PASS if payload.get("verdict") == "PASS"
-        else ai_provenance.HumanOversight.VETO
-    ),
-)
-gate_chain.write_gate_artifact(
-    phase="substantiate", payload=payload, session_id=sid, ai_provenance=manifest,
-)
-```
-
-Schema lives at `qor/gates/schema/substantiate.schema.json`; the helper validates before write. Per Phase 54: substantiate calls `ai_provenance.build_manifest` with the seal verdict mapped to `HumanOversight`; closes EU AI Act Art. 14 oversight-signal surface.
-
-After writing, rotate the session so the next `/qor-plan` starts with a clean gate directory (Phase 30 wiring; closes the session-carry-over gap that let Phase 28/29 share a single session dir):
-
-```python
-import session
-new_sid = session.rotate()
-print(f"Session sealed. New session: {new_sid}. Prior artifacts preserved at .qor/gates/{sid}/")
-```
-
-## Constraints`, `## Next Step`
+   - Verify it still has required sections: `<skill>` block, `## Execution Protocol`, `### Step Z: Write Gate Artifact`, `## Constraints`, `## Next Step`
    - Verify the `## Next Step` section references valid successor skills
    - Log in ledger: "Skill file [name] modified — structure verified"
 
@@ -552,6 +518,32 @@ qor-logic reliability seal_entry_check --ledger docs/META_LEDGER.md --plan "$PLA
 
 The `python -c` source is hardcoded (no shell-variable interpolation; OWASP A03 closed by construction); argv-form throughout. ABORT on non-zero exit leaves the session unsealed — amend the ledger (or re-run Step 7) and re-run.
 
+### Step Z: Write Gate Artifact (Phase 11D wiring)
+
+Persist the gate artifact at `.qor/gates/<session_id>/substantiate.json`. Written here (after Step 7's seal entry, before Step 7.8) so gate-chain completeness can verify it. Session rotation is deferred to Step 9.8 — rotating now would repoint `.qor/session/current` and break `SESSION_ID` for the remaining steps.
+
+```python
+from qor.scripts import gate_chain, shadow_process, ai_provenance
+
+# Build payload conforming to qor/gates/schema/substantiate.schema.json
+payload = {
+    "ts": shadow_process.now_iso(),
+    # ... phase-specific required fields (see schema)
+}
+manifest = ai_provenance.build_manifest(
+    "substantiate",
+    human_oversight=(
+        ai_provenance.HumanOversight.PASS if payload.get("verdict") == "PASS"
+        else ai_provenance.HumanOversight.VETO
+    ),
+)
+gate_chain.write_gate_artifact(
+    phase="substantiate", payload=payload, session_id=sid, ai_provenance=manifest,
+)
+```
+
+Schema at `qor/gates/schema/substantiate.schema.json` validates before write. Per Phase 54 the seal verdict maps to `HumanOversight` (EU AI Act Art. 14).
+
 ### Step 7.8: Gate-chain completeness check (Phase 52 wiring)
 
 Closes the skill-protocol bypass surface. Walks SESSION SEAL entries with phase >= 52 in `docs/META_LEDGER.md`; for each, asserts `.qor/gates/<sid>/{plan,audit,implement,substantiate}.json` all exist. ABORTs seal on any gap. Phase ≤ 51 entries grandfathered.
@@ -675,7 +667,16 @@ else
 fi
 ```
 
-Run after the merge (option 3: after `git push origin main`; option 2: after the PR merges; options 1/4: at a later merge). Why deferral (the `release.yml` reachability guard): `references/release-and-tag-timing.md`.
+Run after the merge (option 3: after `git push origin main`; option 2: after PR merge; options 1/4: later). Detail: `references/release-and-tag-timing.md`.
+
+### Step 9.8: Session Rotation (Phase 30 wiring)
+
+The final action of the seal. Rotate the session so the next `/qor-plan` starts with a clean gate directory. Run LAST — after every Step 7.x-9.7 command that resolves `SESSION_ID` from `.qor/session/current`.
+
+```python
+import session
+new_sid = session.rotate()  # prior artifacts preserved at .qor/gates/<old-sid>/
+```
 
 ## Failure Scenarios
 
