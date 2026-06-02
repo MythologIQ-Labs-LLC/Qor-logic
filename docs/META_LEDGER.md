@@ -11578,7 +11578,28 @@ Change class: feature. Tests: 2150 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `da710312d60f049973c3e3edc8093d31981ce299ccd0370d34969c3155a4e970`
 **Chain Hash (Merkle seal)**: `bc182f16e7b05a12c5ea79ee348dbc55d20cec69dee9b837bec8667f027753f6`
 
+### Entry #317: SESSION SEAL -- Phase 124 release pipeline fix (v0.91.0)
+
+**Timestamp**: 2026-06-02T04:19:37Z
+**Phase**: SUBSTANTIATE (Phase 124; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase124-release-pipeline-fix.md
+**Session**: `2026-06-02T0348-5ce6bc`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `2135cc7371d9`
+
+**Scope**: Phase 124 implemented (release pipeline fix): repaired the broken delivery gate. release.yml's on.push.tags carried paths-ignore, which makes GitHub skip path-filtered push workflows on tag pushes -- silently skipping every Release run since v0.85 (PyPI stuck at v0.84.0). Removed paths-ignore from the tag trigger and added workflow_dispatch with a tag input so the corrected workflow (from main) can build+publish a historical tag whose own commit still has the broken trigger. Both build+publish jobs check out the resolved ref (inputs.tag || github.ref_name), derive the reachability guard from the checked-out HEAD, and pass the ref via env: (no Actions script injection). Reconciled two cross-policy conflicts surfaced by the full suite: test_workflow_budget now exempts tag/dispatch-only workflows from the paths-filter requirement; ci_coverage_lint._is_tag_only_workflow tolerates workflow_dispatch. Preserves SHA-pinned actions + guard-before-publish. 6 new tests. Enables catch-up publish of v0.85-v0.90 via workflow_dispatch.
+
+Change class: feature. Tests: 2153 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR + PyPI publish post-seal.
+
+**Content Hash**: `cc07e417f4d235545d8806f1aada5e2a30392e1abb330483842150c2c445958b`
+**Previous Hash**: `bc182f16e7b05a12c5ea79ee348dbc55d20cec69dee9b837bec8667f027753f6`
+**Chain Hash (Merkle seal)**: `b42f2cab6bc14ddb697a651f10efe82119cf620886d3904b2c3b90c4eb6c6318`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 123; v0.90.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 124; v0.91.0 local; operator authorized push + PR + PyPI)

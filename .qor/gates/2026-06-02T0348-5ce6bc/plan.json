@@ -1,0 +1,23 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T0348-5ce6bc",
+  "ts": "2026-06-02T04:05:39Z",
+  "plan_path": "docs/plan-qor-phase124-release-pipeline-fix.md",
+  "phases": [
+    "Phase 1: release.yml trigger fix + dispatch"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_release_workflow_dispatch.py tests/test_release_workflow_immutability.py tests/test_release_workflow_guard.py -q",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "originating_remediation": "release-pipeline broken since v0.85 (paths-ignore on tag trigger)",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.90.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T04:05:39Z"
+  }
+}

@@ -117,15 +117,18 @@ def _is_tag_only_workflow(on_value: object) -> bool:
 
     Accepts ``push`` configurations that also carry path filters
     (``paths-ignore`` / ``paths``); the discriminating fact is the
-    presence of ``tags`` and the absence of ``branches``.
+    presence of ``tags`` and the absence of ``branches``. ``workflow_dispatch``
+    (a manual trigger on a release-class workflow, e.g. to publish a historical
+    tag) is tolerated and does not reclassify the workflow as a CI gate whose
+    commands must appear in feature plans.
     """
     if not isinstance(on_value, dict):
         return False
-    if set(on_value.keys()) - {"push", "release"}:
+    if set(on_value.keys()) - {"push", "release", "workflow_dispatch"}:
         return False
     push = on_value.get("push")
     if push is None:
-        return bool(on_value.get("release"))
+        return bool(on_value.get("release") or on_value.get("workflow_dispatch"))
     if not isinstance(push, dict):
         return False
     if "tags" not in push:

@@ -66,6 +66,18 @@ def test_no_unjustified_schedule():
 # ----- Rule 2: paths filter mandatory -----
 
 PATHS_FILTER_RE = re.compile(r"^\s*paths(-ignore)?:\s*$", re.MULTILINE)
+# A workflow that triggers only on tag pushes and/or workflow_dispatch is exempt
+# from the paths-filter requirement: GitHub skips path-filtered `push` workflows
+# on tag pushes (no file diff to match), so a paths filter there silently
+# disables the workflow (the Phase 124 release.yml bug). Path filters only make
+# sense for branch-push / pull_request triggers.
+_BRANCH_PUSH_RE = re.compile(r"^\s*branches(-ignore)?:\s*", re.MULTILINE)
+_PULL_REQUEST_RE = re.compile(r"^\s*pull_request(_target)?:\s*", re.MULTILINE)
+
+
+def _needs_paths_filter(text: str) -> bool:
+    """True unless the workflow is tag-push/dispatch-only (no branch-push or PR)."""
+    return bool(_BRANCH_PUSH_RE.search(text) or _PULL_REQUEST_RE.search(text))
 
 
 def test_paths_ignore_present():
@@ -73,7 +85,7 @@ def test_paths_ignore_present():
     failures = []
     for wf in _workflow_files():
         text = wf.read_text(encoding="utf-8")
-        if not PATHS_FILTER_RE.search(text):
+        if _needs_paths_filter(text) and not PATHS_FILTER_RE.search(text):
             failures.append(str(wf.relative_to(REPO_ROOT)))
     if not _workflow_files():
         pytest.skip("No workflows; nothing to audit")
