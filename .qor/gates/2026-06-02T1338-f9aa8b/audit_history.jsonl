@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-06-02T13:45:29Z","version":"0.97.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L1","session_id":"2026-06-02T1338-f9aa8b","target":"docs/plan-qor-phase131-harness-signal-drift.md","ts":"2026-06-02T13:45:29Z","verdict":"PASS"}
