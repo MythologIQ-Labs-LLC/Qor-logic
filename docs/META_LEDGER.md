@@ -11788,7 +11788,28 @@ Change class: feature. Tests: 2235 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `88f0c824ed475def1da71588c102c6d18e9ec98cae8b36c52e48c7ba29cab418`
 **Chain Hash (Merkle seal)**: `b4494770252a2240f8014a0927c8ffd1face1e4a1ce68625c8bbd8c2606ae9ed`
 
+### Entry #327: SESSION SEAL -- Phase 134 cluster conclusion: graph export + roadmap (#164) + qor-compliance determination (#151) (v0.101.0)
+
+**Timestamp**: 2026-06-02T14:56:16Z
+**Phase**: SUBSTANTIATE (Phase 134; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase134-cluster-conclusion.md
+**Session**: `2026-06-02T1431-2ba7f5`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `324f57206791`
+
+**Scope**: Phase 134 implemented (#164 + #151; #147 cluster CONCLUSION): #164 -- shipped Shadow Genome graph export (ShadowGenomeGraph.to_dict/to_json/to_dot + `export` CLI subcommand, the one cheap+aligned capability of the five) and recorded a per-capability roadmap decision (docs/shadow-genome-graph-roadmap.md): dashboard-API / trust-transition / cross-workspace-federation / retention-pruning DEFERRED post-1.0 with rationale (no new open issues spawned). #151 -- recorded Option (c): qor-compliance is FailSafe-owned and absent from Qor-logic source/dist/manifest (grep + prior research brief + Phase 81 confirm); qor-governance-compliance is the in-repo compliance skill (provenance fixed Phase 81); no duplicate created; F244/FX359 belongs upstream. Both issues closed. Dogfood: the Phase 120 governance-index enforcer correctly fail-closed on the new unregistered roadmap doc until it was registered in GOVERNANCE_INDEX Tier 5. 8 new tests. This phase closes the last two #147 half-measure-closures follow-ons -- the cluster (#147 + #148-#165) is fully resolved.
+
+Change class: feature. Tests: 2243 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `dd2ee64627807fd15dd4b8a1b83fe8a1a5fb9a1e24be2154536926c1b42b4d60`
+**Previous Hash**: `b4494770252a2240f8014a0927c8ffd1face1e4a1ce68625c8bbd8c2606ae9ed`
+**Chain Hash (Merkle seal)**: `44c37c2369f1349a330aef47c64cbd786241c99e50c77c79a12a645591dff91e`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 133; v0.100.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 134; v0.101.0 local; #147 cluster concluded; operator authorized push + PR)

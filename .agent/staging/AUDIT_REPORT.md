@@ -1,20 +1,20 @@
-# AUDIT REPORT — Phase 133 (Pluggable release backends, GH #163)
+# AUDIT REPORT — Phase 134 (Cluster conclusion: graph export #164 + qor-compliance determination #151)
 
-**Target**: docs/plan-qor-phase133-pluggable-release-backends.md
+**Target**: docs/plan-qor-phase134-cluster-conclusion.md
 **Verdict**: PASS
-**Risk Grade**: L2 (release-mechanics; touches the seal version-bump/changelog flow, but the python path delegates to the unchanged bump_version/apply_stamp)
+**Risk Grade**: L2 (additive read-only export capability + decision/determination docs; no behavior change to existing graph/compliance surfaces)
 **Mode**: solo (audit_risk_score: option_b_required=false)
-**Session**: 2026-06-02T1404-c5fda5
+**Session**: 2026-06-02T1431-2ba7f5
 
 ## Passes
 
 - **Prompt Injection**: PASS.
-- **Security L3 / OWASP**: PASS. Backends write only the detected manifest/changelog under repo_root via atomic `os.replace`; no subprocess (beyond the reused git-tag guard), no eval, no secrets. A04 — `NoBackendError` maps to a graceful skip (no fail-open); the shared tag-collision + downgrade guards apply to every archetype, so non-Python repos inherit the same release discipline.
-- **Section 4 Razor**: PASS. Per-backend data (name/filename/pattern/template) + a shared bump policy; small detect/read/stamp functions.
-- **Self-Application / backward-compat** (originating_remediation=GH #163): PASS. The python path delegates to the proven `governance_helpers.bump_version` + `changelog_stamp.apply_stamp`, so THIS repo's own seals are byte-for-byte unchanged (verified by keeping the delegated-path regression tests in the CI set). The new backends serve non-Python downstream repos.
-- **Test Functionality**: PASS. Behavioral fixtures bump real package.json / Cargo.toml files and assert the written version, prepend a section to a non-keepachangelog CHANGELOG, and run an end-to-end non-Python fixture — invoking the units, asserting file content. The bump tests monkeypatch the tag list so they do not couple to this repo's live tags (no live-state flake).
-- **Completeness (no half-measure)**: BOTH the version backend AND the changelog backend land, AND substantiate Step 7.5/7.6 are rewired so non-Python repos actually perform release mechanics (not just ship dormant backend modules) — the AC's intent fully met.
-- **Macro / Dependency / Orphan / Ghost-UI / Infrastructure**: PASS / N/A. Reuses `governance_helpers` internals (`_compute_new`/`_list_tags`/`_highest_tag`) + `changelog_stamp.apply_stamp`; substantiate Step 7.5/7.6 + the `file:pyproject.toml` prerequisite exist as cited.
+- **Security L3 / OWASP**: PASS. Export is read-only (renders the in-memory graph to dict/json/dot); no writes, subprocess, or eval. Docs are prose.
+- **Section 4 Razor**: PASS. `to_dict` is the single source; `to_json`/`to_dot` render from it; small CLI subcommand.
+- **Completeness (no half-measure, operator's standing instruction)**: addressed honestly. #164's AC is decision-centric ("decide which are in-scope + split accepted"); this ships the one cheap/aligned capability (export) AND records a real per-capability decision for the other four (deferred post-1.0 with rationale) — a documented roadmap, not a silent cut. #151 is concluded by the evidenced Option-(c) determination (qor-compliance is FailSafe-owned/absent; grep + prior research brief + Phase 81 confirm) rather than fabricating a redundant skill — which would itself be the anti-pattern. Neither issue is left as a hollow close.
+- **Self-Application**: PASS. The export tests + the doc-contract tests (roadmap covers all five; #151 determination recorded) are behavioral/asserted, not prose claims.
+- **Test Functionality**: PASS. Export tests build a real graph and assert dict/json round-trip + DOT structure + CLI exit/output; doc-contract tests read the artifacts and assert the decisions are present.
+- **Macro / Dependency / Orphan / Ghost-UI / Infrastructure**: PASS / N/A. `ShadowGenomeGraph` + its CLI exist (Phase 139); `qor-governance-compliance` exists, `qor-compliance` confirmed absent; the research brief exists to append the determination to.
 
 ## Process Pattern Advisory
 
@@ -23,4 +23,4 @@ No repeated-VETO pattern detected.
 
 ## Next action
 
-PASS -> /qor-implement.
+PASS -> /qor-implement. (Concludes the #147 cluster.)

@@ -64,7 +64,7 @@ Informational, slow-drift. Drift signal: factual claims diverge from current cod
 | Process notes | `docs/PROCESS_*.md` |
 | System-tier docs | `docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md` |
 | Research briefs | `docs/research-brief-*.md`, `docs/RESEARCH_BRIEF.md` |
-| Roadmaps | `docs/roadmap-*.md` |
+| Roadmaps | `docs/roadmap-*.md`, `docs/*-roadmap.md` |
 | Audits & compliance | `docs/*-audit-*.md`, `docs/security-audit-*.md`, `docs/compliance-*.md` |
 | Reconciliation & drift triage | `docs/reconciliation-*.md`, `docs/phase*.md` |
 | Cluster memos | `docs/cluster-*.md` |

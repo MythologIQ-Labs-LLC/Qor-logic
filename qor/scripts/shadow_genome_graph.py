@@ -152,6 +152,35 @@ class ShadowGenomeGraph:
             out.append(n)
         return out
 
+    # --- Export (Phase 134; GH #164 accepted capability) ---
+    def to_dict(self) -> dict:
+        """Serialize the full graph: {'nodes': [...], 'edges': [...]}."""
+        return {
+            "nodes": [
+                {"id": n.id, "type": n.type, "label": n.label, "metadata": n.metadata}
+                for n in self.nodes.values()
+            ],
+            "edges": [
+                {"id": e.id, "source": e.source, "target": e.target,
+                 "type": e.type, "metadata": e.metadata}
+                for e in self.edges.values()
+            ],
+        }
+
+    def to_json(self, indent: int = 2) -> str:
+        return json.dumps(self.to_dict(), indent=indent, sort_keys=True)
+
+    def to_dot(self) -> str:
+        """Render as a Graphviz digraph."""
+        lines = ["digraph shadow_genome {"]
+        for n in self.nodes.values():
+            label = n.label.replace('"', '\\"')
+            lines.append(f'  "{n.id}" [label="{label}"];')
+        for e in self.edges.values():
+            lines.append(f'  "{e.source}" -> "{e.target}" [label="{e.type}"];')
+        lines.append("}")
+        return "\n".join(lines)
+
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="qor.scripts.shadow_genome_graph")
@@ -163,6 +192,8 @@ def main(argv: list[str] | None = None) -> int:
     sp_trace.add_argument("--max-depth", type=int, default=None)
     sp_query = sub.add_parser("query")
     sp_query.add_argument("--type", default=None)
+    sp_export = sub.add_parser("export")
+    sp_export.add_argument("--format", choices=("json", "dot"), default="json")
     args = parser.parse_args(argv)
     graph = ShadowGenomeGraph(args.path)
     if args.cmd == "snapshot":
@@ -173,6 +204,8 @@ def main(argv: list[str] | None = None) -> int:
     elif args.cmd == "query":
         for n in graph.query(node_type=args.type):
             print(f"{n.id}\t{n.type}\t{n.label}")
+    elif args.cmd == "export":
+        print(graph.to_json() if args.format == "json" else graph.to_dot())
     return 0
 
 
