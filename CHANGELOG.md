@@ -10,7 +10,14 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.89.0] - 2026-06-01
+
+### Changed
+- **Phase 122 (#155)**: Seal-time feature-regression gate flipped **fail-closed**. Phase 114's `feature_index_verify` (outside-scope `verified->unverified` detector vs a prior-seal snapshot) was wired into `/qor-substantiate` Step 6 with `--warn-only`; Step 6 now runs it `|| ABORT` so a regression blocks the PASS seal. New per-seal logged escape `--override` emits a `gate_override` shadow event (`details.gate = feature_index_verify`) — the explicit logged override the #155 AC requires. Snapshot baseline + detection logic unchanged; absent `FEATURE_INDEX.md` still disclosed-skips. Also restored the missing `[0.88.0]` CHANGELOG attribution line.
+
 ## [0.88.0] - 2026-06-01
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
 - **Phase 121 (#177)**: Runtime-principal fidelity + Data-API access-control enforcement. Closes the privileged-principal false-PASS class where tests run under `service_role` / a `SECURITY DEFINER` RPC bypass RLS + table `GRANT`s, so a feature broken for its `authenticated`/`anon` caller seals green. `/qor-substantiate` Step 4 adds a runtime-principal fidelity gate (fail-closed unless an explicit disclosed coverage-gap note is recorded) and Step 4.6.10 invokes the new `qor.scripts.data_api_acl_lint` (`|| ABORT`): a static SQL-migration scan flagging `missing-grant` (API-schema `CREATE TABLE` with no GRANT to authenticated/anon) and `definer-view` (view without `security_invoker = true`); `security-definer-fn` is advisory. Escapes: `-- qor:service-role-only`, `-- qor:definer-view-intended`. Absent migrations → Phase 75 disclosed-skip. `/qor-audit` Security Pass gains the plan-level Data-API access-control checklist.

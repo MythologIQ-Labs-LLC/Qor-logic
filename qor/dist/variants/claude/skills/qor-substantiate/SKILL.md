@@ -417,11 +417,11 @@ When `FEATURE_INDEX.md` exists in the repo, verify every declared feature after 
    `**Feature Inventory**: Total: N / verified: V / unverified: U / n/a: A`
 5. List newly unverified entries (regression from prior seal) with explicit names:
    `**Newly unverified**: FX091, FX093, ...`
-6. Run the regression ABORT (Phase 114; GH #155/#40):
-   `qor-logic scripts feature_index_verify --snapshot <prior-seal-session-id> --warn-only`
-   Non-zero exit aborts on an outside-scope `verified->unverified` regression; `--warn-only` downgrades to print-and-pass for graduated rollout until the false-positive rate is measured.
+6. Run the regression ABORT (Phase 114; fail-closed since Phase 122, GH #155/#40):
+   `qor-logic scripts feature_index_verify --snapshot <prior-seal-session-id> --repo-root . || ABORT`
+   Non-zero exit aborts the seal on an outside-scope `verified->unverified` regression (the Phase 114 `--warn-only` graduated-rollout downgrade is no longer used at seal). To accept a known regression for this seal, re-run with `--override`, which emits a logged `gate_override` shadow event (`details.gate = feature_index_verify`) and passes; `--override` is the explicit logged escape required by GH #155.
 
-Repos without `FEATURE_INDEX.md` record a single-line note (`**Feature Inventory**: not adopted`) in the seal entry and skip the verification pass. The outside-scope-regression ABORT now ships as `qor.scripts.feature_index_verify` (previously deferred). Per `qor/references/doctrine-feature-inventory.md` and `qor/references/doctrine-verification-closure-integrity.md`.
+Repos without `FEATURE_INDEX.md` record a single-line note (`**Feature Inventory**: not adopted`) in the seal entry and skip the verification pass (the gate `qor.scripts.feature_index_verify` prints `feature_index: skip` and exits 0). Per `qor/references/doctrine-feature-inventory.md` and `qor/references/doctrine-verification-closure-integrity.md`.
 
 #### Acceptance-criteria close guard (Phase 114; GH #158, WARN-first)
 

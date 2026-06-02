@@ -1,0 +1,25 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-01T2317-5e8be1",
+  "ts": "2026-06-01T23:29:25Z",
+  "plan_path": "docs/plan-qor-phase122-seal-regression-gate.md",
+  "phases": [
+    "Phase 1: Logged override on feature_index_verify",
+    "Phase 2: Flip Step 6 wiring fail-closed",
+    "Phase 3: Doctrine"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_feature_index_verify_gate.py tests/test_feature_index_verify_helper.py -q",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "originating_remediation": "GH #155",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.88.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-01T23:29:25Z"
+  }
+}

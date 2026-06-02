@@ -6,7 +6,7 @@ to `unverified` since the prior snapshot. Deep verification (does the test
 actually exercise this feature?) remains operator judgment per the SG-035
 acceptance question; this helper only counts what FEATURE_INDEX claims.
 
-Stdlib-only.
+Stdlib plus qor.scripts.shadow_process (logging the --override escape).
 """
 from __future__ import annotations
 
@@ -16,6 +16,8 @@ import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+
+from qor.scripts import shadow_process
 
 STATUS_VALUES = ("verified", "unverified", "n/a")
 _TABLE_ROW = re.compile(r"^\|(.+)\|\s*$")
@@ -141,6 +143,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="session id of a prior-seal snapshot to diff against")
     parser.add_argument("--warn-only", action="store_true",
                         help="print regressions but exit 0 (graduated rollout)")
+    parser.add_argument("--override", action="store_true",
+                        help="accept the regression for this seal; emit a logged "
+                             "gate_override event and exit 0")
     args = parser.parse_args(argv)
 
     prior = read_seal_snapshot(args.repo_root, args.snapshot) if args.snapshot else None
@@ -159,6 +164,22 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  REGRESSION [verified->unverified] {fid}")
         if args.warn_only:
             print("feature_index: WARN-only; not aborting")
+            return 0
+        if args.override:
+            shadow_process.append_event({
+                "ts": shadow_process.now_iso(),
+                "skill": "qor-substantiate",
+                "session_id": args.snapshot or "feature-index-verify",
+                "event_type": "gate_override",
+                "severity": 2,
+                "details": {
+                    "gate": "feature_index_verify",
+                    "regressions": list(summary.newly_unverified),
+                },
+                "addressed": False, "issue_url": None, "addressed_ts": None,
+                "addressed_reason": None, "source_entry_id": None,
+            })
+            print("feature_index: OVERRIDE (regression accepted; gate_override logged)")
             return 0
         print("feature_index: ABORT (outside-scope regression)")
         return 1
