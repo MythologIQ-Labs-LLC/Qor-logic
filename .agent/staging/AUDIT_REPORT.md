@@ -1,28 +1,33 @@
-# AUDIT REPORT — Phase 122 (Seal regression gate: flip fail-closed + logged override, GH #155)
+# AUDIT REPORT — Phase 123 (External-reviewer subprocess bridge, GH #160)
 
-**Target**: docs/plan-qor-phase122-seal-regression-gate.md
+**Target**: docs/plan-qor-phase123-external-reviewer-bridge.md
 **Verdict**: PASS
-**Risk Grade**: L2 (governance-gate anti-deception; flips existing detector to fail-closed + logged override)
-**Mode**: solo (audit_risk_score: option_b_required=false)
-**Session**: 2026-06-01T2317-5e8be1
-**Note**: re-plan after first-pass Infrastructure Alignment caught that the gap is in the EXISTING `feature_index_verify` (Phase 114), not a new module. Corrected plan modifies that module; no duplication.
+**Risk Grade**: L2 (audit-gate surface; subprocess exec of an operator-configured command, fail-safe fallback)
+**Mode**: solo (audit_risk_score: option_b_required=false). Note: this plan ships the very independent-review bridge whose absence forces solo audits; it cannot bootstrap its own independent review (no reviewer configured in this repo). Recorded, not a violation.
+**Session**: 2026-06-01T2343-9febd5
 
 ## Passes
 
-- **Prompt Injection**: PASS.
-- **Security L3 / OWASP**: PASS. Flips an existing detector from `--warn-only` to fail-closed; adds a logged `--override` (no silent fail-open — A04 honored). No secrets, no injection (argv-form, no new subprocess), no deserialization.
-- **Section 4 Razor**: PASS. Change is a small flag + branch in `main`; detection logic (`tally`) unchanged.
-- **Self-Application Sub-Pass** (originating_remediation=GH #155): PASS. The discipline ("do not silently pass a regression") is proven by behavior: `test_main_aborts_on_outside_scope_regression` asserts the fail-closed exit; `test_main_override_exits_0_and_logs_event` asserts the override is logged, not silent.
-- **Test Functionality**: PASS. Behavioral tests invoke `main` and assert exit codes + the logged event (monkeypatched shadow log); wiring tests assert `|| ABORT` co-occurrence and absence of `--warn-only` in the seal invocation — weakening either fails them.
-- **Feature Test Coverage**: PASS (one MODIFIED row, behavioral descriptor).
-- **Dependency Audit**: PASS (no new deps).
-- **Macro-Level Architecture**: PASS (modifies existing module in correct layer).
-- **Infrastructure Alignment**: PASS. `feature_index_verify` exists (Phase 114) with the `return 1` fail-closed path; Step 6 currently invokes it `--warn-only` (qor-substantiate SKILL.md:421). `write_seal_snapshot`/`read_seal_snapshot` + `.qor/feature_index_snapshots/` baseline exist. The plan modifies real infrastructure; the earlier new-module/git-baseline draft was rejected at this pass.
-- **Filter-Stage / Orphan / Ghost-UI**: PASS / N/A.
+- **Prompt Injection**: PASS (canaries clean).
+- **Security L3**: PASS. The bridge executes a command resolved from `.qorlogic/config.json` (`external_reviewer.command`) — an **operator-trusted** source, not external/network input. Mitigations in the plan: list-form argv (no `shell=True`), reviewer-input passed via **stdin** (not interpolated into argv), `timeout`-bounded, and output **validated** against the contract before use. No secrets, no bypassed checks.
+- **OWASP Top 10**: PASS. A03 — no shell, no argv interpolation of untrusted data. A04 — failure is a value (`ReviewOutcome(status="fallback")`) that degrades to the existing solo path + `capability_shortfall`; no silent fail-open that skips review without a logged signal. A08 — output is `json.loads` + schema-validated, no `eval`/pickle.
+- **Section 4 Razor**: PASS. Four small pure-ish units (`resolve_reviewer_command`, `validate_review_output`, `dispatch_review`, `run_external_review`) + `main`; fallback-as-value keeps branching shallow.
+- **Self-Application Sub-Pass** (originating_remediation=GH #160): PASS. The discipline is "enable genuinely independent review." The plan proves the bridge by behavior — `test_run_external_review_ok_with_stub` (real subprocess via a stub) and the fallback/failure-path tests — rather than asserting prose.
+- **Test Functionality**: PASS. Tests invoke the units and assert outputs (resolved argv, validated bool, parsed verdict, fallback outcome, exit code), using a real stub script for the happy path and a mocked `TimeoutExpired` for the timeout path (no flaky sleep). Wiring tests assert load-bearing co-occurrence (`external_reviewer` + `capability_shortfall`; the doc flip).
+- **Feature Test Coverage**: PASS (one NEW row, behavioral descriptor covering ok + all fallback modes).
+- **Dependency Audit**: PASS. Stdlib `subprocess`/`json` only.
+- **Macro-Level Architecture**: PASS. New module in `qor/scripts`; audit invokes it; contract doc in `references/`.
+- **Infrastructure Alignment**: PASS. `adversarial-mode.md` reviewer I/O contract exists; `should_run_adversarial_mode` exists (qor_audit_runtime); the tolerant config-read pattern exists (`qor.tone._config_tone`); new module declared NEW. `runtime_contract_walk` WARNs expected for the NEW module (WARN-only V2).
+- **Filter-Stage / Orphan / Ghost-UI / Live-Progress**: PASS / N/A.
 
-## Process note
+## Advisory (non-blocking)
 
-The first-pass plan duplicated `feature_index_verify` because the solo author-audit (SG-007 author-momentum) did not survey the full Step 6 wiring. The Infrastructure Alignment Pass is the designed catch; it fired (here, operator-surfaced) and the plan was corrected before implementation. No cycle shipped the duplicate.
+- Document in `adversarial-mode.md` that `external_reviewer.command` is operator-trusted (config-file provenance) and is executed list-form without a shell — so operators understand the trust boundary.
+
+## Process Pattern Advisory
+
+<!-- qor:veto-pattern-advisory -->
+No repeated-VETO pattern detected (first audit of Phase 123; prior two sealed phases are PASS seals).
 
 ## Next action
 

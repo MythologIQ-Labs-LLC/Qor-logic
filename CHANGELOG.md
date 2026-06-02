@@ -10,7 +10,16 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.90.0] - 2026-06-01
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 123 (#160)**: External-reviewer subprocess bridge for `/qor-audit` Option B. New `qor.scripts.external_reviewer` dispatches the #50 reviewer I/O contract to an operator-configured external reviewer (`.qorlogic/config.json` → `external_reviewer.command`, argv) over stdin/stdout JSON, validates the returned verdict against the contract, and degrades to a graceful in-harness `fallback` (logged `capability_shortfall`) when the reviewer is absent, errors, times out, or returns invalid output. Flips `adversarial-mode.md` from "Contract-only specification" to shipped. Closes #50's documented deferral.
+
 ## [0.89.0] - 2026-06-01
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Changed
 - **Phase 122 (#155)**: Seal-time feature-regression gate flipped **fail-closed**. Phase 114's `feature_index_verify` (outside-scope `verified->unverified` detector vs a prior-seal snapshot) was wired into `/qor-substantiate` Step 6 with `--warn-only`; Step 6 now runs it `|| ABORT` so a regression blocks the PASS seal. New per-seal logged escape `--override` emits a `gate_override` shadow event (`details.gate = feature_index_verify`) — the explicit logged override the #155 AC requires. Snapshot baseline + detection logic unchanged; absent `FEATURE_INDEX.md` still disclosed-skips. Also restored the missing `[0.88.0]` CHANGELOG attribution line.

@@ -11557,7 +11557,28 @@ Change class: feature. Tests: 2135 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `ac720e6a355c71cd4e45dca5071beddd600827e3cf58199ebd6345ff56ee08cc`
 **Chain Hash (Merkle seal)**: `da710312d60f049973c3e3edc8093d31981ce299ccd0370d34969c3155a4e970`
 
+### Entry #316: SESSION SEAL -- Phase 123 external-reviewer subprocess bridge (v0.90.0)
+
+**Timestamp**: 2026-06-02T03:46:44Z
+**Phase**: SUBSTANTIATE (Phase 123; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase123-external-reviewer-bridge.md
+**Session**: `2026-06-01T2343-9febd5`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1, PW.9.1
+**Entry ID**: `0da0f89bbedd`
+
+**Scope**: Phase 123 implemented (#160): External-reviewer subprocess bridge for /qor-audit Option B. New qor.scripts.external_reviewer dispatches the #50 reviewer I/O contract (adversarial-mode.md) to an operator-configured external reviewer (.qorlogic/config.json -> external_reviewer.command, argv) over stdin/stdout JSON, validates the returned verdict against the output contract, and degrades to a graceful in-harness fallback (logged capability_shortfall) when the reviewer is absent / errors / times out / returns invalid output. Runs list-form (no shell), timeout-bounded; command is operator-trusted (config provenance). qor-audit Step 1.a wired to run_external_review; adversarial-mode.md flipped contract-only -> shipped. 1 new glossary term. 12 new behavioral+wiring tests. Closes #50's documented deferral. Directly addresses the SG-007 author-momentum gap that nearly shipped a duplicate module in phase 122 this session.
+
+Change class: feature. Tests: 2150 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal (GH #160).
+
+**Content Hash**: `8c6196cdef7c2cc30d5891c6570b97d32c92d0b6eac12d14d939fd6513cfb56f`
+**Previous Hash**: `da710312d60f049973c3e3edc8093d31981ce299ccd0370d34969c3155a4e970`
+**Chain Hash (Merkle seal)**: `bc182f16e7b05a12c5ea79ee348dbc55d20cec69dee9b837bec8667f027753f6`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 122; v0.89.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 123; v0.90.0 local; operator authorized push + PR)

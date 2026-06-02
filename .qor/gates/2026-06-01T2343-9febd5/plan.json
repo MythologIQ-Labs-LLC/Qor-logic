@@ -1,0 +1,30 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-01T2343-9febd5",
+  "ts": "2026-06-02T03:38:52Z",
+  "plan_path": "docs/plan-qor-phase123-external-reviewer-bridge.md",
+  "phases": [
+    "Phase 1: Bridge logic + CLI",
+    "Phase 2: Audit wiring + reference"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_external_reviewer.py tests/test_external_reviewer_wiring.py -q",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "external-reviewer bridge",
+      "home": "qor/skills/governance/qor-audit/references/adversarial-mode.md"
+    }
+  ],
+  "originating_remediation": "GH #160",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.89.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T03:38:52Z"
+  }
+}
