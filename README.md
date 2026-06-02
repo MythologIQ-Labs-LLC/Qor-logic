@@ -37,7 +37,16 @@ Qor-logic is a governance framework that ships curated skills, doctrines, and ru
 
 Supported hosts: **Claude Code**, **Kilo Code**, **Codex** (provisional), **Gemini CLI**.
 
-Built around **S.H.I.E.L.D.**: Single-purpose, Hash-chained, Idempotent, Explicit, Layered, Delegating.
+Built around **S.H.I.E.L.D.**, the six lifecycle phases each backed by a skill:
+
+| | Phase | Skill | What it does |
+|---|---|---|---|
+| **S** | Secure Intent | `/qor-bootstrap` | Seed project DNA. Document the Why, encode the architecture, initialize the Merkle chain. |
+| **H** | Hypothesize | `/qor-plan` | Create implementation blueprints with risk grades, file contracts, and Section 4 complexity limits. |
+| **I** | Interrogate | `/qor-audit` | Adversarial tribunal. The Judge audits the plan for security, correctness, and drift. PASS or VETO. |
+| **E** | Execute | `/qor-implement` | Build under KISS constraints after a PASS verdict. Functions under 40 lines, nesting under 3 levels. |
+| **L** | Lock Proof | `/qor-substantiate` | Verify Reality matches Promise. Cryptographically seal the session with Merkle hash verification. |
+| **D** | Deliver | `/qor-repo-release` | Deploy, hand off with traceability, and monitor for operational drift. |
 
 ## Latest release
 
