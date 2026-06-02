@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-06-02T13:28:47Z","version":"0.96.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-06-02T1326-69c155","target":"docs/plan-qor-phase130-feature-tdd-lint.md","ts":"2026-06-02T13:28:47Z","verdict":"PASS"}

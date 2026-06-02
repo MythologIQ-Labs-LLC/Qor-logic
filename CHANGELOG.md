@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.97.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 130 (#159)**: Per-feature TDD mechanical lint. New `qor.scripts.plan_feature_tdd_lint` parses a plan's `## Feature Inventory Touches` block and flags `NEW`/`MODIFIED` feature rows that lack a failing-test declaration (no real `test_path`, or a presence-only `test_descriptor`), plus a plan that touches `src/` with no FIT block. `n/a-justified` rows + docs-only plans are exempt. Wired WARN-only into `/qor-audit` Step 0.6; the binding VETO stays the Step 3 Feature Test Coverage Pass. Ships #41's deferred V2 enforcement lint.
+
 ## [0.96.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
