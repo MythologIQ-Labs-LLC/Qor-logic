@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.96.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 129 (#153 + #154)**: SG-MergePaceThrottle-A enforcement + full wiring (combined). `/qor-substantiate` Step 4.6.8 merge-velocity gate is now **fail-closed** — an `exceeded` grade ABORTs the seal (was `|| true`); `merge_velocity_check --override` is the logged operator escape (emits `gate_override`). `workspace_fragility_check` regained the dropped `stabilization_capacity` + `shared_surface_risk` fields and the `branch_only` recommended action, and is now wired into `/qor-plan` (Step 0.4) and `/qor-implement` (Step 0.6) as WARN-only stabilization-capacity / scope-boundary checkpoints. Closes the deferred enforcer (#89) + plan/implement wiring + dropped-fields (#90).
+
 ## [0.95.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

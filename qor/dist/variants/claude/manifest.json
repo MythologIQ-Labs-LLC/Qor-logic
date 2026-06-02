@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-06-02T12:44:43Z",
+  "generated_ts": "2026-06-02T13:25:05Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -222,7 +222,7 @@
       "id": "qor-implement",
       "source_path": "skills/qor-implement/SKILL.md",
       "install_rel_path": "skills/qor-implement/SKILL.md",
-      "sha256": "014092dc9e6c6b976977b72f4a7ae54bf0e6e4d35a0751cdb1642963668efece"
+      "sha256": "962b8012cb7684f31d6d560060c7dc728c72dab6614ed3712bcedb6de175af86"
     },
     {
       "id": "qor-meta-log-decision",
@@ -288,7 +288,7 @@
       "id": "qor-plan",
       "source_path": "skills/qor-plan/SKILL.md",
       "install_rel_path": "skills/qor-plan/SKILL.md",
-      "sha256": "0e6682e5ed501c324a9e27d460ed45aac06129162786c16dcdb23e040c9266b4"
+      "sha256": "c79452e2938a9088ca41225fa8931c4c85cde807bf703b9c852c45ddf1b0ec70"
     },
     {
       "id": "qor-process-review-cycle",
@@ -390,7 +390,7 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "1ccee810bb8e9173108a0763c682b2805f2db0c06e1f4f5956613dd9a08d802c"
+      "sha256": "0150f1bedd22b8132a22848cb50a33d25aebb7dbd07c3e2f08ed683e6190de68"
     },
     {
       "id": "qor-tone",

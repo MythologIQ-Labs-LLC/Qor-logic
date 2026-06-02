@@ -21,6 +21,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from qor.scripts import shadow_process
+
 # Threshold constants exposed at module scope for V1 transparency.
 STRAINED_PR_COUNT = 10
 EXCEEDED_PR_COUNT = 20
@@ -212,6 +214,11 @@ def main(argv: list[str] | None = None) -> int:
         "--shared-core-path", action="append", default=[],
         help="path prefix counted as shared-core (repeatable)",
     )
+    parser.add_argument(
+        "--override", action="store_true",
+        help="accept an 'exceeded' grade for this seal; emit a logged "
+             "gate_override event and pass (Phase 129 enforcer escape)",
+    )
     args = parser.parse_args(argv)
     a = assess_merge_velocity(
         args.repo_root,
@@ -228,8 +235,29 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  shared_core_touch_count={a.shared_core_touch_count}")
     for line in a.evidence:
         print(f"  evidence: {line}")
-    # Exit 1 on exceeded so V2 can remove the substantiate-site || true wrap.
-    return 1 if a.stabilization_capacity == "exceeded" else 0
+    # Phase 129 (#153): enforce on exceeded. The substantiate Step 4.6.8 wiring
+    # is now `|| ABORT`; --override is the logged operator escape.
+    if a.stabilization_capacity != "exceeded":
+        return 0
+    if args.override:
+        shadow_process.append_event({
+            "ts": shadow_process.now_iso(),
+            "skill": "qor-substantiate",
+            "session_id": "merge-velocity-check",
+            "event_type": "gate_override",
+            "severity": 2,
+            "details": {
+                "gate": "merge_velocity_check",
+                "grade": a.stabilization_capacity,
+                "recommended_action": a.recommended_action,
+            },
+            "addressed": False, "issue_url": None, "addressed_ts": None,
+            "addressed_reason": None, "source_entry_id": None,
+        })
+        print("merge_velocity_check: OVERRIDE (exceeded grade accepted; gate_override logged)")
+        return 0
+    print("merge_velocity_check: ABORT (stabilization capacity exceeded)")
+    return 1
 
 
 if __name__ == "__main__":

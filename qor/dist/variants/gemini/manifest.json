@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-06-02T12:44:43Z",
+  "generated_ts": "2026-06-02T13:25:05Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -162,7 +162,7 @@
       "id": "qor-implement.toml",
       "source_path": "commands/qor-implement.toml",
       "install_rel_path": "commands/qor-implement.toml",
-      "sha256": "5470da1a44cec50b91250a72ff97be2d70aa0f7a896bcb82b8e80c18d21e25b1"
+      "sha256": "5e702ab1ed9b341e01216de6d46d9776dfc8a7664d6f26641ad7b79e165a2668"
     },
     {
       "id": "qor-meta-log-decision.toml",
@@ -192,7 +192,7 @@
       "id": "qor-plan.toml",
       "source_path": "commands/qor-plan.toml",
       "install_rel_path": "commands/qor-plan.toml",
-      "sha256": "2e833bbe06583210dc9ce0c5aa704e8971a4b658c68b7dd0bfa12e24b9af6b4e"
+      "sha256": "88c31ab8a92a8e05317d2b3a459ee99de9f69d5bfd3ecea115bbd813a637a62a"
     },
     {
       "id": "qor-process-review-cycle.toml",
@@ -252,7 +252,7 @@
       "id": "qor-substantiate.toml",
       "source_path": "commands/qor-substantiate.toml",
       "install_rel_path": "commands/qor-substantiate.toml",
-      "sha256": "cf7a91bc6d433ba380e2a0b9666925a31c61d1981b03f51dd71f4995ca13a418"
+      "sha256": "e435bf86cdb12f6a474875b6d7428fa7b66b1e95adc8948f20c3a5b388e4f277"
     },
     {
       "id": "qor-tone.toml",

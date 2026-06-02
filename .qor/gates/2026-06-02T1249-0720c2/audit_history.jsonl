@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-06-02T13:14:44Z","version":"0.95.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-06-02T1249-0720c2","target":"docs/plan-qor-phase129-merge-throttle-enforcement.md","ts":"2026-06-02T13:14:44Z","verdict":"PASS"}
