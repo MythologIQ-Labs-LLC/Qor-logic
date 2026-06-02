@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.102.2] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 137 (hotfix)**: resynced `docs/SYSTEM_STATE.md`, which had drifted to a Phase-75 / v0.51.0 / 2026-05-14 snapshot (stale header, pre-migration File Tree, Ledger-chain-head at Entry #169). Rewrote the header, Authoritative-source, File Tree, Ledger-chain-head, Shipped-tooling, and Advisory-gate-overrides sections to current truth (Phase 136/137 era, v0.102.1, 329 ledger entries, live variants) and added a condensed Phases-108-136 bridge; the accurate historical per-phase sections (Phase 36-109) are left intact. Added `tests/test_system_state_freshness.py` -- a drift guard asserting the SYSTEM_STATE header phase stays within 1 of the latest ledger SESSION SEAL phase (the existing `test_system_state_phase_coverage` only matched "Phase N feature substantiated" phrasing, which is why the 61-phase drift went uncaught).
+
 ## [0.102.1] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

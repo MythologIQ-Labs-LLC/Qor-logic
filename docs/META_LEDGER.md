@@ -11851,7 +11851,28 @@ Change class: hotfix. Tests: 2323 passed / 0 failed / 3 skipped (full suite). Au
 **Previous Hash**: `afa61529fd4c94c388c724e9822a22fb7247722775473003772b74c729571d0b`
 **Chain Hash (Merkle seal)**: `927bc482cde6b5d865521f88eda68c7451fff210f12a2dfdeef4908a4ea7f04b`
 
+### Entry #330: SESSION SEAL -- Phase 137 SYSTEM_STATE.md resync + freshness drift-guard (v0.102.2)
+
+**Timestamp**: 2026-06-02T16:35:39Z
+**Phase**: SUBSTANTIATE (Phase 137; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase137-system-state-resync.md
+**Session**: `2026-06-02T1620-fc9ceb`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `d8021e2ae58e`
+
+**Scope**: Phase 137 implemented (hotfix; doc currency): resynced docs/SYSTEM_STATE.md, frozen at a Phase-75 / v0.51.0 / 2026-05-14 snapshot (stale header, pre-migration File Tree claiming variants deferred + 18 ledger entries, Ledger-chain-head at Entry #169). Rewrote the header, Authoritative-source, File Tree, Ledger-chain-head, Shipped-tooling, and Advisory-gate-overrides sections to current truth (Phase 136/137, v0.102.1, 329 ledger entries, live claude/codex/gemini/kilo-code variants, 30 skills / 98 scripts / 6 reliability / 54 references / 18 schemas / 2326 tests) and appended a condensed Phases-108-136 bridge; the accurate historical per-phase sections (Phase 36-109) left intact. Added tests/test_system_state_freshness.py asserting the SYSTEM_STATE header phase stays within 1 of the latest ledger SESSION SEAL phase (the existing test_system_state_phase_coverage only matched 'Phase N feature substantiated' phrasing, which is why the 61-phase drift went uncaught). No code/skill/gate change. Audit PASS (L1 solo). Full suite 2326 passed / 0 failed / 3 skipped. README Tests badge 2323 -> 2326.
+
+Change class: hotfix. Tests: 2326 passed / 0 failed / 3 skipped (full suite). Audit PASS (L1 solo).
+
+**Review Boundary**: Operator handles repo actions (push / PR / merge / tag-push / PyPI) this phase.
+
+**Content Hash**: `e07cb19f8ee21d09555159a5938a9926dbcfd94df04626ae20dcf52f8c20b85c`
+**Previous Hash**: `927bc482cde6b5d865521f88eda68c7451fff210f12a2dfdeef4908a4ea7f04b`
+**Chain Hash (Merkle seal)**: `246f86ddd9aef4402fd90269462e1be7a606b84d82af214fa1cd68fceb0477df`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 136; v0.102.1 local; substantiate skill restructured; operator authorized push + PR)
+*Session: SEALED* (Phase 137; v0.102.2 local; SYSTEM_STATE resynced; operator handles repo actions)

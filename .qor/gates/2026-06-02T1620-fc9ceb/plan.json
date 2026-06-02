@@ -1,0 +1,31 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T1620-fc9ceb",
+  "ts": "2026-06-02T16:28:21Z",
+  "plan_path": "docs/plan-qor-phase137-system-state-resync.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: Resync SYSTEM_STATE.md + freshness guard"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_system_state_freshness.py tests/test_system_state_phase_coverage.py -q",
+    "python -m pytest -q"
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "n/a",
+      "operation": "MODIFIED",
+      "test_path": "tests/test_system_state_freshness.py",
+      "test_descriptor": "parses max('SESSION SEAL -- Phase N') from META_LEDGER and '**Phase**: Phase P' from SYSTEM_STATE header, asserts P >= N-1; pre-resync (75 vs 136) fails, resynced passes"
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.102.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T16:28:21Z"
+  }
+}
