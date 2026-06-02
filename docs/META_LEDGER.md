@@ -11767,7 +11767,28 @@ Change class: feature. Tests: 2222 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `3e70c3113d041e84de2e9f49e735a5880ffd7f0e08e7719a8f788010e81edba9`
 **Chain Hash (Merkle seal)**: `88f0c824ed475def1da71588c102c6d18e9ec98cae8b36c52e48c7ba29cab418`
 
+### Entry #326: SESSION SEAL -- Phase 133 pluggable release backends (v0.100.0)
+
+**Timestamp**: 2026-06-02T14:30:27Z
+**Phase**: SUBSTANTIATE (Phase 133; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase133-pluggable-release-backends.md
+**Session**: `2026-06-02T1404-c5fda5`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `2d87d5171458`
+
+**Scope**: Phase 133 implemented (#163): pluggable version-bump + changelog backends for non-Python release mechanics. qor.scripts.version_backends detects the archetype (pyproject->python / package.json->node / Cargo.toml->rust, that priority) and bumps the right manifest -- python delegates to the unchanged governance_helpers.bump_version; node/rust reuse _compute_new + the shared tag-collision/downgrade guards with a format-specific atomic write. qor.scripts.changelog_backends stamps keepachangelog (delegates to apply_stamp) or a generic prepend format. /qor-substantiate Step 7.5/7.6 rewired to the pluggable entry points (python path unchanged via delegation; prerequisite now any of pyproject/package.json/Cargo.toml). Ships #38's deferred Option 2. 14 new tests on node/rust/python fixtures (tag guards monkeypatched to avoid live-tag coupling); updated the tag-timing-wired contract test for the new bump call.
+
+Change class: feature. Tests: 2235 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `652610a76079fd386bd7e872b588b1afb7b020808dd6dfd72aefa9f0696aefe0`
+**Previous Hash**: `88f0c824ed475def1da71588c102c6d18e9ec98cae8b36c52e48c7ba29cab418`
+**Chain Hash (Merkle seal)**: `b4494770252a2240f8014a0927c8ffd1face1e4a1ce68625c8bbd8c2606ae9ed`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 132; v0.99.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 133; v0.100.0 local; operator authorized push + PR)

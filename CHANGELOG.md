@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.100.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 133 (#163)**: Pluggable version-bump + changelog backends for non-Python release mechanics. `qor.scripts.version_backends` detects the archetype (pyproject/package.json/Cargo.toml) and bumps the right manifest -- python delegates to the unchanged `governance_helpers.bump_version`; node/rust reuse the same semver compute + tag guards. `qor.scripts.changelog_backends` stamps keepachangelog (delegates to apply_stamp) or a generic prepend format. `/qor-substantiate` Step 7.5/7.6 rewired to the pluggable entry points, so non-Python repos perform real release mechanics instead of SKIPping. Ships #38's deferred Option 2.
+
 ## [0.99.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

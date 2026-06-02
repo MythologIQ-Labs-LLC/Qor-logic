@@ -43,7 +43,10 @@ def test_skill_creates_tag_after_seal_commit():
 def test_skill_step_7_5_bumps_version_only():
     text = SKILL_PATH.read_text(encoding="utf-8")
     step = _step_section(text, "7.5")
-    assert "bump_version(" in step
+    # Phase 133 (#163): the bump is pluggable via version_backends.bump (which
+    # delegates the python path to bump_version); either call form satisfies the
+    # version-bump contract. The tag-timing invariant (no tag in 7.5) is unchanged.
+    assert "version_backends.bump(" in step or "bump_version(" in step
     assert "create_seal_tag(" not in step
 
 
