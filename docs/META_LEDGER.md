@@ -11746,7 +11746,28 @@ Change class: feature. Tests: 2211 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `4ea3ac1acae6eb3f153861efeb9888eed647a7fd19f464aedb76181bc794b6d6`
 **Chain Hash (Merkle seal)**: `3e70c3113d041e84de2e9f49e735a5880ffd7f0e08e7719a8f788010e81edba9`
 
+### Entry #325: SESSION SEAL -- Phase 132 corpus-growth counterweight (v0.99.0)
+
+**Timestamp**: 2026-06-02T14:03:31Z
+**Phase**: SUBSTANTIATE (Phase 132; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase132-corpus-counterweight.md
+**Session**: `2026-06-02T1354-a3c7e2`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `13a276480407`
+
+**Scope**: Phase 132 implemented (#162): corpus-growth counterweight (SG-SkillCorpusGrowth-A V2). New qor.scripts.progressive_disclosure_lint flags SKILL.md heading sections whose inline prose (fenced code excluded) exceeds a per-section budget without a references/ pointer (extraction candidates; escape // qor:inline-prose-ok). New qor.scripts.corpus_consolidation_report aggregates total corpus bytes + skill_size_budget_lint findings + the progressive-disclosure candidates into a ranked worklist (EXCEEDED skills, then WARN, then extractable sections), wired into /qor-process-review-cycle Phase 4 as the periodic corpus-weight sweep. Both advisory (suggest, never auto-refactor). Doctrine SG-SkillCorpusGrowth-A V2 items (progressive-disclosure auto-suggest + periodic consolidation cadence) marked shipped; context-fan-out + git-history growth-rate remain reserved. 11 new tests. Dogfood: the report flags qor-audit (52.7KB) + qor-substantiate (48.5KB) as the top consolidation candidates -- the corpus growth this cluster contributed -- closing #162 with no half-measure (both ACs land real mechanisms).
+
+Change class: feature. Tests: 2222 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `026e063bc931c8bc716eafe78737580be9e676d63d39204e703f99c04abad1f9`
+**Previous Hash**: `3e70c3113d041e84de2e9f49e735a5880ffd7f0e08e7719a8f788010e81edba9`
+**Chain Hash (Merkle seal)**: `88f0c824ed475def1da71588c102c6d18e9ec98cae8b36c52e48c7ba29cab418`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 131; v0.98.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 132; v0.99.0 local; operator authorized push + PR)

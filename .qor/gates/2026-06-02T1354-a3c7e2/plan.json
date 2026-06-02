@@ -1,0 +1,26 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T1354-a3c7e2",
+  "ts": "2026-06-02T13:56:37Z",
+  "plan_path": "docs/plan-qor-phase132-corpus-counterweight.md",
+  "phases": [
+    "Phase 1: Progressive-disclosure lint",
+    "Phase 2: Consolidation report + periodic wiring",
+    "Phase 3: Doctrine"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_progressive_disclosure_lint.py tests/test_skill_size_budget_lint.py -q",
+    "python -m qor.cli scripts corpus_consolidation_report --skills-root qor/skills",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "originating_remediation": "GH #162",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.98.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T13:56:37Z"
+  }
+}

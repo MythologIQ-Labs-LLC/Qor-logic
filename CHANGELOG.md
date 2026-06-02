@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.99.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 132 (#162)**: Corpus-growth counterweight (SG-SkillCorpusGrowth-A V2). `qor.scripts.progressive_disclosure_lint` flags SKILL.md heading sections whose inline prose exceeds a per-section budget without pointing to a `references/` file (extraction candidates; escape `<!-- qor:inline-prose-ok -->`). `qor.scripts.corpus_consolidation_report` aggregates total corpus bytes + size-budget findings + extraction candidates into a ranked consolidation worklist, wired into `/qor-process-review-cycle` Phase 4 as a periodic corpus-weight sweep. Both advisory. Ships #92's two deferred V2 directions (progressive-disclosure enforcement + periodic consolidation cadence).
+
 ## [0.98.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

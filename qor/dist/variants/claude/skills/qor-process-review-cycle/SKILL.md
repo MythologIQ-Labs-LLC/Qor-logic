@@ -98,6 +98,16 @@ Adversarial audit of the remediation proposal. Process changes deserve the same 
 
 Audit verdict is binding. PASS → operator can implement. VETO → revise per audit's mandated next actions.
 
+### Phase 4 — Corpus-weight sweep (Phase 132 wiring; GH #162)
+
+The counterweight to additive corpus growth (SG-SkillCorpusGrowth-A). Run the consolidation report so the periodic review surfaces a ranked worklist of skills/sections to pay down, balancing the additive bias of the backlog:
+
+```bash
+qor-logic scripts corpus_consolidation_report --skills-root qor/skills
+```
+
+`corpus_consolidation_report` aggregates total SKILL.md corpus bytes, per-skill size-budget findings (`skill_size_budget_lint`), and progressive-disclosure extraction candidates (`progressive_disclosure_lint`) into a ranked list — EXCEEDED skills first, then WARN skills, then oversized inline sections to move into `references/`. Advisory (exit 0; never blocks); the operator picks consolidation work from the top of the list. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-SkillCorpusGrowth-A.
+
 ## Constraints
 
 - **NEVER** mark events addressed without a paired remediation

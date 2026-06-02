@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-06-02T13:50:46Z",
+  "generated_ts": "2026-06-02T14:03:49Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -294,7 +294,7 @@
       "id": "qor-process-review-cycle",
       "source_path": "skills/qor-process-review-cycle/SKILL.md",
       "install_rel_path": "skills/qor-process-review-cycle/SKILL.md",
-      "sha256": "155f7afc885ee9abb23aeac178397866732847ca71f406a70b93416af66741c4"
+      "sha256": "2021d3b1908c5f243752dfffba9f9f3c9b6fcd17a29da9b6a20fe4f1ef1ffcfe"
     },
     {
       "id": "qor-refactor",
