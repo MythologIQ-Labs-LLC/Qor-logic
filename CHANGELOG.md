@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.91.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 124**: Release pipeline unblocked. `release.yml`'s tag trigger carried `paths-ignore`, which makes GitHub skip path-filtered `push` workflows on tag pushes — silently skipping every release since v0.85 (PyPI stuck at v0.84.0). Removed `paths-ignore` from the tag trigger and added `workflow_dispatch` with a `tag` input so the corrected workflow (from `main`) can build+publish a historical tag whose own commit still has the broken trigger. Both jobs now check out the resolved ref (`inputs.tag || github.ref_name`), derive the reachability guard from the checked-out HEAD, and pass the ref via `env:` (no Actions script injection). Enables catch-up publish of v0.85–v0.90.
+
 ## [0.90.0] - 2026-06-01
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
