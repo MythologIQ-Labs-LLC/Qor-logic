@@ -36,7 +36,7 @@ def test_step_0_3_invokes_iteration_lint_and_aborts():
     text = AUDIT_SKILL.read_text(encoding="utf-8")
     section = _section(text, r"Step 0\.3")
     assert section, "qor-audit SKILL.md has no '### Step 0.3' section"
-    assert "qor.scripts.plan_iteration_status_lint" in section
+    assert ("qor.scripts.plan_iteration_status_lint" in section or "qor-logic scripts plan_iteration_status_lint" in section)
     assert "|| ABORT" in section
     assert "do NOT emit an audit gate artifact" in section
 
@@ -47,4 +47,4 @@ def test_step_0_3_assertion_fails_when_section_removed():
     assert section
     stripped = text.replace(section, "")
     section_after = _section(stripped, r"Step 0\.3")
-    assert "qor.scripts.plan_iteration_status_lint" not in section_after
+    assert ("qor.scripts.plan_iteration_status_lint" not in section_after and "qor-logic scripts plan_iteration_status_lint" not in section_after)

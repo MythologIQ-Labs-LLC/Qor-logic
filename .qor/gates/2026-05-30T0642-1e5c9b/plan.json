@@ -1,0 +1,46 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-30T0642-1e5c9b",
+  "ts": "2026-05-30T06:52:05Z",
+  "plan_path": "docs/plan-qor-phase120-governance-index-enforcement.md",
+  "phases": [
+    "enforcement logic + CLI flags",
+    "skill wiring (substantiate+validate) + variants",
+    "doctrine flip V2->shipped"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_governance_index_enforcement.py tests/test_governance_index_substantiate_wiring.py tests/test_governance_index_validate_wiring.py -q",
+    "python -m pytest tests/test_governance_index.py tests/test_governance_index_doctrine.py tests/test_governance_index_seed.py -q",
+    "python -m qor.cli governance-index --cross-check-ledger --repo-root .",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "governance index enforcement",
+      "home": "qor/references/doctrine-governance-index.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "operates on existing 6-tier index shape; tier3 archival is a forward guard, no row auto-mutation; substantiate auto-advances Last Reviewed + fail-closes"
+    ],
+    "non_goals": [
+      "/qor-implement stale-Tier1 hard-block",
+      "auto-archival row mutation"
+    ],
+    "exclusions": [
+      "non-Python/unseeded workspaces -> disclosed-skip"
+    ]
+  },
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.86.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-30T06:52:05Z"
+  }
+}

@@ -92,10 +92,17 @@ def _do_governance_health(args: argparse.Namespace) -> int:
 
 
 def _do_governance_index(args: argparse.Namespace) -> int:
-    """Detect governance index drift; exit 0 clean / 1 drift (Phase 112; WARN-only)."""
+    """Detect drift (Phase 112 WARN) or enforce/cross-check (Phase 120, GH #149)."""
     from qor.scripts import governance_index as gi
 
-    return gi.main(["--repo-root", args.repo_root])
+    argv = ["--repo-root", args.repo_root]
+    if getattr(args, "advance_last_reviewed", None):
+        argv += ["--advance-last-reviewed", args.advance_last_reviewed]
+    if getattr(args, "enforce", False):
+        argv.append("--enforce")
+    if getattr(args, "cross_check_ledger", False):
+        argv.append("--cross-check-ledger")
+    return gi.main(argv)
 
 
 def _do_capabilities(args: argparse.Namespace) -> int:
@@ -200,8 +207,14 @@ def _register_misc(sub) -> None:
     sp_gh = sub.add_parser("governance-health", help="classify governance artifact health (Phase 109)")
     sp_gh.add_argument("--repo-root", default=".", help="workspace root to inspect")
     sp_gh.add_argument("--profile", default="skill-entry", help="named required-artifact set")
-    sp_gi = sub.add_parser("governance-index", help="detect governance index drift (Phase 112)")
+    sp_gi = sub.add_parser("governance-index", help="detect drift (Phase 112) / enforce + cross-check (Phase 120)")
     sp_gi.add_argument("--repo-root", default=".", help="workspace root to inspect")
+    sp_gi.add_argument("--advance-last-reviewed", metavar="DATE", default=None,
+                       help="rewrite Last Reviewed to DATE (YYYY-MM-DD)")
+    sp_gi.add_argument("--enforce", action="store_true",
+                       help="fail-closed substantiate enforcement (needs --advance-last-reviewed)")
+    sp_gi.add_argument("--cross-check-ledger", action="store_true",
+                       help="read-only validate cross-check against the ledger")
 
 
 def _register_capabilities(sub) -> argparse.ArgumentParser:
@@ -230,6 +243,35 @@ def _register_compliance_policy(sub) -> tuple[argparse.ArgumentParser, argparse.
     return sp_compliance, sp_policy
 
 
+def _register_module_dispatch(sub) -> None:
+    """Register `reliability`/`scripts` subcommands that run a qor.<family>.<module>
+    via the CLI's own interpreter (GH #150). Resolves regardless of which python
+    is active on PATH; bare `python -m qor.<family>.<module>` remains valid in-venv.
+    """
+    for family in ("reliability", "scripts"):
+        sp = sub.add_parser(
+            family,
+            help=f"run a qor.{family}.<module> via the CLI's own interpreter",
+        )
+        sp.add_argument("module", help=f"module name under qor.{family}")
+        sp.add_argument(
+            "args", nargs=argparse.REMAINDER,
+            help="arguments passed through to the module verbatim",
+        )
+
+
+def _do_module_dispatch(family: str, args: argparse.Namespace) -> int:
+    """Invoke qor.<family>.<module> through sys.executable, inheriting stdio and
+    propagating the child's exit code. List-form argv (no shell) and the f-string
+    family prefix confine targets to qor.reliability/qor.scripts."""
+    import subprocess
+    import sys
+
+    target = f"qor.{family}.{args.module}"
+    completed = subprocess.run([sys.executable, "-m", target, *args.args])
+    return completed.returncode
+
+
 def _build_parser() -> tuple[argparse.ArgumentParser, dict[str, argparse.ArgumentParser]]:
     parser = argparse.ArgumentParser(
         prog="qor-logic",
@@ -240,10 +282,16 @@ def _build_parser() -> tuple[argparse.ArgumentParser, dict[str, argparse.Argumen
     _register_install_family(sub)
     _register_misc(sub)
     _register_capabilities(sub)
+    _register_module_dispatch(sub)
     sp_compliance, sp_policy = _register_compliance_policy(sub)
     from qor.cli_handlers import release as release_handlers
     sp_release = release_handlers.register(sub)
-    return parser, {"compliance": sp_compliance, "policy": sp_policy, "release": sp_release}
+    from qor.cli_handlers import reconcile as reconcile_handlers
+    sp_reconcile = reconcile_handlers.register(sub)
+    return parser, {
+        "compliance": sp_compliance, "policy": sp_policy,
+        "release": sp_release, "reconcile": sp_reconcile,
+    }
 
 
 def _dispatch(args: argparse.Namespace) -> int | None:
@@ -264,6 +312,8 @@ def _dispatch(args: argparse.Namespace) -> int | None:
         "governance-index": lambda: _do_governance_index(args),
         "capabilities": lambda: _do_capabilities(args),
         "substantiate-capability": lambda: args.func(args),
+        "reliability": lambda: _do_module_dispatch(args.command, args),
+        "scripts": lambda: _do_module_dispatch(args.command, args),
     }
     if args.command in direct:
         return direct[args.command]()
@@ -303,6 +353,13 @@ def main(argv: list[str] | None = None) -> int:
         if rc is not None:
             return rc
         subparsers["release"].print_help()
+        return 0
+    if args.command == "reconcile":
+        from qor.cli_handlers import reconcile as reconcile_handlers
+        rc = reconcile_handlers.dispatch(args)
+        if rc is not None:
+            return rc
+        subparsers["reconcile"].print_help()
         return 0
     parser.print_help()
     return 0

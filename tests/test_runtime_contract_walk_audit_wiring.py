@@ -8,7 +8,7 @@ QOR_AUDIT_SKILL = REPO_ROOT / "qor" / "skills" / "governance" / "qor-audit" / "S
 REFERENCE = REPO_ROOT / "qor" / "references" / "audit-runtime-contract-walk.md"
 
 WIRING_ANCHOR = "**Phase 99 wiring (GH #108 V2 — Runtime Contract Walk)**"
-WALK_INVOCATION = "python -m qor.scripts.runtime_contract_walk --plan"
+WALK_INVOCATION = "qor-logic scripts runtime_contract_walk --plan"
 WARN_WRAP = "|| true"
 REFERENCE_POINTER = "qor/references/audit-runtime-contract-walk.md"
 

@@ -38,7 +38,7 @@ def test_step_4_6_7_invokes_dod_check():
     text = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
     section = _section(text, r"Step 4\.6\.7")
     assert section, "qor-substantiate SKILL.md has no '### Step 4.6.7' section"
-    assert "qor.scripts.dod_check" in section, (
+    assert ("qor.scripts.dod_check" in section or "qor-logic scripts dod_check" in section), (
         "Step 4.6.7 missing the qor.scripts.dod_check invocation"
     )
     # WARN-only contract: same `|| true` guard convention as Step 0.6 lints.
@@ -53,7 +53,7 @@ def test_step_4_6_7_section_removed_breaks_assertion():
     assert section, "precondition: Step 4.6.7 section must exist"
     stripped = text.replace(section, "")
     section_after = _section(stripped, r"Step 4\.6\.7")
-    assert "qor.scripts.dod_check" not in section_after
+    assert ("qor.scripts.dod_check" not in section_after and "qor-logic scripts dod_check" not in section_after)
 
 
 def test_step_4_6_7_positioned_between_4_6_6_and_4_7():

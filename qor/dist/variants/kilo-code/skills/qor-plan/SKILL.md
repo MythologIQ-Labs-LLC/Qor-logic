@@ -37,7 +37,7 @@ Create implementation plans following Rich Hickey's "Simple Made Easy" principle
 
 ## Environment (Phase 90 wiring; GH #79)
 
-This skill invokes `python -m qor.reliability.*` and `python -m qor.scripts.*` to run integrity gates. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+This skill invokes integrity gates via `qor-logic reliability <module>` / `qor-logic scripts <module>`, which run the module through the CLI's own interpreter and so resolve from any shell. The bare `python -m qor.reliability.<module>` / `python -m qor.scripts.<module>` form remains a valid in-venv fallback. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
 
 ```bash
 python -c "import qor.reliability"
@@ -120,7 +120,7 @@ Override is permitted (advisory gate) but logged as severity-1 `gate_override` e
 Detect whether the operator's locally installed skills differ from the repo source. Non-blocking WARN; operator decides whether to reinstall before proceeding.
 
 ```bash
-python -m qor.scripts.install_drift_check --host claude --scope repo || \
+qor-logic scripts install_drift_check --host claude --scope repo || \
   echo "WARNING: Local skill install differs from repo source. Consider: qor-logic install --host claude --scope repo"
 ```
 
@@ -131,7 +131,7 @@ Fix on drift: `qor-logic install --host <host> --scope <scope>` regenerates the 
 Verify the operator's running model meets each scoped skill's declared `min_model_capability`. Non-blocking WARN; operator decides whether to swap models before proceeding.
 
 ```bash
-python -m qor.scripts.model_pinning_lint --repo-root . || true
+qor-logic scripts model_pinning_lint --repo-root . || true
 ```
 
 Reads `QOR_MODEL_FAMILY` env (set by harness when available) and walks `qor/skills/**/SKILL.md` for `model_compatibility` + `min_model_capability` frontmatter. Emits stderr warnings for any skill whose declared minimum exceeds the current model's tier (`haiku < sonnet < opus`). Per `qor/references/doctrine-ai-rmf.md` §MANAGE-3.1.
@@ -342,7 +342,7 @@ Before finalizing, ensure:
 - [ ] No concluding errata sections
 - [ ] Each unit test description names the behavior it confirms (the unit's output for a given input), not the artifact it expects to find. Per `qor/references/doctrine-test-functionality.md`.
 - [ ] When the plan declares a closed-enum taxonomy (a `CANONICAL_*_VALUES` constant plus a `normalize*` function), the test list includes BOTH the forward round-trip assertion and the inverse coverage assertion. Per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline.
-- [ ] Plan asserts the same command, dependency, or filesystem path identically at every site where it appears (Phase 67 wiring; GH #42). Verify by running `python -m qor.scripts.plan_text_consistency_lint --check <plan-path>`; any drift surfaces as exit 1 with the divergent sites named. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PlanTextDrift-A.
+- [ ] Plan asserts the same command, dependency, or filesystem path identically at every site where it appears (Phase 67 wiring; GH #42). Verify by running `qor-logic scripts plan_text_consistency_lint --check <plan-path>`; any drift surfaces as exit 1 with the divergent sites named. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PlanTextDrift-A.
 - [ ] For every function or struct signature change declared in this plan, every caller (cross-file) and every persistence touchpoint (SQL schema, INSERT/SELECT, frontend TS/JS type) is enumerated in the relevant phase's Affected Files OR explicitly declared exempt with rationale (e.g., backward-compatible wrapper, transient-field). Use `grep -rn '<function_name>('` and `grep -rn 'CREATE TABLE <table>'` to verify. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AffectedFilesContract-A (Phase 110 wiring; GH #137).
 
 #### Feature Inventory Touches declaration (Phase 73 wiring; GH #40 + #41)

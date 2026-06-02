@@ -757,6 +757,7 @@ referenced_by:
   - qor/skills/governance/qor-shadow-process/SKILL.md
   - qor/skills/governance/qor-substantiate/SKILL.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
+  - qor/references/doctrine-governance-index.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
 
@@ -1031,6 +1032,8 @@ referenced_by:
   - qor/scripts/governance_index.py
   - qor/templates/GOVERNANCE_INDEX.md
   - qor/skills/memory/qor-status/SKILL.md
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-validate/SKILL.md
 introduced_in_plan: phase112-governance-index
 ```
 ```yaml
@@ -1065,4 +1068,42 @@ home: qor/references/doctrine-shadow-genome-graph.md
 referenced_by:
   - qor/scripts/shadow_genome_graph.py
 introduced_in_plan: phase113-shadow-genome-graph
+```
+```yaml
+term: module dispatch subcommand
+definition: 'The qor-logic reliability <module> / qor-logic scripts <module> CLI subcommands (Phase 118; GH #150) that run a qor.reliability/qor.scripts module through the CLI''s own sys.executable, resolving the module regardless of which python is active on PATH. The bare python -m qor.<family>.<module> form remains the valid in-venv equivalent and fallback.'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/cli.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+introduced_in_plan: phase118-module-reachability-cli-dispatch
+```
+```yaml
+term: RECONCILIATION entry
+definition: 'A forward-only META_LEDGER entry (Phase 119; GH #148) appended by `qor-logic reconcile authorize` that attests a duplicate-previous_hash residual set on a `**Reconciled Entries**:` line. verify-ledger reports DISCLOSED_RECONCILED for the attested set (gated to genuine duplicate-previous_hash members so it cannot launder content tampering) without the --tolerate-known-grandfathered flag. Sealed entries are never renumbered or rewritten.'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/scripts/reconcile.py
+  - qor/scripts/ledger_hash.py
+introduced_in_plan: phase119-ledger-reconcile-tool
+```
+```yaml
+term: reconcile command
+definition: 'The `qor-logic reconcile propose|authorize` CLI (Phase 119; GH #148). Two-stage operator-authorized, forward-only META_LEDGER reconciliation mirroring the Phase 36 B19 pending->authorized contract: `propose` writes a pending proposal of the duplicate-previous_hash residual (read-only); `authorize --proposal <path>` appends a RECONCILIATION entry. The explicit --proposal path is the sole operator-authorization signal.'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/cli_handlers/reconcile.py
+  - qor/cli.py
+introduced_in_plan: phase119-ledger-reconcile-tool
+```
+```yaml
+term: governance index enforcement
+definition: 'The Phase 120 (GH #149) self-policing layer over docs/GOVERNANCE_INDEX.md. /qor-substantiate Step 4.7.5 auto-advances Last Reviewed to the seal date then fail-closes (|| ABORT) on residual drift (unregistered doc / tier3-unarchived sealed phase); /qor-validate runs the read-only cross_check_index_against_ledger (stale-tier1 + tier3-unarchived). Absent index -> Phase 75 disclosed-skip. Implemented in qor/scripts/governance_index.py (advance_last_reviewed, enforce_at_seal, cross_check_index_against_ledger).'
+home: qor/references/doctrine-governance-index.md
+referenced_by:
+  - qor/scripts/governance_index.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-validate/SKILL.md
+introduced_in_plan: phase120-governance-index-enforcement
 ```

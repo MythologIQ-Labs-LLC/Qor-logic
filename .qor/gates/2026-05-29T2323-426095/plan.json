@@ -1,0 +1,53 @@
+{
+  "phase": "plan",
+  "session_id": "2026-05-29T2323-426095",
+  "ts": "2026-05-30T05:05:49Z",
+  "plan_path": "docs/plan-qor-phase119-ledger-reconcile-tool.md",
+  "phases": [
+    "reconcile core (qor/scripts/reconcile.py)",
+    "verify-ledger RECONCILIATION recognition",
+    "CLI two-stage propose/authorize",
+    "doctrine SG-ConcurrentLedgerRace-A + governance-enforcement"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_reconcile.py tests/test_ledger_hash_reconciliation.py tests/test_cli_reconcile.py -q",
+    "python -m pytest tests/test_ledger_hash.py tests/test_ledger_hash_tolerate_grandfathered.py -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "RECONCILIATION entry",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    },
+    {
+      "term": "reconcile command",
+      "home": "qor/references/doctrine-governance-enforcement.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "forward-only attestation; never renumber/rewrite sealed entries; tolerates only attested set"
+    ],
+    "non_goals": [
+      "touch canonical META_LEDGER",
+      "remove --tolerate-known-grandfathered",
+      "auto-authorize"
+    ],
+    "exclusions": [
+      "post-anchor re-genesis model",
+      "cross-workspace federation merge"
+    ]
+  },
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.85.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-05-30T05:05:49Z"
+  }
+}

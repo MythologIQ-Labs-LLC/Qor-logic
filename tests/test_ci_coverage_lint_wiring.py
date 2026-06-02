@@ -36,7 +36,7 @@ def test_step_0_6_invokes_ci_coverage_lint():
     text = AUDIT_SKILL.read_text(encoding="utf-8")
     section = _section(text, r"Step 0\.6")
     assert section, "qor-audit SKILL.md has no '### Step 0.6' section"
-    assert "qor.scripts.ci_coverage_lint" in section, (
+    assert ("qor.scripts.ci_coverage_lint" in section or "qor-logic scripts ci_coverage_lint" in section), (
         "Step 0.6 missing the ci_coverage_lint module invocation"
     )
     # WARN-only contract: paired with the existing `|| true` guard form
@@ -52,5 +52,5 @@ def test_step_0_6_assertion_fails_when_section_removed():
     assert section, "precondition: Step 0.6 section must exist for negative test"
     stripped = text.replace(section, "")
     section_after = _section(stripped, r"Step 0\.6")
-    assert "qor.scripts.ci_coverage_lint" not in section_after
+    assert ("qor.scripts.ci_coverage_lint" not in section_after and "qor-logic scripts ci_coverage_lint" not in section_after)
     assert "|| true" not in section_after

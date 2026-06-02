@@ -37,7 +37,7 @@ def test_consumer_trace_procedure_documented():
 
 def test_skill_step0_6_runs_delivery_branch_lint():
     text = SKILL.read_text(encoding="utf-8")
-    assert "qor.scripts.delivery_branch_lint" in text, (  # prose-lint: ok=prompt-citation paired with existence check
+    assert ("qor.scripts.delivery_branch_lint" in text or "qor-logic scripts delivery_branch_lint" in text), (  # prose-lint: ok=prompt-citation paired with existence check
         "Step 0.6 must invoke the delivery_branch_lint pre-audit lint"
     )
     assert importlib.util.find_spec("qor.scripts.delivery_branch_lint") is not None

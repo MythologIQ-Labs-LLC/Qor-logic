@@ -182,7 +182,7 @@ def test_audit_skill_invokes_canary_scan_on_governance_reads():
         body = skill.read_text(encoding="utf-8")
         if not _skill_reads_governance(body):
             continue
-        if "qor.scripts.prompt_injection_canaries" not in body:
+        if not ("qor.scripts.prompt_injection_canaries" in body or "qor-logic scripts prompt_injection_canaries" in body):
             violations.append(str(skill.relative_to(REPO_ROOT)))
     assert not violations, (
         f"audit skill reads governance markdown but does not invoke canary "

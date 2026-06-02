@@ -114,8 +114,8 @@ def test_audit_phase_skills_invoke_both_pre_audit_lints():
     violators: list[str] = []
     for skill in audit_skills:
         body = skill.read_text(encoding="utf-8")
-        if "python -m qor.scripts.plan_test_lint" not in body:
+        if not ("python -m qor.scripts.plan_test_lint" in body or "qor-logic scripts plan_test_lint" in body):
             violators.append(f"{skill.relative_to(REPO_ROOT)}: missing plan_test_lint invocation")
-        if "python -m qor.scripts.plan_grep_lint" not in body:
+        if not ("python -m qor.scripts.plan_grep_lint" in body or "qor-logic scripts plan_grep_lint" in body):
             violators.append(f"{skill.relative_to(REPO_ROOT)}: missing plan_grep_lint invocation")
     assert not violators, "audit-phase skills must invoke both pre-audit lints: " + str(violators)

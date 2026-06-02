@@ -10,6 +10,27 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.87.0] - 2026-05-30
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 120 (#149)**: Governance Index enforcement — wires `GOVERNANCE_INDEX` into `/qor-substantiate` (Step 4.7.5, fail-closed) and `/qor-validate` (ledger cross-check), closing #140's deferred enforcement half. `governance_index.enforce_at_seal` auto-advances `Last Reviewed` to the seal date then fail-closes on `unregistered` (doc in no tier) or `tier3-unarchived` (a Tier 3 row naming an already-sealed phase); `cross_check_index_against_ledger` is the read-only validate check. New CLI flags `--advance-last-reviewed`/`--enforce`/`--cross-check-ledger`; absent index records a Phase 75 disclosed-skip. Doctrine flipped from V2-deferred to shipped (the `/qor-implement` stale-Tier-1 block + auto row-mutation remain deferred).
+
+## [0.86.0] - 2026-05-30
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 119 (#148)**: `qor-logic reconcile propose|authorize` — real, forward-only META_LEDGER reconciliation superseding the Phase 91 `--tolerate-known-grandfathered` stopgap. Two-stage operator-authorized flow (mirroring Phase 36 B19): `propose` writes a pending proposal of the duplicate-`previous_hash` residual (read-only); `authorize --proposal <path>` appends a `RECONCILIATION` entry attesting the residual. `verify-ledger` reports `DISCLOSED_RECONCILED` for the attested set without the `--tolerate` flag — but only for genuine duplicate-`previous_hash` members, so an attestation cannot launder content tampering. Sealed entries are never renumbered or rewritten. Doctrine SG-ConcurrentLedgerRace-A updated with the V2 real fix.
+
+## [0.85.0] - 2026-05-29
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 118 (#150)**: `qor-logic reliability <module>` / `qor-logic scripts <module>` CLI dispatch (Option A for module reachability). The dispatch runs the named `qor.reliability`/`qor.scripts` module through the CLI's own `sys.executable`, so integrity gates resolve from any shell regardless of which `python`/venv is active. Canonical skill prompts now invoke gates via the dispatch form; the bare `python -m qor.<family>.<module>` form is retained as the documented in-venv fallback (hybrid migration).
+
 ## [0.84.0] - 2026-05-29
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -25,14 +25,31 @@ def _substantiate_skills() -> list[Path]:
     return matches
 
 
+# Phase 118 (GH #150): accept either the legacy module form or the qor-logic
+# dispatch form (hybrid migration; python -m retained as in-venv fallback).
+_PF_FORMS = (
+    "python -m qor.scripts.procedural_fidelity --session",
+    "qor-logic scripts procedural_fidelity --session",
+)
+
+
+def _pf_index(body: str) -> int:
+    for form in _PF_FORMS:
+        idx = body.find(form)
+        if idx != -1:
+            return idx
+    return -1
+
+
 def test_substantiate_skill_invokes_procedural_fidelity_at_step_4_6_6():
     """Phase 50 co-occurrence rule: any SKILL.md whose `phase: substantiate`
-    MUST invoke `python -m qor.scripts.procedural_fidelity --session`."""
+    MUST invoke procedural_fidelity (via `qor-logic scripts procedural_fidelity
+    --session` or the legacy `python -m` form)."""
     subs = _substantiate_skills()
     assert subs, "expected >=1 substantiate-phase skill"
     invokers = [
         s for s in subs
-        if "python -m qor.scripts.procedural_fidelity --session" in s.read_text(encoding="utf-8")
+        if _pf_index(s.read_text(encoding="utf-8")) != -1
     ]
     assert invokers, (
         "At least one phase: substantiate skill MUST invoke procedural_fidelity; "
@@ -48,7 +65,7 @@ def test_step_4_6_6_uses_warn_not_abort_semantics():
     subs = _substantiate_skills()
     for skill in subs:
         body = skill.read_text(encoding="utf-8")
-        idx = body.find("python -m qor.scripts.procedural_fidelity --session")
+        idx = _pf_index(body)
         if idx == -1:
             continue
         window = body[idx:idx + 250]

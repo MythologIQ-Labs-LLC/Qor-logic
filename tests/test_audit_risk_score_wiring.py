@@ -51,7 +51,7 @@ def _md_section(text: str, header_substr: str) -> str:
 def test_step_1_invokes_audit_risk_score_and_mandates_option_b():
     section = _md_section(AUDIT_SKILL.read_text(encoding="utf-8"), "Step 1:")
     assert section, "qor-audit SKILL.md has no Step 1 section"
-    assert "qor.scripts.audit_risk_score" in section
+    assert ("qor.scripts.audit_risk_score" in section or "qor-logic scripts audit_risk_score" in section)
     assert "option_b_required" in section
     assert "mandatory" in section.lower() and "Option B" in section
 
@@ -62,4 +62,4 @@ def test_step_1_directive_fails_when_stripped():
     kept = "\n".join(
         ln for ln in section.splitlines() if "audit_risk_score" not in ln
     )
-    assert "qor.scripts.audit_risk_score" not in kept
+    assert "qor.scripts.audit_risk_score" not in kept and "qor-logic scripts audit_risk_score" not in kept
