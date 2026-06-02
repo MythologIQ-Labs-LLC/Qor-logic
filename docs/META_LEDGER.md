@@ -11662,7 +11662,28 @@ Change class: feature. Tests: 2181 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `b5f3329e8119c504da801f3cb80ca60653f2dfa4c68a66fcb4a143505eda5a03`
 **Chain Hash (Merkle seal)**: `58075e27e2fdd2f6b759eaa6ccfbc19eca6e8b019017ff6d1c15b350dc98be5a`
 
+### Entry #321: SESSION SEAL -- Phase 128 plan-consistency --apply + --type-check (v0.95.0)
+
+**Timestamp**: 2026-06-02T12:44:22Z
+**Phase**: SUBSTANTIATE (Phase 128; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase128-plan-consistency-apply-typecheck.md
+**Session**: `2026-06-02T0751-39a4b5`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `bebff515420d`
+
+**Scope**: Phase 128 implemented (#161): plan_text_consistency_lint V2.3 --apply + V2.4 --type-check. --apply rewrites detected command/path drift in place, normalizing every divergent site in a group to a canonical raw text (most-common; tie -> earliest by line) via backtick-span replace; dry-run remains the default so the Step 0.6 report contract is unchanged. --type-check flags identifiers given conflicting name: Type annotations across fenced code blocks. dep_name / type_annotation findings are not auto-rewritten. New apply_fixes, _canonical_raw, _detect_type_annotation_drift; docstring moved V2.3/V2.4 from V3-deferred to shipped. 8 new behavioral tests. Closes #46's two deferred sub-scopes that PR (Phase 48) left out.
+
+Change class: feature. Tests: 2189 passed / 0 failed / 3 skipped (full suite). Audit PASS (L2 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `f937789c2869a562791a79e419747effa02d5800cdcb7c5dcc07f05608375a28`
+**Previous Hash**: `58075e27e2fdd2f6b759eaa6ccfbc19eca6e8b019017ff6d1c15b350dc98be5a`
+**Chain Hash (Merkle seal)**: `6803569baaf15276311223d32a27515a4fe478eadec68c4d013845ef57d9c4e9`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 127; v0.94.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 128; v0.95.0 local; operator authorized push + PR)

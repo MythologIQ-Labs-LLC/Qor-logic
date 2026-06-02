@@ -9,10 +9,14 @@ V2 changes vs V1:
   the original COREFORGE V1 finding (dep named in plan but not declared).
 - New `--strict` flag preserves V1 broad-rule for debugging.
 
-V3 deferrals: --apply rewrite mode, type-annotation consistency,
-pyproject.toml [project.dependencies] parsing.
+Phase 128 (GH #161): V2.3 `--apply` rewrite mode (normalize divergent drift
+sites to a canonical raw text in place; dry-run default) + V2.4 `--type-check`
+mode (flag identifiers with conflicting `name: Type` annotations across fenced
+code blocks) are shipped.
 
-Stdlib-only. CLI: python -m qor.scripts.plan_text_consistency_lint --check <path> [--strict] [--repo-root <path>]
+V3 deferrals: pyproject.toml [project.dependencies] parsing.
+
+Stdlib-only. CLI: python -m qor.scripts.plan_text_consistency_lint --check <path> [--strict] [--apply] [--type-check] [--repo-root <path>]
 """
 from __future__ import annotations
 
@@ -349,6 +353,63 @@ def _detect_dep_name_drift(plan_text: str, repo_root: Path | None) -> list[Drift
     return findings
 
 
+# --- V2.3 --apply autofix + V2.4 --type-check (Phase 128; GH #161) ---
+_TYPE_ANNOT_RE = re.compile(r"\b([A-Za-z_]\w*)\s*:\s*([A-Za-z_][\w\[\]., |]*?)\s*[=,)\n]")
+
+
+def _canonical_raw(sites: tuple[Site, ...]) -> str:
+    """Rewrite target: most-common raw_text; tie -> earliest by line."""
+    from collections import Counter
+    counts = Counter(s.raw_text for s in sites)
+    best = max(counts.values())
+    for s in sorted(sites, key=lambda s: s.line):
+        if counts[s.raw_text] == best:
+            return s.raw_text
+    return sites[0].raw_text
+
+
+def apply_fixes(plan_text: str, findings: list[DriftFinding]) -> tuple[str, int]:
+    """Rewrite each command/path drift group's divergent sites to the canonical
+    raw text (backtick-span replace). dep_name / type_annotation findings are
+    not plan-text rewrites and are skipped. Returns (new_text, rewrite_count)."""
+    new_text = plan_text
+    count = 0
+    for finding in findings:
+        if finding.operation_kind in ("dep_name", "type_annotation"):
+            continue
+        canonical = _canonical_raw(finding.sites)
+        for site in finding.sites:
+            if site.raw_text == canonical:
+                continue
+            old, rep = f"`{site.raw_text}`", f"`{canonical}`"
+            if old in new_text:
+                new_text = new_text.replace(old, rep)
+                count += 1
+    return new_text, count
+
+
+def _detect_type_annotation_drift(plan_text: str) -> list[DriftFinding]:
+    """Within fenced code blocks, flag any identifier given >=2 distinct
+    `name: Type` annotations (lexical type-annotation consistency)."""
+    by_name: dict[str, set[str]] = {}
+    for block in _FENCED_BLOCK.finditer(plan_text):
+        for m in _TYPE_ANNOT_RE.finditer(block.group(0)):
+            by_name.setdefault(m.group(1), set()).add(m.group(2).strip())
+    findings: list[DriftFinding] = []
+    for name, types in by_name.items():
+        if len(types) >= 2:
+            sites = tuple(
+                Site(line=0, section="type", raw_text=f"{name}: {t}", normalized=t)
+                for t in sorted(types)
+            )
+            findings.append(DriftFinding(
+                operation_kind="type_annotation", sites=sites,
+                resolution_hint=f"identifier '{name}' has conflicting type "
+                                f"annotations: {sorted(types)}",
+            ))
+    return findings
+
+
 def lint(
     plan_text: str,
     strict: bool = False,
@@ -381,13 +442,31 @@ def main(argv: Iterable[str] | None = None) -> int:
         "--repo-root", default=None,
         help="repo root for dep_name cross-check (Cargo.toml / requirements*.txt)",
     )
+    parser.add_argument(
+        "--apply", action="store_true",
+        help="V2.3: rewrite detected command/path drift to a canonical form in place "
+             "(default is dry-run report)",
+    )
+    parser.add_argument(
+        "--type-check", action="store_true",
+        help="V2.4: also flag identifiers with conflicting type annotations",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
     path = Path(args.check)
     if not path.exists():
         print(f"plan_text_consistency_lint: no such file: {path}", file=sys.stderr)
         return 2
     repo_root = Path(args.repo_root) if args.repo_root else path.parent.parent
-    findings = lint(path.read_text(encoding="utf-8"), strict=args.strict, repo_root=repo_root)
+    text = path.read_text(encoding="utf-8")
+    findings = lint(text, strict=args.strict, repo_root=repo_root)
+    if args.type_check:
+        findings = findings + _detect_type_annotation_drift(text)
+    if args.apply:
+        new_text, n = apply_fixes(text, findings)
+        if n:
+            path.write_text(new_text, encoding="utf-8")
+        print(f"plan_text_consistency_lint: applied {n} fix(es)", file=sys.stderr)
+        return 0
     if not findings:
         return 0
     print("plan_text_consistency_lint: drift detected", file=sys.stderr)

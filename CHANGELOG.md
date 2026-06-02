@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.95.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 128 (#161)**: `plan_text_consistency_lint` gains the two sub-modes #46 deferred. `--apply` (V2.3) rewrites detected command/path drift in place, normalizing every divergent site in a group to a canonical raw text (most-common; tie -> earliest); dry-run remains the default, so the Step 0.6 report contract is unchanged. `--type-check` (V2.4) flags identifiers given conflicting `name: Type` annotations across fenced code blocks. dep_name findings are not auto-rewritten. Behavioral tests for apply + type-check.
+
 ## [0.94.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
