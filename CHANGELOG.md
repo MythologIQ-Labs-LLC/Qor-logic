@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.98.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 131 (#165)**: Closed the #138 residue. Confirmed `shadow_process.append_event` is moot for the `QOR_SKILL_ACTIVE` harness-signal leak (it consumes only the caller-supplied `event['skill']` field, never the env) with a behavioral proof + a source-guard regression test, and added the named `SG-HarnessSignalDrift-A` doctrine entry cataloguing the harness-signal-drift pattern + its shipped countermeasure + the moot finding. No `append_event` change (the phase proves none is needed).
+
 ## [0.97.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

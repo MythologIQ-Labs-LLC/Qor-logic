@@ -11725,7 +11725,28 @@ Change class: feature. Tests: 2208 passed / 0 failed / 3 skipped (full suite). A
 **Previous Hash**: `be0e3e01c88de71108dd66a25bd7ea082ee433db45d2e45ba7d9c17729df62f8`
 **Chain Hash (Merkle seal)**: `4ea3ac1acae6eb3f153861efeb9888eed647a7fd19f464aedb76181bc794b6d6`
 
+### Entry #324: SESSION SEAL -- Phase 131 harness-signal-drift residue close (v0.98.0)
+
+**Timestamp**: 2026-06-02T13:50:28Z
+**Phase**: SUBSTANTIATE (Phase 131; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase131-harness-signal-drift.md
+**Session**: `2026-06-02T1338-f9aa8b`
+**SSDF Practices**: PO.1.3, PO.1.4, PS.3.2
+**Entry ID**: `28a51270fc40`
+
+**Scope**: Phase 131 implemented (#165): closed the #138 residue. AC1: confirmed shadow_process.append_event is moot for the QOR_SKILL_ACTIVE harness-signal leak -- it consumes only the caller-supplied event['skill'] data field and never reads the env -- proven by test_append_event_ignores_qor_skill_active_env (behavioral) + test_append_event_source_has_no_env_read (regression guard). No append_event change required. AC2: added the named SG-HarnessSignalDrift-A doctrine entry cataloguing the harness-signal-drift pattern (#138 env leak across the skill boundary), its shipped PR #144 countermeasure (context-manager scoping + write_gate_artifact(skill=)), and the moot append_event sub-finding; doc-contract test locks it. 3 new tests; no half-measure -- both ACs closed with artifacts, not prose.
+
+Change class: feature. Tests: 2211 passed / 0 failed / 3 skipped (full suite). Audit PASS (L1 solo).
+
+**Review Boundary**: Operator authorized push + PR post-seal.
+
+**Content Hash**: `935ac653c1dfb528401e9d1d32d4aa1f5265bc2ab84f1f526f1e379f2175933b`
+**Previous Hash**: `4ea3ac1acae6eb3f153861efeb9888eed647a7fd19f464aedb76181bc794b6d6`
+**Chain Hash (Merkle seal)**: `3e70c3113d041e84de2e9f49e735a5880ffd7f0e08e7719a8f788010e81edba9`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 130; v0.97.0 local; operator authorized push + PR)
+*Session: SEALED* (Phase 131; v0.98.0 local; operator authorized push + PR)
