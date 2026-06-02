@@ -1,0 +1,25 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T0751-39a4b5",
+  "ts": "2026-06-02T12:37:03Z",
+  "plan_path": "docs/plan-qor-phase128-plan-consistency-apply-typecheck.md",
+  "phases": [
+    "Phase 1: --apply + --type-check",
+    "Phase 2: Doc note"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_text_consistency_apply.py tests/test_plan_text_consistency_lint.py -q",
+    "python -m qor.cli scripts plan_text_consistency_lint --check docs/plan-qor-phase128-plan-consistency-apply-typecheck.md",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "originating_remediation": "GH #161",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.94.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T12:37:03Z"
+  }
+}

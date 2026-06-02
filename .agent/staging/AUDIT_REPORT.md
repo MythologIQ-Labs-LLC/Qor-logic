@@ -1,22 +1,21 @@
-# AUDIT REPORT — Phase 127 (LiveProgressInvariant detector, GH #156)
+# AUDIT REPORT — Phase 128 (plan_text_consistency_lint --apply + --type-check, GH #161)
 
-**Target**: docs/plan-qor-phase127-live-progress-lint.md
+**Target**: docs/plan-qor-phase128-plan-consistency-apply-typecheck.md
 **Verdict**: PASS
-**Risk Grade**: L2 (pre-audit governance-lint; WARN-only; heuristic with escape-comment FP containment)
+**Risk Grade**: L2 (lint extension; adds an opt-in file-rewrite mode, dry-run default)
 **Mode**: solo (audit_risk_score: option_b_required=false)
-**Session**: 2026-06-02T0730-38d2ca
+**Session**: 2026-06-02T0751-39a4b5
 
 ## Passes
 
 - **Prompt Injection**: PASS.
-- **Security L3 / OWASP**: PASS. Pure lexical scan over frontend source text; no subprocess, no eval, no writes. Reads files under repo_root only.
-- **Section 4 Razor**: PASS. `detect_fake_jump` / `scan_text` (pure) + `scan_repo` (walk) + `main`; each small and single-purpose.
-- **Self-Application** (originating_remediation=GH #156): PASS. The detector enforces live-progress fidelity; this repo has no frontend, so it is a no-op here (a CI command asserts zero findings) — proven by behavior, not prose.
-- **Test Functionality**: PASS. Behavioral fixtures cover all three finding kinds (fake-jump / no-event-subscription / error-no-dismiss) plus the negatives (intermediate writes, event subscription, suppress comment, backend-only) and CLI exit codes — invoking the unit, asserting findings.
-- **Over-flag risk (prose-lint lesson)**: ADDRESSED. Fake-jump is the deterministic core; the two heuristics carry an inline `// qor:live-progress-ok` escape; backend-only repos produce zero findings (`test_scan_repo_skips_backend_only`). WARN-only at Step 0.6.
-- **Closed-enum discipline**: the plan correctly updates BOTH `audit.schema.json` `findings_categories.items.enum` AND `findings_signature._VALID_CATEGORIES` (the in-code mirror) with `live-progress-fake`; `test_findings_signature.py` is in the CI command set to confirm no validation breakage.
-- **Feature Test Coverage / Dependency / Macro / Orphan / Ghost-UI**: PASS / N/A. Stdlib only; new module in `qor/scripts`.
-- **Infrastructure Alignment**: PASS. SG-FakeProgress-A doctrine + the audit Live-Progress checklist exist (Phase 74); the enum + `_VALID_CATEGORIES` mirror exist; new module declared NEW.
+- **Security L3 / OWASP**: PASS. `--apply` mutates only the operator-supplied `--check` plan file (no arbitrary-path write); rewrite is a backtick-span string replace, no exec/eval. A04 — mutation is opt-in (`--apply`); dry-run is the default, preserving the read-only Step 0.6 contract (no silent in-place edits).
+- **Section 4 Razor**: PASS. `_canonical_raw` + `apply_fixes` + `_detect_type_annotation_drift`, each small and single-purpose.
+- **Self-Application** (originating_remediation=GH #161): PASS. The lint enforces plan text consistency; this plan self-checks clean (`--check` exit 0) despite citing drift examples. Proven by behavior (apply/type-check fixtures), not prose.
+- **Test Functionality**: PASS. Behavioral tests: apply rewrites divergent sites to canonical (and dry-run leaves bytes unchanged), dep_name skipped, type-check flags conflicting annotations / clears consistent ones, CLI exit codes. Invoke the unit, assert file content + findings.
+- **Backward-compat**: the default (no `--apply`, no `--type-check`) behavior is unchanged — the Step 0.6 / plan-review callers keep their report-only, exit-1-on-drift contract.
+- **Feature Test Coverage / Dependency / Macro / Orphan / Ghost-UI**: PASS / N/A. Stdlib only; extends existing module.
+- **Infrastructure Alignment**: PASS. `plan_text_consistency_lint` (Phase 48) exists with `Site`/`DriftFinding`/`lint`/`main`; the new functions extend it; the docstring's own "V3 deferrals" line names `--apply` + type-annotation consistency.
 
 ## Process Pattern Advisory
 
