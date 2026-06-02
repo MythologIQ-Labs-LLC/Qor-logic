@@ -1,0 +1,26 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T1404-c5fda5",
+  "ts": "2026-06-02T14:20:04Z",
+  "plan_path": "docs/plan-qor-phase133-pluggable-release-backends.md",
+  "phases": [
+    "Phase 1: Version backends",
+    "Phase 2: Changelog backends",
+    "Phase 3: Substantiate wiring + non-Python fixture"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_release_backends.py -q",
+    "python -m pytest tests/test_governance_helpers.py tests/test_changelog_stamp.py -q",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "originating_remediation": "GH #163",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.99.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T14:20:04Z"
+  }
+}

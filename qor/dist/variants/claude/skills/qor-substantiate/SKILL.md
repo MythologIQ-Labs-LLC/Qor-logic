@@ -520,36 +520,38 @@ Operator pastes `$SSDF_LINE` into the SESSION SEAL entry body before Step 7 comp
 
 ### Step 7.5: Version bump (Phase 13 wiring; Phase 33 split)
 
-**Prerequisite (Phase 75; GH #38)**: requires `file:pyproject.toml` (Python-archetype). Non-Python hosts skip this step and use their archetype-native version mechanism (e.g., `package.json` for Node, `Cargo.toml` for Rust); record SKIP in the seal entry and emit a `gate_skipped_prerequisite_absent` shadow event. Future V2 (deferred per ideation 2026-05-14T2216-a5f692) will add pluggable backends.
-
-Bump `pyproject.toml` only. Tag creation was moved to Step 9.5.5 after the seal commit (Phase 33 — prevents the historical off-by-one seal-tag timing bug where tags pointed at the pre-seal HEAD).
+**Prerequisite (Phase 75; GH #38)**: requires a supported version manifest — `file:pyproject.toml` OR `file:package.json` OR `file:Cargo.toml`. Phase 133 (GH #163) made the bump **pluggable** via `qor.scripts.version_backends`: it detects the archetype (python/node/rust, that priority) and bumps the right file. Only when NONE of the three manifests is present does the step record SKIP + emit a `gate_skipped_prerequisite_absent` shadow event. Tag creation was moved to Step 9.5.5 after the seal commit (Phase 33 — prevents the historical off-by-one seal-tag timing bug where tags pointed at the pre-seal HEAD).
 
 ```python
-# Phase 13 wiring: version bump. Tag creation deferred to Step 9.5.5 (Phase 33).
-from qor.scripts import governance_helpers as gh
+# Phase 13 wiring + Phase 133 pluggable backends (#163). Tag creation deferred to Step 9.5.5.
+from qor.scripts import governance_helpers as gh, version_backends
+from pathlib import Path
 
 plan_path = gh.current_phase_plan_path()              # V-5: lexicographic suffix
 phase_num, slug = gh.derive_phase_metadata(plan_path) # W-3: derive before use
 change_class = gh.parse_change_class(plan_path)       # V-2: bold-form enforced
-new_version = gh.bump_version(change_class)           # V-6 + W-4: tag-collision + downgrade interdiction
+# version_backends.bump delegates the python path to gh.bump_version (unchanged
+# tag-collision + downgrade interdiction); node/rust reuse the same guards.
+new_version, backend = version_backends.bump(Path("."), change_class)
 ```
 
 ### Step 7.6: Stamp CHANGELOG (Phase 27 wiring)
 
-After the version bump in Step 7.5 produces `new_version` and the seal date is known, stamp `CHANGELOG.md` in place:
+After the version bump in Step 7.5 produces `new_version` and the seal date is known, stamp `CHANGELOG.md` in place via the **pluggable changelog backend** (Phase 133; GH #163) so non-keepachangelog repos are handled too:
 
 ```python
-from qor.scripts.changelog_stamp import apply_stamp
+from qor.scripts import changelog_backends
 from datetime import datetime, timezone
+from pathlib import Path
 
-apply_stamp(
-    path="CHANGELOG.md",
-    version=new_version,
-    date=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+changelog_backends.stamp(
+    Path("CHANGELOG.md"),
+    new_version,
+    datetime.now(timezone.utc).strftime("%Y-%m-%d"),
 )
 ```
 
-`apply_stamp` raises `ValueError` on missing `## [Unreleased]`, empty Unreleased (no bullets), or collision with an existing `[new_version]` section. On any raise, PAUSE with the operator message; do NOT silently ship an unstamped CHANGELOG. Per `qor/references/doctrine-changelog.md`, every release gets a dated section; the Unreleased convention is populated during `/qor-implement` and mechanically renamed on seal.
+`changelog_backends.stamp` detects the format: a `## [Unreleased]` section delegates to `changelog_stamp.apply_stamp` (keepachangelog — raises `ValueError` on missing/empty Unreleased or a `[new_version]` collision; PAUSE and fix, do NOT silently ship an unstamped CHANGELOG); otherwise the `prepend` backend inserts a `## v<version> - <date>` section near the top. Per `qor/references/doctrine-changelog.md`, every release gets a dated section; the keepachangelog Unreleased convention is populated during `/qor-implement` and mechanically renamed on seal.
 
 ### Step 7.7: Post-seal verification (Phase 47 wiring)
 
