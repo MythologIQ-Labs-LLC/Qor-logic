@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.94.0] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 127 (#156)**: LiveProgressInvariant detector. New `qor.scripts.plan_live_progress_lint` mechanically detects the SG-FakeProgress-A patterns in a target repo's frontend source -- fake-jump (`0%`->`100%` with no intermediate width write), missing event-stream subscription, and error-without-dismiss -- replacing the hand-only Ghost-UI Live-Progress checklist. Promoted `live-progress-fake` from a prose sub-tag to a `findings_categories` schema enum value (+ findings_signature mirror). Wired WARN-only into `/qor-audit` Step 0.6; backend-only repos produce zero findings; escape `// qor:live-progress-ok`. Ships #156's AC2 (enum) + AC3 (detector + behavioral tests) that PR #69 left prose-only.
+
 ## [0.93.0] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

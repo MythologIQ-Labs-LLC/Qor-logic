@@ -7,14 +7,14 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-2173%20passing-brightgreen" alt="Tests: 2173 passing">
+  <img src="https://img.shields.io/badge/Tests-2184%20passing-brightgreen" alt="Tests: 2184 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
   <img src="https://img.shields.io/badge/Doctrines-33-blue" alt="Doctrines: 33">
-  <img src="https://img.shields.io/badge/Ledger-319%20entries%20sealed-green" alt="Ledger: 319 entries sealed">
+  <img src="https://img.shields.io/badge/Ledger-320%20entries%20sealed-green" alt="Ledger: 320 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -37,7 +37,16 @@ Qor-logic is a governance framework that ships curated skills, doctrines, and ru
 
 Supported hosts: **Claude Code**, **Kilo Code**, **Codex** (provisional), **Gemini CLI**.
 
-Built around **S.H.I.E.L.D.**: Single-purpose, Hash-chained, Idempotent, Explicit, Layered, Delegating.
+Built around **S.H.I.E.L.D.**, the six lifecycle phases each backed by a skill:
+
+| | Phase | Skill | What it does |
+|---|---|---|---|
+| **S** | Secure Intent | `/qor-bootstrap` | Seed project DNA. Document the Why, encode the architecture, initialize the Merkle chain. |
+| **H** | Hypothesize | `/qor-plan` | Create implementation blueprints with risk grades, file contracts, and Section 4 complexity limits. |
+| **I** | Interrogate | `/qor-audit` | Adversarial tribunal. The Judge audits the plan for security, correctness, and drift. PASS or VETO. |
+| **E** | Execute | `/qor-implement` | Build under KISS constraints after a PASS verdict. Functions under 40 lines, nesting under 3 levels. |
+| **L** | Lock Proof | `/qor-substantiate` | Verify Reality matches Promise. Cryptographically seal the session with Merkle hash verification. |
+| **D** | Deliver | `/qor-repo-release` | Deploy, hand off with traceability, and monitor for operational drift. |
 
 ## Latest release
 

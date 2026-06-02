@@ -1,21 +1,22 @@
-# AUDIT REPORT — Phase 126 (Citation consumer-trace executable check, GH #157)
+# AUDIT REPORT — Phase 127 (LiveProgressInvariant detector, GH #156)
 
-**Target**: docs/plan-qor-phase126-citation-consumer-trace.md
+**Target**: docs/plan-qor-phase127-live-progress-lint.md
 **Verdict**: PASS
-**Risk Grade**: L2 (audit-pass tooling; read-only lexical trace; operator-supplied inputs)
+**Risk Grade**: L2 (pre-audit governance-lint; WARN-only; heuristic with escape-comment FP containment)
 **Mode**: solo (audit_risk_score: option_b_required=false)
-**Session**: 2026-06-02T0534-f24468
+**Session**: 2026-06-02T0730-38d2ca
 
 ## Passes
 
 - **Prompt Injection**: PASS.
-- **Security L3 / OWASP**: PASS with one binding implement constraint. The trace reads files and follows imports; `resolve_imports` MUST bound resolved paths to `repo_root` (reject `..`-escapes / absolute paths outside the tree) so a crafted relative import can't read arbitrary filesystem locations. Inputs (`--entry`, `--symbol`) are operator-supplied CLI args (trusted). No subprocess, no eval, no writes. `\bsymbol\b` is regex-escaped before use.
-- **Section 4 Razor**: PASS. `resolve_imports` (pure parse) + `trace_reachable` (BFS w/ visited-set + depth bound) + `main`; BFS under 40 lines.
-- **Self-Application** (originating_remediation=GH #157): PASS. The check verifies a cited symbol is reachable from an entry point; the plan's CI command self-applies it to a real reachable symbol (`_do_governance_index` from `qor/cli.py`). Proven by behavior (positive + negative fixtures), not prose.
-- **Test Functionality**: PASS. Positive (in-file + transitive-import reachable), negative (orphan unreachable -> finding), skip (missing entry), cycle-termination, and import-resolution-filtering tests all invoke the unit and assert outputs/exit codes.
-- **Feature Test Coverage**: PASS (NEW row, behavioral descriptor with positive/negative).
-- **Dependency / Macro / Orphan / Ghost-UI**: PASS / N/A. Stdlib `re`/`pathlib`; new module in `qor/scripts`; audit reference invokes it.
-- **Infrastructure Alignment**: PASS. `phase37-subpasses.md` consumer-trace sub-check exists (Phase 83); `findings_signature` exists; the new module is declared NEW. The wiring replaces the manual-grep step with the runnable command.
+- **Security L3 / OWASP**: PASS. Pure lexical scan over frontend source text; no subprocess, no eval, no writes. Reads files under repo_root only.
+- **Section 4 Razor**: PASS. `detect_fake_jump` / `scan_text` (pure) + `scan_repo` (walk) + `main`; each small and single-purpose.
+- **Self-Application** (originating_remediation=GH #156): PASS. The detector enforces live-progress fidelity; this repo has no frontend, so it is a no-op here (a CI command asserts zero findings) — proven by behavior, not prose.
+- **Test Functionality**: PASS. Behavioral fixtures cover all three finding kinds (fake-jump / no-event-subscription / error-no-dismiss) plus the negatives (intermediate writes, event subscription, suppress comment, backend-only) and CLI exit codes — invoking the unit, asserting findings.
+- **Over-flag risk (prose-lint lesson)**: ADDRESSED. Fake-jump is the deterministic core; the two heuristics carry an inline `// qor:live-progress-ok` escape; backend-only repos produce zero findings (`test_scan_repo_skips_backend_only`). WARN-only at Step 0.6.
+- **Closed-enum discipline**: the plan correctly updates BOTH `audit.schema.json` `findings_categories.items.enum` AND `findings_signature._VALID_CATEGORIES` (the in-code mirror) with `live-progress-fake`; `test_findings_signature.py` is in the CI command set to confirm no validation breakage.
+- **Feature Test Coverage / Dependency / Macro / Orphan / Ghost-UI**: PASS / N/A. Stdlib only; new module in `qor/scripts`.
+- **Infrastructure Alignment**: PASS. SG-FakeProgress-A doctrine + the audit Live-Progress checklist exist (Phase 74); the enum + `_VALID_CATEGORIES` mirror exist; new module declared NEW.
 
 ## Process Pattern Advisory
 
@@ -24,4 +25,4 @@ No repeated-VETO pattern detected.
 
 ## Next action
 
-PASS -> `/qor-implement` (repo-root path-bound constraint binding).
+PASS -> `/qor-implement`.
