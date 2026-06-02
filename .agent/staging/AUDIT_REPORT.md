@@ -1,25 +1,21 @@
-# AUDIT REPORT — Phase 124 (Release pipeline fix, paths-ignore + dispatch)
+# AUDIT REPORT — Phase 125 (Citation-drift enforcement lint, GH #152)
 
-**Target**: docs/plan-qor-phase124-release-pipeline-fix.md
+**Target**: docs/plan-qor-phase125-citation-drift-enforcement.md
 **Verdict**: PASS
-**Risk Grade**: L2 (CI/release-config repair; publish capability pre-existed and stays gated by reachability + PyPI pull-back; supply-chain surface noted)
+**Risk Grade**: L2 (pre-audit governance-lint surface; WARN-only, LD-region-scoped; the binding VETO remains the P2 audit re-walk)
 **Mode**: solo (audit_risk_score: option_b_required=false)
-**Session**: 2026-06-02T0348-5ce6bc
+**Session**: 2026-06-02T0521-4c17b9
 
 ## Passes
 
-- **Prompt Injection**: PASS (plan canaries clean).
-- **Security L3 / OWASP A03**: PASS with binding implement constraint. The new `workflow_dispatch.inputs.tag` is attacker-influenceable text; it MUST reach `run:` shells via `env:` indirection (`env: REF: ${{ inputs.tag || github.ref_name }}` then `$REF`), never inline `${{ inputs.tag }}` inside a `run:` script (GitHub Actions script-injection vector). The `actions/checkout` `ref:` field is not a shell context and may use the expression directly. Defense-in-depth: both jobs' reachability guard (`git merge-base --is-ancestor HEAD origin/main`) refuses any ref not on `main`, and the PyPI pull-back step verifies the published artifact — so a hostile tag cannot publish off-main content. Dispatch is collaborator-gated.
-- **Supply chain**: the change does not widen who can publish or alter OIDC/PyPI environment; it repairs a trigger that has been failing closed (no releases) since v0.85. Publishing was always possible via tag push pre-#142.
-- **Section 4 Razor**: PASS (surgical YAML edits; no logic added).
-- **Self-Application** (originating_remediation set): PASS. The fix is proven by structural tests that parse the actual workflow and assert the corrected shape (no paths-ignore, dispatch input, resolved-ref checkout), not prose.
-- **Test Functionality**: PASS. `test_release_workflow_dispatch.py` loads and asserts on the parsed YAML structure the fix depends on; the preserved immutability/guard tests assert SHA-pinning and guard-before-publish still hold.
-- **Infrastructure Alignment**: PASS. release.yml build/publish jobs, the reachability guards, and the SHA-pinned actions exist as cited; the edit modifies real structure and the existing `test_release_workflow_immutability.py` / `test_release_workflow_guard.py` constrain it.
-- **Dependency / Macro / Orphan / Ghost-UI**: PASS / N/A.
-
-## Definition of Done note
-
-The backlog-publish deliverable carries a `D4.d` waiver (live PyPI publish is not unit-testable); executed post-merge via `gh workflow run release.yml -f tag=vX.Y.Z`, self-verified by the workflow's PyPI pull-back gate.
+- **Prompt Injection**: PASS.
+- **Security L3 / OWASP**: PASS. Pure regex over plan text; no subprocess, no eval, no file writes. The migration/file:line/git-show regexes are bounded literals.
+- **Section 4 Razor**: PASS. One pure function `check_citation_evidence(text)` + a small `_ld_blocks` helper; merged into existing `check_plan`. No added nesting.
+- **Self-Application** (originating_remediation=GH #152): PASS. The lint enforces grep-evidence for sealed citations; this plan declares no Locked-Decision region, so the lint is a no-op on it (self-applies clean — a CI command asserts this). Not a violation; the discipline isn't claimed by this plan.
+- **Test Functionality**: PASS. Behavioral tests invoke `check_citation_evidence`/`check_plan` and assert on emitted findings (flagged vs `[]`), including the over-flag guard (`test_no_finding_without_ld_region`) and the attribution-12g cross-iteration regression. These replace the AC5 text-presence assertions.
+- **Over-flag risk (SG-PlanTextDrift / prose-lint lesson)**: ADDRESSED. The LD-region scoping means ordinary plans (no `Locked Decision`/`Citation Inventory` heading) produce zero findings — the explicit `test_no_finding_without_ld_region` guards the false-positive floor. Note: `main` stays WARN-only (returns 0); findings surface in stdout / `check_plan` return (the plan's exit-code test is replaced by an output assertion to match the WARN-only contract).
+- **Feature Test Coverage**: PASS (MODIFIED row, behavioral descriptor).
+- **Dependency / Macro / Orphan / Ghost-UI / Infrastructure**: PASS / N/A. `plan_grep_lint` exists (Phase 55) and runs at audit Step 0.6; the extension rides the existing invocation.
 
 ## Process Pattern Advisory
 
@@ -28,4 +24,4 @@ No repeated-VETO pattern detected.
 
 ## Next action
 
-PASS -> `/qor-implement` (with the env-indirection constraint binding).
+PASS -> `/qor-implement`.

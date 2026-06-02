@@ -1,0 +1,25 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-02T0521-4c17b9",
+  "ts": "2026-06-02T05:21:52Z",
+  "plan_path": "docs/plan-qor-phase125-citation-drift-enforcement.md",
+  "phases": [
+    "Phase 1: Citation-evidence check in plan_grep_lint",
+    "Phase 2: Behavioral wiring"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_grep_lint_citation_evidence.py tests/test_plan_grep_lint.py -q",
+    "python -m qor.cli scripts plan_grep_lint --plan docs/plan-qor-phase125-citation-drift-enforcement.md --repo-root .",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "originating_remediation": "GH #152",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.91.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-02T05:21:52Z"
+  }
+}

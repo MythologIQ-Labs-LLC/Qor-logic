@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-06-02T05:22:24Z","version":"0.91.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-06-02T0521-4c17b9","target":"docs/plan-qor-phase125-citation-drift-enforcement.md","ts":"2026-06-02T05:22:24Z","verdict":"PASS"}
