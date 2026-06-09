@@ -48,15 +48,15 @@ Qor-logic/
 |-- tests/                                 373 test_*.py (2323 collected)
 |-- .qor/                                  Runtime state: session/current + gates/<sid>/*.json
 |-- CHANGELOG.md, README.md, CLAUDE.md, ATTRIBUTION.md, CONTRIBUTING.md
-`-- pyproject.toml                         Python 3.11+; version 0.103.0
+`-- pyproject.toml                         Python 3.11+; version 0.103.1
 ```
 
 ## Ledger chain head
 
+- Entry #335 SESSION SEAL -- Phase 139 (v0.103.1) -- chain `33e04a59aa745ae723188ead1e4be6e0d0944c5aca6e46be8d27ff8ba4c19cd2`
 - Entry #333 SESSION SEAL -- Phase 138 (v0.103.0) -- chain `24cd1569d4a38c047942dbc36e3ff624ee003890d083a7f3e2e4c3790bb2b96a`
 - Entry #330 SESSION SEAL -- Phase 137 (v0.102.2) -- chain `246f86ddd9aef4402fd90269462e1be7a606b84d82af214fa1cd68fceb0477df`
-- Entry #329 SESSION SEAL -- Phase 136 (v0.102.1) -- chain `927bc482cde6b5d865521f88eda68c7451fff210f12a2dfdeef4908a4ea7f04b`
-- 333 ledger entries total (Entries #331 research / #332 GATE TRIBUNAL precede the Phase 138 seal). Verification: `python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md` -> all sealable entries OK.
+- 335 ledger entries total (Entry #334 GATE TRIBUNAL precedes the Phase 139 seal). Verification: `python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md` -> all sealable entries OK.
 
 ## Shipped tooling
 
