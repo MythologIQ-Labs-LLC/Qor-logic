@@ -1,0 +1,103 @@
+{
+  "schema_version": "1",
+  "controls": [
+    {
+      "id": "prompt-injection",
+      "framework": "OWASP-LLM01 (prompt injection)",
+      "control": "scan operator-authored governance markdown for injection canaries before any audit pass",
+      "enforcing_module": "qor.scripts.prompt_injection_canaries",
+      "invocation": "prompt_injection_canaries",
+      "posture": "ABORT",
+      "detection": "skill-marker",
+      "wired_into": {"skill": "qor/skills/governance/qor-audit/SKILL.md", "step": "Prompt Injection Pass"},
+      "variants": ["claude", "codex", "kilo-code", "gemini"]
+    },
+    {
+      "id": "prose-test-lint",
+      "framework": "NIST-SSDF PW.7 (verification integrity)",
+      "control": "reject presence-only tests that assert substring membership without invoking the unit",
+      "enforcing_module": "qor.scripts.prose_test_lint",
+      "invocation": "prose_test_lint --tests-dir tests --enforce",
+      "posture": "ABORT",
+      "detection": "skill-marker",
+      "wired_into": {"skill": "qor/skills/governance/qor-audit/SKILL.md", "step": "Test Functionality Pass"},
+      "variants": ["claude", "codex", "kilo-code", "gemini"]
+    },
+    {
+      "id": "secret-scan",
+      "framework": "OWASP-LLM06 / NIST-AI-600-1 (sensitive information disclosure)",
+      "control": "pre-seal secret scan over staged content",
+      "enforcing_module": "qor.scripts.secret_scanner",
+      "invocation": "secret_scanner --staged",
+      "posture": "ABORT",
+      "detection": "skill-marker",
+      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "4.6.5"},
+      "variants": ["claude", "codex", "kilo-code", "gemini"]
+    },
+    {
+      "id": "data-api-acl",
+      "framework": "OWASP-A01 (broken access control) / runtime-principal-fidelity",
+      "control": "fail-closed scan for API-schema tables without grants and definer views",
+      "enforcing_module": "qor.scripts.data_api_acl_lint",
+      "invocation": "data_api_acl_lint",
+      "posture": "ABORT",
+      "detection": "skill-marker",
+      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "4.6.10"},
+      "variants": ["claude", "codex", "kilo-code", "gemini"]
+    },
+    {
+      "id": "badge-currency",
+      "framework": "NIST-SSDF RV.1 (release artifact integrity)",
+      "control": "release-class README badge currency (Tests/Ledger/Skills/Agents/Doctrines)",
+      "enforcing_module": "qor.scripts.badge_currency",
+      "invocation": "badge_currency",
+      "posture": "ABORT",
+      "detection": "skill-marker",
+      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "6.5"},
+      "variants": ["claude", "codex", "kilo-code", "gemini"]
+    },
+    {
+      "id": "governance-index",
+      "framework": "NIST-SSDF PO.3 (governance currency)",
+      "control": "fail-closed governance-index enforcement (advance Last-Reviewed + unregistered/tier3)",
+      "enforcing_module": "qor.scripts.governance_index",
+      "invocation": "governance-index --advance-last-reviewed",
+      "posture": "ABORT",
+      "detection": "skill-marker",
+      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "4.7.5"},
+      "variants": ["claude", "codex", "kilo-code", "gemini"]
+    },
+    {
+      "id": "gate-chain-completeness",
+      "framework": "NIST-AI-RMF GOVERN-1 (process integrity)",
+      "control": "every sealed phase >= 52 carries all four gate artifacts; bypass is invisible without it",
+      "enforcing_module": "qor.reliability.gate_chain_completeness",
+      "invocation": "gate_chain_completeness",
+      "posture": "ABORT",
+      "detection": "skill-marker",
+      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "7.8"},
+      "variants": ["claude", "codex", "kilo-code", "gemini"]
+    },
+    {
+      "id": "ai-provenance",
+      "framework": "EU-AI-Act Art.13/50 (transparency provenance)",
+      "control": "every gate-artifact write embeds an AI provenance manifest; missing provenance blocks the write",
+      "enforcing_module": "qor.scripts.ai_provenance",
+      "posture": "ABORT",
+      "detection": "test",
+      "wired_into": {"test": "tests/test_gate_chain_phase52_provenance_still_enforced.py::test_provenance_error_blocks_write_and_blocks_hook"},
+      "variants": []
+    },
+    {
+      "id": "dependency-review",
+      "framework": "NIST-SSDF PS.3 (supply-chain integrity)",
+      "control": "PR dependency review + admission cooling-period (hard-fail)",
+      "enforcing_module": "qor.scripts.dependency_admission_lint",
+      "posture": "ABORT",
+      "detection": "ci-job",
+      "wired_into": {"job": ".github/workflows/pr-dependency-review.yml"},
+      "variants": []
+    }
+  ],
+  "waivers": []
+}

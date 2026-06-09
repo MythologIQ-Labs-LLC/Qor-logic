@@ -12030,5 +12030,47 @@ Change class: feature. Tests: full suite 2356 passed / 0 failed / 2 skipped; thr
 
 ---
 
+### Entry #339: GATE TRIBUNAL -- Phase 141 plan PASS (compliance-conveyance integrity)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: GATE (Phase 141)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase141-compliance-conveyance-integrity.md
+**Session**: `2026-06-09T0000-cnv141`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `4e63114c91f0bbef251330cc124a0cc098ed1705723cf1798e3fe2fdd944a386`
+**Previous Hash**: `afcd241c585c76e68e5d8969bc94f936344b73ab1e19f37e30fa8c349efd003a`
+**Chain Hash (Merkle seal)**: `5d737c062f4521f7c64a2ab4564a000f8321896e538488e4de4abbbad3981bba`
+
+**Decision**: PASS (L2, solo; option_b_required=false). Plan for Phase 141 -- a declarative compliance control matrix (`qor/compliance/control_matrix.json` + schema), a conveyance conformance test (generic verifier dispatching on detection mode skill-marker/test/ci-job, including a per-variant conveyance check), and a compliance ratchet (diff vs prior release tag; drop/downgrade fails unless waived) -- clears all binding passes. Infrastructure Alignment grep-verified every cited path/symbol (substantiate SKILL.md, the provenance enforcement test, pr-dependency-review.yml, the compiled variant skill path, `git show v0.104.0` plumbing). No new dependency (jsonschema already present); no cycle; all 12 tests functional; mechanism is self-validating (a wrong seeded posture reds its own conformance test). Hooks explicitly out of scope per operator. Guidance: split `verify_control` into per-detection helpers for the Razor; wire the four new glossary terms before seal. Next: `/qor-implement`.
+
+---
+
+### Entry #340: SESSION SEAL -- Phase 141 compliance-conveyance integrity (v0.105.0)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: SUBSTANTIATE (Phase 141)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase141-compliance-conveyance-integrity.md
+**Session**: `2026-06-09T0000-cnv141`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `8fbd8daf369d`
+
+**Scope**: Phase 141 implemented (feature) -- compliance-conveyance integrity. A declarative Compliance Control Matrix (`qor/compliance/control_matrix.json` + `qor/gates/schema/control_matrix.schema.json`) records every conveyed control (framework, enforcing module, posture ABORT/WARN, detection mode, conveyance target), loaded by `qor.scripts.compliance_matrix`, seeded with nine deterministic shipping controls. `qor.scripts.compliance_conformance` (pytest gate) verifies each row is wired at its declared posture and reaches every conveyed variant (claude/codex/kilo-code `skills/*/SKILL.md`, gemini `commands/*.toml`), dispatching on detection mode skill-marker/test/ci-job; it caught a step-anchor substring bug and the gemini layout difference during build before passing on the real matrix. `qor.scripts.compliance_ratchet.ratchet_check` (pytest gate) diffs the matrix against the prior release tag via `git show` and fails on a dropped or ABORT->WARN control unless a `waivers` entry (id+justification+issue) covers it; growth allowed, first-introduction a no-op. New doctrine `qor/references/doctrine-compliance-conveyance.md` homes four glossary terms. Hooks intentionally out of scope per operator.
+
+Change class: feature. Tests: 15 new behavioral tests (red->green, three target suites deterministic x2); full suite green after a keyword-only-name-collision fix (renamed ratchet `check` -> `ratchet_check`) and badge reconciliation. README badges Tests 2356->2371, Doctrines 33->34, Ledger 338->340. Audit PASS (L2 solo). doc_tier standard; no new dependency (jsonschema present); no cycle; Razor-clean (no function >25 lines). Substantiate gates: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, data-API-ACL SKIP, doc-integrity strict PASS (4 new terms wired), governance-index enforce clean, badge-currency OK, seal-hash-integrity PASS.
+
+**Review Boundary**: stage-only at seal. Per `/qor-auto-dev-1`, commit + tag + push + PR + merge + publish are HELD for explicit operator approval at handoff.
+
+**Content Hash**: `c1bcd0f8f2ee29d83092209c5231fd031a05356e46bc0f6c04a2c7660ad8f207`
+**Previous Hash**: `5d737c062f4521f7c64a2ab4564a000f8321896e538488e4de4abbbad3981bba`
+**Chain Hash (Merkle seal)**: `f723bc25f43a359cfd7e7c3b00e9e3c1cd429df3c39bd0754112b70c3c96f070`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 140; v0.104.0; governance-health + ledger-seal robustness; Review Boundary enforced -- commit/tag/push HELD for operator)
+*Session: SEALED* (Phase 141; v0.105.0; compliance-conveyance integrity; Review Boundary -- commit/tag/push HELD for operator)

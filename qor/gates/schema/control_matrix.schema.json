@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Compliance Control Matrix",
+  "type": "object",
+  "required": ["schema_version", "controls", "waivers"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"type": "string"},
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id", "framework", "control", "enforcing_module",
+          "posture", "detection", "wired_into", "variants"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "framework": {"type": "string", "minLength": 1},
+          "control": {"type": "string", "minLength": 1},
+          "enforcing_module": {"type": "string", "minLength": 1},
+          "invocation": {"type": "string"},
+          "posture": {"type": "string", "enum": ["ABORT", "WARN"]},
+          "detection": {"type": "string", "enum": ["skill-marker", "test", "ci-job"]},
+          "wired_into": {"type": "object"},
+          "variants": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "waivers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "justification", "issue"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "justification": {"type": "string", "minLength": 1},
+          "issue": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

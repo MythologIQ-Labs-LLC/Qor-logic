@@ -1,8 +1,8 @@
 # Qor-logic System State
 
 **Snapshot**: 2026-06-09
-**Chain Status**: ACTIVE. Phase 139 sealed at v0.103.1 (bot-author citation-lint exemption); this entry (Phase 140, feature) seals the GH #199/#200/#201 governance-health + ledger-seal robustness cluster at v0.104.0.
-**Phase**: Phase 140 (feature, GH #199/#200/#201). Hardens the governance-health/seal boundary: a UTF-8/ASCII validity gate at the ledger-seal write boundary (`ledger_hash.assert_sealable_text`), disclosed-pre-anchor tolerance for the skill-entry health gate (parity with the release gate), and template-form placeholder matching so prose mentions of "to-do" no longer false-positive INCOMPLETE. Full per-phase history is authoritative in `docs/META_LEDGER.md` (338 entries; latest Entry #338 -- Phase 140 -- v0.104.0 -- chain `afcd241c...`); SYSTEM_STATE keeps the current-state header, physical map, and a condensed recent-phase bridge rather than restating every phase. The pre-1.0 line is current: the half-measure-closures cluster (GH #147 + #148-#165) is fully closed with real enforcers, and the two largest governance skills remain under the 40 KB skill-size budget (Phases 135/136).
+**Chain Status**: ACTIVE. Phase 140 sealed at v0.104.0 (governance-health + ledger-seal robustness); this entry (Phase 141, feature) adds compliance-conveyance integrity (control matrix + conformance + ratchet) and seals at v0.105.0.
+**Phase**: Phase 141 (feature, compliance-conveyance integrity). Makes the compliance Qor-logic conveys downstream provably complete and non-regressable: a declarative control matrix (`qor/compliance/control_matrix.json`), a conveyance conformance pytest gate (`qor.scripts.compliance_conformance`) that fails when a control is missing/posture-downgraded/un-conveyed, and a compliance ratchet (`qor.scripts.compliance_ratchet`) that forbids a release dropping or downgrading a control without a waiver. Full per-phase history is authoritative in `docs/META_LEDGER.md` (340 entries; latest Entry #340 -- Phase 141 -- v0.105.0 -- chain `<sealed below>`); SYSTEM_STATE keeps the current-state header, physical map, and a condensed recent-phase bridge rather than restating every phase. The pre-1.0 line is current: the half-measure-closures cluster (GH #147 + #148-#165) is fully closed with real enforcers, and the two largest governance skills remain under the 40 KB skill-size budget (Phases 135/136).
 
 ## Authoritative source
 
@@ -929,3 +929,17 @@ Feature closing ALL five V2 carry-forward items accumulated across Phases 101-10
 **Placeholder discipline (GH #200)**: `governance_health._PLACEHOLDER_MARKERS` (bare-substring tuple) is replaced by `_PLACEHOLDER_PATTERNS` (compiled regexes requiring a structural cue: colon-suffixed to-do / fix-me labels, HTML-comment to-do scaffolds, mustache verify tags, bracketed fill-in slots). `_incomplete_reason` matches via `pattern.search` and names the matched marker. Prose mentions of the bare to-do word no longer false-positive a non-ledger artifact as `INCOMPLETE`; the ledger path (`_ledger_incomplete`) is unchanged.
 
 **TDD**: three test files authored first (`test_ledger_seal_utf8_validation`, `test_governance_health_post_anchor_tolerance`, extended `test_governance_health`); RED confirmed (8 failing), then GREEN; the three target suites (19 tests) run green twice for determinism. doc_tier standard; no new dependencies; no new glossary terms (existing symbols).
+
+---
+
+## Phase 141: compliance-conveyance integrity (control matrix + conformance + ratchet)
+
+**New surface**: `qor/compliance/control_matrix.json` (+ `qor/gates/schema/control_matrix.schema.json`) is the declarative registry of every compliance control Qor-logic conveys downstream -- each row carries framework, enforcing module, posture (ABORT/WARN), detection mode (skill-marker/test/ci-job), conveyance target, and variants. Seeded with the deterministic shipping controls (prompt-injection, prose-test-lint, secret-scan, data-api-acl, badge-currency, governance-index, gate-chain-completeness, ai-provenance, dependency-review). `qor.scripts.compliance_matrix` loads + schema-validates it.
+
+**Conformance gate**: `qor.scripts.compliance_conformance.verify_all` (pytest `test_compliance_conformance.py`) verifies each row is wired at its declared posture and reaches the conveyed payload, dispatching on detection mode (skill-marker checks the source skill step + every variant's compiled skill; test checks the named behavioral test exists; ci-job checks the workflow references the module). Runs in the existing CI pytest matrix; a downgraded or un-conveyed control reds every PR. Self-validating: a wrong seeded posture reds its own conformance test.
+
+**Ratchet**: `qor.scripts.compliance_ratchet.ratchet_check` (pytest `test_compliance_ratchet.py`) compares the matrix against the prior release tag via `git show`; a dropped or `ABORT -> WARN` control fails unless a `waivers` entry (id+justification+issue) covers it. Growth is always allowed; first introduction is a no-op. Makes conveyed compliance monotonic across versions.
+
+**Doctrine**: `qor/references/doctrine-compliance-conveyance.md` is the home for the four new glossary terms (Compliance Control Matrix, Control Posture, Conveyance Conformance, Compliance Ratchet).
+
+**TDD**: three test files authored first; RED confirmed, then GREEN; the conformance test caught a step-anchor substring bug and the gemini `commands/*.toml` variant layout during build before passing. doc_tier standard; no new dependency (jsonschema already present); hooks explicitly out of scope per operator.
