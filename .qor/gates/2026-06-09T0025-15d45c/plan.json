@@ -1,0 +1,56 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0025-15d45c",
+  "ts": "2026-06-09T00:25:48Z",
+  "plan_path": "docs/plan-qor-phase138-surface-tag-lint.md",
+  "phases": [
+    "Phase 1: Surface-tag lint logic + CLI mode (qor/scripts/feature_index_verify.py)",
+    "Phase 2: Schema + doctrine/example/glossary/ladder + SKILL.md wiring"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_feature_index_surface_lint.py tests/test_feature_index_surface_schema.py -q",
+    "python -m pytest tests/test_feature_index_example_template.py tests/test_feature_index_verify_helper.py tests/test_feature_index_verify_gate.py tests/test_doctrine_feature_inventory.py -q",
+    "python -m pytest -q",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase138-surface-tag-lint.md",
+    "qor-logic scripts doc_integrity --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "Surface tag",
+      "home": "qor/references/doctrine-feature-inventory.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 schema-optional WARN-only presence lint; degradation event on untagged non-n/a rows; disclosed-skip when no Surface column; missing index silent skip."
+    ],
+    "non_goals": [
+      "surface vocabulary registry",
+      "per-surface coverage gates",
+      "V2 fail-closed",
+      "governance_health vs doctrine drift reconciliation"
+    ],
+    "exclusions": [
+      "repos without FEATURE_INDEX or without a Surface column produce no blocking output; regression ABORT path untouched."
+    ]
+  },
+  "high_risk_target": false,
+  "feature_inventory_touches": [
+    {
+      "entry_id": "n/a",
+      "operation": "NEW",
+      "test_path": "tests/test_feature_index_surface_lint.py",
+      "test_descriptor": "surface_lint returns untagged=(FX002,) for an untagged verified row when a Surface column is declared; () when all tagged; column_present=False when no column; --surface-lint CLI exits 0 and emits degradation/gate_skipped_prerequisite_absent events accordingly"
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.102.2",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T00:25:48Z"
+  }
+}

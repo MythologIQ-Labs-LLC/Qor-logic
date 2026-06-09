@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.103.0] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 138 (GH #196 V1)**: a schema-optional, WARN-only surface-tag presence lint in the `/qor-substantiate` FEATURE_INDEX verification pass. `qor-logic scripts feature_index_verify --surface-lint` flags every non-`n/a` FEATURE_INDEX row missing a `Surface` value with a severity-2 `degradation` event when the repo's index header declares a `Surface` column; a repo whose header lacks the column disclosed-skips (`gate_skipped_prerequisite_absent`) and a repo without a `FEATURE_INDEX.md` silent-skips, so no existing adopter is broken by adoption. Adds an optional `surface` property to `feature_index.schema.json` (`additionalProperties:false` retained), a glossary entry, the worked-example 7th column, and step 7 of the seal pass. The motivating per-surface mapping data is FailSafe's (FailSafe#206); the enforcing gate lives in qor-logic. The lint always exits 0; V2 fail-closed promotion is deferred until consumer surface coverage is complete.
+
 ## [0.102.2] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -2,13 +2,13 @@
 
 Tracked governance artifact enumerating every user-touchable feature. Updated by `/qor-implement` Step 12.5; tallied by `/qor-substantiate` Step 6. Format and discipline per `qor/references/doctrine-feature-inventory.md`.
 
-| ID | Name | Source-of-truth file:line | Doc citation | Test path | Verification status |
-|---|---|---|---|---|---|
-| FX001 | Marketplace install endpoint | src/marketplace/route.py:42 | docs/marketplace.md | tests/test_marketplace_route.py | verified |
-| FX002 | Marketplace install confirmation | src/marketplace/route.py:78 | docs/marketplace.md | — | unverified |
-| FX003 | Settings card: voice substrate | src/settings/voice_card.tsx:15 | docs/settings.md#voice | tests/test_voice_card_presence.spec.ts | unverified |
-| FX004 | Operator-judgment surface: brainstorm UI | src/brainstorm/index.tsx | docs/brainstorm.md | — | n/a |
-| FX005 | RiskManager updateRisk | src/risk/manager.ts:104 | docs/risk.md | tests/test_risk_manager.spec.ts | verified |
+| ID | Name | Source-of-truth file:line | Doc citation | Test path | Surface | Verification status |
+|---|---|---|---|---|---|---|
+| FX001 | Marketplace install endpoint | src/marketplace/route.py:42 | docs/marketplace.md | tests/test_marketplace_route.py | route | verified |
+| FX002 | Marketplace install confirmation | src/marketplace/route.py:78 | docs/marketplace.md | — | route | unverified |
+| FX003 | Settings card: voice substrate | src/settings/voice_card.tsx:15 | docs/settings.md#voice | tests/test_voice_card_presence.spec.ts | settings-card | unverified |
+| FX004 | Operator-judgment surface: brainstorm UI | src/brainstorm/index.tsx | docs/brainstorm.md | — |  | n/a |
+| FX005 | RiskManager updateRisk | src/risk/manager.ts:104 | docs/risk.md | tests/test_risk_manager.spec.ts | command | verified |
 
 ## n/a rationales
 

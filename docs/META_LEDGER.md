@@ -11872,7 +11872,64 @@ Change class: hotfix. Tests: 2326 passed / 0 failed / 3 skipped (full suite). Au
 **Previous Hash**: `927bc482cde6b5d865521f88eda68c7451fff210f12a2dfdeef4908a4ea7f04b`
 **Chain Hash (Merkle seal)**: `246f86ddd9aef4402fd90269462e1be7a606b84d82af214fa1cd68fceb0477df`
 
+### Entry #331: RESEARCH BRIEF -- GH #196 Surface-tag enforcement impact (qor-logic independent + FailSafe interaction)
+
+**Timestamp**: 2026-06-09T00:16:34Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+
+**Content Hash**: `61a0d138111fbe9150c0d069dc236faa43d2f59a0d555e9dd3374bb09e1deb37`
+**Previous Hash**: `246f86ddd9aef4402fd90269462e1be7a606b84d82af214fa1cd68fceb0477df`
+**Chain Hash (Merkle seal)**: `6db2007d4e00e39fd257c1557627c15ed41d218a8ca5ca805139ec2d4ed19068`
+
+**Decision**: Investigated how GH #196 (require/verify a per-feature `Surface` tag in the FEATURE_INDEX verification pass) affects qor-logic independently and together with FailSafe. Findings: the change is a schema-optional, additive, WARN-first capability extension, not a behavior change to any existing gate. Zero effect on qor-logic's own seal today — qor-logic has no `docs/FEATURE_INDEX.md` (governance-health MISSING; ls absent), so it disclosed-skips the whole pass and the new sub-check is doubly gated behind index-exists AND surface-column-declared. The parser (`feature_index_verify.py:55`-`:62`) is header-driven and already tolerates extra columns, so reading `surface` needs no parser change; the coupled V1 change is adding an optional `surface` property to `feature_index.schema.json` (`additionalProperties:false`). WARN-first has copy-ready precedents (`dod_check`, `procedural_fidelity`); V2 fail-closed is the known Phase 114->122 ladder move. FailSafe owns the data (FailSafe#206); qor-logic owns the gate; no runtime coupling (gate reads markdown). Cross-repo contract: V2 must not flip fail-closed until FailSafe reaches full surface-tag coverage, or FailSafe's seal breaks. Two DRIFTs flagged: (a) `governance_health` treats FEATURE_INDEX as *required* while `doctrine-feature-inventory.md` declares it *optional* (pre-existing, separable follow-on); (b) no ARCHITECTURE_PLAN blueprint claim covers this subsystem (canonical spec is the doctrine). Brief: `docs/research-brief-surface-tag-feature-index-2026-06-08.md`. Doctrine updated with a "Surface column (optional V2 extension; GH #196)" subsection. Advisory only; next phase `/qor-plan` (V1 WARN-only).
+
+---
+
+### Entry #332: GATE TRIBUNAL -- Phase 138 plan PASS (GH #196 V1 surface-tag WARN-only lint)
+
+**Timestamp**: 2026-06-09T00:30:00Z
+**Phase**: GATE (Phase 138)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase138-surface-tag-lint.md
+**Session**: `2026-06-09T0025-15d45c`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `726715224fc3ac6103b2646db43fa22d5e3bd6f67f0d27db51cd25bdeec22204`
+**Previous Hash**: `6db2007d4e00e39fd257c1557627c15ed41d218a8ca5ca805139ec2d4ed19068`
+**Chain Hash (Merkle seal)**: `0a65f51f5c13dbf5873b08bc31087dd0a12b2f9d3c14f5555b62180004f9b201`
+
+**Decision**: PASS (L1, solo). All automated gates clean (iteration-status rc=0; ten 0.6 lints clean; prompt-injection rc=0; prose_test_lint rc=0; author-momentum option_b_required=false). All adversarial passes PASS or N/A; Infrastructure Alignment grep-verified every citation (parse_index_rows header-driven feature_index_verify.py:56/60/62; schema additionalProperties:false :7; append_event attribution=LOCAL orchestration_override.py:50; degradation + gate_skipped_prerequisite_absent both in shadow_event enum). Razor PASS is CONDITIONAL on three binding implementation constraints recorded in the report: (1) extract the --surface-lint CLI handler into a dedicated function (main() is already ~57 lines, a grandfathered overage; inlining would FAIL the 40-line razor); (2) factor the shadow-event envelope into a helper to keep the runner <=40 lines and the file <=250; (3) land the Phase 2 glossary `Surface tag` entry (resolves the non-VETO Documentation Drift advisory before seal). No braid between the WARN surface-lint mode and the regression-ABORT mode (separate dispatch). Scope confirmed narrow (vocabulary registry / per-surface gates / V2 fail-closed / governance_health drift all deferred). Next: `/qor-implement`.
+
+---
+
+### Entry #333: SESSION SEAL -- Phase 138 GH #196 V1 surface-tag WARN-only FEATURE_INDEX lint (v0.103.0)
+
+**Timestamp**: 2026-06-09T01:25:56Z
+**Phase**: SUBSTANTIATE (Phase 138; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase138-surface-tag-lint.md
+**Session**: `2026-06-09T0025-15d45c`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1, PW.5.1, RV.1.1, RV.1.2
+**Entry ID**: `f2668a1b65ae`
+
+**Feature Inventory**: not adopted (qor-logic maintains no FEATURE_INDEX of its own).
+
+**Scope**: GH #196 V1 implemented (feature). A schema-optional, WARN-only surface-tag presence lint extends the FEATURE_INDEX verification pass. New `index_has_surface_column`, `surface_lint`, `SurfaceLintResult`, and a `--surface-lint` CLI mode in `qor/scripts/feature_index_verify.py` (the mode always exits 0): when a repo's `FEATURE_INDEX.md` header declares a `Surface` column, non-`n/a` rows missing a surface value append a severity-2 `degradation` event (`details.gate = feature_index_surface_lint`); no column -> `gate_skipped_prerequisite_absent` disclosed-skip; missing index -> silent skip. The WARN surface mode and the regression-ABORT mode are dispatched separately (no braid); to honor the audit Razor constraints the existing regression body was extracted to `_run_regression_check` (main() now 30 lines) and the 11-field shadow-event envelope was factored into `_shadow_event` shared by both emit sites (this also fixed a latent `append_event`-without-attribution defect in the override path). Optional `surface` property added to `feature_index.schema.json` (`additionalProperties:false` retained). Wired across doctrine-feature-inventory.md (Surface column section), glossary (`Surface tag` term + `gate_skipped_prerequisite_absent` referenced_by additions), seal-gate-ladder.md, FEATURE_INDEX.example.md (7-col), and qor-substantiate SKILL.md step 7 (kept under the 40 KB budget at 40.9 KB); 4 dist variants recompiled. 23 new behavioral tests (red->green, run twice for determinism). qor-logic itself has no FEATURE_INDEX so both the regression gate and the new surface lint disclosed-skip on this repo.
+
+Change class: feature. Tests: full suite green; README Tests badge 2326 -> 2339. Audit PASS (L1 solo). All substantiate ABORT gates passed (intent-lock, secret-scan, merge-velocity, data-API-ACL skip, doc-integrity strict, governance-index).
+
+**Review Boundary**: Operator authorized commit + push + PR + merge-on-green-CI.
+
+**Content Hash**: `4380f20af2e8536b5cf1e5d26eb8fb1098468592a55f589f4a872d417041e316`
+**Previous Hash**: `0a65f51f5c13dbf5873b08bc31087dd0a12b2f9d3c14f5555b62180004f9b201`
+**Chain Hash (Merkle seal)**: `24cd1569d4a38c047942dbc36e3ff624ee003890d083a7f3e2e4c3790bb2b96a`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 137; v0.102.2 local; SYSTEM_STATE resynced; operator handles repo actions)
+*Session: SEALED* (Phase 138; v0.103.0; GH #196 V1 surface-tag lint; operator authorized push/PR/merge)

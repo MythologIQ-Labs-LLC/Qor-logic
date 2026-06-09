@@ -1,8 +1,8 @@
 # Qor-logic System State
 
-**Snapshot**: 2026-06-02
-**Chain Status**: ACTIVE. Phase 136 sealed at v0.102.1 (qor-substantiate Step 4.5 / Step Z restructure); this entry (Phase 137, hotfix) resyncs SYSTEM_STATE.md itself and adds a header-freshness drift guard.
-**Phase**: Phase 137 (hotfix, doc currency). Resyncs this file after it drifted to a Phase-75 / v0.51.0 snapshot. Full per-phase history is authoritative in `docs/META_LEDGER.md` (329 entries; latest Entry #329 -- Phase 136 -- v0.102.1 -- chain `927bc482...`); SYSTEM_STATE keeps the current-state header, physical map, and a condensed recent-phase bridge rather than restating every phase. The pre-1.0 line is current: the half-measure-closures cluster (GH #147 + #148-#165) is fully closed with real enforcers, and the two largest governance skills were brought back under the 40 KB skill-size budget (Phases 135/136).
+**Snapshot**: 2026-06-09
+**Chain Status**: ACTIVE. Phase 137 sealed at v0.102.2 (SYSTEM_STATE resync + freshness drift guard); this entry (Phase 138, feature) adds the GH #196 V1 surface-tag WARN-only FEATURE_INDEX lint and seals at v0.103.0.
+**Phase**: Phase 138 (feature, GH #196 V1). Adds a schema-optional WARN-only surface-tag presence lint to the `/qor-substantiate` FEATURE_INDEX verification pass (`feature_index_verify --surface-lint`). Full per-phase history is authoritative in `docs/META_LEDGER.md` (333 entries; latest Entry #333 -- Phase 138 -- v0.103.0 -- chain `24cd1569...`); SYSTEM_STATE keeps the current-state header, physical map, and a condensed recent-phase bridge rather than restating every phase. The pre-1.0 line is current: the half-measure-closures cluster (GH #147 + #148-#165) is fully closed with real enforcers, and the two largest governance skills remain under the 40 KB skill-size budget (Phases 135/136).
 
 ## Authoritative source
 
@@ -48,15 +48,15 @@ Qor-logic/
 |-- tests/                                 373 test_*.py (2323 collected)
 |-- .qor/                                  Runtime state: session/current + gates/<sid>/*.json
 |-- CHANGELOG.md, README.md, CLAUDE.md, ATTRIBUTION.md, CONTRIBUTING.md
-`-- pyproject.toml                         Python 3.11+; version 0.102.1
+`-- pyproject.toml                         Python 3.11+; version 0.103.0
 ```
 
 ## Ledger chain head
 
+- Entry #333 SESSION SEAL -- Phase 138 (v0.103.0) -- chain `24cd1569d4a38c047942dbc36e3ff624ee003890d083a7f3e2e4c3790bb2b96a`
+- Entry #330 SESSION SEAL -- Phase 137 (v0.102.2) -- chain `246f86ddd9aef4402fd90269462e1be7a606b84d82af214fa1cd68fceb0477df`
 - Entry #329 SESSION SEAL -- Phase 136 (v0.102.1) -- chain `927bc482cde6b5d865521f88eda68c7451fff210f12a2dfdeef4908a4ea7f04b`
-- Entry #328 SESSION SEAL -- Phase 135 (v0.102.0) -- chain `afa61529fd4c94c388c724e9822a22fb7247722775473003772b74c729571d0b`
-- Entry #327 SESSION SEAL -- Phase 134 (v0.101.0) -- chain `44c37c2369f1349a330aef47c64cbd786241c99e50c77c79a12a645591dff91e`
-- 329 ledger entries total. Verification: `python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md` -> all sealable entries OK.
+- 333 ledger entries total (Entries #331 research / #332 GATE TRIBUNAL precede the Phase 138 seal). Verification: `python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md` -> all sealable entries OK.
 
 ## Shipped tooling
 
