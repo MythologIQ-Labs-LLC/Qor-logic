@@ -12072,5 +12072,62 @@ Change class: feature. Tests: 15 new behavioral tests (red->green, three target 
 
 ---
 
+### Entry #341: RESEARCH BRIEF -- downstream enforcement SDK (Phase 142)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+
+**Content Hash**: `a6312422b5529332d53fa674f00d26c4bfb1e591e22b69766adf9621311ee1f8`
+**Previous Hash**: `f723bc25f43a359cfd7e7c3b00e9e3c1cd429df3c39bd0754112b70c3c96f070`
+**Chain Hash (Merkle seal)**: `19943183df7ed9b1f3780f88ef074fd827654651041db50e33ea08b4579f7fab`
+
+**Decision**: Investigated the downstream enforcement SDK (Phase 141 matrix -> engagement manifest + mini-SDK). Brief at docs/research-brief-downstream-enforcement-sdk-2026-06-09.md. Buildable on small additions: matrix gains `engagement` (precursor value: pre-commit/pre-push/pre-tool-write/ci/seal) + optional `runner` (module/entry/args); a `qor-logic compliance enforce --engagement <point>` facade (slots into existing cli_handlers/compliance.py register/dispatch, compliance.py:86-104) runs the runnable controls and returns a structured verdict. All five deterministic gates expose a uniform `main(argv)->int` (secret_scanner:223, data_api_acl_lint:190, prompt_injection_canaries:151, prose_test_lint:151, badge_currency:135) -> clean runner contract; the other four controls are seal/CI-context (engagement tag, no V1 runner). TWO DRIFTS: (1) `qor/compliance/control_matrix.json` is NOT in pyproject package-data (pyproject.toml:47-59 ships gates/schema/*.json + dist/variants/**/*.json but not compliance/*.json) -> the matrix never reaches pip consumers; MUST add `compliance/*.json` (P0). (2) import package is `qor`, not `qor_logic` -> SDK is `qor.sdk`/`qor.compliance.enforce`. Conformance test extends to verify each engagement-tagged runner is importable+callable. Hooks (the trigger) stay downstream-owned. Feeds /qor-auto-dev-1. Next: `/qor-plan`.
+
+---
+
+### Entry #342: GATE TRIBUNAL -- Phase 142 plan PASS (downstream enforcement SDK)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: GATE (Phase 142)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase142-downstream-enforcement-sdk.md
+**Session**: `2026-06-09T0000-sdk142`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `e9f3338c71ba45c22235194573f1a37f7b2d3ed0e73c3bf46ff4d8d8f3690408`
+**Previous Hash**: `19943183df7ed9b1f3780f88ef074fd827654651041db50e33ea08b4579f7fab`
+**Chain Hash (Merkle seal)**: `228f73fa007451c1f308b0c71eb8247045886f0dd0e3cfd1a37d38ee7f89d896`
+
+**Decision**: PASS (L2, solo; option_b_required=false). Plan for Phase 142 -- engagement+runner matrix fields, the `qor.compliance.enforce` SDK + `qor-logic compliance enforce` CLI + `qor.sdk` re-export, the package-data fix so the matrix ships, and conformance runner-integrity -- clears all binding passes. Infrastructure Alignment grep-verified: schema items additionalProperties:false (control_matrix.schema.json:6); all 4 gate runners expose `def main(argv` (uniform callable); pyproject package-data omits `compliance/*.json` (the load-bearing drift the plan fixes); cli_handlers/compliance.py register:85 / dispatch:102; all 5 new files absent. No new dependency (stdlib + jsonschema/tomllib); no cycle; 12 tests functional. OWASP A03: importlib on matrix-controlled module names (not user input), no shell. Hooks out of scope per operator. Guidance: in-process runner `main()` calls are safe (return int, no sys.exit); `contextlib.chdir` is process-global so SDK stays single-threaded. Next: `/qor-implement`.
+
+---
+
+### Entry #343: SESSION SEAL -- Phase 142 downstream enforcement SDK (v0.106.0)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: SUBSTANTIATE (Phase 142)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase142-downstream-enforcement-sdk.md
+**Session**: `2026-06-09T0000-sdk142`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `ec28294f28e5`
+
+**Scope**: Phase 142 implemented (feature) -- downstream enforcement SDK. The Phase 141 control matrix becomes an engagement manifest: each control gains `engagement` (pre-commit/pre-push/pre-tool-write/ci/seal) + optional `runner` (module/entry/args); schema + `qor.scripts.compliance_matrix` (`ENGAGEMENTS`, `RUNNABLE_POINTS`, `load_packaged_matrix`) carry them; all nine controls seeded (four runnable). The mini-SDK `qor.compliance.enforce` (`run_control`/`select`/`enforce`/`Verdict`/`ControlResult`), re-exported at `qor.sdk` and surfaced as `qor-logic compliance enforce --engagement <point>` (wired in `cli_handlers/compliance.py`), loads control definitions from the installed package and runs the wired runnable controls against the consumer tree, returning a posture-honoring verdict (ABORT failures fail it; WARN advisory). Packaging fix: `compliance/*.json` added to pyproject package-data so the matrix actually ships to pip consumers. `compliance_conformance._verify_runner` now guards runner integrity. New `downstream-enforcement-sdk.md` + two glossary terms. Qor-logic owns the manifest + runner + verdict; the consumer owns the trigger -- hooks remain addressed exclusively downstream (no hook installer).
+
+Change class: feature. Tests: 12 new behavioral tests + 3 extended (target suites 21, deterministic x2); full suite 2379 passed (2 expected pre-seal badge drifts reconciled in this seal). README badges Tests 2371 -> 2383; Ledger 340 -> 343 (doctrines unchanged at 34; downstream-enforcement-sdk.md is a reference, not a doctrine). Audit PASS (L2 solo). doc_tier standard; no new dependency; Razor-clean. Substantiate gates: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, data-API-ACL clean, doc-integrity strict PASS (2 new terms wired), governance-index enforce clean, badge-currency OK, seal-hash-integrity PASS.
+
+**Review Boundary**: stage-only at seal. Per `/qor-auto-dev-1`, commit + tag + push + PR + merge + publish are HELD for explicit operator approval at handoff.
+
+**Content Hash**: `f93358afd3d7e7a1bd8091afa56e01ccc5942e0da139e61b1874e7a7205829e4`
+**Previous Hash**: `228f73fa007451c1f308b0c71eb8247045886f0dd0e3cfd1a37d38ee7f89d896`
+**Chain Hash (Merkle seal)**: `4d2fb811b52417baa51bda6880024e681e12967ded35703a17d2a43fcf83fc59`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 141; v0.105.0; compliance-conveyance integrity; Review Boundary -- commit/tag/push HELD for operator)
+*Session: SEALED* (Phase 142; v0.106.0; downstream enforcement SDK; Review Boundary -- commit/tag/push HELD for operator)

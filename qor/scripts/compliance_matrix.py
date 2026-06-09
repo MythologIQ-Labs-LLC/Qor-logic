@@ -18,6 +18,11 @@ import jsonschema
 
 POSTURES: tuple[str, ...] = ("ABORT", "WARN")
 DETECTIONS: tuple[str, ...] = ("skill-marker", "test", "ci-job")
+# Engagement points a control can plug into (the precursor values a downstream
+# enforcement layer reads); RUNNABLE_POINTS are the ones the SDK can run
+# standalone and therefore require a runner (Phase 142).
+ENGAGEMENTS: tuple[str, ...] = ("pre-commit", "pre-push", "pre-tool-write", "ci", "seal")
+RUNNABLE_POINTS: tuple[str, ...] = ("pre-commit", "pre-push", "pre-tool-write")
 
 _MATRIX_REL = "qor/compliance/control_matrix.json"
 # The schema ships with qor-logic (package data), resolved relative to this
@@ -37,6 +42,8 @@ class Control:
     detection: str
     wired_into: dict
     variants: tuple[str, ...]
+    engagement: tuple[str, ...] = ()
+    runner: dict | None = None
     invocation: str = ""
 
 
@@ -77,10 +84,23 @@ def load_matrix(root: Path) -> tuple[Control, ...]:
             detection=c["detection"],
             wired_into=c["wired_into"],
             variants=tuple(c["variants"]),
+            engagement=tuple(c["engagement"]),
+            runner=c.get("runner"),
             invocation=c.get("invocation", ""),
         )
         for c in data["controls"]
     )
+
+
+def load_packaged_matrix() -> tuple[Control, ...]:
+    """Load the matrix that ships inside the installed qor-logic package.
+
+    The SDK reads control definitions from here (so a downstream consumer gets
+    the matrix from `pip install qor-logic`, not from their own repo tree), then
+    runs each control's runner against the consumer's working tree. In the dev
+    repo this resolves to the same file as ``load_matrix(REPO)``.
+    """
+    return load_matrix(_PKG.parent)
 
 
 def load_waivers(root: Path) -> tuple[Waiver, ...]:

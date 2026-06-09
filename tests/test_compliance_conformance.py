@@ -70,3 +70,31 @@ def test_test_detection_flags_vanished_test(tmp_path):
     reasons = cc.verify_control(ctl, tmp_path)
     assert reasons
     assert any("test" in r.lower() for r in reasons), reasons
+
+
+def test_conformance_flags_missing_runner_for_runnable_point():
+    ctl = Control(
+        id="x", framework="F", control="c", enforcing_module="m",
+        posture="ABORT", detection="test", wired_into={"test": "tests/test_compliance_conformance.py::test_conformance_flags_missing_runner_for_runnable_point"},
+        variants=(), engagement=("pre-commit",), runner=None,
+    )
+    reasons = cc.verify_control(ctl, REPO)
+    assert any("no runner" in r for r in reasons), reasons
+
+
+def test_conformance_flags_uncallable_runner(tmp_path):
+    ctl = Control(
+        id="y", framework="F", control="c", enforcing_module="m",
+        posture="ABORT", detection="test", wired_into={"test": "tests/test_compliance_conformance.py::test_conformance_flags_uncallable_runner"},
+        variants=(), engagement=("pre-commit",),
+        runner={"module": "qor.scripts.compliance_matrix", "entry": "no_such_entry", "args": []},
+    )
+    reasons = cc.verify_control(ctl, REPO)
+    assert any("not callable" in r for r in reasons), reasons
+
+
+def test_every_seeded_runnable_control_has_callable_runner():
+    from qor.scripts.compliance_matrix import load_matrix, RUNNABLE_POINTS
+    for c in load_matrix(REPO):
+        if set(c.engagement) & set(RUNNABLE_POINTS):
+            assert cc._verify_runner(c, REPO) == [], (c.id, cc._verify_runner(c, REPO))

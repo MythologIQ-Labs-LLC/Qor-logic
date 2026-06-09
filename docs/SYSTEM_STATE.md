@@ -1,8 +1,8 @@
 # Qor-logic System State
 
 **Snapshot**: 2026-06-09
-**Chain Status**: ACTIVE. Phase 140 sealed at v0.104.0 (governance-health + ledger-seal robustness); this entry (Phase 141, feature) adds compliance-conveyance integrity (control matrix + conformance + ratchet) and seals at v0.105.0.
-**Phase**: Phase 141 (feature, compliance-conveyance integrity). Makes the compliance Qor-logic conveys downstream provably complete and non-regressable: a declarative control matrix (`qor/compliance/control_matrix.json`), a conveyance conformance pytest gate (`qor.scripts.compliance_conformance`) that fails when a control is missing/posture-downgraded/un-conveyed, and a compliance ratchet (`qor.scripts.compliance_ratchet`) that forbids a release dropping or downgrading a control without a waiver. Full per-phase history is authoritative in `docs/META_LEDGER.md` (340 entries; latest Entry #340 -- Phase 141 -- v0.105.0 -- chain `<sealed below>`); SYSTEM_STATE keeps the current-state header, physical map, and a condensed recent-phase bridge rather than restating every phase. The pre-1.0 line is current: the half-measure-closures cluster (GH #147 + #148-#165) is fully closed with real enforcers, and the two largest governance skills remain under the 40 KB skill-size budget (Phases 135/136).
+**Chain Status**: ACTIVE. Phase 141 sealed at v0.105.0 (compliance-conveyance integrity); this entry (Phase 142, feature) adds the downstream enforcement SDK (engagement manifest + mini-SDK) and seals at v0.106.0.
+**Phase**: Phase 142 (feature, downstream enforcement SDK). Turns the Phase 141 control matrix into an engagement manifest: controls gain `engagement` points (pre-commit/pre-push/pre-tool-write/ci/seal) + an optional `runner` (module/entry/args), and a mini-SDK (`qor.compliance.enforce` / `qor.sdk` / `qor-logic compliance enforce --engagement <point>`) runs the wired runnable controls against the consumer tree, returning a structured verdict. The matrix now ships in package-data; conformance verifies runner integrity. Qor-logic owns the manifest + runner + verdict; the consumer owns the trigger (hooks stay downstream). Full per-phase history is authoritative in `docs/META_LEDGER.md` (343 entries; latest Entry #343 -- Phase 142 -- v0.106.0 -- chain `<sealed below>`); SYSTEM_STATE keeps the current-state header, physical map, and a condensed recent-phase bridge rather than restating every phase. The pre-1.0 line is current: the half-measure-closures cluster (GH #147 + #148-#165) is fully closed with real enforcers, and the two largest governance skills remain under the 40 KB skill-size budget (Phases 135/136).
 
 ## Authoritative source
 
@@ -943,3 +943,19 @@ Feature closing ALL five V2 carry-forward items accumulated across Phases 101-10
 **Doctrine**: `qor/references/doctrine-compliance-conveyance.md` is the home for the four new glossary terms (Compliance Control Matrix, Control Posture, Conveyance Conformance, Compliance Ratchet).
 
 **TDD**: three test files authored first; RED confirmed, then GREEN; the conformance test caught a step-anchor substring bug and the gemini `commands/*.toml` variant layout during build before passing. doc_tier standard; no new dependency (jsonschema already present); hooks explicitly out of scope per operator.
+
+---
+
+## Phase 142: downstream enforcement SDK (engagement manifest + mini-SDK)
+
+**New surface**: the Phase 141 control matrix gains two precursor fields per control -- `engagement` (which active enforcement layers it plugs into: pre-commit/pre-push/pre-tool-write/ci/seal) and an optional `runner` (`module`/`entry`/`args`) for controls standalone-runnable at a runnable point. Schema + `qor.scripts.compliance_matrix` (`ENGAGEMENTS`, `RUNNABLE_POINTS`, `load_packaged_matrix`) carry them; all nine controls seeded (four runnable: secret-scan, data-api-acl, prose-test-lint, badge-currency; prompt-injection is ci, the rest seal).
+
+**SDK**: `qor.compliance.enforce` (`run_control`, `select`, `enforce`, `Verdict`, `ControlResult`), re-exported at `qor.sdk`, surfaced as `qor-logic compliance enforce --engagement <point>` (wired in `cli_handlers/compliance.py`). It loads control definitions from the installed package and runs each wired runnable control against the consumer working tree, returning a `Verdict` (ABORT-posture failures fail it; WARN advisory). Downstream owns the trigger; no hook installer ships.
+
+**Packaging**: `pyproject.toml` package-data gains `compliance/*.json` so the matrix actually reaches pip consumers (without it the SDK had no manifest downstream).
+
+**Conformance**: `compliance_conformance._verify_runner` folds into `verify_control` -- every control engaging a runnable point must have an importable, callable runner; the live conformance test guards it.
+
+**Docs**: `doctrine-compliance-conveyance.md` extended (engagement manifest + runner + ownership boundary); new `qor/references/downstream-enforcement-sdk.md` (consumer contract); two glossary terms (Engagement Point, Enforcement Runner).
+
+**TDD**: tests authored first across loader/enforce/conformance/packaging; RED then GREEN; 21 target-suite tests deterministic x2. doc_tier standard; no new dependency (importlib/contextlib/tomllib stdlib); Razor-clean. Hooks explicitly out of scope per operator.

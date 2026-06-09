@@ -12,7 +12,7 @@
         "type": "object",
         "required": [
           "id", "framework", "control", "enforcing_module",
-          "posture", "detection", "wired_into", "variants"
+          "posture", "detection", "wired_into", "variants", "engagement"
         ],
         "additionalProperties": false,
         "properties": {
@@ -24,7 +24,27 @@
           "posture": {"type": "string", "enum": ["ABORT", "WARN"]},
           "detection": {"type": "string", "enum": ["skill-marker", "test", "ci-job"]},
           "wired_into": {"type": "object"},
-          "variants": {"type": "array", "items": {"type": "string"}}
+          "variants": {"type": "array", "items": {"type": "string"}},
+          "engagement": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"enum": ["pre-commit", "pre-push", "pre-tool-write", "ci", "seal"]}
+          },
+          "runner": {
+            "oneOf": [
+              {"type": "null"},
+              {
+                "type": "object",
+                "required": ["module", "entry", "args"],
+                "additionalProperties": false,
+                "properties": {
+                  "module": {"type": "string", "minLength": 1},
+                  "entry": {"type": "string", "minLength": 1},
+                  "args": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            ]
+          }
         }
       }
     },

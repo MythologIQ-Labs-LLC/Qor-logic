@@ -64,3 +64,28 @@ introduction (no matrix at the prior ref) is a no-op.
 Hooks (Claude Code session hooks, git hooks) are an out-of-scope trigger layer
 for this doctrine; the controls here are enforced through the existing
 skill-gate, behavioral-test, and CI-job substrate.
+
+## Engagement Manifest + Enforcement Runner (Phase 142)
+
+The control matrix is also the engagement manifest a downstream enforcement SDK consumes. Two
+precursor fields make a control engageable:
+
+- `engagement`: the active enforcement layers a control plugs into -- one or more of
+  `pre-commit`, `pre-push`, `pre-tool-write`, `ci`, `seal`. This is the precursor value a downstream
+  trigger reads to decide what should fire at its point.
+- `runner`: for a control standalone-runnable at a runnable point (`pre-commit`/`pre-push`/
+  `pre-tool-write`), the `{module, entry, args}` the SDK imports and calls; `null` for controls that
+  only engage at `ci`/`seal` (run in the audit/seal flow, not standalone).
+
+The mini-SDK (`qor.compliance.enforce`, re-exported at `qor.sdk`, surfaced as `qor-logic compliance
+enforce --engagement <point>`) loads the control definitions from the installed package, selects the
+controls wired to the requested engagement point that carry a runner, runs each against the
+consumer's working tree, and returns a `Verdict` (ABORT-posture failures fail the verdict; WARN
+failures are advisory). The conveyance conformance test verifies every control engaging a runnable
+point has an importable, callable runner.
+
+**Ownership boundary**: Qor-logic owns the manifest, the uniform runner behavior, and the verdict
+shape; the downstream consumer owns the trigger -- their git hook, editor hook, or CI step calls
+`qor-logic compliance enforce --engagement <point>` and acts on the exit code. Hooks themselves are
+addressed exclusively downstream. Two packaging invariants must hold or conveyance silently fails:
+`compliance/*.json` ships in package-data, and the import package is `qor`.

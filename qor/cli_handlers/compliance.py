@@ -96,7 +96,18 @@ def register(sub: argparse._SubParsersAction) -> argparse.ArgumentParser:
     sp_progress = compliance_sub.add_parser("sprint-progress", help="show compliance-sprint progress against latest research brief")
     sp_progress.add_argument("--repo-root", type=Path, default=None)
 
+    from qor.scripts.compliance_matrix import ENGAGEMENTS
+    sp_enforce = compliance_sub.add_parser("enforce", help="run the controls wired to an engagement point (downstream SDK)")
+    sp_enforce.add_argument("--engagement", required=True, choices=ENGAGEMENTS)
+    sp_enforce.add_argument("--repo-root", type=Path, default=Path("."))
+
     return sp_compliance
+
+
+def do_enforce(args: argparse.Namespace) -> int:
+    from qor.compliance import enforce as enforce_mod
+
+    return enforce_mod.main(["--engagement", args.engagement, "--repo-root", str(args.repo_root)])
 
 
 def dispatch(args: argparse.Namespace) -> int | None:
@@ -109,4 +120,6 @@ def dispatch(args: argparse.Namespace) -> int | None:
         return do_ai_provenance(args)
     if cmd == "sprint-progress":
         return do_sprint_progress(args)
+    if cmd == "enforce":
+        return do_enforce(args)
     return None

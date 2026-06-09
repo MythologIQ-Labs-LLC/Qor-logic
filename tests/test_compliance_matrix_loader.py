@@ -45,6 +45,7 @@ def _control(**over):
         "detection": "skill-marker",
         "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "4.6.5"},
         "variants": ["claude"],
+        "engagement": ["ci"],
     }
     base.update(over)
     return base
@@ -72,3 +73,21 @@ def test_enforced_set_shape(tmp_path):
     )
     controls = cm.load_matrix(root)
     assert cm.enforced_set(controls) == {("a", "ABORT"), ("b", "WARN")}
+
+
+def test_engagement_and_runner_parsed():
+    controls = cm.load_matrix(REPO)
+    for c in controls:
+        assert isinstance(c.engagement, tuple) and c.engagement, c.id
+        for pt in c.engagement:
+            assert pt in cm.ENGAGEMENTS, (c.id, pt)
+        # A control engaging a runnable point must carry a runner dict.
+        if set(c.engagement) & set(cm.RUNNABLE_POINTS):
+            assert isinstance(c.runner, dict), c.id
+            assert c.runner.get("module") and c.runner.get("entry"), c.id
+
+
+def test_schema_rejects_unknown_engagement(tmp_path):
+    root = _write_matrix(tmp_path, [_control(id="bad", engagement=["nope"])])
+    with pytest.raises(ValueError):
+        cm.load_matrix(root)
