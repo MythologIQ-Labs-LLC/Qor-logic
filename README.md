@@ -7,14 +7,14 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-2385%20passing-brightgreen" alt="Tests: 2385 passing">
+  <img src="https://img.shields.io/badge/Tests-2388%20passing-brightgreen" alt="Tests: 2388 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
   <img src="https://img.shields.io/badge/Doctrines-34-blue" alt="Doctrines: 34">
-  <img src="https://img.shields.io/badge/Ledger-346%20entries%20sealed-green" alt="Ledger: 346 entries sealed">
+  <img src="https://img.shields.io/badge/Ledger-348%20entries%20sealed-green" alt="Ledger: 348 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -51,16 +51,6 @@ Built around **S.H.I.E.L.D.**, the six lifecycle phases each backed by a skill:
 ## Latest release
 
 See **[CHANGELOG.md](CHANGELOG.md)** for what shipped in the current release and every prior version. The CHANGELOG is the single source of truth; this section intentionally avoids version-specific content to prevent README drift.
-
-Highlights of the v0.19+ documentation-integrity arc:
-
-- **Tiered documentation doctrine** (`minimal` / `standard` / `system` / `legacy`) hard-enforced at seal time.
-- **Install drift detection** — operators nudged when local skill install lags repo source.
-- **Check Surface D/E live strict-mode** at `/qor-substantiate` Step 4.7 — any term-drift or cross-doc conflict aborts seal.
-- **PR citation CI lint** — PRs must cite plan file + ledger entry + Merkle seal per `doctrine-governance-enforcement.md` §6.
-- **Session rotation + dist-recompile + documentation-currency** machinery in the substantiate flow.
-
-Full details: [CHANGELOG.md](CHANGELOG.md).
 
 ## Quick Start
 
@@ -190,7 +180,7 @@ Qor-logic maps its lifecycle to the Secure Software Development Framework practi
 
 | SSDF Practice Group | Qor-logic Implementation |
 |---|---|
-| **PO** Prepare the Organization | `/qor-bootstrap`, 14 doctrine files, `CLAUDE.md` drop-in, [CONTRIBUTING.md](CONTRIBUTING.md) |
+| **PO** Prepare the Organization | `/qor-bootstrap`, the doctrine library, `CLAUDE.md` drop-in, [CONTRIBUTING.md](CONTRIBUTING.md) |
 | **PS** Protect the Software | `/qor-audit` tribunal, reliability scripts, Shadow Genome |
 | **PW** Produce Well-Secured Software | `/qor-plan` > `/qor-audit` > `/qor-implement` > `/qor-substantiate` |
 | **RV** Respond to Vulnerabilities | `/qor-remediate`, `/qor-debug`, threshold-triggered issue creation |
@@ -203,49 +193,62 @@ The codebase has been [audited against OWASP Top 10 (2021)](docs/security-audit-
 
 ## Skill Catalog
 
-### SDLC Chain (9 skills)
+Skills live under `qor/skills/<category>/` (the full count is on the Skills badge above).
+
+### SDLC (`qor/skills/sdlc/`)
 
 | Skill | Phase | Purpose |
 |---|---|---|
-| `/qor-research` | research | Investigate before planning |
-| `/qor-plan` | plan | Author phased plans with tests |
-| `/qor-audit` | gate | Adversarial PASS/VETO tribunal |
-| `/qor-implement` | implement | Build under KISS constraints |
+| `/qor-ideate` | ideate | Frame the concept and log assumptions before research |
+| `/qor-research` | research | Verify external interfaces and dependencies before planning |
+| `/qor-plan` | plan | Author phased plans with tests and risk grades |
+| `/qor-implement` | implement | Build under KISS / Section 4 Razor constraints |
 | `/qor-refactor` | implement | Section 4 Razor cleanup |
-| `/qor-debug` | cross-cutting | Root-cause diagnosis |
-| `/qor-substantiate` | substantiate | Seal with Merkle evidence |
-| `/qor-validate` | validate | Chain and criteria verification |
-| `/qor-remediate` | process recovery | Process-level fix from Shadow Genome |
+| `/qor-debug` | cross-cutting | Root-cause diagnosis with residual-sweep verification |
+| `/qor-remediate` | process recovery | Process-level fix driven by the Shadow Genome |
 
-### Memory and Meta (9 skills)
+### Governance (`qor/skills/governance/`)
 
 | Skill | Purpose |
 |---|---|
-| `/qor-status` | Diagnose lifecycle state and next action |
+| `/qor-audit` | Adversarial PASS/VETO tribunal over the plan |
+| `/qor-substantiate` | Verify Reality = Promise and seal with Merkle evidence |
+| `/qor-validate` | Recalculate and verify Meta Ledger chain integrity |
+| `/qor-shadow-process` | Append structured process-failure events |
+| `/qor-process-review-cycle` | Periodic process-health sweep + remediation + audit |
+| `/qor-governance-compliance` | Enforce physical-isolation + environment compliance constraints |
+
+### Memory (`qor/skills/memory/`)
+
+| Skill | Purpose |
+|---|---|
+| `/qor-status` | Diagnose lifecycle state and the next legal action |
 | `/qor-tone` | Set session communication tier (technical / standard / plain) |
-| `/qor-document` | Update governance documentation |
+| `/qor-document` | Author and maintain governance documentation |
+| `/qor-docs-technical-writing` | Narrative technical writing for product-facing docs |
 | `/qor-organize` | Project-level structure reorganization |
+
+### Meta (`qor/skills/meta/`)
+
+| Skill | Purpose |
+|---|---|
 | `/qor-bootstrap` | Seed a new workspace with governance DNA |
-| `/qor-help` | In-skill command catalog |
-| `/qor-repo-audit` | Repository-level compliance audit |
-| `/qor-repo-release` | Release ceremony orchestration |
-| `/qor-repo-scaffold` | New-repo template generation |
+| `/qor-help` | Conversational command catalog and SDLC navigator |
+| `/qor-onboard-codebase` | Absorb an external codebase into governed scope |
+| `/qor-repo-audit` | Repository-level governance audit |
+| `/qor-repo-release` | Delivery-gate / release-ceremony orchestration |
+| `/qor-repo-scaffold` | New-repo governance-scaffold generation |
+| `/qor-meta-log-decision` | Record a major engineering decision into the Meta Ledger |
+| `/qor-meta-track-shadow` | Capture a failed approach into the Shadow Genome |
+| `/qor-ab-run` | A/B measurement harness for skill-variant detection |
 
-### Workflow Bundles (5 bundles)
+### Workflow bundles
 
-| Bundle | Phases | Use When |
+| Bundle | Phases | Use when |
 |---|---|---|
 | `/qor-deep-audit` | recon (3) + remediate (3) | Pre-release readiness, tech-debt sweep |
-| `/qor-deep-audit-recon` | research + synthesize + verify | Investigation only; ends at RESEARCH_BRIEF |
-| `/qor-deep-audit-remediate` | plan + implement + validate | Action half; consumes RESEARCH_BRIEF |
-| `/qor-onboard-codebase` | research > organize > audit > plan | Absorbing an external codebase |
-| `/qor-process-review-cycle` | shadow-sweep > remediate > audit | Periodic process health check |
-
-### Governance (1 skill)
-
-| Skill | Purpose |
-|---|---|
-| `/qor-shadow-process` | Append structured process-failure events |
+| `/qor-deep-audit-recon` | research + synthesize + verify | Investigation only; ends at a research brief |
+| `/qor-deep-audit-remediate` | plan + implement + validate | Action half; consumes the research brief |
 
 ## Governance Model
 
@@ -266,13 +269,13 @@ The codebase has been [audited against OWASP Top 10 (2021)](docs/security-audit-
 ```
 qor-logic/
   qor/
-    skills/           28 skills + 5 bundles (governance, sdlc, memory, meta)
+    skills/           Governance skills + multi-phase bundles (governance, sdlc, memory, meta)
     agents/           13 agent personas
     policy/           Cedar-inspired permit/forbid evaluator (pure Python)
     policies/         .cedar policy files (gate enforcement, skill admission, OWASP)
     scripts/          Runtime: ledger, gates, shadow, platform, compiler, remediate, doc-integrity (core + strict), drift-report, pr-citation-lint, changelog-stamp
     reliability/      Intent Lock, Skill Admission, Gate-to-Skill Matrix, Seal Entry Check
-    references/       17 doctrines + 7 patterns + 7 ql-templates + glossary + skill-recovery-pattern
+    references/       Doctrines + patterns + ql-templates + glossary + skill-recovery-pattern
     gates/            Phase chain, delegation table, workflow bundles, 9 JSON schemas
     resources.py      importlib.resources wrapper for packaged assets
     workdir.py        $QOR_ROOT / CWD anchor for consumer-state paths
@@ -284,25 +287,42 @@ qor-logic/
     lifecycle.md      System-tier doc: phase sequence + substantiate steps
     operations.md     System-tier doc: operator runbook + CLI + runbook
     policies.md       System-tier doc: policy files + standards alignment
-    META_LEDGER.md    SHA256-chained decision log (104 entries sealed)
-    SHADOW_GENOME.md  Narrative failure-pattern catalog (21 entries)
+    META_LEDGER.md    SHA256-chained decision log
+    SHADOW_GENOME.md  Narrative failure-pattern catalog
     SYSTEM_STATE.md   Current repo state snapshot
     BACKLOG.md        Work queue
-  tests/              602 tests (unit, integration, e2e, doctrine, bundle contract, install-sync, workflow-budget)
-  .github/workflows/  ci.yml + release.yml + pr-lint.yml (PR citation enforcement)
+  tests/              Unit, integration, e2e, doctrine, bundle-contract, install-sync, and workflow-budget tests
+  .github/workflows/  ci.yml + release.yml + pr-lint.yml (PR citation) + pr-dependency-review.yml
 ```
 
 ## CLI Reference
 
 ```
+# Install + workspace
 qor-logic install --host <claude|kilo-code|codex|gemini> [--scope <repo|global>] [--target <path>] [--dry-run]
 qor-logic uninstall --host <host> [--scope <repo|global>]
 qor-logic init --host <host> [--scope <repo|global>] --profile <sdlc|filesystem|data|research>
 qor-logic list [--available] [--installed] [--host <host>] [--scope <repo|global>]
 qor-logic info <skill-name>
 qor-logic compile [--dry-run]
+qor-logic seed
+
+# Governance + integrity
 qor-logic verify-ledger [<path>]
+qor-logic governance-health [--profile skill-entry]
+qor-logic governance-index [--advance-last-reviewed <date>] [--enforce]
+qor-logic capabilities <inventory|context|route-risk|verification-request> [...]
 qor-logic policy check <request.json>
+
+# Compliance + downstream enforcement SDK
+qor-logic compliance <report|ai-provenance|sprint-progress> [...]
+qor-logic compliance enforce --engagement <pre-commit|pre-push|pre-tool-write|ci|seal> [--repo-root <path>]
+
+# Release + reconciliation + module dispatch
+qor-logic release [...]
+qor-logic reconcile [...]
+qor-logic scripts <module> [args]        # run a qor.scripts.<module> via the CLI interpreter
+qor-logic reliability <module> [args]    # run a qor.reliability.<module>
 qor-logic --version
 ```
 
@@ -310,8 +330,8 @@ qor-logic --version
 
 ```bash
 pip install -e ".[dev]"
-python -m pytest tests/                                    # 602 tests
-python -m pytest tests/ -m integration                     # +4 install-smoke tests
+python -m pytest tests/                                    # full test suite
+python -m pytest tests/ -m integration                     # install-smoke tests
 qor-logic verify-ledger                                     # Merkle chain integrity
 BUILD_REGEN=1 python qor/scripts/dist_compile.py           # regenerate variants
 python qor/scripts/check_variant_drift.py                  # SSoT vs dist consistency
@@ -335,8 +355,8 @@ python qor/scripts/check_variant_drift.py                  # SSoT vs dist consis
 | [`CLAUDE.md`](CLAUDE.md) | Drop-in token-efficiency + test-discipline + governance-flow defaults |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Reading order + quickstart + what-not-to-do for contributors |
 | [`CHANGELOG.md`](CHANGELOG.md) | User-facing release narrative (Keep-a-Changelog 1.1.0) |
-| [`docs/META_LEDGER.md`](docs/META_LEDGER.md) | SHA256-chained governance log (104 entries sealed) |
-| [`docs/SHADOW_GENOME.md`](docs/SHADOW_GENOME.md) | Narrative failure-pattern catalog (21 entries) |
+| [`docs/META_LEDGER.md`](docs/META_LEDGER.md) | SHA256-chained governance log |
+| [`docs/SHADOW_GENOME.md`](docs/SHADOW_GENOME.md) | Narrative failure-pattern catalog |
 | [`docs/SYSTEM_STATE.md`](docs/SYSTEM_STATE.md) | Current repo state snapshot (updated per seal) |
 | [`docs/phase31-drift-triage-report.md`](docs/phase31-drift-triage-report.md) | Live drift triage artifact (Check Surface D/E) |
 
@@ -355,7 +375,7 @@ python qor/scripts/check_variant_drift.py                  # SSoT vs dist consis
 | [`docs/RESEARCH_BRIEF.md`](docs/RESEARCH_BRIEF.md) | Phase 28 recon: documentation-integrity gap audit (18 gaps identified, all closed by Phase 31) |
 | [`docs/security-audit-2026-04-16.md`](docs/security-audit-2026-04-16.md) | OWASP Top 10 + stability audit |
 | [`qor/references/doctrine-nist-ssdf-alignment.md`](qor/references/doctrine-nist-ssdf-alignment.md) | NIST SP 800-218A lifecycle mapping |
-| [`qor/references/doctrine-shadow-genome-countermeasures.md`](qor/references/doctrine-shadow-genome-countermeasures.md) | Codified failure patterns (SG-016 through SG-Phase31-B) |
+| [`qor/references/doctrine-shadow-genome-countermeasures.md`](qor/references/doctrine-shadow-genome-countermeasures.md) | Codified failure-pattern countermeasures |
 
 ### Doctrines (complete inventory)
 
@@ -363,23 +383,40 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 
 | Doctrine | Purpose |
 |---|---|
+| [ai-rmf](qor/references/doctrine-ai-rmf.md) | NIST AI RMF 1.0 Govern / Map / Measure / Manage mapping |
 | [attribution](qor/references/doctrine-attribution.md) | Canonical commit-trailer / PR-footer / CHANGELOG attribution for Qor-logic-SDLC-authored work; helper at `qor/scripts/attribution.py` |
 | [audit-report-language](qor/references/doctrine-audit-report-language.md) | VETO ground-class to skill directive mapping |
 | [changelog](qor/references/doctrine-changelog.md) | Keep-a-Changelog discipline + seal-time stamp |
 | [ci-budget](qor/references/doctrine-ci-budget.md) | CI compute and latency budget |
 | [code-quality](qor/references/doctrine-code-quality.md) | Section 4 Simplicity Razor + anti-slop rules |
 | [communication-tiers](qor/references/doctrine-communication-tiers.md) | Technical / standard / plain output tiers |
+| [compliance-conveyance](qor/references/doctrine-compliance-conveyance.md) | Compliance control matrix + conveyance conformance + ratchet + downstream enforcement SDK |
 | [context-discipline](qor/references/doctrine-context-discipline.md) | Persona scaffolding + measurable-effect contract for SDLC personas |
+| [definition-of-done](qor/references/doctrine-definition-of-done.md) | Per-deliverable D1-D4 acceptance criteria |
+| [dependency-admission](qor/references/doctrine-dependency-admission.md) | Dependency admission + cooling-period supply-chain control |
 | [documentation-integrity](qor/references/doctrine-documentation-integrity.md) | Tiered doc topology + glossary + check surface + documentation currency |
+| [eu-ai-act](qor/references/doctrine-eu-ai-act.md) | EU AI Act Art. 9 / 13 / 14 / 50 risk-management + transparency mapping |
+| [feature-inventory](qor/references/doctrine-feature-inventory.md) | FEATURE_INDEX artifact format + seal-time verification |
+| [feature-tdd](qor/references/doctrine-feature-tdd.md) | Per-feature TDD-Light contract (plan / audit / implement) |
 | [governance-enforcement](qor/references/doctrine-governance-enforcement.md) | Branch / version / tag / push / session-rotation / PR-citation protocol |
+| [governance-index](qor/references/doctrine-governance-index.md) | Hierarchical governance index + self-policing enforcement |
+| [hook-contract](qor/references/doctrine-hook-contract.md) | Non-authoritative `gate_written` observer-hook contract |
+| [host-repo-posture](qor/references/doctrine-host-repo-posture.md) | Host-repo posture + capability checks for non-Python archetypes |
+| [ideation-readiness](qor/references/doctrine-ideation-readiness.md) | Governed ideation-readiness contract for `/qor-ideate` |
 | [nist-ssdf-alignment](qor/references/doctrine-nist-ssdf-alignment.md) | NIST SP 800-218A practice-tag mapping |
 | [owasp-governance](qor/references/doctrine-owasp-governance.md) | OWASP Top 10 governance integration |
+| [procedural-fidelity](qor/references/doctrine-procedural-fidelity.md) | Doc-surface coverage for skill / script / doctrine / schema changes |
+| [prompt-compilation](qor/references/doctrine-prompt-compilation.md) | Prompt-compilation + per-host variant-output rules |
+| [prompt-injection](qor/references/doctrine-prompt-injection.md) | Prompt-injection canary scanning at audit |
 | [prompt-resilience](qor/references/doctrine-prompt-resilience.md) | Autonomy classification + pause-smell detection |
+| [runtime-principal-fidelity](qor/references/doctrine-runtime-principal-fidelity.md) | Data-API access-control + runtime-principal verification |
 | [shadow-attribution](qor/references/doctrine-shadow-attribution.md) | Shadow skill attribution rules |
-| [shadow-genome-countermeasures](qor/references/doctrine-shadow-genome-countermeasures.md) | SG-016 through SG-038 failure-pattern countermeasures |
+| [shadow-genome-countermeasures](qor/references/doctrine-shadow-genome-countermeasures.md) | Codified recurring failure-pattern countermeasures |
+| [shadow-genome-graph](qor/references/doctrine-shadow-genome-graph.md) | Shadow Genome event-graph model |
 | [test-discipline](qor/references/doctrine-test-discipline.md) | TDD, definition of done, reliability rules |
 | [test-functionality](qor/references/doctrine-test-functionality.md) | Tests must invoke the unit and assert on output, not just verify artifact presence |
 | [token-efficiency](qor/references/doctrine-token-efficiency.md) | Terse-by-default output + read/write discipline |
+| [verification-closure-integrity](qor/references/doctrine-verification-closure-integrity.md) | Prose-behavior test lint + verification-closure rules |
 
 Patterns and templates (non-binding references):
 
@@ -392,7 +429,7 @@ Patterns and templates (non-binding references):
 
 The Shadow Genome is Qor-logic's institutional memory for failure patterns. Every governance failure (plan VETOes, import breakage, arithmetic drift, silent data loss) is recorded, classified, and codified as a countermeasure.
 
-12 patterns codified so far:
+Representative codified patterns (full set in the doctrine):
 
 | ID | Pattern | Countermeasure |
 |---|---|---|

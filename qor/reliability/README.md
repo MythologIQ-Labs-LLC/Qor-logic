@@ -9,7 +9,7 @@ Runtime reliability gates invoked from SDLC skill steps. Each gate is a pure-fun
 | [`intent_lock`](intent_lock.py) | `/qor-implement` Step 5.5 (capture) and `/qor-substantiate` Step 4.6 (verify) | Phase 17 | Drift between the audit-PASS state (plan + audit + HEAD ancestry) and the substantiate-time state. Captures SHA-256 fingerprints at implement-start; re-verifies at seal. Phase 43's ancestry fix made HEAD-comparison forward-tolerant. |
 | [`skill_admission`](skill_admission.py) | `/qor-substantiate` Step 4.6 | Phase 17 | Invoking skill is registered, frontmatter has required keys (`name`, `description`, `phase`), `name` matches directory basename. |
 | [`gate_skill_matrix`](gate_skill_matrix.py) | `/qor-substantiate` Step 4.6 | Phase 17 | Every `/qor-*` reference across all skill bodies resolves to an extant skill. Catches handoff drift during refactors. |
-| [`seal_entry_check`](seal_entry_check.py) | `/qor-substantiate` Step 7.7 | Phase 47 | Latest META_LEDGER entry is a `SESSION SEAL` for the current phase with internally-consistent chain hash. Closes SG-AdjacentState-A's bookkeeping-gap subclass — Phase 46's first substantiate sealed at v0.33.0 without writing ledger entries; the existing 4.6 gates run before Step 7's seal-entry-write so they could not catch it. |
+| [`seal_entry_check`](seal_entry_check.py) | `/qor-substantiate` Step 7.7 | Phase 47 | Latest META_LEDGER entry is a `SESSION SEAL` for the current phase with internally-consistent chain hash. Closes SG-AdjacentState-A's bookkeeping-gap subclass -- Phase 46's first substantiate sealed at v0.33.0 without writing ledger entries; the existing 4.6 gates run before Step 7's seal-entry-write so they could not catch it. |
 
 ## Invocation pattern
 
@@ -33,7 +33,7 @@ The gate is the structural countermeasure. Pair it with proximity-anchored + str
 
 ## Step ordering matters
 
-Each gate's location in the substantiate sequence is determined by its preconditions, not by sibling proximity. The Phase 47 audit's first three VETOs all rejected attempts to colocate `seal_entry_check` with the existing reliability gates at Step 4.6 — the seal entry does not yet exist at Step 4.6; it's written by Step 7. Step 7.7 (post-Step-7) is the only valid placement. When proposing a new gate, trace each precondition back to the skill step that establishes it.
+Each gate's location in the substantiate sequence is determined by its preconditions, not by sibling proximity. The Phase 47 audit's first three VETOs all rejected attempts to colocate `seal_entry_check` with the existing reliability gates at Step 4.6 -- the seal entry does not yet exist at Step 4.6; it's written by Step 7. Step 7.7 (post-Step-7) is the only valid placement. When proposing a new gate, trace each precondition back to the skill step that establishes it.
 
 ## Layout
 

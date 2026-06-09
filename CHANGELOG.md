@@ -10,6 +10,16 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.107.0] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 144**: authored the previously-missing `docs/FEATURE_INDEX.md` -- a feature index over the user-touchable `qor-logic` CLI command surface (17 features, each row cited to a source `file:line` and a verifying test, honestly statused: 14 `verified`, 3 `unverified`). Closes the long-standing `FEATURE_INDEX` MISSING governance-health finding and activates the seal-time `feature_index_verify` regression guard.
+
+### Fixed
+- **Phase 144**: removed an ~87-release-stale "Highlights of the v0.19+ documentation-integrity arc" block from the README `## Latest release` section, so it matches its own stated intent of avoiding version-specific content (the CHANGELOG remains the single source of truth).
+
 ## [0.106.1] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
