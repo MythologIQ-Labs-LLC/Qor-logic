@@ -10,6 +10,27 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.103.1] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 139 (hotfix)**: bot-authored PRs (login ending in `[bot]`, e.g. `dependabot[bot]`) are now exempt from the PR Citation Lint. Machine-generated dependency/automation bumps that touch non-doc files (e.g. `.github/workflows/*.yml` action-version bumps) have no plan/ledger/Merkle-seal to cite, so the doctrine §6 citation requirement was failing them indefinitely (e.g. PR #195). `qor/scripts/pr_citation_lint.py` gains `is_exempt_actor()` plus an `--actor` argument that short-circuits to exit 0 for bot authors; `.github/workflows/pr-lint.yml` passes the PR author via an env var. Human-authored PRs remain gated.
+
+## [0.103.0] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 138 (GH #196 V1)**: a schema-optional, WARN-only surface-tag presence lint in the `/qor-substantiate` FEATURE_INDEX verification pass. `qor-logic scripts feature_index_verify --surface-lint` flags every non-`n/a` FEATURE_INDEX row missing a `Surface` value with a severity-2 `degradation` event when the repo's index header declares a `Surface` column; a repo whose header lacks the column disclosed-skips (`gate_skipped_prerequisite_absent`) and a repo without a `FEATURE_INDEX.md` silent-skips, so no existing adopter is broken by adoption. Adds an optional `surface` property to `feature_index.schema.json` (`additionalProperties:false` retained), a glossary entry, the worked-example 7th column, and step 7 of the seal pass. The motivating per-surface mapping data is FailSafe's (FailSafe#206); the enforcing gate lives in qor-logic. The lint always exits 0; V2 fail-closed promotion is deferred until consumer surface coverage is complete.
+
+## [0.102.2] - 2026-06-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 137 (hotfix)**: resynced `docs/SYSTEM_STATE.md`, which had drifted to a Phase-75 / v0.51.0 / 2026-05-14 snapshot (stale header, pre-migration File Tree, Ledger-chain-head at Entry #169). Rewrote the header, Authoritative-source, File Tree, Ledger-chain-head, Shipped-tooling, and Advisory-gate-overrides sections to current truth (Phase 136/137 era, v0.102.1, 329 ledger entries, live variants) and added a condensed Phases-108-136 bridge; the accurate historical per-phase sections (Phase 36-109) are left intact. Added `tests/test_system_state_freshness.py` -- a drift guard asserting the SYSTEM_STATE header phase stays within 1 of the latest ledger SESSION SEAL phase (the existing `test_system_state_phase_coverage` only matched "Phase N feature substantiated" phrasing, which is why the 61-phase drift went uncaught).
+
 ## [0.102.1] - 2026-06-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

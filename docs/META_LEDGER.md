@@ -11851,7 +11851,127 @@ Change class: hotfix. Tests: 2323 passed / 0 failed / 3 skipped (full suite). Au
 **Previous Hash**: `afa61529fd4c94c388c724e9822a22fb7247722775473003772b74c729571d0b`
 **Chain Hash (Merkle seal)**: `927bc482cde6b5d865521f88eda68c7451fff210f12a2dfdeef4908a4ea7f04b`
 
+### Entry #330: SESSION SEAL -- Phase 137 SYSTEM_STATE.md resync + freshness drift-guard (v0.102.2)
+
+**Timestamp**: 2026-06-02T16:35:39Z
+**Phase**: SUBSTANTIATE (Phase 137; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase137-system-state-resync.md
+**Session**: `2026-06-02T1620-fc9ceb`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `d8021e2ae58e`
+
+**Scope**: Phase 137 implemented (hotfix; doc currency): resynced docs/SYSTEM_STATE.md, frozen at a Phase-75 / v0.51.0 / 2026-05-14 snapshot (stale header, pre-migration File Tree claiming variants deferred + 18 ledger entries, Ledger-chain-head at Entry #169). Rewrote the header, Authoritative-source, File Tree, Ledger-chain-head, Shipped-tooling, and Advisory-gate-overrides sections to current truth (Phase 136/137, v0.102.1, 329 ledger entries, live claude/codex/gemini/kilo-code variants, 30 skills / 98 scripts / 6 reliability / 54 references / 18 schemas / 2326 tests) and appended a condensed Phases-108-136 bridge; the accurate historical per-phase sections (Phase 36-109) left intact. Added tests/test_system_state_freshness.py asserting the SYSTEM_STATE header phase stays within 1 of the latest ledger SESSION SEAL phase (the existing test_system_state_phase_coverage only matched 'Phase N feature substantiated' phrasing, which is why the 61-phase drift went uncaught). No code/skill/gate change. Audit PASS (L1 solo). Full suite 2326 passed / 0 failed / 3 skipped. README Tests badge 2323 -> 2326.
+
+Change class: hotfix. Tests: 2326 passed / 0 failed / 3 skipped (full suite). Audit PASS (L1 solo).
+
+**Review Boundary**: Operator handles repo actions (push / PR / merge / tag-push / PyPI) this phase.
+
+**Content Hash**: `e07cb19f8ee21d09555159a5938a9926dbcfd94df04626ae20dcf52f8c20b85c`
+**Previous Hash**: `927bc482cde6b5d865521f88eda68c7451fff210f12a2dfdeef4908a4ea7f04b`
+**Chain Hash (Merkle seal)**: `246f86ddd9aef4402fd90269462e1be7a606b84d82af214fa1cd68fceb0477df`
+
+### Entry #331: RESEARCH BRIEF -- GH #196 Surface-tag enforcement impact (qor-logic independent + FailSafe interaction)
+
+**Timestamp**: 2026-06-09T00:16:34Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+
+**Content Hash**: `61a0d138111fbe9150c0d069dc236faa43d2f59a0d555e9dd3374bb09e1deb37`
+**Previous Hash**: `246f86ddd9aef4402fd90269462e1be7a606b84d82af214fa1cd68fceb0477df`
+**Chain Hash (Merkle seal)**: `6db2007d4e00e39fd257c1557627c15ed41d218a8ca5ca805139ec2d4ed19068`
+
+**Decision**: Investigated how GH #196 (require/verify a per-feature `Surface` tag in the FEATURE_INDEX verification pass) affects qor-logic independently and together with FailSafe. Findings: the change is a schema-optional, additive, WARN-first capability extension, not a behavior change to any existing gate. Zero effect on qor-logic's own seal today — qor-logic has no `docs/FEATURE_INDEX.md` (governance-health MISSING; ls absent), so it disclosed-skips the whole pass and the new sub-check is doubly gated behind index-exists AND surface-column-declared. The parser (`feature_index_verify.py:55`-`:62`) is header-driven and already tolerates extra columns, so reading `surface` needs no parser change; the coupled V1 change is adding an optional `surface` property to `feature_index.schema.json` (`additionalProperties:false`). WARN-first has copy-ready precedents (`dod_check`, `procedural_fidelity`); V2 fail-closed is the known Phase 114->122 ladder move. FailSafe owns the data (FailSafe#206); qor-logic owns the gate; no runtime coupling (gate reads markdown). Cross-repo contract: V2 must not flip fail-closed until FailSafe reaches full surface-tag coverage, or FailSafe's seal breaks. Two DRIFTs flagged: (a) `governance_health` treats FEATURE_INDEX as *required* while `doctrine-feature-inventory.md` declares it *optional* (pre-existing, separable follow-on); (b) no ARCHITECTURE_PLAN blueprint claim covers this subsystem (canonical spec is the doctrine). Brief: `docs/research-brief-surface-tag-feature-index-2026-06-08.md`. Doctrine updated with a "Surface column (optional V2 extension; GH #196)" subsection. Advisory only; next phase `/qor-plan` (V1 WARN-only).
+
+---
+
+### Entry #332: GATE TRIBUNAL -- Phase 138 plan PASS (GH #196 V1 surface-tag WARN-only lint)
+
+**Timestamp**: 2026-06-09T00:30:00Z
+**Phase**: GATE (Phase 138)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase138-surface-tag-lint.md
+**Session**: `2026-06-09T0025-15d45c`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `726715224fc3ac6103b2646db43fa22d5e3bd6f67f0d27db51cd25bdeec22204`
+**Previous Hash**: `6db2007d4e00e39fd257c1557627c15ed41d218a8ca5ca805139ec2d4ed19068`
+**Chain Hash (Merkle seal)**: `0a65f51f5c13dbf5873b08bc31087dd0a12b2f9d3c14f5555b62180004f9b201`
+
+**Decision**: PASS (L1, solo). All automated gates clean (iteration-status rc=0; ten 0.6 lints clean; prompt-injection rc=0; prose_test_lint rc=0; author-momentum option_b_required=false). All adversarial passes PASS or N/A; Infrastructure Alignment grep-verified every citation (parse_index_rows header-driven feature_index_verify.py:56/60/62; schema additionalProperties:false :7; append_event attribution=LOCAL orchestration_override.py:50; degradation + gate_skipped_prerequisite_absent both in shadow_event enum). Razor PASS is CONDITIONAL on three binding implementation constraints recorded in the report: (1) extract the --surface-lint CLI handler into a dedicated function (main() is already ~57 lines, a grandfathered overage; inlining would FAIL the 40-line razor); (2) factor the shadow-event envelope into a helper to keep the runner <=40 lines and the file <=250; (3) land the Phase 2 glossary `Surface tag` entry (resolves the non-VETO Documentation Drift advisory before seal). No braid between the WARN surface-lint mode and the regression-ABORT mode (separate dispatch). Scope confirmed narrow (vocabulary registry / per-surface gates / V2 fail-closed / governance_health drift all deferred). Next: `/qor-implement`.
+
+---
+
+### Entry #333: SESSION SEAL -- Phase 138 GH #196 V1 surface-tag WARN-only FEATURE_INDEX lint (v0.103.0)
+
+**Timestamp**: 2026-06-09T01:25:56Z
+**Phase**: SUBSTANTIATE (Phase 138; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase138-surface-tag-lint.md
+**Session**: `2026-06-09T0025-15d45c`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1, PW.5.1, RV.1.1, RV.1.2
+**Entry ID**: `f2668a1b65ae`
+
+**Feature Inventory**: not adopted (qor-logic maintains no FEATURE_INDEX of its own).
+
+**Scope**: GH #196 V1 implemented (feature). A schema-optional, WARN-only surface-tag presence lint extends the FEATURE_INDEX verification pass. New `index_has_surface_column`, `surface_lint`, `SurfaceLintResult`, and a `--surface-lint` CLI mode in `qor/scripts/feature_index_verify.py` (the mode always exits 0): when a repo's `FEATURE_INDEX.md` header declares a `Surface` column, non-`n/a` rows missing a surface value append a severity-2 `degradation` event (`details.gate = feature_index_surface_lint`); no column -> `gate_skipped_prerequisite_absent` disclosed-skip; missing index -> silent skip. The WARN surface mode and the regression-ABORT mode are dispatched separately (no braid); to honor the audit Razor constraints the existing regression body was extracted to `_run_regression_check` (main() now 30 lines) and the 11-field shadow-event envelope was factored into `_shadow_event` shared by both emit sites (this also fixed a latent `append_event`-without-attribution defect in the override path). Optional `surface` property added to `feature_index.schema.json` (`additionalProperties:false` retained). Wired across doctrine-feature-inventory.md (Surface column section), glossary (`Surface tag` term + `gate_skipped_prerequisite_absent` referenced_by additions), seal-gate-ladder.md, FEATURE_INDEX.example.md (7-col), and qor-substantiate SKILL.md step 7 (kept under the 40 KB budget at 40.9 KB); 4 dist variants recompiled. 23 new behavioral tests (red->green, run twice for determinism). qor-logic itself has no FEATURE_INDEX so both the regression gate and the new surface lint disclosed-skip on this repo.
+
+Change class: feature. Tests: full suite green; README Tests badge 2326 -> 2339. Audit PASS (L1 solo). All substantiate ABORT gates passed (intent-lock, secret-scan, merge-velocity, data-API-ACL skip, doc-integrity strict, governance-index).
+
+**Review Boundary**: Operator authorized commit + push + PR + merge-on-green-CI.
+
+**Content Hash**: `4380f20af2e8536b5cf1e5d26eb8fb1098468592a55f589f4a872d417041e316`
+**Previous Hash**: `0a65f51f5c13dbf5873b08bc31087dd0a12b2f9d3c14f5555b62180004f9b201`
+**Chain Hash (Merkle seal)**: `24cd1569d4a38c047942dbc36e3ff624ee003890d083a7f3e2e4c3790bb2b96a`
+
+---
+
+### Entry #334: GATE TRIBUNAL -- Phase 139 plan PASS (bot-author citation-lint exemption)
+
+**Timestamp**: 2026-06-09T01:52:00Z
+**Phase**: GATE (Phase 139)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase139-citation-lint-bot-exempt.md
+**Session**: `2026-06-09T0150-536a60`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `34d01de6d879ac301e58e73b1cf8c9b14dd014311fea2fe6e55f2ad6677b395d`
+**Previous Hash**: `24cd1569d4a38c047942dbc36e3ff624ee003890d083a7f3e2e4c3790bb2b96a`
+**Chain Hash (Merkle seal)**: `a4efa5a3a6ea7f781474682043e71f1335dc9118fc65ab827279da0b953c4bd6`
+
+**Decision**: PASS (L1, solo). Hotfix exempting bot authors (`*[bot]`) from the PR citation lint so dependabot dependency-bump PRs (e.g. #195, actions/checkout) stop failing a governance-citation gate they cannot satisfy. Exemption lives in `qor.scripts.pr_citation_lint.is_exempt_actor` (testable); `pr-lint.yml` passes `${{ github.event.pull_request.user.login }}`. OWASP A03 reviewed: actor is GitHub-controlled constrained charset, quoted argv, no injection. All automated gates clean; all adversarial passes PASS/N/A. Next: `/qor-implement`.
+
+---
+
+### Entry #335: SESSION SEAL -- Phase 139 bot-author citation-lint exemption (v0.103.1)
+
+**Timestamp**: 2026-06-09T02:04:09Z
+**Phase**: SUBSTANTIATE (Phase 139; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase139-citation-lint-bot-exempt.md
+**Session**: `2026-06-09T0150-536a60`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `5aaded1f0b98`
+
+**Scope**: Phase 139 implemented (hotfix). Exempts bot authors from the PR Citation Lint so machine-generated dependency/automation PRs (dependabot, etc.) that touch non-doc files stop failing a doctrine §6 governance-citation gate they cannot satisfy (root cause of the failing `lint` check on PR #195, actions/checkout 6.0.2->6.0.3). `qor/scripts/pr_citation_lint.py` gains `is_exempt_actor(actor)` (True iff login ends in `[bot]`) and an `--actor` argument on `main()` that short-circuits to exit 0 (SKIP) for bot authors before reading the body; human authors remain gated unchanged. `.github/workflows/pr-lint.yml` passes the PR author via a `PR_ACTOR` env var (not inline `${{ }}` interpolation, closing the OWASP A03 surface by construction). 6 new behavioral tests (red->green, run twice). No skill/doctrine/schema change (doc_tier minimal); dist unaffected.
+
+Change class: hotfix. Tests: full suite green (2 expected pre-seal README badge drifts reconciled in this seal). Audit PASS (L1 solo). All substantiate ABORT gates passed (intent-lock, secret-scan, merge-velocity, data-API skip, doc-integrity strict, governance-index).
+
+**Review Boundary**: Operator authorized push + PR + merge-on-green + PyPI publish.
+
+**Content Hash**: `9b95cd636b7a87cebacb6c0e41a8da88d57844d5542e0c88d0e421131898b27b`
+**Previous Hash**: `a4efa5a3a6ea7f781474682043e71f1335dc9118fc65ab827279da0b953c4bd6`
+**Chain Hash (Merkle seal)**: `33e04a59aa745ae723188ead1e4be6e0d0944c5aca6e46be8d27ff8ba4c19cd2`
+
 ---
 
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 136; v0.102.1 local; substantiate skill restructured; operator authorized push + PR)
+*Session: SEALED* (Phase 139; v0.103.1; bot-author citation-lint exemption; operator authorized push/PR/merge/publish)

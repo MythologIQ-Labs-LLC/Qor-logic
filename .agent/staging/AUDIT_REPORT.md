@@ -1,38 +1,36 @@
-# AUDIT REPORT — Phase 136 (qor-substantiate Step 4.5 / Step Z restructure)
+# AUDIT REPORT — Phase 139: Exempt bot authors from PR citation lint
 
-**Target**: docs/plan-qor-phase136-substantiate-stepz-restructure.md
 **Verdict**: PASS
-**Risk Grade**: L1 (skill-prose structural fix; no code/DB/UI/dependency change)
-**Mode**: solo (audit_risk_score: option_b_required=false)
-**Session**: 2026-06-02T1559-3b57ec
+**Risk Grade**: L1
+**Mode**: solo (capability_shortfall logged; author-momentum option_b_required=false)
+**Target**: docs/plan-qor-phase139-citation-lint-bot-exempt.md
+**Session**: 2026-06-09T0150-536a60
 
-## Passes
+## Automated gate ladder
 
-| Pass | Result | Note |
-|------|--------|------|
-| Prompt Injection | PASS | `prompt_injection_canaries` exit 0 |
-| Security L3 / OWASP / Data-API | PASS (N/A) | No code, secret, DB, or subprocess surface; markdown only |
-| Ghost UI / Live-Progress | PASS (N/A) | No UI |
-| Section 4 Razor | PASS-pending | Test functions <=40 lines; verified at implement Step 9 |
-| Self-Application | N/A | `originating_remediation` not set |
-| Test Functionality | PASS | FIT descriptor parses the SKILL.md and asserts char-offset orderings (Step Z before 7.8; session.rotate after 7.8) + Step 4.5 slice has no embedded fence — a re-tangle or early-rotate flips the comparison and fails (survives SG-035) |
-| Dependency | PASS | None |
-| Macro-Level Architecture | PASS | Fix improves structure; `dist_compile` regenerates variants |
-| Feature Test Coverage | PASS | FIT row cites `tests/test_substantiate_stepz_structure.py` + behavioral (offset-comparison) descriptor |
-| Infrastructure Alignment | PASS | Ordering constraints verified against source: `gate_chain_completeness.check` walks the current SESSION SEAL entry (write must precede 7.8); every post-4.5 step resolves `SESSION_ID` from `.qor/session/current` (rotate must be last). `skill_admission` checks frontmatter only (no section requirement) |
-| Filter-Stage / Orphan | PASS / N/A | No pipeline; reference unchanged |
+| Gate | Result |
+|---|---|
+| plan_iteration_status (0.3 ABORT) | rc=0 |
+| plan_test_lint / plan_grep_lint / plan_text_consistency / plan_feature_tdd (0.6) | clean |
+| prompt_injection_canaries (ABORT) | rc=0 |
+| prose_test_lint --enforce (VETO) | rc=0 |
+| audit_risk_score | option_b_required=false |
 
-## Correctness rationale (why the new ordering is mandatory, not stylistic)
+## Adversarial passes
 
-- **Write before 7.8**: `gate_chain_completeness` reads SESSION SEAL entries (the current one is written at Step 7) and asserts all four `.qor/gates/<sid>/*.json` exist; so `substantiate.json` must be written before Step 7.8 — the new `### Step Z` is placed pre-7.8.
-- **Rotate last**: `session.rotate()` rewrites `.qor/session/current`; every Step 7.x–9.x command re-resolves `SESSION_ID` from it, so rotating at Step 4.5 (current malformed state) would corrupt the rest of the seal. The new `### Step 9.8` places rotation after Step 9.7.
-- **No behavior change**: only the operator-facing prose relocates; the `write_gate_artifact` / `build_manifest` / `session.rotate()` code is verbatim.
+- **Security L3 / OWASP** — PASS. `--actor` is sourced from `${{ github.event.pull_request.user.login }}` — a GitHub-controlled, constrained-charset value (`[A-Za-z0-9-]` plus a literal `[bot]` suffix), passed as a quoted argv argument; no shell metacharacters, no `shell=True`, no command injection (A03). The exemption is an allowlist-by-suffix, not a security bypass (the lint is a governance-citation gate, not auth).
+- **Test Functionality** — PASS. New tests invoke `is_exempt_actor` and `main(...)` and assert on return values/exit codes (bot+uncited→0, human+uncited→1, human+cited→0); none presence-only.
+- **Razor** — PASS. `is_exempt_actor` ~3 lines; `main` gains argparse (~8 lines). Well within limits.
+- **Dependency** — PASS. stdlib `argparse` only.
+- **Macro-Architecture** — PASS. Exemption logic lives in the Python lint (testable), workflow passes the author; no braid.
+- **Feature Test Coverage** — PASS. FIT row (op MODIFIED) cites `tests/test_pr_citation_lint.py` with a behavioral descriptor surviving the acceptance question.
+- **Infrastructure Alignment** — PASS. `.github/workflows/pr-lint.yml` and `qor/scripts/pr_citation_lint.py` exist; `github.event.pull_request.user.login` is a valid GitHub Actions context expression.
+- **Ghost UI / Live-Progress / Filter-Stage / Orphan** — N/A or PASS.
 
 ## Process Pattern Advisory
 
-<!-- qor:veto-pattern-advisory -->
-No repeated-VETO pattern detected.
+No repeated-VETO pattern.
 
 ## Next action
 
-PASS -> /qor-implement. Test-first (red against current malformed SKILL.md), then restructure.
+PASS → `/qor-implement`.

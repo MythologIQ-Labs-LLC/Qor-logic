@@ -34,6 +34,18 @@ class IndexSummary:
     missing_index: bool = False
 
 
+@dataclass(frozen=True)
+class SurfaceLintResult:
+    """Phase 138 (GH #196 V1) surface-tag lint outcome.
+
+    ``column_present`` is True only when the table header declares a ``Surface``
+    column; ``untagged`` lists non-``n/a`` rows whose surface cell is empty.
+    """
+    column_present: bool
+    missing_index: bool = False
+    untagged: tuple[str, ...] = ()
+
+
 def parse_index_rows(text: str) -> list[dict[str, str]]:
     """Parse a FEATURE_INDEX markdown table into row dicts.
 
@@ -74,6 +86,43 @@ def _normalize_status(text: str) -> str | None:
     if cleaned in STATUS_VALUES:
         return cleaned
     return None
+
+
+def index_has_surface_column(text: str) -> bool:
+    """True when the FEATURE_INDEX table header declares a ``Surface`` column.
+
+    Case-insensitive, exact cell match after strip. The first non-separator
+    table row is the header (mirrors ``parse_index_rows``).
+    """
+    for line in text.splitlines():
+        s = line.rstrip()
+        if not _TABLE_ROW.match(s) or _SEPARATOR.match(s):
+            continue
+        cells = [c.strip().lower() for c in s.strip("|").split("|")]
+        return "surface" in cells
+    return False
+
+
+def surface_lint(
+    repo_root: str | Path,
+    index_path: str = "docs/FEATURE_INDEX.md",
+) -> SurfaceLintResult:
+    """Flag non-``n/a`` rows missing a surface tag, when a Surface column exists.
+
+    Schema-optional: a missing index or an index without a ``Surface`` column
+    yields ``column_present=False`` and no findings (the disclosed-skip path).
+    """
+    path = Path(repo_root) / index_path
+    if not path.exists():
+        return SurfaceLintResult(column_present=False, missing_index=True)
+    text = path.read_text(encoding="utf-8")
+    if not index_has_surface_column(text):
+        return SurfaceLintResult(column_present=False)
+    untagged = tuple(
+        r["id"] for r in parse_index_rows(text)
+        if r["status"] != "n/a" and not r.get("surface", "").strip()
+    )
+    return SurfaceLintResult(column_present=True, untagged=untagged)
 
 
 def tally(
@@ -127,6 +176,48 @@ def read_seal_snapshot(repo_root: str | Path, sid: str) -> dict[str, str]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _shadow_event(event_type: str, severity: int, session: str, details: dict) -> dict:
+    """Standard shadow-event envelope shared by the surface-lint and regression emit sites."""
+    return {
+        "ts": shadow_process.now_iso(),
+        "skill": "qor-substantiate",
+        "session_id": session,
+        "event_type": event_type,
+        "severity": severity,
+        "details": details,
+        "addressed": False, "issue_url": None, "addressed_ts": None,
+        "addressed_reason": None, "source_entry_id": None,
+    }
+
+
+def _run_surface_lint(args) -> int:
+    """WARN-only surface-tag lint (Phase 138; GH #196). Always exits 0."""
+    result = surface_lint(args.repo_root, args.index_path)
+    if result.missing_index:
+        print(f"feature_index_surface: skip (no {args.index_path})")
+        return 0
+    if not result.column_present:
+        print("SKIP [feature_index_surface]: no Surface column; "
+              "recording gate_skipped_prerequisite_absent (Phase 75)")
+        shadow_process.append_event(
+            _shadow_event("gate_skipped_prerequisite_absent", 1, args.session,
+                           {"gate": "feature_index_surface_lint"}),
+            attribution="LOCAL")
+        return 0
+    if result.untagged:
+        for fid in result.untagged:
+            print(f"WARN [feature_index_surface]: {fid} missing surface tag")
+        shadow_process.append_event(
+            _shadow_event("degradation", 2, args.session,
+                           {"gate": "feature_index_surface_lint",
+                            "untagged": list(result.untagged)}),
+            attribution="LOCAL")
+        print("feature_index_surface: WARN-only; not aborting")
+        return 0
+    print("feature_index_surface: ok (all non-n/a rows tagged)")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """FEATURE_INDEX regression ABORT (Phase 114; GH #155/#40).
 
@@ -146,8 +237,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--override", action="store_true",
                         help="accept the regression for this seal; emit a logged "
                              "gate_override event and exit 0")
+    parser.add_argument("--surface-lint", action="store_true",
+                        help="run the WARN-only surface-tag presence lint (Phase 138) "
+                             "instead of the regression check; always exits 0")
+    parser.add_argument("--session", default="feature-index-surface",
+                        help="session id stamped on surface-lint shadow events")
     args = parser.parse_args(argv)
+    if args.surface_lint:
+        return _run_surface_lint(args)
+    return _run_regression_check(args)
 
+
+def _run_regression_check(args) -> int:
+    """Outside-scope verified->unverified regression ABORT (Phase 114/122)."""
     prior = read_seal_snapshot(args.repo_root, args.snapshot) if args.snapshot else None
     summary = tally(args.repo_root, args.index_path, prior)
 
@@ -159,31 +261,23 @@ def main(argv: list[str] | None = None) -> int:
         f"feature_index: total={summary.total} verified={summary.verified} "
         f"unverified={summary.unverified} n/a={summary.n_a}"
     )
-    if summary.newly_unverified:
-        for fid in summary.newly_unverified:
-            print(f"  REGRESSION [verified->unverified] {fid}")
-        if args.warn_only:
-            print("feature_index: WARN-only; not aborting")
-            return 0
-        if args.override:
-            shadow_process.append_event({
-                "ts": shadow_process.now_iso(),
-                "skill": "qor-substantiate",
-                "session_id": args.snapshot or "feature-index-verify",
-                "event_type": "gate_override",
-                "severity": 2,
-                "details": {
-                    "gate": "feature_index_verify",
-                    "regressions": list(summary.newly_unverified),
-                },
-                "addressed": False, "issue_url": None, "addressed_ts": None,
-                "addressed_reason": None, "source_entry_id": None,
-            })
-            print("feature_index: OVERRIDE (regression accepted; gate_override logged)")
-            return 0
-        print("feature_index: ABORT (outside-scope regression)")
-        return 1
-    return 0
+    if not summary.newly_unverified:
+        return 0
+    for fid in summary.newly_unverified:
+        print(f"  REGRESSION [verified->unverified] {fid}")
+    if args.warn_only:
+        print("feature_index: WARN-only; not aborting")
+        return 0
+    if args.override:
+        shadow_process.append_event(
+            _shadow_event("gate_override", 2, args.snapshot or "feature-index-verify",
+                           {"gate": "feature_index_verify",
+                            "regressions": list(summary.newly_unverified)}),
+            attribution="LOCAL")
+        print("feature_index: OVERRIDE (regression accepted; gate_override logged)")
+        return 0
+    print("feature_index: ABORT (outside-scope regression)")
+    return 1
 
 
 if __name__ == "__main__":

@@ -58,8 +58,9 @@ jobs:
         if: steps.docs_only.outputs.result == 'false'
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
+          PR_ACTOR: ${{ github.event.pull_request.user.login }}
         run: |
-          printf '%s' "$PR_BODY" | python qor/scripts/pr_citation_lint.py
+          printf '%s' "$PR_BODY" | python qor/scripts/pr_citation_lint.py --actor "$PR_ACTOR"
 
       - name: Doc-only PR — citation lint skipped
         if: steps.docs_only.outputs.result == 'true'

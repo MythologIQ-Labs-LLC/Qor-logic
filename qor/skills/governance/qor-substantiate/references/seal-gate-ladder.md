@@ -103,3 +103,19 @@ the new doc to a tier or archives the sealed Tier 3 row, then re-runs. The
 advanced `docs/GOVERNANCE_INDEX.md` is staged with the seal commit. Per
 `qor/references/doctrine-governance-index.md` "V2 (Phase 120; GH #149) -- shipped
 enforcement".
+
+## FEATURE_INDEX surface-tag lint (Phase 138 wiring; GH #196 V1)
+
+Step 7 of the FEATURE_INDEX verification pass (after the Step 6 regression
+ABORT). WARN-only: `qor-logic scripts feature_index_verify --surface-lint
+--session "$SESSION_ID" --repo-root .` always exits 0. When the repo's
+`FEATURE_INDEX.md` header declares a `Surface` column, every non-`n/a` row
+missing a surface value appends a severity-2 `degradation` event
+(`details.gate = feature_index_surface_lint`, `details.untagged = [...]`) and
+the seal proceeds. A header without a `Surface` column is a Phase 75
+disclosed-skip (`gate_skipped_prerequisite_absent`); a missing `FEATURE_INDEX.md`
+is a silent skip. The motivating data is FailSafe's (FailSafe#206); the gate
+lives in qor-logic. V2 fail-closed promotion (remove the WARN escape) mirrors the Phase
+114->122 `feature_index_verify` ladder and must wait until the consuming repo
+reports full surface coverage. Per `qor/references/doctrine-feature-inventory.md`
+"Surface column".

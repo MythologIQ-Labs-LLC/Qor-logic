@@ -12,6 +12,7 @@ Invoked by .github/workflows/pr-lint.yml on pull_request events.
 """
 from __future__ import annotations
 
+import argparse
 import re
 import sys
 
@@ -39,7 +40,24 @@ def check_pr_body(body: str) -> list[str]:
     return missing
 
 
-def main() -> int:
+def is_exempt_actor(actor: str) -> bool:
+    """True for machine authors (login ending in '[bot]', e.g. dependabot[bot]).
+
+    Their PRs are dependency/automation bumps with no plan/ledger/Merkle-seal
+    to cite, so the doctrine §6 citation requirement does not apply to them.
+    """
+    return actor.strip().lower().endswith("[bot]")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="pr_citation_lint")
+    parser.add_argument("--actor", default="",
+                        help="PR author login; '*[bot]' authors are exempt")
+    args = parser.parse_args(argv)
+    if is_exempt_actor(args.actor):
+        print(f"SKIP: actor '{args.actor}' is a bot; citation lint exempt "
+              "(machine-generated PR has no ledger entry to cite)")
+        return 0
     body = sys.stdin.read()
     missing = check_pr_body(body)
     if not missing:
