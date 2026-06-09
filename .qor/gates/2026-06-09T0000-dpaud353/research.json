@@ -1,0 +1,79 @@
+{
+  "phase": "research",
+  "session_id": "2026-06-09T0000-dpaud353",
+  "ts": "2026-06-09T22:55:24Z",
+  "questions": [
+    "Are there production gaps (security/integrity/quality/test/arch/packaging) in qor-logic at v0.107.2 that a full red-team would surface?",
+    "Does the META_LEDGER Merkle-seal Promise match Reality?"
+  ],
+  "findings": [
+    {
+      "id": "GAP-GOV-01/02",
+      "sev": "HIGH",
+      "verdict": "CONFIRMED",
+      "detail": "content_hash never re-derived from sealed artifacts at verify time (ledger_hash.py:480, seal_entry_check.py:107); only artifact-binding hasher calculate-session-seal.py:42 is dead placeholder code."
+    },
+    {
+      "id": "GAP-GOV-04",
+      "sev": "HIGH",
+      "verdict": "CONFIRMED",
+      "detail": "QOR_GATE_PROVENANCE_OPTIONAL=1 disables gate-artifact provenance binding (gate_chain.py:237)."
+    },
+    {
+      "id": "GAP-ARCH-02/CLI-07",
+      "sev": "MEDIUM",
+      "verdict": "CORROBORATED",
+      "detail": "compliance enforce --engagement ci|seal passes vacuously (all runner:null -> zero runnable controls -> PASS); enforce.py:88."
+    },
+    {
+      "id": "GAP-GOV-14",
+      "sev": "MEDIUM",
+      "verdict": "CONFIRMED",
+      "detail": "gate-chain completeness is existence-only over self-reported session id (gate_chain_completeness.py:44,75)."
+    },
+    {
+      "id": "GAP-CLI-01/03",
+      "sev": "HIGH/MED",
+      "verdict": "CONFIRMED",
+      "detail": "no py.typed ships; compliance/*.json unguarded by packaging test (silent-removal breaks installed enforce)."
+    },
+    {
+      "id": "GAP-CLI-02",
+      "sev": "MEDIUM",
+      "verdict": "CONFIRMED",
+      "detail": "FEATURE_INDEX FX017 cites wrong test file (test_skill_active_env.py vs test_cli_module_dispatch.py); FX013 line drift."
+    },
+    {
+      "id": "GAP-TEST-01/02/05-08",
+      "sev": "MEDIUM",
+      "verdict": "CONFIRMED",
+      "detail": "presence-only doctrine tests + conditional CI skips that no-op in degraded environments."
+    },
+    {
+      "id": "GAP-SEC",
+      "sev": "LOW-MED",
+      "verdict": "CONFIRMED",
+      "detail": "no remote exploit; session_id path-traversal validator applied inconsistently (orchestration_override.py:21, cycle_count_escalator.py:36)."
+    }
+  ],
+  "sources": [
+    "qor/scripts/ledger_hash.py:480",
+    "qor/reliability/seal_entry_check.py:107",
+    "qor/scripts/calculate-session-seal.py:42",
+    "qor/scripts/gate_chain.py:237",
+    "qor/reliability/gate_chain_completeness.py:75",
+    "qor/compliance/enforce.py:88",
+    "docs/FEATURE_INDEX.md:24,28",
+    "tests/test_packaging.py:32",
+    "6-agent parallel recon + Round-1 verification"
+  ],
+  "brief_path": "docs/research-brief-deep-audit-production-gap-2026-06-09.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.107.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T22:55:24Z"
+  }
+}

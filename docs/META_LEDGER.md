@@ -12324,3 +12324,22 @@ Change class: hotfix. Tests: 4 new behavioral tests (list available/no-flag, inf
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 146; v0.107.2; FEATURE_INDEX backfill 17/17 verified; seal + merge authorized, tag-push/publish HELD for operator)
+
+---
+
+### Entry #353: RESEARCH BRIEF -- full production-gap red-team audit (recon)
+
+**Timestamp**: 2026-06-09T22:54:43Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+
+**Scope**: `/qor-deep-audit` Phase 1 recon (6 parallel subagents: governance-integrity, security, code-quality/Razor, test-integrity, architecture Reality=Promise, CLI/SDK/packaging) over the whole package at main (post Phase 146, v0.107.2), plus a Phase 3 Round-1 verification of the CRITICAL/HIGH governance claims with file:line.
+
+**Brief**: docs/research-brief-deep-audit-production-gap-2026-06-09.md
+
+**Content Hash**: `98c7c6717cf344b6660100887c4a227393cc82fdea73fb63bedb0fa064589ecd`
+**Previous Hash**: `32e438a4d1655d9c14d5b8ca286dd43514b32371fddf3cbe5c4fdf0f48428eee`
+**Chain Hash**: `8eef54a304bba8fa857f4605c1776b5e454c7789583ee2d4be530fa7bb8362f6`
+
+**Decision**: 61 raw findings deduped to ~28 consolidated gaps. No remotely-exploitable security vuln (no shell=True / eval / unsafe-yaml / hardcoded secrets / install-time network). Headline (CONFIRMED, corroborated x3): the META_LEDGER binds ordering + recorded content_hash values but never re-derives content_hash from the sealed artifacts (verify_post_anchor:480; seal_entry_check.py:107); the only artifact-binding hasher (calculate-session-seal.py:42) is dead placeholder code -- tamper-evidence over the chain, not tamper-proof over sealed plans/code. Other confirmed: QOR_GATE_PROVENANCE_OPTIONAL env bypass (gate_chain.py:237); vacuous ci/seal enforce via runner:null (enforce.py:88, corroborated x2); existence-only gate-chain completeness (gate_chain_completeness.py:75); no py.typed; compliance/*.json unguarded by packaging test; FX017 mis-cited test. Reassuring: reliability + compliance cores are genuinely behaviorally tested; all 17 CLI commands handler+test-backed (FX substance holds). Risk grade L2; realistic adversary = author self-bypass + undetected post-hoc edits, no GA-blocking remote exploit. Remediation sprint plan (A integrity-binding / B conveyance-correctness / C harden+hygiene) drafted, NOT executed -- awaits operator after-recon checkpoint.
