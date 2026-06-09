@@ -1,36 +1,49 @@
-# AUDIT REPORT — Phase 139: Exempt bot authors from PR citation lint
+# AUDIT REPORT -- Phase 146: FEATURE_INDEX backfill (FX002/FX003/FX005)
 
 **Verdict**: PASS
 **Risk Grade**: L1
-**Mode**: solo (capability_shortfall logged; author-momentum option_b_required=false)
-**Target**: docs/plan-qor-phase139-citation-lint-bot-exempt.md
-**Session**: 2026-06-09T0150-536a60
+**Mode**: solo (audit_risk_score option_b_required=false; no author-momentum signal)
+**Target**: docs/plan-qor-phase146-feature-index-backfill.md
+**Session**: 2026-06-09T0000-rsd351
 
 ## Automated gate ladder
 
 | Gate | Result |
 |---|---|
-| plan_iteration_status (0.3 ABORT) | rc=0 |
-| plan_test_lint / plan_grep_lint / plan_text_consistency / plan_feature_tdd (0.6) | clean |
+| plan_iteration_status_lint (0.3 ABORT) | rc=0 |
 | prompt_injection_canaries (ABORT) | rc=0 |
-| prose_test_lint --enforce (VETO) | rc=0 |
+| plan_test_lint | rc=0 |
+| plan_feature_tdd_lint | rc=0 |
+| plan_text_consistency_lint | rc=0 |
+| prose_test_lint --enforce (VETO) | rc=0 (53 exempted; no new findings) |
 | audit_risk_score | option_b_required=false |
 
 ## Adversarial passes
 
-- **Security L3 / OWASP** — PASS. `--actor` is sourced from `${{ github.event.pull_request.user.login }}` — a GitHub-controlled, constrained-charset value (`[A-Za-z0-9-]` plus a literal `[bot]` suffix), passed as a quoted argv argument; no shell metacharacters, no `shell=True`, no command injection (A03). The exemption is an allowlist-by-suffix, not a security bypass (the lint is a governance-citation gate, not auth).
-- **Test Functionality** — PASS. New tests invoke `is_exempt_actor` and `main(...)` and assert on return values/exit codes (bot+uncited→0, human+uncited→1, human+cited→0); none presence-only.
-- **Razor** — PASS. `is_exempt_actor` ~3 lines; `main` gains argparse (~8 lines). Well within limits.
-- **Dependency** — PASS. stdlib `argparse` only.
-- **Macro-Architecture** — PASS. Exemption logic lives in the Python lint (testable), workflow passes the author; no braid.
-- **Feature Test Coverage** — PASS. FIT row (op MODIFIED) cites `tests/test_pr_citation_lint.py` with a behavioral descriptor surviving the acceptance question.
-- **Infrastructure Alignment** — PASS. `.github/workflows/pr-lint.yml` and `qor/scripts/pr_citation_lint.py` exist; `github.event.pull_request.user.login` is a valid GitHub Actions context expression.
-- **Ghost UI / Live-Progress / Filter-Stage / Orphan** — N/A or PASS.
+- **Test Functionality** -- PASS. The two new tests invoke `_do_list` and `_do_info` and assert
+  return code + captured stdout/stderr (enumerated skill ids; the `not found` message; the dispatch
+  guard rc==1). None presence-only. Acceptance question survives: if the handler silently returned the
+  wrong code or printed nothing, each test fails. The uninstall row cites an existing behavioral test
+  (`test_gemini_uninstall_cleans_commands_dir`), not a presence assertion.
+- **Razor** -- PASS. No production code changed; the new test module is a flat set of 4 functions with
+  two small staging helpers, each well under 40 lines.
+- **Security L3 / OWASP** -- PASS. No auth/secret/injection surface. Tests monkeypatch a dist-root
+  resolver and write to pytest `tmp_path`; no subprocess, no `shell=True`, no network.
+- **Dependency** -- PASS. stdlib `argparse`/`json`/`pathlib` + pytest fixtures only.
+- **Macro-Architecture** -- PASS. Coverage-only change; no new module coupling. FEATURE_INDEX rows now
+  cite real passing tests.
+- **Feature Test Coverage** -- PASS. The plan's Feature Inventory effect is to flip 3 existing rows to
+  `verified` with cited tests; `feature_index_verify` reports total=17 verified=17 unverified=0.
+- **Infrastructure Alignment** -- PASS. Cited symbols verified: `qor/install.py:171 _do_list`,
+  `qor/install.py:142 _list_available`, `qor/cli.py:25 _do_info`, `qor/cli.py:20 _default_dist_root`,
+  `tests/test_cli_install_gemini.py::test_gemini_uninstall_cleans_commands_dir` exists.
+- **Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A (no UI; CLI coverage backfill).
 
 ## Process Pattern Advisory
 
-No repeated-VETO pattern.
+No repeated-VETO pattern. Regression-coverage backfill classified explicitly per CLAUDE.md test
+discipline; tests confirmed deterministic across two runs.
 
 ## Next action
 
-PASS → `/qor-implement`.
+PASS -> `/qor-implement` (already complete) -> `/qor-substantiate`.

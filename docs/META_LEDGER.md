@@ -12274,3 +12274,53 @@ Change class: hotfix. Tests: 3 new behavioral tests (non-ASCII entry -> fail wit
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 145; v0.107.1; #201 follow-on seal-path validity gate; Review Boundary -- commit/tag/push HELD for operator)
+
+---
+
+### Entry #351: RESEARCH BRIEF -- stash triage + FEATURE_INDEX FX002/FX003/FX005 backfill
+
+**Timestamp**: 2026-06-09T22:11:02Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Session**: `2026-06-09T0000-rsd351`
+
+**Scope**: two-part investigation. (1) Disposition of the 10 residual git stashes. (2) Test surface needed to backfill the 3 `unverified` FEATURE_INDEX rows (`uninstall` FX002, `list` FX003, `info` FX005).
+
+**Findings**: All 10 stashes are droppable cruft from superseded phase branches (phase/45 through phase/90 era); filtering each stash's file list against the dist/install/transient artifact set leaves only a single stale 1-line `CLAUDE.md` edit (stash@{5}, phase-65 era, long superseded). No unincorporated source work; the set is safe to `git stash clear`. On the backfill: `uninstall` (FX002) is a DRIFT finding -- it already has a behavioral verifying test (`tests/test_cli_install_gemini.py::test_gemini_uninstall_cleans_commands_dir`, exercising `qor/install.py:114 _do_uninstall`) but its FEATURE_INDEX row carries an empty `Test path` and reads `unverified`. Only `list` (`qor/install.py:171 _do_list`) and `info` (`qor/cli.py:25 _do_info`) genuinely lack coverage; each needs one behavioral test invoking the handler and asserting output/return code. Recommended backfill cycle (hotfix): correct FX002 (cite existing test), add 2 behavioral tests, flip FX003/FX005 -> `verified`; FEATURE_INDEX moves 14/17 -> 17/17.
+
+**Brief**: docs/research-brief-stash-triage-feature-backfill-2026-06-09.md
+
+**Content Hash**: `eda69e7ad3eed5a82bba54d837fd300c77c6b0f58f5b39a867638e8531437960`
+**Previous Hash**: `5e9db9fdf3bd33e659adaf38018f9e1c14051930ba4beb6d15c56c825cd5b2aa`
+**Chain Hash**: `4f957c428aa039176d406c884565a99dc5df71fd93598dcd96f1fbfc6c27e5d0`
+
+**Decision**: 10 stashes safe to drop (no unincorporated work). 1 DRIFT detected (FX002 marked unverified despite existing coverage). Backfill = 1 inventory correction + 2 new behavioral tests.
+
+---
+
+### Entry #352: SESSION SEAL -- Phase 146 FEATURE_INDEX backfill (v0.107.2)
+
+**Timestamp**: 2026-06-09T22:28:56Z
+**Phase**: SUBSTANTIATE (Phase 146; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase146-feature-index-backfill.md
+**Session**: `2026-06-09T0000-rsd351`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `8b7474ae4901`
+
+**Scope**: Phase 146 implemented (hotfix; regression-coverage backfill following the Entry #351 research brief). The brief found the 3 `unverified` FEATURE_INDEX rows resolve to one inventory drift plus two genuine coverage gaps. `uninstall` (FX002) was a DRIFT -- already exercised behaviorally by `tests/test_cli_install_gemini.py::test_gemini_uninstall_cleans_commands_dir` (`qor/install.py:114 _do_uninstall`) but its row carried an empty Test path; corrected to cite the existing test. `list` (FX003, `qor/install.py:171 _do_list`) and `info` (FX005, `qor/cli.py:25 _do_info`) genuinely lacked coverage; a new test module `tests/test_cli_feature_index_backfill.py` invokes each handler and asserts return code + captured output (available-list enumerates de-duplicated skill ids; the no-flag dispatch guard returns 1; info prints a known skill body and returns 1 + "not found" on a miss). All three rows flipped to `verified`; `feature_index_verify` now reports total=17 verified=17 unverified=0. No production code changed.
+
+Change class: hotfix. Tests: 4 new behavioral tests (list available/no-flag, info found/missing), green twice (deterministic); classified explicitly as regression-coverage backfill per CLAUDE.md test discipline. Full suite 2391 passed (collect-only 2395). README badges Tests 2391 -> 2395; Ledger 350 -> 352. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. **Newly unverified**: none. Audit PASS (L1 solo; audit_risk_score option_b_required=false). doc_tier minimal; no new dependency. Substantiate gates: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, data-API clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS, gate-chain-completeness PASS.
+
+**Review Boundary**: operator authorized seal + merge to main (audit-of-clean-main to follow). Tag-push / PyPI publish held pending the post-merge handoff.
+
+**Content Hash**: `80ae9e0259260f6848fe3a4c0c70b4b462bb313ca9d285b7ed4594d1306a427f`
+**Previous Hash**: `4f957c428aa039176d406c884565a99dc5df71fd93598dcd96f1fbfc6c27e5d0`
+**Chain Hash (Merkle seal)**: `32e438a4d1655d9c14d5b8ca286dd43514b32371fddf3cbe5c4fdf0f48428eee`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 146; v0.107.2; FEATURE_INDEX backfill 17/17 verified; seal + merge authorized, tag-push/publish HELD for operator)
