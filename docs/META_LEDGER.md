@@ -12186,5 +12186,49 @@ Change class: hotfix. Tests: 2 new behavioral tests (red->green, deterministic x
 
 ---
 
+### Entry #347: GATE TRIBUNAL -- Phase 144 plan PASS (FEATURE_INDEX + README currency)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: GATE (Phase 144)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase144-feature-index-and-readme-currency.md
+**Session**: `2026-06-09T0000-fidx44`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `3aafa015c0792b961e282cca86087a06e4984eb9b329439e174977fccc773184`
+**Previous Hash**: `ccbd6796f9d8e0165d0461ede316780ce037da9fb58d524172f8fa9baab05790`
+**Chain Hash (Merkle seal)**: `b8feea590a803eadaf56d98b6cb7dd7e1f5ce3f370d4eaa6693d6a9851565a9a`
+
+**Decision**: PASS (L1, solo). Item 4 (research #344): author the absent `docs/FEATURE_INDEX.md` over the user-touchable CLI command surface (rows: ID/Name/Source-of-truth file:line/Doc citation/Test path/Verification status per doctrine-feature-inventory + feature_index_verify.parse_index_rows:49-75, STATUS_VALUES:22), statused honestly from real tests (no false `verified`); and remove the ~87-release-stale `v0.19+` Highlights block from the README `## Latest release` so it matches its own evergreen intent. Infrastructure Alignment grep-verified the format, the cli.py add_parser source lines, and the cited verifying tests. doc-only; feature_inventory_touches empty; all 3 tests behavioral. Next: `/qor-implement`.
+
+---
+
+### Entry #348: SESSION SEAL -- Phase 144 FEATURE_INDEX + README currency (v0.107.0)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: SUBSTANTIATE (Phase 144)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase144-feature-index-and-readme-currency.md
+**Session**: `2026-06-09T0000-fidx44`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `b26f767e9d06`
+
+**Scope**: Phase 144 implemented (feature; research #344 item 4). Authored the previously-absent `docs/FEATURE_INDEX.md` -- a feature index over the user-touchable `qor-logic` CLI command surface (17 features, each row cited to a source file:line and a verifying test, statused honestly from real tests). This closes the long-standing `FEATURE_INDEX` MISSING governance-health finding (preflight is now fully clean) and activates the seal-time `feature_index_verify` regression guard. Also performed a `/qor-document` professional-polish pass over the authored READMEs (`README.md` + `qor/reliability/README.md`): removed the ~87-release-stale "v0.19+ documentation-integrity arc" block; generalized all drift-prone hard counts in prose (tests/ledger/doctrines/shadow-genome) to defer to the test-enforced badges + CHANGELOG; completed the doctrine inventory (17 -> 34) and the skill catalog (24 -> 30, by real category); expanded the CLI Reference to the full current surface (incl. the new `compliance enforce` SDK command); and ASCII-cleaned both files. Vendored/archived third-party READMEs were intentionally left untouched.
+
+**Feature Inventory**: Total: 17 / verified: 14 / unverified: 3 / n-a: 0. (First snapshot; no prior baseline, no regression.)
+
+Change class: feature. Tests: 3 new behavioral tests (red->green, deterministic x2); full suite 2384 passed (2 expected pre-seal badge drifts reconciled here). README badges Tests 2385 -> 2388; Ledger 346 -> 348. SYSTEM_STATE header advanced to Phase 144. Audit PASS (L1 solo). doc_tier standard; no new dependency. Substantiate gates: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, data-API clean, doc-integrity strict PASS, governance-index clean, badge-currency OK, seal-hash-integrity PASS.
+
+**Review Boundary**: stage-only at seal. Per `/qor-auto-dev-1`, commit + tag + push + PR + merge + publish HELD for operator approval.
+
+**Content Hash**: `96e584eb9694b8123db83e3e3adff38251fc4d02af79bdbf5a52aa1a0c64641d`
+**Previous Hash**: `b8feea590a803eadaf56d98b6cb7dd7e1f5ce3f370d4eaa6693d6a9851565a9a`
+**Chain Hash (Merkle seal)**: `5d866f53daf51be490b5cde5ae8c0eea3aa6609ee14829071dc8c9e96596233b`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 143; v0.106.1; shadow-genome test-pollution hotfix; Review Boundary -- commit/tag/push HELD for operator)
+*Session: SEALED* (Phase 144; v0.107.0; FEATURE_INDEX + README currency; Review Boundary -- commit/tag/push HELD for operator)
