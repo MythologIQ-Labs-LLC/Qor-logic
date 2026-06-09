@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import io
+import re
 import sys
 from dataclasses import dataclass
 from enum import Enum
@@ -60,15 +61,21 @@ PROFILES: dict[str, tuple[str, ...]] = {"skill-entry": REQUIRED_ARTIFACTS}
 
 _LEDGER = "docs/META_LEDGER.md"
 _PROJECT_DNA = ("docs/CONCEPT.md", "docs/ARCHITECTURE_PLAN.md")
-_PLACEHOLDER_MARKERS = (
-    "TODO",
-    "FIXME",
-    "{{verify",
-    "INSTRUCTION:",
-    "[Your ",
-    "[Keyword",
-    "[ISO 8601",
-    "[Why ",
+# GH #200: match TEMPLATE-FORM placeholders only -- a structural cue, not the
+# bare word. Prose mentions of "TODO"/"FIXME" (e.g. "TODO stubs", "cosmetic
+# TODOs") must NOT trip INCOMPLETE; a "TODO:" label, an HTML-comment scaffold,
+# or a bracketed fill-in slot must. Mirrors the discipline already in
+# _ledger_incomplete (which only flags an unfilled scaffold).
+_PLACEHOLDER_PATTERNS = (
+    re.compile(r"\bTODO\s*:"),
+    re.compile(r"\bFIXME\s*:"),
+    re.compile(r"<!--\s*(?:TODO|FIXME)"),
+    re.compile(r"\{\{\s*verify"),
+    re.compile(r"INSTRUCTION:"),
+    re.compile(r"\[Your "),
+    re.compile(r"\[Keyword"),
+    re.compile(r"\[ISO 8601"),
+    re.compile(r"\[Why "),
 )
 
 _NEXT_BOOTSTRAP = "/qor-bootstrap (or `qor-logic seed` when an autonomous skill owns recovery)"
@@ -111,7 +118,15 @@ def _ledger_damage(base: Path, text: str) -> str | None:
         with contextlib.redirect_stdout(io.StringIO()):
             rc = _verify_ledger_chain(base / _LEDGER)
         if rc != 0:
-            return "ledger chain verification failed"
+            # GH #199: strict verify rejects single-lineage manual-era residuals
+            # that the release gate already tolerates. Fall back to the
+            # post-anchor surface: a disclosed pre-anchor failure (entry at or
+            # below the auto-detected boundary) is tolerated here exactly as it
+            # is at release; only a genuine post-anchor failure is real damage.
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc_post = _verify_post_anchor(base / _LEDGER)
+            if rc_post != 0:
+                return "ledger chain verification failed"
     return None
 
 
@@ -119,6 +134,12 @@ def _verify_ledger_chain(ledger_path: Path) -> int:
     from qor.scripts import ledger_hash
 
     return ledger_hash.verify(ledger_path)
+
+
+def _verify_post_anchor(ledger_path: Path) -> int:
+    from qor.scripts import ledger_hash
+
+    return ledger_hash.verify_post_anchor(ledger_path)
 
 
 def _damage_reason(base: Path, rel_path: str, text: str) -> str | None:
@@ -143,9 +164,10 @@ def _ledger_incomplete(text: str) -> str | None:
 def _incomplete_reason(rel_path: str, text: str) -> str | None:
     if rel_path == _LEDGER:
         return _ledger_incomplete(text)
-    for marker in _PLACEHOLDER_MARKERS:
-        if marker in text:
-            return f"contains unresolved placeholder marker {marker!r}"
+    for pattern in _PLACEHOLDER_PATTERNS:
+        match = pattern.search(text)
+        if match:
+            return f"contains unresolved placeholder marker {match.group(0)!r}"
     return None
 
 

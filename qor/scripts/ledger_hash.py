@@ -40,6 +40,53 @@ def legacy_chain_hash(content: str, prev: str) -> str:
     return hashlib.sha256((content + prev).encode("utf-8")).hexdigest()
 
 
+# Smart-punctuation -> ASCII map (GH #201). Opt-in authoring helper: callers
+# normalize BEFORE computing a content hash so the seal commits to ASCII bytes.
+# The gate (assert_sealable_text) rejects rather than silently rewrites, so a
+# hash never desyncs from the bytes it was computed over.
+_PUNCTUATION_ASCII = {
+    "\u2014": "--",   # em-dash
+    "\u2013": "-",    # en-dash
+    "\u2018": "'",    # left single quote
+    "\u2019": "'",    # right single quote
+    "\u201c": '"',    # left double quote
+    "\u201d": '"',    # right double quote
+    "\u2192": "->",   # rightwards arrow
+    "\u2026": "...",  # horizontal ellipsis
+}
+
+
+def normalize_punctuation(text: str) -> str:
+    """Map common non-ASCII punctuation to ASCII equivalents (idempotent).
+
+    Output is ASCII for the mapped set; characters outside the map are left
+    unchanged (``assert_sealable_text`` is the gate that rejects any residual
+    non-ASCII). Re-applying the map is a no-op.
+    """
+    for src, dst in _PUNCTUATION_ASCII.items():
+        text = text.replace(src, dst)
+    return text
+
+
+def assert_sealable_text(text: str, *, label: str = "entry body") -> None:
+    """Raise ``ValueError`` if ``text`` is not pure ASCII (GH #201).
+
+    A sealable ledger body/title must be ASCII before its content hash is
+    computed, so codepoint-truncated / cp1252 / invalid-UTF-8 bytes can never be
+    committed to a hash and render the ledger unreadable. The message names the
+    first offending character, its codepoint, and its index for remediation.
+    """
+    if text.isascii():
+        return
+    for index, char in enumerate(text):
+        if not char.isascii():
+            raise ValueError(
+                f"{label} contains non-ASCII character U+{ord(char):04X} "
+                f"at index {index}; normalize (see normalize_punctuation) or "
+                f"remove it before sealing"
+            )
+
+
 def write_manifest(root: Path, include_globs: list[str], output: Path) -> dict:
     """Walk root matching include_globs; emit manifest sorted by path."""
     paths: list[dict[str, str]] = []

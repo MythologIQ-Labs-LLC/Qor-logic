@@ -917,3 +917,15 @@ Feature closing ALL five V2 carry-forward items accumulated across Phases 101-10
 **Doctrine**: `doctrine-prompt-resilience.md` defines Governance Artifact Health and Ungoverned Path Forward; `skill-recovery-pattern.md` defines Governance Repair Mode and the preflight snippet; `doctrine-governance-enforcement.md` §15 records the no-ungoverned-path-forward invariant; glossary gains the three terms.
 
 **TDD**: test files authored first (governance_health, prompt-health-coverage, qor-status routing, CLI exit codes, variant drift); RED confirmed before implementation; GREEN and determinism verified.
+
+---
+
+## Phase 140: governance-health + ledger-seal robustness (GH #199, #200, #201)
+
+**New surface**: `qor.scripts.ledger_hash` gains `assert_sealable_text(text, *, label)` (raises `ValueError` naming the first non-ASCII codepoint + index) and `normalize_punctuation(text)` (opt-in smart-punctuation -> ASCII map, idempotent). `qor.scripts.ledger_fragment` calls the gate in both `write_fragment` (fragment creation) and `canonicalize_fragments` (the META_LEDGER write), so non-ASCII / codepoint-truncated / cp1252 bytes can no longer be sealed into a content hash; on rejection the ledger is left untouched and fragments stay pending (GH #201).
+
+**Skill-entry tolerance (GH #199)**: `governance_health._ledger_damage` now falls back to `_verify_post_anchor` (wrapping `ledger_hash.verify_post_anchor`) when strict `ledger_hash.verify` fails. A disclosed pre-anchor residual (failure at or below the auto-detected boundary) is tolerated -- parity with the release gate -- while a genuine post-anchor failure still classifies `DAMAGED`. Closes the asymmetry where the skill-entry preflight hard-failed single-lineage manual-era residuals the release gate already accepts.
+
+**Placeholder discipline (GH #200)**: `governance_health._PLACEHOLDER_MARKERS` (bare-substring tuple) is replaced by `_PLACEHOLDER_PATTERNS` (compiled regexes requiring a structural cue: colon-suffixed to-do / fix-me labels, HTML-comment to-do scaffolds, mustache verify tags, bracketed fill-in slots). `_incomplete_reason` matches via `pattern.search` and names the matched marker. Prose mentions of the bare to-do word no longer false-positive a non-ledger artifact as `INCOMPLETE`; the ledger path (`_ledger_incomplete`) is unchanged.
+
+**TDD**: three test files authored first (`test_ledger_seal_utf8_validation`, `test_governance_health_post_anchor_tolerance`, extended `test_governance_health`); RED confirmed (8 failing), then GREEN; the three target suites (19 tests) run green twice for determinism. doc_tier standard; no new dependencies; no new glossary terms (existing symbols).
