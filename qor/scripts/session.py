@@ -26,6 +26,18 @@ SESSION_TTL = timedelta(hours=24)
 
 SESSION_ID_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{4}-[0-9a-f]{6}$")
 
+# Path-safety validator (GAP-SEC-04/05/07): looser than SESSION_ID_PATTERN so
+# legacy/operator session ids still pass, but rejects '/', '\\', and '.' so a
+# session_id can never escape .qor/session/ when used as a path segment.
+_SESSION_ID_SAFE = re.compile(r"^[\w\-T:]+$")
+
+
+def validate_session_id(session_id: str) -> None:
+    """Raise ``ValueError`` if ``session_id`` is path-unsafe (empty or contains
+    anything outside ``[\\w\\-T:]`` -- i.e. any '/', '\\', or '.' traversal)."""
+    if not session_id or not _SESSION_ID_SAFE.match(session_id):
+        raise ValueError(f"invalid session_id (path-unsafe): {session_id!r}")
+
 
 def generate_id(now: datetime | None = None) -> str:
     now = now or datetime.now(timezone.utc)

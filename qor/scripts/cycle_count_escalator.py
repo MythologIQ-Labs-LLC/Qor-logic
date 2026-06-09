@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from qor import workdir as _workdir
-from qor.scripts import stall_walk
+from qor.scripts import session, stall_walk
 
 
 ESCALATION_THRESHOLD = 3
@@ -31,6 +31,7 @@ class EscalationRecommendation:
 
 
 def _suppression_active(session_id: str, first_match_ts: str | None) -> bool:
+    session.validate_session_id(session_id)  # GAP-SEC-05: no path traversal
     if first_match_ts is None:
         return False
     marker = _workdir.root() / ".qor" / "session" / session_id / "escalation_suppressed"
@@ -42,6 +43,7 @@ def _suppression_active(session_id: str, first_match_ts: str | None) -> bool:
 
 def check(session_id: str) -> EscalationRecommendation | None:
     """Return an escalation recommendation or None."""
+    session.validate_session_id(session_id)  # GAP-SEC-05/07: validate before stall_walk path build
     count, signature, first_match_ts = stall_walk.run(session_id)
     if count < ESCALATION_THRESHOLD:
         return None

@@ -19,13 +19,9 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-_SESSION_ID_RE = re.compile(r'^[\w\-T:]+$')
-
-
-def validate_session_id(session_id: str) -> None:
-    """Validate session_id matches ^[\\w\\-T:]+$. Raises ValueError on invalid."""
-    if not session_id or not _SESSION_ID_RE.match(session_id):
-        raise ValueError(f"Invalid session_id: {session_id!r}")
+# GAP-SEC-07: single canonical path-safety validator lives in session.py;
+# re-exported here for backward compatibility with existing callers.
+from qor.scripts.session import validate_session_id  # noqa: E402,F401
 
 from qor.scripts import shadow_process
 

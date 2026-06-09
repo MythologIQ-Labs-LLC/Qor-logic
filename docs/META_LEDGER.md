@@ -12362,3 +12362,31 @@ Change class: hotfix. Tests: 4 new behavioral tests (list available/no-flag, inf
 **Chain Hash**: `296bc8275c8ac409612d52da0d288389813d78c14ecf9c8dc10e68fb918f00eb`
 
 **Decision**: Fable 5 VERIFIED real (released 2026-06-09; multi-source: Anthropic/AWS/GitHub/CNBC) -- the earlier "unverifiable" caution was correct given the Jan-2026 cutoff; the model genuinely post-dates it. New 4th model class "Mythos" (haiku<sonnet<opus<mythos); API id `claude-fable-5`. Two qor-logic-relevant facts: (1) `model_pinning_lint.py:25,36` hard-codes a 3-tier ladder + `claude-(haiku|sonnet|opus)-` regex that does NOT match `claude-fable-5` -> a Fable session is silently tier-invisible (DRIFT); (2) Fable safeguards auto-route cybersecurity + biology requests to Opus 4.8, so a declared-Fable session has a DIFFERENT model answering qor-logic's security/gate work -- a hard technical reason the enforcement line (ABORT/VETO gates model-invariant) must hold; QOR_MODEL_FAMILY is advisory for comms only, never for enforcement. Candidate Shadow Genome: SG-DeclaredModelResponderSkew-A. Implementation deferred to its own governed cycle per operator sequencing.
+
+---
+
+### Entry #355: SESSION SEAL -- Phase 147 audit Sprint C batch 1 (v0.107.3)
+
+**Timestamp**: 2026-06-09T23:38:21Z
+**Phase**: SUBSTANTIATE (Phase 147; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase147-audit-sprint-c-hygiene.md
+**Session**: `2026-06-09T0000-sprintc147`
+**SSDF Practices**: PS.2.1, PW.5.1, RV.2.1
+**Entry ID**: `1a987d6e9649`
+
+**Scope**: Phase 147 implemented (hotfix; audit Sprint C batch 1, GH #212). Security: a single canonical path-safety validator `qor.scripts.session.validate_session_id` (rejects empty or any `session_id` outside `[\w\-T:]` -- i.e. any `/`, `\`, or `.` traversal) now guards the `orchestration_override.record`/`_write_suppression_marker` and `cycle_count_escalator.check`/`_suppression_active` marker-path sites; the duplicate definition in `check_shadow_threshold` is replaced by a back-compat re-export (closes GAP-SEC-04/05/07 -- the validator existed but was applied inconsistently). Accuracy: FEATURE_INDEX FX013 source corrected to `qor/cli_handlers/compliance.py:107` (the real `do_enforce` handler, was pointing into the `enforce()` body) and FX017 test corrected to `tests/test_cli_module_dispatch.py` (the real behavioral test, was citing `test_skill_active_env.py`); README `verify-ledger` usage corrected to `--ledger`/`--post-anchor` (GAP-CLI-02 / GAP-ARCH-04 / GAP-ARCH-03). A third validator duplicate in `remediate_emit_gate.py` is noted for a later centralization pass (it already validates -- not a gap).
+
+Change class: hotfix. Tests: 7 new (4 session-id path-safety behavioral incl. read-side + no-out-of-tree-write + happy path; 3 FEATURE_INDEX citation-resolve floor), green twice (deterministic). Full suite 2398 passed (collect-only 2402). README badges Tests 2395 -> 2402; Ledger 352 -> 355. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. **Newly unverified**: none. Audit PASS (L1 solo; option_b_required=false). doc_tier minimal; no new dependency. Substantiate gates: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, data-API clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS, gate-chain-completeness PASS. Deferred (Sprint C remainder -> Phase 148 / Sprint A): GAP-CQ-02 verify() decompose, GAP-TEST-01/02/05-08/10 test-integrity hardening, GAP-CQ-04 regex centralization, GAP-ARCH-01 orphaned-lint decision, GAP-CQ-05/06/07 cosmetic.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + tag + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `4ac76c89d221670ec2bc63229aece7a7ed37f2f9907f3c9363dc2fd9ce463318`
+**Previous Hash**: `296bc8275c8ac409612d52da0d288389813d78c14ecf9c8dc10e68fb918f00eb`
+**Chain Hash (Merkle seal)**: `2f032c9acd40299dc16741b6061789d353a12a40828ce1c71fc691e387760ce3`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 147; v0.107.3; audit Sprint C batch 1 -- session_id path-safety + citation accuracy; Review Boundary -- commit/push/PR/merge HELD for operator)

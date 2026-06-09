@@ -1,10 +1,10 @@
-# AUDIT REPORT -- Phase 146: FEATURE_INDEX backfill (FX002/FX003/FX005)
+# AUDIT REPORT -- Phase 147: Audit Sprint C batch 1 (security + citation accuracy)
 
 **Verdict**: PASS
 **Risk Grade**: L1
-**Mode**: solo (audit_risk_score option_b_required=false; no author-momentum signal)
-**Target**: docs/plan-qor-phase146-feature-index-backfill.md
-**Session**: 2026-06-09T0000-rsd351
+**Mode**: solo (audit_risk_score option_b_required=false)
+**Target**: docs/plan-qor-phase147-audit-sprint-c-hygiene.md
+**Session**: 2026-06-09T0000-sprintc147
 
 ## Automated gate ladder
 
@@ -15,35 +15,41 @@
 | plan_test_lint | rc=0 |
 | plan_feature_tdd_lint | rc=0 |
 | plan_text_consistency_lint | rc=0 |
-| prose_test_lint --enforce (VETO) | rc=0 (53 exempted; no new findings) |
 | audit_risk_score | option_b_required=false |
 
 ## Adversarial passes
 
-- **Test Functionality** -- PASS. The two new tests invoke `_do_list` and `_do_info` and assert
-  return code + captured stdout/stderr (enumerated skill ids; the `not found` message; the dispatch
-  guard rc==1). None presence-only. Acceptance question survives: if the handler silently returned the
-  wrong code or printed nothing, each test fails. The uninstall row cites an existing behavioral test
-  (`test_gemini_uninstall_cleans_commands_dir`), not a presence assertion.
-- **Razor** -- PASS. No production code changed; the new test module is a flat set of 4 functions with
-  two small staging helpers, each well under 40 lines.
-- **Security L3 / OWASP** -- PASS. No auth/secret/injection surface. Tests monkeypatch a dist-root
-  resolver and write to pytest `tmp_path`; no subprocess, no `shell=True`, no network.
-- **Dependency** -- PASS. stdlib `argparse`/`json`/`pathlib` + pytest fixtures only.
-- **Macro-Architecture** -- PASS. Coverage-only change; no new module coupling. FEATURE_INDEX rows now
-  cite real passing tests.
-- **Feature Test Coverage** -- PASS. The plan's Feature Inventory effect is to flip 3 existing rows to
-  `verified` with cited tests; `feature_index_verify` reports total=17 verified=17 unverified=0.
-- **Infrastructure Alignment** -- PASS. Cited symbols verified: `qor/install.py:171 _do_list`,
-  `qor/install.py:142 _list_available`, `qor/cli.py:25 _do_info`, `qor/cli.py:20 _default_dist_root`,
-  `tests/test_cli_install_gemini.py::test_gemini_uninstall_cleans_commands_dir` exists.
-- **Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A (no UI; CLI coverage backfill).
+- **Security L3 / OWASP** -- PASS, and the change IS a security hardening. `session.validate_session_id`
+  rejects any `session_id` containing `/`, `\`, or `.` (regex `^[\w\-T:]+$`) before it is used as a path
+  segment; applied at `orchestration_override.record` / `_write_suppression_marker` and
+  `cycle_count_escalator.check` / `_suppression_active` (the GAP-SEC-04/05/07 sites). No new attack surface;
+  closes a self-targeted path-traversal. The validator is behavior-identical to the one it dedupes from
+  `check_shadow_threshold` (same regex), so no existing caller changes semantics.
+- **Test Functionality** -- PASS. `test_record_rejects_traversal_sid` asserts the call raises AND that no
+  file is written outside `.qor/session/`; `test_suppression_active_rejects_traversal_sid` covers the read
+  side; `test_record_accepts_valid_sid` is the happy-path regression. The citation-resolve tests assert a
+  real property of FEATURE_INDEX (every cited source/test file resolves on disk). None presence-only.
+- **Razor** -- PASS. `validate_session_id` is 3 lines; the call sites add one line each.
+- **Dependency** -- PASS. stdlib `re` only; no new deps.
+- **Macro-Architecture** -- PASS. The change UN-braids: one canonical validator in `session.py` (the
+  low-level session home), re-exported from `check_shadow_threshold` for back-compat, replacing a
+  duplicated definition. (A third duplicate in `remediate_emit_gate.py` is noted as a future
+  centralization candidate; out of this batch's scope, and it already validates -- not a gap.)
+- **Doc accuracy** -- PASS. FX013 source -> `qor/cli_handlers/compliance.py:107` (the real `do_enforce`
+  handler, was pointing into the `enforce()` body); FX017 test -> `tests/test_cli_module_dispatch.py`
+  (the real behavioral test, was citing `test_skill_active_env.py`); README `verify-ledger` example now
+  matches the actual `--ledger`/`--post-anchor` argparse surface.
+- **Feature Test Coverage / Infrastructure Alignment** -- PASS. feature_index_verify holds 17/17 after the
+  citation corrections; cited targets grep-verified to exist.
+- **Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A.
 
-## Process Pattern Advisory
+## Scope discipline
 
-No repeated-VETO pattern. Regression-coverage backfill classified explicitly per CLAUDE.md test
-discipline; tests confirmed deterministic across two runs.
+This is Sprint C batch 1 (security + doc accuracy). Deferred (logged): GAP-CQ-02 (verify() decompose --
+pairs with Sprint A), GAP-TEST-01/02/05-08/10 + GAP-CQ-04 (test-integrity + regex centralization, a
+coherent Phase 148), GAP-ARCH-01 (wire-or-remove decision), GAP-ARCH-05 (non-bug), GAP-CQ-05/06/07
+(cosmetic).
 
 ## Next action
 
-PASS -> `/qor-implement` (already complete) -> `/qor-substantiate`.
+PASS -> `/qor-implement` (complete) -> `/qor-substantiate`.

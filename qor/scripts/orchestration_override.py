@@ -15,10 +15,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from qor import workdir as _workdir
-from qor.scripts import shadow_process
+from qor.scripts import session, shadow_process
 
 
 def _write_suppression_marker(session_id: str, ts: str) -> Path:
+    session.validate_session_id(session_id)  # GAP-SEC-04: no path traversal
     marker_dir = _workdir.root() / ".qor" / "session" / session_id
     marker_dir.mkdir(parents=True, exist_ok=True)
     marker = marker_dir / "escalation_suppressed"
@@ -33,6 +34,7 @@ def record(
     reason: str,
 ) -> str:
     """Append override event, write suppression marker, return event id."""
+    session.validate_session_id(session_id)  # GAP-SEC-04: fail before any side effect
     ts = shadow_process.now_iso()
     event = {
         "ts": ts,
