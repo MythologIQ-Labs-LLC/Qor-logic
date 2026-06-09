@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.107.1] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 145 (hotfix, GH #201 follow-on)**: wired the ledger-seal UTF-8/ASCII validity gate into the actual seal path. The Phase 140 helpers (`assert_sealable_text` / `normalize_punctuation`) were only called from the fragment write path (`ledger_fragment`), which `/qor-substantiate` does not traverse (it edits `META_LEDGER.md` directly), so a SESSION SEAL entry could still be written with non-ASCII / invalid-UTF-8 bytes. `qor.reliability.seal_entry_check` (already run at `/qor-substantiate` Step 7.7) now fails closed: it returns an error rather than raising on a non-UTF-8 ledger, and validates the latest entry body via `assert_sealable_text`. No skill-prompt or dist-variant change.
+
 ## [0.107.0] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

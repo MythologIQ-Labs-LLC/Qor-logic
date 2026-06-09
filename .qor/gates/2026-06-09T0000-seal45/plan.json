@@ -1,0 +1,24 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0000-seal45",
+  "ts": "2026-06-09T21:03:27Z",
+  "plan_path": "docs/plan-qor-phase145-seal-entry-sealable-gate.md",
+  "phases": [
+    "Phase 1: make seal_entry_check reject an unsealable latest entry"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_seal_entry_sealable.py tests/test_seal_entry_check.py -q",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.107.0",
+    "host": "unknown",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T21:03:27Z"
+  }
+}

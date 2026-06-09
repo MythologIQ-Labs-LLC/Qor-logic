@@ -12230,5 +12230,47 @@ Change class: feature. Tests: 3 new behavioral tests (red->green, deterministic 
 
 ---
 
+### Entry #349: GATE TRIBUNAL -- Phase 145 plan PASS (#201 follow-on: seal-path validity gate)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: GATE (Phase 145)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase145-seal-entry-sealable-gate.md
+**Session**: `2026-06-09T0000-seal45`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `255dd3d5da9c965ed3328b5b0a04964dddad71ea6acb8281ced4634dba464f93`
+**Previous Hash**: `5d866f53daf51be490b5cde5ae8c0eea3aa6609ee14829071dc8c9e96596233b`
+**Chain Hash (Merkle seal)**: `e68b95d6ad470ee24d11fdc2bf77b127706f7852c6e110c82141dfd1ba64f5b1`
+
+**Decision**: PASS (L1, solo). Hotfix closing the GH #201 missed-component (operator comment, verified vs 0.106.0): the Phase 140 helpers `assert_sealable_text`/`normalize_punctuation` were wired only into the fragment path (`ledger_fragment`), NOT the actual seal path (`/qor-substantiate` edits META_LEDGER directly), so a SESSION SEAL entry can still be written with non-ASCII/invalid-UTF-8 bytes. Fix: strengthen `qor.reliability.seal_entry_check` (already invoked at substantiate Step 7.7, SKILL.md:71/510) -- wrap the ledger read to fail-closed on invalid UTF-8, and validate the latest entry block via `assert_sealable_text`. Auto-wires the gate into the seal path with no prompt/variant change. Grep-verified seal_entry_check.py:48-54/73 + the existing Step 7.7 invocation. 3 behavioral tests. Next: `/qor-implement`.
+
+---
+
+### Entry #350: SESSION SEAL -- Phase 145 #201 follow-on seal-path validity gate (v0.107.1)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: SUBSTANTIATE (Phase 145; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase145-seal-entry-sealable-gate.md
+**Session**: `2026-06-09T0000-seal45`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `ae1f6662de82`
+
+**Scope**: Phase 145 implemented (hotfix; GH #201 follow-on, operator-flagged missed component). The Phase 140 UTF-8/ASCII validity helpers were wired only into `ledger_fragment` (write_fragment/canonicalize_fragments), a path the real seal does not traverse -- `/qor-substantiate` writes the SESSION SEAL entry by editing META_LEDGER.md directly -- so the seal step was not fail-closed against the #201 corruption class. `qor.reliability.seal_entry_check.check` (already invoked at substantiate Step 7.7) now: (1) wraps the ledger read in try/except UnicodeDecodeError, returning a clean failure instead of an uncaught decode error on a non-UTF-8 ledger; and (2) validates the latest entry block via `ledger_hash.assert_sealable_text`, appending an error (seal aborts) when non-ASCII bytes were written. `_parse_latest_entry` now returns the entry `block`. The gate is wired into the seal path with no skill-prompt or dist-variant change (Step 7.7 already calls the now-stricter check). The seal-entry-check module docstring em-dash was ASCII-cleaned in passing.
+
+Change class: hotfix. Tests: 3 new behavioral tests (non-ASCII entry -> fail with U+2014; invalid-UTF-8 ledger -> fail-closed no crash; clean ASCII -> pass) + the existing seal-entry suite, green twice; a keyword-only-name-collision on `check` was resolved by calling `seal_entry_check.check` with keyword args in the new test. Full suite 2386 passed (2 expected pre-seal badge drifts reconciled here). README badges Tests 2388 -> 2391; Ledger 348 -> 350. Audit PASS (L1 solo). doc_tier minimal; no new dependency. Substantiate gates: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, data-API clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-hash-integrity PASS.
+
+**Review Boundary**: stage-only at seal. Per `/qor-auto-dev-1`, commit + tag + push + PR + merge + publish HELD for operator approval.
+
+**Content Hash**: `58054666c3f8f7ca3869f82d1fd431d353c67ab8160455c681744aecc8bfd2e0`
+**Previous Hash**: `e68b95d6ad470ee24d11fdc2bf77b127706f7852c6e110c82141dfd1ba64f5b1`
+**Chain Hash (Merkle seal)**: `5e9db9fdf3bd33e659adaf38018f9e1c14051930ba4beb6d15c56c825cd5b2aa`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 144; v0.107.0; FEATURE_INDEX + README currency; Review Boundary -- commit/tag/push HELD for operator)
+*Session: SEALED* (Phase 145; v0.107.1; #201 follow-on seal-path validity gate; Review Boundary -- commit/tag/push HELD for operator)
