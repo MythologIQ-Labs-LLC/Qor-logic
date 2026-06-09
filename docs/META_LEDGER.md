@@ -12343,3 +12343,22 @@ Change class: hotfix. Tests: 4 new behavioral tests (list available/no-flag, inf
 **Chain Hash**: `8eef54a304bba8fa857f4605c1776b5e454c7789583ee2d4be530fa7bb8362f6`
 
 **Decision**: 61 raw findings deduped to ~28 consolidated gaps. No remotely-exploitable security vuln (no shell=True / eval / unsafe-yaml / hardcoded secrets / install-time network). Headline (CONFIRMED, corroborated x3): the META_LEDGER binds ordering + recorded content_hash values but never re-derives content_hash from the sealed artifacts (verify_post_anchor:480; seal_entry_check.py:107); the only artifact-binding hasher (calculate-session-seal.py:42) is dead placeholder code -- tamper-evidence over the chain, not tamper-proof over sealed plans/code. Other confirmed: QOR_GATE_PROVENANCE_OPTIONAL env bypass (gate_chain.py:237); vacuous ci/seal enforce via runner:null (enforce.py:88, corroborated x2); existence-only gate-chain completeness (gate_chain_completeness.py:75); no py.typed; compliance/*.json unguarded by packaging test; FX017 mis-cited test. Reassuring: reliability + compliance cores are genuinely behaviorally tested; all 17 CLI commands handler+test-backed (FX substance holds). Risk grade L2; realistic adversary = author self-bypass + undetected post-hoc edits, no GA-blocking remote exploit. Remediation sprint plan (A integrity-binding / B conveyance-correctness / C harden+hygiene) drafted, NOT executed -- awaits operator after-recon checkpoint.
+
+---
+
+### Entry #354: RESEARCH BRIEF -- Claude Fable 5 (Mythos class) + qor-logic model-adaptive comms
+
+**Timestamp**: 2026-06-09T23:05:32Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+
+**Scope**: verify the externally-announced Claude Fable 5 model (API-assumption-drift discipline) and scope its impact on qor-logic's model-capability seam ahead of the deferred model-adaptive-communication feature.
+
+**Brief**: docs/research-brief-fable5-model-adaptive-comms-2026-06-09.md
+
+**Content Hash**: `2ed9a3451f6df91d095952921de64ff0108462cc1216072913ee118593ba13a1`
+**Previous Hash**: `8eef54a304bba8fa857f4605c1776b5e454c7789583ee2d4be530fa7bb8362f6`
+**Chain Hash**: `296bc8275c8ac409612d52da0d288389813d78c14ecf9c8dc10e68fb918f00eb`
+
+**Decision**: Fable 5 VERIFIED real (released 2026-06-09; multi-source: Anthropic/AWS/GitHub/CNBC) -- the earlier "unverifiable" caution was correct given the Jan-2026 cutoff; the model genuinely post-dates it. New 4th model class "Mythos" (haiku<sonnet<opus<mythos); API id `claude-fable-5`. Two qor-logic-relevant facts: (1) `model_pinning_lint.py:25,36` hard-codes a 3-tier ladder + `claude-(haiku|sonnet|opus)-` regex that does NOT match `claude-fable-5` -> a Fable session is silently tier-invisible (DRIFT); (2) Fable safeguards auto-route cybersecurity + biology requests to Opus 4.8, so a declared-Fable session has a DIFFERENT model answering qor-logic's security/gate work -- a hard technical reason the enforcement line (ABORT/VETO gates model-invariant) must hold; QOR_MODEL_FAMILY is advisory for comms only, never for enforcement. Candidate Shadow Genome: SG-DeclaredModelResponderSkew-A. Implementation deferred to its own governed cycle per operator sequencing.

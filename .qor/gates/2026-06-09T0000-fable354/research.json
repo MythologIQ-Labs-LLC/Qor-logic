@@ -1,0 +1,47 @@
+{
+  "phase": "research",
+  "session_id": "2026-06-09T0000-fable354",
+  "ts": "2026-06-09T23:06:07Z",
+  "questions": [
+    "Does Claude Fable 5 actually exist, and what are its verified facts (id, class, selection, fallback, ZDR)?",
+    "How does Fable 5 impact qor-logic's model-capability seam and the deferred adaptive-comms feature?"
+  ],
+  "findings": [
+    {
+      "topic": "existence",
+      "status": "VERIFIED",
+      "detail": "Fable 5 real, released 2026-06-09; multi-source (Anthropic/AWS/GitHub/CNBC). New 4th class Mythos. API id claude-fable-5."
+    },
+    {
+      "topic": "seam-drift",
+      "status": "DRIFT",
+      "detail": "model_pinning_lint.py:25 _CAPABILITY_ORDER lacks mythos; :36 _TIER_RE does not match claude-fable-5 -> Fable session is silently tier-invisible."
+    },
+    {
+      "topic": "security-fallback",
+      "status": "MATERIAL",
+      "detail": "Fable auto-routes cyber+biology requests to Opus 4.8; qor-logic is security-heavy -> declared model != per-request responder on gate work. Enforcement must stay model-invariant; QOR_MODEL_FAMILY advisory only."
+    },
+    {
+      "topic": "zdr",
+      "status": "CONSTRAINT",
+      "detail": "Fable requires 30-day retention; unavailable under ZDR -> adaptive layer must degrade to standard register."
+    }
+  ],
+  "sources": [
+    "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+    "https://www.anthropic.com/claude/fable",
+    "https://aws.amazon.com/blogs/aws/anthropic-claude-fable-5-on-aws-mythos-class-capabilities-with-built-in-safeguards-now-available/",
+    "https://yellow.com/news/anthropic-fable-5-risky-queries",
+    "qor/scripts/model_pinning_lint.py:25,36,48,86,107"
+  ],
+  "brief_path": "docs/research-brief-fable5-model-adaptive-comms-2026-06-09.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.107.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T23:06:07Z"
+  }
+}
