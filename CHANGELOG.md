@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.103.1] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 139 (hotfix)**: bot-authored PRs (login ending in `[bot]`, e.g. `dependabot[bot]`) are now exempt from the PR Citation Lint. Machine-generated dependency/automation bumps that touch non-doc files (e.g. `.github/workflows/*.yml` action-version bumps) have no plan/ledger/Merkle-seal to cite, so the doctrine §6 citation requirement was failing them indefinitely (e.g. PR #195). `qor/scripts/pr_citation_lint.py` gains `is_exempt_actor()` plus an `--actor` argument that short-circuits to exit 0 for bot authors; `.github/workflows/pr-lint.yml` passes the PR author via an env var. Human-authored PRs remain gated.
+
 ## [0.103.0] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

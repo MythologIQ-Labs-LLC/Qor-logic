@@ -1,0 +1,33 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0150-536a60",
+  "ts": "2026-06-09T01:50:48Z",
+  "plan_path": "docs/plan-qor-phase139-citation-lint-bot-exempt.md",
+  "phases": [
+    "Phase 1: Bot-actor exemption in pr_citation_lint.py"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_pr_citation_lint.py -q",
+    "python -m pytest -q",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase139-citation-lint-bot-exempt.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "high_risk_target": false,
+  "feature_inventory_touches": [
+    {
+      "entry_id": "n/a",
+      "operation": "MODIFIED",
+      "test_path": "tests/test_pr_citation_lint.py",
+      "test_descriptor": "is_exempt_actor True for *[bot] False for humans; main(--actor dependabot[bot]) exits 0 over uncited body; main(--actor alice) over empty body exits 1"
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.103.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T01:50:48Z"
+  }
+}

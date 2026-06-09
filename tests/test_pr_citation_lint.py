@@ -73,3 +73,36 @@ Ledger Entry: #200
 Merkle seal: 0000000000000000000000000000000000000000000000000000000000000000
 """
     assert lint.check_pr_body(body) == []
+
+
+# --- Phase 139: bot-author exemption ---
+
+import io  # noqa: E402
+
+
+def test_is_exempt_actor_true_for_dependabot():
+    assert lint.is_exempt_actor("dependabot[bot]") is True
+
+
+def test_is_exempt_actor_true_for_other_bot():
+    assert lint.is_exempt_actor("renovate[bot]") is True
+
+
+def test_is_exempt_actor_false_for_human():
+    assert lint.is_exempt_actor("Knapp-Kevin") is False
+
+
+def test_main_skips_bot_actor_despite_missing_citations(monkeypatch):
+    # Uncited body: a human would fail, but a bot author is exempt -> exit 0.
+    monkeypatch.setattr("sys.stdin", io.StringIO("## bump deps\n\nno citations here\n"))
+    assert lint.main(["--actor", "dependabot[bot]"]) == 0
+
+
+def test_main_enforces_for_human_missing_citations(monkeypatch):
+    monkeypatch.setattr("sys.stdin", io.StringIO("## empty\n\nno citations\n"))
+    assert lint.main(["--actor", "alice"]) == 1
+
+
+def test_main_passes_human_with_full_citations(monkeypatch):
+    monkeypatch.setattr("sys.stdin", io.StringIO(_COMPLETE_BODY))
+    assert lint.main(["--actor", "alice"]) == 0

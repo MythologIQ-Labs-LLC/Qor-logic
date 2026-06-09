@@ -11931,5 +11931,47 @@ Change class: feature. Tests: full suite green; README Tests badge 2326 -> 2339.
 
 ---
 
+### Entry #334: GATE TRIBUNAL -- Phase 139 plan PASS (bot-author citation-lint exemption)
+
+**Timestamp**: 2026-06-09T01:52:00Z
+**Phase**: GATE (Phase 139)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase139-citation-lint-bot-exempt.md
+**Session**: `2026-06-09T0150-536a60`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `34d01de6d879ac301e58e73b1cf8c9b14dd014311fea2fe6e55f2ad6677b395d`
+**Previous Hash**: `24cd1569d4a38c047942dbc36e3ff624ee003890d083a7f3e2e4c3790bb2b96a`
+**Chain Hash (Merkle seal)**: `a4efa5a3a6ea7f781474682043e71f1335dc9118fc65ab827279da0b953c4bd6`
+
+**Decision**: PASS (L1, solo). Hotfix exempting bot authors (`*[bot]`) from the PR citation lint so dependabot dependency-bump PRs (e.g. #195, actions/checkout) stop failing a governance-citation gate they cannot satisfy. Exemption lives in `qor.scripts.pr_citation_lint.is_exempt_actor` (testable); `pr-lint.yml` passes `${{ github.event.pull_request.user.login }}`. OWASP A03 reviewed: actor is GitHub-controlled constrained charset, quoted argv, no injection. All automated gates clean; all adversarial passes PASS/N/A. Next: `/qor-implement`.
+
+---
+
+### Entry #335: SESSION SEAL -- Phase 139 bot-author citation-lint exemption (v0.103.1)
+
+**Timestamp**: 2026-06-09T02:04:09Z
+**Phase**: SUBSTANTIATE (Phase 139; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase139-citation-lint-bot-exempt.md
+**Session**: `2026-06-09T0150-536a60`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `5aaded1f0b98`
+
+**Scope**: Phase 139 implemented (hotfix). Exempts bot authors from the PR Citation Lint so machine-generated dependency/automation PRs (dependabot, etc.) that touch non-doc files stop failing a doctrine §6 governance-citation gate they cannot satisfy (root cause of the failing `lint` check on PR #195, actions/checkout 6.0.2->6.0.3). `qor/scripts/pr_citation_lint.py` gains `is_exempt_actor(actor)` (True iff login ends in `[bot]`) and an `--actor` argument on `main()` that short-circuits to exit 0 (SKIP) for bot authors before reading the body; human authors remain gated unchanged. `.github/workflows/pr-lint.yml` passes the PR author via a `PR_ACTOR` env var (not inline `${{ }}` interpolation, closing the OWASP A03 surface by construction). 6 new behavioral tests (red->green, run twice). No skill/doctrine/schema change (doc_tier minimal); dist unaffected.
+
+Change class: hotfix. Tests: full suite green (2 expected pre-seal README badge drifts reconciled in this seal). Audit PASS (L1 solo). All substantiate ABORT gates passed (intent-lock, secret-scan, merge-velocity, data-API skip, doc-integrity strict, governance-index).
+
+**Review Boundary**: Operator authorized push + PR + merge-on-green + PyPI publish.
+
+**Content Hash**: `9b95cd636b7a87cebacb6c0e41a8da88d57844d5542e0c88d0e421131898b27b`
+**Previous Hash**: `a4efa5a3a6ea7f781474682043e71f1335dc9118fc65ab827279da0b953c4bd6`
+**Chain Hash (Merkle seal)**: `33e04a59aa745ae723188ead1e4be6e0d0944c5aca6e46be8d27ff8ba4c19cd2`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 138; v0.103.0; GH #196 V1 surface-tag lint; operator authorized push/PR/merge)
+*Session: SEALED* (Phase 139; v0.103.1; bot-author citation-lint exemption; operator authorized push/PR/merge/publish)
