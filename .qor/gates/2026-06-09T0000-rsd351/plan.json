@@ -1,0 +1,43 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0000-rsd351",
+  "ts": "2026-06-09T22:34:08Z",
+  "plan_path": "docs/plan-qor-phase146-feature-index-backfill.md",
+  "phases": [
+    "Phase 1: backfill list + info coverage and correct the uninstall row"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_cli_feature_index_backfill.py -q",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "feature_inventory_touches": [
+    {
+      "entry_id": "FX002",
+      "operation": "MODIFIED",
+      "test_path": "tests/test_cli_install_gemini.py::test_gemini_uninstall_cleans_commands_dir",
+      "test_descriptor": "install then uninstall cleans the commands dir (rc + filesystem assertion)"
+    },
+    {
+      "entry_id": "FX003",
+      "operation": "MODIFIED",
+      "test_path": "tests/test_cli_feature_index_backfill.py::test_do_list_available_enumerates_skills",
+      "test_descriptor": "_do_list --available returns 0 and enumerates de-duplicated skill ids"
+    },
+    {
+      "entry_id": "FX005",
+      "operation": "MODIFIED",
+      "test_path": "tests/test_cli_feature_index_backfill.py::test_do_info_prints_known_skill",
+      "test_descriptor": "_do_info prints the known skill body and returns 0; returns 1 + not found on miss"
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.107.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T22:34:08Z"
+  }
+}

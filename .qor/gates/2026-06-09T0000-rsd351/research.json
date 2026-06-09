@@ -1,0 +1,53 @@
+{
+  "phase": "research",
+  "session_id": "2026-06-09T0000-rsd351",
+  "ts": "2026-06-09T22:12:34Z",
+  "questions": [
+    "Do any of the 10 residual git stashes contain unincorporated source work, or are they all droppable cruft?",
+    "What test surface is needed to backfill the 3 unverified FEATURE_INDEX rows (uninstall/list/info)?"
+  ],
+  "findings": [
+    {
+      "topic": "stash-disposition",
+      "status": "cruft",
+      "detail": "All 10 stashes touch only dist/install/transient artifacts; only non-artifact residue is a stale 1-line CLAUDE.md edit in stash@{5} (phase-65 era, superseded). Safe to git stash clear."
+    },
+    {
+      "topic": "FX002-uninstall",
+      "status": "DRIFT",
+      "detail": "Already verified by tests/test_cli_install_gemini.py::test_gemini_uninstall_cleans_commands_dir (qor/install.py:114 _do_uninstall) but FEATURE_INDEX row marks it unverified with empty Test path."
+    },
+    {
+      "topic": "FX003-list",
+      "status": "needs-test",
+      "detail": "qor/install.py:171 _do_list has no test; backfill: invoke _do_list --available/--installed, assert rc + enumerated skills."
+    },
+    {
+      "topic": "FX005-info",
+      "status": "needs-test",
+      "detail": "qor/cli.py:25 _do_info has no test; backfill: invoke _do_info with known + bogus skill name, assert rc 0/1 + output."
+    }
+  ],
+  "sources": [
+    "qor/install.py:114",
+    "qor/install.py:142",
+    "qor/install.py:158",
+    "qor/install.py:171",
+    "qor/cli.py:25",
+    "qor/cli.py:157",
+    "qor/cli.py:162",
+    "qor/cli.py:177",
+    "tests/test_cli_install_gemini.py:59",
+    "docs/FEATURE_INDEX.md:13-16",
+    "git stash list (10 entries, phase/45-90 era)"
+  ],
+  "brief_path": "docs/research-brief-stash-triage-feature-backfill-2026-06-09.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.107.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T22:12:34Z"
+  }
+}

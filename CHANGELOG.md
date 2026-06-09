@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.107.2] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 146 (hotfix)**: backfilled behavioral test coverage for the `qor-logic list` and `qor-logic info` CLI commands (`tests/test_cli_feature_index_backfill.py`), and corrected the `qor-logic uninstall` FEATURE_INDEX row to cite its existing verifying test. `docs/FEATURE_INDEX.md` now reports all 17 features `verified` (was 14 `verified` / 3 `unverified`). Companion research brief (stash triage + backfill scope) at `docs/research-brief-stash-triage-feature-backfill-2026-06-09.md`.
+
 ## [0.107.1] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

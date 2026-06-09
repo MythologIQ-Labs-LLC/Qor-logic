@@ -1,0 +1,25 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-06-09T0000-rsd351",
+  "ts": "2026-06-09T22:34:23Z",
+  "verdict": "PASS",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "exists": [
+      "tests/test_cli_feature_index_backfill.py",
+      "docs/FEATURE_INDEX.md"
+    ]
+  },
+  "merkle_seal": "32e438a4d1655d9c14d5b8ca286dd43514b32371fddf3cbe5c4fdf0f48428eee",
+  "content_hash": "80ae9e0259260f6848fe3a4c0c70b4b462bb313ca9d285b7ed4594d1306a427f",
+  "ledger_entry": 352,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.107.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-06-09T22:34:23Z"
+  }
+}

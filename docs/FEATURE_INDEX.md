@@ -10,10 +10,10 @@ Rows append as the surface grows; the seal-time `feature_index_verify.tally()` p
 | ID | Name | Source-of-truth file:line | Doc citation | Test path | Verification status |
 | --- | --- | --- | --- | --- | --- |
 | FX001 | `qor-logic install` | qor/cli.py:151 | README.md (Quick start) | tests/test_cli_install_gemini.py | verified |
-| FX002 | `qor-logic uninstall` | qor/cli.py:157 | README.md | | unverified |
-| FX003 | `qor-logic list` | qor/cli.py:162 | README.md | | unverified |
+| FX002 | `qor-logic uninstall` | qor/cli.py:157 | README.md | tests/test_cli_install_gemini.py::test_gemini_uninstall_cleans_commands_dir | verified |
+| FX003 | `qor-logic list` | qor/cli.py:162 | README.md | tests/test_cli_feature_index_backfill.py::test_do_list_available_enumerates_skills | verified |
 | FX004 | `qor-logic init` | qor/cli.py:168 | qor/references/doctrine-governance-enforcement.md | tests/test_cli_init_scope.py | verified |
-| FX005 | `qor-logic info` | qor/cli.py:177 | README.md | | unverified |
+| FX005 | `qor-logic info` | qor/cli.py:177 | README.md | tests/test_cli_feature_index_backfill.py::test_do_info_prints_known_skill | verified |
 | FX006 | `qor-logic compile` | qor/cli.py:179 | docs/ARCHITECTURE_PLAN.md | tests/test_compile.py | verified |
 | FX007 | `qor-logic verify-ledger` | qor/cli.py:184 | qor/references/doctrine-governance-enforcement.md | tests/test_verify_ledger_cli.py | verified |
 | FX008 | `qor-logic seed` | qor/cli.py:205 | qor/references/skill-recovery-pattern.md | tests/test_cli_seed.py | verified |
