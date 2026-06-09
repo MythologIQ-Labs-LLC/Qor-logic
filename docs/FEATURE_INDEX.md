@@ -21,8 +21,8 @@ Rows append as the surface grows; the seal-time `feature_index_verify.tally()` p
 | FX010 | `qor-logic governance-index` | qor/cli.py:210 | qor/references/doctrine-governance-index.md | tests/test_governance_index.py | verified |
 | FX011 | `qor-logic capabilities` | qor/cli.py:221 | qor/references/doctrine-governance-enforcement.md | tests/test_cli_capabilities.py | verified |
 | FX012 | `qor-logic compliance report` | qor/cli_handlers/compliance.py:90 | qor/references/doctrine-nist-ssdf-alignment.md | tests/test_compliance_report_post_phase52.py | verified |
-| FX013 | `qor-logic compliance enforce` | qor/compliance/enforce.py:73 | qor/references/downstream-enforcement-sdk.md | tests/test_compliance_enforce.py | verified |
+| FX013 | `qor-logic compliance enforce` | qor/cli_handlers/compliance.py:107 | qor/references/downstream-enforcement-sdk.md | tests/test_compliance_enforce.py | verified |
 | FX014 | `qor-logic policy check` | qor/cli.py:241 | qor/references/doctrine-prompt-injection.md | tests/test_policy.py | verified |
 | FX015 | `qor-logic release` | qor/cli_handlers/release.py:24 | qor/references/release-and-tag-timing.md | tests/test_release_backends.py | verified |
 | FX016 | `qor-logic reconcile` | qor/cli_handlers/reconcile.py | qor/references/doctrine-shadow-genome-countermeasures.md | tests/test_cli_reconcile.py | verified |
-| FX017 | `qor-logic scripts` / `reliability` module dispatch | qor/cli.py:251 | qor/references/doctrine-governance-enforcement.md | tests/test_skill_active_env.py | verified |
+| FX017 | `qor-logic scripts` / `reliability` module dispatch | qor/cli.py:251 | qor/references/doctrine-governance-enforcement.md | tests/test_cli_module_dispatch.py | verified |

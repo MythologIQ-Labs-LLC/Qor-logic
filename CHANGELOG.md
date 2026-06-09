@@ -10,6 +10,16 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.107.3] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Security
+- **Phase 147 (hotfix, audit Sprint C)**: hardened operator-supplied `session_id` handling. A single canonical path-safety validator (`qor.scripts.session.validate_session_id`) now rejects any `session_id` containing `/`, `\`, or `.` before it is used as a path segment, applied at the `orchestration_override` and `cycle_count_escalator` marker-path sites (closes the inconsistent-validation finding GAP-SEC-04/05/07 from the production-gap audit).
+
+### Fixed
+- **Phase 147**: corrected `docs/FEATURE_INDEX.md` citations -- `compliance enforce` now cites its real handler (`qor/cli_handlers/compliance.py`) and the module-dispatch row cites its real behavioral test (`tests/test_cli_module_dispatch.py`) -- and fixed the README `verify-ledger` usage to match its actual `--ledger`/`--post-anchor` flags.
+
 ## [0.107.2] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
