@@ -1160,3 +1160,41 @@ referenced_by:
   - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
 introduced_in_plan: phase138-surface-tag-lint
 ```
+```yaml
+term: Compliance Control Matrix
+definition: 'Declarative registry at qor/compliance/control_matrix.json (schema qor/gates/schema/control_matrix.schema.json; Phase 141) recording every compliance control Qor-logic conveys downstream as a row (id, framework, control, enforcing_module, posture, detection, wired_into, variants) plus a waivers array. Single source of truth for what Qor-logic claims to enforce; verified by the conveyance conformance test and guarded by the compliance ratchet. Seeded with the deterministic shipping controls; new controls append.'
+home: qor/references/doctrine-compliance-conveyance.md
+referenced_by:
+  - qor/scripts/compliance_matrix.py
+  - qor/scripts/compliance_conformance.py
+  - qor/scripts/compliance_ratchet.py
+  - qor/compliance/control_matrix.json
+introduced_in_plan: phase141-compliance-conveyance-integrity
+```
+```yaml
+term: Control Posture
+definition: 'How hard a conveyed compliance control fails: ABORT (a hard-fail halting the seal or audit -- shell || ABORT, an exit 1, or an audit VETO) or WARN (a || true advisory that records a finding without halting). Recorded per control in the Compliance Control Matrix; the conveyance conformance test fails when a declared ABORT control carries || true (a silent downgrade) or a declared WARN control lacks it.'
+home: qor/references/doctrine-compliance-conveyance.md
+referenced_by:
+  - qor/scripts/compliance_matrix.py
+  - qor/scripts/compliance_conformance.py
+introduced_in_plan: phase141-compliance-conveyance-integrity
+```
+```yaml
+term: Conveyance Conformance
+definition: 'The pytest CI gate (qor.scripts.compliance_conformance; Phase 141) that verifies, for each Compliance Control Matrix row, the control is wired at its declared Control Posture and reaches the conveyed payload. Dispatches on the row detection mode: skill-marker (skill step + every declared variant skill carries the invocation), test (the named behavioral test exists), ci-job (the named workflow references the enforcing module). Self-validating: a wrongly-recorded posture reds its own conformance test.'
+home: qor/references/doctrine-compliance-conveyance.md
+referenced_by:
+  - qor/scripts/compliance_conformance.py
+  - tests/test_compliance_conformance.py
+introduced_in_plan: phase141-compliance-conveyance-integrity
+```
+```yaml
+term: Compliance Ratchet
+definition: 'The release-over-release non-regression check (qor.scripts.compliance_ratchet; Phase 141) comparing the current Compliance Control Matrix against the matrix at the prior release ref via git show. A dropped control or an ABORT -> WARN posture downgrade is a regression that fails CI unless a waivers entry names the control with a non-empty justification and issue; growth is always allowed. Makes conveyed compliance monotonic (hold-or-strengthen). First introduction (no prior matrix) is a no-op.'
+home: qor/references/doctrine-compliance-conveyance.md
+referenced_by:
+  - qor/scripts/compliance_ratchet.py
+  - tests/test_compliance_ratchet.py
+introduced_in_plan: phase141-compliance-conveyance-integrity
+```

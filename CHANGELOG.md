@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.105.0] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 141 (compliance-conveyance integrity)**: a declarative **Compliance Control Matrix** (`qor/compliance/control_matrix.json` + schema) records every compliance control Qor-logic conveys downstream (framework, enforcing module, posture, conveyance target), seeded with the deterministic shipping controls. A **conveyance conformance** pytest gate (`qor.scripts.compliance_conformance`) fails CI when any control is missing, posture-downgraded, or absent from a conveyed variant (claude/codex/kilo-code `skills/*/SKILL.md`, gemini `commands/*.toml`). A **compliance ratchet** (`qor.scripts.compliance_ratchet`) compares the matrix against the prior release tag and fails on a dropped or `ABORT -> WARN` control unless an explicit `waivers` entry (id + justification + issue) covers it, making conveyed compliance monotonic. New doctrine `doctrine-compliance-conveyance.md` + four glossary terms. Hooks intentionally out of scope.
+
 ## [0.104.0] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

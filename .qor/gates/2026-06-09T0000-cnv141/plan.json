@@ -1,0 +1,60 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0000-cnv141",
+  "ts": "2026-06-09T17:03:15Z",
+  "plan_path": "docs/plan-qor-phase141-compliance-conveyance-integrity.md",
+  "phases": [
+    "Phase 1: Control matrix data + schema + loader",
+    "Phase 2: Conveyance conformance test",
+    "Phase 3: Compliance ratchet"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_compliance_matrix_loader.py tests/test_compliance_conformance.py tests/test_compliance_ratchet.py -q",
+    "python -m pytest -q",
+    "qor-logic scripts compliance_conformance",
+    "qor-logic scripts compliance_ratchet --base v0.104.0"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "Compliance Control Matrix",
+      "home": "qor/references/doctrine-compliance-conveyance.md"
+    },
+    {
+      "term": "Control Posture",
+      "home": "qor/references/doctrine-compliance-conveyance.md"
+    },
+    {
+      "term": "Conveyance Conformance",
+      "home": "qor/references/doctrine-compliance-conveyance.md"
+    },
+    {
+      "term": "Compliance Ratchet",
+      "home": "qor/references/doctrine-compliance-conveyance.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 seeds deterministic shipping controls; mechanism + initial registry, not exhaustive",
+      "detection covers skill-marker/test/ci-job only"
+    ],
+    "non_goals": [
+      "no git-hook installer or Claude hook pack (hooks deferred)",
+      "no change to existing gate behavior/posture",
+      "no new CI workflow job (runs in existing pytest matrix)"
+    ],
+    "exclusions": [
+      "docs/FEATURE_INDEX.md pre-existing MISSING"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.104.0",
+    "host": "unknown",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T17:03:15Z"
+  }
+}
