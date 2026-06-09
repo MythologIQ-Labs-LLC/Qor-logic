@@ -1198,3 +1198,23 @@ referenced_by:
   - tests/test_compliance_ratchet.py
 introduced_in_plan: phase141-compliance-conveyance-integrity
 ```
+```yaml
+term: Engagement Point
+definition: 'An active enforcement layer a compliance control can plug into, declared per control in the Compliance Control Matrix engagement field (Phase 142). One of pre-commit, pre-push, pre-tool-write, ci, seal. The runnable points (pre-commit/pre-push/pre-tool-write) require an Enforcement Runner; ci/seal controls run in the audit/seal flow. The precursor value a downstream trigger reads via the downstream enforcement SDK (qor-logic compliance enforce --engagement <point>) to decide what should fire.'
+home: qor/references/doctrine-compliance-conveyance.md
+referenced_by:
+  - qor/scripts/compliance_matrix.py
+  - qor/compliance/enforce.py
+  - qor/references/downstream-enforcement-sdk.md
+introduced_in_plan: phase142-downstream-enforcement-sdk
+```
+```yaml
+term: Enforcement Runner
+definition: 'The standalone-runnable contract for a compliance control (Phase 142): a runner object {module, entry, args} the downstream enforcement SDK (qor.compliance.enforce) imports and calls against the consumer working tree, capturing the entry main(argv)->int exit code. Present for controls engaging a runnable point; null for ci/seal controls. The conveyance conformance test verifies every runnable-point control has an importable, callable runner.'
+home: qor/references/doctrine-compliance-conveyance.md
+referenced_by:
+  - qor/scripts/compliance_matrix.py
+  - qor/compliance/enforce.py
+  - qor/scripts/compliance_conformance.py
+introduced_in_plan: phase142-downstream-enforcement-sdk
+```

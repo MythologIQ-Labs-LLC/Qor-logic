@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.106.0] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 142 (downstream enforcement SDK)**: the compliance control matrix becomes an **engagement manifest** -- each control gains an `engagement` field (`pre-commit`/`pre-push`/`pre-tool-write`/`ci`/`seal`) and, where standalone-runnable, a `runner` (`module`/`entry`/`args`). A mini-SDK `qor.compliance.enforce` (re-exported at `qor.sdk`, surfaced as `qor-logic compliance enforce --engagement <point>`) loads control definitions from the installed package and runs the wired runnable controls against the consumer's tree, returning a structured `Verdict` (ABORT failures fail it, WARN are advisory). Conveyance conformance now also verifies every runnable-point control has an importable, callable runner. **Packaging fix**: `compliance/*.json` added to package-data so the matrix actually ships to pip consumers. New `downstream-enforcement-sdk.md` + 2 glossary terms (Engagement Point, Enforcement Runner). Qor-logic owns the manifest + runner + verdict; the consumer owns the trigger -- hooks remain addressed exclusively downstream (no hook installer shipped).
+
 ## [0.105.0] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

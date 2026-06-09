@@ -10,11 +10,12 @@ See ``qor/references/doctrine-compliance-conveyance.md``.
 """
 from __future__ import annotations
 
+import importlib
 import re
 import sys
 from pathlib import Path
 
-from qor.scripts.compliance_matrix import Control, load_matrix
+from qor.scripts.compliance_matrix import RUNNABLE_POINTS, Control, load_matrix
 
 _HEADING_RE = re.compile(r"^#{2,6}\s", re.MULTILINE)
 _HARD_MARKERS = ("ABORT", "VETO", "exit 1")
@@ -121,12 +122,33 @@ _DISPATCH = {
 }
 
 
+def _verify_runner(control: Control, root: Path) -> list[str]:
+    """A control engaging a runnable point (pre-commit/pre-push/pre-tool-write)
+    must carry a runner whose module is importable and entry is callable, so the
+    SDK can actually run it (Phase 142)."""
+    if not (set(control.engagement) & set(RUNNABLE_POINTS)):
+        return []
+    runner = control.runner
+    if not runner:
+        return [f"engages a runnable point but has no runner: {sorted(control.engagement)}"]
+    try:
+        module = importlib.import_module(runner.get("module", ""))
+    except Exception as exc:  # noqa: BLE001 - report any import failure
+        return [f"runner module not importable: {runner.get('module')!r} ({exc})"]
+    if not callable(getattr(module, runner.get("entry", ""), None)):
+        return [f"runner entry not callable: {runner.get('module')}.{runner.get('entry')}"]
+    return []
+
+
 def verify_control(control: Control, root: Path) -> list[str]:
     """Return failure reasons for one control (empty == satisfied)."""
     handler = _DISPATCH.get(control.detection)
-    if handler is None:
-        return [f"unknown detection mode: {control.detection}"]
-    return handler(control, root)
+    reasons = (
+        [f"unknown detection mode: {control.detection}"]
+        if handler is None
+        else list(handler(control, root))
+    )
+    return reasons + _verify_runner(control, root)
 
 
 def verify_all(root: Path) -> dict[str, list[str]]:

@@ -1,0 +1,53 @@
+{
+  "phase": "research",
+  "session_id": "2026-06-09T0000-sdk142",
+  "ts": "2026-06-09T17:58:39Z",
+  "questions": [
+    "Which seeded controls are standalone-runnable for an engagement SDK?",
+    "How does the qor-logic CLI dispatch a new enforce subcommand?",
+    "Does the matrix ship to pip consumers?",
+    "What is the SDK import/runner contract?"
+  ],
+  "findings": [
+    {
+      "topic": "cli",
+      "detail": "qor-logic compliance enforce slots into cli_handlers/compliance.py register/dispatch (:86-104)"
+    },
+    {
+      "topic": "runner",
+      "detail": "all 5 deterministic gates expose main(argv)->int (exit 0/1); clean runner={module,entry,args}"
+    },
+    {
+      "topic": "runnable",
+      "detail": "secret-scan/data-api-acl/prompt-injection/prose-test-lint/badge-currency runnable; governance-index/gate-chain-completeness/ai-provenance/dependency-review seal-or-ci context"
+    },
+    {
+      "topic": "drift-packaging",
+      "detail": "qor/compliance/control_matrix.json absent from pyproject package-data (47-59); must add compliance/*.json (P0)"
+    },
+    {
+      "topic": "drift-naming",
+      "detail": "import package is qor not qor_logic; SDK = qor.sdk / qor.compliance.enforce"
+    }
+  ],
+  "sources": [
+    "qor/cli.py:235-300",
+    "qor/cli_handlers/compliance.py:86-104",
+    "qor/scripts/secret_scanner.py:223",
+    "qor/scripts/data_api_acl_lint.py:190",
+    "qor/scripts/prompt_injection_canaries.py:151",
+    "qor/scripts/prose_test_lint.py:151",
+    "qor/scripts/badge_currency.py:135",
+    "pyproject.toml:41-59",
+    "qor/scripts/compliance_conformance.py"
+  ],
+  "brief_path": "docs/research-brief-downstream-enforcement-sdk-2026-06-09.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.105.0",
+    "host": "unknown",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T17:58:39Z"
+  }
+}

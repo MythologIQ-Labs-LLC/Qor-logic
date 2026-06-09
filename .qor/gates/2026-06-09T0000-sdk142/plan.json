@@ -1,0 +1,51 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0000-sdk142",
+  "ts": "2026-06-09T18:01:28Z",
+  "plan_path": "docs/plan-qor-phase142-downstream-enforcement-sdk.md",
+  "phases": [
+    "Phase 1: Engagement + runner matrix fields",
+    "Phase 2: SDK core + qor-logic compliance enforce",
+    "Phase 3: Packaging + conformance + docs"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_compliance_matrix_loader.py tests/test_compliance_enforce.py tests/test_compliance_conformance.py tests/test_package_data_ships_matrix.py -q",
+    "python -m pytest -q",
+    "qor-logic compliance enforce --engagement pre-commit",
+    "qor-logic scripts compliance_conformance"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [
+    {
+      "term": "Engagement Point",
+      "home": "qor/references/doctrine-compliance-conveyance.md"
+    },
+    {
+      "term": "Enforcement Runner",
+      "home": "qor/references/doctrine-compliance-conveyance.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "V1 generic runners only for the 4 context-free gates; prompt-injection tagged ci (needs --files)",
+      "SDK runs a control via runner.module.entry(args); no-runner controls skipped for runnable points"
+    ],
+    "non_goals": [
+      "no hook installer/pack; trigger wiring downstream-owned",
+      "no change to any gate behavior"
+    ],
+    "exclusions": [
+      "docs/FEATURE_INDEX.md pre-existing MISSING"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.105.0",
+    "host": "unknown",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T18:01:28Z"
+  }
+}

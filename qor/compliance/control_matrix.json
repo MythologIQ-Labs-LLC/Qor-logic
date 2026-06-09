@@ -9,8 +9,20 @@
       "invocation": "prompt_injection_canaries",
       "posture": "ABORT",
       "detection": "skill-marker",
-      "wired_into": {"skill": "qor/skills/governance/qor-audit/SKILL.md", "step": "Prompt Injection Pass"},
-      "variants": ["claude", "codex", "kilo-code", "gemini"]
+      "wired_into": {
+        "skill": "qor/skills/governance/qor-audit/SKILL.md",
+        "step": "Prompt Injection Pass"
+      },
+      "variants": [
+        "claude",
+        "codex",
+        "kilo-code",
+        "gemini"
+      ],
+      "engagement": [
+        "ci"
+      ],
+      "runner": null
     },
     {
       "id": "prose-test-lint",
@@ -20,8 +32,28 @@
       "invocation": "prose_test_lint --tests-dir tests --enforce",
       "posture": "ABORT",
       "detection": "skill-marker",
-      "wired_into": {"skill": "qor/skills/governance/qor-audit/SKILL.md", "step": "Test Functionality Pass"},
-      "variants": ["claude", "codex", "kilo-code", "gemini"]
+      "wired_into": {
+        "skill": "qor/skills/governance/qor-audit/SKILL.md",
+        "step": "Test Functionality Pass"
+      },
+      "variants": [
+        "claude",
+        "codex",
+        "kilo-code",
+        "gemini"
+      ],
+      "engagement": [
+        "pre-commit"
+      ],
+      "runner": {
+        "module": "qor.scripts.prose_test_lint",
+        "entry": "main",
+        "args": [
+          "--tests-dir",
+          "tests",
+          "--enforce"
+        ]
+      }
     },
     {
       "id": "secret-scan",
@@ -31,8 +63,27 @@
       "invocation": "secret_scanner --staged",
       "posture": "ABORT",
       "detection": "skill-marker",
-      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "4.6.5"},
-      "variants": ["claude", "codex", "kilo-code", "gemini"]
+      "wired_into": {
+        "skill": "qor/skills/governance/qor-substantiate/SKILL.md",
+        "step": "4.6.5"
+      },
+      "variants": [
+        "claude",
+        "codex",
+        "kilo-code",
+        "gemini"
+      ],
+      "engagement": [
+        "pre-commit",
+        "pre-push"
+      ],
+      "runner": {
+        "module": "qor.scripts.secret_scanner",
+        "entry": "main",
+        "args": [
+          "--staged"
+        ]
+      }
     },
     {
       "id": "data-api-acl",
@@ -42,8 +93,28 @@
       "invocation": "data_api_acl_lint",
       "posture": "ABORT",
       "detection": "skill-marker",
-      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "4.6.10"},
-      "variants": ["claude", "codex", "kilo-code", "gemini"]
+      "wired_into": {
+        "skill": "qor/skills/governance/qor-substantiate/SKILL.md",
+        "step": "4.6.10"
+      },
+      "variants": [
+        "claude",
+        "codex",
+        "kilo-code",
+        "gemini"
+      ],
+      "engagement": [
+        "pre-commit",
+        "pre-push"
+      ],
+      "runner": {
+        "module": "qor.scripts.data_api_acl_lint",
+        "entry": "main",
+        "args": [
+          "--repo-root",
+          "."
+        ]
+      }
     },
     {
       "id": "badge-currency",
@@ -53,8 +124,29 @@
       "invocation": "badge_currency",
       "posture": "ABORT",
       "detection": "skill-marker",
-      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "6.5"},
-      "variants": ["claude", "codex", "kilo-code", "gemini"]
+      "wired_into": {
+        "skill": "qor/skills/governance/qor-substantiate/SKILL.md",
+        "step": "6.5"
+      },
+      "variants": [
+        "claude",
+        "codex",
+        "kilo-code",
+        "gemini"
+      ],
+      "engagement": [
+        "pre-push"
+      ],
+      "runner": {
+        "module": "qor.scripts.badge_currency",
+        "entry": "main",
+        "args": [
+          "--repo-root",
+          ".",
+          "--ledger",
+          "docs/META_LEDGER.md"
+        ]
+      }
     },
     {
       "id": "governance-index",
@@ -64,8 +156,20 @@
       "invocation": "governance-index --advance-last-reviewed",
       "posture": "ABORT",
       "detection": "skill-marker",
-      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "4.7.5"},
-      "variants": ["claude", "codex", "kilo-code", "gemini"]
+      "wired_into": {
+        "skill": "qor/skills/governance/qor-substantiate/SKILL.md",
+        "step": "4.7.5"
+      },
+      "variants": [
+        "claude",
+        "codex",
+        "kilo-code",
+        "gemini"
+      ],
+      "engagement": [
+        "seal"
+      ],
+      "runner": null
     },
     {
       "id": "gate-chain-completeness",
@@ -75,8 +179,20 @@
       "invocation": "gate_chain_completeness",
       "posture": "ABORT",
       "detection": "skill-marker",
-      "wired_into": {"skill": "qor/skills/governance/qor-substantiate/SKILL.md", "step": "7.8"},
-      "variants": ["claude", "codex", "kilo-code", "gemini"]
+      "wired_into": {
+        "skill": "qor/skills/governance/qor-substantiate/SKILL.md",
+        "step": "7.8"
+      },
+      "variants": [
+        "claude",
+        "codex",
+        "kilo-code",
+        "gemini"
+      ],
+      "engagement": [
+        "seal"
+      ],
+      "runner": null
     },
     {
       "id": "ai-provenance",
@@ -85,8 +201,14 @@
       "enforcing_module": "qor.scripts.ai_provenance",
       "posture": "ABORT",
       "detection": "test",
-      "wired_into": {"test": "tests/test_gate_chain_phase52_provenance_still_enforced.py::test_provenance_error_blocks_write_and_blocks_hook"},
-      "variants": []
+      "wired_into": {
+        "test": "tests/test_gate_chain_phase52_provenance_still_enforced.py::test_provenance_error_blocks_write_and_blocks_hook"
+      },
+      "variants": [],
+      "engagement": [
+        "seal"
+      ],
+      "runner": null
     },
     {
       "id": "dependency-review",
@@ -95,8 +217,14 @@
       "enforcing_module": "qor.scripts.dependency_admission_lint",
       "posture": "ABORT",
       "detection": "ci-job",
-      "wired_into": {"job": ".github/workflows/pr-dependency-review.yml"},
-      "variants": []
+      "wired_into": {
+        "job": ".github/workflows/pr-dependency-review.yml"
+      },
+      "variants": [],
+      "engagement": [
+        "ci"
+      ],
+      "runner": null
     }
   ],
   "waivers": []
