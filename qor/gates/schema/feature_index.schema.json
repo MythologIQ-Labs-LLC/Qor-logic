@@ -29,6 +29,10 @@
       "type": "string",
       "description": "File path containing the feature-level test. Empty when status is unverified or n/a."
     },
+    "surface": {
+      "type": "string",
+      "description": "Optional (GH #196). User-facing product surface the feature ships on (e.g. command, route, settings-card, voice). Free-text in V1; a governed vocabulary is a deferred follow-on."
+    },
     "status": {
       "type": "string",
       "enum": ["verified", "unverified", "n/a"]

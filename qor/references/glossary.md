@@ -768,7 +768,9 @@ referenced_by:
   - qor/references/doctrine-shadow-genome-countermeasures.md
   - qor/references/doctrine-governance-index.md
   - qor/references/doctrine-runtime-principal-fidelity.md
+  - qor/references/doctrine-feature-inventory.md
   - qor/skills/governance/qor-substantiate/references/release-and-tag-timing.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
 
@@ -1147,4 +1149,14 @@ referenced_by:
   - qor/scripts/external_reviewer.py
   - qor/skills/governance/qor-audit/SKILL.md
 introduced_in_plan: phase123-external-reviewer-bridge
+```
+```yaml
+term: Surface tag
+definition: 'Optional FEATURE_INDEX column (GH #196 V1; Phase 138) naming the user-facing product surface a feature ships on (e.g. command, route, settings-card, voice). When a repo declares the Surface column, qor.scripts.feature_index_verify --surface-lint flags non-n/a rows missing a surface value with a WARN-only severity-2 degradation event at qor-substantiate; absent column -> Phase 75 disclosed-skip. Free-text in V1; a governed vocabulary and per-surface coverage gates are deferred follow-ons.'
+home: qor/references/doctrine-feature-inventory.md
+referenced_by:
+  - qor/scripts/feature_index_verify.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
+introduced_in_plan: phase138-surface-tag-lint
 ```

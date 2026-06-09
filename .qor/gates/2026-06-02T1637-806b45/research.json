@@ -1,0 +1,58 @@
+{
+  "phase": "research",
+  "session_id": "2026-06-02T1637-806b45",
+  "ts": "2026-06-09T00:17:32Z",
+  "questions": [
+    "How does GH #196 Surface-tag enforcement affect qor-logic systems independently?",
+    "How does it affect qor-logic together with the FailSafe application?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "claim": "Schema-optional additive WARN-first capability extension; not a behavior change to any existing gate.",
+      "status": "verified"
+    },
+    {
+      "id": "F2",
+      "claim": "Zero effect on qor-logic own seal: no docs/FEATURE_INDEX.md, disclosed-skips whole pass.",
+      "status": "verified"
+    },
+    {
+      "id": "F3",
+      "claim": "Parser header-driven and tolerates extra columns; coupled change is feature_index.schema.json surface property.",
+      "status": "verified"
+    },
+    {
+      "id": "F4",
+      "claim": "FailSafe owns data (FailSafe#206); qor-logic owns gate; no runtime coupling.",
+      "status": "verified"
+    },
+    {
+      "id": "F5",
+      "claim": "Cross-repo: V2 fail-closed must wait for FailSafe full surface coverage or its seal breaks.",
+      "status": "recommendation"
+    },
+    {
+      "id": "F6",
+      "claim": "DRIFT: governance_health treats FEATURE_INDEX required vs doctrine optional (separable follow-on).",
+      "status": "drift"
+    }
+  ],
+  "sources": [
+    "qor/scripts/feature_index_verify.py:37",
+    "qor/scripts/feature_index_verify.py:130",
+    "qor/gates/schema/feature_index.schema.json:7",
+    "qor/skills/governance/qor-substantiate/SKILL.md:360",
+    "qor/references/doctrine-feature-inventory.md:50",
+    "qor/scripts/dod_check.py:14"
+  ],
+  "brief_path": "docs/research-brief-surface-tag-feature-index-2026-06-08.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.102.2",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T00:17:32Z"
+  }
+}
