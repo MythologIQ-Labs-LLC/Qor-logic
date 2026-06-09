@@ -1,4 +1,4 @@
-"""Seal entry check — verify substantiate appended a SESSION SEAL ledger entry.
+"""Seal entry check -- verify substantiate appended a SESSION SEAL ledger entry.
 
 Closes SG-AdjacentState-A: a class of bookkeeping gaps where /qor-substantiate
 runs to completion (commit, tag, push) without appending the mandatory
@@ -62,6 +62,7 @@ def _parse_latest_entry(text: str) -> dict | None:
         "content_hash": hashes[0],
         "previous_hash": hashes[1],
         "chain_hash": hashes[2],
+        "block": block,
     }
 
 
@@ -70,13 +71,26 @@ def check(ledger_path: Path, phase_num: int) -> SealEntryResult:
     internally-consistent chain hash, and that post-anchor chain verification
     passes (GH #88: tolerates a re-anchored ledger's disclosed pre-anchor
     failures instead of tainting every entry after them)."""
-    text = Path(ledger_path).read_text(encoding="utf-8")
+    try:
+        text = Path(ledger_path).read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        # GH #201 follow-on: a seal that wrote invalid-UTF-8 bytes fails closed
+        # here instead of raising an uncaught decode error.
+        return SealEntryResult(ok=False, errors=[f"ledger is not valid UTF-8: {exc}"])
     latest = _parse_latest_entry(text)
     errors: list[str] = []
 
     if latest is None:
         errors.append(f"no parseable entries in {ledger_path}")
         return SealEntryResult(ok=False, errors=errors)
+
+    # GH #201 follow-on: the actual seal path edits META_LEDGER directly (not via
+    # ledger_fragment), so validate the just-sealed entry is ASCII here -- making
+    # the seal fail-closed against the non-ASCII corruption class.
+    try:
+        ledger_hash.assert_sealable_text(latest["block"], label=f"entry #{latest['entry_num']} body")
+    except ValueError as exc:
+        errors.append(str(exc))
 
     if latest["kind"] != "SESSION SEAL":
         errors.append(
