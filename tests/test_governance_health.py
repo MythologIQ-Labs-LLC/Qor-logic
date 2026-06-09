@@ -116,3 +116,61 @@ def test_scaffold_owned_set_pinned_to_seed_targets():
 
     seed_files = frozenset(t.rel_path for t in SEED_TARGETS if t.mode == "file")
     assert SCAFFOLD_OWNED == seed_files
+
+
+def _healthy_workspace(tmp_path):
+    """Write all required artifacts in a healthy state; return the docs dir."""
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    content = {
+        "META_LEDGER.md": "# QoreLogic Meta Ledger\n\nGenesis 2026-01-01. Chain Status ACTIVE.\n",
+        "CONCEPT.md": "# Project Concept\n\nWhy: ship governed software safely.\n",
+        "ARCHITECTURE_PLAN.md": "# Architecture Plan\n\nRisk Grade L2. Modules: cli, scripts.\n",
+        "SYSTEM_STATE.md": "# System State\n\nCurrent governance surfaces documented here.\n",
+        "SHADOW_GENOME.md": "# Shadow Genome\n\nNo open failures recorded.\n",
+        "BACKLOG.md": "# Backlog\n\nNo open blockers.\n",
+        "FEATURE_INDEX.md": "# Feature Index\n\nNo user-facing features yet.\n",
+        "GOVERNANCE_INDEX.md": "# Governance Index\n\nLast Reviewed 2026-01-01. Tier 1 mapped.\n",
+    }
+    for name, body in content.items():
+        (docs / name).write_text(body, encoding="utf-8")
+    return docs
+
+
+def test_prose_todo_is_not_incomplete(tmp_path):
+    """GH #200: prose mentions of the bare word TODO/FIXME must not flag INCOMPLETE."""
+    docs = _healthy_workspace(tmp_path)
+    (docs / "SHADOW_GENOME.md").write_text(
+        "# Shadow Genome\n\nWe removed TODO stubs and cosmetic TODOs; the old code was "
+        "a TODO list disguised as logic. No FIXME debt remains.\n",
+        encoding="utf-8",
+    )
+    sg = _find(check_governance_health(tmp_path), "docs/SHADOW_GENOME.md")
+    assert sg.status is ArtifactStatus.OK, (sg.status.value, sg.reason)
+
+
+def test_template_todo_label_is_incomplete(tmp_path):
+    """GH #200: a TODO: label is a real template placeholder and must flag INCOMPLETE."""
+    docs = _healthy_workspace(tmp_path)
+    (docs / "CONCEPT.md").write_text(
+        "# Project Concept\n\nTODO: write the why.\n", encoding="utf-8"
+    )
+    concept = _find(check_governance_health(tmp_path), "docs/CONCEPT.md")
+    assert concept.status is ArtifactStatus.INCOMPLETE
+    assert "TODO:" in concept.reason
+
+
+def test_html_comment_and_bracket_placeholders_still_flag(tmp_path):
+    """GH #200: existing structural markers (<!-- TODO, [Your ...]) still flag."""
+    docs = _healthy_workspace(tmp_path)
+    (docs / "CONCEPT.md").write_text(
+        "# Project Concept\n\n<!-- TODO fill this in -->\n", encoding="utf-8"
+    )
+    concept = _find(check_governance_health(tmp_path), "docs/CONCEPT.md")
+    assert concept.status is ArtifactStatus.INCOMPLETE
+
+    (docs / "ARCHITECTURE_PLAN.md").write_text(
+        "# Architecture Plan\n\nOwner: [Your name here].\n", encoding="utf-8"
+    )
+    arch = _find(check_governance_health(tmp_path), "docs/ARCHITECTURE_PLAN.md")
+    assert arch.status is ArtifactStatus.INCOMPLETE

@@ -10,6 +10,15 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.104.0] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 140 (GH #201)**: the ledger-seal write boundary now asserts UTF-8/ASCII validity before a content hash is computed. `qor.scripts.ledger_hash` gains `assert_sealable_text()` (rejects non-ASCII, naming the offending codepoint + index) and `normalize_punctuation()` (opt-in smart-punctuation -> ASCII map); both `ledger_fragment.write_fragment` and `ledger_fragment.canonicalize_fragments` call the gate, so codepoint-truncated / cp1252 / invalid-UTF-8 punctuation can no longer be sealed into a hash and render the ledger unreadable. On rejection the ledger is left untouched and fragments stay pending.
+- **Phase 140 (GH #199)**: the skill-entry `governance-health` ledger check now tolerates a disclosed pre-anchor residual exactly as the release gate does. When strict chain verification fails, it falls back to `ledger_hash.verify_post_anchor`; a failure at or below the auto-detected boundary is tolerated (not `DAMAGED`), while a genuine post-anchor failure still classifies `DAMAGED`. This unblocks `/qor-*` skills on ledgers carrying single-lineage manual-era residuals that the release gate already accepts.
+- **Phase 140 (GH #200)**: the `governance-health` placeholder check matches template-form markers only (`TODO:`/`FIXME:` labels, `<!-- TODO` comments, bracketed fill-ins) instead of the bare substring `TODO`. Prose mentions of the word TODO/FIXME (e.g. "TODO stubs", "cosmetic TODOs") no longer false-positive a governance artifact as `INCOMPLETE`.
+
 ## [0.103.1] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

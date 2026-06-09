@@ -21,6 +21,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from qor.scripts.ledger_entry_id import validate_entry_uid
+from qor.scripts.ledger_hash import assert_sealable_text
 
 
 @dataclass(frozen=True)
@@ -45,6 +46,7 @@ def write_fragment(root: Path, fragment: LedgerFragment) -> Path:
     indicate a federation worker collision).
     """
     validate_entry_uid(fragment.uid)
+    assert_sealable_text(fragment.body, label=f"fragment {fragment.uid} body")
     if fragment.content_hash != _body_hash(fragment.body):
         raise ValueError(
             f"fragment {fragment.uid}: content_hash does not match SHA256 of body"
@@ -118,7 +120,12 @@ def canonicalize_fragments(ledger_md: Path, fragment_root: Path) -> int:
     for f in fragments:
         # Each fragment body must be a fully-formatted SESSION SEAL entry minus
         # the heading line; canonicalization prepends ``### Entry #N: <title>``.
-        appendix_parts.append(f"\n---\n\n### Entry #{next_num}: {f.title}\n\n{f.body}\n")
+        part = f"\n---\n\n### Entry #{next_num}: {f.title}\n\n{f.body}\n"
+        # GH #201: reject non-ASCII before the META_LEDGER write so codepoint-
+        # truncated / cp1252 bytes can never be sealed into the chain. On raise
+        # the ledger is left untouched and fragments stay pending (not consumed).
+        assert_sealable_text(part, label=f"entry #{next_num} ({f.title})")
+        appendix_parts.append(part)
         next_num += 1
     ledger_md.write_text(text + "".join(appendix_parts), encoding="utf-8")
     archive_fragments(fragment_root, fragments)

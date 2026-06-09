@@ -1,0 +1,46 @@
+{
+  "phase": "research",
+  "session_id": "2026-06-09T0000-rsch99",
+  "ts": "2026-06-09T14:00:58Z",
+  "questions": [
+    "GH #199: why does skill-entry governance-health hard-fail on single-lineage manual-era ledger residuals?",
+    "GH #200: why does the placeholder check false-positive on prose containing TODO?",
+    "GH #201: how did non-UTF-8 bytes get sealed into a ledger entry and what breaks?"
+  ],
+  "findings": [
+    {
+      "issue": 201,
+      "root": "seal write boundary asserts no UTF-8/ASCII validity; ledger_hash.content_hash hashes raw bytes (ledger_hash.py:25-30)",
+      "impact": "invalid-UTF-8 ledger unreadable; governance_health DAMAGED at :157 before chain verify",
+      "severity": "P0"
+    },
+    {
+      "issue": 200,
+      "root": "_PLACEHOLDER_MARKERS bare TODO/FIXME via substring test (governance_health.py:63-72,146-148)",
+      "impact": "INCOMPLETE false-positive on prose; ledger path :132-140 already correct",
+      "severity": "P2"
+    },
+    {
+      "issue": 199,
+      "root": "skill-entry calls strict verify(); both tolerance paths require dup-previous_hash (ledger_hash.py:281-297)",
+      "impact": "single-lineage residuals FAIL+taint while verify_post_anchor (:390) tolerates band for release gates",
+      "severity": "P1"
+    }
+  ],
+  "sources": [
+    "qor/scripts/governance_health.py:63-72,118-121,143-159",
+    "qor/scripts/ledger_hash.py:25-30,180-219,222-297,390-465",
+    "qor/scripts/ledger_fragment.py:36-50",
+    "gh issue 199,200,201"
+  ],
+  "brief_path": "docs/research-brief-governance-health-ledger-seal-robustness-2026-06-09.md",
+  "drift_count": 4,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.103.1",
+    "host": "unknown",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T14:00:58Z"
+  }
+}

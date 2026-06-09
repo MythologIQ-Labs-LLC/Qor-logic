@@ -11973,5 +11973,62 @@ Change class: hotfix. Tests: full suite green (2 expected pre-seal README badge 
 
 ---
 
+### Entry #336: RESEARCH BRIEF -- governance-health + ledger-seal robustness (GH #199, #200, #201)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+
+**Content Hash**: `765cfce6b2d64b74bd108a124b09ce5af88462c289d676f1bef2cfd177a4e77b`
+**Previous Hash**: `33e04a59aa745ae723188ead1e4be6e0d0944c5aca6e46be8d27ff8ba4c19cd2`
+**Chain Hash (Merkle seal)**: `e3d8762794f533c40c0802387a0af4974a3a8b8717cf06a8b2eb94d10e80fa6c`
+
+**Decision**: Investigated GH #199/#200/#201 -- all genuine, unfixed defects in qor-logic's own tooling (no PR addresses them). Brief at docs/research-brief-governance-health-ledger-seal-robustness-2026-06-09.md. (1) #201: seal write boundary asserts no UTF-8/ASCII validity; `ledger_hash.content_hash` hashes raw bytes (ledger_hash.py:25-30), so codepoint-truncated/invalid-UTF-8 punctuation (incl. 0x92) gets permanently sealed and renders the ledger unreadable to every `read_text(encoding="utf-8")` (ledger_hash.py:195/286/407/473) and to governance_health (:157) which then reports DAMAGED before chain verify. Highest blast radius; fix = validity gate at write boundary, aligns with CLAUDE.md ASCII rule. (2) #200: `_PLACEHOLDER_MARKERS` bare `"TODO"`/`"FIXME"` matched via `if marker in text` (governance_health.py:63-72,146-148) false-positives on prose; the ledger path (:132-140) already avoids this; fix = template-form matching. (3) #199: skill-entry preflight calls strict `ledger_hash.verify()` (governance_health.py:118-121) whose two tolerance paths both require duplicate-previous_hash (ledger_hash.py:281-297), so single-lineage manual-era residuals hard-FAIL + taint, while `verify_post_anchor` (:390-465) tolerates the same band for release gates; fix = route skill-entry through the post-anchor surface (Option A) or operator-signed attestation (Option B). DRIFT count: 4 (one wiring gap). Sequence #201 -> #199 -> #200 (a #201-corrupted ledger fails the read before #199 tolerance is reached). Next: `/qor-plan`.
+
+---
+
+### Entry #337: GATE TRIBUNAL -- Phase 140 plan PASS (governance-health + ledger-seal robustness)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: GATE (Phase 140)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase140-gov-health-seal-robustness.md
+**Session**: `2026-06-09T0000-rsch99`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `56ebde30aa7aa82d8dbc1f855dd9d5670a64cf5e13a11e535450e38a1f1f71a6`
+**Previous Hash**: `e3d8762794f533c40c0802387a0af4974a3a8b8717cf06a8b2eb94d10e80fa6c`
+**Chain Hash (Merkle seal)**: `12152be020ffae42b848d1ebcd8a888c47045066eebaf7fb23a20d04c5f69c49`
+
+**Decision**: PASS (L2, solo; audit_risk_score option_b_required=false). Plan for the combined Phase 140 fix of GH #199/#200/#201 clears all binding passes. Highlights: Self-Application caught the plan's own #201 violation (literal U+2014/U+2013/U+2026 in a test descriptor -> plan `isascii: False`), remediated to codepoint names before PASS. Test Functionality: all 11 planned tests invoke the unit and assert on output/raise/state (none presence-only). Infrastructure Alignment: every cited symbol grep-verified; `ledger_fragment` -> `ledger_hash` import introduces no cycle. Dependency: none added. prose_test_lint --enforce + prompt_injection ABORT gate both clean. Non-binding WARNs: ci_coverage_lint (dependency-cooling CI step, irrelevant to a no-dependency change) and runtime_contract_walk V2 (2 false-positive backward findings; modules dispatch via CLI). Next: `/qor-implement`.
+
+---
+
+### Entry #338: SESSION SEAL -- Phase 140 governance-health + ledger-seal robustness (v0.104.0)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: SUBSTANTIATE (Phase 140)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase140-gov-health-seal-robustness.md
+**Session**: `2026-06-09T0000-rsch99`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `a77e69dbfb97`
+
+**Scope**: Phase 140 implemented (feature) -- combined fix of GH #199/#200/#201, sequence #201 -> #199 -> #200. (#201) `qor.scripts.ledger_hash` gains `assert_sealable_text(text, *, label)` (rejects non-ASCII, naming codepoint + index) and `normalize_punctuation(text)` (opt-in smart-punctuation -> ASCII map, idempotent); `ledger_fragment.write_fragment` and `canonicalize_fragments` call the gate before hashing / writing META_LEDGER, so codepoint-truncated / cp1252 / invalid-UTF-8 bytes can no longer be sealed into a content hash (on rejection the ledger is untouched and fragments stay pending). (#199) `governance_health._ledger_damage` falls back to `_verify_post_anchor` (wrapping `ledger_hash.verify_post_anchor`) on strict-verify failure: a disclosed pre-anchor residual at or below the auto boundary is tolerated (parity with the release gate) while a genuine post-anchor failure still classifies DAMAGED. (#200) `_PLACEHOLDER_MARKERS` (bare substring) becomes `_PLACEHOLDER_PATTERNS` (compiled regex requiring a structural cue: `TODO:`/`FIXME:` labels, `<!-- TODO`, `{{verify`, bracketed slots); prose mentions of the bare word TODO/FIXME no longer false-positive INCOMPLETE.
+
+Change class: feature. Tests: full suite 2356 passed / 0 failed / 2 skipped; three target suites (19 tests) green twice (deterministic). README Tests badge 2345 -> 2356; Ledger badge 335 -> 338. Audit PASS (L2 solo). doc_tier standard; no new dependencies; no new glossary terms. Substantiate gates: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, data-API-ACL SKIP (no SQL), doc-integrity strict PASS, governance-index enforce clean, badge-currency OK, seal-hash-integrity PASS. procedural-fidelity WARN cleared by SYSTEM_STATE.md Phase 140 section.
+
+**Review Boundary**: ENFORCED (stage-only). Per `/qor-auto-dev-1`, this seal entry is the cryptographic anchor; commit + tag + push + PR + merge + publish are HELD for explicit operator approval at handoff.
+
+**Content Hash**: `962749707ba23d6f14cbe1903ac7d86a4412b4511145abc9270b3d021b49dce7`
+**Previous Hash**: `12152be020ffae42b848d1ebcd8a888c47045066eebaf7fb23a20d04c5f69c49`
+**Chain Hash (Merkle seal)**: `afcd241c585c76e68e5d8969bc94f936344b73ab1e19f37e30fa8c349efd003a`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 139; v0.103.1; bot-author citation-lint exemption; operator authorized push/PR/merge/publish)
+*Session: SEALED* (Phase 140; v0.104.0; governance-health + ledger-seal robustness; Review Boundary enforced -- commit/tag/push HELD for operator)

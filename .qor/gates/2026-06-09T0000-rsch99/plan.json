@@ -1,0 +1,42 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0000-rsch99",
+  "ts": "2026-06-09T14:29:22Z",
+  "plan_path": "docs/plan-qor-phase140-gov-health-seal-robustness.md",
+  "phases": [
+    "Phase 1: Ledger-seal UTF-8/ASCII validity gate (GH #201)",
+    "Phase 2: skill-entry disclosed-pre-anchor tolerance (GH #199)",
+    "Phase 3: placeholder check template-form matching (GH #200)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ledger_seal_utf8_validation.py tests/test_governance_health_post_anchor_tolerance.py tests/test_governance_health.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "qor-logic governance-health --profile skill-entry"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "#201 gate rejects non-ASCII sealable text; does not auto-repair sealed historical entries",
+      "#199 reuses verify_post_anchor auto boundary; no new exposure beyond existing release posture"
+    ],
+    "non_goals": [
+      "no change to qor-validate strict validator",
+      "no retroactive migration",
+      "no silent normalization inside the hash boundary"
+    ],
+    "exclusions": [
+      "docs/FEATURE_INDEX.md pre-existing MISSING, separate remediation"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.103.1",
+    "host": "unknown",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T14:29:22Z"
+  }
+}
