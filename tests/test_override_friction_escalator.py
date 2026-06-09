@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from qor.scripts import override_friction
+from qor.scripts import override_friction, shadow_process
 from qor.scripts.override_friction import (
     DEFAULT_THRESHOLD,
     MIN_JUSTIFICATION_LEN,
@@ -103,6 +103,9 @@ def test_emit_gate_override_raises_on_third_without_justification(tmp_path, monk
     """Behavior invariant: third call without justification raises."""
     log = _write_log(tmp_path, _override("sess-1", 3))
     monkeypatch.setattr(override_friction, "_shadow_log_path", lambda: log)
+    # Redirect the event-append target too, else emit_gate_override writes a real
+    # event into the tracked docs/PROCESS_SHADOW_GENOME_UPSTREAM.md (Phase 143).
+    monkeypatch.setattr(shadow_process, "UPSTREAM_LOG_PATH", tmp_path / "upstream.jsonl")
 
     from qor.scripts import gate_chain
     with pytest.raises(OverrideFrictionRequired, match="threshold reached"):
@@ -117,6 +120,9 @@ def test_emit_gate_override_raises_on_third_without_justification(tmp_path, monk
 def test_emit_gate_override_succeeds_with_justification(tmp_path, monkeypatch):
     log = _write_log(tmp_path, _override("sess-1", 3))
     monkeypatch.setattr(override_friction, "_shadow_log_path", lambda: log)
+    # Redirect the event-append target too, else emit_gate_override writes a real
+    # event into the tracked docs/PROCESS_SHADOW_GENOME_UPSTREAM.md (Phase 143).
+    monkeypatch.setattr(shadow_process, "UPSTREAM_LOG_PATH", tmp_path / "upstream.jsonl")
 
     from qor.scripts import gate_chain
     just = "Operator: research phase intentionally skipped for this hotfix because the upstream change is purely cosmetic and the existing baseline already covers the surface."

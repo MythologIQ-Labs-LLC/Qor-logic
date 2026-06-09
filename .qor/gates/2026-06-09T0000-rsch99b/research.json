@@ -1,0 +1,47 @@
+{
+  "phase": "research",
+  "session_id": "2026-06-09T0000-rsch99b",
+  "ts": "2026-06-09T19:33:16Z",
+  "questions": [
+    "Is phase 117 in main or stranded?",
+    "Does FEATURE_INDEX MISSING need a cycle?",
+    "Does the shadow-genome test pollution need a cycle?",
+    "Does the v0.102.2 gap need a cycle?"
+  ],
+  "findings": [
+    {
+      "item": "phase-117",
+      "verdict": "already in main (Entry #310 v0.84.0); stash is cruft; no cycle"
+    },
+    {
+      "item": "4-feature-index",
+      "verdict": "genuinely absent required artifact; full cycle to author"
+    },
+    {
+      "item": "5-test-pollution",
+      "verdict": "real bug in main (78 sess-1 lines via test_override_friction_escalator.py); small cycle: tmp-redirect + prune + guard"
+    },
+    {
+      "item": "6-v0.102.2",
+      "verdict": "never on PyPI, tag not on origin, grandfathered; no cycle (permanent)"
+    }
+  ],
+  "sources": [
+    "docs/META_LEDGER.md#Entry-310",
+    "qor/scripts/governance_health.py",
+    "qor/scripts/feature_index_verify.py",
+    "tests/test_override_friction_escalator.py",
+    "docs/PROCESS_SHADOW_GENOME_UPSTREAM.md",
+    "tests/test_changelog_tag_coverage.py",
+    "pypi.org/pypi/qor-logic/json"
+  ],
+  "brief_path": "docs/research-brief-residual-cleanup-triage-2026-06-09.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.106.0",
+    "host": "unknown",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-09T19:33:16Z"
+  }
+}

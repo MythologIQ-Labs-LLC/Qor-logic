@@ -12129,5 +12129,62 @@ Change class: feature. Tests: 12 new behavioral tests + 3 extended (target suite
 
 ---
 
+### Entry #344: RESEARCH BRIEF -- residual-cleanup triage (items 4-6 + phase 117)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+
+**Content Hash**: `23bebd7129b3a2c3ca1de7b3b4829de5bf301136f30b3166cddf0c01c79aca74`
+**Previous Hash**: `4d2fb811b52417baa51bda6880024e681e12967ded35703a17d2a43fcf83fc59`
+**Chain Hash (Merkle seal)**: `3de89a85b2e763d00b475a4c560eedab03f0b290cc74428f0eb452a61d7d7bc3`
+
+**Decision**: Triaged the four residuals (brief at docs/research-brief-residual-cleanup-triage-2026-06-09.md). ALREADY IN MAIN / no cycle: phase 117 (Entry #310, v0.84.0; the stash@{2} is droppable cruft, not unincorporated work). NO CYCLE: item 6 v0.102.2 (never on PyPI, tag never on origin, CHANGELOG section already grandfathered in test_changelog_tag_coverage; shipping post-0.106.0 would be wrong; permanent grandfather + optional cosmetic note). NEEDS A CYCLE: item 5 shadow-genome test pollution (small/hotfix -- tests/test_override_friction_escalator.py emits sess-1 gate_override events into the tracked docs/PROCESS_SHADOW_GENOME_UPSTREAM.md, 78 lines accumulated in HEAD; fix = redirect test to tmp + prune lines + guard test); item 4 FEATURE_INDEX.md (full cycle -- genuinely absent required artifact consumed by feature_index_verify/governance_health/qa_evidence; authoring per doctrine-feature-inventory means enumerating user-touchable features + a proving test each, re-activating the feature_inventory_touches plan gate). Net: 2 governed work items (item 5 small, item 4 full) + housekeeping; phase 117 + item 6 closed by construction. Next: `/qor-plan` (per chosen item) or housekeeping.
+
+---
+
+### Entry #345: GATE TRIBUNAL -- Phase 143 plan PASS (shadow-genome test pollution hotfix)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: GATE (Phase 143)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase143-shadow-upstream-test-pollution.md
+**Session**: `2026-06-09T0000-pol143`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `3adede5098aa43257ef0b0efb25cc1f66123d830547e03ec58e5537291d147e5`
+**Previous Hash**: `3de89a85b2e763d00b475a4c560eedab03f0b290cc74428f0eb452a61d7d7bc3`
+**Chain Hash (Merkle seal)**: `0eb4491a29f2b8c24c5eb1d6f3c6dbcc3fc2eaf12da22082e17175390f14c044`
+
+**Decision**: PASS (L1, solo). Hotfix for item 5 (research #344). Root cause grep-verified: `test_emit_gate_override_succeeds_with_justification` patches the friction-check log (`override_friction._shadow_log_path`) but not the event-append target; `emit_gate_override` -> `append_event(attribution="UPSTREAM")` -> `shadow_process.UPSTREAM_LOG_PATH` (shadow_process.py:25,60-62) = the tracked `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`, so each run leaks one `sess-1` event (78 accumulated). Fix patches `UPSTREAM_LOG_PATH` in the two emit tests, prunes the 78 lines, and adds a guard test (real file has 0 sess-1 events + emit-write lands in tmp). All passes clean; both new tests behavioral. Next: `/qor-implement`.
+
+---
+
+### Entry #346: SESSION SEAL -- Phase 143 shadow-genome test pollution hotfix (v0.106.1)
+
+**Timestamp**: 2026-06-09T00:00:00Z
+**Phase**: SUBSTANTIATE (Phase 143; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase143-shadow-upstream-test-pollution.md
+**Session**: `2026-06-09T0000-pol143`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `ae6bd54d33ab`
+
+**Scope**: Phase 143 implemented (hotfix; research #344 item 5). `test_emit_gate_override_succeeds_with_justification` patched the override-friction check log but not the event-append target, so `gate_chain.emit_gate_override` -> `shadow_process.append_event(attribution="UPSTREAM")` -> `shadow_process.UPSTREAM_LOG_PATH` wrote a real `sess-1` gate_override event into the tracked `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` on every run (78 accumulated in HEAD). The two emit tests now also `monkeypatch.setattr(shadow_process, "UPSTREAM_LOG_PATH", tmp)`; the 78 synthetic lines were pruned from the tracked file; new `tests/test_shadow_upstream_no_test_pollution.py` guards (a) the tracked file has 0 `sess-1` events and (b) `emit_gate_override` honors a redirected upstream path (write lands in tmp, real file untouched).
+
+Change class: hotfix. Tests: 2 new behavioral tests (red->green, deterministic x2); full suite 2381 passed (2 expected pre-seal badge drifts reconciled here). README badges Tests 2383 -> 2385; Ledger 343 -> 346. SYSTEM_STATE header unchanged (drift 1 within the freshness allowance). Audit PASS (L1 solo). doc_tier minimal; no new dependency. Substantiate gates: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, data-API clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-hash-integrity PASS.
+
+**Review Boundary**: stage-only at seal. Per `/qor-auto-dev-1`, commit + tag + push + PR + merge + publish HELD for operator approval.
+
+**Content Hash**: `f3ed0bf602b87ccbafb84009c2b3cfd84caf1792e20069b6fe4f981cf5a15771`
+**Previous Hash**: `0eb4491a29f2b8c24c5eb1d6f3c6dbcc3fc2eaf12da22082e17175390f14c044`
+**Chain Hash (Merkle seal)**: `ccbd6796f9d8e0165d0461ede316780ce037da9fb58d524172f8fa9baab05790`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 142; v0.106.0; downstream enforcement SDK; Review Boundary -- commit/tag/push HELD for operator)
+*Session: SEALED* (Phase 143; v0.106.1; shadow-genome test-pollution hotfix; Review Boundary -- commit/tag/push HELD for operator)

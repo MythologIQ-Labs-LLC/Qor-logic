@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.106.1] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 143 (hotfix)**: stopped a test from polluting the tracked process shadow genome. `tests/test_override_friction_escalator.py::test_emit_gate_override_succeeds_with_justification` patched the override-friction check log but not the event-append target, so `emit_gate_override` wrote a real `sess-1` event into `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` on every run (78 accumulated). The emit tests now also patch `shadow_process.UPSTREAM_LOG_PATH`; the 78 synthetic lines were pruned; and a new `tests/test_shadow_upstream_no_test_pollution.py` guards that the tracked file carries no `sess-1` events and that `emit_gate_override` honors a redirected upstream path.
+
 ## [0.106.0] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
