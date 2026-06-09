@@ -1,8 +1,8 @@
 # Qor-logic System State
 
 **Snapshot**: 2026-06-09
-**Chain Status**: ACTIVE. Phase 137 sealed at v0.102.2 (SYSTEM_STATE resync + freshness drift guard); this entry (Phase 138, feature) adds the GH #196 V1 surface-tag WARN-only FEATURE_INDEX lint and seals at v0.103.0.
-**Phase**: Phase 138 (feature, GH #196 V1). Adds a schema-optional WARN-only surface-tag presence lint to the `/qor-substantiate` FEATURE_INDEX verification pass (`feature_index_verify --surface-lint`). Full per-phase history is authoritative in `docs/META_LEDGER.md` (333 entries; latest Entry #333 -- Phase 138 -- v0.103.0 -- chain `24cd1569...`); SYSTEM_STATE keeps the current-state header, physical map, and a condensed recent-phase bridge rather than restating every phase. The pre-1.0 line is current: the half-measure-closures cluster (GH #147 + #148-#165) is fully closed with real enforcers, and the two largest governance skills remain under the 40 KB skill-size budget (Phases 135/136).
+**Chain Status**: ACTIVE. Phase 139 sealed at v0.103.1 (bot-author citation-lint exemption); this entry (Phase 140, feature) seals the GH #199/#200/#201 governance-health + ledger-seal robustness cluster at v0.104.0.
+**Phase**: Phase 140 (feature, GH #199/#200/#201). Hardens the governance-health/seal boundary: a UTF-8/ASCII validity gate at the ledger-seal write boundary (`ledger_hash.assert_sealable_text`), disclosed-pre-anchor tolerance for the skill-entry health gate (parity with the release gate), and template-form placeholder matching so prose mentions of "to-do" no longer false-positive INCOMPLETE. Full per-phase history is authoritative in `docs/META_LEDGER.md` (338 entries; latest Entry #338 -- Phase 140 -- v0.104.0 -- chain `afcd241c...`); SYSTEM_STATE keeps the current-state header, physical map, and a condensed recent-phase bridge rather than restating every phase. The pre-1.0 line is current: the half-measure-closures cluster (GH #147 + #148-#165) is fully closed with real enforcers, and the two largest governance skills remain under the 40 KB skill-size budget (Phases 135/136).
 
 ## Authoritative source
 

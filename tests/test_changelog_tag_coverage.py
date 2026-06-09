@@ -23,7 +23,10 @@ _VERSION_HEADER = re.compile(r"^## \[([0-9]+\.[0-9]+\.[0-9]+)\] -", re.MULTILINE
 # cluster, but the corresponding historical release tags were never pushed.
 # Backfilling the tags now would trigger old release workflows, so keep the
 # exception precise and preserve strict coverage for every future version.
-_GRANDFATHERED_UNTAGGED_SECTIONS = frozenset({"0.69.0", "0.70.0", "0.71.0"})
+# Phase 140: 0.102.2 has a CHANGELOG section + a local tag, but the tag never
+# reached origin (origin holds 0.102.0/0.102.1, then 0.103.0); pushing it now
+# would re-fire the release workflow for an already-shipped version. Same precedent.
+_GRANDFATHERED_UNTAGGED_SECTIONS = frozenset({"0.69.0", "0.70.0", "0.71.0", "0.102.2"})
 
 
 def _git_tags() -> list[str]:
