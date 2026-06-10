@@ -1,0 +1,23 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0000-seedhelp154",
+  "ts": "2026-06-10T02:46:05Z",
+  "plan_path": "docs/plan-qor-phase154-gh219-seed-target-help.md",
+  "phases": [
+    "P1 clarifying help on path --target args"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_cli_target_help.py -q",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.109.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-10T02:46:05Z"
+  }
+}

@@ -12576,3 +12576,31 @@ Change class: hotfix (pure refactor; no behavior change). Tests: 4 new direct he
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 153; v0.109.1; GAP-CQ-02 -- verify() decomposed behavior-preservingly; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #362: SESSION SEAL -- Phase 154 seed --target help text (v0.109.2)
+
+**Timestamp**: 2026-06-10T02:52:32Z
+**Phase**: SUBSTANTIATE (Phase 154; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase154-gh219-seed-target-help.md
+**Session**: `2026-06-09T0000-seedhelp154`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `170673ab6efa`
+
+**Scope**: Phase 154 implemented (hotfix; closes GH #219). `qor-logic seed --target` carried no `help=`, so it read like "the artifact to seed" when it is the destination workspace directory; the natural wrong invocation (`seed --target GOVERNANCE_INDEX`) scaffolds a whole fresh workspace under `./GOVERNANCE_INDEX/` instead of creating that one artifact. Added the issue's primary fix -- a clarifying `help=` on `seed --target` ("destination workspace DIRECTORY (default: current directory); this is a path, NOT an artifact name ...") -- plus concise help on the sibling path `--target` arguments (`install` / `uninstall` / `init`), so the whole `--target` family is self-documenting. Help-text only; no behavior change. Verified the issue's secondary fix #3 (exit-1 with success output, observed on v0.106.0) is ALREADY resolved in current code: `_do_seed` returns 0 unconditionally and `seed --target` exits 0 from both a clean and an already-seeded workspace (a regression test pins this). Fix #2 (warn/skip when `--target` resolves inside an initialized workspace) is deferred as a separate, deeper change (the issue marks it optional).
+
+Change class: hotfix. Tests: 3 new (seed `--target` help clarifies a directory + disambiguates from an artifact name; the install/uninstall/init/seed `--target` family all carry help; `_do_seed` returns 0 -- the fix-#3 regression), green twice. Full suite 2436 passed (1 pre-seal badge-drift reconciled here). README badges Tests 2436 -> 2439; Ledger 361 -> 362. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. Audit PASS (L1 solo; option_b_required=false). doc_tier minimal. Substantiate gates: secret-scan clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS (content_hash bound to plan), gate-chain-completeness PASS.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `587530db0fb16025bfee9a3d8a7df9b41c243da55dffab4b84add2623f9ce6ee`
+**Previous Hash**: `2c8c88c619400ca31032dbd65188becde6444bc0ba29797b90a0dcbb1070fb88`
+**Chain Hash (Merkle seal)**: `aa2905c76cb1834d950b6f6fa297941bd871d31f90d977a83ce91c273953a0cc`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 154; v0.109.2; GH #219 -- seed --target clarifying help; Review Boundary -- commit/push/PR/merge HELD for operator)
