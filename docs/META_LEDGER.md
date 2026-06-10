@@ -12632,3 +12632,31 @@ Change class: hotfix. Tests: 4 new (a #123 markup-less entry -> exit 1 with the 
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 155; v0.109.3; GAP-GOV-09 -- verify() FAILs modern missing-markup entries; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #364: SESSION SEAL -- Phase 156 committed-seal re-verify + content_hash CRLF-invariance (v0.109.4)
+
+**Timestamp**: 2026-06-10T06:15:13Z
+**Phase**: SUBSTANTIATE (Phase 156; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase156-gov03-committed-seal-reverify.md
+**Session**: `2026-06-09T0000-gov03156`
+**SSDF Practices**: PS.2.1, PW.5.1, RV.1.1, RV.2.1
+**Entry ID**: `6de5020630ad`
+
+**Scope**: Phase 156 implemented (hotfix; audit Sprint A, GH #210, GAP-GOV-03). The GOV-01 content_hash<->plan binding (Phase 150) was only ever re-checked locally pre-commit; nothing re-verified it on the COMMITTED bytes. Added `seal_entry_check.check_latest` (derives the phase + plan from the latest ledger entry) and a `--auto` CLI flag (`--plan` now optional), then wired a CI step (`python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto`) so the binding is re-verified on the committed ledger in CI (ci.yml already re-verifies the chain). Running `--auto` against the live ledger surfaced a genuine defect: `ledger_hash.content_hash` hashed raw bytes, so it was sensitive to git's autocrlf -- the seal-time digest is computed on the LF working copy, but git rewrites the committed/checked-out plan to CRLF, so the recompute disagreed (entry #363: recorded `b3a53552` vs raw-recompute `b4fd6c98`). Root-cause fix: `content_hash` now LF-normalizes (`read_bytes().replace(b"\r\n", b"\n")`) before hashing -- a no-op for LF files, so every existing recorded hash is unchanged and the chain math (which uses recorded values) is untouched. Phase 150's GOV-01 self-test only passed because it ran on the pre-commit LF file; this phase makes GOV-01 actually hold on committed bytes.
+
+Change class: hotfix. Tests: 5 new (`check_latest` pass on a bound seal + fail on an unbound seal; `--auto` CLI exit codes 0/1; `content_hash` CRLF-invariance; CI-step-present guard), green twice; the 53-assertion chain-verifier net + the GOV-01 binding suite unchanged and green with the normalization. Full suite 2448 passed (1 pre-seal badge-drift reconciled here; the new ci.yml step registered in the Phase-89 CI-commands plan to keep `ci_coverage_lint` green). README badges Tests 2443 -> 2448; Ledger 363 -> 364. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. Audit PASS (L2 solo; option_b_required=false). doc_tier minimal. Substantiate gates: secret-scan clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS (content_hash bound to plan, now CRLF-invariant), gate-chain-completeness PASS. Sprint A remainder: only GAP-GOV-05 (self-asserted provenance; non-forgeable signal) remains.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `6a18c621ad264d9d8f7bbb7ecfe7450e955909215714ff21b33ac8215c31770f`
+**Previous Hash**: `a3ae32f9528a495d8da5ad5b2518edcbe659fd8fc8d5167e72bb280520c94302`
+**Chain Hash (Merkle seal)**: `67207cc0fcc330f8d6560c6f562dbde4330c3f1d6f48c39eea752de1da73fe08`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 156; v0.109.4; GAP-GOV-03 -- committed-seal re-verify + content_hash CRLF-invariance; Review Boundary -- commit/push/PR/merge HELD for operator)

@@ -38,6 +38,10 @@ jobs:
       - run: python -m pytest tests/ -v
       - run: python qor/scripts/check_variant_drift.py
       - run: python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md
+      # GAP-GOV-03: re-verify the COMMITTED seal's content_hash<->plan binding
+      # (the local gates run only on the pre-commit working tree).
+      - name: Re-verify committed seal binding
+        run: python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto
 
   install-smoke:
     runs-on: ubuntu-latest

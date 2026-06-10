@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.109.4] - 2026-06-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Security
+- **Phase 156 (hotfix, audit Sprint A)**: re-verify the committed seal's `content_hash`<->plan binding (GAP-GOV-03). New `seal_entry_check --auto` (derives the phase from the latest entry) + a CI step run it on the committed `META_LEDGER.md`, so the binding is re-checked on the committed bytes (CI already re-verified the chain). This uncovered and fixed a real fragility: `ledger_hash.content_hash` was sensitive to git's CRLF conversion, so the binding could disagree between the seal-time (LF) working copy and the committed (CRLF) file; `content_hash` now normalizes line endings to LF before hashing (a no-op for LF files, so existing recorded hashes are unchanged).
+
 ## [0.109.3] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
