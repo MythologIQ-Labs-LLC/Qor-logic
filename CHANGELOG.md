@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.110.2] - 2026-06-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 160 (hotfix; documentation currency)**: brought the docs current with the Phase 158/159 work and added an enforcement test. The README doctrine inventory now lists `provenance-binding` (it had drifted to 34 of 35 doctrines; `badge_currency` only checks the badge count, not the prose table), and `docs/operations.md` now documents the `provenance-attest` CI job + per-session provenance sidecars and the seal-entry plan-name fallback. New `tests/test_readme_doctrine_inventory.py` pins the README doctrine table to the on-disk `doctrine-*.md` corpus bidirectionally, so the table cannot silently drift again.
+
 ## [0.110.1] - 2026-06-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-06-10T17:31:31Z","version":"0.110.1"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L1","session_id":"2026-06-10T1728-deb672","target":"docs/plan-qor-phase160-doc-currency-provenance.md","ts":"2026-06-10T17:31:31Z","verdict":"PASS"}
