@@ -1245,3 +1245,20 @@ referenced_by:
   - .github/workflows/ci.yml
 introduced_in_plan: phase158-gov05-nonforgeable-provenance
 ```
+```yaml
+term: ledger base currency
+definition: 'The property (Phase 162, GH #231) that a branch is up to date with the trunk for sealing: its first new-on-branch META_LEDGER entry previous_hash equals origin/main tip chain_hash, so the branch new sub-chain starts exactly where main ends and merges into a still-linear chain. Checked WARN-first by qor.reliability.ledger_base_currency.check.'
+home: qor/references/doctrine-ledger-concurrency.md
+referenced_by:
+  - qor/reliability/ledger_base_currency.py
+  - .github/workflows/ci.yml
+introduced_in_plan: phase162-ledger-base-currency
+```
+```yaml
+term: provisional seal entry
+definition: 'A SESSION SEAL entry (Phase 162, GH #231) sealed on a branch before that branch is up to date with main, so its previous_hash reflects a possibly-stale base. It becomes canonical only once the branch is rebased onto the current main tip and, if the tip moved, re-anchored via qor.reliability.ledger_base_currency.reanchor (a pure fold that rebuilds previous_hash/chain_hash/entry_id from the live base tip without editing the ledger).'
+home: qor/references/doctrine-ledger-concurrency.md
+referenced_by:
+  - qor/reliability/ledger_base_currency.py
+introduced_in_plan: phase162-ledger-base-currency
+```

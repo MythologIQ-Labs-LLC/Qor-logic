@@ -7,14 +7,14 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-2482%20passing-brightgreen" alt="Tests: 2482 passing">
+  <img src="https://img.shields.io/badge/Tests-2490%20passing-brightgreen" alt="Tests: 2490 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-35-blue" alt="Doctrines: 35">
-  <img src="https://img.shields.io/badge/Ledger-373%20entries%20sealed-green" alt="Ledger: 373 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-36-blue" alt="Doctrines: 36">
+  <img src="https://img.shields.io/badge/Ledger-375%20entries%20sealed-green" alt="Ledger: 375 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -407,6 +407,7 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 | [hook-contract](qor/references/doctrine-hook-contract.md) | Non-authoritative `gate_written` observer-hook contract |
 | [host-repo-posture](qor/references/doctrine-host-repo-posture.md) | Host-repo posture + capability checks for non-Python archetypes |
 | [ideation-readiness](qor/references/doctrine-ideation-readiness.md) | Governed ideation-readiness contract for `/qor-ideate` |
+| [ledger-concurrency](qor/references/doctrine-ledger-concurrency.md) | Linearize the ledger hash-chain at the trunk (GH #231): WARN-first base-currency gate + re-anchor helper |
 | [nist-ssdf-alignment](qor/references/doctrine-nist-ssdf-alignment.md) | NIST SP 800-218A practice-tag mapping |
 | [owasp-governance](qor/references/doctrine-owasp-governance.md) | OWASP Top 10 governance integration |
 | [procedural-fidelity](qor/references/doctrine-procedural-fidelity.md) | Doc-surface coverage for skill / script / doctrine / schema changes |

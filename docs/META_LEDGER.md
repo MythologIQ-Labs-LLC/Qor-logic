@@ -12854,5 +12854,47 @@ Change class: hotfix. Tests: 2 new in `tests/test_merge_velocity_check.py` (`_fe
 
 ---
 
+### Entry #374: GATE TRIBUNAL -- Phase 162 plan PASS (ledger base-currency gate, GH #231)
+
+**Timestamp**: 2026-06-10T18:45:00Z
+**Phase**: GATE (Phase 162)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase162-ledger-base-currency.md
+**Session**: `2026-06-10T1841-762eb0`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `bbcd1720932b8a47f7975276afb33a70764261e7bf044887de831f752902b57d`
+**Previous Hash**: `1ec244e96894ed2dad851415c8f9c22ae36f0eddd590837f8d6937a59c4cf89f`
+**Chain Hash (Merkle seal)**: `1d06f7f665d0dec418df306f754f52f89c43227a2c81d2c9dce66cded79cc45d`
+
+**Decision**: PASS (L2, solo). Implements GH #231 Option 1 (linearize the ledger hash-chain at the trunk) as a WARN-first gate plus a pure re-anchor helper. New `qor/reliability/ledger_base_currency.py`: `check(branch_text, base_text)` flags a branch whose first new-on-branch entry's `previous_hash` does not equal `origin/main`'s tip `chain_hash` (a stale-base fork signal), identifying new entries by chain-hash set membership (robust to the entry-number reuse #231 is about); `reanchor(base_tip, new_entries)` is a pure fold over `ledger_hash.chain_hash` + `entry_id.derive_entry_id` that returns the corrected sub-chain an operator applies at merge. The CLI is WARN-only in V1 (`--enforce` reserved for V2), so it neither blocks the introducing phase's own seal nor any open PR -- the self-application trap is avoided by construction (162 was branched from the live #373 tip). The existing `check_previous_hash_uniqueness` post-hoc detector is retained as defense-in-depth. New `doctrine-ledger-concurrency.md` (home for `ledger base currency` + `provisional seal entry`); README doctrine inventory + glossary updated. Infrastructure Alignment grep-verified `ledger_hash`/`entry_id`/`seal_entry_check` surfaces + that `git show origin/main:docs/META_LEDGER.md` resolves. Next: `/qor-implement`.
+
+---
+
+### Entry #375: SESSION SEAL -- Phase 162 ledger base-currency gate (v0.111.0)
+
+**Timestamp**: 2026-06-10T18:50:00Z
+**Phase**: SUBSTANTIATE (Phase 162; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase162-ledger-base-currency.md
+**Session**: `2026-06-10T1841-762eb0`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `a1969bca5bf6`
+
+**Scope**: Phase 162 implemented (feature; GH #231 Option 1). The META_LEDGER is a linear hash chain carried in a file that lives in a git branch DAG: a branch that seals against a stale `origin/main` tip forks the chain, and git can auto-merge the two non-conflicting appends silently. New `qor/reliability/ledger_base_currency.py`: `check_base_currency(branch_text, base_text)` finds the first entry whose `Chain Hash` is not on the base (new-on-branch entries identified by chain-hash set membership -- robust to the entry-number reuse #231 is about) and asserts its `Previous Hash` equals `origin/main`'s tip `Chain Hash`; `reanchor(base_tip_chain, new_entries)` is a pure fold over `ledger_hash.chain_hash` + `entry_id.derive_entry_id` that rebuilds a provisional sub-chain's `previous_hash`/`chain_hash`/`entry_id` onto the live base tip without editing the ledger (content hashes unchanged -> the GOV-01 binding is preserved). The CLI is WARN-only in V1 (`--enforce` reserved for a V2 flip after false-positive evidence), wired as a `|| true` CI step on the `test` job; the post-hoc `check_previous_hash_uniqueness` detector (`SG-ConcurrentLedgerRace-A`) is retained as defense-in-depth (forward gate + post-hoc detector). New `doctrine-ledger-concurrency.md` is the home for `ledger base currency` + `provisional seal entry` (glossary + README inventory updated). A cross-platform bug was caught by a live self-check during implement and fixed: `git show` output was being decoded with the Windows locale (cp1252) and crashed on the ledger's valid-UTF-8 arrows; `_base_ledger_text` now forces `encoding="utf-8"`. Self-application verified: Phase 162 was branched from the live #373 tip, so its first new entry (#374) chains from `1ec244e9...` and the gate PASSes on itself (also WARN-only, so it could not block regardless). The standalone `check` was named `check_base_currency` to avoid the SG-033 keyword-only-lint name collision.
+
+Change class: feature. Tests: 8 new in `tests/test_ledger_base_currency.py` (check ok/stale/no-new/multi-new; reanchor sub-chain rebuild + stale-fix; CLI WARN-only exit-0 / `--enforce` exit-1 / base-unresolvable SKIP), green twice. Full suite 2490 passed. README badges Tests 2482 -> 2490; Doctrines 35 -> 36; Ledger 373 -> 375. SYSTEM_STATE header advanced to Phase 162. Audit PASS (L2 solo). doc_tier standard; no new dependency (stdlib + ledger_hash/entry_id). Substantiate gates: secret-scan clean, merge-velocity healthy, data-API SKIP, doc-integrity PASS, governance-index clean, badge-currency OK, seal-hash-integrity PASS, seal-entry-check PASS, gate-chain-completeness PASS, provenance verify-committed PASS (5 sessions), ledger-base-currency OK (self). Run under `/qor-auto-dev-1` (Review Boundary -- staged only).
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge + tag + publish HELD for operator approval at handoff.
+
+**Content Hash**: `c4d7f4114d47faad205150381a9f9a6aaff7eb1cf5f29818630b20df7ed0a98c`
+**Previous Hash**: `1d06f7f665d0dec418df306f754f52f89c43227a2c81d2c9dce66cded79cc45d`
+**Chain Hash (Merkle seal)**: `b355167206ee0e6414999f18aab7520aa868af41d5829155bba89317a0fba298`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 161; v0.110.3; deterministic merge-velocity test naming -- CI-flake hotfix; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
+*Session: SEALED* (Phase 162; v0.111.0; ledger base-currency gate -- GH #231 Option 1, WARN-first; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
