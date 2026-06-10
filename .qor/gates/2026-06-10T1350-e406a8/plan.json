@@ -1,0 +1,25 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-10T1350-e406a8",
+  "ts": "2026-06-10T14:30:04Z",
+  "plan_path": "docs/plan-qor-phase158-gov05-nonforgeable-provenance.md",
+  "phases": [
+    "Phase 1: Layer A local per-session HMAC provenance",
+    "Phase 2: Layer B CI attestation non-forgeable at merge boundary"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_gate_provenance.py tests/test_gate_chain_provenance.py -v",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.gate_provenance verify-committed --phase-min 158",
+    "python qor/scripts/check_variant_drift.py",
+    "python -m qor.reliability.gate_chain_completeness --phase-min 52"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.109.5",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-10T14:30:04Z"
+  }
+}

@@ -1218,3 +1218,30 @@ referenced_by:
   - qor/scripts/compliance_conformance.py
 introduced_in_plan: phase142-downstream-enforcement-sdk
 ```
+```yaml
+term: provenance sidecar
+definition: 'A <phase>.provenance JSON file (Phase 158, GAP-GOV-05) written beside each gate artifact by gate_provenance.write_sidecar, carrying a keyless payload_sha256 over the artifact bytes and an hmac_tag keyed by the session provenance key. Buys tamper-evidence and cross-session replay resistance for the local working tree; its keyless payload digest is the recomputation basis for the CI merge gate.'
+home: qor/references/doctrine-provenance-binding.md
+referenced_by:
+  - qor/scripts/gate_provenance.py
+  - qor/scripts/gate_chain.py
+  - .github/workflows/ci.yml
+introduced_in_plan: phase158-gov05-nonforgeable-provenance
+```
+```yaml
+term: session provenance key
+definition: 'A per-session 32-byte secret (Phase 158, GAP-GOV-05) created on first use under .qor/session/keys/<session_id>.key and used to HMAC-sign gate-artifact provenance sidecars. Because .qor/session/ is gitignored the key is local-only by construction; its honest ceiling is an in-repo filesystem actor who can read and re-sign.'
+home: qor/references/doctrine-provenance-binding.md
+referenced_by:
+  - qor/scripts/gate_provenance.py
+introduced_in_plan: phase158-gov05-nonforgeable-provenance
+```
+```yaml
+term: CI attestation
+definition: 'A CI-secret-keyed HMAC (Phase 158, GAP-GOV-05) over a sealed ledger entry content hash and chain hash, produced by gate_provenance.ci_attest only when QOR_CI_ATTEST_SECRET is configured. Only the trusted CI environment holds the secret, so only genuine CI can produce a valid attestation and it is verifiable only where the secret lives; it proves verification by trusted CI, not human authorship.'
+home: qor/references/doctrine-provenance-binding.md
+referenced_by:
+  - qor/scripts/gate_provenance.py
+  - .github/workflows/ci.yml
+introduced_in_plan: phase158-gov05-nonforgeable-provenance
+```

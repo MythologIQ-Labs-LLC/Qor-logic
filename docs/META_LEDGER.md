@@ -12686,5 +12686,47 @@ Change class: hotfix. Tests: 3 new in `tests/test_hash_guard.py` (CRLF<->LF dige
 
 ---
 
+### Entry #366: GATE TRIBUNAL -- Phase 158 plan PASS (GAP-GOV-05 non-forgeable provenance)
+
+**Timestamp**: 2026-06-10T13:55:00Z
+**Phase**: GATE (Phase 158)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase158-gov05-nonforgeable-provenance.md
+**Session**: `2026-06-10T1350-e406a8`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `ee81ab3111e45dac0d5500d0fde2ca6ef9b8e7b087d98f13e7821f3a8f9516ed`
+**Previous Hash**: `03f4efc7d18d060aba551cfe63db8a966591b5953c0fdcb239c79d2753601e58`
+**Chain Hash (Merkle seal)**: `80c138468b8b17566482cdece5736d8f452e6e1066ce2c6e355778585009ca98`
+
+**Decision**: PASS (L2, solo; option_b_required=false). Closes the last Sprint A item (GH #210): the self-asserted `QOR_SKILL_ACTIVE==phase` gate-artifact binding (`gate_chain.py`) is replaced by a layered A+B provenance scheme. Layer A is a stdlib-only per-session HMAC sidecar (tamper-evidence + cross-session replay resistance; honest ceiling = in-repo filesystem actor, since the per-session key lives under the gitignored `.qor/session/`). Layer B is a CI attestation: a keyless `verify-committed --phase-min 158` recomputation gate (runs on every PR incl. forks; FAILs merge on a forged committed artifact) plus a CI-secret-keyed attestation that only trusted CI can produce. Honesty contract verified: non-forgeability against the operator is declared a non-goal (impossible by construction), Layer B is verifiable only in CI -- the plan does not overclaim, satisfying the "non-forgeable, NOT accepted-residual" directive. Infrastructure Alignment grep-verified all cited sites (`gate_chain` binding, `session.validate_session_id:35`, `gate_chain_completeness._extract_seal_sessions:34`, `validate_gate_artifact.write_artifact:123`, `.gitignore:17`, 507 committed gate artifacts -> grandfather at phase 158). All 16 planned tests are behavioral; stdlib-only (zero new deps); acyclic module graph. Doc drift advisory (non-VETO): the 3 introduced terms need the NEW `doctrine-provenance-binding.md` home + glossary `referenced_by` at implement. Next: `/qor-implement`.
+
+---
+
+### Entry #367: SESSION SEAL -- Phase 158 non-forgeable gate-artifact provenance (v0.110.0)
+
+**Timestamp**: 2026-06-10T14:10:00Z
+**Phase**: SUBSTANTIATE (Phase 158; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase158-gov05-nonforgeable-provenance.md
+**Session**: `2026-06-10T1350-e406a8`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `f75a9958cf83`
+
+**Scope**: Phase 158 implemented (feature; audit Sprint A, GH #210, GAP-GOV-05 -- the LAST Sprint A item). The pre-158 gate-artifact binding (`gate_chain.write_gate_artifact`) authorized a write on the self-asserted env string `QOR_SKILL_ACTIVE==phase`; any process exporting it could write a schema-valid artifact. New `qor/scripts/gate_provenance.py` adds a layered, honest replacement. **Layer A** (local, per-session HMAC): a `<phase>.provenance` sidecar written beside each gate artifact (fail-closed wiring in `write_gate_artifact`) carries a keyless `payload_sha256` and an `hmac_tag` keyed by a per-session 32-byte secret under the gitignored `.qor/session/keys/`. It buys tamper-evidence + cross-session replay resistance (the `session_id|phase` prefix is bound into the signed material); honest ceiling = an in-repo filesystem actor who can read the key. **Layer B** (CI, merge boundary): `verify-committed --phase-min 158` recomputes each committed artifact's payload digest against its sidecar (keyless -> runs on forks) and is wired as a required CI job in the new `provenance-attest` workflow, so a forged committed artifact fails the merge boundary; `attest-latest` emits a CI-secret-keyed HMAC over the latest sealed entry that only trusted CI can produce (verifiable only where the secret lives). All signed material is LF-normalized (the GAP-GOV-03 CRLF lesson). Honesty contract enforced at audit: non-forgeability against the operator is a declared non-goal (impossible by construction -- operator is both author and bound party), so this is a real mechanism at two honest boundaries, NOT an accepted-residual stopgap. New `qor/references/doctrine-provenance-binding.md` is the home for 3 glossary terms (provenance sidecar, session provenance key, CI attestation). This session's own four gate artifacts dogfood the binding (each carries a validated sidecar). The `verify` standalone was named `verify_tag` to avoid the SG-033 keyword-only-lint name collision with `ledger_hash.verify`.
+
+Change class: feature. Tests: 23 new in `tests/test_gate_provenance.py` (sign/verify round-trip, payload-edit + phase-swap + cross-session replay rejection, CRLF-invariance, key persistence/path-safety, sidecar write+verify+tamper detection, keyless payload digest, ci_attest/verify round-trip + secret isolation, attest-latest CLI, verify_committed pass/tamper/missing-sidecar/grandfather) + 1 new in `tests/test_gate_chain_provenance.py` (write_gate_artifact emits a valid sidecar); green twice. Full suite 2475 passed (the 5 pre-seal reds were the 3 badge-currency drifts reconciled here + the keyword-only lint + the Phase-89 CI-surface self-test, all now green). README badges Tests 2451 -> 2475; Doctrines 34 -> 35; Ledger 365 -> 367. SYSTEM_STATE header advanced to Phase 158. Audit PASS (L2 solo; option_b_required=false). doc_tier standard; no new dependency (stdlib hmac/hashlib/secrets). Substantiate gates: intent-lock no-lock (manual implement), secret-scan clean, merge-velocity healthy, data-API SKIP (no migrations), doc-integrity strict PASS, governance-index clean, badge-currency OK, seal-hash-integrity PASS, seal-entry-check PASS, gate-chain-completeness PASS, provenance verify-committed PASS. **Sprint A (GH #210) fully closed; only #209 (audit umbrella) remains open.**
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge + tag + publish HELD for operator approval at handoff.
+
+**Content Hash**: `d96d49aff4601599d53b270d2e511c74ab931a7a1988c340ed210b5f136b96c3`
+**Previous Hash**: `80c138468b8b17566482cdece5736d8f452e6e1066ce2c6e355778585009ca98`
+**Chain Hash (Merkle seal)**: `7890f838bc8cfdc048c9731ded0ea71eb7b0d5db4f11336b07818794a9dcd48c`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 157; v0.109.5; GAP-GOV-03 follow-on -- hash_file CRLF-invariant seal-text option; Review Boundary -- commit/push/PR/merge HELD for operator)
+*Session: SEALED* (Phase 158; v0.110.0; GAP-GOV-05 -- non-forgeable gate-artifact provenance; closes Sprint A GH #210; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)

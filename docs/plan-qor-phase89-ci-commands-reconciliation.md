@@ -306,3 +306,5 @@ CI surface in `## CI Commands` below to satisfy
 - `python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase89-ci-commands-reconciliation.md` — plan-internal text-consistency.
 - `python -m qor.scripts.dependency_admission_lint --base <ref>` — Phase 105 pr-dependency-review.yml WARN-only step (forward-maintenance: command introduced after Phase 89 seal; the self-applied test discipline requires Phase 89's CI Commands list to enumerate every operator-runnable Python invocation across all workflows).
 - `python -m qor.scripts.session_id_lint` — Phase 106 /qor-substantiate Step 4.6 WARN-only step (forward-maintenance; same pattern as the Phase 105 entry above).
+- `python -m qor.scripts.gate_provenance verify-committed --phase-min 158` — Phase 158 ci.yml `provenance-attest` job: keyless GAP-GOV-05 merge gate over committed provenance sidecars (forward-maintenance; command introduced after Phase 89 seal).
+- `python -m qor.scripts.gate_provenance attest-latest` — Phase 158 ci.yml `provenance-attest` job: emit the CI-secret-keyed attestation over the latest sealed entry (disclosed-skip when the secret is absent; forward-maintenance).
