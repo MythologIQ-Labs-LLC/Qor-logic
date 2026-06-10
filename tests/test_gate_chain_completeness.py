@@ -14,12 +14,44 @@ from pathlib import Path
 import pytest
 
 
+import json as _json
+
+
+def _valid_payload(phase: str, sid: str) -> dict:
+    """Minimal schema-valid gate payload (GAP-GOV-14: completeness now validates
+    artifact content + schema, so fixtures must be valid, not bare `{}`)."""
+    base = {"phase": phase, "ts": "2026-01-01T00:00:00Z", "session_id": sid}
+    extra = {
+        "plan": {"plan_path": "docs/plan-x.md", "phases": ["P1"], "ci_commands": ["pytest"]},
+        "audit": {"target": "docs/plan-x.md", "verdict": "PASS"},
+        "implement": {"files_touched": ["a.py"]},
+        "substantiate": {"verdict": "PASS", "merkle_seal": "a" * 64},
+    }[phase]
+    return {**base, **extra}
+
+
 def _make_session_dir(gates_root: Path, sid: str, *artifacts: str) -> Path:
     sess = gates_root / sid
     sess.mkdir(parents=True, exist_ok=True)
     for art in artifacts:
-        (sess / f"{art}.json").write_text("{}", encoding="utf-8")
+        (sess / f"{art}.json").write_text(_json.dumps(_valid_payload(art, sid)), encoding="utf-8")
     return sess
+
+
+def test_empty_artifact_file_fails_completeness(tmp_path):
+    """GAP-GOV-14: a present-but-empty/invalid gate file no longer satisfies
+    completeness (existence alone is insufficient)."""
+    from qor.reliability import gate_chain_completeness as gcc
+
+    sid = "2026-01-01T0000-aaaaaa"
+    gates = tmp_path / ".qor" / "gates"
+    sess = _make_session_dir(gates, sid, "plan", "audit", "implement", "substantiate")
+    (sess / "plan.json").write_text("", encoding="utf-8")  # corrupt one to empty
+    ledger = tmp_path / "META_LEDGER.md"
+    ledger.write_text("# L\n\n" + _make_seal_entry(60, sid), encoding="utf-8")
+    result = gcc.check(tmp_path, phase_min=52, ledger_path=ledger, gates_root=gates)
+    assert result.ok is False
+    assert any("plan.json" in m[1] for m in result.missing), result.missing
 
 
 def _make_seal_entry(phase_num: int, sid: str) -> str:

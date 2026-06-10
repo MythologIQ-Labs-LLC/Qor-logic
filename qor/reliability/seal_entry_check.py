@@ -37,6 +37,7 @@ _ENTRY_HEADER_RE = re.compile(
 _HASH_FIELD_RE = re.compile(
     r"\*\*(?:Content Hash|Previous Hash|Chain Hash)(?:\s*\([^)]+\))?\*\*:\s*`([0-9a-fA-F]{64})`"
 )
+_PLAN_FIELD_RE = re.compile(r"^\*\*Plan\*\*:\s*(\S+)", re.MULTILINE)
 
 
 @dataclass
@@ -55,6 +56,7 @@ def _parse_latest_entry(text: str) -> dict | None:
     hashes = _HASH_FIELD_RE.findall(block)
     if len(hashes) < 3:
         return None
+    plan_match = _PLAN_FIELD_RE.search(block)
     return {
         "entry_num": int(last.group(1)),
         "kind": last.group(2),
@@ -62,15 +64,18 @@ def _parse_latest_entry(text: str) -> dict | None:
         "content_hash": hashes[0],
         "previous_hash": hashes[1],
         "chain_hash": hashes[2],
+        "plan_path": plan_match.group(1) if plan_match else None,
         "block": block,
     }
 
 
-def check(ledger_path: Path, phase_num: int) -> SealEntryResult:
+def check(ledger_path: Path, phase_num: int, repo_root: Path | None = None) -> SealEntryResult:
     """Verify the latest ledger entry is a SESSION SEAL for ``phase_num`` with
-    internally-consistent chain hash, and that post-anchor chain verification
-    passes (GH #88: tolerates a re-anchored ledger's disclosed pre-anchor
-    failures instead of tainting every entry after them)."""
+    internally-consistent chain hash, that its recorded ``content_hash`` matches
+    the bytes of the plan it cites (GAP-GOV-01: forward-only binding -- only the
+    just-sealed latest entry is recomputed), and that post-anchor chain
+    verification passes (GH #88: tolerates a re-anchored ledger's disclosed
+    pre-anchor failures instead of tainting every entry after them)."""
     try:
         text = Path(ledger_path).read_text(encoding="utf-8")
     except UnicodeDecodeError as exc:
@@ -110,6 +115,28 @@ def check(ledger_path: Path, phase_num: int) -> SealEntryResult:
             f"chain_hash inconsistent on entry #{latest['entry_num']}: "
             f"recorded {latest['chain_hash'][:8]}..., recomputed {expected[:8]}..."
         )
+
+    # GAP-GOV-01: bind content_hash to the cited plan's bytes. Recompute the plan
+    # digest and fail the seal if it does not match the recorded content_hash, so
+    # the hash can no longer be an unverified free field. Forward-only: only this
+    # latest (just-sealed) entry is recomputed; existing entries are grandfathered.
+    plan_rel = latest.get("plan_path")
+    if plan_rel:
+        root = Path(repo_root) if repo_root is not None else Path(ledger_path).parent.parent
+        plan_file = root / plan_rel
+        if not plan_file.is_file():
+            errors.append(
+                f"entry #{latest['entry_num']} cites plan {plan_rel!r} but the plan "
+                f"file is absent under {root}"
+            )
+        else:
+            recomputed = ledger_hash.content_hash(plan_file)
+            if recomputed != latest["content_hash"]:
+                errors.append(
+                    f"content_hash on entry #{latest['entry_num']} does not match its plan "
+                    f"{plan_rel}: recorded {latest['content_hash'][:8]}..., "
+                    f"recomputed {recomputed[:8]}..."
+                )
 
     if not errors:
         rc = ledger_hash.verify_post_anchor(Path(ledger_path))

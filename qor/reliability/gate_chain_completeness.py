@@ -67,13 +67,19 @@ def check(
         )
     text = ledger.read_text(encoding="utf-8")
     by_phase = _extract_seal_sessions(text, phase_min)
+    from qor.scripts import validate_gate_artifact
+
     missing: list[tuple[int, str]] = []
     for phase_num, sid in sorted(by_phase.items()):
         sess_dir = gates / sid
         for required in REQUIRED_PHASES:
             artifact = sess_dir / f"{required}.json"
-            if not artifact.is_file():
-                missing.append((phase_num, f"{sid}/{required}.json"))
+            # GAP-GOV-14: existence alone is not enough -- an empty / malformed /
+            # schema-invalid gate file must not satisfy completeness. validate_one
+            # reports not-found, invalid-JSON, and schema violations alike.
+            errs = validate_gate_artifact.validate_one(required, artifact)
+            if errs:
+                missing.append((phase_num, f"{sid}/{required}.json: {errs[0]}"))
     return CompletenessResult(
         ok=not missing,
         missing=missing,

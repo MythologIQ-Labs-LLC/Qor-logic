@@ -1,0 +1,26 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-06-09T0000-sprinta150",
+  "ts": "2026-06-10T01:24:53Z",
+  "verdict": "PASS",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "exists": [
+      "qor/reliability/seal_entry_check.py",
+      "qor/scripts/gate_chain.py",
+      "qor/reliability/gate_chain_completeness.py"
+    ]
+  },
+  "merkle_seal": "727b0c36cf55db17bae8e03a9fd51866fd3dd9c336a8d1115ca85798284e0b9d",
+  "content_hash": "fb50cac0787fc365daea4c341c1e0c1ef1a38fa98ed8156c5ed8b983a7767b46",
+  "ledger_entry": 358,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.108.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-06-10T01:24:53Z"
+  }
+}

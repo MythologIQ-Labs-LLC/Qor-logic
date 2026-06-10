@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.108.2] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Security
+- **Phase 150 (hotfix, audit Sprint A)**: bound the ledger seal's `content_hash` to the artifacts it claims to seal. `seal_entry_check` now recomputes the SHA256 of the plan file the latest entry cites and fails the seal on mismatch (or a missing plan), so the recorded hash can no longer be an unverified free value (closes GAP-GOV-01 from the production-gap audit). Forward-only: only the just-sealed entry is recomputed; existing entries are grandfathered. Also: the `QOR_GATE_PROVENANCE_OPTIONAL` test-only bypass is now honored only under pytest, so a non-test process cannot disable the gate-artifact provenance binding by exporting the variable (GAP-GOV-04); and gate-chain completeness now validates each gate artifact's content + schema rather than mere file existence (GAP-GOV-14).
+
 ## [0.108.1] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
