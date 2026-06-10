@@ -12770,5 +12770,47 @@ Change class: hotfix. Tests: 3 new in `tests/test_seal_entry_check.py` (non-conf
 
 ---
 
+### Entry #370: GATE TRIBUNAL -- Phase 160 plan PASS (doc currency + inventory enforcement)
+
+**Timestamp**: 2026-06-10T17:30:00Z
+**Phase**: GATE (Phase 160)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase160-doc-currency-provenance.md
+**Session**: `2026-06-10T1728-deb672`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `1e49acccb905dfcba2653283bb8079a3887959b6ac4530e082f5249af3652dc2`
+**Previous Hash**: `1ad5ac8285a1583b0b9b14167929d46022a7df04736045e1199922fd4f1e05e1`
+**Chain Hash (Merkle seal)**: `24e28c9c672f5e063a35289c98d7d827f731fffedd0be78c918d5952a8fd5e9d`
+
+**Decision**: PASS (L1, solo). Documentation-currency hotfix for the Phase 158/159 work plus an inventory-enforcement test. Gap: the README doctrine inventory omits `provenance-binding` (lists 34 of 35 `doctrine-*.md` files); `badge_currency` did not catch it because it compares the badge count (35==35), never the prose table. `operations.md` also lacks the Phase 158 `provenance-attest` CI job / per-session sidecar and the Phase 159 seal-entry plan-name fallback. The new `tests/test_readme_doctrine_inventory.py` asserts bidirectional set-equality between the doctrine corpus and the README table (closing the silent-drift surface), then the README + operations.md are brought current. No runtime behavior change. Next: `/qor-implement`.
+
+---
+
+### Entry #371: SESSION SEAL -- Phase 160 documentation currency + inventory enforcement (v0.110.2)
+
+**Timestamp**: 2026-06-10T17:35:00Z
+**Phase**: SUBSTANTIATE (Phase 160; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase160-doc-currency-provenance.md
+**Session**: `2026-06-10T1728-deb672`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `e8bb06fc334e`
+
+**Scope**: Phase 160 implemented (hotfix; documentation currency). A disk-vs-doc reconciliation after the Phase 158/159 ships found the README doctrine inventory had drifted to 34 of 35 `doctrine-*.md` files -- omitting `provenance-binding` (Phase 158's GAP-GOV-05 doctrine). The `badge_currency` gate did not catch it: it compares the Doctrines BADGE number (35 == 35 file count) and never inspects the prose table, so the table can drift by any amount that keeps the count coincidentally matching. This phase (a) adds the `provenance-binding` row to the README doctrine table, (b) documents the Phase 158 `provenance-attest` CI job (keyless `verify-committed --phase-min 158` required gate + per-session `.provenance` sidecars + CI-secret `attest-latest`) and the Phase 159 seal-entry plan-name fallback in `docs/operations.md`, and (c) adds `tests/test_readme_doctrine_inventory.py` pinning the README doctrine table to the on-disk corpus bidirectionally (every doctrine file is linked; no phantom rows) -- closing the silent-drift surface `badge_currency` leaves open. No runtime behavior change.
+
+Change class: hotfix. Tests: 2 new in `tests/test_readme_doctrine_inventory.py` (README lists every doctrine file -- was red on `provenance-binding`; no phantom entries), green twice; full suite 2480 passed. README badges Tests 2478 -> 2480; Ledger 369 -> 371. SYSTEM_STATE header advanced to Phase 160. Audit PASS (L1 solo). doc_tier standard; no new dependency, no new term. Substantiate gates: secret-scan clean, merge-velocity healthy, data-API SKIP, doc-integrity PASS, governance-index clean, badge-currency OK, seal-hash-integrity PASS, seal-entry-check PASS, gate-chain-completeness PASS, provenance verify-committed PASS (3 sessions). Context: PyPI was backfilled this day to a continuous 0.109.0->0.109.5 + 0.110.0->0.110.2 release line.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge + tag + publish HELD for operator approval at handoff.
+
+**Content Hash**: `114417dfeeb8baecab04b16d5fb59c87d0405d26a290533214ccc715d14c5f15`
+**Previous Hash**: `24e28c9c672f5e063a35289c98d7d827f731fffedd0be78c918d5952a8fd5e9d`
+**Chain Hash (Merkle seal)**: `2ab9b1c7ef4577e5530d67685d4b56c086b3d9b324ce134ec92dad07411a050d`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 159; v0.110.1; GH #223 -- seal-entry plan-name fallback; stacked on Phase 158/Entry #367; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
+*Session: SEALED* (Phase 160; v0.110.2; documentation currency for GAP-GOV-05 + inventory-enforcement test; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)

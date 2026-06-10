@@ -1,9 +1,9 @@
-# AUDIT REPORT -- Phase 159 / GH #223
+# AUDIT REPORT -- Phase 160 (doc currency + inventory enforcement)
 
 **Verdict**: PASS
-**Risk Grade**: L2
-**Target**: docs/plan-qor-phase159-seal-entry-plan-name-fallback.md
-**Session**: `2026-06-10T1615-774e45`
+**Risk Grade**: L1
+**Target**: docs/plan-qor-phase160-doc-currency-provenance.md
+**Session**: `2026-06-10T1728-deb672`
 **Mode**: solo (option_b_required=false)
 
 ## Pass Results
@@ -11,22 +11,19 @@
 | Pass | Result | Notes |
 |---|---|---|
 | Prompt Injection | PASS | canary scan exit 0 |
-| Security (L3) | PASS | no auth/secret/bypass. The change turns a cosmetic hard-fail into a WARN+fallback; the fallback (`check_latest`) STILL runs the full consistency check incl. the GOV-01 content_hash<->cited-plan binding, so the seal-integrity guarantee is preserved (not weakened) |
-| OWASP Top 10 | PASS | A03: argv-only, no shell. A04 (insecure design / fail-open): NOT fail-open -- the fallback re-derives the phase from the entry and re-verifies; it does not skip the check |
-| Section 4 Razor | PASS | `_main` adds ~4 lines; well under 40 |
-| Test Functionality | PASS | all 3 tests invoke `_main` and assert rc + stderr; the "still-fails-broken-entry" test proves the fallback is not a blanket bypass |
-| Dependency Audit | PASS | no new deps |
-| Macro Architecture / Orphan | PASS | edit-only; no new files, no orphans |
-| Infrastructure Alignment | PASS | grep-verified `derive_phase_metadata` (governance_helpers:47) + `check_latest` (seal_entry_check:197) + the hard-fail site (seal_entry_check:230-233) |
+| Security (L3) | PASS | doc + test only; no auth/secret/logic |
+| OWASP / Ghost UI / Razor | PASS / N/A | no runtime code, no UI |
+| Test Functionality | PASS | both tests parse the README + glob the doctrine corpus and assert set equality / no-phantom; they invoke real logic and assert output, not presence |
+| Dependency / Orphan / Macro | PASS | no new deps; 1 new test file reached by pytest; no orphans |
+| Infrastructure Alignment | PASS | grep-verified: `provenance-binding` absent from README table, present on disk; `badge_currency` checks the count not the table; operations.md describes seal_entry_check (Step 7.7) but not provenance-attest |
 | prose_test_lint (ENFORCED) | PASS | exit 0 |
 
 ## Decision
 
-PASS (L2, solo). The relaxation is sound: the plan-filename pattern only ever
-supplied the phase NUMBER for the consistency check; routing a non-conforming
-name through the existing `check_latest` path re-derives that number from the
-ledger entry and runs the identical (GOV-01-bound) verification. A real
-inconsistency still FAILs. Closes #223. Next: `/qor-implement`.
+PASS (L1, solo). Pure documentation-currency hotfix for the Phase 158/159 work,
+plus an enforcement test that pins the README doctrine inventory to the on-disk
+doctrine corpus (closing the silent-drift gap `badge_currency` leaves). No
+runtime behavior changes. Next: `/qor-implement`.
 
 ## Process Pattern Advisory
 
