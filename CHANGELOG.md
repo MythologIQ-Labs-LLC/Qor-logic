@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.108.3] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Removed
+- **Phase 151 (hotfix, audit Sprint A)**: deleted the dead placeholder session-seal hasher (`qor/scripts/calculate-session-seal.py`) -- a non-importable script with a literal `previous_hash = "PREVIOUS_LEDGER_HASH"` placeholder that misrepresented how seals are computed -- and re-pointed the `/qor-substantiate` skill at the real seal helpers (`ledger_hash.content_hash`/`chain_hash`, bound to the plan by the Phase-150 `seal_entry_check`). A corpus guard test now blocks re-introduction of any placeholder hasher (GAP-GOV-02).
+
 ## [0.108.2] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
