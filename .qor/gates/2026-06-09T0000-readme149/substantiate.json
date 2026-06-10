@@ -1,0 +1,24 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-06-09T0000-readme149",
+  "ts": "2026-06-10T00:45:00Z",
+  "verdict": "PASS",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "exists": [
+      "README.md"
+    ]
+  },
+  "merkle_seal": "e6b1b7a6aecb4d9437583d695d48fc3ec46bda0a201d80a0db4d5507af652baf",
+  "content_hash": "4ad784e0e21e41a47d30cd2af7cefe18e0bbf2284346dd2ae350f1f0ae1aa902",
+  "ledger_entry": 357,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.108.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-06-10T00:45:00Z"
+  }
+}

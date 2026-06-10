@@ -12418,3 +12418,31 @@ Change class: feature. Tests: 9 new (matrix wiring x2, enforce disclosed-skip/st
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 148; v0.108.0; audit Sprint B conveyance -- compliance enforce no longer vacuous + py.typed; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #357: SESSION SEAL -- Phase 149 README currency (v0.108.1)
+
+**Timestamp**: 2026-06-10T00:42:38Z
+**Phase**: SUBSTANTIATE (Phase 149; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase149-readme-currency.md
+**Session**: `2026-06-09T0000-readme149`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `a07652620538`
+
+**Scope**: Phase 149 implemented (hotfix; doc-only). A `/qor-document` thorough review of the two Qor-authored READMEs found `qor/reliability/README.md` fully current and three operator-approved `README.md` edits: (1) the host-layout table pointed `kilo-code` installs at a non-existent `./.kilo-code/` -- corrected to `./.kilo/`, grep-verified against `qor/hosts.py` (`resolve('kilo-code').base.name == '.kilo'`); (2) the CLI Reference now links `qor/references/downstream-enforcement-sdk.md` and notes the Phase-148 `compliance enforce` verdict semantics (enforced/failed/no_op + per-control status + disclosed-skip), the most consequential recently-changed surface previously undocumented in the README; (3) a `docs/FEATURE_INDEX.md` row was added to the documentation index. README verified ASCII-clean (0 non-ASCII) and both new links resolve on disk.
+
+Change class: hotfix; doc-only (no code, no new dependency, no behavior change; D4.d waiver -- no runtime unit, evidence is grep-verification + link resolution + ASCII check). Full suite green (no test count change). README badges Ledger 356 -> 357 (Tests unchanged at 2410). **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. Audit PASS (L1 solo; option_b_required=false). doc_tier minimal. Substantiate gates: secret-scan clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS, gate-chain-completeness PASS.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `4ad784e0e21e41a47d30cd2af7cefe18e0bbf2284346dd2ae350f1f0ae1aa902`
+**Previous Hash**: `f5f95df01a2bb287ba6e10616feea1448b81d3f1fe666174102080ccaa1516d2`
+**Chain Hash (Merkle seal)**: `e6b1b7a6aecb4d9437583d695d48fc3ec46bda0a201d80a0db4d5507af652baf`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 149; v0.108.1; README currency -- kilo-code folder + enforce semantics + FEATURE_INDEX row; Review Boundary -- commit/push/PR/merge HELD for operator)

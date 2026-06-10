@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
   <img src="https://img.shields.io/badge/Doctrines-34-blue" alt="Doctrines: 34">
-  <img src="https://img.shields.io/badge/Ledger-356%20entries%20sealed-green" alt="Ledger: 356 entries sealed">
+  <img src="https://img.shields.io/badge/Ledger-357%20entries%20sealed-green" alt="Ledger: 357 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -96,7 +96,7 @@ Supported host layouts:
 | Host | Default folder (repo scope) | File format |
 |------|-----------------------------|-------------|
 | `claude` | `./.claude/skills/`, `./.claude/agents/` | Markdown |
-| `kilo-code` | `./.kilo-code/skills/`, `./.kilo-code/agents/` | Markdown |
+| `kilo-code` | `./.kilo/skills/`, `./.kilo/agents/` | Markdown |
 | `codex` | `./.codex/skills/`, `./.codex/agents/` | Markdown |
 | `gemini` | `./.gemini/commands/` | TOML |
 
@@ -317,6 +317,9 @@ qor-logic policy check <request.json>
 # Compliance + downstream enforcement SDK
 qor-logic compliance <report|ai-provenance|sprint-progress> [...]
 qor-logic compliance enforce --engagement <pre-commit|pre-push|pre-tool-write|ci|seal> [--repo-root <path>]
+# enforce reports an explicit verdict (enforced/failed/no_op) + per-control status
+# (pass/fail/skip/disclosed); ci/seal run real controls, never a vacuous pass. Runner
+# semantics + disclosed-skip: see qor/references/downstream-enforcement-sdk.md
 
 # Release + reconciliation + module dispatch
 qor-logic release [...]
@@ -358,6 +361,7 @@ python qor/scripts/check_variant_drift.py                  # SSoT vs dist consis
 | [`docs/META_LEDGER.md`](docs/META_LEDGER.md) | SHA256-chained governance log |
 | [`docs/SHADOW_GENOME.md`](docs/SHADOW_GENOME.md) | Narrative failure-pattern catalog |
 | [`docs/SYSTEM_STATE.md`](docs/SYSTEM_STATE.md) | Current repo state snapshot (updated per seal) |
+| [`docs/FEATURE_INDEX.md`](docs/FEATURE_INDEX.md) | Verified feature inventory: every user-touchable CLI command mapped to a source-of-truth `file:line`, a doc citation, and a passing test |
 | [`docs/phase31-drift-triage-report.md`](docs/phase31-drift-triage-report.md) | Live drift triage artifact (Check Surface D/E) |
 
 ### Gates + routing

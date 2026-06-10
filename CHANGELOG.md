@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.108.1] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 149 (hotfix, docs)**: corrected the PyPI-facing README host-layout table, which pointed `kilo-code` installs at a non-existent `./.kilo-code/` directory; the `kilo-code` host resolves to `./.kilo/` (per `qor/hosts.py`). Also surfaced the Phase-148 `compliance enforce` verdict/status semantics in the CLI Reference with a link to `qor/references/downstream-enforcement-sdk.md`, and added a `docs/FEATURE_INDEX.md` row to the documentation index. Found by a `/qor-document` thorough README review.
+
 ## [0.108.0] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
