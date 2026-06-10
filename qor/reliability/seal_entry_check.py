@@ -194,21 +194,48 @@ def check_previous_hash_uniqueness(ledger_path: Path, min_entry_num: int = 207) 
     return SealEntryResult(ok=not errors, errors=errors)
 
 
+def check_latest(ledger_path: Path, repo_root: Path | None = None) -> SealEntryResult:
+    """GAP-GOV-03: re-verify the latest SESSION SEAL entry without an external
+    plan argument -- derive the phase from the entry itself, then run ``check``
+    (which recomputes content_hash from the entry's cited plan, the GOV-01
+    binding). Used by CI to re-verify the COMMITTED seal's binding (the gates
+    otherwise run only on the pre-commit working tree)."""
+    try:
+        text = Path(ledger_path).read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        return SealEntryResult(ok=False, errors=[f"ledger is not valid UTF-8: {exc}"])
+    latest = _parse_latest_entry(text)
+    if latest is None:
+        return SealEntryResult(ok=False, errors=[f"no parseable latest entry in {ledger_path}"])
+    return check(ledger_path, latest["phase_num"], repo_root=repo_root)
+
+
 def _main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Verify SESSION SEAL ledger entry")
     parser.add_argument("--ledger", required=True, type=Path)
-    parser.add_argument("--plan", required=True, type=Path)
+    parser.add_argument("--plan", type=Path, default=None)
+    parser.add_argument(
+        "--auto", action="store_true",
+        help="derive phase + plan from the latest entry (GAP-GOV-03 committed-seal re-verify)",
+    )
     args = parser.parse_args(argv)
 
-    try:
-        phase_num, _slug = derive_phase_metadata(args.plan)
-    except (ValueError, FileNotFoundError) as e:
-        print(f"plan path resolution failed: {e}", file=sys.stderr)
-        return 1
+    if args.auto:
+        result = check_latest(args.ledger)
+        label: object = "latest"
+    else:
+        if args.plan is None:
+            parser.error("--plan is required unless --auto is given")
+        try:
+            phase_num, _slug = derive_phase_metadata(args.plan)
+        except (ValueError, FileNotFoundError) as e:
+            print(f"plan path resolution failed: {e}", file=sys.stderr)
+            return 1
+        result = check(ledger_path=args.ledger, phase_num=phase_num)
+        label = phase_num
 
-    result = check(ledger_path=args.ledger, phase_num=phase_num)
     if result.ok:
-        print(f"OK seal entry verified for phase {phase_num}")
+        print(f"OK seal entry verified for phase {label}")
         return 0
     for err in result.errors:
         print(f"FAIL: {err}", file=sys.stderr)

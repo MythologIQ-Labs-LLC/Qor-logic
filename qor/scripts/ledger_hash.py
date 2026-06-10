@@ -23,11 +23,17 @@ from pathlib import Path
 
 
 def content_hash(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return h.hexdigest()
+    """SHA256 of the file's bytes with line endings normalized to LF.
+
+    GAP-GOV-03 follow-on: the content_hash<->plan binding must be invariant to
+    line-ending conversion. Git's autocrlf rewrites a committed/checked-out file
+    to CRLF, so hashing raw bytes makes the seal-time digest (computed on the LF
+    working copy) disagree with the recompute on the committed file. Normalizing
+    CRLF -> LF before hashing keeps the digest stable across that conversion; it
+    is a no-op for already-LF files, so existing recorded hashes are unchanged.
+    """
+    data = Path(path).read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def chain_hash(content: str, prev: str) -> str:
