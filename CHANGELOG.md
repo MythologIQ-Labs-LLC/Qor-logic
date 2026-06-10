@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.110.1] - 2026-06-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 159 (hotfix; closes GH #223)**: `seal_entry_check` (substantiate Step 7.7, `|| ABORT`) no longer hard-fails on a plan filename that does not match the qor-internal `plan-qor-phase<N>-<slug>.md` pattern. Downstream workspaces that name plans `plan-<slug>.md` (e.g. FailSafe) were blocked from sealing a cryptographically valid ledger entry. The filename only ever supplied the phase number for the consistency check, so a non-conforming `--plan` now falls back to the ledger-derived phase (the existing `--auto` path), emitting a WARN instead of `rc=1`. The fallback still runs the identical GOV-01 `content_hash`<->cited-plan binding, so a real inconsistency still fails -- it is not a bypass.
+
 ## [0.110.0] - 2026-06-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

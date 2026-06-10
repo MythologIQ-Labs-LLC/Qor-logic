@@ -229,10 +229,25 @@ def _main(argv: list[str] | None = None) -> int:
         try:
             phase_num, _slug = derive_phase_metadata(args.plan)
         except (ValueError, FileNotFoundError) as e:
-            print(f"plan path resolution failed: {e}", file=sys.stderr)
-            return 1
-        result = check(ledger_path=args.ledger, phase_num=phase_num)
-        label = phase_num
+            # GH #223: the strict `plan-qor-phase<N>-<slug>.md` filename is a
+            # qor-internal convention; downstream workspaces name plans
+            # `plan-<slug>.md`. The filename only ever supplied the phase NUMBER
+            # for the consistency check, so a non-conforming name must NOT hard-
+            # block the seal (this gate is `|| ABORT` at substantiate Step 7.7).
+            # Fall back to the ledger-derived phase (the `--auto` path), which
+            # re-derives the phase from the latest entry and still runs the
+            # identical GOV-01 content_hash<->cited-plan binding -- a WARN, not
+            # rc=1. A real inconsistency still FAILs.
+            print(
+                f"WARN: plan filename not phase-tagged ({e}); deriving phase from "
+                f"the latest ledger entry instead.",
+                file=sys.stderr,
+            )
+            result = check_latest(args.ledger)
+            label = "latest (plan-name fallback)"
+        else:
+            result = check(ledger_path=args.ledger, phase_num=phase_num)
+            label = phase_num
 
     if result.ok:
         print(f"OK seal entry verified for phase {label}")

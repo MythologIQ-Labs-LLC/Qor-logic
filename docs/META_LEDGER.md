@@ -12728,5 +12728,47 @@ Change class: feature. Tests: 23 new in `tests/test_gate_provenance.py` (sign/ve
 
 ---
 
+### Entry #368: GATE TRIBUNAL -- Phase 159 plan PASS (GH #223 seal-entry plan-name fallback)
+
+**Timestamp**: 2026-06-10T16:20:00Z
+**Phase**: GATE (Phase 159)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase159-seal-entry-plan-name-fallback.md
+**Session**: `2026-06-10T1615-774e45`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `1c93ce7fb0b1b574338a084759c56547eac35cb9442ab8cf97fb4bfda05dfd6d`
+**Previous Hash**: `7890f838bc8cfdc048c9731ded0ea71eb7b0d5db4f11336b07818794a9dcd48c`
+**Chain Hash (Merkle seal)**: `133dbf5fc2f867d42ecf95f1da65a6a4bbb1573ed9b3ebceeb821f7ddb7f0668`
+
+**Decision**: PASS (L2, solo; option_b_required=false). Fixes GH #223: `seal_entry_check._main` hard-fails (rc=1, `|| ABORT` at substantiate Step 7.7) on any plan filename not matching the qor-internal `plan-qor-phase<N>-<slug>.md` pattern -- blocking `/qor-substantiate` for downstream workspaces (e.g. FailSafe's `plan-<slug>.md`) despite a cryptographically valid seal. The plan-filename pattern only ever supplied the phase NUMBER for the consistency check; the fix routes a non-conforming `--plan` through the existing `check_latest` path (Phase 156, the `--auto` re-verify), which re-derives the phase from the latest ledger entry and runs the identical GOV-01 content_hash<->cited-plan binding, emitting a WARN instead of rc=1. Security review confirmed this is NOT a fail-open relaxation: a real inconsistency still FAILs (proven by a dedicated test). Infrastructure Alignment grep-verified `derive_phase_metadata` (governance_helpers:47), `check_latest` (seal_entry_check:197), and the hard-fail site (seal_entry_check:230-233). 3 behavioral tests; hotfix; no new deps. Next: `/qor-implement`.
+
+---
+
+### Entry #369: SESSION SEAL -- Phase 159 seal-entry plan-name fallback (v0.110.1)
+
+**Timestamp**: 2026-06-10T16:25:00Z
+**Phase**: SUBSTANTIATE (Phase 159; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase159-seal-entry-plan-name-fallback.md
+**Session**: `2026-06-10T1615-774e45`
+**SSDF Practices**: PO.1.3, PS.2.1, PW.5.1, RV.2.1
+**Entry ID**: `e962bcb39dec`
+
+**Scope**: Phase 159 implemented (hotfix; closes GH #223). `seal_entry_check._main` (substantiate Step 7.7, `|| ABORT`) hard-failed `rc=1` for any `--plan` whose filename did not match the qor-internal `plan-qor-phase<N>-<slug>.md` pattern, blocking `/qor-substantiate` for downstream workspaces (e.g. FailSafe's `plan-<slug>.md`) despite a cryptographically valid ledger entry (content/chain/previous hashes all recompute; uniqueness + governance-health clean). The plan-filename pattern only ever supplied the phase NUMBER for the consistency check, so the fix routes a non-conforming name through the existing `check_latest` path (the Phase 156 `--auto` re-verify): it re-derives the phase from the latest ledger entry and runs the identical GOV-01 `content_hash`<->cited-plan binding, printing a WARN instead of `rc=1`. Security-reviewed as NOT a fail-open relaxation -- a test proves a non-conforming name with a non-SEAL latest entry still FAILs, and a conforming name still derives its phase from the filename (unchanged). `governance_helpers.derive_phase_metadata` is untouched (other callers keep the strict contract); only the seal-entry CLI gains the fallback.
+
+Change class: hotfix. Tests: 3 new in `tests/test_seal_entry_check.py` (non-conforming name falls back + PASS with WARN; non-conforming name still FAILs a non-SEAL latest entry; conforming name still uses the filename phase), green twice; full suite 2478 passed. README badges Tests 2475 -> 2478; Ledger 367 -> 369. SYSTEM_STATE header advanced to Phase 159. Audit PASS (L2 solo; option_b_required=false). doc_tier minimal; no new dependency. Substantiate gates: secret-scan clean, merge-velocity healthy, data-API SKIP, doc-integrity PASS, governance-index clean, badge-currency OK, seal-hash-integrity PASS, seal-entry-check PASS, gate-chain-completeness PASS, provenance verify-committed PASS (2 sessions). Stacked on the Phase 158 seal (Entry #367); both await operator merge in order (158 then 159).
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge + tag + publish HELD for operator approval at handoff.
+
+**Content Hash**: `194f2eb46fd7703992ef952373f37ef78aba9317bf9a129030f978610dd84563`
+**Previous Hash**: `133dbf5fc2f867d42ecf95f1da65a6a4bbb1573ed9b3ebceeb821f7ddb7f0668`
+**Chain Hash (Merkle seal)**: `1ad5ac8285a1583b0b9b14167929d46022a7df04736045e1199922fd4f1e05e1`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 158; v0.110.0; GAP-GOV-05 -- non-forgeable gate-artifact provenance; closes Sprint A GH #210; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
+*Session: SEALED* (Phase 159; v0.110.1; GH #223 -- seal-entry plan-name fallback; stacked on Phase 158/Entry #367; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)

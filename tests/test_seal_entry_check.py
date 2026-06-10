@@ -388,3 +388,45 @@ def test_cli_rejects_path_with_shell_metacharacters_safely(tmp_path):
     assert result.returncode in (0, 1)
     if result.returncode == 1:
         assert result.stderr.strip() != ""
+
+
+# --- GH #223: non-conforming plan filename falls back to ledger-derived phase ---
+
+def test_main_nonconforming_plan_name_falls_back_and_passes(tmp_path, capsys):
+    """A valid SESSION SEAL whose --plan uses a downstream `plan-<slug>.md` name
+    must PASS (rc 0) with a WARN, not hard-fail on the filename pattern."""
+    entries, _ = _make_3_entry_chain(phase_num=47)
+    ledger = _write_ledger(tmp_path, entries)
+    rc = seal_entry_check._main(
+        ["--ledger", str(ledger), "--plan", "plan-monitor-theme-inheritance.md"]
+    )
+    assert rc == 0
+    err = capsys.readouterr().err
+    assert "WARN" in err and "plan filename" in err
+
+
+def test_main_nonconforming_plan_name_still_fails_broken_entry(tmp_path):
+    """The fallback is not a blanket bypass: a non-conforming plan name with a
+    latest entry that is NOT a SESSION SEAL still FAILs (rc 1)."""
+    prev = _zhash(0)
+    entries = [
+        _entry(100, "GATE TRIBUNAL", 47, _zhash(1), prev),
+        _entry(101, "IMPLEMENTATION", 47, _zhash(2), chain_hash(_zhash(1), prev)),
+    ]
+    ledger = _write_ledger(tmp_path, entries)
+    rc = seal_entry_check._main(
+        ["--ledger", str(ledger), "--plan", "plan-no-phase.md"]
+    )
+    assert rc == 1
+
+
+def test_main_conforming_plan_name_uses_filename_phase(tmp_path):
+    """A conforming plan name still derives the phase from the FILENAME: a
+    filename phase (158) that disagrees with the latest entry's phase (47)
+    yields a phase-mismatch FAIL, proving the conforming path is unchanged."""
+    entries, _ = _make_3_entry_chain(phase_num=47)
+    ledger = _write_ledger(tmp_path, entries)
+    rc = seal_entry_check._main(
+        ["--ledger", str(ledger), "--plan", "plan-qor-phase158-x.md"]
+    )
+    assert rc == 1
