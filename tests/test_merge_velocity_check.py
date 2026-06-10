@@ -7,6 +7,7 @@ presence.
 """
 from __future__ import annotations
 
+import hashlib
 import re
 import subprocess
 import sys
@@ -44,6 +45,17 @@ def _make_repo(tmp_path: Path) -> Path:
     return repo
 
 
+def _feat_suffix(subject: str) -> str:
+    """Deterministic, collision-resistant name suffix for a merge subject.
+
+    A pure function of ``subject`` (sha1, not the PYTHONHASHSEED-randomized
+    builtin ``hash()``), so distinct subjects never collide into the same
+    ``git checkout -b feat-<n>`` branch name across processes -- closing the
+    exit-128 CI flake that mod-100000-truncated ``hash()`` produced.
+    """
+    return hashlib.sha1(subject.encode("utf-8")).hexdigest()[:8]
+
+
 def _make_merge_commit(
     repo: Path,
     subject: str,
@@ -54,8 +66,9 @@ def _make_merge_commit(
     (so the merge generates a merge commit that `--merges` will match)."""
     # Sanitize: filenames cannot contain ':' on Windows
     safe = re.sub(r"[^A-Za-z0-9_]", "_", subject)
-    files = files or {f"feature_{safe}_{abs(hash(subject)) % 100000}.txt": subject}
-    branch = f"feat-{abs(hash(subject)) % 100000}"
+    suffix = _feat_suffix(subject)
+    files = files or {f"feature_{safe}_{suffix}.txt": subject}
+    branch = f"feat-{suffix}"
     _run(["git", "checkout", "-b", branch], cwd=repo)
     for path, content in files.items():
         full = repo / path
@@ -266,3 +279,27 @@ def test_assess_velocity_on_qor_logic_main():
     assert a.prs_merged_in_window > 0, (
         f"canonical repo must have at least one merge in 30-day window; got {a.prs_merged_in_window}"
     )
+
+
+# --- Phase 161 (GH CI flake): deterministic, seed-independent feat naming ---
+
+def test_feat_suffix_is_deterministic_and_seed_independent():
+    """`_feat_suffix` must be a pure function of the subject -- pinned to sha1, so
+    it does NOT use the PYTHONHASHSEED-randomized builtin hash()."""
+    import hashlib
+    assert _feat_suffix("feature 3") == hashlib.sha1(b"feature 3").hexdigest()[:8]
+    assert _feat_suffix("feature 3") == _feat_suffix("feature 3")
+
+
+def test_feat_suffix_unique_across_the_exercised_subject_range():
+    """Distinct subjects the suite actually uses must yield distinct suffixes, so
+    no within-repo `git checkout -b feat-<n>` collision (the exit-128 flake) can
+    occur regardless of process seed."""
+    subjects = (
+        [f"feature {i}" for i in range(301)]
+        + [f"fix: {i}" for i in range(301)]
+        + [f"recent {i}" for i in range(301)]
+        + [f"old {i}" for i in range(301)]
+    )
+    suffixes = [_feat_suffix(s) for s in subjects]
+    assert len(set(suffixes)) == len(suffixes)

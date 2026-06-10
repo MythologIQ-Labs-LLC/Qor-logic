@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.110.3] - 2026-06-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 161 (hotfix; CI flake)**: made `tests/test_merge_velocity_check.py` deterministic. `_make_merge_commit` derived its feature-branch and filename from `abs(hash(subject)) % 100000`, where Python's `hash(str)` is `PYTHONHASHSEED`-randomized and the mod-100000 truncation collides distinct subjects -- so on some CI matrix cells the second `git checkout -b feat-<n>` hit an existing branch and exited 128 (an intermittent failure that flaked the ubuntu-3.13 cell during the Phase 158 PR). Replaced both sites with a pure `_feat_suffix(subject) = hashlib.sha1(subject).hexdigest()[:8]` -- deterministic across processes and collision-resistant for distinct subjects. Verified green under `PYTHONHASHSEED=0` and `=12345`. Test-only; no runtime change.
+
 ## [0.110.2] - 2026-06-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

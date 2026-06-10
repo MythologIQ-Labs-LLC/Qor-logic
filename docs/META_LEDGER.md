@@ -12812,5 +12812,47 @@ Change class: hotfix. Tests: 2 new in `tests/test_readme_doctrine_inventory.py` 
 
 ---
 
+### Entry #372: GATE TRIBUNAL -- Phase 161 plan PASS (merge-velocity test determinism)
+
+**Timestamp**: 2026-06-10T17:58:00Z
+**Phase**: GATE (Phase 161)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase161-merge-velocity-test-determinism.md
+**Session**: `2026-06-10T1755-aea106`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `94a2ab29181b45ca45e05958596f277a979765a479d66fc1dcfe6b964cb8025c`
+**Previous Hash**: `2ab9b1c7ef4577e5530d67685d4b56c086b3d9b324ce134ec92dad07411a050d`
+**Chain Hash (Merkle seal)**: `9f24d7899c9594cbf3c525733bfbaad7f8b5d0e37d8e54d5954a3e47754a2f8b`
+
+**Decision**: PASS (L1, solo). Fixes the CI flake surfaced during the Phase 158 PR: `tests/test_merge_velocity_check.py::_make_merge_commit` derives the branch + filename from `abs(hash(subject)) % 100000`, where Python's `hash(str)` is `PYTHONHASHSEED`-randomized and the mod-100000 truncation collides distinct subjects -- so on some matrix cells the second `git checkout -b feat-<n>` hit an existing branch and exited 128 (flaked `test_recommended_action_maps_from_grade` + `test_main_cli_exits_one_on_exceeded` on ubuntu-3.13 only). The fix introduces a pure `_feat_suffix(subject) = hashlib.sha1(subject).hexdigest()[:8]` used for both names: deterministic across processes, collision-resistant for distinct subjects. Test-only; closes a test-discipline-doctrine violation (no hidden random coupling). 2 behavioral tests (determinism pinned to sha1; uniqueness over the exercised subject range). Next: `/qor-implement`.
+
+---
+
+### Entry #373: SESSION SEAL -- Phase 161 deterministic merge-velocity test naming (v0.110.3)
+
+**Timestamp**: 2026-06-10T18:05:00Z
+**Phase**: SUBSTANTIATE (Phase 161; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase161-merge-velocity-test-determinism.md
+**Session**: `2026-06-10T1755-aea106`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `990ccb63aa39`
+
+**Scope**: Phase 161 implemented (hotfix; CI flake). `tests/test_merge_velocity_check.py::_make_merge_commit` derived its feature-branch and filename from `abs(hash(subject)) % 100000`. Python's `hash(str)` is `PYTHONHASHSEED`-randomized and the mod-100000 truncation collides distinct subjects, so the second `git checkout -b feat-<n>` could hit an already-created branch and exit 128 -- an intermittent failure that flaked `test_recommended_action_maps_from_grade` + `test_main_cli_exits_one_on_exceeded` on the ubuntu-3.13 matrix cell during the Phase 158 PR (the other five cells passed; worked around twice this session by re-running CI). The fix introduces a pure `_feat_suffix(subject) = hashlib.sha1(subject.encode("utf-8")).hexdigest()[:8]` used for both names -- deterministic across processes (no builtin `hash()`), collision-resistant for distinct subjects. Callers use distinct subjects within each repo (`feature {i}` / `fix: {i}` / ...), so distinct suffixes guarantee no within-repo branch collision. Test-only; no runtime behavior change; closes a test-discipline-doctrine violation (no hidden random coupling).
+
+Change class: hotfix. Tests: 2 new in `tests/test_merge_velocity_check.py` (`_feat_suffix` determinism pinned to sha1 / seed-independence; uniqueness across the exercised subject range), green twice; the file's 14 tests verified green under `PYTHONHASHSEED=0` and `=12345` (seed-independence proof). Full suite 2482 passed. README badges Tests 2480 -> 2482; Ledger 371 -> 373. SYSTEM_STATE header advanced to Phase 161. Audit PASS (L1 solo). doc_tier minimal; no new dependency (stdlib hashlib). Substantiate gates: secret-scan clean, merge-velocity healthy, data-API SKIP, doc-integrity PASS, governance-index clean, badge-currency OK, seal-hash-integrity PASS, seal-entry-check PASS, gate-chain-completeness PASS, provenance verify-committed PASS (4 sessions). Run under `/qor-auto-dev-1`.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge + tag + publish HELD for operator approval at handoff.
+
+**Content Hash**: `6b10ebc8d58b39a5da4b8333406d84df34d63cbd8c0359b20633948d87e6d72d`
+**Previous Hash**: `9f24d7899c9594cbf3c525733bfbaad7f8b5d0e37d8e54d5954a3e47754a2f8b`
+**Chain Hash (Merkle seal)**: `1ec244e96894ed2dad851415c8f9c22ae36f0eddd590837f8d6937a59c4cf89f`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 160; v0.110.2; documentation currency for GAP-GOV-05 + inventory-enforcement test; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
+*Session: SEALED* (Phase 161; v0.110.3; deterministic merge-velocity test naming -- CI-flake hotfix; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
