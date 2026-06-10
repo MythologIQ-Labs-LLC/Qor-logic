@@ -34,6 +34,8 @@ def test_pyproject_declares_package_data():
         "references/",
         "agents/",
         "gates/schema/",
+        "compliance/",
+        "py.typed",
         "platform/",
         "templates/",
         "dist/variants/",

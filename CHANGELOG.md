@@ -10,6 +10,17 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.108.0] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 148 (feature, audit Sprint B)**: the downstream compliance-enforcement SDK now produces explicit verdict status and never passes vacuously. `compliance enforce --engagement ci|seal` runs real controls (`prompt-injection` for ci; `governance-index` + `gate-chain-completeness` for seal) instead of returning an empty PASS; controls that are enforced elsewhere and have no CLI runner (`ai-provenance`, `dependency-review`) are surfaced explicitly as `disclosed` with a reason. Each result carries a `status` (`pass`/`fail`/`skip`/`disclosed`) and the verdict carries `enforced`/`failed`/`no_op`. Runners may declare `requires` paths so a consumer lacking a governance artifact is reported as `skip` rather than hard-failed.
+- **Phase 148**: shipped a `py.typed` marker so the typed SDK (`qor.sdk` / `qor.compliance.enforce`) is consumable by downstream type checkers, and guarded the SDK's `compliance/*.json` package data + the `py.typed` marker against silent removal in the packaging test.
+
+### Fixed
+- **Phase 148**: two doctrine-content tests (`test_doctrine_dependency_admission`, `test_codeowners_doctrine`) now resolve their paths from `__file__` so they pass from any working directory, not only the repo root.
+
 ## [0.107.3] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -40,11 +40,13 @@
                 "properties": {
                   "module": {"type": "string", "minLength": 1},
                   "entry": {"type": "string", "minLength": 1},
-                  "args": {"type": "array", "items": {"type": "string"}}
+                  "args": {"type": "array", "items": {"type": "string"}},
+                  "requires": {"type": "array", "items": {"type": "string"}}
                 }
               }
             ]
-          }
+          },
+          "runner_unavailable_reason": {"type": "string", "minLength": 1}
         }
       }
     },

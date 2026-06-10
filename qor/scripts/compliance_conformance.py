@@ -126,11 +126,14 @@ def _verify_runner(control: Control, root: Path) -> list[str]:
     """A control engaging a runnable point (pre-commit/pre-push/pre-tool-write)
     must carry a runner whose module is importable and entry is callable, so the
     SDK can actually run it (Phase 142)."""
-    if not (set(control.engagement) & set(RUNNABLE_POINTS)):
-        return []
     runner = control.runner
-    if not runner:
-        return [f"engages a runnable point but has no runner: {sorted(control.engagement)}"]
+    requires_runner = bool(set(control.engagement) & set(RUNNABLE_POINTS))
+    if runner is None:
+        if requires_runner:
+            return [f"engages a runnable point but has no runner: {sorted(control.engagement)}"]
+        return []
+    # Phase 148: any control that DOES carry a runner (incl. the wired ci/seal
+    # controls) must be importable + callable, so a wired runner cannot rot.
     try:
         module = importlib.import_module(runner.get("module", ""))
     except Exception as exc:  # noqa: BLE001 - report any import failure

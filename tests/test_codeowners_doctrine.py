@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import pathlib
 
-_DOCTRINE = pathlib.Path("qor/references/doctrine-governance-enforcement.md")
-_CODEOWNERS = pathlib.Path(".github/CODEOWNERS")
+# Resolve from __file__ so the test runs from any cwd (GAP-TEST-10), not only repo-root.
+_REPO = pathlib.Path(__file__).resolve().parent.parent
+_DOCTRINE = _REPO / "qor" / "references" / "doctrine-governance-enforcement.md"
+_CODEOWNERS = _REPO / ".github" / "CODEOWNERS"
 
 
 def test_doctrine_documents_solo_owner_mode():
