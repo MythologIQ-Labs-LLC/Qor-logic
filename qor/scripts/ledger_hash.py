@@ -352,6 +352,7 @@ def verify(
     *,
     tolerate_known_grandfathered: bool = False,
     grandfather_cutoff: int = 207,
+    markup_required_cutoff: int = 123,
 ) -> int:
     """Verify chain integrity of META_LEDGER.md. Returns exit code.
 
@@ -399,7 +400,20 @@ def verify(
     for num, body in entries:
         resolved = _resolve_recorded(body)
         if resolved is None:
-            skipped += 1
+            # GAP-GOV-09: a modern entry (>= markup_required_cutoff) MUST carry
+            # verifiable hash markup; an unmarked one is a FAIL, not a silent
+            # skip. Entries below the cutoff are pre-convention historical
+            # entries and stay grandfathered (recorded only in the skip summary).
+            if num >= markup_required_cutoff:
+                print(
+                    f"FAIL Entry #{num}: missing canonical hash markup "
+                    f"(required at/after entry #{markup_required_cutoff})",
+                    file=sys.stderr,
+                )
+                errors += 1
+                last_failed = num
+            else:
+                skipped += 1
             continue
         content_val, previous_val, recorded = resolved
         message, to_stderr, is_error, sets_last_failed = _classify_entry(

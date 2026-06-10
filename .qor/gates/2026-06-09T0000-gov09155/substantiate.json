@@ -1,0 +1,25 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-06-09T0000-gov09155",
+  "ts": "2026-06-10T03:11:00Z",
+  "verdict": "PASS",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "exists": [
+      "qor/scripts/ledger_hash.py",
+      "tests/test_ledger_hash_markup_cutoff.py"
+    ]
+  },
+  "merkle_seal": "a3ae32f9528a495d8da5ad5b2518edcbe659fd8fc8d5167e72bb280520c94302",
+  "content_hash": "b3a5355284c5d8a258a63fd3948d1ea5f47a6f01a75a858d09462c7270fc61fb",
+  "ledger_entry": 363,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.109.3",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-06-10T03:11:00Z"
+  }
+}
