@@ -1,0 +1,25 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-06-09T0000-genome152",
+  "ts": "2026-06-10T02:09:14Z",
+  "verdict": "PASS",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "exists": [
+      "qor/scripts/shadow_genome_graph.py",
+      "qor/references/doctrine-shadow-genome-graph.md"
+    ]
+  },
+  "merkle_seal": "d64bce566cf27d080fa028598dacb9ff7c9c83aacdb9571808bfbfae0ff6e5db",
+  "content_hash": "688ec6c26d79ecaed1489d8d04a12842ad3a4ca0ac8ab863c8c3e2fef60f3835",
+  "ledger_entry": 360,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.109.0",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-06-10T02:09:14Z"
+  }
+}
