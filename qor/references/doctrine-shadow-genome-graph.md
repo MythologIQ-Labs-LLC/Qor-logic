@@ -20,6 +20,7 @@ testable. Persistence path defaults to `.qor/genome.jsonl`, overridable via
 | `state` | workcell or module state change |
 | `failure` | governance denial, audit failure, or error |
 | `governance` | policy application or rule enforcement |
+| `trust` | a CBT/KBT/IBT trust-level transition event (#213) |
 
 ### Edge types
 
@@ -39,21 +40,32 @@ returns node/edge counts + per-type distribution; `query()` filters nodes by
 type and label. These give operators and `/qor-debug` / `/qor-remediate`
 root-cause traceback over governance events.
 
-## Scope boundary (qor-logic fit assessment; #139)
+## Scope boundary (qor-logic fit assessment; #139 -> #213)
 
-The originating proposal targets a consuming product with a governance
-dashboard. For qor-logic, only the **core causal layer** above is in scope. The
-following are **DECLINED for qor-logic** — they realize their advantage in a
-consuming product/UI that this repo does not have, so building them here would
-be infrastructure without a consumer:
+The originating proposal (#139) targeted a consuming product with a governance
+dashboard, so the trust-level / federation / maturity surfaces were originally
+**declined** for qor-logic as infrastructure without a consumer. That premise
+changed at #213: FailSafe (#196, shipped) is now the consumer, so those surfaces
+are back in scope under an **emitter-API + derive** model -- qor-logic owns the
+canonical schema + recorder methods and surfaces them in `to_dict`; it derives
+failure-node maturity from its own data; trust-transitions + federation-peer
+status are fed by the consumer's adapter through the API. The
+`/api/qor/governance-dashboard` endpoint remains a consumer concern (qor-logic
+ships data, not a web UI).
 
-- Governance dashboard API (`/api/qor/governance-dashboard`).
-- CBT/KBT/IBT trust-level transitions.
-- Cross-module federation gossip / centralized graph store.
+### Producer surfaces (#213, emitter-API + derive)
 
-This is a deliberate, honest scope decision (not a deferral with intent): the
-causal-traceback shape translates to Python and is retained; the dashboard /
-trust-level / federation vision belongs to a consumer.
+| Surface | API | `to_dict` key |
+|---|---|---|
+| Trust transitions | `record_trust_transition(from_level, to_level, *, triggering_evidence, governance_node_id, at)` | `trust_transitions` |
+| Federation peers | `set_federation_peer(peer_id, *, name, state, last_sync, origin)` | `federation_peers` |
+| Failure maturity | `annotate_failure_maturity(failure_node_id, *, classified, constraint_id, detector_id, enforced_by, verified_window)` + `derive_maturity_stage(...)` | `maturity` (on failure nodes) |
+
+`TrustLevel` (CBT/KBT/IBT), `PeerState` (synced/syncing/stale/degraded/
+incompatible/unauthorized/offline), and `MaturityStage` (observed -> classified
+-> constraint_extracted -> detectable -> enforced -> verified) are closed enums.
+All three remain strictly append-only: trust transitions are `trust` nodes with
+edges; peer status and maturity are append-only ops with latest-wins derivation.
 
 ## Caveats
 

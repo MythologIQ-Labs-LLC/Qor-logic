@@ -12520,3 +12520,31 @@ GAP-GOV-09, GAP-GOV-05, GAP-GOV-03.
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 151; v0.108.3; GAP-GOV-02 -- dead placeholder hasher deleted + skill re-pointed; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #360: SESSION SEAL -- Phase 152 Shadow Genome trust/federation/maturity producers (v0.109.0)
+
+**Timestamp**: 2026-06-10T02:06:56Z
+**Phase**: SUBSTANTIATE (Phase 152; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase152-genome-trust-federation-maturity.md
+**Session**: `2026-06-09T0000-genome152`
+**SSDF Practices**: PS.2.1, PW.4.1, RV.2.1
+**Entry ID**: `f1a9137767a0`
+
+**Scope**: Phase 152 implemented (feature; closes GH #213, a downstream FailSafe blocker). The Shadow Genome graph (`qor.scripts.shadow_genome_graph`) emitted only the causal layer (checkpoint/state/failure/governance); the trust-transition, federation-peer, and learning-maturity surfaces FailSafe's dashboard renders were declined in the doctrine (#139) as "infrastructure without a consumer." That premise changed -- FailSafe (#196) is the consumer -- so under the operator-chosen **emitter-API + derive** model qor-logic now ships: `record_trust_transition(from_level, to_level, *, triggering_evidence, governance_node_id, at)` (CBT/KBT/IBT transitions as append-only `trust` nodes linked `triggered_by` from evidence + `applies_to` the governance node; direction derived from the CBT<KBT<IBT order); `set_federation_peer(peer_id, *, name, state, last_sync, origin)` (append-only, latest-wins, 7-value `PeerState`); and `annotate_failure_maturity(failure_node_id, *, classified, constraint_id, detector_id, enforced_by, verified_window)` + the pure `derive_maturity_stage` (Observed->Classified->Constraint extracted->Detectable->Enforced->Verified). `to_dict` gains `trust_transitions` + `federation_peers` and a `maturity` field on failure nodes; `nodes`/`edges` are unchanged (back-compat). `TrustLevel`/`PeerState`/`MaturityStage` are closed enums; all surfaces are strictly append-only (peer/maturity are new JSONL ops). The `doctrine-shadow-genome-graph.md` "Scope boundary" + the module docstring are updated to record the reversed scope decision (consumer now exists); the governance dashboard web API stays a consumer concern.
+
+Change class: feature. Tests: 12 new (trust direction/evidence-links/to_dict/invalid-level; peer surface/latest-wins/reload-persistence/invalid-state; maturity stage-ladder/unannotated-observed/failure-only/non-failure-rejected) + 2 existing updated for the new contract (empty-export shape, doctrine scope), green twice. Full suite 2429 passed (1 pre-seal badge-drift reconciled here). README badges Tests 2420 -> 2432; Ledger 359 -> 360. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (the emitters are library API, not a CLI feature). Audit PASS (L1 solo; option_b_required=false). doc_tier minimal. Substantiate gates: secret-scan clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS (content_hash bound to plan), gate-chain-completeness PASS.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `688ec6c26d79ecaed1489d8d04a12842ad3a4ca0ac8ab863c8c3e2fef60f3835`
+**Previous Hash**: `7e4c5b49928fc8e2e754effa1a0bb09d3b64c4a52d4bd48c959a555bf5060e35`
+**Chain Hash (Merkle seal)**: `d64bce566cf27d080fa028598dacb9ff7c9c83aacdb9571808bfbfae0ff6e5db`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 152; v0.109.0; GH #213 -- Shadow Genome trust/federation/maturity producers; Review Boundary -- commit/push/PR/merge HELD for operator)

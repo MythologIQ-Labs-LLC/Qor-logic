@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.109.0] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 152 (feature, GH #213)**: the Shadow Genome graph now emits the trust / federation / maturity data surfaces the downstream FailSafe dashboard renders. New emitter API on `qor.scripts.shadow_genome_graph`: `record_trust_transition(...)` (CBT/KBT/IBT transitions as `trust` nodes linked to their evidence + governance), `set_federation_peer(...)` (adapter-level peer status, latest-wins, with a 7-value `PeerState`), and `annotate_failure_maturity(...)` + `derive_maturity_stage(...)` (Observed -> Classified -> Constraint extracted -> Detectable -> Enforced -> Verified). `to_dict` gains `trust_transitions` + `federation_peers` and a `maturity` field on failure nodes; `nodes`/`edges` are unchanged (back-compat). All surfaces are strictly append-only. Per the operator-chosen emitter-API + derive model: qor-logic owns the schema + recorders and derives maturity, while trust/federation are fed by the consumer's adapter. The doctrine's original "declined -- no consumer" scope decision (#139) is reversed now that FailSafe (#196) is the consumer.
+
 ## [0.108.3] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

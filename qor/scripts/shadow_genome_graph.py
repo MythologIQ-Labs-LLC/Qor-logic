@@ -7,11 +7,13 @@ append-only JSONL with deterministic sequence ids. `trace_chain` walks inbound
 edges back to root(s) for operator / `/qor-debug` / `/qor-remediate` root-cause
 traceback.
 
-Scope (per `qor/references/doctrine-shadow-genome-graph.md`): this is the core
-causal layer only. The originating proposal's governance dashboard API, CBT/KBT/
-IBT trust-level transitions, and cross-module federation gossip are DECLINED for
-qor-logic — they realize their advantage in a consuming product/UI that this
-repo does not have. Strictly append-only; no retention/pruning automation in V1.
+Scope (per `qor/references/doctrine-shadow-genome-graph.md`): the core causal
+layer plus the #213 producer surfaces (trust-transitions, federation-peer
+status, failure-node maturity) under an emitter-API + derive model -- qor-logic
+owns the schema and surfaces them in `to_dict`; the consumer (FailSafe, #196)
+feeds trust/federation and qor derives maturity. The governance dashboard web
+API stays a consumer concern. Strictly append-only; no retention/pruning
+automation in V1.
 """
 from __future__ import annotations
 
@@ -32,6 +34,7 @@ class GenomeNodeType(str, Enum):
     STATE = "state"
     FAILURE = "failure"
     GOVERNANCE = "governance"
+    TRUST = "trust"  # #213: a CBT/KBT/IBT trust-level transition event
 
 
 class GenomeEdgeType(str, Enum):
@@ -39,6 +42,52 @@ class GenomeEdgeType(str, Enum):
     OCCURRED_DURING = "occurred_during"
     TRIGGERED_BY = "triggered_by"
     APPLIES_TO = "applies_to"
+
+
+# #213 producer surfaces (emitter-API + derive). Consumer = FailSafe (#196).
+class TrustLevel(str, Enum):
+    CBT = "CBT"
+    KBT = "KBT"
+    IBT = "IBT"
+
+
+_TRUST_ORDER = {TrustLevel.CBT: 0, TrustLevel.KBT: 1, TrustLevel.IBT: 2}
+
+
+class PeerState(str, Enum):
+    SYNCED = "synced"
+    SYNCING = "syncing"
+    STALE = "stale"
+    DEGRADED = "degraded"
+    INCOMPATIBLE = "incompatible"
+    UNAUTHORIZED = "unauthorized"
+    OFFLINE = "offline"
+
+
+class MaturityStage(str, Enum):
+    OBSERVED = "observed"
+    CLASSIFIED = "classified"
+    CONSTRAINT_EXTRACTED = "constraint_extracted"
+    DETECTABLE = "detectable"
+    ENFORCED = "enforced"
+    VERIFIED = "verified"
+
+
+def derive_maturity_stage(annotation: dict) -> MaturityStage:
+    """Map a failure-node maturity annotation to its highest satisfied stage.
+    Pure: highest evidence wins (verified > enforced > detectable >
+    constraint_extracted > classified > observed)."""
+    if annotation.get("verified_window"):
+        return MaturityStage.VERIFIED
+    if annotation.get("enforced_by"):
+        return MaturityStage.ENFORCED
+    if annotation.get("detector_id"):
+        return MaturityStage.DETECTABLE
+    if annotation.get("constraint_id"):
+        return MaturityStage.CONSTRAINT_EXTRACTED
+    if annotation.get("classified"):
+        return MaturityStage.CLASSIFIED
+    return MaturityStage.OBSERVED
 
 
 @dataclass
@@ -69,6 +118,8 @@ class ShadowGenomeGraph:
         self._in: dict[str, list[str]] = {}
         self._n = 0
         self._e = 0
+        self.peers: dict[str, dict] = {}      # #213: federation peer status, latest-wins
+        self.maturity: dict[str, dict] = {}   # #213: failure-node maturity annotations, latest-wins
         if self.path.exists():
             for line in self.path.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
@@ -88,6 +139,16 @@ class ShadowGenomeGraph:
             self._out.setdefault(e.source, []).append(e.id)
             self._in.setdefault(e.target, []).append(e.id)
             self._e = max(self._e, int(e.id[1:]) + 1)
+        elif op["op"] == "peer":  # #213: federation peer status (latest-wins)
+            self.peers[op["id"]] = {
+                "id": op["id"], "name": op.get("name"), "state": op["state"],
+                "last_sync": op.get("last_sync"), "origin": op.get("origin"),
+            }
+        elif op["op"] == "maturity":  # #213: failure-node maturity (latest-wins)
+            self.maturity[op["node"]] = {
+                k: op[k] for k in ("classified", "constraint_id", "detector_id",
+                                   "enforced_by", "verified_window") if k in op
+            }
 
     def _append(self, record: dict) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -108,6 +169,51 @@ class ShadowGenomeGraph:
         self._append(rec)
         self._apply(rec)
         return eid
+
+    # ----- #213 producer emitters (append-only) -----
+
+    def record_trust_transition(self, from_level, to_level, *, triggering_evidence=(),
+                                governance_node_id=None, at=None) -> str:
+        """Record a CBT/KBT/IBT trust-level transition as a `trust` node, linked
+        `triggered_by` from each evidence node and `applies_to` the governance
+        node. Returns the trust node id. Raises ValueError on an unknown level."""
+        fl, tl = TrustLevel(from_level), TrustLevel(to_level)
+        direction = "promotion" if _TRUST_ORDER[tl] > _TRUST_ORDER[fl] else "demotion"
+        evidence = list(triggering_evidence)
+        tid = self.add_node(GenomeNodeType.TRUST, f"{fl.value}->{tl.value}", {
+            "from_level": fl.value, "to_level": tl.value, "direction": direction,
+            "at": at, "triggering_evidence": evidence, "governance_node_id": governance_node_id,
+        })
+        for ev in evidence:
+            self.add_edge(ev, tid, GenomeEdgeType.TRIGGERED_BY)
+        if governance_node_id is not None:
+            self.add_edge(tid, governance_node_id, GenomeEdgeType.APPLIES_TO)
+        return tid
+
+    def set_federation_peer(self, peer_id: str, *, name, state, last_sync=None, origin=None) -> None:
+        """Append a federation peer-status record (latest-wins per id). Raises
+        ValueError on an unknown state."""
+        st = PeerState(state)
+        rec = {"op": "peer", "id": peer_id, "name": name, "state": st.value,
+               "last_sync": last_sync, "origin": origin}
+        self._append(rec)
+        self._apply(rec)
+
+    def annotate_failure_maturity(self, failure_node_id: str, *, classified=None,
+                                  constraint_id=None, detector_id=None,
+                                  enforced_by=None, verified_window=None) -> None:
+        """Append a maturity annotation for a FAILURE node (latest-wins). Raises
+        ValueError if the node is not a failure node."""
+        node = self.nodes.get(failure_node_id)
+        if node is None or node.type != GenomeNodeType.FAILURE.value:
+            raise ValueError(f"maturity annotation requires a failure node: {failure_node_id!r}")
+        fields = {"classified": classified, "constraint_id": constraint_id,
+                  "detector_id": detector_id, "enforced_by": enforced_by,
+                  "verified_window": verified_window}
+        rec = {"op": "maturity", "node": failure_node_id,
+               **{k: v for k, v in fields.items() if v is not None}}
+        self._append(rec)
+        self._apply(rec)
 
     def trace_chain(self, node_id: str, max_depth: int | None = None) -> list[list[str]]:
         """Return causal paths (root -> ... -> node_id) by walking inbound edges.
@@ -153,18 +259,29 @@ class ShadowGenomeGraph:
         return out
 
     # --- Export (Phase 134; GH #164 accepted capability) ---
+    def _node_dict(self, n: GenomeNode) -> dict:
+        d = {"id": n.id, "type": n.type, "label": n.label, "metadata": n.metadata}
+        if n.type == GenomeNodeType.FAILURE.value:  # #213: maturity on failure nodes
+            ann = self.maturity.get(n.id, {})
+            d["maturity"] = {"stage": derive_maturity_stage(ann).value, **ann}
+        return d
+
     def to_dict(self) -> dict:
-        """Serialize the full graph: {'nodes': [...], 'edges': [...]}."""
+        """Serialize the full graph. Back-compat `nodes`/`edges`, plus the #213
+        producer surfaces: `trust_transitions`, `federation_peers`, and a
+        `maturity` field on failure nodes."""
         return {
-            "nodes": [
-                {"id": n.id, "type": n.type, "label": n.label, "metadata": n.metadata}
-                for n in self.nodes.values()
-            ],
+            "nodes": [self._node_dict(n) for n in self.nodes.values()],
             "edges": [
                 {"id": e.id, "source": e.source, "target": e.target,
                  "type": e.type, "metadata": e.metadata}
                 for e in self.edges.values()
             ],
+            "trust_transitions": [
+                {"id": n.id, **n.metadata}
+                for n in self.nodes.values() if n.type == GenomeNodeType.TRUST.value
+            ],
+            "federation_peers": list(self.peers.values()),
         }
 
     def to_json(self, indent: int = 2) -> str:

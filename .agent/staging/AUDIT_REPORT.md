@@ -1,10 +1,10 @@
-# AUDIT REPORT -- Phase 151: delete the dead session-seal hasher (GAP-GOV-02)
+# AUDIT REPORT -- Phase 152: Shadow Genome trust/federation/maturity producers (GH #213)
 
 **Verdict**: PASS
 **Risk Grade**: L1
 **Mode**: solo (audit_risk_score option_b_required=false)
-**Target**: docs/plan-qor-phase151-gov02-delete-dead-hasher.md
-**Session**: 2026-06-09T0000-gov02151
+**Target**: docs/plan-qor-phase152-genome-trust-federation-maturity.md
+**Session**: 2026-06-09T0000-genome152
 
 ## Automated gate ladder
 
@@ -18,19 +18,22 @@
 
 ## Adversarial passes
 
-- **Test Functionality** -- PASS. `test_no_placeholder_hasher_in_scripts` scans the whole `qor/scripts`
-  corpus for the `PREVIOUS_LEDGER_HASH` placeholder literal (a real guard against re-introducing a
-  placeholder hasher, not a presence assertion); plus deletion + doc-currency guards. All would fail if
-  the dead file or its SKILL.md pointer returned.
-- **Macro-Architecture / Dead-code** -- PASS. The deleted file had zero import coupling (hyphenated,
-  non-importable `__main__`); the SKILL.md pointer is re-aimed at the real seal helpers
-  (`ledger_hash.content_hash` / `chain_hash`, validated by Step 6.8 hash-guard + Step 7.7
-  seal_entry_check's GAP-GOV-01 binding). The historical mention in `doctrine-governance-enforcement.md`
-  is accurate history and correctly retained.
-- **Infrastructure Alignment** -- PASS. dist variants recompiled; no variant still references the dead
-  file; check_variant_drift clean.
-- **Security / Razor / Dependency** -- PASS. Removal-only; no new surface, no new dependency.
-- **Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A.
+- **Test Functionality** -- PASS. 12 new tests invoke the emitters and assert on the returned/serialized
+  data: promotion/demotion direction, evidence+governance edges, to_dict surfaces, latest-wins peer state,
+  reload persistence, the full maturity-stage ladder, and the non-failure-node rejection. The two existing
+  tests updated for the new contract (empty-export shape, doctrine scope) remain behavioral.
+- **Append-only invariant** -- PASS. Trust transitions are immutable `trust` nodes + edges; peer status and
+  maturity are append-only ops with latest-wins derivation; no node/edge is mutated. Honors the doctrine's
+  core invariant.
+- **Back-compat** -- PASS. `to_dict` `nodes`/`edges` unchanged; the three new keys are additive; all 8
+  pre-existing genome tests still pass.
+- **Scope/Architecture** -- PASS. Emitter-API + derive (operator-decided): qor owns the schema + recorders,
+  derives failure maturity, and the consumer feeds trust/federation. Reverses the #139 "declined -- no
+  consumer" scope decision honestly (consumer = FailSafe #196), documented in the doctrine + module
+  docstring. The governance dashboard web API stays a consumer concern (no UI built here).
+- **Razor / Dependency** -- PASS. Each emitter is short; `derive_maturity_stage` is a flat ladder; stdlib
+  only; closed enums for TrustLevel / PeerState / MaturityStage.
+- **Security / Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A.
 
 ## Next action
 

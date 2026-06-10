@@ -40,7 +40,9 @@ def test_to_dot_contains_digraph_and_elements(tmp_path: Path) -> None:
 
 def test_export_empty_graph(tmp_path: Path) -> None:
     g = sgg.ShadowGenomeGraph(tmp_path / "empty.jsonl")
-    assert g.to_dict() == {"nodes": [], "edges": []}
+    assert g.to_dict() == {
+        "nodes": [], "edges": [], "trust_transitions": [], "federation_peers": [],
+    }
     assert "digraph" in g.to_dot()  # valid empty digraph, no crash
 
 
