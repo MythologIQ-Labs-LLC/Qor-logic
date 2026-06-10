@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.109.3] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Security
+- **Phase 155 (hotfix, audit Sprint A)**: `ledger_hash.verify()` no longer silently skips a modern ledger entry that lacks canonical hash markup. A skipped (no Content/Previous/Chain markup) entry numbered at/after the markup-required cutoff (123) is now a FAIL, while the 32 historical pre-convention entries (<= 122) stay grandfathered (GAP-GOV-09). The real chain still verifies clean; the floor only catches a future modern entry written without its hashes.
+
 ## [0.109.2] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

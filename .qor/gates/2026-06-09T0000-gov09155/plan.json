@@ -1,0 +1,23 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0000-gov09155",
+  "ts": "2026-06-10T03:04:11Z",
+  "plan_path": "docs/plan-qor-phase155-gov09-markup-required-cutoff.md",
+  "phases": [
+    "P1 markup-required cutoff in verify()"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ledger_hash_markup_cutoff.py tests/test_ledger_hash.py -q",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.109.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-10T03:04:11Z"
+  }
+}

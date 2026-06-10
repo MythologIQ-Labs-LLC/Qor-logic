@@ -1,0 +1,19 @@
+{
+  "phase": "audit",
+  "session_id": "2026-06-09T0000-gov09155",
+  "ts": "2026-06-10T03:04:11Z",
+  "target": "docs/plan-qor-phase155-gov09-markup-required-cutoff.md",
+  "verdict": "PASS",
+  "risk_grade": "L2",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "violations": [],
+  "findings_categories": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.109.2",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-06-10T03:04:11Z"
+  }
+}

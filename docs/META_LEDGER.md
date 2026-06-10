@@ -12604,3 +12604,31 @@ Change class: hotfix. Tests: 3 new (seed `--target` help clarifies a directory +
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 154; v0.109.2; GH #219 -- seed --target clarifying help; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #363: SESSION SEAL -- Phase 155 verify() markup-required cutoff (v0.109.3)
+
+**Timestamp**: 2026-06-10T03:09:20Z
+**Phase**: SUBSTANTIATE (Phase 155; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase155-gov09-markup-required-cutoff.md
+**Session**: `2026-06-09T0000-gov09155`
+**SSDF Practices**: PS.2.1, PW.5.1, RV.2.1
+**Entry ID**: `5ef550c859ff`
+
+**Scope**: Phase 155 implemented (hotfix; audit Sprint A, GH #210, GAP-GOV-09). `ledger_hash.verify()` previously `skipped += 1` (and still returned 0) on any entry lacking canonical Content/Previous/Chain markup, so a modern chain entry written without its hashes would pass unnoticed. Added `markup_required_cutoff: int = 123`: in the chain walk, a markup-less entry numbered `>= cutoff` now prints `FAIL Entry #N: missing canonical hash markup (required at/after entry #123)`, counts as an error, and taints downstream (consistent with the other FAIL branches); entries `< cutoff` stay grandfathered (recorded only in the "Skipped N entries with non-verifiable markup" summary). The cutoff was grounded in the real ledger: the skipped set is exactly entries #1-11 + #68-122 (GENESIS / early AUDIT / GATE TRIBUNAL / IMPLEMENTATION, pre-canonical-markup), and every entry above #122 already carries canonical markup -- so the modern convention is uniform (all entries chain-linked) and no per-entry-type logic is needed. The CLI passes the default (no new flag). Slots into the Phase-153 `_resolve_recorded`-returns-None branch.
+
+Change class: hotfix. Tests: 4 new (a #123 markup-less entry -> exit 1 with the named FAIL line; a #100 one -> skip + exit 0; the exact off-by-one boundary -- cutoff fails, cutoff-1 skips; the real-ledger-clean regression) + the 53-assertion chain-verifier net unchanged, green twice. Full suite 2440 passed (1 pre-seal badge-drift reconciled here). README badges Tests 2439 -> 2443; Ledger 362 -> 363. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. Audit PASS (L2 solo; option_b_required=false). doc_tier minimal. Substantiate gates: secret-scan clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS, gate-chain-completeness PASS. Sprint A remainder: GAP-GOV-05 (self-asserted provenance) + GAP-GOV-03 (TOCTOU).
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `b3a5355284c5d8a258a63fd3948d1ea5f47a6f01a75a858d09462c7270fc61fb`
+**Previous Hash**: `aa2905c76cb1834d950b6f6fa297941bd871d31f90d977a83ce91c273953a0cc`
+**Chain Hash (Merkle seal)**: `a3ae32f9528a495d8da5ad5b2518edcbe659fd8fc8d5167e72bb280520c94302`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 155; v0.109.3; GAP-GOV-09 -- verify() FAILs modern missing-markup entries; Review Boundary -- commit/push/PR/merge HELD for operator)
