@@ -1,0 +1,25 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-06-09T0000-cq02153",
+  "ts": "2026-06-10T02:32:25Z",
+  "verdict": "PASS",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "exists": [
+      "qor/scripts/ledger_hash.py",
+      "tests/test_ledger_hash_verify_helpers.py"
+    ]
+  },
+  "merkle_seal": "2c8c88c619400ca31032dbd65188becde6444bc0ba29797b90a0dcbb1070fb88",
+  "content_hash": "ece05a173333d446c95196b810d215b36cd7f92ba1bebb53eadfe777815ecb35",
+  "ledger_entry": 361,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.109.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-06-10T02:32:25Z"
+  }
+}

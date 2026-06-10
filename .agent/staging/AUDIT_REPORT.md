@@ -1,10 +1,10 @@
-# AUDIT REPORT -- Phase 152: Shadow Genome trust/federation/maturity producers (GH #213)
+# AUDIT REPORT -- Phase 153: decompose ledger_hash.verify() (GAP-CQ-02)
 
 **Verdict**: PASS
-**Risk Grade**: L1
+**Risk Grade**: L2 (critical chain-verifier function; behavior-preserving refactor)
 **Mode**: solo (audit_risk_score option_b_required=false)
-**Target**: docs/plan-qor-phase152-genome-trust-federation-maturity.md
-**Session**: 2026-06-09T0000-genome152
+**Target**: docs/plan-qor-phase153-cq02-decompose-verify.md
+**Session**: 2026-06-09T0000-cq02153
 
 ## Automated gate ladder
 
@@ -18,21 +18,20 @@
 
 ## Adversarial passes
 
-- **Test Functionality** -- PASS. 12 new tests invoke the emitters and assert on the returned/serialized
-  data: promotion/demotion direction, evidence+governance edges, to_dict surfaces, latest-wins peer state,
-  reload persistence, the full maturity-stage ladder, and the non-failure-node rejection. The two existing
-  tests updated for the new contract (empty-export shape, doctrine scope) remain behavioral.
-- **Append-only invariant** -- PASS. Trust transitions are immutable `trust` nodes + edges; peer status and
-  maturity are append-only ops with latest-wins derivation; no node/edge is mutated. Honors the doctrine's
-  core invariant.
-- **Back-compat** -- PASS. `to_dict` `nodes`/`edges` unchanged; the three new keys are additive; all 8
-  pre-existing genome tests still pass.
-- **Scope/Architecture** -- PASS. Emitter-API + derive (operator-decided): qor owns the schema + recorders,
-  derives failure maturity, and the consumer feeds trust/federation. Reverses the #139 "declined -- no
-  consumer" scope decision honestly (consumer = FailSafe #196), documented in the doctrine + module
-  docstring. The governance dashboard web API stays a consumer concern (no UI built here).
-- **Razor / Dependency** -- PASS. Each emitter is short; `derive_maturity_stage` is a flat ladder; stdlib
-  only; closed enums for TrustLevel / PeerState / MaturityStage.
+- **Behavior preservation (the whole point)** -- PASS. `verify()`'s output bytes (stdout/stderr lines)
+  and `return 1 if errors else 0` are unchanged: all 59 assertions across the 5 ledger-hash test files
+  (`test_ledger_hash` / `_reconciliation` / `_validation` / `placeholder_pattern_detection` /
+  `session_seal_markup_recognition`) stay green. A subtle trap was caught and preserved: `last_failed` is
+  advanced only on a genuine FAIL (placeholder/math), NOT on TAINTED -- so the extracted `_classify_entry`
+  returns a 4th `sets_last_failed` flag rather than the plan's simplified 3-tuple, keeping the
+  taint-predecessor message chain (`depends on failed predecessor #N`) identical.
+- **Test Functionality** -- PASS. The 4 new helper tests invoke `_resolve_recorded` / `_classify_entry`
+  and assert on their returned tuples (canonical-resolution, OK/FAIL, taint-no-advance, grandfathered/
+  reconciled tolerance); none presence-only.
+- **Razor** -- PASS. The ~118-line `verify()` is now a thin parse + per-entry orchestrate loop; resolution
+  and classification live in two named pure helpers, each well under the limit.
+- **Macro-Architecture / Dependency** -- PASS. Pure extraction; no new dependency; the tolerance sets
+  (grandfathered/reconciled) and the placeholder/taint/disclosed semantics are byte-for-byte preserved.
 - **Security / Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A.
 
 ## Next action
