@@ -12446,3 +12446,31 @@ Change class: hotfix; doc-only (no code, no new dependency, no behavior change; 
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 149; v0.108.1; README currency -- kilo-code folder + enforce semantics + FEATURE_INDEX row; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #358: SESSION SEAL -- Phase 150 audit Sprint A integrity binding (v0.108.2)
+
+**Timestamp**: 2026-06-10T01:23:09Z
+**Phase**: SUBSTANTIATE (Phase 150; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase150-audit-sprint-a-integrity.md
+**Session**: `2026-06-09T0000-sprinta150`
+**SSDF Practices**: PS.2.1, PW.5.1, RV.2.1
+**Entry ID**: `bf0d160354aa`
+
+**Scope**: Phase 150 implemented (hotfix; audit Sprint A enforcement core, GH #210 -- the production-gap audit headline). GAP-GOV-01: `qor.reliability.seal_entry_check.check` now parses the latest SESSION SEAL entry's `**Plan**:` path, recomputes `ledger_hash.content_hash(plan)`, and fails the seal when it does not match the entry's recorded `content_hash` (or when the cited plan file is absent) -- so the recorded hash is bound to the plan bytes and can no longer be an unverified free value. Forward-only by construction (`check` inspects only the latest, just-sealed entry; the 357 prior entries are grandfathered and `verify_post_anchor` still passes; verified non-regressive against the real chain). GAP-GOV-04: a new `gate_chain._pytest_active()` (`PYTEST_CURRENT_TEST` present) guards the `QOR_GATE_PROVENANCE_OPTIONAL` bypass -- it is honored only under pytest, so a non-test process cannot disable the provenance binding by exporting the variable. GAP-GOV-14: `gate_chain_completeness.check` now validates each required artifact via `validate_gate_artifact.validate_one` (content + schema), so an empty / malformed / schema-invalid gate file no longer satisfies completeness (verified: the real 91-session chain still reports complete; synthetic completeness fixtures upgraded from bare `{}` to minimally schema-valid payloads).
+
+Change class: hotfix. Tests: 7 new (content_hash binding match/tamper/missing-plan; env-bypass ignored-outside-pytest/honored-under-pytest/sanity; empty-artifact completeness failure), green twice; self-application verified (Phase 150's own seal entry content_hash == sha256(its plan), so the new GOV-01 gate passes on this very seal). Full suite 2414 passed (1 pre-seal badge-drift failure reconciled here). README badges Tests 2410 -> 2417; Ledger 357 -> 358. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. Audit PASS (L2 solo; option_b_required=false; highest-blast-radius surface -- alters seal verification). doc_tier minimal. Substantiate gates: secret-scan clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS (incl. the new content_hash binding), gate-chain-completeness PASS (incl. the new content validation). Deferred to follow-on phases: GAP-GOV-02, GAP-CQ-02, GAP-GOV-09, GAP-GOV-05, GAP-GOV-03.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `fb50cac0787fc365daea4c341c1e0c1ef1a38fa98ed8156c5ed8b983a7767b46`
+**Previous Hash**: `e6b1b7a6aecb4d9437583d695d48fc3ec46bda0a201d80a0db4d5507af652baf`
+**Chain Hash (Merkle seal)**: `727b0c36cf55db17bae8e03a9fd51866fd3dd9c336a8d1115ca85798284e0b9d`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 150; v0.108.2; audit Sprint A -- content_hash bound to plan + provenance-bypass gated + completeness content-validated; Review Boundary -- commit/push/PR/merge HELD for operator)

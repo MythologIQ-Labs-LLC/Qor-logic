@@ -1,0 +1,24 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-09T0000-sprinta150",
+  "ts": "2026-06-10T01:16:27Z",
+  "plan_path": "docs/plan-qor-phase150-audit-sprint-a-integrity.md",
+  "phases": [
+    "Phase 1: bind content_hash to plan",
+    "Phase 2: env bypass + completeness content-validation"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_seal_entry_content_hash_binding.py tests/test_gate_provenance_bypass_pytest_only.py tests/test_gate_chain_completeness.py -q",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.108.1",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-06-10T01:16:27Z"
+  }
+}

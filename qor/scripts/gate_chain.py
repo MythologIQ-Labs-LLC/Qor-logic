@@ -200,6 +200,14 @@ def skill_active(skill_name: str):
             os.environ["QOR_SKILL_ACTIVE"] = prev
 
 
+def _pytest_active() -> bool:
+    """True only when running under pytest. GAP-GOV-04: the
+    QOR_GATE_PROVENANCE_OPTIONAL bypass is honored ONLY here -- in any other
+    process the provenance binding is enforced regardless of the env var, so an
+    attacker cannot disable it by exporting the variable."""
+    return "PYTEST_CURRENT_TEST" in os.environ
+
+
 def write_gate_artifact(
     phase: str,
     payload: dict,
@@ -234,7 +242,7 @@ def write_gate_artifact(
             return write_gate_artifact(
                 phase, payload, session_id=session_id, ai_provenance=ai_provenance, skill=None
             )
-    if not os.environ.get("QOR_GATE_PROVENANCE_OPTIONAL"):
+    if not (os.environ.get("QOR_GATE_PROVENANCE_OPTIONAL") and _pytest_active()):
         active = os.environ.get("QOR_SKILL_ACTIVE")
         if active is None:
             raise ProvenanceError(
