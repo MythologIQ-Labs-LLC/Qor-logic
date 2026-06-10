@@ -12474,3 +12474,49 @@ Change class: hotfix. Tests: 7 new (content_hash binding match/tamper/missing-pl
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 150; v0.108.2; audit Sprint A -- content_hash bound to plan + provenance-bypass gated + completeness content-validated; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #359: SESSION SEAL -- Phase 151 delete dead session-seal hasher (v0.108.3)
+
+**Timestamp**: 2026-06-10T01:42:45Z
+**Phase**: SUBSTANTIATE (Phase 151; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase151-gov02-delete-dead-hasher.md
+**Session**: `2026-06-09T0000-gov02151`
+**SSDF Practices**: PS.2.1, PW.1.1, RV.2.1
+**Entry ID**: `ef919234a586`
+
+**Scope**: Phase 151 implemented (hotfix; audit Sprint A follow-on, GH #210, GAP-GOV-02). Deleted
+`qor/scripts/calculate-session-seal.py` -- dead placeholder code: a hyphenated, non-importable
+`__main__` script with a literal `previous_hash = "PREVIOUS_LEDGER_HASH"` placeholder that read paths
+absent from this repo and misrepresented how seals are computed (the audit flagged it as reinforcing the
+GAP-GOV-01 gap, closed in Phase 150). It had no import coupling. The one misleading `/qor-substantiate`
+SKILL.md reference (`Reference implementation: ...calculate-session-seal.py`) is re-pointed at the real
+seal helpers (`ledger_hash.content_hash(plan)` / `chain_hash`, bound to the cited plan by the Step 7.7
+`seal_entry_check`). The historical mention in `doctrine-governance-enforcement.md` is accurate history
+and retained. dist variants recompiled (no variant references the dead file). The substantiate SKILL.md
+edit was kept terse to stay under the 40 KB skill-size budget (39.99 KB; the skill remains near the edge
+-- a progressive-disclosure refactor is the long-term fix, tracked separately).
+
+Change class: hotfix. Tests: 3 new guards (no `PREVIOUS_LEDGER_HASH` placeholder anywhere in the
+`qor/scripts` corpus -- blocks re-introduction; the file is removed; the substantiate skill no longer
+cites it), green twice. Full suite green (the pre-fix run surfaced the skill-budget overflow, reconciled
+by trimming the SKILL.md edit; 2415 passed post-fix). README badges Tests 2417 -> 2420; Ledger 358 ->
+359. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. Audit PASS (L1 solo;
+option_b_required=false). doc_tier minimal. Substantiate gates: secret-scan clean, doc-integrity PASS,
+governance-index clean, badge-currency OK, seal-entry-check PASS (incl. the Phase-150 content_hash
+binding on this entry), gate-chain-completeness PASS. Sprint A remainder (own follow-on phases): GAP-CQ-02,
+GAP-GOV-09, GAP-GOV-05, GAP-GOV-03.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `3c760376434fb1938fcfd0fa974c925cb092d276908873d1ed0e71f815ea7ac0`
+**Previous Hash**: `727b0c36cf55db17bae8e03a9fd51866fd3dd9c336a8d1115ca85798284e0b9d`
+**Chain Hash (Merkle seal)**: `7e4c5b49928fc8e2e754effa1a0bb09d3b64c4a52d4bd48c959a555bf5060e35`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 151; v0.108.3; GAP-GOV-02 -- dead placeholder hasher deleted + skill re-pointed; Review Boundary -- commit/push/PR/merge HELD for operator)

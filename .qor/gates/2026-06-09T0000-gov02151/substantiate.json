@@ -1,0 +1,25 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-06-09T0000-gov02151",
+  "ts": "2026-06-10T01:44:47Z",
+  "verdict": "PASS",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "exists": [
+      "qor/skills/governance/qor-substantiate/SKILL.md",
+      "tests/test_no_dead_session_seal_hasher.py"
+    ]
+  },
+  "merkle_seal": "7e4c5b49928fc8e2e754effa1a0bb09d3b64c4a52d4bd48c959a555bf5060e35",
+  "content_hash": "3c760376434fb1938fcfd0fa974c925cb092d276908873d1ed0e71f815ea7ac0",
+  "ledger_entry": 359,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.108.3",
+    "host": "unknown",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-06-10T01:44:47Z"
+  }
+}
