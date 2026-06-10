@@ -1,0 +1,24 @@
+{
+  "phase": "plan",
+  "session_id": "2026-06-10T1841-762eb0",
+  "ts": "2026-06-10T18:43:03Z",
+  "plan_path": "docs/plan-qor-phase162-ledger-base-currency.md",
+  "phases": [
+    "Phase 1: base-currency gate + re-anchor helper + doctrine"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ledger_base_currency.py -v",
+    "python -m pytest tests/test_readme_doctrine_inventory.py -v",
+    "python -m pytest tests/ -q",
+    "python -m qor.reliability.ledger_base_currency --base-ref origin/main",
+    "python qor/scripts/check_variant_drift.py"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.110.3",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-10T18:43:03Z"
+  }
+}

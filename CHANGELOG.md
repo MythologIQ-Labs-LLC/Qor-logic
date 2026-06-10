@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.111.0] - 2026-06-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 162 (feature; GH #231 Option 1)**: a ledger base-currency gate that linearizes the META_LEDGER hash chain at the trunk. The ledger is a linear hash chain carried in a file that lives in a git branch DAG, so a branch that seals against a stale `origin/main` tip forks the chain (and git can auto-merge the appends silently). New `qor.reliability.ledger_base_currency`: `check_base_currency` flags a branch whose first new-on-branch entry's `previous_hash` does not equal `origin/main`'s tip `chain_hash` (new entries identified by chain-hash set membership, robust to entry-number reuse), and `reanchor` is a pure fold that deterministically rebuilds a provisional sub-chain onto the live base tip (`previous_hash`/`chain_hash`/`entry_id`) without editing the ledger. Wired as a **WARN-only** CI step (`--enforce` reserved for a V2 flip); the existing post-hoc `check_previous_hash_uniqueness` detector is retained as defense-in-depth. New `doctrine-ledger-concurrency.md` documents the provisional-until-merge contract.
+
 ## [0.110.3] - 2026-06-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

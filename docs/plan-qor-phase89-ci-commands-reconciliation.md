@@ -308,3 +308,4 @@ CI surface in `## CI Commands` below to satisfy
 - `python -m qor.scripts.session_id_lint` — Phase 106 /qor-substantiate Step 4.6 WARN-only step (forward-maintenance; same pattern as the Phase 105 entry above).
 - `python -m qor.scripts.gate_provenance verify-committed --phase-min 158` — Phase 158 ci.yml `provenance-attest` job: keyless GAP-GOV-05 merge gate over committed provenance sidecars (forward-maintenance; command introduced after Phase 89 seal).
 - `python -m qor.scripts.gate_provenance attest-latest` — Phase 158 ci.yml `provenance-attest` job: emit the CI-secret-keyed attestation over the latest sealed entry (disclosed-skip when the secret is absent; forward-maintenance).
+- `python -m qor.reliability.ledger_base_currency --base-ref origin/main` — Phase 162 ci.yml `test` job WARN-only step (GH #231): surface a branch that sealed against a stale origin/main tip before merge (forward-maintenance; command introduced after Phase 89 seal).

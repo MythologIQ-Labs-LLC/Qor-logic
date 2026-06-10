@@ -42,6 +42,11 @@ jobs:
       # (the local gates run only on the pre-commit working tree).
       - name: Re-verify committed seal binding
         run: python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto
+      # GH #231 (Phase 162): WARN-first base-currency gate -- surfaces a branch
+      # that sealed against a stale origin/main tip (forked chain) before merge.
+      # WARN-only in V1 (|| true); V2 flips to --enforce after false-positive data.
+      - name: Ledger base-currency (WARN-only)
+        run: python -m qor.reliability.ledger_base_currency --base-ref origin/main || true
 
   install-smoke:
     runs-on: ubuntu-latest
