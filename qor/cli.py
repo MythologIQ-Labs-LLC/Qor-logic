@@ -151,13 +151,19 @@ def _register_install_family(sub) -> None:
     sp_install = sub.add_parser("install", help="install skills into an AI coding host")
     sp_install.add_argument("--host", required=True, choices=_HOSTS_CHOICES)
     sp_install.add_argument("--scope", default="repo", choices=_SCOPES_CHOICES)
-    sp_install.add_argument("--target", type=Path, default=None)
+    sp_install.add_argument(
+        "--target", type=Path, default=None,
+        help="custom destination directory to install into (overrides the host default path)",
+    )
     sp_install.add_argument("--dry-run", action="store_true")
 
     sp_uninstall = sub.add_parser("uninstall", help="remove installed skills")
     sp_uninstall.add_argument("--host", default="claude", choices=_HOSTS_CHOICES)
     sp_uninstall.add_argument("--scope", default="repo", choices=_SCOPES_CHOICES)
-    sp_uninstall.add_argument("--target", type=Path, default=None)
+    sp_uninstall.add_argument(
+        "--target", type=Path, default=None,
+        help="custom destination directory to uninstall from (overrides the host default path)",
+    )
 
     sp_list = sub.add_parser("list", help="enumerate available or installed skills")
     sp_list.add_argument("--available", action="store_true")
@@ -170,7 +176,10 @@ def _register_install_family(sub) -> None:
     sp_init.add_argument("--scope", default="repo", choices=_SCOPES_CHOICES)
     sp_init.add_argument("--profile", default="sdlc", choices=_PROFILE_CHOICES)
     sp_init.add_argument("--tone", default=None, choices=["technical", "standard", "plain"])
-    sp_init.add_argument("--target", type=Path, default=None)
+    sp_init.add_argument(
+        "--target", type=Path, default=None,
+        help="custom destination directory to initialize (overrides the host default path)",
+    )
 
 
 def _register_misc(sub) -> None:
@@ -203,7 +212,12 @@ def _register_misc(sub) -> None:
         help="entry-number upper bound for --tolerate-known-grandfathered (default 207; Phase 76 cutoff)",
     )
     sp_seed = sub.add_parser("seed", help="scaffold governance files in a workspace")
-    sp_seed.add_argument("--target", type=Path, default=None)
+    sp_seed.add_argument(
+        "--target", type=Path, default=None,
+        help=("destination workspace DIRECTORY to scaffold into (default: current directory). "
+              "This is a path, NOT an artifact name -- `seed --target FOO` creates a whole fresh "
+              "workspace under ./FOO/, it does not seed a single file named FOO."),
+    )
     sp_gh = sub.add_parser("governance-health", help="classify governance artifact health (Phase 109)")
     sp_gh.add_argument("--repo-root", default=".", help="workspace root to inspect")
     sp_gh.add_argument("--profile", default="skill-entry", help="named required-artifact set")

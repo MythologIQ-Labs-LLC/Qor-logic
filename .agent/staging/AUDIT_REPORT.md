@@ -1,10 +1,10 @@
-# AUDIT REPORT -- Phase 153: decompose ledger_hash.verify() (GAP-CQ-02)
+# AUDIT REPORT -- Phase 154: seed --target help text (GH #219)
 
 **Verdict**: PASS
-**Risk Grade**: L2 (critical chain-verifier function; behavior-preserving refactor)
+**Risk Grade**: L1
 **Mode**: solo (audit_risk_score option_b_required=false)
-**Target**: docs/plan-qor-phase153-cq02-decompose-verify.md
-**Session**: 2026-06-09T0000-cq02153
+**Target**: docs/plan-qor-phase154-gh219-seed-target-help.md
+**Session**: 2026-06-09T0000-seedhelp154
 
 ## Automated gate ladder
 
@@ -18,21 +18,19 @@
 
 ## Adversarial passes
 
-- **Behavior preservation (the whole point)** -- PASS. `verify()`'s output bytes (stdout/stderr lines)
-  and `return 1 if errors else 0` are unchanged: all 59 assertions across the 5 ledger-hash test files
-  (`test_ledger_hash` / `_reconciliation` / `_validation` / `placeholder_pattern_detection` /
-  `session_seal_markup_recognition`) stay green. A subtle trap was caught and preserved: `last_failed` is
-  advanced only on a genuine FAIL (placeholder/math), NOT on TAINTED -- so the extracted `_classify_entry`
-  returns a 4th `sets_last_failed` flag rather than the plan's simplified 3-tuple, keeping the
-  taint-predecessor message chain (`depends on failed predecessor #N`) identical.
-- **Test Functionality** -- PASS. The 4 new helper tests invoke `_resolve_recorded` / `_classify_entry`
-  and assert on their returned tuples (canonical-resolution, OK/FAIL, taint-no-advance, grandfathered/
-  reconciled tolerance); none presence-only.
-- **Razor** -- PASS. The ~118-line `verify()` is now a thin parse + per-entry orchestrate loop; resolution
-  and classification live in two named pure helpers, each well under the limit.
-- **Macro-Architecture / Dependency** -- PASS. Pure extraction; no new dependency; the tolerance sets
-  (grandfathered/reconciled) and the placeholder/taint/disclosed semantics are byte-for-byte preserved.
-- **Security / Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A.
+- **Test Functionality** -- PASS. Tests build the real parser via `_build_parser`, locate the `seed`
+  `--target` action, and assert its `help` is present + clarifies "directory" + disambiguates from an
+  artifact name; plus the install/uninstall/init `--target` family carries help; plus a regression that
+  `_do_seed` returns 0 (the now-resolved fix #3). Not presence-only -- they invoke the parser/handler and
+  assert behavior.
+- **Scope / Footgun** -- PASS. The change is help-text only (no behavior change): `seed --help` now states
+  `--target` is a destination DIRECTORY, not an artifact name -- the issue's "this alone prevents the
+  misuse" fix. Verified fix #3 (exit-1 with success output) is already resolved in current code
+  (`_do_seed` returns 0; reproduced exit 0 in clean + already-seeded workspaces). Fix #2 (warn/skip when
+  `--target` resolves inside an initialized workspace) is deferred -- a separate, deeper change, marked
+  optional by the issue.
+- **Razor / Dependency / Security** -- PASS. Four `help=` additions; no new dependency; no new surface.
+- **Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A.
 
 ## Next action
 

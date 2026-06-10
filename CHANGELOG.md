@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.109.2] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 154 (hotfix, GH #219)**: `qor-logic seed --target` now carries clarifying help -- it is a destination workspace DIRECTORY (default: current directory), not an artifact name, so `seed --target FOO` no longer reads as "seed the FOO artifact" (it scaffolds a fresh workspace under `./FOO/`). The sibling `install`/`uninstall`/`init` `--target` arguments gained help too. (The issue's secondary exit-1-with-success-output was already resolved in current code; the optional warn-on-nested-workspace is deferred.)
+
 ## [0.109.1] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
