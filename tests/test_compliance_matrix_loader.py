@@ -91,3 +91,33 @@ def test_schema_rejects_unknown_engagement(tmp_path):
     root = _write_matrix(tmp_path, [_control(id="bad", engagement=["nope"])])
     with pytest.raises(ValueError):
         cm.load_matrix(root)
+
+
+# Phase 148 (Sprint B, GH #211): ci/seal runners wired + the 2 non-CLI controls disclosed.
+
+
+def _by_id(controls):
+    return {c.id: c for c in controls}
+
+
+def test_ci_seal_runnable_controls_have_runners():
+    controls = _by_id(cm.load_matrix(REPO))
+    for cid, mod in [
+        ("prompt-injection", "qor.scripts.prompt_injection_canaries"),
+        ("governance-index", "qor.scripts.governance_index"),
+        ("gate-chain-completeness", "qor.reliability.gate_chain_completeness"),
+    ]:
+        c = controls[cid]
+        assert c.runner is not None, f"{cid} must carry a runner"
+        assert c.runner["module"] == mod
+        assert isinstance(c.runner.get("requires"), list) and c.runner["requires"], (
+            f"{cid} runner must declare a non-empty requires list (disclosed-skip)"
+        )
+
+
+def test_disclosed_controls_carry_reason():
+    controls = _by_id(cm.load_matrix(REPO))
+    for cid in ("ai-provenance", "dependency-review"):
+        c = controls[cid]
+        assert c.runner is None, f"{cid} is not CLI-runnable; runner must stay null"
+        assert c.runner_unavailable_reason, f"{cid} must declare runner_unavailable_reason"

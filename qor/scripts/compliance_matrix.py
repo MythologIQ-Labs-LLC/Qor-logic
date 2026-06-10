@@ -45,6 +45,7 @@ class Control:
     engagement: tuple[str, ...] = ()
     runner: dict | None = None
     invocation: str = ""
+    runner_unavailable_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -87,6 +88,7 @@ def load_matrix(root: Path) -> tuple[Control, ...]:
             engagement=tuple(c["engagement"]),
             runner=c.get("runner"),
             invocation=c.get("invocation", ""),
+            runner_unavailable_reason=c.get("runner_unavailable_reason"),
         )
         for c in data["controls"]
     )

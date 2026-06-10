@@ -44,3 +44,18 @@ trigger, and the decision of when and whether to enforce, are yours.
 
 A control's posture decides severity: an `ABORT` control whose runner fails makes the verdict fail; a
 `WARN` control's failure is recorded but advisory. The exit code follows the verdict.
+
+Each `ControlResult` carries an explicit `status` (Phase 148): `pass`, `fail`, `skip`, or `disclosed`.
+The `Verdict.status` is `enforced` (at least one control ran), `failed` (an `ABORT` control failed), or
+`no_op` (nothing actually ran). `verdict.passed` is `status != "failed"`; the SDK never returns a silent
+PASS for an engagement that enforced nothing -- a `no_op` is reported explicitly.
+
+- **Disclosed-skip** -- a runner may declare `requires` paths (relative to the consumer root). If any is
+  absent, the control reports `skip` *without* importing or invoking its runner, so a consumer who lacks
+  a given governance artifact is not hard-failed.
+- **Disclosed (non-CLI) controls** -- a control that is enforced elsewhere and has no CLI runner carries
+  `runner: null` + a `runner_unavailable_reason`; `enforce()` surfaces it with `status: disclosed` and
+  the reason, rather than silently dropping it. (V1 examples: `ai-provenance` is a gate-write-time
+  manifest builder; `dependency-review` is a GitHub Action.)
+- **ci / seal engagements** now carry real runners (`prompt-injection` for ci; `governance-index` +
+  `gate-chain-completeness` for seal) plus disclosed controls -- they are no longer vacuous passes.

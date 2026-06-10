@@ -12390,3 +12390,31 @@ Change class: hotfix. Tests: 7 new (4 session-id path-safety behavioral incl. re
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 147; v0.107.3; audit Sprint C batch 1 -- session_id path-safety + citation accuracy; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #356: SESSION SEAL -- Phase 148 audit Sprint B conveyance correctness (v0.108.0)
+
+**Timestamp**: 2026-06-10T00:28:23Z
+**Phase**: SUBSTANTIATE (Phase 148; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase148-audit-sprint-b-conveyance.md
+**Session**: `2026-06-09T0000-sprintb148`
+**SSDF Practices**: PS.2.1, PW.4.1, RV.2.1
+**Entry ID**: `f7bc9fa34d26`
+
+**Scope**: Phase 148 implemented (feature; audit Sprint B, GH #211, + the GAP-TEST-10 tail of #212). The downstream compliance-enforcement SDK no longer passes vacuously: `qor/compliance/enforce.py` `ControlResult` gains `status` (pass/fail/skip/disclosed) and `Verdict` gains `status` (enforced/failed/no_op), both with back-compat `passed` properties. `run_control` honors a runner `requires` list (disclosed-skip: an absent artifact yields `skip` without importing/invoking the runner). `enforce` surfaces engagement-matched controls that carry `runner_unavailable_reason` as `disclosed`. The matrix wires 3 real ci/seal runners -- `prompt-injection` (ci -> `prompt_injection_canaries.main --files docs/META_LEDGER.md`), `governance-index` (seal -> `governance_index.main --cross-check-ledger`), `gate-chain-completeness` (seal -> `gate_chain_completeness.main --repo-root .`) -- each with a `requires` guard; and discloses the 2 genuinely non-CLI controls (`ai-provenance` builder, `dependency-review` GitHub Action) with reasons. control_matrix.schema gains optional `runner.requires` + `runner_unavailable_reason`. Conformance now verifies any control carrying a runner is importable+callable. `qor/py.typed` ships (PEP 561; typed SDK) via package-data; the packaging test guards `compliance/` + `py.typed`. GAP-TEST-10 (cwd-coupled `test_doctrine_dependency_admission` / `test_codeowners_doctrine`) resolved from `__file__`. GAP-SEC-01 (conformance importlib allowlist) deferred.
+
+Change class: feature. Tests: 9 new (matrix wiring x2, enforce disclosed-skip/status x4, conformance wired-runners x1, py.typed x1, packaging-guard extension) + ci/seal CLI smoke (`engagement ci: enforced`, `engagement seal: enforced`) + conformance OK over the real matrix; green twice. Full suite 2410 passed (1 pre-seal badge-drift failure reconciled here). README badges Tests 2402 -> 2410; Ledger 355 -> 356. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. **Newly unverified**: none. Audit PASS (L1 solo; option_b_required=false). doc_tier minimal; no new dependency. Substantiate gates: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, data-API clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS, gate-chain-completeness PASS.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + tag + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `e4e75a1358d69eea3197eb5279ad5622df7f93eb1a2b075d2caa2c9cd60ff0ee`
+**Previous Hash**: `2f032c9acd40299dc16741b6061789d353a12a40828ce1c71fc691e387760ce3`
+**Chain Hash (Merkle seal)**: `f5f95df01a2bb287ba6e10616feea1448b81d3f1fe666174102080ccaa1516d2`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 148; v0.108.0; audit Sprint B conveyance -- compliance enforce no longer vacuous + py.typed; Review Boundary -- commit/push/PR/merge HELD for operator)

@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import pathlib
 
-_DOCTRINE = pathlib.Path("qor/references/doctrine-dependency-admission.md")
+# Resolve from __file__ so the test runs from any cwd (GAP-TEST-10), not only repo-root.
+_REPO = pathlib.Path(__file__).resolve().parent.parent
+_DOCTRINE = _REPO / "qor" / "references" / "doctrine-dependency-admission.md"
 
 
 def _read() -> str:

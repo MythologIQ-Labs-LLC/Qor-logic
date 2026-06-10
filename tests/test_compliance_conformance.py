@@ -98,3 +98,18 @@ def test_every_seeded_runnable_control_has_callable_runner():
     for c in load_matrix(REPO):
         if set(c.engagement) & set(RUNNABLE_POINTS):
             assert cc._verify_runner(c, REPO) == [], (c.id, cc._verify_runner(c, REPO))
+
+
+# Phase 148 (Sprint B, GH #211): the 3 newly-wired ci/seal runners must stay
+# importable + callable (conformance now guards any control carrying a runner).
+
+
+def test_wired_ci_seal_runners_are_importable():
+    from qor.scripts import compliance_conformance as cc
+    from qor.scripts.compliance_matrix import load_matrix
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[1]
+    controls = {c.id: c for c in load_matrix(repo)}
+    for cid in ("prompt-injection", "governance-index", "gate-chain-completeness"):
+        reasons = cc._verify_runner(controls[cid], repo)
+        assert reasons == [], f"{cid} runner failed conformance: {reasons}"

@@ -22,7 +22,17 @@
       "engagement": [
         "ci"
       ],
-      "runner": null
+      "runner": {
+        "module": "qor.scripts.prompt_injection_canaries",
+        "entry": "main",
+        "args": [
+          "--files",
+          "docs/META_LEDGER.md"
+        ],
+        "requires": [
+          "docs/META_LEDGER.md"
+        ]
+      }
     },
     {
       "id": "prose-test-lint",
@@ -169,7 +179,18 @@
       "engagement": [
         "seal"
       ],
-      "runner": null
+      "runner": {
+        "module": "qor.scripts.governance_index",
+        "entry": "main",
+        "args": [
+          "--cross-check-ledger",
+          "--repo-root",
+          "."
+        ],
+        "requires": [
+          "docs/GOVERNANCE_INDEX.md"
+        ]
+      }
     },
     {
       "id": "gate-chain-completeness",
@@ -192,7 +213,17 @@
       "engagement": [
         "seal"
       ],
-      "runner": null
+      "runner": {
+        "module": "qor.reliability.gate_chain_completeness",
+        "entry": "main",
+        "args": [
+          "--repo-root",
+          "."
+        ],
+        "requires": [
+          "docs/META_LEDGER.md"
+        ]
+      }
     },
     {
       "id": "ai-provenance",
@@ -208,7 +239,8 @@
       "engagement": [
         "seal"
       ],
-      "runner": null
+      "runner": null,
+      "runner_unavailable_reason": "build_manifest() embeds provenance at gate-write time; not a standalone pass/fail gate (enforced via tests/test_gate_chain_phase52_provenance_still_enforced.py)"
     },
     {
       "id": "dependency-review",
@@ -224,7 +256,8 @@
       "engagement": [
         "ci"
       ],
-      "runner": null
+      "runner": null,
+      "runner_unavailable_reason": "enforced as a GitHub Action (.github/workflows/pr-dependency-review.yml); not a CLI-invokable control"
     }
   ],
   "waivers": []
