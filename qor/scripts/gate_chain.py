@@ -262,6 +262,11 @@ def write_gate_artifact(
     if phase == "audit":
         from qor.scripts import audit_history
         audit_history.append(payload, session_id=sid)
+    # GAP-GOV-05 (Phase 158): bind the artifact with a per-session provenance
+    # sidecar. Fail-closed -- a sidecar that cannot be written is a security-
+    # control failure and MUST propagate (unlike the best-effort gate hook).
+    from qor.scripts import gate_provenance
+    gate_provenance.write_sidecar(phase, sid, path)
     _fire_gate_written_hook(phase, sid, path)
     return path
 

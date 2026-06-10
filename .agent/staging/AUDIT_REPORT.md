@@ -1,37 +1,58 @@
-# AUDIT REPORT -- Phase 157: hash_guard.hash_file CRLF-invariant seal-text option
+# AUDIT REPORT -- Phase 158 / GAP-GOV-05
 
 **Verdict**: PASS
-**Risk Grade**: L1 (opt-in hardening on a seal-relevant hasher; default path byte-exact and unchanged)
-**Mode**: solo (audit_risk_score option_b_required=false)
-**Target**: docs/plan-qor-phase157-hash-guard-crlf-invariance.md
-**Session**: 2026-06-10T0000-hashcrlf157
+**Risk Grade**: L2
+**Target**: docs/plan-qor-phase158-gov05-nonforgeable-provenance.md
+**Session**: `2026-06-10T1350-e406a8`
+**Mode**: solo (option_b_required=false; no author-momentum signal)
 
-## Automated gate ladder
+## Pass Results
 
-| Gate | Result |
-|---|---|
-| plan_iteration_status_lint | rc=0 |
-| prompt_injection_canaries | rc=0 |
-| plan_test_lint / plan_grep_lint | rc=0 |
-| plan_text_consistency_lint | rc=0 |
-| ci_coverage_lint | rc=0 (WARN-only; flagged commands are pre-existing CI steps unrelated to this plan) |
-| plan_feature_tdd_lint | rc=0 |
-| audit_risk_score | option_b_required=false |
+| Pass | Result | Notes |
+|---|---|---|
+| Prompt Injection | PASS | canary scan exit 0 over plan + 3 governance docs |
+| Security (L3) | PASS | no placeholder auth, no hardcoded secret (CI key from GitHub secret/env), fail-closed sidecar write, pytest bypass preserved + pytest-gated |
+| OWASP Top 10 | PASS | A03: session_id path-validated via `session.validate_session_id` before path use; no shell=True. A05: key under gitignored `.qor/session/`. A08: stdlib hmac/hashlib only, no eval/pickle/yaml |
+| Ghost UI / Live-Progress | N/A | no UI surface |
+| Section 4 Razor | PASS | every function budgeted <=40 lines; enforced at implement |
+| Self-Application | N/A | no `originating_remediation` field; mechanism not yet runnable (circular) |
+| Test Functionality | PASS | all 16 described tests invoke the unit and assert on output; none presence-only |
+| Closed-enum taxonomy | N/A | no `CANONICAL_*_VALUES`/`normalize*` taxonomy declared |
+| Dependency Audit | PASS | stdlib only (hmac, hashlib, secrets, json); zero new deps |
+| Macro Architecture | PASS | new `gate_provenance.py`; `gate_chain` -> `gate_provenance` -> `session` (acyclic; verified `session` does not import `gate_chain`) |
+| Feature Test Coverage | EXEMPT | plan touches `qor/scripts`/`qor/references`/`.github`, not `src/` |
+| Infrastructure Alignment | PASS | all claims grep-verified (below) |
+| Filter-Stage Ordering | PASS | `verify_committed` extract->load->verify pipeline; no precondition inversion |
+| Orphan Detection | PASS | module reached via gate_chain import + CLI main + ci.yml; tests via pytest |
+| prose_test_lint (ENFORCED) | PASS | exit 0; 53 exempted-with-reason |
 
-## Adversarial passes
+## Infrastructure Alignment -- grep evidence
 
-- **Integrity (the point)** -- PASS. Phase 156 LF-normalized `ledger_hash.content_hash`; `hash_guard.hash_file` is the OTHER seal-relevant file hasher (cited in `/qor-substantiate` Step 6.8 Preparation, verified by `test_substantiate_hash_integrity_step.py::test_hash_gate_preparation_names_canonical_helpers`) and still hashes raw bytes (hash_guard.py:35 `read_bytes()` -> `sha256(raw)`). A digest it produces over a text seal artifact would drift on git autocrlf exactly as content_hash did pre-156. The plan adds an OPT-IN `normalize_newlines` flag rather than an unconditional change, correctly preserving byte-exactness for the documented general-purpose / binary use (`test_hash_file_returns_64_lower_hex_digest` hashes a `.bin` fixture).
-- **Scope honesty (devil's advocate)** -- PASS. The plan does not overclaim: there are no current seal-text callers of `hash_file` (the live seal records `content_hash`, already fixed). This is preventive hardening + Step-6.8 guidance, and the plan states that plainly rather than dressing it as a live-binding fix. Not a half-measure: it closes the "helper cannot produce a CRLF-invariant digest" capability gap and documents when to use it; `intent_lock._hash_file` is correctly excluded (intra-checkout, no git round-trip).
-- **No-regression** -- PASS. `normalize_newlines` defaults `False`, so every existing call is byte-identical and the missing-path `FileNotFoundError` still raises from `read_bytes()`. `byte_count` is computed over the bytes actually hashed under either mode, keeping the dataclass internally consistent.
-- **Test Functionality** -- PASS. The three new tests invoke `hash_file` and assert digest EQUALITY across CRLF/LF under the flag, digest INEQUALITY at the default, and `byte_count` == hashed length -- all behavioral, none presence-only.
-- **Razor / Dependency / Security** -- PASS. One keyword-only param + one `replace`/branch line; stdlib only; no auth/secret/deserialization surface (OWASP A08 N/A).
-- **Skill-budget discipline** -- PASS. The plan deliberately routes new guidance to `qor/references/seal-gate-ladder.md` and leaves `qor-substantiate/SKILL.md` untouched (9 bytes under the 40 KB EXCEEDED budget), honoring the progressive-disclosure doctrine; the Step 6.8 self-test's cited `hash_guard.hash_file` token is unchanged.
-- **Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A.
+- `grep -nE "QOR_SKILL_ACTIVE" qor/scripts/gate_chain.py` -> the self-asserted binding at the cited site (the GOV-05 target). CONFIRMED.
+- `grep -nE "def validate_session_id" qor/scripts/session.py` -> line 35. CONFIRMED (reused for key path-safety).
+- `grep -nE "def _extract_seal_sessions" qor/reliability/gate_chain_completeness.py` -> line 34. CONFIRMED (reused by `verify_committed`).
+- `grep -nE "def write_artifact" qor/scripts/validate_gate_artifact.py` -> line 123, returns `Path`. CONFIRMED (sidecar derives from its return).
+- `.gitignore:17` `.qor/session/` ignored. CONFIRMED (per-session key is local-only by construction).
+- `git ls-files .qor/gates | wc -l` -> 507 committed gate artifacts. CONFIRMED (grandfathering at `--phase-min 158` required; honored by plan).
+- `ls qor/scripts/gate_provenance.py` -> absent. CONFIRMED NEW (no orphan/collision).
 
-## Scope note
+## Honesty contract review (load-bearing)
 
-Closes the GAP-GOV-03 follow-on fragility class for the second seal-relevant hasher. After this, Sprint A has only GAP-GOV-05 (non-forgeable provenance) remaining.
+The plan's threat model is correct and not overclaimed: Layer A ceiling is explicitly an in-repo filesystem actor (key is readable in the working tree); Layer B is explicitly verifiable only in CI (CI-held secret) and proves "verified by trusted CI", not human authorship. Non-forgeability against the operator is declared a non-goal (impossible by construction -- operator is both author and bound party). This satisfies the "non-forgeable, NOT accepted-residual stopgap" directive: Layer B's keyless `verify-committed` recomputation gate plus branch protection is a real merge-boundary control, not advisory.
 
-## Next action
+## Documentation Drift (advisory, non-VETO)
 
-PASS -> `/qor-implement` -> `/qor-substantiate`.
+`doc_tier: standard` introduces 3 terms (`provenance sidecar`, `session provenance key`, `CI attestation`) whose home is the NEW `qor/references/doctrine-provenance-binding.md`; glossary terms confirmed absent. Implement MUST add the doctrine file and the glossary entries (with `referenced_by`) or `/qor-substantiate` doc-integrity will hard-block.
+
+## Implementation guidance (non-binding)
+
+Key root should derive from `qor.workdir` so test workdir-relocation does not scatter real `.qor/session/keys/*.key` files; honor the existing pytest bypass for the sidecar path.
+
+## Process Pattern Advisory
+
+<!-- qor:veto-pattern-advisory -->
+No repeated-VETO pattern detected in the last 2 sealed phases.
+
+## Decision
+
+PASS (L2, solo). Next: `/qor-implement`.

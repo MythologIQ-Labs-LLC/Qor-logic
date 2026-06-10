@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.110.0] - 2026-06-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 158 (feature, audit Sprint A; closes GH #210)**: non-forgeable gate-artifact provenance (GAP-GOV-05), replacing the self-asserted `QOR_SKILL_ACTIVE==phase` binding with a layered scheme. **Layer A** is a stdlib-only per-session HMAC provenance sidecar (`qor/scripts/gate_provenance.py`) written beside each gate artifact by `gate_chain.write_gate_artifact` (fail-closed): it carries a keyless `payload_sha256` and an `hmac_tag` keyed by a per-session secret under the gitignored `.qor/session/keys/`, giving tamper-evidence and cross-session replay resistance. **Layer B** is a CI attestation: a keyless `verify-committed --phase-min 158` recomputation gate wired as a required CI job (a forged committed artifact fails the merge boundary, and it runs on forks), plus a CI-secret-keyed `attest-latest` stamp only trusted CI can produce. The threat model is stated honestly: non-forgeability against the operator is impossible by construction (the operator is both author and bound party), so Layer A's ceiling is an in-repo filesystem actor and Layer B is verifiable only in CI. New `doctrine-provenance-binding.md`; this seal closes the Sprint A umbrella (only GAP-GOV-05 remained).
+
 ## [0.109.5] - 2026-06-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
