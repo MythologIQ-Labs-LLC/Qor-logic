@@ -12660,3 +12660,31 @@ Change class: hotfix. Tests: 5 new (`check_latest` pass on a bound seal + fail o
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 156; v0.109.4; GAP-GOV-03 -- committed-seal re-verify + content_hash CRLF-invariance; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #365: SESSION SEAL -- Phase 157 hash_guard.hash_file CRLF-invariant seal-text option (v0.109.5)
+
+**Timestamp**: 2026-06-10T07:05:00Z
+**Phase**: SUBSTANTIATE (Phase 157; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase157-hash-guard-crlf-invariance.md
+**Session**: `2026-06-10T0000-hashcrlf157`
+**SSDF Practices**: PS.2.1, PW.5.1, RV.2.1
+**Entry ID**: `86d490e68cfe`
+
+**Scope**: Phase 157 implemented (hotfix; audit Sprint A, GH #210, GAP-GOV-03 follow-on). Phase 156 made `ledger_hash.content_hash` LF-normalize so the GOV-01 binding survives git autocrlf; `hash_guard.hash_file` is the OTHER seal-relevant file hasher (cited in `/qor-substantiate` Step 6.8 Preparation) and still hashed raw bytes, so a digest it produced over a text seal artifact would drift the same way once git rewrote the committed file to CRLF. Because `hash_file` is also advertised as a general-purpose / binary hasher (its Phase-59 test hashes a `.bin` fixture), the fix is an OPT-IN `normalize_newlines: bool = False` keyword param: when True it LF-normalizes before hashing and reports `byte_count` over the hashed (normalized) bytes; the default stays byte-exact, so every existing call is unchanged. `qor/reliability/intent_lock._hash_file` is intentionally left byte-exact -- it captures and re-checks the plan/audit gate artifacts within one working copy (no git round-trip). New guidance routed to the substantiate `references/seal-gate-ladder.md` (progressive disclosure), leaving the at-budget SKILL.md untouched.
+
+Change class: hotfix. Tests: 3 new in `tests/test_hash_guard.py` (CRLF<->LF digest invariance under the flag; default path byte-exact for CRLF and distinct from LF; `byte_count` tracks the hashed/normalized length) + the unchanged Phase 59 contract, green twice. Full suite 2451 passed. README badges Tests 2448 -> 2451; Ledger 364 -> 365. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. Audit PASS (L1 solo; option_b_required=false). doc_tier minimal. Substantiate gates: secret-scan clean, doc-integrity PASS, badge-currency OK, seal-entry-check PASS (content_hash bound to plan, CRLF-invariant), gate-chain-completeness PASS. Sprint A remainder: only GAP-GOV-05 (non-forgeable provenance) remains.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `3440c2050198d82e2358ede960830b3102f48956aa643803377bc17e2fb540fd`
+**Previous Hash**: `67207cc0fcc330f8d6560c6f562dbde4330c3f1d6f48c39eea752de1da73fe08`
+**Chain Hash (Merkle seal)**: `03f4efc7d18d060aba551cfe63db8a966591b5953c0fdcb239c79d2753601e58`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 157; v0.109.5; GAP-GOV-03 follow-on -- hash_file CRLF-invariant seal-text option; Review Boundary -- commit/push/PR/merge HELD for operator)

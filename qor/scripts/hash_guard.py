@@ -3,7 +3,9 @@
 Public surface:
 - ``HashEvidence`` frozen dataclass: digest + path + byte count.
 - ``HEX_SHA256_RE``: anchored regex for lowercase 64-hex SHA-256 digests.
-- ``hash_file(path)``: compute digest of a file, returning ``HashEvidence``.
+- ``hash_file(path, *, normalize_newlines=False)``: compute digest of a file,
+  returning ``HashEvidence``; pass ``normalize_newlines=True`` for a CRLF-
+  invariant digest over a text seal artifact (binary default is byte-exact).
 - ``validate_sha256(value, *, label)``: raise ``ValueError`` on placeholder /
   empty / wrong-length / uppercase / non-hex strings; return the value when
   it's a legitimate digest.
@@ -32,12 +34,22 @@ class HashEvidence:
     byte_count: int
 
 
-def hash_file(path: Path) -> HashEvidence:
+def hash_file(path: Path, *, normalize_newlines: bool = False) -> HashEvidence:
+    """Compute the SHA-256 of a file, returning ``HashEvidence``.
+
+    With ``normalize_newlines=True`` the bytes are LF-normalized (CRLF -> LF)
+    before hashing, so a digest recorded over a TEXT seal artifact survives git
+    autocrlf converting the committed file to CRLF (mirrors the Phase 156
+    ``ledger_hash.content_hash`` fix). ``byte_count`` reports the bytes actually
+    hashed. The default is byte-exact -- use it for binary / general-purpose
+    files where every byte is significant.
+    """
     raw = Path(path).read_bytes()
+    data = raw.replace(b"\r\n", b"\n") if normalize_newlines else raw
     return HashEvidence(
         path=str(path),
-        sha256=hashlib.sha256(raw).hexdigest(),
-        byte_count=len(raw),
+        sha256=hashlib.sha256(data).hexdigest(),
+        byte_count=len(data),
     )
 
 

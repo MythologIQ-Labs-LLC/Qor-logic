@@ -36,6 +36,48 @@ def test_hash_file_raises_on_missing_path(tmp_path):
         hash_file(tmp_path / "no-such.bin")
 
 
+def test_hash_file_normalize_newlines_crlf_invariant(tmp_path):
+    # Phase 157 (GAP-GOV-03 follow-on): a seal-text digest produced under
+    # normalize_newlines=True must survive git's autocrlf conversion, i.e. a
+    # CRLF file and its LF twin hash identically -- and to the LF default.
+    crlf = tmp_path / "crlf.md"
+    crlf.write_bytes(b"# Seal\r\nline one\r\nline two\r\n")
+    lf = tmp_path / "lf.md"
+    lf.write_bytes(b"# Seal\nline one\nline two\n")
+    crlf_norm = hash_file(crlf, normalize_newlines=True).sha256
+    lf_norm = hash_file(lf, normalize_newlines=True).sha256
+    assert crlf_norm == lf_norm
+    # The normalized CRLF digest equals the default (raw) digest of the
+    # already-LF twin -- the value an operator recorded at LF seal time.
+    assert crlf_norm == hash_file(lf).sha256
+
+
+def test_hash_file_default_is_byte_exact_for_crlf(tmp_path):
+    # The default (binary/general-purpose) path must NOT silently normalize:
+    # a CRLF file and its LF twin differ, and the digest is over the raw bytes.
+    crlf = tmp_path / "crlf.bin"
+    raw = b"a\r\nb\r\n"
+    crlf.write_bytes(raw)
+    lf = tmp_path / "lf.bin"
+    lf.write_bytes(b"a\nb\n")
+    ev = hash_file(crlf)
+    assert ev.sha256 == hashlib.sha256(raw).hexdigest()
+    assert ev.byte_count == len(raw)
+    assert ev.sha256 != hash_file(lf).sha256
+
+
+def test_hash_file_normalize_byte_count_matches_hashed_bytes(tmp_path):
+    # Under normalization, byte_count must describe the bytes actually hashed
+    # (the LF-normalized length), not the raw CRLF length.
+    crlf = tmp_path / "crlf.md"
+    raw = b"x\r\ny\r\nz\r\n"  # 9 raw bytes -> 6 after CRLF->LF
+    crlf.write_bytes(raw)
+    ev = hash_file(crlf, normalize_newlines=True)
+    assert ev.byte_count == len(raw.replace(b"\r\n", b"\n"))
+    assert ev.byte_count != len(raw)
+    assert ev.sha256 == hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest()
+
+
 def test_validate_sha256_accepts_real_digest():
     real = hashlib.sha256(b"x").hexdigest()
     assert validate_sha256(real, label="content_hash") == real
