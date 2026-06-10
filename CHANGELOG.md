@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.109.1] - 2026-06-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 153 (hotfix, audit Sprint A)**: decomposed the ~118-line `ledger_hash.verify()` (the audit's largest-function finding) into a thin orchestrator plus two named pure helpers -- `_resolve_recorded` (hash-markup resolution incl. the Session-Seal fallback) and `_classify_entry` (placeholder / taint / OK / disclosed-tolerance / fail classification). Behavior-preserving: output bytes and exit code are unchanged, verified by the 59 existing chain-verifier assertions across 5 test files plus 4 new direct helper tests (GAP-CQ-02).
+
 ## [0.109.0] - 2026-06-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

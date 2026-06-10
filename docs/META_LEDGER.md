@@ -12548,3 +12548,31 @@ Change class: feature. Tests: 12 new (trust direction/evidence-links/to_dict/inv
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 152; v0.109.0; GH #213 -- Shadow Genome trust/federation/maturity producers; Review Boundary -- commit/push/PR/merge HELD for operator)
+
+---
+
+### Entry #361: SESSION SEAL -- Phase 153 decompose ledger_hash.verify() (v0.109.1)
+
+**Timestamp**: 2026-06-10T02:30:03Z
+**Phase**: SUBSTANTIATE (Phase 153; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase153-cq02-decompose-verify.md
+**Session**: `2026-06-09T0000-cq02153`
+**SSDF Practices**: PS.2.1, PW.5.1, RV.2.1
+**Entry ID**: `1bf0afd5dfa9`
+
+**Scope**: Phase 153 implemented (hotfix; audit Sprint A follow-on, GH #210, GAP-CQ-02). Decomposed the ~118-line `ledger_hash.verify()` (the production-gap audit's largest-function / Section-4-Razor finding) into a thin orchestrator plus two named pure helpers: `_resolve_recorded(body)` (returns the (content, previous, recorded) hash triple from canonical markup or the Phase-66 Session-Seal fallback, or None for a non-verifiable entry) and `_classify_entry(...)` (placeholder -> FAIL / prior-failure -> TAINTED / chain-math OK / grandfathered|reconciled -> DISCLOSED_* / else math FAIL). Behavior-preserving: `verify()`'s stdout/stderr lines and `return 1 if errors else 0` are byte-for-byte unchanged. A subtle invariant was caught and preserved -- `last_failed` advances only on a genuine FAIL (placeholder/math), NOT on TAINTED (which keeps naming the original failed predecessor) -- via a `sets_last_failed` flag in the classifier rather than the plan's simplified 3-tuple.
+
+Change class: hotfix (pure refactor; no behavior change). Tests: 4 new direct helper tests (canonical resolution + None; OK/FAIL; taint-no-advance; grandfathered/reconciled tolerance) + the behavior-preservation net of 59 existing assertions across `test_ledger_hash` / `_reconciliation` / `_validation` / `placeholder_pattern_detection` / `session_seal_markup_recognition`, all green twice. Full suite 2433 passed (1 pre-seal badge-drift reconciled here). README badges Tests 2432 -> 2436; Ledger 360 -> 361. **Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0. Audit PASS (L2 solo -- critical chain-verifier surface; option_b_required=false). doc_tier minimal. Substantiate gates: secret-scan clean, doc-integrity PASS, governance-index clean, badge-currency OK, seal-entry-check PASS (content_hash bound to plan), gate-chain-completeness PASS. This closes the last clean #210 item; remainder GAP-GOV-09 / GAP-GOV-05 / GAP-GOV-03 is design-heavy.
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge HELD for operator approval at handoff.
+
+**Content Hash**: `ece05a173333d446c95196b810d215b36cd7f92ba1bebb53eadfe777815ecb35`
+**Previous Hash**: `d64bce566cf27d080fa028598dacb9ff7c9c83aacdb9571808bfbfae0ff6e5db`
+**Chain Hash (Merkle seal)**: `2c8c88c619400ca31032dbd65188becde6444bc0ba29797b90a0dcbb1070fb88`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 153; v0.109.1; GAP-CQ-02 -- verify() decomposed behavior-preservingly; Review Boundary -- commit/push/PR/merge HELD for operator)

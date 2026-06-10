@@ -297,6 +297,56 @@ def _attested_reconciled(entries: list[tuple[int, str]]) -> set[int]:
     return attested
 
 
+def _resolve_recorded(body: str) -> tuple[str, str, str] | None:
+    """Return (content_val, previous_val, recorded_chain) for an entry body, or
+    None when it carries neither canonical Content/Previous/Chain markup nor a
+    Session-Seal fallback (the 'skipped, non-verifiable markup' case). Phase 66:
+    canonical CHAIN_HASH_RE wins; otherwise the Session-Seal hash is the recorded
+    chain hash."""
+    ch = CONTENT_HASH_RE.search(body)
+    ph = PREV_HASH_RE.search(body)
+    xh = CHAIN_HASH_RE.search(body)
+    seal_only = None
+    if not (ch and ph and xh):
+        seal_only = SESSION_SEAL_RE.search(body) if not xh else None
+        if not (ch and ph and seal_only):
+            return None
+    content_val = ch.group(1) or ch.group(2)
+    previous_val = ph.group(1) or ph.group(2)
+    recorded = (xh.group(1) or xh.group(2)) if xh else seal_only.group(1)
+    return content_val, previous_val, recorded
+
+
+def _classify_entry(num: int, content_val: str, previous_val: str, recorded: str, *,
+                    grandfathered, reconciled, last_failed: int) -> tuple[str, bool, bool, bool]:
+    """Classify one resolved entry. Returns (message, to_stderr, is_error,
+    sets_last_failed). Pure (no I/O). Order matters and matches the original
+    verify() flow: placeholder -> FAIL (sets last_failed even under taint);
+    prior failure -> TAINTED (error, but does NOT advance last_failed); chain-math
+    OK -> OK; grandfathered/reconciled tolerance -> DISCLOSED_* (no error); else
+    a genuine math FAIL (sets last_failed)."""
+    placeholder_field = _find_placeholder_field(content_val, previous_val, recorded)
+    if placeholder_field is not None:
+        return (f"FAIL Entry #{num}: placeholder-pattern detected in {placeholder_field}",
+                True, True, True)
+    new_expected = chain_hash(content_val, previous_val)
+    old_expected = legacy_chain_hash(content_val, previous_val)
+    math_ok = (new_expected == recorded or old_expected == recorded)
+    if last_failed:
+        return (f"TAINTED Entry #{num}: depends on failed predecessor #{last_failed}",
+                True, True, False)
+    if math_ok:
+        return (f"OK   Entry #{num}: chain hash verified", False, False, False)
+    if num in grandfathered:
+        return (f"DISCLOSED_GRANDFATHERED Entry #{num}: tolerated "
+                f"SG-ConcurrentLedgerRace-A residual", False, False, False)
+    if num in reconciled:
+        return (f"DISCLOSED_RECONCILED Entry #{num}: attested by RECONCILIATION entry",
+                False, False, False)
+    return (f"FAIL Entry #{num}: computed {new_expected} != recorded {recorded}",
+            True, True, True)
+
+
 def verify(
     ledger_md: Path,
     *,
@@ -347,70 +397,19 @@ def verify(
     skipped = 0
     last_failed = 0
     for num, body in entries:
-        ch = CONTENT_HASH_RE.search(body)
-        ph = PREV_HASH_RE.search(body)
-        xh = CHAIN_HASH_RE.search(body)
-        seal_only = None
-        if not (ch and ph and xh):
-            # Phase 66: try Session Seal fallback when canonical markup absent.
-            seal_only = SESSION_SEAL_RE.search(body) if not xh else None
-            if not (ch and ph and seal_only):
-                skipped += 1
-                continue
-        # Resolve recorded chain hash: canonical CHAIN_HASH_RE wins; else Session Seal.
-        content_val = ch.group(1) or ch.group(2)
-        previous_val = ph.group(1) or ph.group(2)
-        if xh:
-            recorded = xh.group(1) or xh.group(2)
-        else:
-            recorded = seal_only.group(1)
-        # Phase 66 placeholder check: reject obvious fabrications before chain math.
-        placeholder_field = _find_placeholder_field(content_val, previous_val, recorded)
-        if placeholder_field is not None:
-            print(
-                f"FAIL Entry #{num}: placeholder-pattern detected in {placeholder_field}",
-                file=sys.stderr,
-            )
-            errors += 1
-            last_failed = num
+        resolved = _resolve_recorded(body)
+        if resolved is None:
+            skipped += 1
             continue
-        new_expected = chain_hash(content_val, previous_val)
-        old_expected = legacy_chain_hash(content_val, previous_val)
-        math_ok = (new_expected == recorded or old_expected == recorded)
-        # Phase 66 taint propagation (per GH #54): once an earlier entry has
-        # FAILed, every subsequent verifiable entry is TAINTED regardless of
-        # its own math, because the chain root is poisoned. Math consistency
-        # alone is not trust. Re-anchor / fix the upstream entry to clear taint.
-        if last_failed:
-            print(
-                f"TAINTED Entry #{num}: depends on failed predecessor #{last_failed}",
-                file=sys.stderr,
-            )
+        content_val, previous_val, recorded = resolved
+        message, to_stderr, is_error, sets_last_failed = _classify_entry(
+            num, content_val, previous_val, recorded,
+            grandfathered=grandfathered, reconciled=reconciled, last_failed=last_failed,
+        )
+        print(message, file=sys.stderr if to_stderr else None)
+        if is_error:
             errors += 1
-        elif math_ok:
-            print(f"OK   Entry #{num}: chain hash verified")
-        elif num in grandfathered:
-            # Phase 91 (GH #85): SG-ConcurrentLedgerRace-A documented residual.
-            # Operator opted into the --tolerate-known-grandfathered surface;
-            # the chain math fails but the failure matches the known signature.
-            # Do not count as an error and do not propagate taint downstream.
-            print(
-                f"DISCLOSED_GRANDFATHERED Entry #{num}: tolerated "
-                f"SG-ConcurrentLedgerRace-A residual"
-            )
-        elif num in reconciled:
-            # Phase 119 (GH #148): in-chain RECONCILIATION attestation of a
-            # genuine duplicate-previous_hash residual. Honored without the
-            # --tolerate flag; no error, no taint propagation.
-            print(
-                f"DISCLOSED_RECONCILED Entry #{num}: attested by RECONCILIATION entry"
-            )
-        else:
-            print(
-                f"FAIL Entry #{num}: computed {new_expected} != recorded {recorded}",
-                file=sys.stderr,
-            )
-            errors += 1
+        if sets_last_failed:
             last_failed = num
     if skipped > 0:
         print(f"Skipped {skipped} entries with non-verifiable markup")
