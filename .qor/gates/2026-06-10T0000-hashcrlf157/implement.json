@@ -1,0 +1,24 @@
+{
+  "phase": "implement",
+  "session_id": "2026-06-10T0000-hashcrlf157",
+  "ts": "2026-06-10T06:38:01Z",
+  "files_touched": [
+    "qor/scripts/hash_guard.py",
+    "qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md",
+    "tests/test_hash_guard.py"
+  ],
+  "tests_added": [
+    "tests/test_hash_guard.py::test_hash_file_normalize_newlines_crlf_invariant",
+    "tests/test_hash_guard.py::test_hash_file_default_is_byte_exact_for_crlf",
+    "tests/test_hash_guard.py::test_hash_file_normalize_byte_count_matches_hashed_bytes"
+  ],
+  "reality_equals_promise": true,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.109.4",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-06-10T06:38:01Z"
+  }
+}

@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.109.5] - 2026-06-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Security
+- **Phase 157 (hotfix, audit Sprint A)**: gave `hash_guard.hash_file` an opt-in `normalize_newlines=True` mode so a digest recorded over a text seal artifact is invariant to git's CRLF conversion (the GAP-GOV-03 fragility class Phase 156 fixed for `ledger_hash.content_hash`, now closed for the second seal-relevant file hasher cited in the substantiate Step 6.8 preparation). The default stays byte-exact, so binary and general-purpose hashing is unchanged; `intent_lock`'s intra-checkout gate-artifact hasher is intentionally left byte-exact.
+
 ## [0.109.4] - 2026-06-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

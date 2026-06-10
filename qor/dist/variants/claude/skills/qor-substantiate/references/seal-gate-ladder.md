@@ -119,3 +119,20 @@ lives in qor-logic. V2 fail-closed promotion (remove the WARN escape) mirrors th
 114->122 `feature_index_verify` ladder and must wait until the consuming repo
 reports full surface coverage. Per `qor/references/doctrine-feature-inventory.md`
 "Surface column".
+
+## Step 6.8 seal-hash helpers — CRLF-invariance (Phase 157 wiring; GAP-GOV-03 follow-on)
+
+The Step 6.8 Preparation cites `hash_guard.hash_file`, `ledger_hash.content_hash`,
+and `ledger_hash.chain_hash` as the helpers an operator uses to compute the
+four real seal digests. Both file-digest helpers are CRLF-sensitive sources:
+git autocrlf rewrites a committed TEXT artifact to CRLF, so a digest computed
+at LF seal time over the working copy would disagree with a recompute over the
+committed/checked-out file. `ledger_hash.content_hash` LF-normalizes
+unconditionally (Phase 156, the GOV-01 binding). `hash_guard.hash_file` stays
+byte-exact by default (it is also a general-purpose / binary hasher) and exposes
+`normalize_newlines=True` for the text-seal path: pass it when the digest is
+recorded against a text artifact that round-trips through git, and leave the
+default for binary or intra-checkout evidence. `byte_count` always reports the
+bytes actually hashed under either mode. `intent_lock._hash_file` is excluded:
+it captures and re-checks the plan/audit gate artifacts within one working copy
+(no git round-trip), so byte-exact comparison is correct there.

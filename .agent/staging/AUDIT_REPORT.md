@@ -1,10 +1,10 @@
-# AUDIT REPORT -- Phase 156: committed-seal re-verify + content_hash CRLF-invariance (GAP-GOV-03)
+# AUDIT REPORT -- Phase 157: hash_guard.hash_file CRLF-invariant seal-text option
 
 **Verdict**: PASS
-**Risk Grade**: L2 (seal-binding correctness; touches content_hash used by the GOV-01 binding)
+**Risk Grade**: L1 (opt-in hardening on a seal-relevant hasher; default path byte-exact and unchanged)
 **Mode**: solo (audit_risk_score option_b_required=false)
-**Target**: docs/plan-qor-phase156-gov03-committed-seal-reverify.md
-**Session**: 2026-06-09T0000-gov03156
+**Target**: docs/plan-qor-phase157-hash-guard-crlf-invariance.md
+**Session**: 2026-06-10T0000-hashcrlf157
 
 ## Automated gate ladder
 
@@ -12,37 +12,26 @@
 |---|---|
 | plan_iteration_status_lint | rc=0 |
 | prompt_injection_canaries | rc=0 |
-| plan_test_lint / plan_feature_tdd_lint | rc=0 |
-| plan_text_consistency_lint / ci_coverage_lint | rc=0 |
+| plan_test_lint / plan_grep_lint | rc=0 |
+| plan_text_consistency_lint | rc=0 |
+| ci_coverage_lint | rc=0 (WARN-only; flagged commands are pre-existing CI steps unrelated to this plan) |
+| plan_feature_tdd_lint | rc=0 |
 | audit_risk_score | option_b_required=false |
 
 ## Adversarial passes
 
-- **Integrity (the point) + a real find** -- PASS. GAP-GOV-03: `seal_entry_check --auto` (via new
-  `check_latest`, deriving the phase from the latest entry) re-verifies the committed seal's GOV-01
-  content_hash<->plan binding; a CI step runs it on the committed ledger, so the binding is re-checked on
-  the committed bytes (ci.yml:40 already re-verifies the chain). Running `--auto` against the LIVE ledger
-  surfaced a genuine defect: the GOV-01 binding was silently FRAGILE to git autocrlf -- the seal-time
-  digest is computed on the LF working copy, but git rewrites the committed/checked-out plan to CRLF, so
-  the recompute disagreed (entry #363: recorded b3a53552 vs raw-recompute b4fd6c98). Root-cause fix:
-  `ledger_hash.content_hash` now LF-normalizes before hashing (LF-normalized hash of plan-155 == b3a53552
-  == the recorded value). Phase 150's GOV-01 self-test only passed because it ran on the pre-commit LF
-  file; this phase makes GOV-01 actually hold on committed bytes.
-- **No chain impact** -- PASS. `content_hash` is recomputed only by the GOV-01 binding; the chain math
-  (verify / verify_post_anchor) uses the recorded values, so normalization changes no chain result. The
-  real chain still verifies clean; the live `--auto` now passes; the GOV-01 binding suite + the
-  53-assertion ledger-hash net are green with the change (LF tmp files -> identical hash -> no regression).
-- **Test Functionality** -- PASS. `check_latest` pass/fail on bound/unbound seals, the `--auto` CLI exit
-  codes, the `content_hash` CRLF-invariance, and the CI-step-present guard -- all behavioral.
-- **Razor / Dependency / Security** -- PASS. `check_latest` is ~8 lines; `content_hash` is now a 2-line
-  read+normalize+hash; stdlib only; the CI step is one `--auto` invocation.
+- **Integrity (the point)** -- PASS. Phase 156 LF-normalized `ledger_hash.content_hash`; `hash_guard.hash_file` is the OTHER seal-relevant file hasher (cited in `/qor-substantiate` Step 6.8 Preparation, verified by `test_substantiate_hash_integrity_step.py::test_hash_gate_preparation_names_canonical_helpers`) and still hashes raw bytes (hash_guard.py:35 `read_bytes()` -> `sha256(raw)`). A digest it produces over a text seal artifact would drift on git autocrlf exactly as content_hash did pre-156. The plan adds an OPT-IN `normalize_newlines` flag rather than an unconditional change, correctly preserving byte-exactness for the documented general-purpose / binary use (`test_hash_file_returns_64_lower_hex_digest` hashes a `.bin` fixture).
+- **Scope honesty (devil's advocate)** -- PASS. The plan does not overclaim: there are no current seal-text callers of `hash_file` (the live seal records `content_hash`, already fixed). This is preventive hardening + Step-6.8 guidance, and the plan states that plainly rather than dressing it as a live-binding fix. Not a half-measure: it closes the "helper cannot produce a CRLF-invariant digest" capability gap and documents when to use it; `intent_lock._hash_file` is correctly excluded (intra-checkout, no git round-trip).
+- **No-regression** -- PASS. `normalize_newlines` defaults `False`, so every existing call is byte-identical and the missing-path `FileNotFoundError` still raises from `read_bytes()`. `byte_count` is computed over the bytes actually hashed under either mode, keeping the dataclass internally consistent.
+- **Test Functionality** -- PASS. The three new tests invoke `hash_file` and assert digest EQUALITY across CRLF/LF under the flag, digest INEQUALITY at the default, and `byte_count` == hashed length -- all behavioral, none presence-only.
+- **Razor / Dependency / Security** -- PASS. One keyword-only param + one `replace`/branch line; stdlib only; no auth/secret/deserialization surface (OWASP A08 N/A).
+- **Skill-budget discipline** -- PASS. The plan deliberately routes new guidance to `qor/references/seal-gate-ladder.md` and leaves `qor-substantiate/SKILL.md` untouched (9 bytes under the 40 KB EXCEEDED budget), honoring the progressive-disclosure doctrine; the Step 6.8 self-test's cited `hash_guard.hash_file` token is unchanged.
 - **Ghost UI / Live-Progress / Filter-Stage / Orphan** -- N/A.
 
 ## Scope note
 
-Closes GAP-GOV-03 and hardens GAP-GOV-01 (CRLF-invariance). The GOV-03 fix legitimately uncovered the
-GOV-01 fragility, so they ship together. Sprint A after this: only GAP-GOV-05 (the deferred-decision item).
+Closes the GAP-GOV-03 follow-on fragility class for the second seal-relevant hasher. After this, Sprint A has only GAP-GOV-05 (non-forgeable provenance) remaining.
 
 ## Next action
 
-PASS -> `/qor-implement` (complete) -> `/qor-substantiate`.
+PASS -> `/qor-implement` -> `/qor-substantiate`.
