@@ -82,9 +82,13 @@ def _last_chain_hash(text: str) -> str:
     raise ValueError("final ledger entry has no parseable chain hash to link off")
 
 
-def append_reconciliation_entry(ledger_path: Path, proposal: dict, *, ts: str) -> dict:
+def append_reconciliation_entry(
+    ledger_path: Path, proposal: dict, *, ts: str, dry_run: bool = False,
+) -> dict:
     """Append a forward-only RECONCILIATION entry attesting the proposal's
-    residual set. Pre-existing ledger bytes are preserved verbatim."""
+    residual set. Pre-existing ledger bytes are preserved verbatim. With
+    dry_run the full entry is computed (numbers, hashes, entry id) but the
+    ledger is not touched (Phase 167; GH #250)."""
     path = Path(ledger_path)
     text = path.read_text(encoding="utf-8")
     residual = sorted(int(n) for n in proposal["residual_entry_nums"])
@@ -119,7 +123,8 @@ def append_reconciliation_entry(ledger_path: Path, proposal: dict, *, ts: str) -
         f"**Previous Hash**: `{previous}`\n"
         f"**Chain Hash (Merkle seal)**: `{chain}`\n"
     )
-    path.write_text(text + entry, encoding="utf-8")
+    if not dry_run:
+        path.write_text(text + entry, encoding="utf-8")
     return {
         "entry_num": next_num,
         "content_hash": content,

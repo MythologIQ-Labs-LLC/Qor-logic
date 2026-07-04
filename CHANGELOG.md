@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.115.0] - 2026-07-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 167 (feature; dry-run modes)**: every mutating CLI surface can now rehearse safely (completes GH #250). `--dry-run` on `seal_artifacts --write`, `reconcile propose`/`authorize`, `governance-index --advance-last-reviewed`, and `uninstall`, plus `dry_run=` parameters on the `changelog` stamping library -- in every case reads, rendering, and validation execute exactly as in a wet run (errors surface identically), only the writes are suppressed, and each suppressed mutation prints a `[dry] would <action>` preview (the Orko rehearsal pattern). New operator-facing `qor.scripts.session_tool` (`current` / `rotate --dry-run`) provides safe session inspection while the internal automation rotation stays untouched.
+
 ## [0.114.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

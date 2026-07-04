@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-07-04T1514-caa2a3",
+  "ts": "2026-07-04T15:25:25Z",
+  "verdict": "PASS",
+  "plan_path": "docs/plan-qor-phase167-dry-run-modes.md",
+  "seal_entry": 393,
+  "merkle_seal": "f5bc985feca8f97c81368c1037c3c7d83284f7eda2a5beef8d57b5f6b1818dff",
+  "version": "0.115.0",
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.115.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-04T15:25:25Z"
+  }
+}

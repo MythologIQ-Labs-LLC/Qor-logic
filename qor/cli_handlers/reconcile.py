@@ -28,12 +28,17 @@ def do_propose(args: argparse.Namespace) -> int:
         return 1
     proposal = reconcile.build_proposal(ledger, ts=shadow_process.now_iso())
     out = Path(args.out) if args.out else _default_proposal_path(ledger)
-    out.write_text(json.dumps(proposal, indent=2), encoding="utf-8")
+    dry_run = getattr(args, "dry_run", False)
+    if dry_run:
+        print(f"[dry] would write proposal to {out}")
+    else:
+        out.write_text(json.dumps(proposal, indent=2), encoding="utf-8")
     nums = proposal["residual_entry_nums"]
     if not nums:
         print(f"No duplicate-previous_hash residual found in {ledger}. Nothing to reconcile.")
         return 0
-    print(f"Reconciliation proposal (pending) written to {out}")
+    if not dry_run:
+        print(f"Reconciliation proposal (pending) written to {out}")
     print(f"  residual entries: {', '.join('#' + str(n) for n in nums)}")
     print(f"  shared previous-hashes: {len(proposal['previous_hashes'])}")
     print(f"  proposal_id: {proposal['proposal_id']}")
@@ -61,9 +66,15 @@ def do_authorize(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return 1
+    dry_run = getattr(args, "dry_run", False)
     result = reconcile.append_reconciliation_entry(
-        ledger, proposal, ts=shadow_process.now_iso()
+        ledger, proposal, ts=shadow_process.now_iso(), dry_run=dry_run
     )
+    if dry_run:
+        print(f"[dry] would append RECONCILIATION Entry #{result['entry_num']} "
+              f"(entry_id {result['entry_id']}) to {ledger}")
+        print(f"[dry] would mark proposal authorized: {proposal_path}")
+        return 0
     proposal["status"] = "authorized"
     proposal["reconciliation_entry_num"] = result["entry_num"]
     proposal_path.write_text(json.dumps(proposal, indent=2), encoding="utf-8")
@@ -85,10 +96,12 @@ def register(sub: argparse._SubParsersAction) -> argparse.ArgumentParser:
     sp_propose = rec_sub.add_parser("propose", help="detect duplicate-previous_hash residual; write a pending proposal")
     sp_propose.add_argument("--ledger", required=True, help="path to the META_LEDGER.md to reconcile")
     sp_propose.add_argument("--out", default=None, help="proposal output path (default: alongside the ledger)")
+    sp_propose.add_argument("--dry-run", action="store_true", help="detect + preview; write nothing (Phase 167)")
 
     sp_auth = rec_sub.add_parser("authorize", help="append the RECONCILIATION entry for a pending proposal")
     sp_auth.add_argument("--proposal", required=True, help="path to the pending proposal JSON (operator signal)")
     sp_auth.add_argument("--ledger", required=True, help="path to the META_LEDGER.md to reconcile")
+    sp_auth.add_argument("--dry-run", action="store_true", help="run all guards + preview the entry; write nothing (Phase 167)")
 
     return sp
 

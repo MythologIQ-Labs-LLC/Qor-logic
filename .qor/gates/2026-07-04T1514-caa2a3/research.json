@@ -1,0 +1,53 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-04T1514-caa2a3",
+  "ts": "2026-07-04T15:15:27Z",
+  "questions": [
+    "Where exactly does each mutating surface write, and what is the dry-run seam?",
+    "Which surfaces force growth on the over-razor qor/cli.py?",
+    "How should session rotate get dry-run visibility without threading flags through automation?"
+  ],
+  "findings": [
+    {
+      "topic": "clean seams",
+      "claim": "Five surfaces are read-compute-write with 1-2 funnel points each; dry_run guards the writes while reads/validation still execute",
+      "citation": "seal_artifacts.py:106-113; cli_handlers/reconcile.py:31,69; reconcile.py:122; changelog_stamp.py:75; changelog_backends.py:49; governance_index.py:118; install.py:103,137"
+    },
+    {
+      "topic": "session special case",
+      "claim": "rotate() is invoked internally by ~4 modules mid-automation; ship an operator-facing session_tool (current/rotate --dry-run) and leave internal rotate mutation-only",
+      "citation": "qor/scripts/session.py:96-106"
+    },
+    {
+      "topic": "cli growth bounded",
+      "claim": "Only reconcile (+2 flags, in cli_handlers) and uninstall (+1 flag) touch argparse outside module mains; install already has --dry-run",
+      "citation": "qor/cli.py:158; qor/install.py:76"
+    },
+    {
+      "topic": "scope closure",
+      "claim": "This phase completes #250 part b; parts a/c shipped in Phase 165 with live runtime evidence -- #250 closes at full scope",
+      "citation": "GH #250 progress comment (Phase 165)"
+    }
+  ],
+  "sources": [
+    "qor/scripts/seal_artifacts.py",
+    "qor/cli_handlers/reconcile.py",
+    "qor/scripts/reconcile.py",
+    "qor/scripts/changelog_stamp.py",
+    "qor/scripts/changelog_backends.py",
+    "qor/scripts/session.py",
+    "qor/scripts/governance_index.py",
+    "qor/install.py",
+    "qor/cli.py",
+    "D:/Accountable/Orko/poll.py"
+  ],
+  "brief_path": "docs\\research-brief-dry-run-modes-2026-07-04.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.114.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T15:15:27Z"
+  }
+}

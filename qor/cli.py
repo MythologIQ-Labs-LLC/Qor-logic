@@ -164,6 +164,7 @@ def _register_install_family(sub) -> None:
         "--target", type=Path, default=None,
         help="custom destination directory to uninstall from (overrides the host default path)",
     )
+    sp_uninstall.add_argument("--dry-run", action="store_true")
 
     sp_list = sub.add_parser("list", help="enumerate available or installed skills")
     sp_list.add_argument("--available", action="store_true")
@@ -316,6 +317,7 @@ def _dispatch(args: argparse.Namespace) -> int | None:
         ),
         "uninstall": lambda: _do_uninstall(
             host=args.host, scope=args.scope, target_override=args.target,
+            dry_run=args.dry_run,
         ),
         "list": lambda: _do_list(args),
         "info": lambda: _do_info(args),

@@ -13171,5 +13171,82 @@ Change class: feature (v0.113.0 -> v0.114.0). Tests: 6 behavioral in `tests/test
 
 ---
 
+### Entry #390: RESEARCH BRIEF -- Dry-run modes for mutating commands (GH #250 part b)
+
+**Timestamp**: 2026-07-04T15:15:27Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #250 part b (final scope item; perspective-reset rec 4 completion)
+**Session**: `2026-07-04T1514-caa2a3`
+**Brief**: docs/research-brief-dry-run-modes-2026-07-04.md
+
+**Content Hash**: `f8d7760353fae1ceb6ab5fb94619acc6e3dd9206d75165cfa57dd46143665564`
+**Previous Hash**: `6f0f90ff23b9df8dda271b4a3cb553e0d15254cdde20134df0ace3f01016daaa`
+**Chain Hash (Merkle seal)**: `6f6689f02697e686794f6b3c8be36bf61af40ed7c9bf96dc3470af56a7a6eba8`
+
+**Decision**: Six mutating surfaces need dry-run (install already has it). Five are clean read-compute-write seams with 1-2 write funnel points each (seal_artifacts `_write_atomic` x2; reconcile propose JSON write + authorize ledger-append/proposal-update; changelog stamp/backends atomic writes; governance-index `advance_last_reviewed`; uninstall unlinks x2) -- `dry_run` guards the writes, reads and validation ALWAYS execute, output uses the Orko `[dry] would <action>` convention. `session.rotate()` is the special case (invoked internally by ~4 modules mid-automation): ship an operator-facing `session_tool` module (current/rotate `--dry-run` via the generic runner) and leave the internal `rotate()` mutation-only. CLI growth bounded to ~3 flag lines (reconcile in cli_handlers, uninstall in cli.py); everything else lands in module mains. This phase closes GH #250 at full scope (parts a/c shipped in Phase 165 with live runtime evidence). Next: /qor-plan.
+
+---
+
+### Entry #391: GATE TRIBUNAL -- Phase 167 plan PASS (dry-run modes)
+
+**Timestamp**: 2026-07-04T15:17:45Z
+**Phase**: GATE (Phase 167)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase167-dry-run-modes.md
+**Session**: `2026-07-04T1514-caa2a3`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `404ef4bf5d335c61ac83c450870871b555774fdafb7f3ab98797a911114500e4`
+**Previous Hash**: `6f6689f02697e686794f6b3c8be36bf61af40ed7c9bf96dc3470af56a7a6eba8`
+**Chain Hash (Merkle seal)**: `25b365637a0ef95530d1e4444b0f9c0f6d40351104f24cb6420eb86b639041e2`
+
+**Decision**: PASS (L2, solo; option_b_required=false). Operationalizes research entry #390, completing GH #250: keyword-defaulted `dry_run` guards at every write funnel (seal_artifacts `_write_atomic` x2; reconcile propose/authorize x3 across two files; changelog stamp/backends; governance-index advance; uninstall unlinks x2), with reads/rendering/validation executing identically in both modes and the Orko `[dry] would <action>` preview per suppressed mutation; new operator-facing `session_tool` (current/rotate --dry-run) while internal `rotate()` stays mutation-only; `qor/cli.py` grows exactly one flag line (uninstall, mirroring install). Every LD seam re-grepped at audit time and matched exactly. All 6 tests observe both halves (zero mutation dry AND real mutation wet) plus identical validation failure on the changelog surface (OWASP A04: dry-run must not weaken validation). Next: `/qor-implement` (intent lock captured).
+
+---
+
+### Entry #392: IMPLEMENTATION -- Phase 167 dry-run modes
+
+**Timestamp**: 2026-07-04T15:23:03Z
+**Phase**: IMPLEMENT (Phase 167)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-04T1514-caa2a3`
+**Intent Lock**: `LOCKED: 2026-07-04T1514-caa2a3`
+
+**Content Hash**: `fbf9dbc66443ee1e0c562d99eaf1566fe5d5341a09a6dee3d8d9a21442a02d2d`
+**Previous Hash**: `25b365637a0ef95530d1e4444b0f9c0f6d40351104f24cb6420eb86b639041e2`
+**Chain Hash (Merkle seal)**: `bf7ac0bb53c640f2cf4bea2582210e1d3e8cc6e39aa2182c724ac17a6f9da5fb`
+
+**Decision**: Phase 167 implemented per plan, TDD-first (6 behavioral tests red, then green twice). Keyword-defaulted `dry_run` guards landed at every LD write funnel: seal_artifacts `update_files` (+ `--dry-run` flag on `--write`), reconcile `append_reconciliation_entry` + both cli_handlers subcommands (+2 flags), changelog `apply_stamp`/`stamp` (validation raises identically in dry mode -- OWASP A04 property tested), governance-index `advance_last_reviewed` (+ flag), uninstall `_do_uninstall` (+1 cli.py flag line mirroring install). New operator-facing `qor/scripts/session_tool.py` (current/rotate --dry-run) leaves the internal automation `rotate()` mutation-only per LD-4. All existing call sites unaffected (additive keyword defaults). CHANGELOG authored via /qor-document. Next: full-suite verification, then `/qor-substantiate`.
+
+---
+
+### Entry #393: SESSION SEAL -- Phase 167 dry-run modes (v0.115.0)
+
+**Timestamp**: 2026-07-04T15:28:00Z
+**Phase**: SUBSTANTIATE (Phase 167; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase167-dry-run-modes.md
+**Session**: `2026-07-04T1514-caa2a3`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `127a0ecbf745`
+
+**Scope**: Phase 167 implemented (feature; research entry #390 -> closes GH #250 at full scope, completing perspective-reset rec 4). Uniform dry-run contract at every mutating write funnel: `seal_artifacts --write --dry-run` previews the write set; `reconcile propose --dry-run` detects + previews without writing the proposal; `reconcile authorize --dry-run` runs the full drift guard AND computes the complete RECONCILIATION entry preview (number, hashes, entry id via `append_reconciliation_entry(dry_run=True)`) while leaving ledger and proposal byte-identical; changelog `apply_stamp`/`stamp` gained `dry_run=` with validation raising identically (empty-Unreleased still fails in dry mode -- the OWASP A04 no-weakened-validation property, tested); `governance-index --advance-last-reviewed --dry-run` previews the date rewrite; `uninstall --dry-run` lists the removal set (mirrors install's existing flag; the single +1 line on `qor/cli.py`). New operator-facing `qor/scripts/session_tool.py` (`current` / `rotate --dry-run`) per LD-4 -- internal automation `rotate()` untouched. All signature changes keyword-defaulted; zero existing call sites broken. Reads/rendering/validation execute identically in both modes; each suppressed mutation prints one `[dry] would <action>` line (Orko rehearsal pattern, D:/Accountable/Orko/poll.py).
+
+Change class: feature (v0.114.0 -> v0.115.0). Tests: 6 behavioral in `tests/test_dry_run_modes.py` (each observes BOTH halves: zero mutation dry, real mutation wet; plus identical validation failure on the changelog surface), green twice. Full suite results recorded at handoff. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 132/0, merge-velocity healthy/merge_ok, size-budget 0 EXCEEDED, data-API SKIP, doc-integrity strict PASS, governance-index advanced+enforce clean, feature-inventory 17/17, procedural-fidelity 1 WARN (resolved by this SYSTEM_STATE sync), secret-scan recorded at handoff. Run under `/qor-auto-dev-1` with operator-authorized auto-ship (PyPI publish held for operator environment approval). With this seal the perspective-reset autonomous-QA cluster (GH #240, #249, #250) is fully closed.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**Content Hash**: `81880d107459cf2a4c64135b01c0d2d1b322efaa064466fda4135aabfef81b75`
+**Previous Hash**: `bf7ac0bb53c640f2cf4bea2582210e1d3e8cc6e39aa2182c724ac17a6f9da5fb`
+**Chain Hash (Merkle seal)**: `f5bc985feca8f97c81368c1037c3c7d83284f7eda2a5beef8d57b5f6b1818dff`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 166; v0.114.0; SG closure requires an executable enforcer -- closure_enforcer contract + corpus lint; auto-ship authorized, PyPI publish held for operator)
+*Session: SEALED* (Phase 167; v0.115.0; dry-run rehearsal on every mutating surface -- GH #250 closed at full scope; auto-ship authorized, PyPI publish held for operator)

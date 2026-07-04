@@ -105,9 +105,10 @@ _NEXT_HEADING_RE = re.compile(r"^##\s+", re.MULTILINE)
 _PHASE_TOKEN_RE = re.compile(r"phase\s*(\d+)", re.IGNORECASE)
 
 
-def advance_last_reviewed(base: Path, date_str: str) -> bool:
+def advance_last_reviewed(base: Path, date_str: str, dry_run: bool = False) -> bool:
     """Rewrite every `**Last Reviewed**: <date>` line to date_str. The only
-    index mutation. Returns True iff the file content changed."""
+    index mutation. Returns True iff the file content changed (or, with
+    dry_run, WOULD change -- the write is suppressed; Phase 167, GH #250)."""
     index_path = Path(base) / _INDEX_REL
     if not index_path.is_file():
         return False
@@ -115,6 +116,9 @@ def advance_last_reviewed(base: Path, date_str: str) -> bool:
     new = _ADVANCE_RE.sub(rf"\g<1>{date_str}", text)
     if new == text:
         return False
+    if dry_run:
+        print(f"[dry] would advance Last Reviewed -> {date_str} in {index_path}")
+        return True
     index_path.write_text(new, encoding="utf-8")
     return True
 
@@ -186,6 +190,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="fail-closed substantiate enforcement (requires --advance-last-reviewed)")
     parser.add_argument("--cross-check-ledger", action="store_true",
                         help="read-only validate cross-check (stale-tier1 + tier3-unarchived)")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="with --advance-last-reviewed: preview the rewrite; write nothing (Phase 167)")
     args = parser.parse_args(argv)
     root = Path(args.repo_root)
 
@@ -200,7 +206,7 @@ def main(argv: list[str] | None = None) -> int:
         findings = enforce_at_seal(root, seal_date)
         return _emit(findings, fail_closed=True)
     if args.advance_last_reviewed:
-        advance_last_reviewed(root, args.advance_last_reviewed)
+        advance_last_reviewed(root, args.advance_last_reviewed, dry_run=args.dry_run)
         return 0
     findings = check_index_drift(root)
     return _emit(findings, fail_closed=False)

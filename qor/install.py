@@ -115,8 +115,13 @@ def _do_uninstall(
     host: str = "claude",
     scope: str = "repo",
     target_override: Path | None = None,
+    dry_run: bool = False,
 ) -> int:
-    """Remove previously installed files using the install record."""
+    """Remove previously installed files using the install record.
+
+    With dry_run (Phase 167; GH #250) the record is read and the removal set
+    listed, but nothing is unlinked.
+    """
     if target_override is not None:
         base = target_override
     else:
@@ -130,6 +135,13 @@ def _do_uninstall(
         return 1
 
     data = json.loads(record_path.read_text(encoding="utf-8"))
+    if dry_run:
+        existing = [e["path"] for e in data["files"] if Path(e["path"]).exists()]
+        print(f"[dry] Would remove {len(existing)} files:")
+        for p in existing:
+            print(f"[dry]   {p}")
+        print(f"[dry] would remove install record {record_path}")
+        return 0
     removed = sum(
         1 for entry in data["files"]
         if _remove_file_and_empty_parents(Path(entry["path"]), base)
