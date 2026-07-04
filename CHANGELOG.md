@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.118.0] - 2026-07-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 170 (feature; estate consolidation)**: the estate's proven ledger-format migration tool is now part of the dist (GH #252, closing the perspective-reset umbrella #247's final item). `qor.scripts.ledger_migrate --input <ledger> --output <path> [--dry-run]` normalizes the three legacy hash-markup formats (inline backticks, fenced blocks, session-seal labels) to the canonical form the verifier parses -- never in place, hashes preserved verbatim (markup moves, math does not), chain-hash mismatches against both historical formulas reported rather than corrected, partial/no-hash entries left byte-identical with an honest exit 1. Absorbed from FailSafe-Pro's `migrate_ledger_v0_14.py` with dry-run, idempotence, and same-path rejection added. Rehearsal on Qor-logic's own ledger (dry-run, nothing written): 403 entries, 269 clean migrations, 0 mismatches. Estate dispositions recorded per research entry #402: public-repo governance mirroring remains design-blocked upstream on five operator decisions (nothing to absorb yet); the SQLite ledger adapter stays with bicameral-mcp as its maintained home (interchange pointer: its `ledger-export`/`ledger-import` JSONL CLIs).
+
 ## [0.117.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -1,0 +1,43 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-04T1633-f0d980",
+  "ts": "2026-07-04T16:38:39Z",
+  "plan_path": "docs/plan-qor-phase170-estate-consolidation.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "ledger migration tool (TDD first)"
+  ],
+  "affected_files": [
+    "tests/test_ledger_migrate.py",
+    "qor/scripts/ledger_migrate.py"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ledger_migrate.py -q",
+    "python -m pytest -q",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase170-estate-consolidation.md"
+  ],
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "never in-place; own-ledger application out of scope (operator decision)",
+      "partial/no-hash entries byte-identical + reported"
+    ],
+    "non_goals": [
+      "no mirroring code (design-blocked upstream)",
+      "no SQLite absorption (bicameral-mcp product)",
+      "no cli.py change"
+    ],
+    "exclusions": [
+      "estate-patterns doc via /qor-document at seal"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.117.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T16:38:39Z"
+  }
+}

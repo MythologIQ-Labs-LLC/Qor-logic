@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-07-04T1633-f0d980",
+  "ts": "2026-07-04T16:46:46Z",
+  "verdict": "PASS",
+  "plan_path": "docs/plan-qor-phase170-estate-consolidation.md",
+  "seal_entry": 405,
+  "merkle_seal": "037f5ee7ab3202220e30a417e881f50942a692e58d7158f1f945c7181267a49c",
+  "version": "0.118.0",
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.118.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-04T16:46:46Z"
+  }
+}
