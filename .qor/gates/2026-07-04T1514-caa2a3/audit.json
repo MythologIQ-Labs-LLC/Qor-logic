@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-04T1514-caa2a3",
+  "ts": "2026-07-04T15:17:45Z",
+  "target": "docs/plan-qor-phase167-dry-run-modes.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "target_content_hash": "81880d107459cf2a4c64135b01c0d2d1b322efaa064466fda4135aabfef81b75",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.114.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-04T15:17:45Z"
+  }
+}

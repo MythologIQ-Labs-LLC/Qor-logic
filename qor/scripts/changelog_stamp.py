@@ -62,12 +62,19 @@ def stamp_unreleased(text: str, version: str, date: str) -> str:
     return text[:start] + new_section + text[body_end:]
 
 
-def apply_stamp(path: Path | str, version: str, date: str) -> Path:
-    """Read ``path``, stamp it, write atomically. Returns the path."""
+def apply_stamp(path: Path | str, version: str, date: str, dry_run: bool = False) -> Path:
+    """Read ``path``, stamp it, write atomically. Returns the path.
+
+    With dry_run (Phase 167; GH #250) all validation still runs and raises
+    identically; only the write is suppressed, with a '[dry]' preview line.
+    """
     p = Path(path)
     if not p.exists():
         raise FileNotFoundError(p)
     stamped = stamp_unreleased(p.read_text(encoding="utf-8"), version, date)
+    if dry_run:
+        print(f"[dry] would stamp {p} version={version} date={date}")
+        return p
     tmp_fd, tmp_name = tempfile.mkstemp(dir=p.parent, prefix=p.name, suffix=".tmp")
     try:
         with os.fdopen(tmp_fd, "w", encoding="utf-8") as fh:

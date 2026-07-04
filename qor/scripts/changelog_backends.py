@@ -35,15 +35,19 @@ def _prepend(text: str, version: str, date: str) -> str:
     return section + text
 
 
-def stamp(path: Path, version: str, date: str) -> str:
+def stamp(path: Path, version: str, date: str, dry_run: bool = False) -> str:
     """Stamp the changelog with a release section. Returns the format used
-    ('keepachangelog' | 'prepend')."""
+    ('keepachangelog' | 'prepend'). With dry_run (Phase 167; GH #250) both
+    backends validate/render identically and suppress only the write."""
     text = path.read_text(encoding="utf-8")
     fmt = detect_changelog_format(text)
     if fmt == "keepachangelog":
-        changelog_stamp.apply_stamp(path, version, date)
+        changelog_stamp.apply_stamp(path, version, date, dry_run=dry_run)
         return "keepachangelog"
     new_text = _prepend(text, version, date)
+    if dry_run:
+        print(f"[dry] would stamp {path} version={version} date={date}")
+        return "prepend"
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(new_text, encoding="utf-8")
     os.replace(tmp, path)

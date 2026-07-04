@@ -1,0 +1,51 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-04T1514-caa2a3",
+  "ts": "2026-07-04T15:16:47Z",
+  "plan_path": "docs/plan-qor-phase167-dry-run-modes.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "dry-run guards (TDD first)"
+  ],
+  "affected_files": [
+    "tests/test_dry_run_modes.py",
+    "qor/scripts/seal_artifacts.py",
+    "qor/scripts/reconcile.py",
+    "qor/cli_handlers/reconcile.py",
+    "qor/scripts/changelog_stamp.py",
+    "qor/scripts/changelog_backends.py",
+    "qor/scripts/session_tool.py",
+    "qor/scripts/governance_index.py",
+    "qor/install.py",
+    "qor/cli.py"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_dry_run_modes.py -q",
+    "python -m pytest -q",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase167-dry-run-modes.md"
+  ],
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "dry-run guards writes only; reads/validation identical",
+      "internal automation call sites unchanged (defaulted params)"
+    ],
+    "non_goals": [
+      "no install change (has --dry-run)",
+      "no notification channels",
+      "no nightly-health change"
+    ],
+    "exclusions": [
+      "doctrine/CHANGELOG via /qor-document at seal"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.114.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T15:16:47Z"
+  }
+}

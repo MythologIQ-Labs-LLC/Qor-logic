@@ -94,8 +94,10 @@ def _write_atomic(path: Path, text: str) -> None:
 
 def update_files(
     repo_root: Path, phase: int, snapshot: str, counts: dict[str, int] | None = None,
+    dry_run: bool = False,
 ) -> list[str]:
-    """Regenerate README badges + SYSTEM_STATE header; return paths actually changed."""
+    """Regenerate README badges + SYSTEM_STATE header; return paths that changed
+    (or, with dry_run, that WOULD change -- rendering runs, writes are suppressed)."""
     if counts is None:
         counts = collect_counts(repo_root)
     changed: list[str] = []
@@ -103,13 +105,15 @@ def update_files(
     before = readme.read_text(encoding="utf-8")
     after = render_readme_badges(before, counts)
     if after != before:
-        _write_atomic(readme, after)
+        if not dry_run:
+            _write_atomic(readme, after)
         changed.append(str(readme))
     state = repo_root / "docs" / "SYSTEM_STATE.md"
     before = state.read_text(encoding="utf-8")
     after = render_system_state_header(before, phase=phase, snapshot=snapshot)
     if after != before:
-        _write_atomic(state, after)
+        if not dry_run:
+            _write_atomic(state, after)
         changed.append(str(state))
     return changed
 
@@ -154,14 +158,17 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--repo-root", type=Path, default=Path.cwd())
     ap.add_argument("--skip-tests", action="store_true",
                     help="skip the pytest --collect-only Tests count (unit tests / fast paths)")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="with --write: render everything, preview the write set, mutate nothing")
     args = ap.parse_args(argv)
     if args.write:
         if args.phase is None or args.snapshot is None:
             ap.error("--write requires --phase and --snapshot")
         counts = collect_counts(args.repo_root, skip_tests=args.skip_tests)
-        changed = update_files(args.repo_root, args.phase, args.snapshot, counts=counts)
+        changed = update_files(args.repo_root, args.phase, args.snapshot,
+                               counts=counts, dry_run=args.dry_run)
         for c in changed:
-            print(f"regenerated: {c}")
+            print(f"[dry] would write {c}" if args.dry_run else f"regenerated: {c}")
         if not changed:
             print("OK: seal artifacts already current")
         return 0
