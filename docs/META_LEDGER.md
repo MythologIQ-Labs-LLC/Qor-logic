@@ -13402,5 +13402,82 @@ Change class: feature (v0.116.0 -> v0.117.0). Tests: 5 behavioral in `tests/test
 
 ---
 
+### Entry #402: RESEARCH BRIEF -- Estate consolidation (GH #252)
+
+**Timestamp**: 2026-07-04T16:37:19Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #252 (perspective-reset rec 6; final series item; umbrella #247)
+**Session**: `2026-07-04T1633-f0d980`
+**Brief**: docs/research-brief-estate-consolidation-2026-07-04.md
+
+**Content Hash**: `23a8509d5563654ac8ca893cde8d46f6897910a533bdbf770d477d521c0b9c19`
+**Previous Hash**: `5eb347c21d7701c1da8313e6ecce7bd829424d6ee2a93ee6be394b40dfd317b8`
+**Chain Hash (Merkle seal)**: `9b8443bd357427ffb3b293a8dc4a8de3f0598c79e0550889fa722c1af1df79d7`
+
+**Decision**: The issue's premise is one-third right, and the research corrects it: (a) FailSafe-Pro's ledger migration tool (230 lines; 13 patterns over 3 legacy hash-markup formats; extract->strip->inject canonical; never in-place; dual-formula chain validation) is the only capability that EXISTS as absorbable code -- and it is exactly what would make Qor-logic's own 32 skipped-for-non-verifiable-markup entries verifiable (read-side already tolerates the variance via legacy_chain_hash); (b) the public-repo mirroring is design-only upstream with an explicit execution gate on FIVE unresolved operator decisions (auth model, intake mode, sync trigger, key provisioning/rotation, retention) -- nothing to absorb, decisions surfaced to the operator; (c) the SQLite ledger adapter is bicameral-mcp's shipped product (schema v26, tested JSONL round-trips) -- absorbing would duplicate a maintained distribution. Phase 170 ships (a) as `qor/scripts/ledger_migrate.py` with house discipline added (--dry-run per Phase 167, idempotence, honest exit codes, Qor's current canonical output), documents (b)/(c) dispositions via /qor-document, and closes #252 with the corrected premise recorded. Applying the migration to our own ledger stays an explicit operator decision (never-in-place design makes it safe to rehearse). Next: /qor-plan.
+
+---
+
+### Entry #403: GATE TRIBUNAL -- Phase 170 plan PASS (estate consolidation)
+
+**Timestamp**: 2026-07-04T16:40:12Z
+**Phase**: GATE (Phase 170)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase170-estate-consolidation.md
+**Session**: `2026-07-04T1633-f0d980`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `0b2ac5bafe7cecdaa5f00edbd6e7a1cdc7f9c4807560ac27686b461da7b72782`
+**Previous Hash**: `9b8443bd357427ffb3b293a8dc4a8de3f0598c79e0550889fa722c1af1df79d7`
+**Chain Hash (Merkle seal)**: `ac8466f16e16f70e85e410ce95ebaa9e1b1f992bb977de3bf1b0c3da936a8ad4`
+
+**Decision**: PASS (L2, solo). Operationalizes research entry #402 (GH #252, final series item): FailSafe-Pro's proven migration transform is absorbed as `qor/scripts/ledger_migrate.py` with the house discipline the source lacks (--dry-run per Phase 167, idempotence, honest exit codes, same-path rejection, never-in-place preserved), canonical output re-homed to the form the existing verifier parses, and value proven end-to-end (LD-3: a synthetic legacy ledger goes from Skipped to OK under the REAL `ledger_hash` verify). The premise correction is recorded, not hidden: mirroring is design-blocked upstream on five operator decisions; the SQLite adapter is bicameral-mcp's maintained product -- both dispositions ship in the closure comment. Phase 169's schema-freeze lint took its first live ladder run this audit (0 unjustified). Next: `/qor-implement` (intent lock captured).
+
+---
+
+### Entry #404: IMPLEMENTATION -- Phase 170 estate consolidation
+
+**Timestamp**: 2026-07-04T16:43:30Z
+**Phase**: IMPLEMENT (Phase 170)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-04T1633-f0d980`
+**Intent Lock**: `LOCKED: 2026-07-04T1633-f0d980`
+
+**Content Hash**: `8a2b02fbb5ba9b8de0b870ba00a37bf48ed4a6d06ed4ce4b31e9bb74d514a429`
+**Previous Hash**: `ac8466f16e16f70e85e410ce95ebaa9e1b1f992bb977de3bf1b0c3da936a8ad4`
+**Chain Hash (Merkle seal)**: `1106f1604594bb58ef3d8a50368cb657e016565e314da2a37aef7a455443db0d`
+
+**Decision**: Phase 170 implemented per plan, TDD-first (7 behavioral tests red, then green twice). `qor/scripts/ledger_migrate.py` (183 lines, stdlib): the FailSafe-Pro transform ported faithfully (13 patterns, extract->strip->inject) with house discipline added -- `--dry-run` (Phase 167 contract), idempotence (canonical entries pass through byte-stable), same-path rejection, honest exit codes (1 on residual partial/no-hash), canonical output re-homed to `**Chain Hash (Merkle seal)**: \`h\`` (the form ledger_hash parses). The LD-3 acceptance test drives the REAL verifier: a synthetic three-format legacy ledger goes from 0 verified (skipped markup) to 3/3 chain-hash-verified post-migration. Live rehearsal on Qor-logic's own ledger via --dry-run (nothing written): 403 entries, 269 clean migrations, 112 partial, 22 no-hash, 0 chain-math mismatches -- the operator now has the exact worklist should they choose to apply it. CHANGELOG authored via /qor-document with the (b)/(c) estate dispositions recorded. Next: full-suite verification, then `/qor-substantiate`.
+
+---
+
+### Entry #405: SESSION SEAL -- Phase 170 estate consolidation (v0.118.0)
+
+**Timestamp**: 2026-07-04T16:48:00Z
+**Phase**: SUBSTANTIATE (Phase 170; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase170-estate-consolidation.md
+**Session**: `2026-07-04T1633-f0d980`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `c9278c77f2e0`
+
+**Scope**: Phase 170 implemented (feature; research entry #402 -> closes GH #252 with a recorded premise correction, completing the perspective-reset umbrella #247: ALL SIX recommendations from research entry #378 shipped, Phases 164-170, v0.112.0-v0.118.0). New `qor/scripts/ledger_migrate.py` (183 lines, stdlib): the FailSafe-Pro transform ported faithfully (13 patterns over the three legacy hash-markup formats; extract->strip->inject canonical) with the house discipline the source lacked -- `--dry-run` (Phase 167 contract), idempotence (canonical entries byte-stable), same-path rejection, honest exit codes (1 on residual partial/no-hash), canonical output in the form `ledger_hash` parses. Hashes preserved verbatim: markup moves, math does not; dual-formula mismatches reported never corrected. Acceptance through the REAL verifier (LD-3): synthetic three-format legacy ledger 0 -> 3/3 chain-hash-verified. Live rehearsal on our own ledger (dry-run, nothing written): 403 entries, 269 clean, 112 partial, 22 no-hash, 0 mismatches -- the exact operator worklist; applying it stays an explicit operator decision. Estate dispositions recorded on #252 at close: (b) public-repo mirroring design-blocked upstream on five operator decisions (auth model, intake mode, sync trigger, key provisioning/rotation, retention); (c) SQLite adapter remains bicameral-mcp's maintained product (JSONL interchange pointer documented).
+
+Change class: feature (v0.117.0 -> v0.118.0). Tests: 7 behavioral in `tests/test_ledger_migrate.py` (all three formats; idempotence; partial/no-hash verbatim+reported; mismatch report-not-reject; dry-run; exit codes + same-path rejection; the real-verifier round-trip), green twice. Full suite results recorded at handoff. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 132/0, merge-velocity healthy/merge_ok, size-budget 0 EXCEEDED, data-API SKIP, doc-integrity strict PASS, governance-index advanced+enforce clean, feature-inventory 17/17, procedural-fidelity 1 WARN (resolved by this SYSTEM_STATE sync), schema-freeze 0 unjustified, secret-scan recorded at handoff. Run under `/qor-auto-dev-1` with operator-authorized auto-ship (PyPI publish held for operator environment approval).
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**Content Hash**: `d41ad01e5e1e829444e6b87cc424544b366abf0bc16a0cbb3cf82645bf849163`
+**Previous Hash**: `1106f1604594bb58ef3d8a50368cb657e016565e314da2a37aef7a455443db0d`
+**Chain Hash (Merkle seal)**: `037f5ee7ab3202220e30a417e881f50942a692e58d7158f1f945c7181267a49c`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 169; v0.117.0; evidence reconstructed on demand + ceremony-artifact freeze -- GH #251 closed; auto-ship authorized, PyPI publish held for operator)
+*Session: SEALED* (Phase 170; v0.118.0; estate ledger-migration tool absorbed -- GH #252 closed, perspective-reset umbrella #247 complete; auto-ship authorized, PyPI publish held for operator)

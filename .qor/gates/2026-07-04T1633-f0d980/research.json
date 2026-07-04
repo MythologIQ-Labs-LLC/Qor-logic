@@ -1,0 +1,49 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-04T1633-f0d980",
+  "ts": "2026-07-04T16:37:19Z",
+  "questions": [
+    "Which of the three named capabilities actually exist as absorbable code?",
+    "What are the migration tool mechanics and its gaps vs house discipline?",
+    "What is the honest slicing for #252?"
+  ],
+  "findings": [
+    {
+      "topic": "premise correction",
+      "claim": "Only the migration tool exists to absorb; mirroring is design-only upstream (5 unresolved operator decisions, explicit execution gate); the SQLite adapter is already distributed via bicameral-mcp",
+      "citation": "FailSafe-Pro/scripts/migrate_ledger_v0_14.py; bicameral-factory PUBLIC_REPO_GOVERNANCE_AGGREGATION.md:75-85 + GOVERNANCE_DOC_TRACKING_PROPAGATION.md:103-115; bicameral-mcp adapters/ledger.py"
+    },
+    {
+      "topic": "migration mechanics",
+      "claim": "13 patterns over 3 legacy formats; extract->strip->inject canonical; never in-place; dual-formula chain validation reporting not rejecting; gaps: no dry-run, no idempotence guarantee, exit 0 unconditional",
+      "citation": "migrate_ledger_v0_14.py:34-66,69-124,150-161,194-225"
+    },
+    {
+      "topic": "qor value",
+      "claim": "Our own verify reports 32 entries skipped for non-verifiable markup (legacy variance the read-side already tolerates via legacy_chain_hash); migration makes them verifiable, applied only by operator decision",
+      "citation": "qor/scripts/ledger_hash.py:39-46,435"
+    },
+    {
+      "topic": "slicing",
+      "claim": "Phase 170: port as ledger_migrate with house discipline + document the two deferred thirds with named owners; #252 closes with the corrected premise recorded",
+      "citation": "brief Recommendations"
+    }
+  ],
+  "sources": [
+    "G:/MythologIQ/FailSafe-Pro/scripts/migrate_ledger_v0_14.py",
+    "G:/MythologIQ/bicameral-factory/docs/governance/PUBLIC_REPO_GOVERNANCE_AGGREGATION.md",
+    "G:/MythologIQ/bicameral-mcp/adapters/ledger.py",
+    "G:/MythologIQ/bicameral-mcp/cli/ledger_io.py",
+    "qor/scripts/ledger_hash.py",
+    "qor/seed.py"
+  ],
+  "brief_path": "docs\\research-brief-estate-consolidation-2026-07-04.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.117.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T16:37:19Z"
+  }
+}
