@@ -13248,5 +13248,82 @@ Change class: feature (v0.114.0 -> v0.115.0). Tests: 6 behavioral in `tests/test
 
 ---
 
+### Entry #394: RESEARCH BRIEF -- Risk-tiered gate depth (GH #248)
+
+**Timestamp**: 2026-07-04T15:42:54Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #248 (perspective-reset rec 1; umbrella #247)
+**Session**: `2026-07-04T1541-18963c`
+**Brief**: docs/research-brief-risk-tiered-gate-depth-2026-07-04.md
+
+**Content Hash**: `2ad6c74569f9beddc9c541767b955918f3caa557b61b6f45d219cbba3b78aa34`
+**Previous Hash**: `f5bc985feca8f97c81368c1037c3c7d83284f7eda2a5beef8d57b5f6b1818dff`
+**Chain Hash (Merkle seal)**: `bd7b201094ad532635130ae19e16041469fe2c5172d1389d80f13996e338cd2e`
+
+**Decision**: The tiering seams already exist: substitutable priors (Phase 59 ideation carve-out, gate_chain.py:102-117), audited gate-skips (Phase 75 SKIP events; Phase 59 severity-1 overrides), and the hardcoded `REQUIRED_PHASES` tuple (gate_chain_completeness.py:20) that can defer to a per-plan declaration. Three design shapes evaluated; two Governor decisions RECORDED via operator prompt: (1) Shape 3 -- the plan artifact declares `required_gate_artifacts` explicitly, completeness validates the declaration, absent field defaults to the full tuple (all history grandfathered by construction); (2) audit-skip posture -- the short chain `[plan, implement, substantiate]` is permitted ONLY for L1-risk (per qor/capabilities/risk.py routing over affected files) non-release changes, emits a severity-1 shadow event on declaration, and leaves every substantiate fail-closed gate unchanged; feature/breaking or any L2/L3 path forces the full chain. PAMA M-classes (bicameral-factory/PAMA.md:269-335) adopted as rationale, not as a new field -- no third taxonomy. Self-application: Phase 168 itself touches gate machinery (an L3 path) and must be classified full-chain by its own guard. Next: /qor-plan.
+
+---
+
+### Entry #395: GATE TRIBUNAL -- Phase 168 plan PASS (risk-tiered gate depth)
+
+**Timestamp**: 2026-07-04T15:47:02Z
+**Phase**: GATE (Phase 168)
+**Author**: Judge
+**Risk Grade**: L3
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase168-risk-tiered-gate-depth.md
+**Session**: `2026-07-04T1541-18963c`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `63e29625a58102dc7d68ae05e754d4f24cd23ffaca12b3976fa7f39983f5a1b8`
+**Previous Hash**: `bd7b201094ad532635130ae19e16041469fe2c5172d1389d80f13996e338cd2e`
+**Chain Hash (Merkle seal)**: `9dfb2afed82b75126c703d7008d38fbb819c4df51f692b1406afde2c1f2c8933`
+
+**Decision**: PASS (L3, solo; option_b_required=false). Lands the Governor's two recorded decisions (entry #394): Shape 3 -- plan.json declares `required_gate_artifacts`, absent field defaults full (grandfathers all history) -- and guarded audit-skip (short chain only for L1-risk hotfix; schema forbids release classes from omitting audit; severity-1 shadow event on declaration; substantiate ladder unchanged). Fail-closed at four consumer seams: schema (write), tier_guard (implement prior carve-out mirroring Phase 59), gate_chain_completeness (seal/CI), gate_provenance verify-committed (merge). One plan-text finding resolved pre-verdict (SG-AffectedFilesContract-A: gate_provenance's own `_REQUIRED_PHASES` copy at :45/:221 was an unenumerated CI consumer that would have failed every legal short-chain session; both copies now route through one shared declared-set reader). Self-application confirmed: Phase 168 touches L2/L3 paths, so its own guard classifies it full-chain -- the chain it is traversing. Next: `/qor-implement` (intent lock captured).
+
+---
+
+### Entry #396: IMPLEMENTATION -- Phase 168 risk-tiered gate depth
+
+**Timestamp**: 2026-07-04T15:54:15Z
+**Phase**: IMPLEMENT (Phase 168)
+**Author**: Specialist
+**Risk Grade**: L3
+**Session**: `2026-07-04T1541-18963c`
+**Intent Lock**: `LOCKED: 2026-07-04T1541-18963c`
+
+**Content Hash**: `e2ada62fecad5e167ec9a361be5d68013dd0a3c9fbbc115809567690de6c3842`
+**Previous Hash**: `9dfb2afed82b75126c703d7008d38fbb819c4df51f692b1406afde2c1f2c8933`
+**Chain Hash (Merkle seal)**: `91227ade19767159e411e69ad7c53578ef0e29582466ca88aa8a9b432d1cf7f9`
+
+**Decision**: Phase 168 implemented per plan, TDD-first (7 behavioral tests red, then green twice; adjacent gate suites 85/85). New `qor/scripts/tier_guard.py` (~110 lines): `allowed_artifact_set` (short iff risk L1 AND hotfix), `check_declaration` (names the violated grade/class), `declared_artifacts` (absent/illegal -> FULL_CHAIN, single shared reader for all consumers), `verify_session`, `emit_short_chain_event` (severity-1 gate_override, details.gate=audit). plan.schema.json: `change_class` persisted (closes the prose-only gap) + `required_gate_artifacts` with two allOf rules (mandatory-minimum membership; release classes must contain audit). gate_chain gained the implement-prior carve-out mirroring the Phase 59 ideation shape (`_check_short_chain_plan`; illegal declarations preserve the legacy missing-prior error). Both `gate_chain_completeness.check` and `gate_provenance.verify_committed` resolve the per-session declared set through the shared reader (fail-closed on illegal declarations). chain.md tier section + delegation-table row + CHANGELOG authored via /qor-document. Two fixture-shape corrections mid-pass (synthetic implement/substantiate payloads needed schema-required fields; sidecars need session_id) -- both caught by schema validation working as designed. Next: full-suite verification, then `/qor-substantiate` (full chain: this phase touches L3 paths per its own guard).
+
+---
+
+### Entry #397: SESSION SEAL -- Phase 168 risk-tiered gate depth (v0.116.0)
+
+**Timestamp**: 2026-07-04T15:58:00Z
+**Phase**: SUBSTANTIATE (Phase 168; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase168-risk-tiered-gate-depth.md
+**Session**: `2026-07-04T1541-18963c`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `2e08858218c8`
+
+**Scope**: Phase 168 implemented (feature; research entry #394 -> closes GH #248, perspective-reset rec 1). Gate depth now scales with declared risk under two operator-recorded decisions: Shape 3 (the plan artifact declares `required_gate_artifacts`; absent == full chain, grandfathering all 396 prior entries by construction) and guarded audit-skip (short chain `[plan, implement, substantiate]` exclusively for L1-risk hotfix changes per `qor/capabilities/risk.py` routing; never silent -- severity-1 `gate_override` shadow event with details.gate=audit). Fail-closed at four seams: (1) plan.schema.json -- `change_class` persisted + `required_gate_artifacts` with mandatory-minimum membership and a release-classes-must-contain-audit rule; (2) new `qor/scripts/tier_guard.py` (~110 lines; `allowed_artifact_set` / `check_declaration` / shared `declared_artifacts` reader / `verify_session` / `emit_short_chain_event`) consumed by the gate_chain implement-prior carve-out (mirrors the Phase 59 ideation shape; illegal declarations preserve the legacy missing-prior error); (3) `gate_chain_completeness.check` and (4) `gate_provenance.verify_committed` both resolve the per-session declared set through the ONE shared reader -- the audit's pre-verdict finding (gate_provenance's duplicate `_REQUIRED_PHASES` copy would have failed every legal short-chain session at the CI merge boundary) is thereby structurally closed. chain.md tier section + delegation-table short-chain row via /qor-document. Self-application: this phase touches L3 paths; its own guard classified it full-chain -- the ceremony it traversed (audit PASS at entry #395).
+
+Change class: feature (v0.115.0 -> v0.116.0). Tests: 7 behavioral in `tests/test_tier_guard.py` (every guard cell, both schema conditionals, all three consumers end-to-end, event emission), green twice; adjacent gate suites 85/85. Full suite results recorded at handoff. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 132/0, merge-velocity healthy/merge_ok, size-budget 0 EXCEEDED, data-API SKIP, doc-integrity strict PASS, governance-index advanced+enforce clean, feature-inventory 17/17, procedural-fidelity 1 WARN (resolved by this SYSTEM_STATE sync), secret-scan recorded at handoff. Run under `/qor-auto-dev-1` with operator-authorized auto-ship (PyPI publish held for operator environment approval).
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**Content Hash**: `092a481806785f6bcaaf19a3858b0775beca8e97dad1359e0308e2fe3ce253c3`
+**Previous Hash**: `91227ade19767159e411e69ad7c53578ef0e29582466ca88aa8a9b432d1cf7f9`
+**Chain Hash (Merkle seal)**: `5ed895cb3f7068febe5a1febd268b97ce9bdcc5961702c8512bc291893e59a38`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 167; v0.115.0; dry-run rehearsal on every mutating surface -- GH #250 closed at full scope; auto-ship authorized, PyPI publish held for operator)
+*Session: SEALED* (Phase 168; v0.116.0; gate depth scales with declared risk -- GH #248 closed; auto-ship authorized, PyPI publish held for operator)

@@ -1,9 +1,9 @@
-# AUDIT REPORT -- Phase 167 (dry-run modes; closes GH #250)
+# AUDIT REPORT -- Phase 168 (risk-tiered gate depth)
 
 **Verdict**: PASS
-**Risk Grade**: L2
-**Target**: docs/plan-qor-phase167-dry-run-modes.md
-**Session**: `2026-07-04T1514-caa2a3`
+**Risk Grade**: L3
+**Target**: docs/plan-qor-phase168-risk-tiered-gate-depth.md
+**Session**: `2026-07-04T1541-18963c`
 **Mode**: solo (option_b_required=false; codex-plugin capability shortfall logged)
 
 ## Pass Results
@@ -11,23 +11,23 @@
 | Pass | Result | Notes |
 |---|---|---|
 | Prompt Injection | PASS | canaries exit 0 |
-| Security (L3) | PASS | No new privilege; dry-run REDUCES blast radius; validation identical in both modes (no fail-open) |
-| OWASP Top 10 | PASS | A04 honored: dry-run must not weaken validation -- the plan's D4 requires identical failure behavior, tested |
+| Security (L3) | PASS with L3 grade | The plan touches gate machinery (an L3 surface by its own guard's rules) -- graded L3 accordingly. The security posture is fail-closed at every consumer: an ILLEGAL short declaration is rejected by schema (release classes), by tier_guard at implement time, by completeness at seal/CI, and by provenance verify-committed at merge. Release classes (feature/breaking) can NEVER skip audit -- schema-level allOf. Substantiate ladder unchanged for all tiers. |
+| OWASP Top 10 | PASS | A04 (insecure design / fail-open) is the central risk and is closed four ways as above; skipped audits are never silent (severity-1 shadow event per LD-5) |
 | Ghost UI / Live-Progress | PASS | No UI surface |
-| Section 4 Razor | PASS | All changes are keyword-defaulted params + guards; `qor/cli.py` grows exactly 1 flag line (mirrors install); new session_tool is a small leaf module |
-| Self-Application | PASS | The plan itself follows the reads-always/writes-guarded discipline it enforces; no prose-only commitments (every surface has a named test observing both halves) |
-| Test Functionality | PASS | All 6 tests invoke the units and assert BOTH no-mutation (dry) and real mutation (wet) plus identical validation failure; no presence-only assertions |
-| Dependency | PASS | stdlib only |
-| Macro Architecture | PASS | Guards live at the existing write funnels; internal automation call sites untouched via defaulted params (LD-7 additive-only) |
+| Section 4 Razor | PASS | tier_guard <120 lines; seam edits ~15/~12/~10 lines; no file crosses limits |
+| Self-Application | PASS | Phase 168 itself touches gate_chain/completeness/provenance -- L2/L3 paths -- so its own guard classifies it FULL-chain, which is exactly the chain it is traversing (this audit exists). The discipline the plan introduces is applied to the plan. |
+| Test Functionality | PASS | All 7 tests invoke units and assert outputs across every guard cell, both consumers, the schema conditionals, and the event emission; no presence-only assertions |
+| Dependency | PASS | stdlib + in-repo reuse (risk routing, shadow_process, validate_gate_artifact) |
+| Macro Architecture | PASS | One new leaf module; the declared-set reader is shared (single source) by the three consumers; no new taxonomy axis -- composes the two existing ones |
 | Feature Test Coverage | EXEMPT | feature_inventory_touches empty |
-| Infrastructure Alignment | PASS | Every LD seam re-grepped this audit: `_write_atomic` def+2 call sites; reconcile write_text at cli_handlers 31/69 + scripts 122; changelog os.replace at stamp 75 / backends 49; governance_index write_text at 118; install unlink at 103/137; install --dry-run precedent confirmed |
-| Runtime Contract Walk | WARN-only | Expected WARNs on the NEW session_tool module |
-| Filter-Stage Ordering | PASS | Validate -> render -> (guarded) write order preserved on every surface |
-| Orphan Detection | PASS | session_tool reached via generic runner + tests; all other changes are edits to reached modules |
+| Infrastructure Alignment | PASS | Every LD grep-verified this audit: chain/prior/ideation-carve-out at gate_chain.py:28/50/59/102; REQUIRED_PHASES at completeness:20,75 AND gate_provenance:45,221 (the initially-missed CI consumer, resolved pre-verdict); risk rules at risk.py:17-44,55; change_class regex at governance_helpers.py:20 |
+| Runtime Contract Walk | WARN-only | Expected WARNs on the NEW tier_guard module |
+| Filter-Stage Ordering | PASS | Guard order explicit: schema (write time) -> tier_guard (implement prior) -> completeness/provenance (seal/CI/merge) -- each later stage assumes only earlier-stage outputs |
+| Orphan Detection | PASS | tier_guard reached via gate_chain + completeness + provenance + tests |
 
-## Pre-audit lints
+## Findings resolved pre-verdict
 
-iteration 0; plan_test 0; plan_grep clean; signature-widening 0 (all params keyword-defaulted); feature-tdd 0; sg_closure_lint 10 known findings (WARN-wrapped; the standing backfill worklist, unchanged by this phase); unchanged-plan no-skip.
+1. **Plan-text (SG-AffectedFilesContract-A)**: LD-6's initial caller enumeration missed `gate_provenance.py` (its own `_REQUIRED_PHASES` copy at :45 walked per session at :221) -- the CI merge gate would have failed every legal short-chain session. Governor amended in-dialogue: gate_provenance added to Affected Files with the same declared-set resolution + a dedicated test. No cycle consumed. (Recorded also as evidence for the duplicated-constant smell: two copies of the phase tuple existed; the fix routes both through one shared reader.)
 
 ## Documentation Drift
 
@@ -40,4 +40,4 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ## Decision
 
-PASS (L2, solo). The plan completes GH #250 with the uniform dry-run contract at every write funnel (reads/validation identical, writes guarded, `[dry]` preview per suppressed mutation) and resolves the session-rotate awkwardness honestly: internal automation keeps mutation-only `rotate()`, operators get a dedicated `session_tool` with dry-run visibility. All signature changes are keyword-defaulted (zero existing call-site breakage). Next: `/qor-implement`.
+PASS (L3, solo). The plan lands the Governor's two recorded decisions (Shape 3 declared artifact set; guarded L1-hotfix audit-skip) at the four consumer seams with fail-closed rejection of illegal declarations at every one, never-silent skip evidence, and total grandfathering by construction (absent field == full chain). Next: `/qor-implement`.

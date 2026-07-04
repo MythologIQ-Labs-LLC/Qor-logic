@@ -64,6 +64,17 @@
         "residual_risks": { "type": "array", "items": { "type": "string" } }
       }
     },
+    "change_class": {
+      "enum": ["hotfix", "feature", "breaking"],
+      "description": "Phase 168 (GH #248): the release class, previously carried only in plan prose (governance_helpers regex). Persisted here so the tier rules below are schema-enforceable."
+    },
+    "required_gate_artifacts": {
+      "type": "array",
+      "items": { "enum": ["plan", "audit", "implement", "substantiate"] },
+      "minItems": 3,
+      "uniqueItems": true,
+      "description": "Phase 168 (GH #248, Shape 3 per research entry #394): the gate artifacts THIS phase must produce. Absent == the full chain (grandfathers all prior sessions). The short chain [plan, implement, substantiate] is permitted only for L1-risk hotfix changes (tier_guard verifies at implement time; completeness + provenance verify at seal/CI/merge); declaring it emits a severity-1 gate_override shadow event."
+    },
     "ai_provenance": { "$ref": "_provenance.schema.json" },
     "feature_inventory_touches": {
       "type": "array",
@@ -88,6 +99,31 @@
     {
       "if": { "properties": { "high_risk_target": { "const": true } }, "required": ["high_risk_target"] },
       "then": { "required": ["impact_assessment"] }
+    },
+    {
+      "if": { "required": ["required_gate_artifacts"] },
+      "then": {
+        "properties": {
+          "required_gate_artifacts": {
+            "allOf": [
+              { "contains": { "const": "plan" } },
+              { "contains": { "const": "implement" } },
+              { "contains": { "const": "substantiate" } }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "change_class": { "enum": ["feature", "breaking"] } },
+        "required": ["change_class", "required_gate_artifacts"]
+      },
+      "then": {
+        "properties": {
+          "required_gate_artifacts": { "contains": { "const": "audit" } }
+        }
+      }
     }
   ]
 }

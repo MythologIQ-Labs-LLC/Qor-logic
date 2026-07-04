@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.116.0] - 2026-07-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 168 (feature; risk-tiered gate depth)**: gate depth now scales with declared risk (GH #248). A plan may declare `required_gate_artifacts`; the short chain `[plan, implement, substantiate]` -- omitting only the adversarial audit -- is permitted exclusively for L1-risk hotfix changes (risk routing over the plan's affected files via `qor.capabilities.risk`), enforced fail-closed at four seams: the plan schema forbids release classes from omitting audit, new `qor.scripts.tier_guard` verifies the declaration when implement resolves its prior, and both `gate_chain_completeness` and `gate_provenance verify-committed` honor legal declarations at seal/CI/merge (absent or illegal declarations resolve to the full chain, grandfathering every prior session by construction). Declaring the short chain emits a severity-1 shadow event -- an audit skip is never silent. Design: Shape 3 (declared artifact set) selected by the operator; PAMA M-classes (bicameral-factory) adopted as rationale without adding a new taxonomy.
+
 ## [0.115.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
