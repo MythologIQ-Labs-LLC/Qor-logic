@@ -163,6 +163,7 @@ qor-logic scripts plan_data_round_trip_lint --plan "$PLAN_PATH" --repo-root . ||
 qor-logic scripts plan_live_progress_lint --repo-root . || true
 qor-logic scripts plan_feature_tdd_lint --plan "$PLAN_PATH" --repo-root . || true
 qor-logic scripts sg_closure_lint || true
+qor-logic scripts gate_schema_freeze_lint --session "$SESSION_ID" || true
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.

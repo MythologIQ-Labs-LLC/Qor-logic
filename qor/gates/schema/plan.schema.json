@@ -68,6 +68,18 @@
       "enum": ["hotfix", "feature", "breaking"],
       "description": "Phase 168 (GH #248): the release class, previously carried only in plan prose (governance_helpers regex). Persisted here so the tier rules below are schema-enforceable."
     },
+    "new_ceremony_artifacts": {
+      "type": "array",
+      "description": "Phase 169 (GH #251): net-new gate-artifact schemas this plan introduces, each with an L3-grade justification (>= 100 chars). gate_schema_freeze_lint flags unregistered schemas lacking this declaration -- ceremony artifacts accrete cost forever (research entry #378).",
+      "items": {
+        "type": "object",
+        "required": ["name", "justification"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z0-9_]+(\\.schema\\.json)?$" },
+          "justification": { "type": "string", "minLength": 100 }
+        }
+      }
+    },
     "required_gate_artifacts": {
       "type": "array",
       "items": { "enum": ["plan", "audit", "implement", "substantiate"] },

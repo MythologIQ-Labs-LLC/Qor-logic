@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-07-04T1612-9ee76f",
+  "ts": "2026-07-04T16:23:11Z",
+  "verdict": "PASS",
+  "plan_path": "docs/plan-qor-phase169-evidence-reconstruction.md",
+  "seal_entry": 401,
+  "merkle_seal": "5eb347c21d7701c1da8313e6ecce7bd829424d6ee2a93ee6be394b40dfd317b8",
+  "version": "0.117.0",
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.117.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-04T16:23:11Z"
+  }
+}

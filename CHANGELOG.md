@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.117.0] - 2026-07-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 169 (feature; evidence reconstruction)**: audit evidence is now reconstructed on demand instead of accreting new ceremony (GH #251; the Decision-BOM posture from Microsoft's agent-governance-toolkit ADR 0018). New `qor.scripts.evidence_bundle --session <sid> | --phase <N>` joins the eight already-recorded signals for a sealed phase (ledger seal entry, gate artifacts honoring Phase 168 short-chain declarations, provenance sidecars, audit history, intent lock, shadow events across both logs, CHANGELOG section, seal commit/tag) into one machine-readable bundle with partial reconstruction explicitly surfaced (`completeness.missing` names absent signals; collectors never raise, nothing is fabricated). Companion freeze rule: `qor/gates/SCHEMA_REGISTRY.json` baselines the 19 existing gate schemas, the new WARN-only `gate_schema_freeze_lint` flags any net-new schema lacking registration or a plan-declared `new_ceremony_artifacts` justification (100+ chars) at every audit. Live self-application: the previous seal (Phase 168) reconstructs 8/8 signals.
+
 ## [0.116.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
