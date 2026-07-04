@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-07-04T0729-4d0fb9",
+  "ts": "2026-07-04T07:43:07Z",
+  "verdict": "PASS",
+  "plan_path": "docs/plan-qor-phase165-autonomous-qa-nightly.md",
+  "seal_entry": 385,
+  "merkle_seal": "1dc6ecb2a3cfe253de1a3c795b04470029c7df6c1247518cded1cd84c015ed1b",
+  "version": "0.113.0",
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.113.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-04T07:43:07Z"
+  }
+}

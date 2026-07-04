@@ -1,41 +1,37 @@
-# AUDIT REPORT -- Phase 164 (seal-artifact generation: generate, don't assert)
+# AUDIT REPORT -- Phase 165 (autonomous QA nightly self-check)
 
 **Verdict**: PASS
 **Risk Grade**: L2
-**Target**: docs/plan-qor-phase164-seal-artifact-generation.md
-**Session**: `2026-07-04T0600-6a2a11`
+**Target**: docs/plan-qor-phase165-autonomous-qa-nightly.md
+**Session**: `2026-07-04T0729-4d0fb9`
 **Mode**: solo (option_b_required=false; codex-plugin capability shortfall logged)
 
 ## Pass Results
 
 | Pass | Result | Notes |
 |---|---|---|
-| Prompt Injection | PASS | `prompt_injection_canaries` exit 0 over ARCHITECTURE_PLAN, META_LEDGER, CONCEPT, plan |
-| Security (L3) | PASS | No auth/credential/DB surface; atomic tmp+`os.replace` writes; stdlib only |
-| OWASP Top 10 | PASS | A03: argv-only `main`, no subprocess/shell; A08: no deserialization (markdown text I/O) |
-| Ghost UI / Live-Progress | PASS | No UI surface |
-| Section 4 Razor | PASS | New module targets <200 lines, functions <=40; `qor/cli.py` (383 lines, over-razor) deliberately untouched per LD-4 |
-| Self-Application | PASS | Plan's own discipline (no live repo-state assertions in suite) is honored by its test list after the pre-verdict amendment (wiring test declares its `# prose-lint: ok=` exemption) |
-| Test Functionality | PASS | 9 behavioral tests invoke units and assert outputs (renderers, write/check round-trip, exit codes); `prose_test_lint --enforce` exit 0 (53 exempted-with-reason, 0 unexplained); no closed-enum taxonomy declared |
-| Dependency | PASS | Zero new dependencies (stdlib + in-repo `badge_currency` reuse) |
-| Macro Architecture | PASS | One-direction import (`seal_artifacts` -> `badge_currency`); check/write concerns un-complected across modules |
-| Feature Test Coverage | EXEMPT | `feature_inventory_touches` empty; governance tooling + test refactor only |
-| Infrastructure Alignment | PASS | All 8 Locked Decisions carry inline grep evidence re-verified this audit (badge_currency defs 22-135; README badges 10/14/15/16/17; SYSTEM_STATE 3/5; SKILL.md Steps 6/6.5 at 346/384; dist_compile main at 166) |
-| Runtime Contract Walk | WARN-only | 2 expected forward/backward WARNs on `qor.scripts.seal_artifacts` (module declared NEW in Affected Files) |
-| Filter-Stage Ordering | PASS | No filter pipeline; independent renderers |
-| Orphan Detection | PASS | Module reached via `qor-logic scripts` runner (established path for all `qor/scripts` peers), tests, and SKILL.md invocation |
+| Prompt Injection | PASS | canaries exit 0 over governance docs + plan |
+| Security (L3) | PASS | `issues: write` scoped to the new workflow only; read-only check ladder; no credentials in code; GITHUB_TOKEN implicit |
+| OWASP Top 10 | PASS with binding note | A03 (GitHub Actions script injection): the issue-comment step MUST pass the status JSON via an `env:` variable and quote it (`"$JSON_PAYLOAD"`) -- NEVER inline `${{ steps.*.outputs.* }}` inside a `run:` body. Binding on /qor-implement. |
+| Ghost UI / Live-Progress | PASS | no UI surface |
+| Section 4 Razor | PASS | status_json targets <=200 lines; `qor/cli.py` untouched per non_goals |
+| Self-Application | PASS | the plan's own discipline (deterministic aggregate, self-test-before-trust) is embodied in its test list; no originating_remediation field |
+| Test Functionality | PASS | all 6 status_json tests invoke the unit and assert outputs; wiring test asserts workflow structure with named failure modes; prose_test_lint --enforce exit 0 (53 exempted, 0 unexplained) |
+| Dependency | PASS | stdlib only; wiring test asserts via text/regex, no YAML parser dependency added |
+| Macro Architecture | PASS | one new leaf module; workflow consumes it via `python -m`; no cycles |
+| Feature Test Coverage | EXEMPT | feature_inventory_touches empty (governance tooling/CI automation) |
+| Infrastructure Alignment | PASS | LD-1 module mains re-verified (256/552/147/90/233/180); LD-2 re-grepped this audit: zero `schedule:` and zero `issues: write` in .github/workflows; LD-3 generic-runner precedent (Phase 164); LD-4 lifecycle idioms cited to drift-detection.yml:70-111; LD-5 SHA pins from ci.yml; LD-6 registry command string matches Phase 89 registry |
+| Runtime Contract Walk | WARN-only | 2 expected WARNs on the NEW module |
+| Filter-Stage Ordering | PASS | aggregate runner has independent checks, no ordered filter pipeline; workflow enforces self-test-before-status (declared order, wiring-tested) |
+| Orphan Detection | PASS | module reached via generic runner + workflow + tests |
 
-## Pre-audit lints (WARN-only ladder)
+## Pre-audit lints
 
-`plan_iteration_status_lint` 0; `plan_test_lint` 0; `plan_grep_lint` 0; `plan_text_consistency_lint` 0; `delivery_branch_lint` 0; `plan_signature_widening_caller_lint` 0; `plan_data_round_trip_lint` 0; `plan_feature_tdd_lint` 0; `plan_live_progress_lint` 0; `ci_coverage_lint` 9 pre-existing WARNs (workflow commands not covered by any plan's CI Commands; same posture as Phase 163, which also declared no exemptions section); `workspace_fragility_check` medium/branch_only (isolated phase branch in use; scope held to plan).
-
-## Findings resolved pre-verdict
-
-1. **Plan-text**: the single retained wiring test is a prose-substring test; without a declared `# prose-lint: ok=<reason>` allowlist comment the ENFORCED `prose_test_lint` would VETO it as an unexplained presence-only finding at the next audit/seal. Governor amended the plan in-dialogue to declare the exemption comment (doctrine-verification-closure-integrity contract). No audit cycle consumed; no VETO issued.
+iteration 0; plan_test 0; plan_grep 4 WARNs (all the declared-NEW `qor.scripts.status_json` path -- expected); consistency 0; delivery_branch 0; signature-widening 0; round-trip 0; feature-tdd 0; live-progress 0; unchanged-plan no-skip; fragility medium/branch_only (isolated phase branch; scope held).
 
 ## Documentation Drift
 
-(clean -- `doc_integrity.render_drift_section` returned empty)
+(clean)
 
 ## Process Pattern Advisory
 
@@ -44,4 +40,4 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ## Decision
 
-PASS (L2, solo). The plan operationalizes research entry #378 recommendation 2 with a clean seam: two pure renderers + atomic updaters in a new `qor/scripts/seal_artifacts.py` (checker reuse from `badge_currency`, no CLI growth per LD-4), substantiate Steps 6/6.5 become scripted `--write`/`--check` invocations, and the 13-member seal-fragile test class is retired in favor of 9 behavioral tests + 1 exempted wiring lock, with currency enforcement relocated to the seal gate and a CI step where repo state is stable. TDD order honored (test files listed first). Next: `/qor-implement`.
+PASS (L2, solo). The plan ports a proven autonomous-QA recipe with clean seams: a stdlib aggregate runner with a final-line JSON contract and a self-test mode (closing GH #240), and a scheduled workflow with idempotent GitHub-issue lifecycle (advancing GH #250 parts a/c). Scope integrity honored: #250 stays open until the dry-run follow-on ships (half-measure-closure countermeasure). One binding OWASP A03 note for implement (env-var JSON passing). D4.d waiver on live-schedule verification carries a follow-up (post-merge workflow_dispatch evidence on #250). Next: `/qor-implement`.

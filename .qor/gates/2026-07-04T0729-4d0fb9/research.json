@@ -1,0 +1,52 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-04T0729-4d0fb9",
+  "ts": "2026-07-04T07:30:34Z",
+  "questions": [
+    "What are the exact mechanics of the Accountable drift-detection + issue-lifecycle pattern?",
+    "Which Qor-logic health checks are automatable tonight, and what gaps block aggregation?",
+    "How should #250 scope split to avoid a half-measure closure?"
+  ],
+  "findings": [
+    {
+      "topic": "portable pattern",
+      "claim": "Drift-detection recipe is complete: cron + self-test against ephemeral state + JSON-last-line contract + idempotent gh issue search/comment/create/close",
+      "citation": "D:/Accountable/Accountable-App-3.0/.github/workflows/drift-detection.yml lines 3-111; scripts/drift-check.sh lines 7-115"
+    },
+    {
+      "topic": "qor surface",
+      "claim": "11 CLI-invocable read-only checks with clean exits, but text-only output, no scheduled workflow, no issues:write, no aggregate JSON",
+      "citation": "qor/scripts/governance_health.py:256 et al; .github/workflows/*.yml"
+    },
+    {
+      "topic": "dependency",
+      "claim": "The nightly workflow needs a machine-readable aggregate first -- exactly GH #240; build it in the same phase",
+      "citation": "GH #240; qor/cli.py capabilities JSON precedent"
+    },
+    {
+      "topic": "scope integrity",
+      "claim": "Phase 165 ships aggregate + nightly workflow + self-test (closes #240, advances #250); dry-run modes for 6 mutating commands go to phase 166 to close #250 fully",
+      "citation": "docs/research-brief-half-measure-closures-2026-05-29.md"
+    }
+  ],
+  "sources": [
+    "D:/Accountable/Accountable-App-3.0/.github/workflows/drift-detection.yml",
+    "D:/Accountable/Accountable-App-3.0/scripts/drift-check.sh",
+    "D:/Accountable/Orko/poll.py",
+    "qor/scripts/governance_health.py",
+    "qor/scripts/seal_artifacts.py",
+    "qor/reliability/gate_chain_completeness.py",
+    "qor/scripts/gate_provenance.py",
+    ".github/workflows/ci.yml",
+    "tests/test_packaging_install.py"
+  ],
+  "brief_path": "docs\\research-brief-autonomous-qa-nightly-2026-07-04.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.112.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T07:30:34Z"
+  }
+}

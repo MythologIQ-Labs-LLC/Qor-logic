@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.113.0] - 2026-07-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 165 (feature; autonomous QA nightly)**: governance health now verifies itself with zero operator engagement. New `qor.scripts.status_json` runs the read-only check ladder (governance-health, ledger chain, seal-artifact currency, gate-chain completeness, provenance, governance index) in-process and emits a deterministic machine-readable JSON verdict as its final output line (closes the `status --json` ask, GH #240), with a `--self-test` mode that validates the aggregation logic before any consumer trusts a live verdict. New `.github/workflows/nightly-health.yml` runs the ladder plus the packaging smoke nightly (and on demand): drift automatically opens or updates a single "Nightly governance health" issue with the JSON payload, and recovery automatically closes it (GH #250 part a; pattern ported from the Accountable drift-detection reference).
+
 ## [0.112.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

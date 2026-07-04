@@ -13017,5 +13017,82 @@ Change class: feature (v0.111.1 -> v0.112.0). Tests: 9 behavioral in `tests/test
 
 ---
 
+### Entry #382: RESEARCH BRIEF -- Autonomous QA nightly self-check (GH #250)
+
+**Timestamp**: 2026-07-04T07:30:34Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #250 (autonomous QA layer); GH #240 discovered as an in-phase dependency
+**Session**: `2026-07-04T0729-4d0fb9`
+**Brief**: docs/research-brief-autonomous-qa-nightly-2026-07-04.md
+
+**Content Hash**: `e8d57f87d61bc4c3bc55f19d722a7a58e79e4d3f82861352a8268618c66f4033`
+**Previous Hash**: `d61a32d5dbd9a0940450b21a54170685bb58b056df88f9df85ded19fa301b24e`
+**Chain Hash (Merkle seal)**: `fbc4d119bedf1510d0cc8eab699d957d3d7069f5e307e00aded2fe906cd00885`
+
+**Decision**: The Accountable drift-detection pattern is port-ready end-to-end (cron + workflow_dispatch; checker self-test against ephemeral state with three validation gates; text-then-one-JSON-line output contract extracted via grep; idempotent gh-issue lifecycle: search title-key + state open, comment-if-exists, create-with-labels-if-not, close-with-comment when clear). Qor-logic has 11 CLI-invocable read-only health checks with clean 0/1 exits but text-only output, no scheduled workflow, no issues:write permission, and no machine-readable aggregate -- the aggregate is exactly GH #240. Recommendation: Phase 165 ships the aggregate status JSON (closes #240) + nightly-health workflow with auto issue lifecycle + checker self-test (advances #250 parts a/c); a follow-on phase ships --dry-run for the 6 mutating commands (seal_artifacts --write, reconcile authorize, changelog stamp, session rotate, governance-index --advance-last-reviewed, uninstall) and then closes #250 at full scope -- avoiding the half-measure-closure pattern. Nightly v1 check ladder: governance_health, ledger verify, seal_artifacts --check --skip-tests, gate_chain_completeness, gate_provenance verify-committed, governance_index --cross-check-ledger, packaging smoke; branch-context signals (merge-velocity, fragility) and plan-scoped doc_integrity excluded as noisy/inapplicable on a bare main checkout. Next: /qor-plan.
+
+---
+
+### Entry #383: GATE TRIBUNAL -- Phase 165 plan PASS (autonomous QA nightly self-check)
+
+**Timestamp**: 2026-07-04T07:34:46Z
+**Phase**: GATE (Phase 165)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase165-autonomous-qa-nightly.md
+**Session**: `2026-07-04T0729-4d0fb9`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `cf69a4cc0ec4abdd90da61638666a16876302785dd10e803ac70880bbe60cf42`
+**Previous Hash**: `fbc4d119bedf1510d0cc8eab699d957d3d7069f5e307e00aded2fe906cd00885`
+**Chain Hash (Merkle seal)**: `e4f9772e09d23a3467ddfdaf402d74aee7e0898c014ec319cf198d5fe2ab9643`
+
+**Decision**: PASS (L2, solo; option_b_required=false). Operationalizes research entry #382: a stdlib aggregate status runner (`qor/scripts/status_json.py`; six-check ladder, final-line JSON contract, --self-test mode) closing GH #240, plus `.github/workflows/nightly-health.yml` (cron + workflow_dispatch; issues:write scoped to that workflow; self-test-before-status ordering; idempotent gh-issue lifecycle ported verbatim from the Accountable drift-detection reference) advancing GH #250 parts a/c. Scope-integrity: #250 remains open pending the dry-run follow-on (half-measure-closure countermeasure). One binding OWASP A03 implementation note: the issue-comment step passes the status JSON via env-var, never inline `${{ }}` interpolation in a run body. D4.d waiver on live-schedule verification with a post-merge workflow_dispatch follow-up on #250. All six Locked Decisions grep-verified (LD-2 re-grepped: zero schedule/issues:write in workflows today). Next: `/qor-implement`.
+
+---
+
+### Entry #384: IMPLEMENTATION -- Phase 165 autonomous QA nightly
+
+**Timestamp**: 2026-07-04T07:39:30Z
+**Phase**: IMPLEMENT (Phase 165)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-04T0729-4d0fb9`
+**Intent Lock**: `LOCKED: 2026-07-04T0729-4d0fb9`
+
+**Content Hash**: `1271ee56999470113979b6e625d9a6afd6ca916c5a1eb133dde140e786ce4f94`
+**Previous Hash**: `e4f9772e09d23a3467ddfdaf402d74aee7e0898c014ec319cf198d5fe2ab9643`
+**Chain Hash (Merkle seal)**: `8de7d79d61e16b69904f9c953aaadfee54d241d78c8ee0951581fa6af01287e6`
+
+**Decision**: Phase 165 implemented per plan, TDD-first (6 behavioral tests red, then `qor/scripts/status_json.py` green twice; 145 lines, stdlib only). Live-run verification surfaced one real defect the synthetic tests could not: `ledger_hash.main()` takes no argv parameter, so the runner is now signature-aware (inspect + sys.argv patch fallback). The live aggregate correctly reports the single expected mid-phase FAIL (seal-artifact currency; badge staleness that Step 6 --write resolves at seal) with all other checks OK -- the JSON contract and exit semantics observed working end-to-end. `nightly-health.yml` written per plan Phase 2 with the audit's binding OWASP A03 note honored (status JSON reaches gh via env: HEALTH_JSON, never inline `${{ }}` in a run body -- and the wiring test enforces this property against every run body in the file). CI-surface registry rows added for the two new commands; CHANGELOG [Unreleased] authored via /qor-document. Next: full-suite verification, then `/qor-substantiate`.
+
+---
+
+### Entry #385: SESSION SEAL -- Phase 165 autonomous QA nightly (v0.113.0)
+
+**Timestamp**: 2026-07-04T07:45:00Z
+**Phase**: SUBSTANTIATE (Phase 165; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase165-autonomous-qa-nightly.md
+**Session**: `2026-07-04T0729-4d0fb9`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `5a84de93384f`
+
+**Scope**: Phase 165 implemented (feature; autonomous QA nightly; research entry #382 -> GH #250 part a + closes GH #240). New `qor/scripts/status_json.py` (145 lines, stdlib): six-check read-only ladder run in-process via a signature-aware module runner (live-run verification caught that `ledger_hash.main()` takes no argv; the runner now inspects and patches sys.argv for such mains), human lines + exactly one JSON object as the final stdout line, exit 0 iff overall_ok, plus `--self-test` validating the aggregation logic against a synthetic pass+fail registry before any consumer trusts a live verdict. New `.github/workflows/nightly-health.yml`: cron 09:00 UTC + workflow_dispatch; permissions contents:read + issues:write only; self-test -> aggregate -> packaging smoke; idempotent gh-issue lifecycle on the title key "Nightly governance health" (comment-if-exists, create-with-labels-if-not, close-with-comment on recovery); the status JSON reaches gh via env-var passing per the audit's binding OWASP A03 note, and the wiring test enforces that property against every run body. CI-surface registry rows added (forward-maintenance). Scope integrity: GH #250 stays OPEN for the dry-run follow-on phase; GH #240 closes with the canonical invocation documented (`qor-logic scripts status_json` / `python -m qor.scripts.status_json`).
+
+Change class: feature (v0.112.0 -> v0.113.0). Tests: 6 behavioral in `tests/test_status_json.py` + 2 structural property tests in `tests/test_nightly_health_wiring.py` (incl. the A03 no-inline-interpolation guard), green twice. Full suite results recorded at handoff. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 132/0, merge-velocity healthy/merge_ok, size-budget 0 EXCEEDED, data-API SKIP, doc-integrity strict PASS, governance-index advanced+enforce clean, feature-inventory 17/17 verified, procedural-fidelity 1 WARN (resolved by this SYSTEM_STATE sync), secret-scan recorded at handoff. D4.d waiver: the live schedule cannot fire pre-merge; post-merge workflow_dispatch evidence lands on GH #250. Run under `/qor-auto-dev-1` discipline with operator-authorized auto-ship (commit/push/PR/merge on green CI/tag; PyPI publish held for operator environment approval).
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**Content Hash**: `f54ded1f93e4f845304aa6f330f86852d1dfb77d2ef19a8267e71fed2384081e`
+**Previous Hash**: `8de7d79d61e16b69904f9c953aaadfee54d241d78c8ee0951581fa6af01287e6`
+**Chain Hash (Merkle seal)**: `1dc6ecb2a3cfe253de1a3c795b04470029c7df6c1247518cded1cd84c015ed1b`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 164; v0.112.0; seal presentation artifacts generated-not-asserted; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
+*Session: SEALED* (Phase 165; v0.113.0; autonomous QA nightly -- aggregate status JSON + scheduled self-check with automatic issue lifecycle; auto-ship authorized, PyPI publish held for operator)
