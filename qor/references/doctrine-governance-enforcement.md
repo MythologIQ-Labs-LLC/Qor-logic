@@ -170,11 +170,11 @@ patterns, ql-templates, and the glossary are not verified because they
 are not currently installed by `qor-logic install` into the host's
 runtime surface.
 
-### Badge currency (Phase 49 wiring)
+### Badge currency (Phase 49 wiring; Phase 164 generate-not-assert form)
 
-Feature and breaking phases MUST update README literal-count badges (Tests, Ledger, Skills, Agents, Doctrines) to match current truth. Verified by `qor/scripts/badge_currency.py` invoked at `/qor-substantiate` Step 6.5; ABORTs seal on mismatch. Hotfix is exempt (matches `_RELEASE_CLASSES` semantics).
+Feature and breaking phases MUST carry current README literal-count badges (Tests, Ledger, Skills, Agents, Doctrines) and SYSTEM_STATE header fields. Since Phase 164 (research entry #378) these are GENERATED, not hand-edited: `/qor-substantiate` Step 6 runs `qor.scripts.seal_artifacts --write` to regenerate them from truth (via the `qor/scripts/badge_currency.py` counters), and Step 6.5 runs `seal_artifacts --check`; ABORTs seal on mismatch. Hotfix is exempt (matches `_RELEASE_CLASSES` semantics). The same `--check` runs as a CI step on sealed state.
 
-Locked at the test layer by `tests/test_readme_badge_currency.py` (5 tests verifying each badge against truth) and `tests/test_substantiate_badge_currency_wiring.py` (3 defensive tests with proximity-anchor + strip-and-fail per Phase 46 doctrine).
+Locked at the test layer by `tests/test_seal_artifacts.py` (behavioral tests of the generators against synthetic fixtures) and `tests/test_substantiate_seal_artifacts_wiring.py` (Step 6/6.5 wiring regression lock). The pre-164 live-equality class (5 badge tests + 2 SYSTEM_STATE header tests + 6 prose-wiring tests) is retired: it asserted generated-artifact state against moving truth and broke on nearly every seal (phases 121/122/123/140).
 
 Dynamic badges (PyPI, Python version, License, NIST, OWASP, Doc Tier) are NOT parsed — they auto-refresh from shields.io live queries or are framework-named and don't drift with project state.
 

@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.112.0] - 2026-07-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 164 (feature; generate-not-assert)**: seal presentation artifacts are now generated, never hand-edited. New `qor.scripts.seal_artifacts` deterministically regenerates the five README literal-count badges (Tests, Ledger, Skills, Agents, Doctrines) and the SYSTEM_STATE header fields (Snapshot date, Phase number) from current truth (`--write`), and verifies currency fail-closed (`--check`, wired into `/qor-substantiate` Steps 6/6.5 and a new CI step). The 13-test live-equality class that broke on nearly every seal (badge counts, header freshness, prose-wiring) is retired in favor of behavioral generator tests against synthetic fixtures -- currency is now enforced where repo state is stable, at seal time and in CI. Origin: the SDLC perspective-reset research brief (ledger entry #378), recommendation 2.
+
 ## [0.111.1] - 2026-06-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

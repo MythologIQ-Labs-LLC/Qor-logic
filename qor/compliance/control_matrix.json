@@ -129,9 +129,9 @@
     {
       "id": "badge-currency",
       "framework": "NIST-SSDF RV.1 (release artifact integrity)",
-      "control": "release-class README badge currency (Tests/Ledger/Skills/Agents/Doctrines)",
-      "enforcing_module": "qor.scripts.badge_currency",
-      "invocation": "badge_currency",
+      "control": "release-class seal-artifact currency (README count badges + SYSTEM_STATE header; Phase 164 generate-not-assert form)",
+      "enforcing_module": "qor.scripts.seal_artifacts",
+      "invocation": "seal_artifacts",
       "posture": "ABORT",
       "detection": "skill-marker",
       "wired_into": {
@@ -148,13 +148,12 @@
         "pre-push"
       ],
       "runner": {
-        "module": "qor.scripts.badge_currency",
+        "module": "qor.scripts.seal_artifacts",
         "entry": "main",
         "args": [
+          "--check",
           "--repo-root",
-          ".",
-          "--ledger",
-          "docs/META_LEDGER.md"
+          "."
         ]
       }
     },

@@ -81,6 +81,11 @@ jobs:
       - run: pip install -e .
       - name: Verify gate-chain completeness for sealed phases >= 52
         run: python -m qor.reliability.gate_chain_completeness --phase-min 52
+      - name: seal-artifacts currency
+        # Phase 164 (generate-not-assert): README badges + SYSTEM_STATE header
+        # currency, enforced here on sealed state instead of the retired
+        # per-test live-equality assertions that broke on every seal.
+        run: python -m qor.scripts.seal_artifacts --check --repo-root .
 
   provenance-attest:
     # Phase 158 wiring (GAP-GOV-05): non-forgeable gate-artifact provenance.

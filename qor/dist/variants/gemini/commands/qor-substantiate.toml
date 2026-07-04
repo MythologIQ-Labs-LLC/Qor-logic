@@ -336,6 +336,14 @@ Glob: tests/**/*
 Glob: docs/**/*
 ```
 
+Regenerate the mechanical fields (Phase 164; see `references/seal-gate-ladder.md`):
+
+```bash
+qor-logic scripts seal_artifacts --write --phase <N> --snapshot <YYYY-MM-DD>
+```
+
+Rewrites Snapshot date, Phase number, README count badges; narrative stays authored.
+
 Create/Update `docs/SYSTEM_STATE.md`:
 
 Template: `references/qor-substantiate-templates.md`.
@@ -387,18 +395,16 @@ if warnings:
 
 Phase 33 addition: when `change_class` is `feature`/`breaking`, the check also requires README.md + CHANGELOG.md in `files_touched` (hotfix exempt). Operator judgment: continue on spurious warnings; PAUSE + amend on legitimate ones (new doctrine without a lifecycle.md update, feature shipped without release-doc authoring).
 
-**Phase 49 addition: README badge currency (release-class only, ABORT semantics)**. When `change_class` is `feature`/`breaking`, parse the README literal-count badges (Tests, Ledger, Skills, Agents, Doctrines) against current truth and ABORT on mismatch (hotfix exempt):
+**Phase 49/164: seal-artifact currency (release-class only, ABORT semantics)**. For `feature`/`breaking`, verify README badges + SYSTEM_STATE header against truth; ABORT on mismatch (hotfix exempt):
 
 ```bash
 if [[ "${CHANGE_CLASS}" == "feature" || "${CHANGE_CLASS}" == "breaking" ]]; then
-  qor-logic scripts badge_currency \\
-    --repo-root . \\
-    --ledger docs/META_LEDGER.md \\
-    || { echo "ABORT: README badge currency mismatch — update Tests/Ledger/Skills/Agents/Doctrines counts to match truth before re-running /qor-substantiate"; exit 1; }
+  qor-logic scripts seal_artifacts --check --repo-root . \\
+    || { echo "ABORT: seal-artifact currency mismatch — re-run Step 6 --write"; exit 1; }
 fi
 ```
 
-The exit-1 ABORT distinguishes Phase 49 enforcement from the Phase 31 WARN above. Locked by `tests/test_readme_badge_currency.py` + `tests/test_substantiate_badge_currency_wiring.py` per `qor/references/doctrine-governance-enforcement.md` §"Badge currency".
+Locked by `tests/test_substantiate_seal_artifacts_wiring.py` per `qor/references/doctrine-governance-enforcement.md` §"Badge currency".
 
 ### Step 6.8: Seal Hash Integrity Gate (Phase 64 wiring - GH #48)
 
