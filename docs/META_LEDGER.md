@@ -13479,5 +13479,30 @@ Change class: feature (v0.117.0 -> v0.118.0). Tests: 7 behavioral in `tests/test
 
 ---
 
+### Entry #406: SESSION SEAL -- Phase 171 release evidence pins (v0.118.1; SHORT CHAIN)
+
+**Timestamp**: 2026-07-04T17:45:00Z
+**Phase**: SUBSTANTIATE (Phase 171; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase171-release-evidence-pins.md
+**Session**: `2026-07-04T1734-f2b16f`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `a6003622b309`
+
+**Scope**: Phase 171 implemented (hotfix; the FIRST live short-chain phase under the Phase 168 tier rules). The release pipeline's `evidence.json` `action_pins` literals (release.yml:131-132) drifted from the pins actually used -- the checkout entry (`de0fac2e...`) pre-dated even v6.0.3, and both fell further behind after the dependabot bumps to checkout v7.0.0 / setup-python v6.3.0 (PRs #235/#236, merged today; the rebased directory group also aligned nightly-health.yml, mooting the planned pin-alignment hotfix). Both literals now equal release.yml's real `uses:` SHAs (`9c091bb2...` / `ece7cb06...`), verified by grep equality; upload/download/pypi-publish entries were already current. The next release attests the pins it actually runs.
+
+**Short-chain record (Phase 168 first live use)**: plan.json declared `required_gate_artifacts: [plan, implement, substantiate]`; tier_guard verified legality (workflow path -> L1 risk; hotfix class); the skipped audit is evidenced by severity-1 `gate_override` shadow event `b116f94a8f49` (plus the research-skip advisory override); `check_prior_artifact('implement')` resolved its prior to plan.json via the carve-out; completeness/provenance validate this session against the declared three-artifact set. Known V1 refinement surfaced: `intent_lock capture` still fingerprints the (stale) staged AUDIT_REPORT on short chains -- follow-up candidate for short-chain awareness.
+
+Change class: hotfix (v0.118.0 -> v0.118.1). Tests: none new (config-literal fix; D4.d waiver in plan); regression net: release-immutability + workflow-budget + nightly wiring suites 27/27, full suite recorded at handoff. Gates: intent-lock VERIFIED, merge-velocity strained/narrow_scope (exit 0 per contract; today's 10-merge series -- this phase IS the narrow scope), data-API SKIP, governance-index advanced+enforce clean, feature-inventory 17/17, secret-scan recorded at handoff. Run under `/qor-auto-dev-1` with operator-authorized auto-ship.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**Content Hash**: `e4a23b551abb683744d2f49851215a4b4fd5238aaeac98ae413bbd13208b624e`
+**Previous Hash**: `037f5ee7ab3202220e30a417e881f50942a692e58d7158f1f945c7181267a49c`
+**Chain Hash (Merkle seal)**: `bbaf31b288d83c484a92fc97721810feabda8604bc81a1ffd80e83a2e9b49102`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 170; v0.118.0; estate ledger-migration tool absorbed -- GH #252 closed, perspective-reset umbrella #247 complete; auto-ship authorized, PyPI publish held for operator)
+*Session: SEALED* (Phase 171; v0.118.1; release evidence pins corrected -- first live short-chain seal; auto-ship authorized, PyPI publish held for operator)

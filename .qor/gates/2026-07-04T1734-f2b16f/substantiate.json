@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-07-04T1734-f2b16f",
+  "ts": "2026-07-04T17:40:19Z",
+  "verdict": "PASS",
+  "plan_path": "docs/plan-qor-phase171-release-evidence-pins.md",
+  "seal_entry": 406,
+  "merkle_seal": "bbaf31b288d83c484a92fc97721810feabda8604bc81a1ffd80e83a2e9b49102",
+  "version": "0.118.1",
+  "change_class": "hotfix",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.118.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-04T17:40:19Z"
+  }
+}
