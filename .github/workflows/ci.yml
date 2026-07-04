@@ -85,7 +85,10 @@ jobs:
         # Phase 164 (generate-not-assert): README badges + SYSTEM_STATE header
         # currency, enforced here on sealed state instead of the retired
         # per-test live-equality assertions that broke on every seal.
-        run: python -m qor.scripts.seal_artifacts --check --repo-root .
+        # --skip-tests: this job installs -e . without dev extras, so pytest
+        # is unavailable for the Tests-badge collect; that badge is verified
+        # at seal time (substantiate Step 6.5) where the dev env exists.
+        run: python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .
 
   provenance-attest:
     # Phase 158 wiring (GAP-GOV-05): non-forgeable gate-artifact provenance.
