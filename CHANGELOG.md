@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.111.1] - 2026-06-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 163 (hotfix; release-pipeline integrity)**: gate the PyPI publish on the CI suite passing for the tagged commit. `release.yml` previously had `build -> publish` with **no test step** -- a publish was coupled to tests only by operator discipline (verify PR CI before approving the `pypi` environment), which could ship untested code on an early approval or a broken `main`. New `qor.scripts.release_ci_gate` (pure, fail-closed `evaluate` returning ok only when a `CI` run for the exact SHA concluded `success`) is wired into BOTH the build (early) and publish (enforcement) jobs before their work: the workflow runs the authenticated `gh api .../ci.yml/runs?head_sha=<SHA>` and pipes it to the gate, which exits 1 (refusing the release) unless CI was green for that commit. Mirrors the existing tag-reachability double-gate; the decision logic is unit-tested in-process.
+
 ## [0.111.0] - 2026-06-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

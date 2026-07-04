@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      actions: read
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
         with:
@@ -35,6 +36,17 @@ jobs:
             echo "::error::Tag ${REF} points at ${SHA} which is not reachable from origin/main. Build refused."
             exit 1
           fi
+      # Phase 163 (GH release-gate): refuse to build/publish unless the CI
+      # workflow concluded `success` for THIS exact tagged commit. The pure
+      # decision is qor.scripts.release_ci_gate; the authenticated runs-list
+      # call stays here. Fail-closed: no green CI run -> exit 1.
+      - name: Verify CI succeeded for this SHA (build-side early gate)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA=$(git rev-parse HEAD)
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${SHA}&per_page=100" \
+            | python -m qor.scripts.release_ci_gate --sha "$SHA"
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
         with:
           python-version: "3.12"
@@ -65,6 +77,7 @@ jobs:
     permissions:
       id-token: write
       contents: write
+      actions: read
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
         with:
@@ -81,6 +94,15 @@ jobs:
             echo "::error::Tag ${REF} points at ${SHA} which is not reachable from origin/main. Publish refused."
             exit 1
           fi
+      # Phase 163: enforcement gate -- mirror the build-side CI-success check at
+      # the actual decision point (defense-in-depth, like the reachability gate).
+      - name: Verify CI succeeded for this SHA (publish-side enforcement gate)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA=$(git rev-parse HEAD)
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${SHA}&per_page=100" \
+            | python -m qor.scripts.release_ci_gate --sha "$SHA"
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
           name: release-dist
