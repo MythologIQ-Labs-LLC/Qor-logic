@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.118.1] - 2026-07-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 171 (hotfix; release evidence pins)**: the release pipeline's `evidence.json` provenance block hardcoded `action_pins` values that drifted from the pins actually used (the checkout entry predated even v6.0.3; both fell further behind after the dependabot v7.0.0/v6.3.0 bumps in PRs #235/#236). The two literals now match the workflow's real `uses:` SHAs, so the next release attests the pins it actually ran. First live short-chain phase under the Phase 168 tier rules: L1-risk hotfix, audit legally skipped with the severity-1 shadow event recorded.
+
 ## [0.118.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

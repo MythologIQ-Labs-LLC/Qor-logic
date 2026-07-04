@@ -1,0 +1,32 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-04T1734-f2b16f",
+  "ts": "2026-07-04T17:36:32Z",
+  "plan_path": "docs/plan-qor-phase171-release-evidence-pins.md",
+  "change_class": "hotfix",
+  "doc_tier": "minimal",
+  "phases": [
+    "literal correction"
+  ],
+  "affected_files": [
+    ".github/workflows/release.yml"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_release_workflow_immutability.py -q",
+    "python -m pytest -q"
+  ],
+  "required_gate_artifacts": [
+    "plan",
+    "implement",
+    "substantiate"
+  ],
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.118.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T17:36:33Z"
+  }
+}
