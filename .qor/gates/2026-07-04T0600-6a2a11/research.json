@@ -1,0 +1,62 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-04T0600-6a2a11",
+  "ts": "2026-07-04T06:01:12Z",
+  "questions": [
+    "Is the process over-invested in its own ceremony (perspective reset)?",
+    "Does the QA/remediate cycle burn tokens disproportionately?",
+    "How to extend Qor-logic into autonomous QA without heavy user engagement?"
+  ],
+  "findings": [
+    {
+      "topic": "token-burn hypothesis",
+      "claim": "Directionally confirmed: ~83% of phases 104-163 harden governance machinery; ~33% first-pass VETO rate; 51% of ledger entries mention remediation workflows",
+      "citation": "docs/META_LEDGER.md entries #278-377"
+    },
+    {
+      "topic": "doctrine efficacy",
+      "claim": "Prose doctrine does not self-enforce: SG-038 recurred 4+ times post-codification (phases 15/17a/19/20/28); only executable checks stick",
+      "citation": "docs/SHADOW_GENOME.md lines 346-391, 548, 598"
+    },
+    {
+      "topic": "test suite shape",
+      "claim": "Seal-fragile test class (badges/freshness/keywords, est. 50-60% of 404-file suite) asserts generated-artifact state rather than behavior; breaks on nearly every seal",
+      "citation": "tests/ census; META_LEDGER entries #314-316"
+    },
+    {
+      "topic": "estate fragmentation",
+      "claim": "14+ MythologIQ repos carry governance artifacts; bicameral PAMA M1-M5 mutation classes and PUBLIC-repo governance mirroring are the top absorbable patterns",
+      "citation": "G:/MythologIQ/bicameral-factory/docs/governance/PUBLIC_REPO_GOVERNANCE_AGGREGATION.md"
+    },
+    {
+      "topic": "autonomous QA exemplars (Accountable)",
+      "claim": "Executable lints with allowlists, scheduled drift detection with automatic GH issue lifecycle, risk-stratified coverage, dry-run modes, regression-guard tests named for issues",
+      "citation": "D:/Accountable/accountable-os/scripts/lint-migration-rls.mjs; Accountable-App-3.0/.github/workflows/drift-detection.yml"
+    },
+    {
+      "topic": "autonomous QA exemplars (MS toolkit)",
+      "claim": "Deterministic fail-closed policy evaluation with no LLM in the decision loop; reconstructible Decision BOM from observability signals; graduated execution rings; independently validates Merkle-chained audit design",
+      "citation": "agent-governance-toolkit docs/adr/0004, 0013, 0017, 0018"
+    }
+  ],
+  "sources": [
+    "docs/META_LEDGER.md",
+    "docs/SHADOW_GENOME.md",
+    "qor/scripts/gate_chain.py",
+    "G:/MythologIQ/bicameral-factory/docs/governance/PUBLIC_REPO_GOVERNANCE_AGGREGATION.md",
+    "G:/MythologIQ/FailSafe-Pro/scripts/migrate_ledger_v0_14.py",
+    "D:/Accountable/accountable-os/scripts/lint-migration-rls.mjs",
+    "D:/Accountable/Accountable-App-3.0/.github/workflows/drift-detection.yml",
+    "G:/MythologIQ/agent-governance-toolkit/docs/adr/0004-keep-policy-evaluation-deterministic.md",
+    "G:/MythologIQ/agent-governance-toolkit/docs/adr/0018-reconstructible-decision-bom-over-prebuilt.md"
+  ],
+  "brief_path": "docs/research-brief-sdlc-perspective-reset-2026-07-04.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.111.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T06:01:12Z"
+  }
+}

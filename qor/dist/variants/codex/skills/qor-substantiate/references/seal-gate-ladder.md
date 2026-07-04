@@ -136,3 +136,18 @@ default for binary or intra-checkout evidence. `byte_count` always reports the
 bytes actually hashed under either mode. `intent_lock._hash_file` is excluded:
 it captures and re-checks the plan/audit gate artifacts within one working copy
 (no git round-trip), so byte-exact comparison is correct there.
+
+## Step 6 seal-artifact generation (Phase 164 wiring; generate, don't assert)
+
+Research entry #378 rec 2: the pre-164 seal ceremony hand-edited README count
+badges and the SYSTEM_STATE header, and 13 always-on tests asserted that live
+repo state matched truth -- a class that broke on nearly every seal (phases
+121/122/123/140). Phase 164 inverts the contract: `qor.scripts.seal_artifacts
+--write --phase <N> --snapshot <date>` deterministically regenerates the
+mechanical fields (Snapshot date, Phase number, the five README literal-count
+badges) from current truth via the `badge_currency` counters, with atomic
+tmp+os.replace writes. Step 6.5 `--check` (release classes; hotfix exempt) and
+the CI `seal-artifacts currency` step enforce currency where repo state is
+stable. The generators are behaviorally tested against synthetic fixtures in
+`tests/test_seal_artifacts.py`; the `**Phase**:` narrative and `**Chain
+Status**:` prose remain authored content.

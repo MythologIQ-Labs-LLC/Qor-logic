@@ -12938,5 +12938,84 @@ Change class: hotfix. Tests: 10 new in `tests/test_release_ci_gate.py` (8 behavi
 
 ---
 
+### Entry #378: RESEARCH BRIEF -- SDLC perspective reset + autonomous QA investment
+
+**Timestamp**: 2026-07-04T06:00:19Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: Qor-logic process efficacy; MythologIQ governance estate; D:\Accountable repos; Microsoft agent-governance-toolkit
+**Session**: `2026-07-04T0600-6a2a11`
+**Brief**: docs/research-brief-sdlc-perspective-reset-2026-07-04.md
+
+**Content Hash**: `6a2a1194af3d0797aba2a79bebc15422959009fa6a65e6f59446cea99e20c33e`
+**Previous Hash**: `e41503528b05120d2c09dd2bba1ae190b29be96d1a389d568da7b111c147b410`
+**Chain Hash (Merkle seal)**: `d53bc2872048f79d779f63a7ae6cd2c78c8070d0157c052d144f6230c96f99fd`
+
+**Decision**: Operator-requested perspective reset researched across four parallel sweeps. The token-burn hypothesis (QA/remediate cycles dominate spend) is directionally CONFIRMED: ~83% of phases 104-163 hardened governance machinery, first-pass VETO rate ~33% (211 VETO mentions / 377 entries), 51% of entries reference remediation workflows, and the seal-fragile test class (badges/freshness/keywords, est. 50-60% of the 404-file suite) asserts generated-artifact state rather than behavior. Prose doctrine measurably fails to self-enforce (SG-038 recurred 4+ times post-codification); only executable checks have stuck. External exemplars converge on the counter-pattern: deterministic fail-closed executable checks with no LLM in the decision loop (agent-governance-toolkit ADRs 0004/0013), evidence reconstruction over ceremonial artifacts (ADR 0018), executable lints + scheduled drift detection with automatic issue lifecycle (Accountable), and risk-tiered gate depth (bicameral PAMA M1-M5). Top recommendations (advisory): (1) risk-tiered gate depth, (2) generate-not-assert for seal artifacts, (3) doctrine-that-can-be-a-lint-must-become-a-lint closure rule, (4) an autonomous QA layer (scheduled health/drift workflows, dry-run modes, issue-named regression guards), (5) artifact freeze in favor of evidence reconstruction, (6) estate consolidation into the dist. Findings advisory; routing to /qor-plan remains with the Governor.
+
+---
+
+### Entry #379: GATE TRIBUNAL -- Phase 164 plan PASS (seal-artifact generation)
+
+**Timestamp**: 2026-07-04T06:21:54Z
+**Phase**: GATE (Phase 164)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase164-seal-artifact-generation.md
+**Session**: `2026-07-04T0600-6a2a11`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `09a051a164456858c3a3b5f58746b53a502bcc82930114e8f81892f09e255bf2`
+**Previous Hash**: `d53bc2872048f79d779f63a7ae6cd2c78c8070d0157c052d144f6230c96f99fd`
+**Chain Hash (Merkle seal)**: `d4d1de246f937921589eea96a70438a14b5189b491ac8873b2aaf532ee60aef5`
+
+**Decision**: PASS (L2, solo; option_b_required=false). Operationalizes research entry #378 recommendation 2 (generate-not-assert): new pure `qor/scripts/seal_artifacts.py` (renderers + atomic updaters reusing `badge_currency` counters; no `qor/cli.py` growth -- generic `qor-logic scripts` runner), substantiate Steps 6/6.5 become scripted `--write`/`--check` with the ABORT + hotfix-exemption semantics retained, the 13-member seal-fragile test class (5 badge-equality + 2 SYSTEM_STATE-currency + 6 prose-wiring) is retired for 9 behavioral tests + 1 exempted wiring lock, and currency enforcement relocates to the seal gate + a CI step where repo state is stable. One plan-text finding resolved pre-verdict in-dialogue (wiring test must declare its `# prose-lint: ok=` exemption; no cycle consumed). All 8 Locked Decisions grep-verified. Next: `/qor-implement`.
+
+---
+
+### Entry #380: IMPLEMENTATION -- Phase 164 seal-artifact generation
+
+**Timestamp**: 2026-07-04T06:44:32Z
+**Phase**: IMPLEMENT (Phase 164)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-04T0600-6a2a11`
+**Intent Lock**: `LOCKED: 2026-07-04T0600-6a2a11`
+
+**Content Hash**: `b43fc77f1abec84bd01db4e059be8632084740e6ef9b13e04ad6005cf457777a`
+**Previous Hash**: `d4d1de246f937921589eea96a70438a14b5189b491ac8873b2aaf532ee60aef5`
+**Chain Hash (Merkle seal)**: `2f5c62727ace42b1c622ca2a4ff48f64282712bb8fc07cf89d69276e6c5c514d`
+
+**Decision**: Phase 164 implemented per plan, TDD-first (9 behavioral tests red, then `qor/scripts/seal_artifacts.py` green twice; 179 lines, functions <=40, stdlib + `badge_currency` reuse only). Substantiate SKILL.md Steps 6/6.5 now invoke `seal_artifacts --write`/`--check` (ABORT + hotfix exemption retained); rationale in `references/seal-gate-ladder.md` (progressive disclosure; SKILL.md held under the 40KB budget at 40912 bytes). Retired the 13-test live-equality class; added 1 exempted wiring lock. New CI step `seal-artifacts currency` (gate-chain-completeness job); Phase 89 CI-surface registry row appended (forward-maintenance pattern); compliance control `badge-currency` re-pointed to `qor.scripts.seal_artifacts`. Docs via /qor-document: doctrine-governance-enforcement §Badge currency rewritten to the generate-not-assert form; CHANGELOG [Unreleased] feature entry with Built-via attribution. Mid-pass corrections (all caught by the existing suite, logged): skill-size budget (3 trims), compliance conveyance (control update + dist recompile), CI-coverage self-application (registry row). Dist recompiled (30 skills, 13 agents). Next: full-suite verification, then `/qor-substantiate`.
+
+---
+
+### Entry #381: SESSION SEAL -- Phase 164 seal-artifact generation (v0.112.0)
+
+**Timestamp**: 2026-07-04T07:05:00Z
+**Phase**: SUBSTANTIATE (Phase 164; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase164-seal-artifact-generation.md
+**Session**: `2026-07-04T0600-6a2a11`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `77c3ef97e91a`
+
+**Scope**: Phase 164 implemented (feature; generate-not-assert, research entry #378 rec 2). The seal ceremony hand-edited README count badges and the SYSTEM_STATE header while 13 always-on tests asserted live repo state against moving truth -- the class that broke on nearly every seal (phases 121/122/123/140). New `qor/scripts/seal_artifacts.py` (179 lines; pure `render_readme_badges` / `render_system_state_header` + atomic `update_files` / fail-closed `check_files` + argv `main`; reuses `badge_currency` counters, no `qor/cli.py` growth -- generic `qor-logic scripts` runner). Substantiate SKILL.md Step 6 now runs `seal_artifacts --write --phase <N> --snapshot <date>` and Step 6.5 runs `seal_artifacts --check` (ABORT semantics + hotfix exemption retained; rationale in `references/seal-gate-ladder.md` for the 40KB budget). Retired 13 tests (5 badge live-equality, 2 SYSTEM_STATE header-currency, 6 prose-wiring incl. deleted `test_substantiate_badge_currency_wiring.py`); added 9 behavioral generator tests (synthetic fixtures) + 1 prose-lint-exempted wiring lock. New CI step `seal-artifacts currency` (gate-chain-completeness job); Phase 89 CI-surface registry row appended; compliance control `badge-currency` re-pointed to `qor.scripts.seal_artifacts`; doctrine-governance-enforcement section "Badge currency" rewritten to the generated form (via /qor-document); glossary `Gate` referenced_by gained `doctrine-provenance-binding.md` (pre-existing drift surfaced by this phase's standard-tier strict check). Self-application: this seal is the first to regenerate its own badges/header via the new tool.
+
+Change class: feature (v0.111.1 -> v0.112.0). Tests: 9 behavioral in `tests/test_seal_artifacts.py` + 1 structural in `tests/test_substantiate_seal_artifacts_wiring.py`, green twice. Full suite re-run post-seal (results recorded at handoff; one pre-existing order-dependent flake observed once in `test_reachability_probe.py`, passes in isolation, out of scope). Unplanned-but-necessary files (caught by the suite mid-pass, documented per protocol): `qor/compliance/control_matrix.json`, `docs/plan-qor-phase89-ci-commands-reconciliation.md`, `qor/references/glossary.md`. Substantiate gates: intent-lock VERIFIED, skill-admission ADMITTED, gate-matrix 132/0 broken, secret-scan (staged) recorded at handoff, merge-velocity healthy/merge_ok, skill-size-budget 2 WARN 0 EXCEEDED (substantiate 40.0KB), data-API SKIP (no migrations), doc-integrity strict PASS (after glossary registration), governance-index advanced to 2026-07-04 + enforce clean, DoD 1 WARN (D3 tier on one deliverable), procedural-fidelity 1 WARN (resolved by this SYSTEM_STATE sync), feature-inventory Total: 17 / verified: 17 / unverified: 0 / n/a: 0, surface-lint disclosed-SKIP (no Surface column). Run under `/qor-auto-dev-1` discipline.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge + tag + publish HELD for operator approval at handoff.
+
+**Content Hash**: `c6a01c5fc0313f3a887fd3e84c71c563dd8ccbf5b32cb684be4275efa81e5673`
+**Previous Hash**: `2f5c62727ace42b1c622ca2a4ff48f64282712bb8fc07cf89d69276e6c5c514d`
+**Chain Hash (Merkle seal)**: `d61a32d5dbd9a0940450b21a54170685bb58b056df88f9df85ded19fa301b24e`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 163; v0.111.1; release publish gated on CI success for the tagged SHA; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
+*Session: SEALED* (Phase 164; v0.112.0; seal presentation artifacts generated-not-asserted; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)

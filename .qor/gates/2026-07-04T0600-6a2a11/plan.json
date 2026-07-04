@@ -1,0 +1,53 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-04T0600-6a2a11",
+  "ts": "2026-07-04T06:19:08Z",
+  "plan_path": "docs/plan-qor-phase164-seal-artifact-generation.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "generator module (TDD first)",
+    "wiring + fragile-test retirement"
+  ],
+  "affected_files": [
+    "tests/test_seal_artifacts.py",
+    "qor/scripts/seal_artifacts.py",
+    "tests/test_substantiate_seal_artifacts_wiring.py",
+    "tests/test_readme_badge_currency.py",
+    "tests/test_system_state_freshness.py",
+    "tests/test_substantiate_badge_currency_wiring.py",
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    ".github/workflows/ci.yml",
+    "qor/dist/"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_seal_artifacts.py tests/test_substantiate_seal_artifacts_wiring.py -q",
+    "python -m pytest -q",
+    "qor-logic scripts seal_artifacts --check",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase164-seal-artifact-generation.md",
+    "qor-logic scripts dist_compile --dry-run"
+  ],
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "SYSTEM_STATE Phase narrative remains authored; only phase number + snapshot date generated",
+      "CHANGELOG stamping stays in Step 7.6"
+    ],
+    "non_goals": [
+      "no qor/cli.py subcommand",
+      "no badge additions",
+      "no check_currency semantic change"
+    ],
+    "exclusions": [
+      "doctrine files, FEATURE_INDEX, glossary untouched except /qor-document currency updates"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.111.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T06:19:08Z"
+  }
+}

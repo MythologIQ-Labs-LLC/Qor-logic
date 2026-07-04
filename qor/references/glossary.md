@@ -125,6 +125,7 @@ referenced_by:
   - qor/references/patterns-devops.md
   - qor/references/ql-audit-templates.md
   - qor/skills/sdlc/qor-ideate/SKILL.md
+  - qor/references/doctrine-provenance-binding.md
   - docs/architecture.md
   - docs/lifecycle.md
   - docs/operations.md

@@ -1,4 +1,4 @@
-# Plan: Phase 89 — Plan ci_commands reconciliation against .github/workflows (GH #91)
+﻿# Plan: Phase 89 â€” Plan ci_commands reconciliation against .github/workflows (GH #91)
 
 **change_class**: feature
 
@@ -7,7 +7,7 @@
 **originating_remediation**: GH #91
 
 **boundaries**:
-- limitations: V1 ships a Python-fingerprint heuristic — extracts `python ...`
+- limitations: V1 ships a Python-fingerprint heuristic â€” extracts `python ...`
   and `pytest ...` commands from `run:` blocks in `.github/workflows/*.yml`.
   Non-Python checks (custom shell, `cargo`, `npm`, `go`, native binaries)
   are not candidates; the issue's COREFORGE origination case is a Python
@@ -15,7 +15,7 @@
   motivating failure class. WARN-only (parallels existing Step 0.6
   pre-audit lints `plan_test_lint`, `plan_grep_lint`,
   `plan_text_consistency_lint`, `delivery_branch_lint`). Tag-only
-  workflows (`on: push: tags:` exclusively) are skipped by default — they
+  workflows (`on: push: tags:` exclusively) are skipped by default â€” they
   do not run on branch PRs and so cannot be plan-verified per-phase.
   Environment-setup commands (`pip install`, `git fetch`,
   `git merge-base`, `echo`, `printf`, doc-only conditional bash) are
@@ -28,7 +28,7 @@
   `## CI Coverage Exemptions` block instead); auto-suggestion of
   exemption rationale (operator authors the justification).
 - exclusions: no changes to `release.yml`, `ci.yml`, or `pr-lint.yml`;
-  the lint is consumed by `/qor-audit` Step 0.6 only — not by
+  the lint is consumed by `/qor-audit` Step 0.6 only â€” not by
   `/qor-plan`, not by `/qor-implement`, not by `/qor-substantiate`. WARN
   output is advisory; no VETO is bound to the lint output in V1.
 
@@ -56,7 +56,7 @@ when the 10-phase stack was opened as an integration PR, the
 `scripts/architecture/check_test_metadata.py`) failed because three
 test files introduced across Phases 358 and 366 lacked the required
 `SPEC:` / `FEATURE:` / `TEST_ID:` markers. The `Architecture Guard` job
-was never listed in any phase's `ci_commands` — the gap was invisible
+was never listed in any phase's `ci_commands` â€” the gap was invisible
 to the governed cycle, then surfaced only after ten seals.
 
 The minimal V1 fix is a pre-audit plan-lint, in the same spirit and
@@ -81,8 +81,8 @@ bullet, modulo whitespace collapse). Unmatched candidates emit a WARN
 naming the workflow, job, and command.
 
 The plan may declare a `## CI Coverage Exemptions` block (optional) as
-a bullet list — each bullet of the form
-`` - `<substring-pattern>` — <justification> `` exempts any discovered
+a bullet list â€” each bullet of the form
+`` - `<substring-pattern>` â€” <justification> `` exempts any discovered
 command matching the substring pattern, with the operator's
 justification recorded inline. The exemption block is the only V1
 justification mechanism (per non_goals).
@@ -91,7 +91,7 @@ This phase's own plan covers the lint by enumerating Qor-logic's
 current CI surface explicitly in its `## CI Commands` section (rather
 than using exemptions): the first time the lint runs against this very
 plan, it should report zero WARNs. That self-application property is
-the deterministic acceptance test for the lint shipping correctly —
+the deterministic acceptance test for the lint shipping correctly â€”
 captured in `test_lint_self_applies_to_phase_89_plan` below.
 
 Tests follow the established Phase 84 / Phase 87 wiring convention:
@@ -106,17 +106,17 @@ with a strip-and-fail negative per
 
 ### Affected Files
 
-- `qor/scripts/ci_coverage_lint.py` — NEW. The lint module.
-- `qor/skills/governance/qor-audit/SKILL.md` — Step 0.6: add the
+- `qor/scripts/ci_coverage_lint.py` â€” NEW. The lint module.
+- `qor/skills/governance/qor-audit/SKILL.md` â€” Step 0.6: add the
   `ci_coverage_lint` invocation to the WARN-only pre-audit lint block,
   after the existing four lints. Phase 89 wiring paragraph.
-- `qor/references/doctrine-shadow-genome-countermeasures.md` — append an
+- `qor/references/doctrine-shadow-genome-countermeasures.md` â€” append an
   `SG-CICoverageDrift-A` paragraph (originating COREFORGE incident
   citation + Phase 89 countermeasure).
-- `tests/test_ci_coverage_lint.py` — NEW. Behavior tests.
-- `tests/test_ci_coverage_lint_wiring.py` — NEW. Anchored + strip-and-fail
+- `tests/test_ci_coverage_lint.py` â€” NEW. Behavior tests.
+- `tests/test_ci_coverage_lint_wiring.py` â€” NEW. Anchored + strip-and-fail
   wiring test for the Step 0.6 paragraph.
-- `docs/plan-qor-phase89-ci-commands-reconciliation.md` — NEW. This plan
+- `docs/plan-qor-phase89-ci-commands-reconciliation.md` â€” NEW. This plan
   file.
 
 ### Unit Tests
@@ -128,53 +128,53 @@ with a strip-and-fail negative per
   self-application test).
 
   - `test_python_pytest_command_in_workflow_matched_by_plan_yields_no_warning`
-    — fixture workflow has a `run:` step invoking pytest in CI-form
+    â€” fixture workflow has a `run:` step invoking pytest in CI-form
     (verbose flag); fixture plan's `## CI Commands` lists pytest in
     quiet-flag form; the discovered command appears as a substring of
     the plan bullet (modulo trailing flag); no warnings.
   - `test_python_script_command_missing_from_plan_yields_warning`
-    — fixture workflow `run: python qor/scripts/check_variant_drift.py`;
+    â€” fixture workflow `run: python qor/scripts/check_variant_drift.py`;
     fixture plan `## CI Commands` is empty; one WARN naming the workflow,
     job, and command.
-  - `test_pip_install_is_not_a_candidate` — fixture workflow's only
+  - `test_pip_install_is_not_a_candidate` â€” fixture workflow's only
     `run:` is `pip install -e ".[dev]"`; fixture plan has no CI Commands
     section; no warnings (env-setup filtered).
-  - `test_git_fetch_and_merge_base_are_not_candidates` — fixture
+  - `test_git_fetch_and_merge_base_are_not_candidates` â€” fixture
     `release.yml`-style step `run: |\n  git fetch origin main --depth=100\n  git merge-base --is-ancestor "$X" origin/main`;
     no warnings.
-  - `test_doc_only_conditional_bash_is_not_a_candidate` — fixture
+  - `test_doc_only_conditional_bash_is_not_a_candidate` â€” fixture
     `pr-lint.yml`-style multiline `run:` block with `BASE_BRANCH=`,
     `[[ -z "$CHANGED" ]]`, `echo "result=false" >> $GITHUB_OUTPUT`; no
     warnings.
-  - `test_tag_only_workflow_is_skipped` — fixture workflow with
+  - `test_tag_only_workflow_is_skipped` â€” fixture workflow with
     `on: { push: { tags: ['v*.*.*'] } }` containing
     `python -m build`; no warnings.
-  - `test_multiline_run_block_extracts_each_python_command` — fixture
+  - `test_multiline_run_block_extracts_each_python_command` â€” fixture
     workflow `run: |\n  python -m qor.reliability.X\n  python -m qor.reliability.Y`;
     fixture plan covers only one; one WARN for the uncovered command.
-  - `test_exemption_block_suppresses_matching_warning` — fixture
+  - `test_exemption_block_suppresses_matching_warning` â€” fixture
     workflow has uncovered `python qor/scripts/check_variant_drift.py`;
     fixture plan has a `## CI Coverage Exemptions` bullet
-    `` - `check_variant_drift` — pre-existing infra CI, not phase-relevant ``;
+    `` - `check_variant_drift` â€” pre-existing infra CI, not phase-relevant ``;
     no warnings.
   - `test_exemption_pattern_must_appear_as_substring_of_command`
-    — boundary: an exemption bullet whose pattern is the string
+    â€” boundary: an exemption bullet whose pattern is the string
     `nonexistent_module_name` does NOT suppress a warning for
     `check_variant_drift` (the exemption substring is unrelated to the
     candidate command).
   - `test_plan_missing_ci_commands_section_warns_for_every_candidate`
-    — fixture plan has no `## CI Commands` section; every Python
+    â€” fixture plan has no `## CI Commands` section; every Python
     candidate in the fixture workflow emits a WARN.
-  - `test_pytest_marker_form_is_candidate` — fixture workflow
+  - `test_pytest_marker_form_is_candidate` â€” fixture workflow
     `run: python -m pytest tests/test_packaging_install.py -v -m integration`
     is a candidate (pytest marker syntax is part of the discoverable
     command); plan must cover it or exempt it.
   - `test_main_cli_returns_zero_even_with_warnings`
-    — `subprocess.run([sys.executable, "-m", "qor.scripts.ci_coverage_lint", "--plan", <fixture-with-gaps>, "--workflows-dir", <fixture-dir>])`
+    â€” `subprocess.run([sys.executable, "-m", "qor.scripts.ci_coverage_lint", "--plan", <fixture-with-gaps>, "--workflows-dir", <fixture-dir>])`
     exit code is 0 (WARN-only contract); stdout contains the warning
     text.
   - `test_lint_self_applies_to_phase_89_plan`
-    — self-application: run `check_plan` against
+    â€” self-application: run `check_plan` against
     `docs/plan-qor-phase89-ci-commands-reconciliation.md` with
     `workflows_dir=.github/workflows`; assert the returned warning list
     is empty (Phase 89's own plan must cover its own CI). This is the
@@ -182,19 +182,19 @@ with a strip-and-fail negative per
 
 - `tests/test_ci_coverage_lint_wiring.py`
 
-  - `test_step_0_6_invokes_ci_coverage_lint` — read
+  - `test_step_0_6_invokes_ci_coverage_lint` â€” read
     `qor/skills/governance/qor-audit/SKILL.md`; isolate `### Step 0.6`
     section; assert it contains the substring
     `python -m qor.scripts.ci_coverage_lint`; assert it contains the
     substring `|| true` (the existing Step 0.6 WARN-only convention).
   - `test_step_0_6_assertion_fails_when_section_removed`
-    — strip-and-fail negative: locate the Step 0.6 section in the
+    â€” strip-and-fail negative: locate the Step 0.6 section in the
     SKILL.md text, remove it in-memory, re-isolate; assert the
     `ci_coverage_lint` substring is no longer present.
 
 ### Changes
 
-`qor/scripts/ci_coverage_lint.py` — new module structured like the
+`qor/scripts/ci_coverage_lint.py` â€” new module structured like the
 existing `qor/scripts/*_lint.py` scripts:
 
 ```python
@@ -262,7 +262,7 @@ Match rule:
     command, it is exempt (operator-justified).
   - Else emit a WARN.
 
-`qor/skills/governance/qor-audit/SKILL.md` — Step 0.6 gets one new
+`qor/skills/governance/qor-audit/SKILL.md` â€” Step 0.6 gets one new
 line in the WARN-only pre-audit lint block, placed after the
 existing four lints, and a `Phase 89 wiring (GH #91)` paragraph that
 cites the workflow-vs-plan reconciliation purpose and the
@@ -275,7 +275,7 @@ python -m qor.scripts.ci_coverage_lint --plan "$PLAN_PATH" --workflows-dir .gith
 Argv-form invocation; SG-Phase47-A countermeasure honored by
 construction (no `python -c "...${VAR}..."` interpolation).
 
-`qor/references/doctrine-shadow-genome-countermeasures.md` — append
+`qor/references/doctrine-shadow-genome-countermeasures.md` â€” append
 `SG-CICoverageDrift-A`: pattern (phase plans hand-author `ci_commands`
 without parsing actual workflow files; CI jobs the operator forgot to
 list never run via the governed cycle; latent CI failures surface only
@@ -294,18 +294,19 @@ CI surface in `## CI Commands` below to satisfy
 
 ## CI Commands
 
-- `python -m pytest tests/test_ci_coverage_lint.py -q` — behavior tests for the new lint module.
-- `python -m pytest tests/test_ci_coverage_lint_wiring.py -q` — Step 0.6 wiring (anchored + strip-and-fail).
-- `python -m pytest tests/ -v` — full regression suite (matches the ci.yml `test` job's `-v` form).
-- `python qor/scripts/check_variant_drift.py` — ci.yml `test` job step.
-- `python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md` — ci.yml `test` job step.
-- `python -m pytest tests/test_packaging_install.py -v -m integration` — ci.yml `install-smoke` job step.
-- `python -m qor.reliability.gate_chain_completeness --phase-min 52` — ci.yml `gate-chain-completeness` job step.
-- `python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto` — ci.yml `test` job step (Phase 156, GAP-GOV-03: re-verify the committed seal binding).
-- `python qor/scripts/pr_citation_lint.py` — pr-lint.yml `lint` job step (non-doc-only PRs).
-- `python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase89-ci-commands-reconciliation.md` — plan-internal text-consistency.
-- `python -m qor.scripts.dependency_admission_lint --base <ref>` — Phase 105 pr-dependency-review.yml WARN-only step (forward-maintenance: command introduced after Phase 89 seal; the self-applied test discipline requires Phase 89's CI Commands list to enumerate every operator-runnable Python invocation across all workflows).
-- `python -m qor.scripts.session_id_lint` — Phase 106 /qor-substantiate Step 4.6 WARN-only step (forward-maintenance; same pattern as the Phase 105 entry above).
-- `python -m qor.scripts.gate_provenance verify-committed --phase-min 158` — Phase 158 ci.yml `provenance-attest` job: keyless GAP-GOV-05 merge gate over committed provenance sidecars (forward-maintenance; command introduced after Phase 89 seal).
-- `python -m qor.scripts.gate_provenance attest-latest` — Phase 158 ci.yml `provenance-attest` job: emit the CI-secret-keyed attestation over the latest sealed entry (disclosed-skip when the secret is absent; forward-maintenance).
-- `python -m qor.reliability.ledger_base_currency --base-ref origin/main` — Phase 162 ci.yml `test` job WARN-only step (GH #231): surface a branch that sealed against a stale origin/main tip before merge (forward-maintenance; command introduced after Phase 89 seal).
+- `python -m pytest tests/test_ci_coverage_lint.py -q` â€” behavior tests for the new lint module.
+- `python -m pytest tests/test_ci_coverage_lint_wiring.py -q` â€” Step 0.6 wiring (anchored + strip-and-fail).
+- `python -m pytest tests/ -v` â€” full regression suite (matches the ci.yml `test` job's `-v` form).
+- `python qor/scripts/check_variant_drift.py` â€” ci.yml `test` job step.
+- `python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md` â€” ci.yml `test` job step.
+- `python -m pytest tests/test_packaging_install.py -v -m integration` â€” ci.yml `install-smoke` job step.
+- `python -m qor.reliability.gate_chain_completeness --phase-min 52` â€” ci.yml `gate-chain-completeness` job step.
+- `python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto` â€” ci.yml `test` job step (Phase 156, GAP-GOV-03: re-verify the committed seal binding).
+- `python qor/scripts/pr_citation_lint.py` â€” pr-lint.yml `lint` job step (non-doc-only PRs).
+- `python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase89-ci-commands-reconciliation.md` â€” plan-internal text-consistency.
+- `python -m qor.scripts.dependency_admission_lint --base <ref>` â€” Phase 105 pr-dependency-review.yml WARN-only step (forward-maintenance: command introduced after Phase 89 seal; the self-applied test discipline requires Phase 89's CI Commands list to enumerate every operator-runnable Python invocation across all workflows).
+- `python -m qor.scripts.session_id_lint` â€” Phase 106 /qor-substantiate Step 4.6 WARN-only step (forward-maintenance; same pattern as the Phase 105 entry above).
+- `python -m qor.scripts.gate_provenance verify-committed --phase-min 158` â€” Phase 158 ci.yml `provenance-attest` job: keyless GAP-GOV-05 merge gate over committed provenance sidecars (forward-maintenance; command introduced after Phase 89 seal).
+- `python -m qor.scripts.gate_provenance attest-latest` â€” Phase 158 ci.yml `provenance-attest` job: emit the CI-secret-keyed attestation over the latest sealed entry (disclosed-skip when the secret is absent; forward-maintenance).
+- `python -m qor.reliability.ledger_base_currency --base-ref origin/main` â€” Phase 162 ci.yml `test` job WARN-only step (GH #231): surface a branch that sealed against a stale origin/main tip before merge (forward-maintenance; command introduced after Phase 89 seal).
+- `python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .` â€” Phase 164 ci.yml `gate-chain-completeness` job step: seal-artifact currency (README count badges + SYSTEM_STATE header) enforced on sealed state, replacing the retired live-equality test class (forward-maintenance; command introduced after Phase 89 seal).

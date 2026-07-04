@@ -1,8 +1,11 @@
-"""Phase 49: README badge currency enforcement (G-4).
+"""Phase 49: README badge currency helpers (G-4); Phase 164 retirement.
 
-Each test invokes the unit (the counting helper or pytest collect),
-parses the README badge declared value, asserts on the (declared, actual)
-tuple. Functionality tests, not presence checks.
+The five live-equality tests (declared badge == current repo truth) were
+retired in Phase 164 (generate-not-assert, research entry #378 rec 2): that
+class broke on every seal. Currency is now enforced where repo state is
+stable -- substantiate Step 6.5 `seal_artifacts --check` (ABORT) and the CI
+`seal-artifacts currency` step. The remaining tests here exercise the helper
+functions against synthetic fixtures.
 """
 from __future__ import annotations
 
@@ -36,61 +39,6 @@ def test_parse_readme_badges_returns_all_keys():
     for key, val in declared.items():
         assert isinstance(val, int), f"{key} declared value must parse to int; got {val!r}"
         assert val > 0, f"{key} declared value must be positive; got {val}"
-
-
-def test_readme_ledger_badge_matches_entry_count():
-    """README Ledger badge declares the actual entry count (strict equality)."""
-    from qor.scripts.badge_currency import count_ledger_entries, parse_readme_badges
-    actual = count_ledger_entries(REPO_ROOT / "docs" / "META_LEDGER.md")
-    declared = parse_readme_badges(REPO_ROOT / "README.md")["ledger"]
-    assert declared == actual, (
-        f"README Ledger badge declares {declared} but actual entry count is {actual}. "
-        f"Update README.md or run /qor-substantiate."
-    )
-
-
-def test_readme_skills_badge_matches_skill_count():
-    from qor.scripts.badge_currency import count_skills, parse_readme_badges
-    actual = count_skills(REPO_ROOT)
-    declared = parse_readme_badges(REPO_ROOT / "README.md")["skills"]
-    assert declared == actual, (
-        f"README Skills badge declares {declared} but actual SKILL.md count is {actual}."
-    )
-
-
-def test_readme_agents_badge_matches_agent_count():
-    from qor.scripts.badge_currency import count_agents, parse_readme_badges
-    actual = count_agents(REPO_ROOT)
-    declared = parse_readme_badges(REPO_ROOT / "README.md")["agents"]
-    assert declared == actual, (
-        f"README Agents badge declares {declared} but actual agent count is {actual}."
-    )
-
-
-def test_readme_tests_badge_matches_test_count():
-    """README Tests badge declares the actual test count (strict equality).
-
-    Closes the F7 prompt-surface-review finding: prior to this test, the
-    currency suite covered ledger/skills/agents/doctrines but not the
-    Tests badge, which had silently drifted by 91 tests (declared 1740;
-    actual 1831 at the time of the gap-detection).
-    """
-    from qor.scripts.badge_currency import count_tests, parse_readme_badges
-    actual = count_tests(REPO_ROOT)
-    declared = parse_readme_badges(REPO_ROOT / "README.md")["tests"]
-    assert declared == actual, (
-        f"README Tests badge declares {declared} but actual test count is {actual}. "
-        f"Update README.md."
-    )
-
-
-def test_readme_doctrines_badge_matches_doctrine_count():
-    from qor.scripts.badge_currency import count_doctrines, parse_readme_badges
-    actual = count_doctrines(REPO_ROOT)
-    declared = parse_readme_badges(REPO_ROOT / "README.md")["doctrines"]
-    assert declared == actual, (
-        f"README Doctrines badge declares {declared} but actual doctrine count is {actual}."
-    )
 
 
 def test_check_currency_returns_clean_for_synthetic_match(tmp_path):
