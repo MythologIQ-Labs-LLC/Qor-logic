@@ -1,0 +1,1 @@
+{"ai_provenance":{"host":"unknown","human_oversight":"pass","model_family":"unknown","system":"Qor-logic","ts":"2026-06-10T19:23:25Z","version":"0.111.0"},"phase":"audit","report_path":".agent/staging/AUDIT_REPORT.md","risk_grade":"L2","session_id":"2026-06-10T1920-ed8ca2","target":"docs/plan-qor-phase163-release-ci-success-gate.md","ts":"2026-06-10T19:23:25Z","verdict":"PASS"}

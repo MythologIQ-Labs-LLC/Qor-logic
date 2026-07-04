@@ -12896,5 +12896,47 @@ Change class: feature. Tests: 8 new in `tests/test_ledger_base_currency.py` (che
 
 ---
 
+### Entry #376: GATE TRIBUNAL -- Phase 163 plan PASS (release publish gated on CI success)
+
+**Timestamp**: 2026-06-10T19:25:00Z
+**Phase**: GATE (Phase 163)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase163-release-ci-success-gate.md
+**Session**: `2026-06-10T1920-ed8ca2`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `cdaf4b1587168932fd5b713e5a870dcb06684696921c1701855aacfd0a56106a`
+**Previous Hash**: `b355167206ee0e6414999f18aab7520aa868af41d5829155bba89317a0fba298`
+**Chain Hash (Merkle seal)**: `d5b09035388fe2a367e52175f48068d937db3f0f394ec104c4f4ba3a72a73602`
+
+**Decision**: PASS (L2, solo). Closes a real release-pipeline gap surfaced by the operator: `release.yml` has `build -> publish` with NO test step, so a publish was coupled to the tests passing only by operator discipline (verify PR CI before approving the `pypi` gate) -- which has failed. The fix is structural + fail-closed: a new pure, unit-tested `qor/scripts/release_ci_gate.py` (`evaluate(runs, head_sha)` returns ok iff a `CI` run for that exact SHA concluded `success`; `main` reads the `gh api` runs JSON from stdin and exits 1 otherwise) is wired into BOTH the build (early-fail) and publish (enforcement) jobs before their real work -- mirroring the existing tag-reachability double-gate. The authenticated `gh api` call stays in the workflow (`actions: read` added to both jobs); the decision logic is unit-testable in-process. So a publish cannot proceed unless CI was green for the tagged commit, regardless of approval timing. Audited against the release-immutability properties (jobs stay `{build, publish}`, `id-token` once, SHA-pinned) -- the change adds steps + a permission, not a job. Next: `/qor-implement`.
+
+---
+
+### Entry #377: SESSION SEAL -- Phase 163 release publish gated on CI success (v0.111.1)
+
+**Timestamp**: 2026-06-10T19:30:00Z
+**Phase**: SUBSTANTIATE (Phase 163; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase163-release-ci-success-gate.md
+**Session**: `2026-06-10T1920-ed8ca2`
+**SSDF Practices**: PS.2.1, RV.2.1
+**Entry ID**: `ad68c3a61be5`
+
+**Scope**: Phase 163 implemented (hotfix; release-pipeline integrity). Operator-surfaced gap: `release.yml` had `build -> publish` with NO test step, so a PyPI publish was coupled to the test suite passing only by operator discipline (verify PR CI before approving the `pypi` environment) -- an early approval or a broken `main` could ship untested code; the existing pull-back check only proves published bytes == built bytes, never that they pass tests. The fix makes it structural + fail-closed: new `qor/scripts/release_ci_gate.py` exposes a pure `evaluate(runs, head_sha)` (ok iff a `CI` run for that exact SHA concluded `success`) and a `main` that reads the `gh api` workflow-runs JSON from stdin and exits 1 otherwise. `release.yml` runs `gh api .../workflows/ci.yml/runs?head_sha=<SHA>` and pipes it to the gate in BOTH the build (early-fail) and publish (enforcement) jobs before their real work, with `actions: read` added to each job -- mirroring the existing tag-reachability double-gate. So a publish cannot proceed unless CI was green for the tagged commit, regardless of approval timing. The decision logic lives in a unit-tested stdlib-only module; the authenticated network call stays in the workflow. The 13 release-immutability + guard properties (jobs=={build,publish}, `id-token: write` exactly once, SHA-pinned actions, step ordering) all still hold. Self-application: Phase 163's own release (after merge) is the first one this gates -- its tag's CI run must be green to publish.
+
+Change class: hotfix. Tests: 10 new in `tests/test_release_ci_gate.py` (8 behavioral -- evaluate ok/failure/in-progress/wrong-sha/empty/mixed + main exit-0/exit-1 via stdin; 2 structural -- gate wired into both jobs, precedes publish), green twice. Full suite 2500 passed. README badges Tests 2490 -> 2500; Ledger 375 -> 377. SYSTEM_STATE header advanced to Phase 163. Audit PASS (L2 solo). doc_tier minimal; no new dependency (stdlib only). Substantiate gates: secret-scan clean, merge-velocity healthy, data-API SKIP, doc-integrity PASS, governance-index clean, badge-currency OK, seal-hash-integrity PASS, seal-entry-check PASS, gate-chain-completeness PASS, provenance verify-committed PASS (6 sessions), ledger-base-currency OK (self). Run under `/qor-auto-dev-1` discipline (Review Boundary -- staged only).
+
+**Review Boundary**: per `/qor-auto-dev-1`, stage-only at seal; commit + push + PR + merge + tag + publish HELD for operator approval at handoff.
+
+**Content Hash**: `ae4bb7dc57810e6119aeeff6e704f87175f808ddd78382cb32b9cb5be63b5793`
+**Previous Hash**: `d5b09035388fe2a367e52175f48068d937db3f0f394ec104c4f4ba3a72a73602`
+**Chain Hash (Merkle seal)**: `e41503528b05120d2c09dd2bba1ae190b29be96d1a389d568da7b111c147b410`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 162; v0.111.0; ledger base-currency gate -- GH #231 Option 1, WARN-first; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
+*Session: SEALED* (Phase 163; v0.111.1; release publish gated on CI success for the tagged SHA; Review Boundary -- commit/push/PR/merge/tag/publish HELD for operator)
