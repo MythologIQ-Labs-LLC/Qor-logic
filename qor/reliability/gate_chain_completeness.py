@@ -69,10 +69,17 @@ def check(
     by_phase = _extract_seal_sessions(text, phase_min)
     from qor.scripts import validate_gate_artifact
 
+    from qor.scripts import tier_guard
+
     missing: list[tuple[int, str]] = []
     for phase_num, sid in sorted(by_phase.items()):
         sess_dir = gates / sid
-        for required in REQUIRED_PHASES:
+        # Phase 168 (GH #248): the session's plan may declare a short chain
+        # (validated by tier_guard; absent/illegal declaration => full set).
+        declared = tier_guard.declared_artifacts(sess_dir / "plan.json")
+        if "audit" not in declared and tier_guard.verify_session(sid, gates):
+            declared = REQUIRED_PHASES  # illegal short declaration: fail-closed
+        for required in declared:
             artifact = sess_dir / f"{required}.json"
             # GAP-GOV-14: existence alone is not enough -- an empty / malformed /
             # schema-invalid gate file must not satisfy completeness. validate_one

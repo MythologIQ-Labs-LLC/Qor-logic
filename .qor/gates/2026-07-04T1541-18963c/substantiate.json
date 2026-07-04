@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-07-04T1541-18963c",
+  "ts": "2026-07-04T15:56:40Z",
+  "verdict": "PASS",
+  "plan_path": "docs/plan-qor-phase168-risk-tiered-gate-depth.md",
+  "seal_entry": 397,
+  "merkle_seal": "5ed895cb3f7068febe5a1febd268b97ce9bdcc5961702c8512bc291893e59a38",
+  "version": "0.116.0",
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.116.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-04T15:56:40Z"
+  }
+}

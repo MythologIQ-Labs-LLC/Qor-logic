@@ -217,8 +217,15 @@ def verify_committed(repo_root: Path, *, phase_min: int = 158) -> CommittedResul
     by_phase = _extract_seal_sessions(ledger.read_text(encoding="utf-8"), phase_min)
     gates = repo_root / ".qor" / "gates"
     mismatches: list[tuple[int, str]] = []
+    from qor.scripts import tier_guard
+
     for phase_num, sid in sorted(by_phase.items()):
-        for ph in _REQUIRED_PHASES:
+        # Phase 168 (GH #248): honor a legally-declared short chain; absent or
+        # illegal declarations resolve to the full set (fail-closed).
+        declared = tier_guard.declared_artifacts(gates / sid / "plan.json")
+        if "audit" not in declared and tier_guard.verify_session(sid, gates):
+            declared = _REQUIRED_PHASES
+        for ph in declared:
             art = gates / sid / f"{ph}.json"
             if not art.is_file():
                 mismatches.append((phase_num, f"{sid}/{ph}.json: artifact missing"))

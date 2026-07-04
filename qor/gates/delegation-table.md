@@ -12,6 +12,7 @@ This table is the single source of truth for cross-skill handoffs. Every `/qor-*
 | `qor-audit` | Orphan file detected | `/qor-organize` | organize owns project-level structure |
 | `qor-audit` | Macro-level architecture breach (cyclic deps, mixed domains, layering reversal) | `/qor-organize` | structural concerns are organize's domain |
 | `qor-audit` | PASS verdict | `/qor-implement` | next phase in chain |
+| `qor-plan` | Legal short-chain declaration (`required_gate_artifacts` without audit; L1-risk hotfix only, Phase 168) | `/qor-implement` | tier_guard verifies; skipped audit is a logged severity-1 shadow event, never silent |
 | `qor-audit` | VETO with security L3 | `/qor-debug` (root cause) then `/qor-refactor` or `/qor-implement` | security findings need diagnosis before fix |
 | `qor-ideate` | Readiness `ready` + recommended_next_phase `research` | `/qor-research` | grounded research follows ideation when external facts/APIs need verification |
 | `qor-ideate` | Readiness `ready` + recommended_next_phase `plan` | `/qor-plan` | direct-to-plan when ideation captured all context needed |

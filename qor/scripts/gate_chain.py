@@ -85,6 +85,13 @@ def check_prior_artifact(
             ideation_result = _check_ideation_predecessor(session_id)
             if ideation_result and ideation_result.found:
                 return ideation_result
+        # Phase 168 (GH #248): when checking implement's predecessor and the
+        # session's plan legitimately declares the short chain (L1-risk
+        # hotfix per tier_guard), accept plan.json as the prior.
+        if current_phase == "implement":
+            short_result = _check_short_chain_plan(sid)
+            if short_result is not None:
+                return short_result
         return GateResult(
             found=False, valid=False, path=artifact,
             errors=[f"prior-phase artifact missing: {artifact}"],
@@ -97,6 +104,27 @@ def check_prior_artifact(
         path=artifact,
         errors=errs,
     )
+
+
+def _check_short_chain_plan(sid: str) -> GateResult | None:
+    """Phase 168: accept a legally short-chain plan.json as implement's prior.
+
+    Returns a GateResult only when the plan declares a set omitting audit AND
+    tier_guard verifies the declaration (L1-risk hotfix); None otherwise so
+    the caller falls back to the legacy missing-prior error (fail-closed).
+    """
+    from qor.scripts import tier_guard
+
+    plan_artifact = GATES_DIR / sid / "plan.json"
+    if not plan_artifact.exists():
+        return None
+    declared = tier_guard.declared_artifacts(plan_artifact)
+    if "audit" in declared:
+        return None
+    if tier_guard.verify_session(sid, GATES_DIR):
+        return None  # illegal declaration: keep the missing-prior error
+    errs = vga.validate_one("plan", plan_artifact)
+    return GateResult(found=True, valid=not errs, path=plan_artifact, errors=errs)
 
 
 def _check_ideation_predecessor(session_id: str | None) -> GateResult | None:

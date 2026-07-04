@@ -1,0 +1,46 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-04T1541-18963c",
+  "ts": "2026-07-04T15:44:58Z",
+  "plan_path": "docs/plan-qor-phase168-risk-tiered-gate-depth.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "tier guard + schema (TDD first)"
+  ],
+  "affected_files": [
+    "tests/test_tier_guard.py",
+    "qor/gates/schema/plan.schema.json",
+    "qor/scripts/tier_guard.py",
+    "qor/scripts/gate_chain.py",
+    "qor/reliability/gate_chain_completeness.py"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_tier_guard.py -q",
+    "python -m pytest -q",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase168-risk-tiered-gate-depth.md"
+  ],
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "short chain omits only audit; substantiate ladder unchanged for every tier",
+      "guard consumes existing axes -- no new taxonomy"
+    ],
+    "non_goals": [
+      "no audit changes",
+      "no historical reclassification (absent field == full chain)",
+      "no CI workflow change"
+    ],
+    "exclusions": [
+      "chain.md / delegation-table / doctrine via /qor-document at seal"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.115.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T15:44:58Z"
+  }
+}

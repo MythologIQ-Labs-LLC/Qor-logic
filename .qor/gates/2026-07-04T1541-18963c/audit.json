@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-04T1541-18963c",
+  "ts": "2026-07-04T15:47:01Z",
+  "target": "docs/plan-qor-phase168-risk-tiered-gate-depth.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L3",
+  "target_content_hash": "092a481806785f6bcaaf19a3858b0775beca8e97dad1359e0308e2fe3ce253c3",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.115.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-04T15:47:01Z"
+  }
+}

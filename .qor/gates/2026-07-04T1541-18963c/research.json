@@ -1,0 +1,51 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-04T1541-18963c",
+  "ts": "2026-07-04T15:42:50Z",
+  "questions": [
+    "What machinery must change for tiered gate depth, and what precedents exist?",
+    "Which design shape is smallest-honest?",
+    "What may a short chain skip, under what guards?"
+  ],
+  "findings": [
+    {
+      "topic": "seams exist",
+      "claim": "Substitutable priors (Phase 59), audited gate-skips (Phase 75), and a hardcoded REQUIRED_PHASES tuple are the three seams tiering composes",
+      "citation": "gate_chain.py:28,102-117; gate_chain_completeness.py:20,52-88"
+    },
+    {
+      "topic": "no third taxonomy",
+      "claim": "Declaration = required_gate_artifacts in plan.json (Shape 3); guard = existing risk routing + change_class; PAMA M-classes adopted as rationale only",
+      "citation": "qor/capabilities/risk.py:55-79; bicameral-factory/PAMA.md:269-335"
+    },
+    {
+      "topic": "Governor decisions",
+      "claim": "Shape 3 selected; audit-skip only for L1 + non-release with severity-1 shadow event; substantiate gates unchanged; L2/L3 paths force full chain",
+      "citation": "operator decision 2026-07-04 (AskUserQuestion; recorded in brief section Governor Decisions)"
+    },
+    {
+      "topic": "self-application",
+      "claim": "Phase 168 itself touches gate machinery (L3 path) and must be classified full-chain by its own guard",
+      "citation": "qor/capabilities/risk.py L3 rules"
+    }
+  ],
+  "sources": [
+    "qor/scripts/gate_chain.py",
+    "qor/reliability/gate_chain_completeness.py",
+    "qor/gates/schema/plan.schema.json",
+    "qor/capabilities/risk.py",
+    "qor/gates/chain.md",
+    "qor/gates/delegation-table.md",
+    "G:/MythologIQ/bicameral-factory/PAMA.md",
+    "tests/test_gate_chain_completeness.py"
+  ],
+  "brief_path": "docs\\research-brief-risk-tiered-gate-depth-2026-07-04.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.115.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T15:42:50Z"
+  }
+}
