@@ -132,10 +132,13 @@ flipped, missing = rma.mark_addressed(
     session_id=sid,
     review_pass_artifact_path=".qor/gates/<sid>/audit.json",
     remediate_gate_path=".qor/gates/<sid>/remediate.json",
+    closure_enforcer=proposal["closure_enforcer"],  # Phase 166 (GH #249)
 )
 ```
 
-`mark_addressed` verifies the audit artifact's `phase == "audit"`, `verdict == "PASS"`, and `reviews_remediate_gate == remediate_gate_path` before flipping. On any verification failure it raises `ReviewAttestationError` without mutating events. This closes the advisory-until-reviewed loop: Step 4 writes pending state; Step 6 (via operator-explicit audit) completes the flip to `addressed: true`.
+**Closure-enforcer contract (Phase 166; GH #249)**: every remediation proposal MUST declare `closure_enforcer` -- the executable mechanism that now guards the pattern. Four accepted forms: an existing `tests/test_*.py` path; an importable `qor.scripts.*`/`qor.reliability.*` module; a `/qor-<skill> Step N` gate reference; or `cannot-automate: <justification >= 50 chars>` when the pattern is genuinely un-automatable. `mark_addressed` validates the form FIRST and raises `ClosureEnforcerError` without mutating events -- a pattern cannot close on prose alone.
+
+`mark_addressed` then verifies the audit artifact's `phase == "audit"`, `verdict == "PASS"`, and `reviews_remediate_gate == remediate_gate_path` before flipping. On any verification failure it raises `ReviewAttestationError` without mutating events. This closes the advisory-until-reviewed loop: Step 4 writes pending state; Step 6 (via operator-explicit audit) completes the flip to `addressed: true`.
 
 See `qor/references/doctrine-governance-enforcement.md` §10.1 "Two-stage remediation flip."
 

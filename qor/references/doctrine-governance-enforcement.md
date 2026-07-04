@@ -211,16 +211,19 @@ A duplicate-`previous_hash` residual (the SG-ConcurrentLedgerRace-A pattern: two
 
 **Stage 1 — pending.** `/qor-remediate` Step 4 calls `remediate_mark_addressed.mark_addressed_pending(ids, session_id)`. This flips `addressed_pending: true` on each matched event. `addressed` stays `false`; `addressed_ts` stays `null`; `addressed_reason` stays `null`. The event log now records "remediation proposed; awaiting review."
 
-**Stage 2 — addressed.** When the operator reviews the remediation, they invoke `/qor-audit` with the skill arg `reviews-remediate:<path-to-remediate.json>`. `/qor-audit` Step 4.1 captures this path and writes `reviews_remediate_gate: "<path>"` into the audit gate artifact. If the audit reaches a PASS verdict, Step 4.2 invokes `remediate_mark_addressed.mark_addressed(ids, session_id, review_pass_artifact_path, remediate_gate_path)`, which:
+**Stage 2 — addressed.** When the operator reviews the remediation, they invoke `/qor-audit` with the skill arg `reviews-remediate:<path-to-remediate.json>`. `/qor-audit` Step 4.1 captures this path and writes `reviews_remediate_gate: "<path>"` into the audit gate artifact. If the audit reaches a PASS verdict, Step 4.2 invokes `remediate_mark_addressed.mark_addressed(ids, session_id, review_pass_artifact_path, remediate_gate_path, closure_enforcer)`, which:
 
-1. Verifies the audit artifact exists, has `phase == "audit"`, `verdict == "PASS"`.
-2. Verifies the artifact's `reviews_remediate_gate` field equals `remediate_gate_path`.
-3. On any verification failure: raises `ReviewAttestationError`; no event mutation.
-4. On success: flips `addressed: true`, stamps `addressed_ts`, writes `addressed_reason: "remediated"`, preserves `addressed_pending: true`.
+1. Validates `closure_enforcer` (Phase 166; GH #249) against exactly four forms: an existing `tests/test_*.py` path, an importable `qor.scripts.*`/`qor.reliability.*` module, a `/qor-<skill> Step N` gate reference, or `cannot-automate: <justification >= 50 chars>`. Invalid or missing: raises `ClosureEnforcerError`; no event mutation. A pattern cannot close on prose alone.
+2. Verifies the audit artifact exists, has `phase == "audit"`, `verdict == "PASS"`.
+3. Verifies the artifact's `reviews_remediate_gate` field equals `remediate_gate_path`.
+4. On any verification failure: raises `ReviewAttestationError`; no event mutation.
+5. On success: flips `addressed: true`, stamps `addressed_ts`, writes `addressed_reason: "remediated"`, records `closure_enforcer`, preserves `addressed_pending: true`.
+
+The `sg_closure_lint` companion (WARN-only, `/qor-audit` Step 0.6 ladder) walks the countermeasure doctrine's `## SG-` entries and flags any entry citing no executable enforcer -- the standing backfill worklist for the same rule at corpus level.
 
 The `reviews_remediate_gate` field is the **explicit operator signal**. Absence of the signal is interpreted as "this audit is not reviewing a remediation" — unrelated PASS audits in the same session never touch event state. This is the V1 resolution from Phase 36 Pass 1: detecting review intent via `remediate.json` file presence alone was too coarse (any session with a prior `/qor-remediate` invocation would fire the flip on any subsequent PASS audit).
 
-**Schema invariant.** `qor/gates/schema/shadow_event.schema.json` enforces via `allOf/if-then`: any event with `addressed == true AND addressed_reason == "remediated"` must also carry `addressed_pending == true`. Legacy closure paths (`addressed_reason in {"issue_created", "stale"}`) are unaffected — the invariant does not fire on those.
+**Schema invariant.** `qor/gates/schema/shadow_event.schema.json` enforces via `allOf/if-then`: any event with `addressed == true AND addressed_reason == "remediated"` must also carry `addressed_pending == true` AND a non-null `closure_enforcer` (>= 8 chars; Phase 166). Legacy closure paths (`addressed_reason in {"issue_created", "stale"}`) are unaffected — the invariants do not fire on those.
 
 **Anti-pattern.** Do not bypass the two-stage flip by calling `mark_addressed` directly without the review-pass artifact. The function explicitly requires it and will raise. Do not attempt to derive the review-pass path from heuristics (newest audit file, file in session dir, etc.) — the operator's explicit `reviews-remediate:<path>` arg is the only valid signal.
 

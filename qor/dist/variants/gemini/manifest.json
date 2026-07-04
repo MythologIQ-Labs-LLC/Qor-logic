@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-07-04T07:43:17Z",
+  "generated_ts": "2026-07-04T14:37:05Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -96,7 +96,7 @@
       "id": "qor-audit.toml",
       "source_path": "commands/qor-audit.toml",
       "install_rel_path": "commands/qor-audit.toml",
-      "sha256": "dd19bfdc1124b46bd5b3b795b14c54173ac58e0fb5e9a518a13924d68deea052"
+      "sha256": "62ac13ac4f83948e19340325001f3a729d573484456988fa5936a185cb27d8e0"
     },
     {
       "id": "qor-bootstrap.toml",
@@ -210,7 +210,7 @@
       "id": "qor-remediate.toml",
       "source_path": "commands/qor-remediate.toml",
       "install_rel_path": "commands/qor-remediate.toml",
-      "sha256": "0001282c03c9ff19d905f84a487f35b2c3b6fba0b43376795c8385ae2c7876f5"
+      "sha256": "7efccac66ae0764bf52beb340520b8c1ea5b4ea0fe19ec252dbef8a66eee6811"
     },
     {
       "id": "qor-repo-audit.toml",

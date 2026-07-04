@@ -27,7 +27,9 @@ rather than silently dropped.
 """
 from __future__ import annotations
 
+import importlib.util
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -36,6 +38,49 @@ from qor.scripts import shadow_process
 
 class ReviewAttestationError(Exception):
     """Raised when a review-pass artifact fails verification during mark_addressed."""
+
+
+class ClosureEnforcerError(Exception):
+    """Raised when a closure lacks a valid executable enforcer (Phase 166; GH #249)."""
+
+
+_MODULE_RE = re.compile(r"^qor\.(scripts|reliability)\.[a-z0-9_]+$")
+_GATE_STEP_RE = re.compile(r"^/qor-[a-z-]+ Step [0-9]+(\.[0-9]+)*$")
+_CANNOT_AUTOMATE_PREFIX = "cannot-automate:"
+
+
+def _validate_closure_enforcer(value: str, repo_root: Path | None = None) -> None:
+    """Accept exactly four enforcer forms; raise ClosureEnforcerError otherwise.
+
+    Forms: (1) existing tests/test_*.py path; (2) importable qor.scripts.* /
+    qor.reliability.* module; (3) '/qor-<skill> Step N[.M]' gate reference;
+    (4) 'cannot-automate: <justification >= 50 chars>'.
+    """
+    root = repo_root or Path.cwd()
+    if not value or not value.strip():
+        raise ClosureEnforcerError("closure_enforcer is required and cannot be empty")
+    if value.startswith(_CANNOT_AUTOMATE_PREFIX):
+        justification = value[len(_CANNOT_AUTOMATE_PREFIX):].strip()
+        if len(justification) < 50:
+            raise ClosureEnforcerError(
+                "cannot-automate justification must be >= 50 characters "
+                f"(got {len(justification)})"
+            )
+        return
+    if re.fullmatch(r"tests/test_[a-z0-9_]+\.py", value):
+        if not (root / value).is_file():
+            raise ClosureEnforcerError(f"enforcer test file does not exist: {value}")
+        return
+    if _MODULE_RE.fullmatch(value):
+        if importlib.util.find_spec(value) is None:
+            raise ClosureEnforcerError(f"enforcer module is not importable: {value}")
+        return
+    if _GATE_STEP_RE.fullmatch(value):
+        return
+    raise ClosureEnforcerError(
+        f"closure_enforcer matches none of the four accepted forms: {value!r} "
+        "(test path | qor module | '/qor-<skill> Step N' | 'cannot-automate: <justification>')"
+    )
 
 
 def _flip_event_fields(
@@ -114,13 +159,19 @@ def mark_addressed(
     session_id: str,  # noqa: ARG001 -- reserved for future audit trail wiring
     review_pass_artifact_path: str,
     remediate_gate_path: str,
+    closure_enforcer: str,
+    repo_root: Path | None = None,
 ) -> tuple[int, list[str]]:
-    """Stage 2: after review-pass verification, flip addressed=true.
+    """Stage 2: after enforcer + review-pass verification, flip addressed=true.
 
-    Requires a PASS audit gate artifact whose ``reviews_remediate_gate`` field
-    equals ``remediate_gate_path``. On verification failure raises
-    ``ReviewAttestationError`` without mutating any event.
+    Phase 166 (GH #249): ``closure_enforcer`` is required and validated first
+    (raises ``ClosureEnforcerError``); an SG event may only close as
+    ``remediated`` with an executable enforcer or an explicit cannot-automate
+    decision recorded. Then requires a PASS audit gate artifact whose
+    ``reviews_remediate_gate`` field equals ``remediate_gate_path`` (raises
+    ``ReviewAttestationError``). No event is mutated on either failure.
     """
+    _validate_closure_enforcer(closure_enforcer, repo_root=repo_root)
     _verify_review_pass_artifact(review_pass_artifact_path, remediate_gate_path)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     return _flip_event_fields(
@@ -130,5 +181,6 @@ def mark_addressed(
             "addressed_ts": now,
             "addressed_reason": "remediated",
             "addressed_pending": True,
+            "closure_enforcer": closure_enforcer,
         },
     )

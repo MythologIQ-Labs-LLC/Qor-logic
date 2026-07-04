@@ -50,12 +50,17 @@ def test_schema_invariant_remediated_requires_pending():
 
 
 def test_schema_invariant_remediated_with_pending_true_validates():
-    """addressed=true, reason=remediated, addressed_pending=true -> valid."""
+    """addressed=true, reason=remediated, pending=true, enforcer set -> valid.
+
+    Phase 166 (GH #249): a remediated closure also requires closure_enforcer;
+    the tests/test_sg_closure_enforcement.py suite covers the rejection paths.
+    """
     event = _base_event(
         addressed=True,
         addressed_ts="2026-04-20T12:30:00Z",
         addressed_reason="remediated",
         addressed_pending=True,
+        closure_enforcer="qor.scripts.sg_closure_lint",
     )
     shadow_process.validate(event)
 
