@@ -162,6 +162,7 @@ qor-logic scripts plan_signature_widening_caller_lint --plan "$PLAN_PATH" --repo
 qor-logic scripts plan_data_round_trip_lint --plan "$PLAN_PATH" --repo-root . || true
 qor-logic scripts plan_live_progress_lint --repo-root . || true
 qor-logic scripts plan_feature_tdd_lint --plan "$PLAN_PATH" --repo-root . || true
+qor-logic scripts sg_closure_lint || true
 ```
 
 `PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
@@ -533,10 +534,11 @@ if verdict == "PASS" and reviews_gate:
         session_id=sid,
         review_pass_artifact_path=f".qor/gates/{sid}/audit.json",
         remediate_gate_path=reviews_gate,
+        closure_enforcer=remediate_proposal["closure_enforcer"],  # Phase 166 (GH #249)
     )
 ```
 
-`mark_addressed` re-verifies the audit artifact before flipping (mismatch raises `ReviewAttestationError`); PASS audits without the field never touch event state. See `qor/references/doctrine-governance-enforcement.md` §10.1 "Two-stage remediation flip."
+`mark_addressed` validates `closure_enforcer` first (four accepted forms per `/qor-remediate` Step 6; invalid raises `ClosureEnforcerError` without mutation), then re-verifies the audit artifact before flipping (mismatch raises `ReviewAttestationError`); PASS audits without the field never touch event state. See `qor/references/doctrine-governance-enforcement.md` §10.1 "Two-stage remediation flip."
 
 ### Step 5: Update Ledger
 

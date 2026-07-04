@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.114.0] - 2026-07-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 166 (feature; SG closure enforcement)**: a Shadow Genome pattern can no longer close on prose alone (GH #249). `mark_addressed` now requires a `closure_enforcer` -- the executable mechanism that guards the closed pattern (an existing test path, an importable qor module, a gate-step reference, or an explicit `cannot-automate:` justification of 50+ characters) -- validated fail-closed before any event mutates, recorded on the event, and required by the shadow-event schema whenever an event closes as `remediated`. A new WARN-only `qor.scripts.sg_closure_lint` walks the 40-entry countermeasure doctrine at every audit and flags entries citing no executable enforcer (10 today -- the standing backfill worklist). Root evidence: prose codification went 0-for-4 against SG-038 recurrence; only executable checks have stuck (research entries #378/#386).
+
 ## [0.113.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

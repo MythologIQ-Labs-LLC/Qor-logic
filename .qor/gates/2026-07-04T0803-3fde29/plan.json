@@ -1,0 +1,52 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-04T0803-3fde29",
+  "ts": "2026-07-04T08:07:04Z",
+  "plan_path": "docs/plan-qor-phase166-sg-closure-enforcement.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "closure-enforcer contract (TDD first)",
+    "wiring + prose"
+  ],
+  "affected_files": [
+    "tests/test_sg_closure_enforcement.py",
+    "qor/gates/schema/shadow_event.schema.json",
+    "qor/scripts/remediate_mark_addressed.py",
+    "qor/scripts/sg_closure_lint.py",
+    "qor/skills/governance/qor-audit/SKILL.md",
+    "qor/skills/sdlc/qor-remediate/SKILL.md",
+    "tests/test_sg_closure_wiring.py",
+    "qor/dist/"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_sg_closure_enforcement.py tests/test_sg_closure_wiring.py -q",
+    "python -m pytest -q",
+    "qor-logic scripts sg_closure_lint",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase166-sg-closure-enforcement.md"
+  ],
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "corpus lint WARN-only in V1; fail-closed layer is the mark_addressed contract",
+      "no doctrine backfill this phase"
+    ],
+    "non_goals": [
+      "no stage-1 change",
+      "no new addressed_reason enum values",
+      "no cli.py change",
+      "no backfill of prose-only entries"
+    ],
+    "exclusions": [
+      "doctrine/glossary edits only via /qor-document at seal"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.113.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T08:07:04Z"
+  }
+}

@@ -351,6 +351,7 @@ def test_mark_addressed_requires_review_pass_artifact(tmp_path):
                 session_id="s-req-rp",
                 review_pass_artifact_path=str(nonexistent),
                 remediate_gate_path=str(remediate_gate),
+                closure_enforcer="qor.scripts.sg_closure_lint",
             )
 
 
@@ -374,6 +375,7 @@ def test_mark_addressed_verifies_artifact_is_audit_pass(tmp_path):
                 session_id="s-veto",
                 review_pass_artifact_path=str(audit_path),
                 remediate_gate_path=str(remediate_gate),
+                closure_enforcer="qor.scripts.sg_closure_lint",
             )
 
 
@@ -397,6 +399,7 @@ def test_mark_addressed_rejects_audit_without_reviews_remediate_gate_field(tmp_p
                 session_id="s-no-field",
                 review_pass_artifact_path=str(audit_path),
                 remediate_gate_path=str(remediate_gate),
+                closure_enforcer="qor.scripts.sg_closure_lint",
             )
 
 
@@ -422,6 +425,7 @@ def test_mark_addressed_rejects_reviews_remediate_gate_mismatch(tmp_path):
                 session_id="s-mismatch",
                 review_pass_artifact_path=str(audit_path),
                 remediate_gate_path=str(remediate_gate),
+                closure_enforcer="qor.scripts.sg_closure_lint",
             )
 
 
@@ -444,6 +448,7 @@ def test_mark_addressed_success_path_sets_addressed_ts(tmp_path):
             session_id="s-success",
             review_pass_artifact_path=str(audit_path),
             remediate_gate_path=str(remediate_gate),
+            closure_enforcer="qor.scripts.sg_closure_lint",
         )
     assert flipped == 1
     assert missing == []

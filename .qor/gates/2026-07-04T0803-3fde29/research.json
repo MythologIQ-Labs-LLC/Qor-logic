@@ -1,0 +1,48 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-04T0803-3fde29",
+  "ts": "2026-07-04T08:04:31Z",
+  "questions": [
+    "How do SG patterns close today, and where is enforcer existence verified?",
+    "What share of the countermeasure corpus already cites executable enforcement?",
+    "What is the smallest enforcement seam and the backfill burden?"
+  ],
+  "findings": [
+    {
+      "topic": "schema gap",
+      "claim": "addressed/addressed_reason carry no enforcer field; remediated conflates executable closure with operator fiat",
+      "citation": "qor/gates/schema/shadow_event.schema.json:67-84"
+    },
+    {
+      "topic": "contract gap",
+      "claim": "mark_addressed stage 2 verifies audit PASS but never that an enforcer exists",
+      "citation": "qor/scripts/remediate_mark_addressed.py:112-134"
+    },
+    {
+      "topic": "corpus precedent",
+      "claim": "32 of 40 SG entries cite executable enforcers by convention; 8 prose-only; convention is unenforced",
+      "citation": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    },
+    {
+      "topic": "zero backfill",
+      "claim": "Structured log has 0 closed events of 3; grandfathering costs nothing; lint findings double as the backfill worklist",
+      "citation": "docs/PROCESS_SHADOW_GENOME.md"
+    }
+  ],
+  "sources": [
+    "qor/gates/schema/shadow_event.schema.json",
+    "qor/scripts/remediate_mark_addressed.py",
+    "qor/references/doctrine-shadow-genome-countermeasures.md",
+    "docs/PROCESS_SHADOW_GENOME.md",
+    "qor/skills/sdlc/qor-remediate/SKILL.md"
+  ],
+  "brief_path": "docs\\research-brief-sg-closure-enforcement-2026-07-04.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.113.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T08:04:31Z"
+  }
+}

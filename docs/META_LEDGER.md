@@ -13094,5 +13094,82 @@ Change class: feature (v0.112.0 -> v0.113.0). Tests: 6 behavioral in `tests/test
 
 ---
 
+### Entry #386: RESEARCH BRIEF -- SG closure enforcement (GH #249)
+
+**Timestamp**: 2026-07-04T08:04:31Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #249 (lint-closure rule; perspective-reset rec 3)
+**Session**: `2026-07-04T0803-3fde29`
+**Brief**: docs/research-brief-sg-closure-enforcement-2026-07-04.md
+
+**Content Hash**: `19ec91542f623c553489986da04ae6903458a36b62f92331788c20bbf3a61755`
+**Previous Hash**: `1dc6ecb2a3cfe253de1a3c795b04470029c7df6c1247518cded1cd84c015ed1b`
+**Chain Hash (Merkle seal)**: `201763dedc798968e514c52df2286a0102c443c165eb87c7c64596820629da5b`
+
+**Decision**: SG closure is implicit today: the shadow-event schema (addressed/addressed_reason enum) carries no enforcer field, `mark_addressed` stage 2 verifies audit PASS but never verifies that anything executable now guards the pattern, and the countermeasure doctrine cites enforcers only by convention (32 of 40 entries do; 8 prose-only). The structured log has never closed an event (0/3), so enforcement lands before bad precedent accumulates -- zero backfill. Recommended seam (two layers): (1) `closure_enforcer` field on shadow_event.schema.json required (if-then) when addressed==true with reason `remediated`, validated in `mark_addressed` against four forms (existing tests/test_*.py path, importable qor.scripts.*/qor.reliability.* module, /qor-skill Step N gate reference, or `cannot-automate: <justification>=50 chars>`), fail-closed; (2) WARN-only `sg_closure_lint` over the `## SG-` corpus flagging entries without an enforcer citation, wired into the audit Step 0.6 ladder, its finding list doubling as the backfill worklist. Skill/doctrine prose via /qor-document. Next: /qor-plan.
+
+---
+
+### Entry #387: GATE TRIBUNAL -- Phase 166 plan PASS (SG closure enforcement)
+
+**Timestamp**: 2026-07-04T14:26:11Z
+**Phase**: GATE (Phase 166)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase166-sg-closure-enforcement.md
+**Session**: `2026-07-04T0803-3fde29`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `fb82b45a2084eafc51bfe6761143ef35f5fb9f12ad54e4ca7e1dff0154e1300b`
+**Previous Hash**: `201763dedc798968e514c52df2286a0102c443c165eb87c7c64596820629da5b`
+**Chain Hash (Merkle seal)**: `64fd48b305059b6b82dc5bcb4eea059849f13d6a71fb70ff4403b5ad7893cdb8`
+
+**Decision**: PASS (L2, solo; option_b_required=false). Operationalizes research entry #386 (GH #249): `closure_enforcer` schema property + if-then rule mirroring the Phase 36 shape (required when addressed==true with reason `remediated`), a fail-closed required parameter on `mark_addressed` stage 2 validated against four explicit forms (existing tests/test_*.py path; importable qor.scripts.*/qor.reliability.* module; /qor-skill Step N gate reference; `cannot-automate:` justification >=50 chars) raising `ClosureEnforcerError` without mutation, and a WARN-only `sg_closure_lint` over the 40-entry countermeasure corpus wired into the audit Step 0.6 ladder (its ~8 expected findings double as the backfill worklist). One plan-text finding resolved pre-verdict in-dialogue (SG-AffectedFilesContract-A: complete caller enumeration for the signature change -- 5 test call sites, 2 skill code examples, doctrine line 214, dist recompile; `create_shadow_issue.py` same-named function documented exempt). Zero backfill (0 events ever closed). Next: `/qor-implement`.
+
+---
+
+### Entry #388: IMPLEMENTATION -- Phase 166 SG closure enforcement
+
+**Timestamp**: 2026-07-04T14:33:23Z
+**Phase**: IMPLEMENT (Phase 166)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-04T0803-3fde29`
+**Intent Lock**: `LOCKED: 2026-07-04T0803-3fde29`
+
+**Content Hash**: `2bd374bcd844f17462c4cb91b896b874e0088aa9157dfc31e193d12b15398606`
+**Previous Hash**: `64fd48b305059b6b82dc5bcb4eea059849f13d6a71fb70ff4403b5ad7893cdb8`
+**Chain Hash (Merkle seal)**: `7c875ae697f9f3c91be095bf518d53b873db760fe273df484b6053f9644303bd`
+
+**Decision**: Phase 166 implemented per plan, TDD-first (6 behavioral tests red, then green twice with the 30 updated remediate tests). Schema: `closure_enforcer` property + second if-then rule mirroring the Phase 36 shape. Contract: `_validate_closure_enforcer` (four forms, fail-closed `ClosureEnforcerError` before any mutation) + required parameter on `mark_addressed` stage 2, stamped onto the event. Lint: `sg_closure_lint` (61 lines) -- live corpus reports 40 entries, 10 without enforcer citation (the standing backfill worklist). All 5 LD-7 caller sites updated (tests/test_remediate.py x5, both SKILL.md code examples); audit Step 0.6 ladder gained the WARN-wrapped lint; doctrine section 10.1 rewritten to the 5-step contract via /qor-document; CHANGELOG authored. Mid-pass corrections (both caught by the suite): audit SKILL.md size budget (40990 -> 40859 after trimming the Step 4.2 explanation to reference /qor-remediate Step 6) and one prose-lint exemption comment on the wiring assert. Dist recompiled. Next: full-suite verification, then `/qor-substantiate`.
+
+---
+
+### Entry #389: SESSION SEAL -- Phase 166 SG closure enforcement (v0.114.0)
+
+**Timestamp**: 2026-07-04T14:40:00Z
+**Phase**: SUBSTANTIATE (Phase 166; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase166-sg-closure-enforcement.md
+**Session**: `2026-07-04T0803-3fde29`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `6b0a98267d71`
+
+**Scope**: Phase 166 implemented (feature; research entry #386 -> closes GH #249, perspective-reset rec 3). A Shadow Genome pattern can no longer close on prose alone. `remediate_mark_addressed.mark_addressed` stage 2 now requires `closure_enforcer`, validated FIRST and fail-closed (`ClosureEnforcerError`, no mutation) against exactly four forms: existing `tests/test_*.py` path; importable `qor.scripts.*`/`qor.reliability.*` module; `/qor-<skill> Step N` gate reference; `cannot-automate: <justification >= 50 chars>`. The validated enforcer is stamped onto the event, and `shadow_event.schema.json` gained a second if-then invariant (mirroring the Phase 36 shape): `remediated` closure requires a non-null `closure_enforcer` >= 8 chars. New WARN-only `qor/scripts/sg_closure_lint` (61 lines) walks the `## SG-` corpus at every audit via the Step 0.6 ladder; live inventory: 40 entries, 10 without enforcer citation (the standing backfill worklist -- SG-016/017/019/021/032/034/035/036/037/038). LD-7 caller enumeration honored: 5 tests/test_remediate.py call sites, both SKILL.md code examples (audit Step 4.2, remediate Step 6), doctrine-governance-enforcement section 10.1 rewritten to the 5-step contract (via /qor-document), dist recompiled. Zero backfill of events (0 ever closed).
+
+Change class: feature (v0.113.0 -> v0.114.0). Tests: 6 behavioral in `tests/test_sg_closure_enforcement.py` + 1 structural in `tests/test_sg_closure_wiring.py` + 5 updated call sites, green twice (36/36 with the remediate suite). Full suite results recorded at handoff. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 132/0, merge-velocity healthy/merge_ok, size-budget 0 EXCEEDED (audit SKILL.md trimmed 40990 -> 40859 mid-pass), data-API SKIP, doc-integrity strict PASS, governance-index advanced+enforce clean, feature-inventory 17/17, procedural-fidelity 1 WARN (resolved by this SYSTEM_STATE sync), secret-scan recorded at handoff. Run under `/qor-auto-dev-1` with operator-authorized auto-ship (PyPI publish held for operator environment approval).
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**Content Hash**: `a43e590e821892942c604d6a83e89907a38ee39ba756c83095bd07a3d4df534e`
+**Previous Hash**: `7c875ae697f9f3c91be095bf518d53b873db760fe273df484b6053f9644303bd`
+**Chain Hash (Merkle seal)**: `6f0f90ff23b9df8dda271b4a3cb553e0d15254cdde20134df0ace3f01016daaa`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 165; v0.113.0; autonomous QA nightly -- aggregate status JSON + scheduled self-check with automatic issue lifecycle; auto-ship authorized, PyPI publish held for operator)
+*Session: SEALED* (Phase 166; v0.114.0; SG closure requires an executable enforcer -- closure_enforcer contract + corpus lint; auto-ship authorized, PyPI publish held for operator)
