@@ -1,0 +1,49 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-04T1612-9ee76f",
+  "ts": "2026-07-04T16:14:39Z",
+  "plan_path": "docs/plan-qor-phase169-evidence-reconstruction.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "evidence bundle + freeze lint (TDD first)"
+  ],
+  "affected_files": [
+    "tests/test_evidence_bundle.py",
+    "tests/test_gate_schema_freeze_lint.py",
+    "qor/scripts/evidence_bundle.py",
+    "qor/scripts/gate_schema_freeze_lint.py",
+    "qor/gates/SCHEMA_REGISTRY.json",
+    "qor/gates/schema/plan.schema.json",
+    "qor/skills/governance/qor-audit/SKILL.md"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_evidence_bundle.py tests/test_gate_schema_freeze_lint.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.evidence_bundle --phase 168 --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase169-evidence-reconstruction.md"
+  ],
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "bundle reconstructs only -- zero per-phase writes; missing signals named, never fabricated",
+      "freeze lint WARN-only V1"
+    ],
+    "non_goals": [
+      "no md/csv formatters",
+      "no gate semantics changes",
+      "no retroactive registry enforcement"
+    ],
+    "exclusions": [
+      "doctrine rule via /qor-document at seal"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.116.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T16:14:39Z"
+  }
+}

@@ -13325,5 +13325,82 @@ Change class: feature (v0.115.0 -> v0.116.0). Tests: 7 behavioral in `tests/test
 
 ---
 
+### Entry #398: RESEARCH BRIEF -- Evidence reconstruction over ceremony artifacts (GH #251)
+
+**Timestamp**: 2026-07-04T16:13:16Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #251 (perspective-reset rec 5; umbrella #247)
+**Session**: `2026-07-04T1612-9ee76f`
+**Brief**: docs/research-brief-evidence-reconstruction-2026-07-04.md
+
+**Content Hash**: `2fc6de3745345b8f711470ccfadf1c3308b5e7a6d0599bf55ec4a4725a47c657`
+**Previous Hash**: `5ed895cb3f7068febe5a1febd268b97ce9bdcc5961702c8512bc291893e59a38`
+**Chain Hash (Merkle seal)**: `dea9f5063d201292a4a497fdf90edcc7c26b05a9d0d4d9761aed9a2e1e80c8df`
+
+**Decision**: Every sealed phase already leaves eight independently-locatable evidence signals joinable from session_id/phase (ledger seal entry; gate artifacts; provenance sidecars; audit_history.jsonl; intent-lock record; shadow events; CHANGELOG section; seal commit/tag) -- the ADR-0018 posture holds: reconstruction needs ZERO new per-phase writes. Partial assemblers exist (`compliance do_ai_provenance` per-session phase walk; `status_json` final-line JSON contract); the missing piece is one verb joining all signals with an explicit completeness field (missing signals NAMED, never fabricated). Freeze rule smallest form: `qor/gates/SCHEMA_REGISTRY.json` baseline + sg_closure_lint-shaped `gate_schema_freeze_lint` (unregistered net-new gate schema without a plan-declared `new_ceremony_artifacts` justification -> WARN, exit 1 for the ladder wrap), WARN-only V1 in the audit Step 0.6 ladder; plan.schema.json gains the optional justification field. Phase 169 ships both deliverables + doctrine rule via /qor-document. Next: /qor-plan.
+
+---
+
+### Entry #399: GATE TRIBUNAL -- Phase 169 plan PASS (evidence reconstruction)
+
+**Timestamp**: 2026-07-04T16:15:51Z
+**Phase**: GATE (Phase 169)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase169-evidence-reconstruction.md
+**Session**: `2026-07-04T1612-9ee76f`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `30581d26600f115e4e75d703702910a8059b38ec223ca442fa6bbb784ef65e47`
+**Previous Hash**: `dea9f5063d201292a4a497fdf90edcc7c26b05a9d0d4d9761aed9a2e1e80c8df`
+**Chain Hash (Merkle seal)**: `aff6ce99b120873bfdbacf6d25345f72c40ec6b6d54ed8ce40bc0a909e13f7f5`
+
+**Decision**: PASS (L2, solo). Operationalizes research entry #398 (GH #251): `evidence_bundle` reconstructs a sealed phase's evidence from the eight already-recorded signals (reusing the canonical join helpers; collectors never raise; partial reconstruction surfaced via completeness.missing -- never fabricated; Phase 168 short-chain sessions report audit as not-required, not missing), and the artifact-freeze rule lands in its smallest executable form (SCHEMA_REGISTRY.json baseline + sg_closure_lint-shaped WARN-only freeze lint in the audit Step 0.6 ladder + optional plan-declared `new_ceremony_artifacts` justification field). Self-application verified: the phase introduces zero new ceremony artifacts and its CI commands reconstruct the prior seal (--phase 168) live. Next: `/qor-implement` (intent lock captured).
+
+---
+
+### Entry #400: IMPLEMENTATION -- Phase 169 evidence reconstruction
+
+**Timestamp**: 2026-07-04T16:20:34Z
+**Phase**: IMPLEMENT (Phase 169)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-04T1612-9ee76f`
+**Intent Lock**: `LOCKED: 2026-07-04T1612-9ee76f`
+
+**Content Hash**: `6e8123171446b25256d862d8cdeb99af42b67d35f13b0c4167f088fb8fbc3744`
+**Previous Hash**: `aff6ce99b120873bfdbacf6d25345f72c40ec6b6d54ed8ce40bc0a909e13f7f5`
+**Chain Hash (Merkle seal)**: `b6b48c3a0c6cfe9d01aed4bbfe5f7743df1062da1e02e157027be8b85b514a8b`
+
+**Decision**: Phase 169 implemented per plan, TDD-first (7 tests red, then green twice). `evidence_bundle.py` (234 lines): resolve-by-phase-or-session via the seal-block parser; eight never-raising collectors (`@_collect` records exceptions as errors) reusing the canonical helpers (validate_gate_artifact, gate_provenance.payload_digest, tier_guard.declared_artifacts for Phase 168 short-chain interop); completeness.missing NAMES absent signals; final-line JSON per the Phase 165 contract. `gate_schema_freeze_lint.py` (65 lines) + `SCHEMA_REGISTRY.json` (19-schema baseline) + plan.schema.json optional `new_ceremony_artifacts` (justification >= 100 chars) + audit Step 0.6 ladder line (SKILL.md at 40934 bytes, under budget). Live-run verification improved the design mid-pass: the shadow-events collector initially read only the LOCAL log and missed session events routed UPSTREAM -- fixed to scan both, after which the previous seal (Phase 168) reconstructs 8/8 signals. Live freeze-lint: 0 unjustified schemas (baseline exact). Next: full-suite verification, then `/qor-substantiate`.
+
+---
+
+### Entry #401: SESSION SEAL -- Phase 169 evidence reconstruction (v0.117.0)
+
+**Timestamp**: 2026-07-04T16:25:00Z
+**Phase**: SUBSTANTIATE (Phase 169; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase169-evidence-reconstruction.md
+**Session**: `2026-07-04T1612-9ee76f`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `d31f66ae8c97`
+
+**Scope**: Phase 169 implemented (feature; research entry #398 -> closes GH #251, perspective-reset rec 5; the MS agent-governance-toolkit ADR-0018 posture). Audit evidence is now RECONSTRUCTED on demand: `qor/scripts/evidence_bundle.py` (234 lines) resolves `--session <sid>` / `--phase <N>` via the ledger's SESSION SEAL blocks and joins the eight already-recorded signals -- ledger entry, gate artifacts (honoring Phase 168 short-chain declarations via the shared `tier_guard.declared_artifacts` reader), provenance sidecars, audit_history.jsonl, intent-lock record, shadow events across BOTH local and upstream logs, CHANGELOG section, seal commit/tag -- into one final-line JSON bundle (Phase 165 contract). Collectors never raise (`@_collect` records exceptions as errors); `completeness.missing` NAMES absent signals; nothing is fabricated. Companion freeze rule: `qor/gates/SCHEMA_REGISTRY.json` baselines the 19 existing gate schemas; WARN-only `gate_schema_freeze_lint` (65 lines; audit Step 0.6 ladder) flags net-new schemas lacking registration or a plan-declared `new_ceremony_artifacts` justification (>= 100 chars; new optional plan.schema.json field, additive). Mid-pass live-run improvement: the shadow-events collector initially scanned only the LOCAL log and missed UPSTREAM-routed session events; fixed, after which the previous seal (Phase 168) reconstructs 8/8 signals -- recorded here as the phase's live self-application evidence. The phase itself introduces ZERO new ceremony artifacts (the registry is an inventory, not a gate artifact).
+
+Change class: feature (v0.116.0 -> v0.117.0). Tests: 5 behavioral in `tests/test_evidence_bundle.py` (incl. Phase 168 short-chain interop and completeness naming) + 2 in `tests/test_gate_schema_freeze_lint.py` (four-cell discrimination + live registry baseline lock), green twice. Full suite results recorded at handoff. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 132/0, merge-velocity healthy/merge_ok, size-budget 0 EXCEEDED (audit SKILL.md 40934), data-API SKIP, doc-integrity strict PASS, governance-index advanced+enforce clean, feature-inventory 17/17, procedural-fidelity 1 WARN (resolved by this SYSTEM_STATE sync), secret-scan recorded at handoff. Run under `/qor-auto-dev-1` with operator-authorized auto-ship (PyPI publish held for operator environment approval).
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**Content Hash**: `6bf35ee3be89e2c7ce56b78314cf8595ef79af97816cc24392e106057a3823bb`
+**Previous Hash**: `b6b48c3a0c6cfe9d01aed4bbfe5f7743df1062da1e02e157027be8b85b514a8b`
+**Chain Hash (Merkle seal)**: `5eb347c21d7701c1da8313e6ecce7bd829424d6ee2a93ee6be394b40dfd317b8`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 168; v0.116.0; gate depth scales with declared risk -- GH #248 closed; auto-ship authorized, PyPI publish held for operator)
+*Session: SEALED* (Phase 169; v0.117.0; evidence reconstructed on demand + ceremony-artifact freeze -- GH #251 closed; auto-ship authorized, PyPI publish held for operator)

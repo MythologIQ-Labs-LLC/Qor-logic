@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-04T1612-9ee76f",
+  "ts": "2026-07-04T16:15:51Z",
+  "target": "docs/plan-qor-phase169-evidence-reconstruction.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "target_content_hash": "6bf35ee3be89e2c7ce56b78314cf8595ef79af97816cc24392e106057a3823bb",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.116.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-04T16:15:51Z"
+  }
+}

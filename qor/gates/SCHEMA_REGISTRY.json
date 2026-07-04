@@ -1,0 +1,24 @@
+{
+  "description": "Deliberate registry of gate-artifact schemas (Phase 169; GH #251). A net-new schema in qor/gates/schema/ must be added here in the same phase that introduces it, with the plan carrying a new_ceremony_artifacts justification -- ceremony artifacts accrete cost forever (research entry #378). gate_schema_freeze_lint compares this list against the directory at every audit.",
+  "schemas": [
+    "_provenance",
+    "audit",
+    "capability_inventory",
+    "control_matrix",
+    "deliver",
+    "feature_index",
+    "governance_context",
+    "ideation",
+    "implement",
+    "plan",
+    "qa",
+    "remediate",
+    "repos_config",
+    "research",
+    "risk_routing",
+    "shadow_event",
+    "substantiate",
+    "validate",
+    "verification_request"
+  ]
+}

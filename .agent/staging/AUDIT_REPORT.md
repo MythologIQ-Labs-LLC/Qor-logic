@@ -1,9 +1,9 @@
-# AUDIT REPORT -- Phase 168 (risk-tiered gate depth)
+# AUDIT REPORT -- Phase 169 (evidence reconstruction over ceremony artifacts)
 
 **Verdict**: PASS
-**Risk Grade**: L3
-**Target**: docs/plan-qor-phase168-risk-tiered-gate-depth.md
-**Session**: `2026-07-04T1541-18963c`
+**Risk Grade**: L2
+**Target**: docs/plan-qor-phase169-evidence-reconstruction.md
+**Session**: `2026-07-04T1612-9ee76f`
 **Mode**: solo (option_b_required=false; codex-plugin capability shortfall logged)
 
 ## Pass Results
@@ -11,23 +11,23 @@
 | Pass | Result | Notes |
 |---|---|---|
 | Prompt Injection | PASS | canaries exit 0 |
-| Security (L3) | PASS with L3 grade | The plan touches gate machinery (an L3 surface by its own guard's rules) -- graded L3 accordingly. The security posture is fail-closed at every consumer: an ILLEGAL short declaration is rejected by schema (release classes), by tier_guard at implement time, by completeness at seal/CI, and by provenance verify-committed at merge. Release classes (feature/breaking) can NEVER skip audit -- schema-level allOf. Substantiate ladder unchanged for all tiers. |
-| OWASP Top 10 | PASS | A04 (insecure design / fail-open) is the central risk and is closed four ways as above; skipped audits are never silent (severity-1 shadow event per LD-5) |
+| Security (L3) | PASS | Read-only reconstruction (zero per-phase writes -- the point of the phase); no network; no credentials; freeze lint is read-only over the schema directory |
+| OWASP Top 10 | PASS | A04: missing evidence is NAMED, never fabricated (completeness.missing); collectors never raise (errors recorded); no deserialization beyond json.loads of repo-local files |
 | Ghost UI / Live-Progress | PASS | No UI surface |
-| Section 4 Razor | PASS | tier_guard <120 lines; seam edits ~15/~12/~10 lines; no file crosses limits |
-| Self-Application | PASS | Phase 168 itself touches gate_chain/completeness/provenance -- L2/L3 paths -- so its own guard classifies it FULL-chain, which is exactly the chain it is traversing (this audit exists). The discipline the plan introduces is applied to the plan. |
-| Test Functionality | PASS | All 7 tests invoke units and assert outputs across every guard cell, both consumers, the schema conditionals, and the event emission; no presence-only assertions |
-| Dependency | PASS | stdlib + in-repo reuse (risk routing, shadow_process, validate_gate_artifact) |
-| Macro Architecture | PASS | One new leaf module; the declared-set reader is shared (single source) by the three consumers; no new taxonomy axis -- composes the two existing ones |
+| Section 4 Razor | PASS | evidence_bundle <=240 declared with eight small collectors; freeze lint <90; audit SKILL.md gains one ladder line (size headroom verified in Phase 166 at 40859) |
+| Self-Application | PASS | The phase's own rule applied to itself: it introduces ZERO new ceremony artifacts (SCHEMA_REGISTRY.json is a registry, not a gate artifact; no new gate schema), and its own CI commands include reconstructing the PRIOR seal (--phase 168) as live self-application |
+| Test Functionality | PASS | All 7 tests invoke units and assert outputs; the registry-baseline test locks directory<->registry integrity behaviorally (fails when a schema lands unregistered) |
+| Dependency | PASS | stdlib + in-repo reuse only |
+| Macro Architecture | PASS | Collectors reuse the canonical join helpers (LD-1) rather than duplicating parsers; freeze lint mirrors the Phase 166 corpus-lint shape; tier interop via the Phase 168 shared reader |
 | Feature Test Coverage | EXEMPT | feature_inventory_touches empty |
-| Infrastructure Alignment | PASS | Every LD grep-verified this audit: chain/prior/ideation-carve-out at gate_chain.py:28/50/59/102; REQUIRED_PHASES at completeness:20,75 AND gate_provenance:45,221 (the initially-missed CI consumer, resolved pre-verdict); risk rules at risk.py:17-44,55; change_class regex at governance_helpers.py:20 |
-| Runtime Contract Walk | WARN-only | Expected WARNs on the NEW tier_guard module |
-| Filter-Stage Ordering | PASS | Guard order explicit: schema (write time) -> tier_guard (implement prior) -> completeness/provenance (seal/CI/merge) -- each later stage assumes only earlier-stage outputs |
-| Orphan Detection | PASS | tier_guard reached via gate_chain + completeness + provenance + tests |
+| Infrastructure Alignment | PASS | LD-1 joins re-verified (_extract_seal_sessions:34; verify_sidecar:127; intent-lock record path 66-139); LD-3 do_ai_provenance:55; LD-4 sg_closure_lint fns 34/45/49; LD-6 generic-runner precedent |
+| Runtime Contract Walk | WARN-only | 1 expected WARN on the declared-NEW evidence_bundle module |
+| Filter-Stage Ordering | PASS | resolve query -> collect (independent) -> assemble -> emit; no ordered filter dependencies between collectors |
+| Orphan Detection | PASS | Both modules reached via generic runner + tests + audit ladder |
 
-## Findings resolved pre-verdict
+## Pre-audit lints
 
-1. **Plan-text (SG-AffectedFilesContract-A)**: LD-6's initial caller enumeration missed `gate_provenance.py` (its own `_REQUIRED_PHASES` copy at :45 walked per session at :221) -- the CI merge gate would have failed every legal short-chain session. Governor amended in-dialogue: gate_provenance added to Affected Files with the same declared-set resolution + a dedicated test. No cycle consumed. (Recorded also as evidence for the duplicated-constant smell: two copies of the phase tuple existed; the fix routes both through one shared reader.)
+iteration 0; canaries 0; plan_test 0; plan_grep 1 WARN (declared-NEW module, expected); signature-widening 0; feature-tdd 0; sg_closure_lint 10 known findings (standing worklist); unchanged-plan no-skip.
 
 ## Documentation Drift
 
@@ -40,4 +40,4 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ## Decision
 
-PASS (L3, solo). The plan lands the Governor's two recorded decisions (Shape 3 declared artifact set; guarded L1-hotfix audit-skip) at the four consumer seams with fail-closed rejection of illegal declarations at every one, never-silent skip evidence, and total grandfathering by construction (absent field == full chain). Next: `/qor-implement`.
+PASS (L2, solo). The plan lands GH #251 in the ADR-0018 posture: one verb reconstructs a sealed phase's evidence from the eight already-recorded signals with partial reconstruction explicitly surfaced, and the artifact-freeze rule gets its smallest executable form (registry baseline + WARN-only lint + plan-declared justification field). Zero new ceremony artifacts introduced by the phase itself. Next: `/qor-implement`.

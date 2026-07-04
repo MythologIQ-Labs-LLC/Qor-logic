@@ -1,0 +1,45 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-04T1612-9ee76f",
+  "ts": "2026-07-04T16:13:16Z",
+  "questions": [
+    "What evidence signals already exist per sealed session, and how do they join?",
+    "What assembler/output precedents exist?",
+    "What is the smallest executable artifact-freeze rule?"
+  ],
+  "findings": [
+    {
+      "topic": "signal inventory",
+      "claim": "Eight signals joinable from session_id/phase: ledger entry, gate artifacts, sidecars, audit_history, intent-lock, shadow events, changelog, seal commit/tag",
+      "citation": "gate_chain_completeness.py:34-49; gate_provenance.py:127-150; intent_lock.py:66-139; workdir.py:35-52"
+    },
+    {
+      "topic": "assembler precedent",
+      "claim": "do_ai_provenance walks a session per phase; status_json defines the final-line JSON contract; the bundle generalizes both with an explicit completeness field (partial reconstruction surfaced, never fabricated)",
+      "citation": "cli_handlers/compliance.py:55-74; scripts/status_json.py"
+    },
+    {
+      "topic": "freeze rule",
+      "claim": "SCHEMA_REGISTRY.json baseline + gate_schema_freeze_lint (directory vs registry; unregistered schema without plan-declared justification -> WARN), sg_closure_lint-shaped, audit Step 0.6 ladder",
+      "citation": "qor/gates/schema/; scripts/sg_closure_lint.py:42-57"
+    }
+  ],
+  "sources": [
+    "qor/reliability/gate_chain_completeness.py",
+    "qor/scripts/gate_provenance.py",
+    "qor/reliability/intent_lock.py",
+    "qor/cli_handlers/compliance.py",
+    "qor/scripts/status_json.py",
+    "qor/scripts/sg_closure_lint.py",
+    "qor/workdir.py"
+  ],
+  "brief_path": "docs\\research-brief-evidence-reconstruction-2026-07-04.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.116.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T16:13:16Z"
+  }
+}
