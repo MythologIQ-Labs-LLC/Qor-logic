@@ -1,0 +1,96 @@
+name: Nightly Health
+
+# Phase 165 (GH #250 part a; GH #240): autonomous governance self-check.
+# Runs the read-only status_json ladder on a bare checkout of main and keeps
+# exactly one "Nightly governance health" issue in sync with the verdict:
+# drift opens/updates it, recovery closes it. Pattern ported from the
+# Accountable drift-detection workflow (self-test before verdict; JSON as the
+# final output line; idempotent gh-issue lifecycle).
+
+# cost justification: one ~2-minute ubuntu job per day (checkout + pip install
+# + in-process read-only checks + 4 packaging tests); replaces a recurring
+# manual governance-health review and is the enforcement surface for GH #250.
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: nightly-health
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  nightly-health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      - name: Checker self-test (fail fast before trusting a verdict)
+        run: python -m qor.scripts.status_json --self-test
+      - name: Aggregate governance health
+        id: health
+        run: |
+          set +e
+          OUTPUT=$(python -m qor.scripts.status_json --repo-root .)
+          RC=$?
+          set -e
+          echo "$OUTPUT"
+          echo "health_failed=$RC" >> "$GITHUB_OUTPUT"
+          JSON=$(echo "$OUTPUT" | grep '^{' | tail -1)
+          echo "health_json=$JSON" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Nightly governance health"
+            echo '```'
+            echo "$OUTPUT"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Packaging smoke
+        id: smoke
+        run: |
+          set +e
+          python -m pytest tests/test_packaging_install.py -v -m integration
+          RC=$?
+          set -e
+          echo "smoke_failed=$RC" >> "$GITHUB_OUTPUT"
+      - name: Create or update health issue
+        if: steps.health.outputs.health_failed != '0' || steps.smoke.outputs.smoke_failed != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEALTH_JSON: ${{ steps.health.outputs.health_json }}
+          SMOKE_FAILED: ${{ steps.smoke.outputs.smoke_failed }}
+        run: |
+          TITLE="Nightly governance health: drift detected"
+          EXISTING=$(gh issue list --search "Nightly governance health" --json number --limit 1 --state open | jq '.[0].number // empty')
+          STAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          BODY=$(printf 'Nightly self-check failed as of %s.\n\nStatus payload:\n```json\n%s\n```\nPackaging smoke exit: %s\n\nRun `python -m qor.scripts.status_json --repo-root .` locally for detail.' "$STAMP" "$HEALTH_JSON" "$SMOKE_FAILED")
+          if [[ -n "$EXISTING" ]]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+            echo "Commented on existing issue #$EXISTING" >> "$GITHUB_STEP_SUMMARY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label "bug" --label "governance"
+            echo "Created new health issue" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Close resolved health issue
+        if: steps.health.outputs.health_failed == '0' && steps.smoke.outputs.smoke_failed == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXISTING=$(gh issue list --search "Nightly governance health" --json number --limit 1 --state open | jq '.[0].number // empty')
+          if [[ -n "$EXISTING" ]]; then
+            gh issue close "$EXISTING" --comment "Resolved as of $(date -u +%Y-%m-%dT%H:%M:%SZ). All nightly checks green."
+            echo "Closed resolved health issue #$EXISTING" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No open health issues to close." >> "$GITHUB_STEP_SUMMARY"
+          fi

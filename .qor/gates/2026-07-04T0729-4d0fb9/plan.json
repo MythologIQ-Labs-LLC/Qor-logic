@@ -1,0 +1,48 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-04T0729-4d0fb9",
+  "ts": "2026-07-04T07:33:02Z",
+  "plan_path": "docs/plan-qor-phase165-autonomous-qa-nightly.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "aggregate status runner (TDD first)",
+    "nightly workflow + wiring"
+  ],
+  "affected_files": [
+    "tests/test_status_json.py",
+    "qor/scripts/status_json.py",
+    "tests/test_nightly_health_wiring.py",
+    ".github/workflows/nightly-health.yml",
+    "docs/plan-qor-phase89-ci-commands-reconciliation.md"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_status_json.py tests/test_nightly_health_wiring.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.status_json --self-test",
+    "python -m qor.scripts.status_json --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase165-autonomous-qa-nightly.md"
+  ],
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "nightly ladder = bare-main-valid read-only checks only; Tests badge via --skip-tests"
+    ],
+    "non_goals": [
+      "no qor/cli.py change",
+      "no --dry-run modes (follow-on phase closes #250)",
+      "no channels beyond GitHub issues"
+    ],
+    "exclusions": [
+      "doctrine/FEATURE_INDEX/glossary untouched except /qor-document currency"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.112.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T07:33:02Z"
+  }
+}
