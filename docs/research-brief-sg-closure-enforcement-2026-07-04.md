@@ -17,7 +17,7 @@ Closure is currently implicit: the structured event schema (`addressed`/`address
 2. **Contract gap**: `qor/scripts/remediate_mark_addressed.py:64-69` (stage 1 `mark_addressed_pending`) and `:112-134` (stage 2 `mark_addressed`) -- stage 2 re-verifies the audit artifact (PASS + `reviews_remediate_gate` match) but accepts closure with no evidence that an enforcer exists.
 3. **Corpus precedent**: `qor/references/doctrine-shadow-genome-countermeasures.md` -- 40 `## SG-` entries; ~32 cite executable enforcement inline (e.g., SG-033 names `tests/test_shadow_genome_doctrine.py::test_no_positional_calls_to_keyword_only_functions`; SG-SkillProtocolBypass names `qor.reliability.gate_chain_completeness` + the CI job; SG-SecretLeakAtSeal-A names `qor.scripts.secret_scanner` at Step 4.6.5); ~8 are prose-only or deferred (SG-016/017/019/020/021 manual verification hints, SG-037 deferred test, SG-DoDImplicit-A V1 WARN-only).
 4. **Never-exercised closure**: `docs/PROCESS_SHADOW_GENOME.md` -- 3 events, all `addressed: false`. The enforcement lands before the closure path has accumulated bad precedent.
-5. **Prior art for the lint shape**: Phase 164's "generate-not-assert" and the pre-audit lint ladder (audit Step 0.6) give the wiring point; accountable-os `lint-migration-rls.mjs` gives the allowlist-with-reasons model (here: `cannot-automate:` justifications are the allowlist).
+5. **Prior art for the lint shape**: Phase 164's "generate-not-assert" and the pre-audit lint ladder (audit Step 0.6) give the wiring point; an external QA exemplar's `lint-migration-rls.mjs` gives the allowlist-with-reasons model (here: `cannot-automate:` justifications are the allowlist).
 
 ## Blueprint Alignment
 

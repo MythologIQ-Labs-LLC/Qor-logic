@@ -1,6 +1,6 @@
 """Phase 67 (#42): plan_text_consistency_lint wired into qor-audit + qor-plan.
 
-Locks the wiring contract so the COREFORGE-class drift pattern (same
+Locks the wiring contract so the consumer-workspace-class drift pattern (same
 operation specified differently at multiple plan sites) is caught at
 pre-audit lint time, before the binding Infrastructure Alignment Pass
 consumes an audit cycle.

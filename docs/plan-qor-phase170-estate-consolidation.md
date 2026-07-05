@@ -8,7 +8,7 @@
 
 **boundaries**:
 - limitations: The tool NEVER writes in place (`--output` required and must differ from `--input`); applying the migration to Qor-logic's own META_LEDGER.md is explicitly OUT of this phase's scope (operator decision later). Partial/no-hash entries are left byte-identical and reported.
-- non_goals: No public-repo mirroring code (design-only upstream; five operator decisions surfaced on #252 at close); no SQLite adapter absorption (bicameral-mcp's shipped product -- interchange documented instead); no cli.py change (generic runner).
+- non_goals: No public-repo mirroring code (design-only upstream; five operator decisions surfaced on #252 at close); no SQLite adapter absorption (a sibling repository's shipped product -- interchange documented instead); no cli.py change (generic runner).
 - exclusions: The estate-patterns documentation section via /qor-document at seal.
 
 ## Open Questions
@@ -17,7 +17,7 @@
 
 ## Origin
 
-Research brief docs/research-brief-estate-consolidation-2026-07-04.md (ledger entry #402, session `2026-07-04T1633-f0d980`); GH #252 (perspective-reset rec 6, final series item). Source tool: FailSafe-Pro/scripts/migrate_ledger_v0_14.py (read in full).
+Research brief docs/research-brief-estate-consolidation-2026-07-04.md (ledger entry #402, session `2026-07-04T1633-f0d980`); GH #252 (perspective-reset rec 6, final series item). Source tool: a sibling repository's scripts/migrate_ledger_v0_14.py (read in full).
 
 ## Locked Decisions
 
@@ -63,7 +63,7 @@ Research brief docs/research-brief-estate-consolidation-2026-07-04.md (ledger en
 
 - **D1**: Any estate repo can normalize a legacy-markup ledger to the canonical verifiable form with a safe rehearsal path (GH #252a; ends per-repo re-solving).
 - **D2**: `qor/scripts/ledger_migrate.py` <=250 lines, stdlib; never-in-place; dry-run; honest exit codes.
-- **D3**: GH #252 closes with the corrected premise recorded (b: design-blocked on five named operator decisions; c: bicameral-mcp pointer); estate-patterns doc section via /qor-document.
+- **D3**: GH #252 closes with the corrected premise recorded (b: design-blocked on five named operator decisions; c: a sibling repository pointer); estate-patterns doc section via /qor-document.
 - **D4**: `test_migrated_ledger_becomes_verifiable` observes the skipped->verified round-trip through the real verifier; `test_canonical_input_is_byte_stable` observes idempotence.
 
 ## CI Commands

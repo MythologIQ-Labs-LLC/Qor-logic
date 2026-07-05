@@ -60,7 +60,7 @@ let world = data.slice(6..11); // Zero-copy!
 ## Real-World Pattern from Deno
 
 ```rust
-// https://github.com/denoland/deno/blob/main/ext/http/lib.rs
+// github:denoland/deno/blob/main/ext/http/lib.rs
 fn method_to_cow(method: &http::Method) -> Cow<'static, str> {
     match *method {
         Method::GET => Cow::Borrowed("GET"),      // Zero-copy

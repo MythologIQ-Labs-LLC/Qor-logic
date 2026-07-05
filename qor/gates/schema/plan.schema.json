@@ -50,7 +50,7 @@
     },
     "originating_remediation": {
       "type": ["string", "null"],
-      "description": "Phase 68 (GH #44): free-form reference to the issue, incident, or SG pattern this plan remediates (e.g., 'GH #44', 'SG-PlanTextDrift-A', 'COREFORGE 3-VETO cycle 2026-05-08'). Read by /qor-audit Step 3.5 (Self-Application Sub-Pass): when set, the auditor manually performs the to-be-introduced discipline against the plan's own content. Optional; absence skips the sub-pass."
+      "description": "Phase 68 (GH #44): free-form reference to the issue, incident, or SG pattern this plan remediates (e.g., 'GH #44', 'SG-PlanTextDrift-A', 'the host project 3-VETO cycle 2026-05-08'). Read by /qor-audit Step 3.5 (Self-Application Sub-Pass): when set, the auditor manually performs the to-be-introduced discipline against the plan's own content. Optional; absence skips the sub-pass."
     },
     "impact_assessment": {
       "type": "object",

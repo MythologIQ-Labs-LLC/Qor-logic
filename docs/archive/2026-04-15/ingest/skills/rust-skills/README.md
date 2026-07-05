@@ -66,12 +66,12 @@ If `add-skill` doesn't work for your setup, here's how to install manually:
 
 Global (applies to all projects):
 ```bash
-git clone https://github.com/leonardomso/rust-skills.git ~/.claude/skills/rust-skills
+git clone github:leonardomso/rust-skills.git ~/.claude/skills/rust-skills
 ```
 
 Or just for one project:
 ```bash
-git clone https://github.com/leonardomso/rust-skills.git .claude/skills/rust-skills
+git clone github:leonardomso/rust-skills.git .claude/skills/rust-skills
 ```
 </details>
 
@@ -79,7 +79,7 @@ git clone https://github.com/leonardomso/rust-skills.git .claude/skills/rust-ski
 <summary><b>OpenCode</b></summary>
 
 ```bash
-git clone https://github.com/leonardomso/rust-skills.git .opencode/skills/rust-skills
+git clone github:leonardomso/rust-skills.git .opencode/skills/rust-skills
 ```
 </details>
 
@@ -87,7 +87,7 @@ git clone https://github.com/leonardomso/rust-skills.git .opencode/skills/rust-s
 <summary><b>Cursor</b></summary>
 
 ```bash
-git clone https://github.com/leonardomso/rust-skills.git .cursor/skills/rust-skills
+git clone github:leonardomso/rust-skills.git .cursor/skills/rust-skills
 ```
 
 Or just grab the skill file:
@@ -109,7 +109,7 @@ curl -o .windsurf/rules/rust-skills.md https://raw.githubusercontent.com/leonard
 <summary><b>OpenAI Codex</b></summary>
 
 ```bash
-git clone https://github.com/leonardomso/rust-skills.git .codex/skills/rust-skills
+git clone github:leonardomso/rust-skills.git .codex/skills/rust-skills
 ```
 
 Or use the AGENTS.md standard:
@@ -153,7 +153,7 @@ curl -o AGENTS.md https://raw.githubusercontent.com/leonardomso/rust-skills/mast
 <summary><b>Amp</b></summary>
 
 ```bash
-git clone https://github.com/leonardomso/rust-skills.git .agents/skills/rust-skills
+git clone github:leonardomso/rust-skills.git .agents/skills/rust-skills
 ```
 </details>
 

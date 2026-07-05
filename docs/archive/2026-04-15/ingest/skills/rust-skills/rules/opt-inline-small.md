@@ -89,7 +89,7 @@ fn complex_processing(data: &mut Data) {
 ## Evidence from ripgrep
 
 ```rust
-// https://github.com/BurntSushi/ripgrep/blob/master/crates/printer/src/standard.rs
+// github:BurntSushi/ripgrep/blob/master/crates/printer/src/standard.rs
 
 #[inline(always)]
 fn write_prelude(

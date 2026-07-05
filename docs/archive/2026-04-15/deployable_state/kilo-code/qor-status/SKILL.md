@@ -6,7 +6,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
     path: processed/skills-output/qor-status
 ---
 

@@ -26,7 +26,7 @@ Preferred roots:
 
 Rules:
 
-- Do not mix `docs/` and `.failsafe/governance/` for the same artifact class.
+- Do not mix `docs/` and `<legacy-staging>/` for the same artifact class.
 - Do not invent a new artifact root if an existing one already fits.
 - If a temporary file is produced by one skill and consumed by another, both skills must reference the same path.
 

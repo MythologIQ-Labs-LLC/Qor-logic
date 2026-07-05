@@ -14,7 +14,7 @@ Three coupled capabilities:
 
 1. **`qorlogic seed`** -- a new top-level CLI subcommand that scaffolds the governance files skills assume (META_LEDGER, SHADOW_GENOME, ARCHITECTURE_PLAN stub, CONCEPT stub, SYSTEM_STATE stub, plus required directories). Idempotent; does not overwrite existing files.
 2. **Skill prompt resilience** -- codify a doctrine banning (a) hidden file-existence assumptions and (b) gratuitous "proceed?" pauses. Apply the pattern to every `/qor-*` skill that currently ABORTs on missing governance artifacts, replacing bare aborts with a single Y/N "correct it or pause?" prompt that, on Y, invokes `qorlogic seed` and continues. Deep-audit family skills run autonomously with auto-heal instead of Y/N.
-3. **Communication tiers** -- audience-aware output. Three tiers selected by a `/qor-tone` slash command (session-sticky) and persisted in `.qorlogic/config.json`. Inspired by the MIT-licensed `caveman` project (https://github.com/JuliusBrussee/caveman). Orthogonal to autonomy: a plain-tier autonomous skill still auto-heals silently; only its EMERGENCY surfacing text changes register.
+3. **Communication tiers** -- audience-aware output. Three tiers selected by a `/qor-tone` slash command (session-sticky) and persisted in `.qorlogic/config.json`. Inspired by the MIT-licensed `caveman` project. Orthogonal to autonomy: a plain-tier autonomous skill still auto-heals silently; only its EMERGENCY surfacing text changes register.
 
 ## Design summary
 

@@ -17,7 +17,7 @@
 
 ## Origin
 
-Research brief docs/research-brief-autonomous-qa-nightly-2026-07-04.md (ledger entry #382, session `2026-07-04T0729-4d0fb9`). Pattern source: Accountable drift-detection (workflow lines 3-111; drift-check.sh self-test lines 7-76 with three validation gates; JSON-last-line contract lines 91-115).
+Research brief docs/research-brief-autonomous-qa-nightly-2026-07-04.md (ledger entry #382, session `2026-07-04T0729-4d0fb9`). Pattern source: an external QA exemplar's drift-detection (workflow lines 3-111; drift-check.sh self-test lines 7-76 with three validation gates; JSON-last-line contract lines 91-115).
 
 ## Locked Decisions
 
@@ -28,7 +28,7 @@ Research brief docs/research-brief-autonomous-qa-nightly-2026-07-04.md (ledger e
 - **LD-3: generic runner invocation, no CLI growth.**
   `qor-logic scripts <module>` executes any `qor/scripts/*.py` `main()` (Phase 90 contract; Phase 164 precedent with `seal_artifacts`). `qor/cli.py` stays untouched.
 - **LD-4: issue-lifecycle idioms ported verbatim from the reference.**
-  `D:/Accountable/Accountable-App-3.0/.github/workflows/drift-detection.yml lines 70-111`: search `gh issue list --search "<title-key>" --json number --limit 1 --state open | jq '.[0].number // empty'`; comment-if-exists; `gh issue create --title --body --label` if not; `gh issue close N --comment` when clear.
+  `an external QA exemplar's drift-detection workflow (lines 70-111)`: search `gh issue list --search "<title-key>" --json number --limit 1 --state open | jq '.[0].number // empty'`; comment-if-exists; `gh issue create --title --body --label` if not; `gh issue close N --comment` when clear.
 - **LD-5: SHA-pinned actions per repo convention.**
   `grep -nE 'uses: actions/(checkout|setup-python)@' .github/workflows/ci.yml -> checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 (v6.0.3), setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 (v6.2.0)`.
 - **LD-6: packaging smoke reuses the registered CI command form.**
@@ -49,7 +49,7 @@ Research brief docs/research-brief-autonomous-qa-nightly-2026-07-04.md (ledger e
 - `run_check(check) -> dict` -- executes with `contextlib.redirect_stdout/stderr` capture around the module `main(argv)` call; catches `SystemExit` and any exception (exception => exit 3, summary = first line of the error); returns `{id, ok, exit, summary}` where summary is the first non-empty output line truncated to 200 chars.
 - `default_registry(repo_root) -> list[Check]` -- the six LD-1 checks with their argv.
 - `run_all(checks) -> dict` -- `{schema_version: '1', ts: <UTC ISO>, checks: [...], overall_ok: all(ok)}`.
-- `main(argv) -> int` -- default mode: run the registry, print human lines (`OK/FAIL <id>: <summary>`) then exactly one JSON object as the FINAL line (the Accountable grep-extractable contract); exit 0 iff overall_ok. `--self-test`: run `run_all` over a synthetic two-entry registry (one passing fn, one failing fn), assert JSON shape + overall_ok False + per-check exits, print `self-test PASSED`, exit 0 (exit 1 with the failed assertion otherwise). `--repo-root` supported.
+- `main(argv) -> int` -- default mode: run the registry, print human lines (`OK/FAIL <id>: <summary>`) then exactly one JSON object as the FINAL line (the external exemplar's grep-extractable contract); exit 0 iff overall_ok. `--self-test`: run `run_all` over a synthetic two-entry registry (one passing fn, one failing fn), assert JSON shape + overall_ok False + per-check exits, print `self-test PASSED`, exit 0 (exit 1 with the failed assertion otherwise). `--repo-root` supported.
 
 ### Unit Tests
 

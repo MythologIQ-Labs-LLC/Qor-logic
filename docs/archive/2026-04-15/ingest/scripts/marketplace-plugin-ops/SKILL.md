@@ -1,6 +1,6 @@
 ---
 name: marketplace-plugin-ops
-description: Marketplace and plugin operations for Hearthlink. Use when editing marketplace catalog parsing, install/uninstall flows, local plugin scanning, or the marketplace UI/bridge.
+description: Marketplace and plugin operations for the host project. Use when editing marketplace catalog parsing, install/uninstall flows, local plugin scanning, or the marketplace UI/bridge.
 ---
 
 # Marketplace and Plugin Ops

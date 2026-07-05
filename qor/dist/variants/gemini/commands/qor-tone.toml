@@ -1,4 +1,4 @@
-description = "Session-level communication tier selector. Sets the output register for tone-aware skills to technical, standard, or plain. Inspired by the MIT-licensed caveman project (https://github.com/JuliusBruss"
+description = "Session-level communication tier selector. Sets the output register for tone-aware skills to technical, standard, or plain. Inspired by the MIT-licensed caveman project."
 phase = "memory"
 prompt = """
 # /qor-tone - Communication Tier Selector

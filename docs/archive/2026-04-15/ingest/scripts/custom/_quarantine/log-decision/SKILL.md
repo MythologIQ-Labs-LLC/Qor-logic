@@ -384,7 +384,7 @@ PyVeritas is aspirational (80% accuracy per research, not validated). Focus Phas
 Located at: `docs/META_LEDGER.md`
 
 ```markdown
-# Q-DNA Development Meta-Ledger
+# ExampleProject Development Meta-Ledger
 ## Auditable Decision Trail
 
 **Version:** 1.0
@@ -412,7 +412,7 @@ Located at: `docs/META_LEDGER.md`
 **Approver:** System
 
 ### Decision
-Initialize Meta-Ledger for Q-DNA development governance.
+Initialize Meta-Ledger for ExampleProject development governance.
 
 ### Hash Chain
 ```

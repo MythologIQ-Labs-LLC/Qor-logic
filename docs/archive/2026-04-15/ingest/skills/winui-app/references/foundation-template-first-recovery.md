@@ -6,7 +6,7 @@ sources:
   - https://learn.microsoft.com/windows/apps/get-started/start-here
   - https://learn.microsoft.com/windows/apps/windows-app-sdk/deploy-packaged-apps
   - https://learn.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps
-  - https://github.com/microsoft/WinUI-Gallery
+  - github:microsoft/WinUI-Gallery
 ---
 
 ## What This Reference Is For

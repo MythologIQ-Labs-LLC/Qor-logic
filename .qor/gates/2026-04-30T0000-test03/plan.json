@@ -1,0 +1,12 @@
+{
+  "phase": "plan",
+  "session_id": "2026-04-30T0000-test03",
+  "ts": "2026-04-30T00:00:00Z",
+  "plan_path": "docs/plan-qor-phase52-test.md",
+  "phases": [
+    "Phase 1: test"
+  ],
+  "ci_commands": [
+    "pytest"
+  ]
+}

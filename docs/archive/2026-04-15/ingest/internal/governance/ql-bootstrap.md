@@ -28,7 +28,7 @@ Check for existing QoreLogic DNA:
 
 ```
 Glob: docs/META_LEDGER.md
-Glob: .failsafe/governance/
+Glob: <legacy-staging>/
 ```
 
 **INTERDICTION**: If `docs/META_LEDGER.md` exists:
@@ -47,7 +47,7 @@ Report: "Integrity Violation: Genesis already exists. Use /ql-status to resume."
 
 ### Step 3: Create Directory Structure
 
-Ensure required directories exist: `.agent/`, `.failsafe/governance/`, `docs/`
+Ensure required directories exist: `.agent/`, `<legacy-staging>/`, `docs/`
 
 ### Step 3.5: Privacy Configuration
 
@@ -138,7 +138,7 @@ Bootstrap succeeds when:
 - [ ] BACKLOG.md exists with template structure
 - [ ] Genesis hash calculated and recorded
 - [ ] Risk grade properly assigned (L1/L2/L3)
-- [ ] Required directories created (.failsafe/governance/, docs/)
+- [ ] Required directories created (<legacy-staging>/, docs/)
 - [ ] Routing decision provided based on risk grade
 
 ## Integration with S.H.I.E.L.D.

@@ -78,7 +78,7 @@ def _parse_github_url(url: str, default_ref: str) -> tuple[str, str, str, str | 
 
 
 def _download_repo_zip(owner: str, repo: str, ref: str, dest_dir: str) -> str:
-    zip_url = f"https://codeload.github.com/{owner}/{repo}/zip/{ref}"
+    zip_url = f"https://codeload.github:{owner}/{repo}/zip/{ref}"
     zip_path = os.path.join(dest_dir, "repo.zip")
     try:
         payload = _request(zip_url)
@@ -177,7 +177,7 @@ def _copy_skill(src: str, dest_dir: str) -> None:
 
 
 def _build_repo_url(owner: str, repo: str) -> str:
-    return f"https://github.com/{owner}/{repo}.git"
+    return f"github:{owner}/{repo}.git"
 
 
 def _build_repo_ssh(owner: str, repo: str) -> str:
@@ -247,7 +247,7 @@ def _default_dest() -> str:
 def _parse_args(argv: list[str]) -> Args:
     parser = argparse.ArgumentParser(description="Install a skill from GitHub.")
     parser.add_argument("--repo", help="owner/repo")
-    parser.add_argument("--url", help="https://github.com/owner/repo[/tree/ref/path]")
+    parser.add_argument("--url", help="github:owner/repo[/tree/ref/path]")
     parser.add_argument(
         "--path",
         nargs="+",

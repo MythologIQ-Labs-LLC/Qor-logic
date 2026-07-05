@@ -18,7 +18,7 @@ None. All design choices ratified pre-draft.
 | V-3 | "Rename `test_write_manifest_atomic_write` → `test_write_manifest_uses_os_replace`" | §Track B.1 |
 | V-4 | "Split combined-assertion test name into two distinct tests." | §Track A.2 |
 | V-5 | "Narrow caching rule scope OR enumerate heuristic blind spots in the doctrine doc." | §Track A.1 (narrow scope chosen) |
-| V-6 | "Replace Entry-#20 coupling with synthetic-known-value pattern (compute expected via the algorithm, don't hardcode a live entry)." | §Track B.2 |
+| V-6 | "Replace Entry #20 coupling with synthetic-known-value pattern (compute expected via the algorithm, don't hardcode a live entry)." | §Track B.2 |
 | V-7 | "Add `test_write_gate_artifact_*` to Track B" | §Track B.3 |
 | V-8 | "Add classification to plan: 'Track B = regression coverage backfill (not TDD; module pre-existed Phase 11D).'" | §Classification below |
 | V-9 | "Reconcile test count" | §Track B totals (15 ledger + 4 gate = 19) |

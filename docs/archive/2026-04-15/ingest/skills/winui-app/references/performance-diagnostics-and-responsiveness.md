@@ -4,7 +4,7 @@ priority: HIGH
 tags: performance, responsiveness, ui-thread, wpr, wpa, diagnostics
 sources:
   - https://learn.microsoft.com/windows/apps/performance/winui-perf
-  - https://github.com/microsoft/WinUI-Gallery
+  - github:microsoft/WinUI-Gallery
 ---
 
 ## What This Reference Is For

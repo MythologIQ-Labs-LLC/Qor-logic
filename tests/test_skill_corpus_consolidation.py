@@ -146,7 +146,7 @@ def test_substantiate_references_resolve() -> None:
 # the SKILL.md (proving the move).
 AUDIT_MOVED = [
     ("pre-audit-lints.md",
-     "Catches the COREFORGE-class credibility failure where a phase seals"),
+     "Catches the consumer-workspace-class credibility failure where a phase seals"),
     ("adversarial-mode.md",
      "Independent reviewers with no plan-authorship context naturally check different sources"),
     ("phase37-subpasses.md",

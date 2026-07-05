@@ -28,7 +28,7 @@
       "V1 hotfix: minimal frontmatter edit + one regression test; no doctrine, no glossary."
     ],
     "non_goals": [
-      "No fix for qor-compliance (not in this repo; file against FailSafe upstream)",
+      "No fix for qor-compliance (not in this repo; file against a sibling governance repository upstream)",
       "No org-spelling normalization across other skills",
       "No schema extension"
     ],

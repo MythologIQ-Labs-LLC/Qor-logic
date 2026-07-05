@@ -5,7 +5,7 @@
 
 Skills organized by functional category. Path-shown relative to repo root.
 
-## governance/ (6)
+## governance/ (5)
 
 Gate, audit, and compliance authority.
 
@@ -15,7 +15,6 @@ Gate, audit, and compliance authority.
 | qor-validate | `qor/skills/governance/qor-validate/` | Active |
 | qor-substantiate | `qor/skills/governance/qor-substantiate/` | Active |
 | qor-shadow-process | `qor/skills/governance/qor-shadow-process/` | Stub (full impl deferred) |
-| qor-governance-compliance | `qor/skills/governance/qor-governance-compliance/` | Active (migrated) |
 | qor-process-review-cycle | `qor/skills/governance/qor-process-review-cycle/` | Active (workflow bundle) |
 
 ## sdlc/ (7)

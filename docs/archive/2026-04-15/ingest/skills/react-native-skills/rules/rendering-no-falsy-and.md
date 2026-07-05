@@ -70,5 +70,5 @@ Early returns are clearest. When using conditionals inline, prefer ternary or
 explicit boolean checks.
 
 **Lint rule:** Enable `react/jsx-no-leaked-render` from
-[eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-no-leaked-render.md)
+[eslint-plugin-react](github:jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-no-leaked-render.md)
 to catch this automatically.

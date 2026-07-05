@@ -6,7 +6,7 @@ description: Resume governance after third-party skill usage and reconcile any d
 
 ## Purpose
 
-Resume FailSafe governance after using third-party skills. This workflow:
+Resume a sibling governance repository governance after using third-party skills. This workflow:
 
 1. Detects what changed during the pause (drift detection)
 2. Logs `GOVERNANCE_RESUMED` to the ledger
@@ -141,7 +141,7 @@ If `--audit` flag provided:
 ```powershell
 foreach ($file in $drift.files_changed) {
     # Queue for Sentinel audit
-    failsafe.auditFile($file)
+    sibling-product.auditFile($file)
 }
 ```
 

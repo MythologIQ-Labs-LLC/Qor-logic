@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-Six mutating surfaces need dry-run (install already has it). Five are low/medium effort with clean seams -- each is a read-compute-write shape where the writes are already funneled through one or two call sites that a `dry_run` guard can wrap while reads and rendering still execute (the Orko `[dry] would <action>` pattern). One is architecturally awkward: `session.rotate()` is invoked internally by ~4 modules mid-automation, so a flag would have to thread through orchestration; the honest shape is a NEW operator-facing `session_tool` command (rotate/current subcommands with `--dry-run`) while the internal `rotate()` stays mutation-only. CLI growth stays within ~5 lines on the already-over-razor `qor/cli.py` (reconcile + uninstall flags); everything else lands in module `main()`s reached via the generic runner.
+Six mutating surfaces need dry-run (install already has it). Five are low/medium effort with clean seams -- each is a read-compute-write shape where the writes are already funneled through one or two call sites that a `dry_run` guard can wrap while reads and rendering still execute (the external polling tool's `[dry] would <action>` pattern). One is architecturally awkward: `session.rotate()` is invoked internally by ~4 modules mid-automation, so a flag would have to thread through orchestration; the honest shape is a NEW operator-facing `session_tool` command (rotate/current subcommands with `--dry-run`) while the internal `rotate()` stays mutation-only. CLI growth stays within ~5 lines on the already-over-razor `qor/cli.py` (reconcile + uninstall flags); everything else lands in module `main()`s reached via the generic runner.
 
 ## Findings (mutation sites, all file:line verified)
 

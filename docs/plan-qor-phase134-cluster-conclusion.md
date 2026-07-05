@@ -5,9 +5,9 @@
 **doc_tier**: standard
 
 **boundaries**:
-- limitations: Concludes the last two #147 follow-ons. **#164**: of the five declined production-hardening capabilities, **export** is the one cheap + aligned with "Qor-logic proper", so it ships now — `ShadowGenomeGraph.to_dict/to_json/to_dot` + an `export` CLI subcommand; the other four (dashboard/query-API surface, trust-transition modeling, cross-workspace federation, retention/pruning) are evaluated and **deferred post-1.0** with rationale in a roadmap doc (they are SaaS-grade surfaces a governance-skills package does not need to be 1.0-complete). **#151**: records the determination (Option c) that `qor-compliance` is a FailSafe-owned artifact absent from Qor-logic — not retire/fix here; `qor-governance-compliance` is the in-repo compliance skill (already provenance-fixed Phase 81); no duplicate is created.
+- limitations: Concludes the last two #147 follow-ons. **#164**: of the five declined production-hardening capabilities, **export** is the one cheap + aligned with "Qor-logic proper", so it ships now — `ShadowGenomeGraph.to_dict/to_json/to_dot` + an `export` CLI subcommand; the other four (dashboard/query-API surface, trust-transition modeling, cross-workspace federation, retention/pruning) are evaluated and **deferred post-1.0** with rationale in a roadmap doc (they are SaaS-grade surfaces a governance-skills package does not need to be 1.0-complete). **#151**: records the determination (Option c) that `qor-compliance` is a sibling-repository-owned artifact absent from Qor-logic — not retire/fix here; `qor-governance-compliance` is the in-repo compliance skill (already provenance-fixed Phase 81); no duplicate is created.
 - non_goals: Building the four deferred #164 capabilities (documented roadmap, not implemented — they remain post-1.0); creating a `qor-compliance` skill (would duplicate `qor-governance-compliance`, violating #151's no-duplicate guarantee); spawning new open issues (the deferrals are a roadmap doc, not new trackers, so the cluster closes).
-- exclusions: No change to FailSafe's bundled `qor-compliance` (not this repo's artifact).
+- exclusions: No change to the sibling governance repository's bundled `qor-compliance` (not this repo's artifact).
 
 ## Open Questions
 
@@ -54,7 +54,7 @@ De-complecting: `to_dict` is the single source; `to_json`/`to_dot` render from i
 
 - `tests/test_genome_graph_export.py` - add the roadmap/determination doc-contract tests.
 - `docs/shadow-genome-graph-roadmap.md` - NEW. Records the decision for each of the five #164 capabilities: `export` = SHIPPED (Phase 134); `dashboard/query-API`, `trust-transition modeling`, `cross-workspace federation`, `retention/pruning` = DEFERRED post-1.0, each with a one-paragraph rationale (why a governance-skills package does not need it to be 1.0-complete + what would trigger revisiting). Also records the #151 determination.
-- `docs/research-brief-qor-compliance-provenance-2026-05-29.md` - append a `## Decision (GH #151 closed, 2026-06-02)` section finalizing Option (c): qor-compliance is FailSafe-owned/absent from Qor-logic; `qor-governance-compliance` is the canonical in-repo compliance skill; no duplicate created; F244/FX359 belongs to FailSafe's bundle.
+- `docs/research-brief-qor-compliance-provenance-2026-05-29.md` - append a `## Decision (GH #151 closed, 2026-06-02)` section finalizing Option (c): qor-compliance is sibling-repository-owned/absent from Qor-logic; `qor-governance-compliance` is the canonical in-repo compliance skill; no duplicate created; F244/FX359 belongs to the sibling governance repository's bundle.
 
 ### Changes
 

@@ -51,6 +51,6 @@ def test_doctrine_cites_countermeasure():
     assert "filter-order-inversion" in region, (
         "SG entry must name the VETO sub-tag filter-order-inversion"
     )
-    assert "COREFORGE" in region or "skill_forge" in region or "dispatcher" in region, (
-        "SG entry must cite COREFORGE Skill-Forge dispatcher originating recurrence"
+    assert "skill_forge" in region or "dispatcher" in region, (
+        "SG entry must cite the Skill-Forge dispatcher originating recurrence"
     )

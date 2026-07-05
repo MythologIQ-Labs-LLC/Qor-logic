@@ -15,7 +15,7 @@
 **boundaries**:
 - limitations: V1 ships the scaffold, the 6-tier doctrine, and a WARN-only drift checker (Tier-1 freshness + unregistered-governance-file detection). It does NOT implement automated Tier 3->6 / Tier 4->6 archival, the `/qor-validate` ledger-cross-check, or a hard `/qor-implement` block on stale Tier 1 — those are deferred V2 enforcement.
 - non_goals: Not a replacement for META_LEDGER (decision history) or FEATURE_INDEX (code feature -> test). Not a CMS; Markdown tables, hand-edited, audited by the checker. No JSON-backed manifest in V1.
-- exclusions: No FailSafe-specific paths (`.failsafe/`); qor-logic's governance set is the default. No `paths.governance` config knob in V1 (V2).
+- exclusions: No sibling-product-specific paths (`<consumer-governance-dotdir>/`); qor-logic's governance set is the default. No `paths.governance` config knob in V1 (V2).
 
 ## Open Questions
 

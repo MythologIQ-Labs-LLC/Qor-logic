@@ -72,6 +72,6 @@ The doctrine's three documented components all have operational tooling.
 - **META_LEDGER entries**: #288 (audit gate tribunal), #289 (implementation), #290 (session seal)
 - **Merkle seal**: `72f12d2f7ff3ec2e20a1aec38efe2e74e5faf0d6383db84253deadadecdde1ed`
 
-🤖 Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+🤖 Authored via [Qor-logic SDLC](github:MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

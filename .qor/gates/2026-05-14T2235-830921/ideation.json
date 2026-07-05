@@ -4,7 +4,7 @@
   "ts": "2026-05-14T22:36:06Z",
   "concept_name": "META_LEDGER concurrent-federation entry numbering (GH #51)",
   "spark": {
-    "observation": "/qor-substantiate Step 7 appends entries to docs/META_LEDGER.md using sequential numbering (Entry #1, #2, etc.) which is fundamentally single-writer. In a multi-worker federation session, Entries #16, #17, and #18 each appeared twice from different concurrent sessions working different issues (Canonical Event Schema #376 / Accountable Live #335 / Migration Pipeline #332). Chain-hash linkage stayed intact (each worker read latest at append time) but sequential ordering was corrupted.",
+    "observation": "/qor-substantiate Step 7 appends entries to docs/META_LEDGER.md using sequential numbering (Entry #1, #2, etc.) which is fundamentally single-writer. In a multi-worker federation session, Entries #16, #17, and #18 each appeared twice from different concurrent sessions working different issues (Canonical Event Schema #376 / an external QA exemplar Live #335 / Migration Pipeline #332). Chain-hash linkage stayed intact (each worker read latest at append time) but sequential ordering was corrupted.",
     "initial_question": "How should META_LEDGER preserve sequential-ordering invariants under concurrent federation append without breaking the cryptographic chain or requiring centralized coordination?",
     "why_now": "Federation is no longer hypothetical -- FED-0001 through FED-0026 dispatches have been observed in production. Every concurrent seal cycle has a non-trivial chance of producing duplicate-numbered entries until this is closed. Each duplicate degrades audit-trail readability and confuses downstream tooling that assumes sequential entries."
   },

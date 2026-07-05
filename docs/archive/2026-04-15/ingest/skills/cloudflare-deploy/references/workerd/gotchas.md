@@ -134,6 +134,6 @@ bindings = [(name = "API", service = (external = (address = "api.com:443", http 
 4. **Test bindings**: Log `Object.keys(env)` to verify
 5. **Check versions**: Workerd version vs compat date
 6. **Isolate issue**: Minimal repro config
-7. **Review schema**: [workerd.capnp](https://github.com/cloudflare/workerd/blob/main/src/workerd/server/workerd.capnp)
+7. **Review schema**: [workerd.capnp](github:cloudflare/workerd/blob/main/src/workerd/server/workerd.capnp)
 
 See [configuration.md](./configuration.md) for config details, [patterns.md](./patterns.md) for working examples, [api.md](./api.md) for runtime APIs.

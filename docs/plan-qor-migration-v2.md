@@ -14,7 +14,7 @@ None. User decisions resolved pre-draft:
 - `qor-shadow-process` category: `governance/`
 - GitHub issue client: `gh` CLI via subprocess
 - `/qor-remediate` trigger: auto-invoke on threshold breach
-- Meta repo: `MythologIQ/Qorelogic`
+- Meta repo: `MythologIQ-Labs-LLC/Qor-logic`
 - Codex plugin: production-available, adversarial protocol specified (contract level) in Phase 3; detection probe authored with `qor/platform/detect.md` in Phase 6
 
 ## 0. Verified Grounding
@@ -256,7 +256,7 @@ docs/
   - `false → true (stale_expired)` — entries older than 90 days without triggering threshold; `addressed_reason="stale"` (prevents permanent accumulation)
   - Reverse transitions forbidden (append a new event if re-opened)
 - `check_shadow_threshold.py`: reads JSONL, filters `addressed=false`, sums severity, exits with code 10 if ≥ threshold (signals auto-trigger)
-- `create_shadow_issue.py`: runs `gh issue create --repo MythologIQ/Qorelogic --title "..." --body "..." --label qor-shadow`, captures URL, mutates JSONL in place (atomic write via temp+rename)
+- `create_shadow_issue.py`: runs `gh issue create --repo MythologIQ-Labs-LLC/Qor-logic --title "..." --body "..." --label qor-shadow`, captures URL, mutates JSONL in place (atomic write via temp+rename)
 - Auto-trigger wiring: any Qor skill's post-run hook invokes `check_shadow_threshold.py`; if exit=10, invokes `/qor-remediate`
 
 **Unit tests**:
@@ -283,9 +283,9 @@ docs/
   ```json
   {
     "version": "1",
-    "meta_repo": "MythologIQ/Qorelogic",
+    "meta_repo": "MythologIQ-Labs-LLC/Qor-logic",
     "repos": [
-      {"path": "G:/MythologIQ/Qorelogic", "name": "qorelogic", "enabled": true}
+      {"path": "<path-to-local-clone>", "name": "qorelogic", "enabled": true}
     ],
     "threshold": 10,
     "stale_days": 90
@@ -400,7 +400,7 @@ docs/
 | 9 | Define `addressed` state machine | Phase 4 |
 | 10 | Validation tests for ledger, bypass, schema | Phase 1.5, Phase 2, Phase 3, Phase 8 |
 | 11 | `qor/dist/` preserves SSoT boundary | §1 structure |
-| 12 | `~/.qor/repos.json` schema + meta repo named | Phase 5 (`MythologIQ/Qorelogic`) |
+| 12 | `~/.qor/repos.json` schema + meta repo named | Phase 5 (`MythologIQ-Labs-LLC/Qor-logic`) |
 | 13 | Replace marker-tolerance non-mitigation with concrete rule | Phase 6 |
 
 ## 4. Dependencies

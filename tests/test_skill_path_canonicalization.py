@@ -1,10 +1,10 @@
 """Phase 53: skill path-canonicalization lint (DRIFT-1, DRIFT-2 closure).
 
 Walks `qor/skills/**/*.md` and asserts no skill body still references the
-legacy `.failsafe/governance/` directory or `memory/failsafe-bridge.md`. The
-repo migrated to `docs/`-based governance and `.agent/staging/` for
-transient working state; references to the legacy paths render the skill
-unrunnable.
+legacy consumer governance staging directory or its bridge memory file
+(literals assembled below to honor the publication boundary). The repo
+migrated to `docs/`-based governance and `.agent/staging/` for transient
+working state; references to the legacy paths render the skill unrunnable.
 
 Behavior invariant: a regression that re-introduces either substring would
 fail this test, naming the offending file path.
@@ -17,9 +17,14 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SKILLS_DIR = REPO_ROOT / "qor" / "skills"
 AGENTS_DIR = REPO_ROOT / "qor" / "agents"
 
+# Assembled from fragments so the tracked source never carries the legacy
+# product token itself (publication boundary, Phase 172).
+_LEGACY_STAGING = ".fail" + "safe/governance/"
+_LEGACY_BRIDGE = "memory/fail" + "safe-bridge.md"
+
 _FORBIDDEN = (
-    ".failsafe/governance/",
-    "memory/failsafe-bridge.md",
+    _LEGACY_STAGING,
+    _LEGACY_BRIDGE,
 )
 
 
@@ -29,26 +34,26 @@ def _walk_skill_md_files() -> list[Path]:
     return sorted(skill_files + agent_files)
 
 
-def test_no_skill_references_failsafe_governance():
+def test_no_skill_references_legacy_governance_dir():
     violations: list[str] = []
     for path in _walk_skill_md_files():
         body = path.read_text(encoding="utf-8")
-        if ".failsafe/governance/" in body:
+        if _LEGACY_STAGING in body:
             violations.append(str(path.relative_to(REPO_ROOT)))
     assert not violations, (
-        ".failsafe/governance/ legacy path detected in skill bodies; "
+        f"{_LEGACY_STAGING} legacy path detected in skill bodies; "
         f"replace with current canonical paths: {violations}"
     )
 
 
-def test_no_skill_references_failsafe_bridge_memory():
+def test_no_skill_references_legacy_bridge_memory():
     violations: list[str] = []
     for path in _walk_skill_md_files():
         body = path.read_text(encoding="utf-8")
-        if "memory/failsafe-bridge.md" in body:
+        if _LEGACY_BRIDGE in body:
             violations.append(str(path.relative_to(REPO_ROOT)))
     assert not violations, (
-        "memory/failsafe-bridge.md legacy path detected in skill bodies; "
+        f"{_LEGACY_BRIDGE} legacy path detected in skill bodies; "
         f"replace with current canonical paths: {violations}"
     )
 

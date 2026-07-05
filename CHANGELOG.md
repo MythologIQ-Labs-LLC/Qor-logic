@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.119.0] - 2026-07-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 172 (feature; publication-boundary remediation)**: Qor-logic's tracked and published surfaces no longer identify repositories outside this project. New doctrine (`qor/references/doctrine-publication-boundary.md`) prohibits outside repository/organization/product names, cross-repo issue references, local workspace paths, and provenance identity leakage in tracked files -- the sole deliberate exception being public-safe records under `docs/Lessons-Learned/`. New structural lint `qor.scripts.publication_boundary_lint` (absolute-path shapes, non-self GitHub URLs, cross-repo issue shapes) accepts an operator-local, gitignored terms overlay (`.qor/private/boundary-terms.txt`) so the term list itself is never tracked. Retroactive sweep applied neutral-concept anonymization ("a sibling governance repository", "an external QA exemplar", "an external agent-governance toolkit") across the ledger entry bodies (hash fields byte-untouched; chain verified), all tracked gate artifacts (provenance sidecars regenerated), the docs archive (~300 files), skill SOURCE.yml metadata, and every open GitHub issue plus all items created 2026-07-04 (historical items inventoried as GH #260). `qor.reliability.intent_lock` now stores repo-relative paths (legacy absolute records still verify). Legally required third-party license/attribution text is preserved verbatim (two skill license lines, `qor/vendor/`). The consumer-specific `qor-governance-compliance` skill moved out of the public repo.
+
 ## [0.118.1] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
@@ -22,28 +29,28 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
-- **Phase 170 (feature; estate consolidation)**: the estate's proven ledger-format migration tool is now part of the dist (GH #252, closing the perspective-reset umbrella #247's final item). `qor.scripts.ledger_migrate --input <ledger> --output <path> [--dry-run]` normalizes the three legacy hash-markup formats (inline backticks, fenced blocks, session-seal labels) to the canonical form the verifier parses -- never in place, hashes preserved verbatim (markup moves, math does not), chain-hash mismatches against both historical formulas reported rather than corrected, partial/no-hash entries left byte-identical with an honest exit 1. Absorbed from FailSafe-Pro's `migrate_ledger_v0_14.py` with dry-run, idempotence, and same-path rejection added. Rehearsal on Qor-logic's own ledger (dry-run, nothing written): 403 entries, 269 clean migrations, 0 mismatches. Estate dispositions recorded per research entry #402: public-repo governance mirroring remains design-blocked upstream on five operator decisions (nothing to absorb yet); the SQLite ledger adapter stays with bicameral-mcp as its maintained home (interchange pointer: its `ledger-export`/`ledger-import` JSONL CLIs).
+- **Phase 170 (feature; estate consolidation)**: the estate's proven ledger-format migration tool is now part of the dist (GH #252, closing the perspective-reset umbrella #247's final item). `qor.scripts.ledger_migrate --input <ledger> --output <path> [--dry-run]` normalizes the three legacy hash-markup formats (inline backticks, fenced blocks, session-seal labels) to the canonical form the verifier parses -- never in place, hashes preserved verbatim (markup moves, math does not), chain-hash mismatches against both historical formulas reported rather than corrected, partial/no-hash entries left byte-identical with an honest exit 1. Absorbed from a sibling governance repository's `migrate_ledger_v0_14.py` with dry-run, idempotence, and same-path rejection added. Rehearsal on Qor-logic's own ledger (dry-run, nothing written): 403 entries, 269 clean migrations, 0 mismatches. Estate dispositions recorded per research entry #402: public-repo governance mirroring remains design-blocked upstream on five operator decisions (nothing to absorb yet); the SQLite ledger adapter stays with a sibling governance repository as its maintained home (interchange pointer: its `ledger-export`/`ledger-import` JSONL CLIs).
 
 ## [0.117.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
-- **Phase 169 (feature; evidence reconstruction)**: audit evidence is now reconstructed on demand instead of accreting new ceremony (GH #251; the Decision-BOM posture from Microsoft's agent-governance-toolkit ADR 0018). New `qor.scripts.evidence_bundle --session <sid> | --phase <N>` joins the eight already-recorded signals for a sealed phase (ledger seal entry, gate artifacts honoring Phase 168 short-chain declarations, provenance sidecars, audit history, intent lock, shadow events across both logs, CHANGELOG section, seal commit/tag) into one machine-readable bundle with partial reconstruction explicitly surfaced (`completeness.missing` names absent signals; collectors never raise, nothing is fabricated). Companion freeze rule: `qor/gates/SCHEMA_REGISTRY.json` baselines the 19 existing gate schemas, the new WARN-only `gate_schema_freeze_lint` flags any net-new schema lacking registration or a plan-declared `new_ceremony_artifacts` justification (100+ chars) at every audit. Live self-application: the previous seal (Phase 168) reconstructs 8/8 signals.
+- **Phase 169 (feature; evidence reconstruction)**: audit evidence is now reconstructed on demand instead of accreting new ceremony (GH #251; the Decision-BOM posture from ADR 0018 of an external agent-governance toolkit). New `qor.scripts.evidence_bundle --session <sid> | --phase <N>` joins the eight already-recorded signals for a sealed phase (ledger seal entry, gate artifacts honoring Phase 168 short-chain declarations, provenance sidecars, audit history, intent lock, shadow events across both logs, CHANGELOG section, seal commit/tag) into one machine-readable bundle with partial reconstruction explicitly surfaced (`completeness.missing` names absent signals; collectors never raise, nothing is fabricated). Companion freeze rule: `qor/gates/SCHEMA_REGISTRY.json` baselines the 19 existing gate schemas, the new WARN-only `gate_schema_freeze_lint` flags any net-new schema lacking registration or a plan-declared `new_ceremony_artifacts` justification (100+ chars) at every audit. Live self-application: the previous seal (Phase 168) reconstructs 8/8 signals.
 
 ## [0.116.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
-- **Phase 168 (feature; risk-tiered gate depth)**: gate depth now scales with declared risk (GH #248). A plan may declare `required_gate_artifacts`; the short chain `[plan, implement, substantiate]` -- omitting only the adversarial audit -- is permitted exclusively for L1-risk hotfix changes (risk routing over the plan's affected files via `qor.capabilities.risk`), enforced fail-closed at four seams: the plan schema forbids release classes from omitting audit, new `qor.scripts.tier_guard` verifies the declaration when implement resolves its prior, and both `gate_chain_completeness` and `gate_provenance verify-committed` honor legal declarations at seal/CI/merge (absent or illegal declarations resolve to the full chain, grandfathering every prior session by construction). Declaring the short chain emits a severity-1 shadow event -- an audit skip is never silent. Design: Shape 3 (declared artifact set) selected by the operator; PAMA M-classes (bicameral-factory) adopted as rationale without adding a new taxonomy.
+- **Phase 168 (feature; risk-tiered gate depth)**: gate depth now scales with declared risk (GH #248). A plan may declare `required_gate_artifacts`; the short chain `[plan, implement, substantiate]` -- omitting only the adversarial audit -- is permitted exclusively for L1-risk hotfix changes (risk routing over the plan's affected files via `qor.capabilities.risk`), enforced fail-closed at four seams: the plan schema forbids release classes from omitting audit, new `qor.scripts.tier_guard` verifies the declaration when implement resolves its prior, and both `gate_chain_completeness` and `gate_provenance verify-committed` honor legal declarations at seal/CI/merge (absent or illegal declarations resolve to the full chain, grandfathering every prior session by construction). Declaring the short chain emits a severity-1 shadow event -- an audit skip is never silent. Design: Shape 3 (declared artifact set) selected by the operator; the M-classes of an external mutation-classification doctrine (M0-M5) adopted as rationale without adding a new taxonomy.
 
 ## [0.115.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
-- **Phase 167 (feature; dry-run modes)**: every mutating CLI surface can now rehearse safely (completes GH #250). `--dry-run` on `seal_artifacts --write`, `reconcile propose`/`authorize`, `governance-index --advance-last-reviewed`, and `uninstall`, plus `dry_run=` parameters on the `changelog` stamping library -- in every case reads, rendering, and validation execute exactly as in a wet run (errors surface identically), only the writes are suppressed, and each suppressed mutation prints a `[dry] would <action>` preview (the Orko rehearsal pattern). New operator-facing `qor.scripts.session_tool` (`current` / `rotate --dry-run`) provides safe session inspection while the internal automation rotation stays untouched.
+- **Phase 167 (feature; dry-run modes)**: every mutating CLI surface can now rehearse safely (completes GH #250). `--dry-run` on `seal_artifacts --write`, `reconcile propose`/`authorize`, `governance-index --advance-last-reviewed`, and `uninstall`, plus `dry_run=` parameters on the `changelog` stamping library -- in every case reads, rendering, and validation execute exactly as in a wet run (errors surface identically), only the writes are suppressed, and each suppressed mutation prints a `[dry] would <action>` preview (the rehearsal pattern from an external QA exemplar's polling tool). New operator-facing `qor.scripts.session_tool` (`current` / `rotate --dry-run`) provides safe session inspection while the internal automation rotation stays untouched.
 
 ## [0.114.0] - 2026-07-04
 
@@ -57,7 +64,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
-- **Phase 165 (feature; autonomous QA nightly)**: governance health now verifies itself with zero operator engagement. New `qor.scripts.status_json` runs the read-only check ladder (governance-health, ledger chain, seal-artifact currency, gate-chain completeness, provenance, governance index) in-process and emits a deterministic machine-readable JSON verdict as its final output line (closes the `status --json` ask, GH #240), with a `--self-test` mode that validates the aggregation logic before any consumer trusts a live verdict. New `.github/workflows/nightly-health.yml` runs the ladder plus the packaging smoke nightly (and on demand): drift automatically opens or updates a single "Nightly governance health" issue with the JSON payload, and recovery automatically closes it (GH #250 part a; pattern ported from the Accountable drift-detection reference).
+- **Phase 165 (feature; autonomous QA nightly)**: governance health now verifies itself with zero operator engagement. New `qor.scripts.status_json` runs the read-only check ladder (governance-health, ledger chain, seal-artifact currency, gate-chain completeness, provenance, governance index) in-process and emits a deterministic machine-readable JSON verdict as its final output line (closes the `status --json` ask, GH #240), with a `--self-test` mode that validates the aggregation logic before any consumer trusts a live verdict. New `.github/workflows/nightly-health.yml` runs the ladder plus the packaging smoke nightly (and on demand): drift automatically opens or updates a single "Nightly governance health" issue with the JSON payload, and recovery automatically closes it (GH #250 part a; pattern ported from an external QA exemplar's drift-detection workflow).
 
 ## [0.112.0] - 2026-07-04
 
@@ -99,7 +106,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Fixed
-- **Phase 159 (hotfix; closes GH #223)**: `seal_entry_check` (substantiate Step 7.7, `|| ABORT`) no longer hard-fails on a plan filename that does not match the qor-internal `plan-qor-phase<N>-<slug>.md` pattern. Downstream workspaces that name plans `plan-<slug>.md` (e.g. FailSafe) were blocked from sealing a cryptographically valid ledger entry. The filename only ever supplied the phase number for the consistency check, so a non-conforming `--plan` now falls back to the ledger-derived phase (the existing `--auto` path), emitting a WARN instead of `rc=1`. The fallback still runs the identical GOV-01 `content_hash`<->cited-plan binding, so a real inconsistency still fails -- it is not a bypass.
+- **Phase 159 (hotfix; closes GH #223)**: `seal_entry_check` (substantiate Step 7.7, `|| ABORT`) no longer hard-fails on a plan filename that does not match the qor-internal `plan-qor-phase<N>-<slug>.md` pattern. Downstream workspaces that name plans `plan-<slug>.md` (e.g. a sibling governance repository) were blocked from sealing a cryptographically valid ledger entry. The filename only ever supplied the phase number for the consistency check, so a non-conforming `--plan` now falls back to the ledger-derived phase (the existing `--auto` path), emitting a WARN instead of `rc=1`. The fallback still runs the identical GOV-01 `content_hash`<->cited-plan binding, so a real inconsistency still fails -- it is not a bypass.
 
 ## [0.110.0] - 2026-06-10
 
@@ -148,7 +155,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
-- **Phase 152 (feature, GH #213)**: the Shadow Genome graph now emits the trust / federation / maturity data surfaces the downstream FailSafe dashboard renders. New emitter API on `qor.scripts.shadow_genome_graph`: `record_trust_transition(...)` (CBT/KBT/IBT transitions as `trust` nodes linked to their evidence + governance), `set_federation_peer(...)` (adapter-level peer status, latest-wins, with a 7-value `PeerState`), and `annotate_failure_maturity(...)` + `derive_maturity_stage(...)` (Observed -> Classified -> Constraint extracted -> Detectable -> Enforced -> Verified). `to_dict` gains `trust_transitions` + `federation_peers` and a `maturity` field on failure nodes; `nodes`/`edges` are unchanged (back-compat). All surfaces are strictly append-only. Per the operator-chosen emitter-API + derive model: qor-logic owns the schema + recorders and derives maturity, while trust/federation are fed by the consumer's adapter. The doctrine's original "declined -- no consumer" scope decision (#139) is reversed now that FailSafe (#196) is the consumer.
+- **Phase 152 (feature, GH #213)**: the Shadow Genome graph now emits the trust / federation / maturity data surfaces the downstream consumer dashboard renders. New emitter API on `qor.scripts.shadow_genome_graph`: `record_trust_transition(...)` (CBT/KBT/IBT transitions as `trust` nodes linked to their evidence + governance), `set_federation_peer(...)` (adapter-level peer status, latest-wins, with a 7-value `PeerState`), and `annotate_failure_maturity(...)` + `derive_maturity_stage(...)` (Observed -> Classified -> Constraint extracted -> Detectable -> Enforced -> Verified). `to_dict` gains `trust_transitions` + `federation_peers` and a `maturity` field on failure nodes; `nodes`/`edges` are unchanged (back-compat). All surfaces are strictly append-only. Per the operator-chosen emitter-API + derive model: qor-logic owns the schema + recorders and derives maturity, while trust/federation are fed by the consumer's adapter. The doctrine's original "declined -- no consumer" scope decision (#139) is reversed now that a sibling governance repository (#196) is the consumer.
 
 ## [0.108.3] - 2026-06-09
 
@@ -258,7 +265,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
-- **Phase 138 (GH #196 V1)**: a schema-optional, WARN-only surface-tag presence lint in the `/qor-substantiate` FEATURE_INDEX verification pass. `qor-logic scripts feature_index_verify --surface-lint` flags every non-`n/a` FEATURE_INDEX row missing a `Surface` value with a severity-2 `degradation` event when the repo's index header declares a `Surface` column; a repo whose header lacks the column disclosed-skips (`gate_skipped_prerequisite_absent`) and a repo without a `FEATURE_INDEX.md` silent-skips, so no existing adopter is broken by adoption. Adds an optional `surface` property to `feature_index.schema.json` (`additionalProperties:false` retained), a glossary entry, the worked-example 7th column, and step 7 of the seal pass. The motivating per-surface mapping data is FailSafe's (FailSafe#206); the enforcing gate lives in qor-logic. The lint always exits 0; V2 fail-closed promotion is deferred until consumer surface coverage is complete.
+- **Phase 138 (GH #196 V1)**: a schema-optional, WARN-only surface-tag presence lint in the `/qor-substantiate` FEATURE_INDEX verification pass. `qor-logic scripts feature_index_verify --surface-lint` flags every non-`n/a` FEATURE_INDEX row missing a `Surface` value with a severity-2 `degradation` event when the repo's index header declares a `Surface` column; a repo whose header lacks the column disclosed-skips (`gate_skipped_prerequisite_absent`) and a repo without a `FEATURE_INDEX.md` silent-skips, so no existing adopter is broken by adoption. Adds an optional `surface` property to `feature_index.schema.json` (`additionalProperties:false` retained), a glossary entry, the worked-example 7th column, and step 7 of the seal pass. The motivating per-surface mapping data is a sibling governance repository's (tracked in an external repository's issue); the enforcing gate lives in qor-logic. The lint always exits 0; V2 fail-closed promotion is deferred until consumer surface coverage is complete.
 
 ## [0.102.2] - 2026-06-02
 
@@ -286,7 +293,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Added
-- **Phase 134 (#164, #151)**: #147 cluster conclusion. **#164**: shipped Shadow Genome graph **export** (`ShadowGenomeGraph.to_dict/to_json/to_dot` + `export` CLI subcommand) and recorded a per-capability roadmap decision (`docs/shadow-genome-graph-roadmap.md`) deferring dashboard-API / trust-transition / federation / retention to post-1.0 with rationale. **#151**: recorded the Option-(c) determination that `qor-compliance` is FailSafe-owned/absent from Qor-logic (the in-repo compliance skill is `qor-governance-compliance`, fixed in Phase 81); no duplicate created. Both closed; the half-measure-closures cluster (#147) is fully resolved.
+- **Phase 134 (#164, #151)**: #147 cluster conclusion. **#164**: shipped Shadow Genome graph **export** (`ShadowGenomeGraph.to_dict/to_json/to_dot` + `export` CLI subcommand) and recorded a per-capability roadmap decision (`docs/shadow-genome-graph-roadmap.md`) deferring dashboard-API / trust-transition / federation / retention to post-1.0 with rationale. **#151**: recorded the Option-(c) determination that `qor-compliance` is owned by a sibling governance repository/absent from Qor-logic (the in-repo compliance skill is `qor-governance-compliance`, fixed in Phase 81); no duplicate created. Both closed; the half-measure-closures cluster (#147) is fully resolved.
 
 ## [0.100.0] - 2026-06-02
 
@@ -1128,7 +1135,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
   (between after-synthesis checkpoint and existing Phase 3
   VERIFICATION) invokes the probe WARN-only. CLI exits 0 by default;
   `--exit-on-any` opts into CI-style enforcement. New
-  `SG-GrepShapedRunclaim-A` doctrine entry carries the COREFORGE Phase
+  `SG-GrepShapedRunclaim-A` doctrine entry carries a sibling consumer workspace's Phase
   371 originating recurrence verbatim. Detailed five-check protocol
   lives in `qor/references/recon-reachability-probe.md` (progressive
   disclosure per GH #92 doctrine). Opens the Tier 1 prompt-surface
@@ -1209,7 +1216,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
   Repair-keyword classification covers `fix`, `hotfix`, `repair`,
   `regression`, `rollback`, `revert`. Operator-declarable shared-core
   paths via repeat `--shared-core-path` flag (no built-in patterns).
-  New `SG-MergePaceThrottle-A` doctrine entry catalogs the Bicameral
+  New `SG-MergePaceThrottle-A` doctrine entry catalogs the sibling-consumer-workspace
   originating recurrence. V2 (enforcement, GitHub-API signals) reserved
   for a future phase.
 
@@ -1253,7 +1260,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
   AND the failing entry numbers are `<=` the cutoff (default 207,
   matching `check_previous_hash_uniqueness`'s `min_entry_num`). Lets
   consumer workspaces with SG-ConcurrentLedgerRace-A residuals (e.g.,
-  the Accountable-App-3.0 case in GH #85) ship clean `verify-ledger`
+  an external QA exemplar's case in GH #85) ship clean `verify-ledger`
   gates without rewriting past entries. Read-only verifier semantics —
   the ledger is not modified, so no operator-authorization protocol is
   needed in V1. Flag is OFF by default; strict verifier remains the
@@ -1300,7 +1307,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 - **Phase 89 (feature, GH #91)**: `/qor-audit` Step 0.6 gains a fifth
   pre-audit lint, `qor.scripts.ci_coverage_lint`, that reconciles the
   plan's `## CI Commands` bullets against the Python-fingerprint `run:`
-  steps discovered in `.github/workflows/*.yml`. Closes the COREFORGE-class
+  steps discovered in `.github/workflows/*.yml`. Closes the consumer-workspace-class
   credibility failure where a phase seals "all CI green" while a real
   GitHub Actions job — one the operator simply forgot to enumerate —
   would fail. WARN-only (parallels `plan_grep_lint` /
@@ -1447,17 +1454,17 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 - **Phase 81 (hotfix, GH #77)**: `qor-governance-compliance` SKILL.md
   YAML frontmatter now carries the F244/FX359 provenance contract:
   `metadata.source.repository` (https URL to this repo) and
-  `metadata.source.path`. Without these the FailSafe extension's
+  `metadata.source.path`. Without these the downstream extension's
   `skill-provenance-schema.test.ts` walker fails on every machine
-  where qor-logic has been installed; FailSafe's v5.1.0 release had
+  where qor-logic has been installed; the consumer's v5.1.0 release had
   to patch locally to ship. The source-of-truth fix flows to dist
   variants via `qor.scripts.dist_compile` and to installed copies on
   the next `qor-logic install`. 2 regression tests added.
 
   Out of scope: the companion `qor-compliance` skill referenced in
   GH #77 does not exist in this repo (no occurrence in `qor/skills/`,
-  `qor/dist/`, or anywhere else); it is sourced from FailSafe's own
-  skills bundle and must be filed upstream against FailSafe.
+  `qor/dist/`, or anywhere else); it is sourced from a sibling governance
+  repository's own skills bundle and must be filed upstream there.
 
 ## [0.55.0] - 2026-05-15
 
@@ -1529,7 +1536,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 - **Phase 78 (feature, GH #47)**: `/qor-audit` Step 3 Filter-Stage
   Ordering Coherence sub-pass. V1 prose-only audit-pass extension
-  (matches Phase 73/74 pattern). Catches the COREFORGE-class
+  (matches Phase 73/74 pattern). Catches the consumer-workspace-class
   composition defect where stage-by-stage review passes each filter
   individually but the validator that enforces an upstream invariant
   runs elsewhere instead of as the first stage of the pipeline.
@@ -1542,7 +1549,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
     precondition is an external-state assumption). No schema enum
     change.
   - SG-FilterOrderInversion-A doctrine entry with originating
-    recurrence (COREFORGE Skill-Forge V1 dispatcher META_LEDGER #209;
+    recurrence (a sibling consumer workspace's Skill-Forge V1 dispatcher META_LEDGER #209;
     operator-caught at PR #82 merge commit `0999e47`).
   - 3 new glossary terms: `pipeline stage dependency graph`,
     `filter-stage ordering coherence`, `SG-FilterOrderInversion-A`.
@@ -1634,7 +1641,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
     `live-progress-fake` under existing `ghost-ui` VETO category.
   - `qor/references/doctrine-shadow-genome-countermeasures.md`
     SG-FakeProgress-A catalogues the pattern + originating recurrence
-    (FailSafe v5.1.0 Install QorLogic Skills card) + countermeasure.
+    (a sibling governance repository's v5.1.0 Install QorLogic Skills card) + countermeasure.
   - 4 new glossary terms: third-party SDK citation,
     behavioral-semantics claim, Live-Progress Invariant, SG-FakeProgress-A.
   - 6 new tests across 3 files (audit prose + doctrine prose).
@@ -1674,7 +1681,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
     FEATURE_INDEX verification pass with count surface in seal entry.
   - 15 new tests across 7 files (doctrine prose, schema validation,
     SKILL prose).
-  - Source incident: FailSafe v5 2026-05-06 -> 264-feature retroactive
+  - Source incident: a sibling governance repository's v5 2026-05-06 -> 264-feature retroactive
     test marathon. V2 follow-on (runtime parser/verifier + ABORT helper)
     queued.
 
@@ -1755,7 +1762,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
   - `plan_text_consistency_lint` wired into `/qor-audit` Step 0.6 (third lint
     alongside plan_test_lint + plan_grep_lint) and `/qor-plan` Step 5 review
     checklist. The lint detects same-operation drift across plan sites
-    (commands, dependencies, paths) per the COREFORGE-class pattern.
+    (commands, dependencies, paths) per the consumer-workspace-class pattern.
   - Doctrine `SG-PlanTextDrift-A` catalogued in
     `doctrine-shadow-genome-countermeasures.md`.
   - `qor.scripts.qor_audit_runtime.check_unchanged_plan_short_circuit()`
@@ -1775,7 +1782,7 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 - **Phase 66 (feature, GH #54 + #55)**: qor-validate integrity bundle.
   - `qor/scripts/ledger_hash.py` gains `SESSION_SEAL_RE` for Session Seal
     markup recognition, `is_placeholder_pattern()` detector
-    (ascending-hex / repeating-bigram / FailSafe-class / low-entropy
+    (ascending-hex / repeating-bigram / issue-54-class / low-entropy
     heuristics; all-zeros genesis convention exempted), and
     `verify_post_anchor()` mode with auto-detected or operator-pinned
     boundary.
@@ -1958,7 +1965,7 @@ Phase 58: procedural-fidelity check at `/qor-substantiate` Step 4.6.6 + SYSTEM_S
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
-Phase 57: `gate_written` observer push-channel. Closes PR #12 (FailSafe-Pro B24 contribution, opened 2026-04-20) by reintegrating the hook contract on top of current main with the OWASP A04 SIGINT-swallow VETO ground resolved. Net-new public-API surface: `qor_logic.events.gate_written` entry-point group + `<root>/.qor/hooks.yaml` config-file format + frozen `GateWrittenEvent` payload. Hook channel is non-authoritative observer-only; the authoritative gate-write path is unchanged.
+Phase 57: `gate_written` observer push-channel. Closes PR #12 (a sibling governance repository's B24 contribution, opened 2026-04-20) by reintegrating the hook contract on top of current main with the OWASP A04 SIGINT-swallow VETO ground resolved. Net-new public-API surface: `qor_logic.events.gate_written` entry-point group + `<root>/.qor/hooks.yaml` config-file format + frozen `GateWrittenEvent` payload. Hook channel is non-authoritative observer-only; the authoritative gate-write path is unchanged.
 
 ### Added
 - **gate_hooks dispatcher** (`qor/scripts/gate_hooks.py`, ~165 LOC, zero new runtime deps): frozen `GateWrittenEvent` and `_HookTarget` dataclasses; `dispatch_gate_written` synchronous fan-out over entry-points + config-file hooks; `reload_entry_points` (test-only cache invalidator); JSONL hook-log at `<root>/.qor/hooks/hooks.log`. `except Exception` (NOT `BaseException`) — `KeyboardInterrupt` and `SystemExit` propagate.
@@ -1974,7 +1981,7 @@ Phase 57: `gate_written` observer push-channel. Closes PR #12 (FailSafe-Pro B24 
 - META_LEDGER entries #186 (PR #12 audit VETO), #187 (Phase 57 plan audit PASS), #189 (implementation), #190 (session seal).
 
 ### Fixed
-- PR #12 `feat/b24-gate-written-hooks` SIGINT-swallow: superseded by Phase 57. The PR's API surface (entry-point group, config-file format, GateWrittenEvent payload, swallow-log error semantics) is preserved exactly. The PR's BaseException catch is replaced by `except Exception` per Phase 57 audit verdict (Entry #186 VETO). B24 backlog item from FailSafe-Pro upstream now resolved at the qor-logic side of the contract; the FailSafe-Pro `failsafe-qor-hook` consumer in their B24 PR registers under `qor_logic.events.gate_written` and observes governance writes without filesystem polling.
+- PR #12 `feat/b24-gate-written-hooks` SIGINT-swallow: superseded by Phase 57. The PR's API surface (entry-point group, config-file format, GateWrittenEvent payload, swallow-log error semantics) is preserved exactly. The PR's BaseException catch is replaced by `except Exception` per Phase 57 audit verdict (Entry #186 VETO). B24 backlog item from the sibling repository upstream now resolved at the qor-logic side of the contract; that repository's hook consumer package in their B24 PR registers under `qor_logic.events.gate_written` and observes governance writes without filesystem polling.
 
 ## [0.42.0] - 2026-05-01
 
@@ -2060,7 +2067,7 @@ Phase 53: prompt-injection defense + path canonicalization + intent-lock anchore
 
 ### Changed
 - **Intent-lock anchored PASS regex** (closes Apr-16 OWASP LOW-4): `qor/reliability/intent_lock.py:_audit_has_pass` was `re.search("VERDICT.*PASS", body, re.IGNORECASE)`, which admitted substring "PASS" mentions in narrative prose. Now anchors to a multiline-anchored canonical verdict line (`^Verdict:\s*PASS$` with markdown-bold tolerance and `:`/`-` separator support). After Phase 53: zero residual OWASP (2021) MEDIUM/LOW findings open.
-- **Path canonicalization** (DRIFT-1, DRIFT-2): `qor/skills/sdlc/qor-research/SKILL.md`, `qor/skills/governance/qor-substantiate/SKILL.md`, `qor/skills/meta/qor-bootstrap/SKILL.md`, and the five agent files under `qor/agents/` no longer reference legacy `.failsafe/governance/` directory or `memory/failsafe-bridge.md`. Replaced with current canonical paths (`docs/`, `.agent/staging/`, `.qor/gates/<session_id>/`).
+- **Path canonicalization** (DRIFT-1, DRIFT-2): `qor/skills/sdlc/qor-research/SKILL.md`, `qor/skills/governance/qor-substantiate/SKILL.md`, `qor/skills/meta/qor-bootstrap/SKILL.md`, and the five agent files under `qor/agents/` no longer reference the legacy sibling-product governance directory or its bridge memory file. Replaced with current canonical paths (`docs/`, `.agent/staging/`, `.qor/gates/<session_id>/`).
 
 ### Security
 - Closes OWASP LLM Top 10 (2025) **LLM01 Prompt Injection** at the audit-prose layer for the operator-authored governance markdown surface. Aligns with NIST AI 600-1 §2.7 (Information integrity / prompt injection) and EU AI Act Art. 15 (cybersecurity dimension). Sprint context: Phase 53 of a five-phase compliance sprint per `docs/research-brief-prompt-logic-frameworks-2026-04-30.md`; subsequent phases planned for AI provenance metadata (54), subagent least-privilege + model-pinning (55), secret-scanning gate (56), override-friction escalator (57).
@@ -2133,7 +2140,7 @@ Phase 45: attribution trailer convention. Implements GitHub issue #18.
 
 ### Added
 - **`qor/scripts/attribution.py`**: pure-function helper exposing three string-returning functions — `commit_trailer(model=...)`, `pr_footer(model=..., defects_list=..., comparison_doc_path=...)`, and `changelog_attribution_line()`. Module-level constants (`_SDK_NAME`, `_SDK_URL`, `_QOR_URL`, `_MODEL_EMAIL`) are the single source of truth; every default surface accepts a kwarg override so a fork rebranding the SDK or pointing at a different canonical URL needs no code changes outside the call site. Functions are pure: no I/O, no env reads, no time/random/network coupling.
-- **`qor/references/doctrine-attribution.md`**: full doctrine — purpose, when-to-apply scope (only commits/PRs/releases produced under `/qor-bootstrap → /qor-plan → /qor-audit → /qor-implement → /qor-substantiate`), three canonical strings captioned with the helper function names that produce them, helper API contract, narrowly-scoped emoji exception (the leading robot emoji on bot-attribution trailer text is the single carve-out from CLAUDE.md's no-non-ASCII-in-data rule), worked example citing issue #18 + BicameralAI MCP #59.
+- **`qor/references/doctrine-attribution.md`**: full doctrine — purpose, when-to-apply scope (only commits/PRs/releases produced under `/qor-bootstrap → /qor-plan → /qor-audit → /qor-implement → /qor-substantiate`), three canonical strings captioned with the helper function names that produce them, helper API contract, narrowly-scoped emoji exception (the leading robot emoji on bot-attribution trailer text is the single carve-out from CLAUDE.md's no-non-ASCII-in-data rule), worked example citing issue #18 + an external repository's issue.
 - **`ATTRIBUTION.md`** (root): one-screen quick-ref with copy-pasteable canonical strings; pointers to the doctrine for rationale and to the helper for the canonical source.
 - **CLAUDE.md Authority line**: now references `[attribution](qor/references/doctrine-attribution.md)` alongside the existing `token-efficiency`, `test-discipline`, and `governance-enforcement` doctrines.
 - **15 new tests** (`tests/test_attribution.py` + `tests/test_attribution_docs_consistency.py`): 9 unit tests pinning canonical output and override semantics, 1 functional test piping the rendered trailer through `git interpret-trailers --parse` to confirm `Co-Authored-By:` is recognized as a valid git trailer (catches spacing/bracket/separator drift that pure presence-tests would miss), and 5 drift-guard tests asserting the helper's output appears verbatim in `ATTRIBUTION.md` and the doctrine and that `CLAUDE.md` Authority line links the doctrine.

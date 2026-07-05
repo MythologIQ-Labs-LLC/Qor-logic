@@ -74,7 +74,7 @@ Add prose under the existing Infrastructure Alignment Pass stating: iter-N>1 aud
 
 ### Changes
 
-Doctrine entry catalogs the pattern (cross-iteration unverified citation), originating recurrence (Accountable-App attribution-12g iter-1 → iter-3 cycle 2026-05-13), and the P1+P2 countermeasures.
+Doctrine entry catalogs the pattern (cross-iteration unverified citation), originating recurrence (an external QA exemplar's attribution-12g iter-1 → iter-3 cycle 2026-05-13), and the P1+P2 countermeasures.
 
 ### Unit Tests
 

@@ -123,7 +123,7 @@ The compile pipeline regenerates 119 dist files, but no test asserts a high-leve
 
 ### qor-research
 
-- Doc references `.failsafe/governance/RESEARCH_BRIEF.md` and `.failsafe/governance/META_LEDGER.md` — `.failsafe/governance/` doesn't exist; canonical paths are `docs/research-brief-*.md` and `docs/META_LEDGER.md`. **Same class as S-2 (stale paths post-SSoT)**.
+- Doc references `<legacy-staging>/RESEARCH_BRIEF.md` and `<legacy-staging>/META_LEDGER.md` — `<legacy-staging>/` doesn't exist; canonical paths are `docs/research-brief-*.md` and `docs/META_LEDGER.md`. **Same class as S-2 (stale paths post-SSoT)**.
 - Doctrine reference to "Shadow Genome Entry #2 (API_ASSUMPTION_DRIFT)" — that entry doesn't exist in current `docs/SHADOW_GENOME.md` (the migration archived prior shadow content). Pre-migration cite.
 
 ### qor-bootstrap
@@ -132,7 +132,7 @@ The compile pipeline regenerates 119 dist files, but no test asserts a high-leve
 
 ### qor-organize
 
-- Hard-coded list of "FORBIDDEN_PATHS" includes `.qor/` (correct), `.failsafe/` (legacy, OK for compatibility), but NOT `.githooks/` or `tests/` which probably should be excluded too in a typical organize pass.
+- Hard-coded list of "FORBIDDEN_PATHS" includes `.qor/` (correct), `<consumer-governance-dotdir>/` (legacy, OK for compatibility), but NOT `.githooks/` or `tests/` which probably should be excluded too in a typical organize pass.
 
 ### qor-deep-audit (and sub-bundles)
 
@@ -208,7 +208,7 @@ The compile pipeline regenerates 119 dist files, but no test asserts a high-leve
 
 ### Phase 11G (LOW, polish)
 
-14. Specific items per-skill (qor-research stale `.failsafe/`, qor-bootstrap re-bootstrap behavior, qor-organize FORBIDDEN_PATHS expansion, qor-judge missing cross-refs, etc.)
+14. Specific items per-skill (qor-research stale `<consumer-governance-dotdir>/`, qor-bootstrap re-bootstrap behavior, qor-organize FORBIDDEN_PATHS expansion, qor-judge missing cross-refs, etc.)
 15. Workflow inconsistencies #1-#4 (audit.verdict enforcement, checkpoint enforcement, deep-audit sequencing prose, shadow log naming).
 
 ### Strategic (defer to Phase 12+)

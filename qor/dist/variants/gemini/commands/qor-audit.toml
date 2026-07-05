@@ -147,11 +147,12 @@ qor-logic scripts plan_live_progress_lint --repo-root . || true
 qor-logic scripts plan_feature_tdd_lint --plan "$PLAN_PATH" --repo-root . || true
 qor-logic scripts sg_closure_lint || true
 qor-logic scripts gate_schema_freeze_lint --session "$SESSION_ID" || true
+qor-logic scripts publication_boundary_lint || true
 ```
 
-`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. Closes the cross-session recurrence pattern flagged across Phase 53/54/55 first audits per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-PreAuditLintGap-A.
+`PLAN_PATH` is argv-only; SG-Phase47-A honored by construction. Closes SG-PreAuditLintGap-A per `qor/references/doctrine-shadow-genome-countermeasures.md`.
 
-Per-lint wiring rationale (which recurrence each lint closes, escape hatches, WARN/VETO posture) lives in `references/pre-audit-lints.md` (progressive disclosure per GH #92). All ten are WARN-only; the binding VETOs remain the Step 3 passes.
+Per-lint wiring rationale (which recurrence each lint closes, escape hatches, WARN/VETO posture) lives in `references/pre-audit-lints.md` (progressive disclosure per GH #92). All are WARN-only; the binding VETOs remain the Step 3 passes.
 
 ### Step 1: Identity Activation + Mode Selection
 
@@ -344,7 +345,7 @@ if remediation:
     pass
 ```
 
-Pattern origin (SG-007 self-audit verification scope bias + the COREFORGE 3-VETO meta-cycle) lives in `references/adversarial-mode.md`.
+Pattern origin (SG-007 self-audit verification scope bias + a sibling consumer workspace's 3-VETO meta-cycle) lives in `references/adversarial-mode.md`.
 
 **Any violation surfaced by self-application -> VETO with `specification-drift` category.** **Required next action:** Governor: amend plan to remove the self-violation, then re-run `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md`, this is a **Plan-text** ground.
 

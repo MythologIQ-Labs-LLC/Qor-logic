@@ -45,7 +45,7 @@ root-cause traceback over governance events.
 The originating proposal (#139) targeted a consuming product with a governance
 dashboard, so the trust-level / federation / maturity surfaces were originally
 **declined** for qor-logic as infrastructure without a consumer. That premise
-changed at #213: FailSafe (#196, shipped) is now the consumer, so those surfaces
+changed at #213: a sibling governance repository (#196, shipped) is now the consumer, so those surfaces
 are back in scope under an **emitter-API + derive** model -- qor-logic owns the
 canonical schema + recorder methods and surfaces them in `to_dict`; it derives
 failure-node maturity from its own data; trust-transitions + federation-peer

@@ -141,7 +141,7 @@ fn process_user(email: Email, age: Age, username: Username) {
 
 ```rust
 // sqlx parses SQL at compile time, ensuring query validity
-// https://github.com/launchbadge/sqlx/blob/master/src/macros/mod.rs
+// github:launchbadge/sqlx/blob/master/src/macros/mod.rs
 
 // The query! macro parses and validates SQL
 let user = sqlx::query!("SELECT * FROM users WHERE id = ?", id)

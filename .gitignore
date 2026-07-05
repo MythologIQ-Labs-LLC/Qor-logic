@@ -32,3 +32,6 @@ build/
 /dist/
 *.egg-info/
 *.whl
+
+# Phase 172: operator-local publication-boundary identity terms (never tracked)
+.qor/private/

@@ -50,7 +50,7 @@ Doctrine 1 (`doctrine-feature-inventory.md`) covers:
 - Section grouping by surface category (commands, routes, UI surfaces, services, etc.).
 - Lifecycle hooks: `/qor-implement` Step 12.5 appends/updates entries; `/qor-substantiate` Step 6 verifies + surfaces counts in seal entry.
 - Append-only vs mutable: V1 documents append-only-with-deprecation-markers as the recommended convention (Merkle-friendly).
-- Originating incident: FailSafe v5 2026-05-06 sealed-but-not-verified Phase 1 monitor surface; 264 features eventually backfilled across 80+ test files.
+- Originating incident: a sibling product's v5 2026-05-06 sealed-but-not-verified Phase 1 monitor surface; 264 features eventually backfilled across 80+ test files.
 
 Doctrine 2 (`doctrine-feature-tdd.md`) covers:
 - Definition: per-unit TDD (existing TDD-Light contract) vs per-feature TDD (new contract).

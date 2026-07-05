@@ -1,0 +1,49 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-04T1840-46e4d9",
+  "ts": "2026-07-04T18:41:30Z",
+  "questions": [
+    "Where do outside-repository references live in tracked/published surfaces, by class?",
+    "Which surfaces are hash-bound and what does editing them actually break?",
+    "What remediation conventions keep behavior and required attribution intact?"
+  ],
+  "findings": [
+    {
+      "topic": "inventory",
+      "claim": "~237 instances: ~87 prose-doc, ~51 in 23 sealed ledger entry bodies, 7 gate-artifact sessions (sidecar-bound), 7 tracked intent-lock records, inherited dist copies, plus published GitHub items",
+      "citation": "mechanical sweep 2026-07-04 (terms held as private reasoning per the doctrine)"
+    },
+    {
+      "topic": "binding reality",
+      "claim": "Ledger body edits keep chain verification green (chain math consumes recorded hash fields; latest-only plan-binding CI check); gate-artifact edits require sidecar payload_sha256 regeneration",
+      "citation": "qor/scripts/ledger_hash.py chain_hash/verify; qor/reliability/seal_entry_check.py check_latest; qor/scripts/gate_provenance.py verify_sidecar"
+    },
+    {
+      "topic": "lint constraint",
+      "claim": "A tracked lint cannot carry the private denylist; structural patterns + optional gitignored operator-local terms file",
+      "citation": "qor/references/doctrine-publication-boundary.md"
+    },
+    {
+      "topic": "Governor decisions",
+      "claim": "Scrub sealed surfaces in place + one disclosure REMEDIATION entry; GitHub sweep covers all open + today-created items with historical follow-on worklist",
+      "citation": "operator decisions 2026-07-04 (AskUserQuestion; recorded in brief)"
+    }
+  ],
+  "sources": [
+    "qor/references/doctrine-publication-boundary.md",
+    "tests/test_publication_boundary_policy.py",
+    "qor/scripts/ledger_hash.py",
+    "qor/reliability/seal_entry_check.py",
+    "qor/scripts/gate_provenance.py",
+    "qor/reliability/intent_lock.py"
+  ],
+  "brief_path": "docs\\research-brief-publication-boundary-remediation-2026-07-04.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.118.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-04T18:41:30Z"
+  }
+}

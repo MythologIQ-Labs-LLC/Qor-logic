@@ -10,7 +10,7 @@ traceback.
 Scope (per `qor/references/doctrine-shadow-genome-graph.md`): the core causal
 layer plus the #213 producer surfaces (trust-transitions, federation-peer
 status, failure-node maturity) under an emitter-API + derive model -- qor-logic
-owns the schema and surfaces them in `to_dict`; the consumer (FailSafe, #196)
+owns the schema and surfaces them in `to_dict`; the consumer (a sibling governance repository, #196)
 feeds trust/federation and qor derives maturity. The governance dashboard web
 API stays a consumer concern. Strictly append-only; no retention/pruning
 automation in V1.
@@ -44,7 +44,7 @@ class GenomeEdgeType(str, Enum):
     APPLIES_TO = "applies_to"
 
 
-# #213 producer surfaces (emitter-API + derive). Consumer = FailSafe (#196).
+# #213 producer surfaces (emitter-API + derive). Consumer = a sibling governance repository (#196).
 class TrustLevel(str, Enum):
     CBT = "CBT"
     KBT = "KBT"

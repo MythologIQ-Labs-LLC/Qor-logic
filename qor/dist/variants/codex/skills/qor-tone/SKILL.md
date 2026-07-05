@@ -1,7 +1,7 @@
 ---
 name: qor-tone
 description: >-
-  Session-level communication tier selector. Sets the output register for tone-aware skills to technical, standard, or plain. Inspired by the MIT-licensed caveman project (https://github.com/JuliusBrussee/caveman).
+  Session-level communication tier selector. Sets the output register for tone-aware skills to technical, standard, or plain. Inspired by the MIT-licensed caveman project.
 metadata:
   category: memory
   author: MythologIQ

@@ -58,12 +58,12 @@ This materially changes the cost/benefit. The 5-phase implementation cost flagge
 
 The ideation packet's evidence_required calls for "one consumer integration report on whether the IR shape captures their use case." Two practical candidates:
 
-1. **FailSafe v5.1.0** (canonical Qor-logic consumer) -- already builds prompts for `claude` host installs and SHIELD-progression context. Has documented prompt-compilation needs (install-skills-card UX uses VS Code commands + ConsoleServer routes; each could declare governance contracts).
+1. **A sibling product v5.1.0** (canonical Qor-logic consumer) -- already builds prompts for `claude` host installs and SHIELD-progression context. Has documented prompt-compilation needs (install-skills-card UX uses VS Code commands + ConsoleServer routes; each could declare governance contracts).
 2. **Qor-logic itself** -- the `/qor-help --stuck` mode + `/qor-research` + `/qor-ideate` skills already produce structured prompts for downstream models. Self-application: compile Qor-logic's own skill-prose through PromptIR + GovernanceDecision.
 
 **Recommendation**: self-application (consumer #2) is the lowest-friction validation. If `/qor-help --stuck` output can be expressed as a PromptIR and a `GovernanceDecision` can be derived via existing Cedar policies + secret_scanner + prompt_injection_canaries, the spike succeeds; the API shape captures at least one real use case.
 
-If the spike succeeds in self-application, then proceed to FailSafe integration as a second validation point before committing to Phase 1 build.
+If the spike succeeds in self-application, then proceed to a sibling governance repository integration as a second validation point before committing to Phase 1 build.
 
 ## Sub-question (d): spike approved or defer recommended?
 

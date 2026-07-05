@@ -116,7 +116,7 @@ Before implementing helper or utility logic:
 
 ### Pre-Implementation Gate Check
 ```
-Read: .failsafe/governance/AUDIT_REPORT.md
+Read: <legacy-staging>/AUDIT_REPORT.md
 If verdict != "PASS" -> ABORT
 Report: "Gate locked. Tribunal audit required."
 ```

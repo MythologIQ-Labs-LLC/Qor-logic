@@ -6,12 +6,12 @@ Use this map to select the most specific skill for the request. If multiple appl
 | --- | --- |
 | cx-ux-flow-audit | Audit UX/CX flows, journey mapping, friction detection, onboarding/task completion analysis |
 | dopamine-engagement-review | Evaluate engagement loops, motivation/reward systems, neurodiverse considerations |
-| frontend-bridge-integration | React/TypeScript bridge wiring to Tauri commands (Hearthlink) |
-| marketplace-plugin-ops | Marketplace catalog parsing, plugin install/uninstall, local plugin scanning (Hearthlink) |
-| playwright-e2e-mocks | Playwright E2E tests, selectors, IPC mocks under tests/e2e (Hearthlink) |
+| frontend-bridge-integration | React/TypeScript bridge wiring to Tauri commands (the host project) |
+| marketplace-plugin-ops | Marketplace catalog parsing, plugin install/uninstall, local plugin scanning (the host project) |
+| playwright-e2e-mocks | Playwright E2E tests, selectors, IPC mocks under tests/e2e (the host project) |
 | rust-skills | Writing/reviewing/refactoring Rust code with strict guidelines |
-| security-permission-audit | Consent checks, auth guards, audit logging, SecureVault (Hearthlink) |
-| skill-lifecycle-ops | Synapse skill registry/resolution/instance management/execution (Hearthlink) |
+| security-permission-audit | Consent checks, auth guards, audit logging, SecureVault (the host project) |
+| skill-lifecycle-ops | Synapse skill registry/resolution/instance management/execution (the host project) |
 | tauri-ipc-wiring | Tauri Rust IPC command wiring, invoke registration, payload shapes |
 | tauri2-async-commands | Long-running async Tauri 2.x commands with cancellation/timeouts |
 | tauri2-cicd-distribution | Tauri 2.x CI/CD, signing, updater workflows |

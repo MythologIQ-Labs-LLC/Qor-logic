@@ -18,8 +18,8 @@ def test_doctrine_defines_types_and_scope_boundary():
         assert edge_type in text, f"missing edge type {edge_type}"
     low = text.lower()
     # #213: the trust/federation/maturity surfaces are now in scope under an
-    # emitter-API + derive model (consumer = FailSafe); the dashboard web API
-    # stays a consumer concern.
+    # emitter-API + derive model (consumer = a sibling governance repository);
+    # the dashboard web API stays a consumer concern.
     assert "emitter-api" in low
     assert "trust_transitions" in low and "federation_peers" in low
     assert "dashboard" in low and "federation" in low

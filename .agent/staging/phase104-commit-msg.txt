@@ -34,6 +34,6 @@ Plan: docs/plan-qor-phase104-release-publish-fix.md
 Audit: .agent/staging/phase104-AUDIT_REPORT.md (PASS, L3 iter-1)
 Merkle seal: 34a86f66128ca7f8e150fecf58e0602e451350be601c73f94ae50a40b1fcbd55
 
-🤖 Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+🤖 Authored via [Qor-logic SDLC](github:MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

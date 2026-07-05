@@ -62,7 +62,7 @@ Production deployment using GitHub Actions with zero-downtime rolling updates.
 
 3. **Trigger deployment**
    - GitHub Actions auto-starts from tag push
-   - Monitor: https://github.com/org/repo/actions
+   - Monitor: github:org/repo/actions
 
 4. **Database migrations** (if needed)
    - Auto-run in GitHub Actions

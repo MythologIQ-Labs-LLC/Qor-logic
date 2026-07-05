@@ -33,7 +33,7 @@ Four of the nine issues edit the same skill and three edit the same schema. Spre
 - `qor/skills/sdlc/qor-plan/SKILL.md` Step 5 review checklist (target of #42 edit 1).
 - `qor/references/doctrine-shadow-genome-countermeasures.md` (target of #42 edit 3).
 
-#46 explicitly scopes itself as "V2 backlog for `plan_text_consistency_lint`, sealed at COREFORGE META_LEDGER #206 (V1) per upstream-adoption issue #42." V2 cannot land before V1 is upstream. They must be sequenced; bundling them in a single mega-phase would breach the project's "one discipline per phase" pattern visible in `git log --oneline -20` (each phase ships one named feature).
+#46 explicitly scopes itself as "V2 backlog for `plan_text_consistency_lint`, sealed at the sibling consumer workspace's META_LEDGER #206 (V1) per upstream-adoption issue #42." V2 cannot land before V1 is upstream. They must be sequenced; bundling them in a single mega-phase would breach the project's "one discipline per phase" pattern visible in `git log --oneline -20` (each phase ships one named feature).
 
 ### F3 — #40 + #41 are operator-paired by construction
 
@@ -42,7 +42,7 @@ Four of the nine issues edit the same skill and three edit the same schema. Spre
 - Both edit `qor-plan` Step 7, `qor-audit` Step 3, `qor-implement` Step 5/12.5, and `qor-substantiate` Step 6.
 - Both introduce overlapping artifacts: `FEATURE_INDEX.md` (#40) + `feature_inventory_touches` schema field on `plan.schema.json` (#41).
 
-The same operator filed both within 2 days from the same FailSafe v5 incident. #40 fixes seal-time symptoms; #41 fixes the upstream cause. Implementing them separately would mean two passes over the same four skill bodies and a contradictory intermediate state where one gate exists without the other.
+The same operator filed both within 2 days from the same sibling-product v5 incident. #40 fixes seal-time symptoms; #41 fixes the upstream cause. Implementing them separately would mean two passes over the same four skill bodies and a contradictory intermediate state where one gate exists without the other.
 
 ### F4 — #38 stands alone but pairs thematically with B23 (host-repo posture)
 
@@ -109,7 +109,7 @@ No DRIFT detected. One UNVERIFIED row (does not affect grouping recommendation).
 ### Priority ordering (recommended)
 
 1. **α** — closes the active recurring discipline gap that filed 4 of the 9 issues; smallest schema risk; unblocks β.
-2. **γ** — closes the FailSafe v5 incident class; independent; high-value for any consumer using SHIELD substantiation.
+2. **γ** — closes the sibling-product v5 incident class; independent; high-value for any consumer using SHIELD substantiation.
 3. **δ** — unlocks non-Python consumer adoption; pairs the open `Architecture Proposal`-class B23 work with the pre-existing #38.
 4. **β** — depends on α; can wait until α has shipped and stabilized.
 5. **ε** — largest scope; deserves its own roadmap track once the lifecycle skills are stable.
@@ -128,7 +128,7 @@ No DRIFT detected. One UNVERIFIED row (does not affect grouping recommendation).
 
 Add to `docs/SHADOW_GENOME.md` (or the analyst's working notes if SG entries are gated):
 
-> **Pattern observed (2026-05-09)**: The COREFORGE consumer workspace (a downstream Qor-logic consumer) filed 5 of the 9 open issues from a single session (2026-05-08T1610-21dfe5). All 5 (#42, #43, #44, #45, #46) describe the same root: framework discipline that would have caught the recurring failure pattern is not load-bearing because it isn't yet runnable upstream. This is the #44 pattern at meta-level: the framework cannot apply its own newest disciplines to its own framework-improvement plans until those disciplines are ported upstream. The α-bundle is the structural answer.
+> **Pattern observed (2026-05-09)**: The sibling consumer workspace (a downstream Qor-logic consumer) filed 5 of the 9 open issues from a single session (2026-05-08T1610-21dfe5). All 5 (#42, #43, #44, #45, #46) describe the same root: framework discipline that would have caught the recurring failure pattern is not load-bearing because it isn't yet runnable upstream. This is the #44 pattern at meta-level: the framework cannot apply its own newest disciplines to its own framework-improvement plans until those disciplines are ported upstream. The α-bundle is the structural answer.
 
 No update needed to existing doctrine. Phase sequencing recommendation lives in this brief and in `docs/BACKLOG.md` once the operator schedules.
 

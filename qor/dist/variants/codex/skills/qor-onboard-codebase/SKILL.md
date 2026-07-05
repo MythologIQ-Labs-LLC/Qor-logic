@@ -61,7 +61,7 @@ Output: `RESEARCH_BRIEF.md` (or `docs/onboard-<name>-research.md`) with file:lin
 Normalize the codebase's layout to project-host conventions. Per `/qor-organize`:
 - Detect project archetype
 - Propose directory restructuring matching host conventions
-- Identify governance directories that must be excluded (`.agent/`, `.claude/`, `.qor/`, `.failsafe/`)
+- Identify governance directories that must be excluded (`.agent/`, `.claude/`, `.qor/`, `<consumer-governance-dotdir>/`)
 - Document the proposal as `FILE_INDEX.md` audit trail
 
 Bundle does NOT execute reorganization automatically. Operator approves the proposal.
@@ -96,7 +96,7 @@ Output: `plan-onboard-<name>.md` with phased integration sprints.
 - **NEVER** auto-execute the organize proposal (Phase 2) — operator approves
 - **ALWAYS** delegate to constituent skills via their `/qor-*` triggers (per `qor/gates/delegation-table.md`)
 - **ALWAYS** abort gracefully on budget breach with resume marker
-- **ALWAYS** preserve external repo's existing governance (don't overwrite their `.failsafe/` etc.)
+- **ALWAYS** preserve external repo's existing governance (don't overwrite their `<consumer-governance-dotdir>/` etc.)
 
 ## Anti-Patterns
 

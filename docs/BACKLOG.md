@@ -3,12 +3,12 @@
 ## Blockers (Must Fix Before Progress)
 
 ### Development Blockers
-- [x] [D1] Import existing QL skills from FailSafe extension into ingest/internal/ (Complete)
+- [x] [D1] Import existing QL skills from a sibling governance repository's extension into ingest/internal/ (Complete)
 - [x] [D2] Create processing script that normalizes skills to S.H.I.E.L.D. format (Complete — scripts/process-skills.py)
 - [x] [D3] Create qor-document skill (Complete — ingest/internal/governance/qor-document.md)
 
 ## Backlog (Planned Work)
-- [x] [B1] Import all existing qor-* skills from G:/MythologIQ/FailSafe/.claude/commands/ (Complete)
+- [x] [B1] Import all existing qor-* skills from a sibling governance repository's `.claude/commands/` (Complete)
 - [x] [B2] Create compilation script for Claude Code format (Complete — scripts/compile-claude.py)
 - [x] [B3] Create compilation script for Agent workflow format (Complete — scripts/compile-agent.py)
 - [x] [B4] Process collaborative design principles into qor-plan and qor-bootstrap (Complete)

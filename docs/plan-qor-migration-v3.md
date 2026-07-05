@@ -10,7 +10,7 @@
 ## Open Questions
 
 None. User decisions resolved pre-draft:
-- Hearthlink agents (5): **DELETE** (project no longer active)
+- A retired sibling project's agents (5): **DELETE** (project no longer active)
 - Generic engineering specialists (7): move to `qor/vendor/agents/`
 - `ql-*` → `qor-*` prefix rename applied during migration (consistent with commit 806e359)
 - `qor-ux-evaluator` category: `sdlc/`
@@ -69,17 +69,17 @@ Verified count: 25 files in `ingest/subagents/` (`ls ingest/subagents/ | wc -l` 
 | `ui-correction-specialist.md` | `qor/vendor/agents/ui-correction-specialist.md` | — |
 | `ultimate-debugger.md` | `qor/vendor/agents/ultimate-debugger.md` | — |
 | `voice-integration-specialist.md` | `qor/vendor/agents/voice-integration-specialist.md` | — |
-| `hearthlink-backend-dev.md` | **DELETE** | — |
-| `hearthlink-frontend-dev.md` | **DELETE** | — |
-| `hearthlink-skill-framework.md` | **DELETE** | — |
-| `hearthlink-skill-template.md` | **DELETE** | — |
-| `hearthlink-ui-ux-designer.md` | **DELETE** | — |
+| `legacy-project-backend-dev.md` | **DELETE** | — |
+| `legacy-project-frontend-dev.md` | **DELETE** | — |
+| `legacy-project-skill-framework.md` | **DELETE** | — |
+| `legacy-project-skill-template.md` | **DELETE** | — |
+| `legacy-project-ui-ux-designer.md` | **DELETE** | — |
 
 Totals: 13 to `qor/agents/` (5 sdlc, 3 memory, 3 meta, 2 governance), 7 to `qor/vendor/agents/`, 5 deleted. Sum: 25 ✓.
 
 Added unit test:
 - `tests/test_agent_inventory.py::test_mapping_is_exhaustive` — every `ingest/subagents/*.md` has a dispositon; no source file is unaccounted for
-- `tests/test_agent_inventory.py::test_no_hearthlink_survives` — all five deleted post-migration
+- `tests/test_agent_inventory.py::test_no_legacy-project_survives` — all five deleted post-migration
 
 ## 4. V-3..V-5 — Test infrastructure declared
 
@@ -206,5 +206,5 @@ python -m pytest tests/ -m integration                      # integration tests 
 python qor/scripts/check_variant_drift.py                   # exit 0 on clean
 python qor/scripts/ledger_hash.py --verify docs/META_LEDGER.md  # chain verification
 grep -r "kilo-code/qor-\|deployable state\|processed/\|compiled/" docs/ --exclude-dir=archive  # empty
-grep -rn "hearthlink" qor/ || echo "clean"                  # no hearthlink survives in qor/
+grep -rn "legacy-project" qor/ || echo "clean"                  # no legacy-project survives in qor/
 ```

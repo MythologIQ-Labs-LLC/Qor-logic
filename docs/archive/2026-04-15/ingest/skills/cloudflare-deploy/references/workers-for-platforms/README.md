@@ -15,9 +15,9 @@ Multi-tenant platform with isolated customer code execution at scale.
 
 ## Quick Start
 
-**One-click deploy:** [Platform Starter Kit](https://github.com/cloudflare/workers-for-platforms-example) deploys complete WfP setup with dispatch namespace, dispatch worker, and user worker example.
+**One-click deploy:** [Platform Starter Kit](github:cloudflare/workers-for-platforms-example) deploys complete WfP setup with dispatch namespace, dispatch worker, and user worker example.
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/workers-for-platforms-example)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=github:cloudflare/workers-for-platforms-example)
 
 **Manual setup:** See [configuration.md](./configuration.md) for namespace creation and dispatch worker configuration.
 

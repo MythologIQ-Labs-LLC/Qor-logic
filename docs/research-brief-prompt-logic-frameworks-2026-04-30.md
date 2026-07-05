@@ -18,8 +18,8 @@ Qor-logic's governance posture against **classical OWASP Top 10 (2021)** and **N
 
 **Two structural drifts surfaced during this research:**
 
-- **DRIFT-1**: `qor/skills/sdlc/qor-research/SKILL.md` Steps 6–8 prescribe `.failsafe/governance/RESEARCH_BRIEF.md` and `.failsafe/governance/META_LEDGER.md` paths and update `memory/failsafe-bridge.md`. None of those paths exist in the current repo (canonical paths are `docs/research-brief-*.md`, `docs/META_LEDGER.md`; no `memory/` tree). The skill body has not been re-canonicalized since the migration to `docs/`-based governance.
-- **DRIFT-2**: `qor/skills/governance/qor-substantiate/SKILL.md` Step 2 reads `.failsafe/governance/AUDIT_REPORT.md` while Step 4.1 writes to `.agent/staging/AUDIT_REPORT.md` (also referenced by `/qor-audit` Step 4 and `/qor-implement` Step 2). The `.failsafe/` reference is stale.
+- **DRIFT-1**: `qor/skills/sdlc/qor-research/SKILL.md` Steps 6–8 prescribe `<legacy-staging>/RESEARCH_BRIEF.md` and `<legacy-staging>/META_LEDGER.md` paths and update `a legacy bridge memory file`. None of those paths exist in the current repo (canonical paths are `docs/research-brief-*.md`, `docs/META_LEDGER.md`; no `memory/` tree). The skill body has not been re-canonicalized since the migration to `docs/`-based governance.
+- **DRIFT-2**: `qor/skills/governance/qor-substantiate/SKILL.md` Step 2 reads `<legacy-staging>/AUDIT_REPORT.md` while Step 4.1 writes to `.agent/staging/AUDIT_REPORT.md` (also referenced by `/qor-audit` Step 4 and `/qor-implement` Step 2). The `<consumer-governance-dotdir>/` reference is stale.
 
 Both drifts are doctrinal/path-currency, not runtime exploit surfaces, but should be folded into the same docs-currency phase as G-3/G-4 from `docs/compliance-re-evaluation-2026-04-29.md`.
 
@@ -276,14 +276,14 @@ The audit therefore evaluates Qor-logic as a **support tool** for downstream hig
 #### DRIFT-1: `/qor-research` skill body references nonexistent paths
 
 **Location**: `qor/skills/sdlc/qor-research/SKILL.md`
-- Line 22: `<output>.failsafe/governance/RESEARCH_BRIEF.md` — repo uses `docs/research-brief-*.md`.
-- Lines 113, 127, 173, 177: `.failsafe/governance/ARCHITECTURE_PLAN.md`, `.failsafe/governance/RESEARCH_BRIEF.md`, `memory/failsafe-bridge.md`, `.failsafe/governance/META_LEDGER.md` — none exist.
+- Line 22: `<output><legacy-staging>/RESEARCH_BRIEF.md` — repo uses `docs/research-brief-*.md`.
+- Lines 113, 127, 173, 177: `<legacy-staging>/ARCHITECTURE_PLAN.md`, `<legacy-staging>/RESEARCH_BRIEF.md`, `a legacy bridge memory file`, `<legacy-staging>/META_LEDGER.md` — none exist.
 
 **Impact**: Skill is unrunnable as written; operator (or model) must mentally rewrite paths. Equivalent to V10-class infrastructure mismatch from Phase 36 SG.
 
 **Severity**: MEDIUM doctrinal (cosmetic for runtime; high for governance integrity).
 
-#### DRIFT-2: `/qor-substantiate` Step 2 reads `.failsafe/governance/AUDIT_REPORT.md`
+#### DRIFT-2: `/qor-substantiate` Step 2 reads `<legacy-staging>/AUDIT_REPORT.md`
 
 **Location**: `qor/skills/governance/qor-substantiate/SKILL.md:70`
 
@@ -304,8 +304,8 @@ The audit therefore evaluates Qor-logic as a **support tool** for downstream hig
 | META_LEDGER provides immutable audit trail | Merkle chain with content+chain hashes; 169 entries; chain verification clean | MATCH |
 | Prompt-resilience doctrine covers Y/N pause discipline | Covers banned-phrase lint; does not cover injection-resilience | PARTIAL |
 | ATTRIBUTION.md provides AI-authoring transparency | Commit-trailer + CHANGELOG tiered usage (Phase 49) | MATCH (commit surface only) |
-| `qor-research` skill outputs to `docs/` | Skill body still references `.failsafe/governance/` | DRIFT (DRIFT-1) |
-| `qor-substantiate` reads audit from `.agent/staging/` | Step 2 references `.failsafe/governance/AUDIT_REPORT.md` | DRIFT (DRIFT-2) |
+| `qor-research` skill outputs to `docs/` | Skill body still references `<legacy-staging>/` | DRIFT (DRIFT-1) |
+| `qor-substantiate` reads audit from `.agent/staging/` | Step 2 references `<legacy-staging>/AUDIT_REPORT.md` | DRIFT (DRIFT-2) |
 
 ---
 
@@ -360,7 +360,7 @@ In priority order (risk × effort):
 **Closes**: DRIFT-1, DRIFT-2.
 
 **Scope**:
-1. Sweep all `qor/skills/**/SKILL.md` for `.failsafe/governance/`, `memory/failsafe-bridge.md` references; replace with current canonical paths.
+1. Sweep all `qor/skills/**/SKILL.md` for `<legacy-staging>/`, `a legacy bridge memory file` references; replace with current canonical paths.
 2. Add `tests/test_skill_path_canonicalization.py` asserting no SKILL.md references the historical paths.
 
 **Estimated effort**: ~2 hours, `change_class: hotfix`, no new functionality.
@@ -379,7 +379,7 @@ In priority order (risk × effort):
 
 The following facts should inform memory and downstream phases:
 
-- **Drift inventory**: `/qor-research` and `/qor-substantiate` skill bodies still cite `.failsafe/governance/` paths from a pre-`docs/`-migration era. Any future skill audit should sweep for these strings as part of the path-canonicalization check.
+- **Drift inventory**: `/qor-research` and `/qor-substantiate` skill bodies still cite `<legacy-staging>/` paths from a pre-`docs/`-migration era. Any future skill audit should sweep for these strings as part of the path-canonicalization check.
 - **Compliance posture vs frameworks**:
   - Classical OWASP Top 10 (2021) + SSDF: **mature** (per `docs/compliance-re-evaluation-2026-04-29.md` plus this audit).
   - OWASP LLM Top 10 (2025): **PARTIAL**, dominated by LLM01 prompt-injection gap.

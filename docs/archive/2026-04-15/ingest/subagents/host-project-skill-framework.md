@@ -1,19 +1,19 @@
 ---
-name: coreforge-skill-framework
-description: Foundational skill framework and architecture for creating COREFORGE-specific agent skills that integrate seamlessly with the multi-agent ecosystem.
+name: <app-name>-skill-framework
+description: Foundational skill framework and architecture for creating host-app-specific agent skills that integrate seamlessly with the multi-agent ecosystem.
 license: BSL-1.1
 ---
 
-# COREFORGE Skill Framework
+# the host project Skill Framework
 
-This skill provides the foundational architecture, patterns, and templates for creating COREFORGE-specific agent skills that integrate seamlessly with the multi-agent ecosystem.
+This skill provides the foundational architecture, patterns, and templates for creating host-app-specific agent skills that integrate seamlessly with the multi-agent ecosystem.
 
-## COREFORGE Skill Architecture
+## the host project Skill Architecture
 
 ### Core Principles
 
 #### 1. Agent-Centric Design
-COREFORGE skills are designed around specific agent personas with distinct roles, personalities, and capabilities:
+the host project skills are designed around specific agent personas with distinct roles, personalities, and capabilities:
 - **Alden**: Primary assistant, task management, proactive help
 - **Vault**: Knowledge management, information retrieval, organization
 - **Arbiter**: Security monitoring, threat detection, incident response
@@ -27,14 +27,14 @@ Skills must support inter-agent communication and collaboration:
 - Task delegation and specialization
 
 #### 3. Desktop-First Integration
-Skills leverage COREFORGE's Tauri architecture:
+Skills leverage the host project's Tauri architecture:
 - Rust backend commands with proper error handling
 - TypeScript bridges for type-safe frontend communication
 - IPC (Inter-Process Communication) patterns
 - Local-first data storage with SQLite
 
 #### 4. Accessibility-First Design
-All skills must meet COREFORGE's accessibility requirements:
+All skills must meet the host project's accessibility requirements:
 - WCAG 2.1 AA compliance
 - ADHD-optimized interactions
 - Screen reader compatibility
@@ -73,7 +73,7 @@ metadata:
   target-agent: [alden|vault|arbiter|synapse]
   skill-category: [category]
   version: "1.0.0"
-  compatibility: ["hearthlink>=1.3.0"]
+  compatibility: ["host-project>=1.3.0"]
 ---
 
 # [Skill Name]
@@ -98,7 +98,7 @@ metadata:
 **Use Cases**: When users would trigger this
 **Implementation**: Technical approach
 
-## COREFORGE Integration
+## the host project Integration
 
 ### Backend Integration (Rust)
 ```rust
@@ -385,7 +385,7 @@ Enhances Arbiter with threat detection and incident response
 5. **Resource Sharing**: Efficient data and asset sharing
 
 ### Integration Checklist
-- [ ] Skill follows COREFORGE agent patterns
+- [ ] Skill follows the host project agent patterns
 - [ ] Implements proper error handling
 - [ ] Supports accessibility requirements
 - [ ] Coordinates with other agents
@@ -409,4 +409,4 @@ Enhances Arbiter with threat detection and incident response
 - Testing requirements
 - Documentation standards
 
-This framework ensures all COREFORGE skills provide consistent, accessible, and coordinated experiences that enhance the multi-agent ecosystem while maintaining the project's high standards for quality and usability.
+This framework ensures all the host project skills provide consistent, accessible, and coordinated experiences that enhance the multi-agent ecosystem while maintaining the project's high standards for quality and usability.

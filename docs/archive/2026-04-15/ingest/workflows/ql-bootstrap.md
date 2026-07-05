@@ -48,7 +48,7 @@ Ensure required **workspace** directories exist:
 docs/               # Governance documents (workspace-level)
 ```
 
-**🔒 ISOLATION NOTE**: These directories are **workspace operations**, independent of any repository source code. If this workspace is the FailSafe development repository, do NOT confuse these with:
+**🔒 ISOLATION NOTE**: These directories are **workspace operations**, independent of any repository source code. If this workspace is the sibling governance repository development repository, do NOT confuse these with:
 
 - `src/` (extension source code)
 - `qorelogic/` (extension legacy source)
@@ -72,7 +72,7 @@ The following directories and files contain proprietary AI governance logic, ses
 
 | Category        | Patterns                                            | Reason                       |
 | --------------- | --------------------------------------------------- | ---------------------------- |
-| AI Governance   | `.agent/`, `.claude/`, `.failsafe/`, `.qorelogic/`  | Proprietary governance state |
+| AI Governance   | `.agent/`, `.claude/`, `<consumer-governance-dotdir>/`, `.qorelogic/`  | Proprietary governance state |
 | AI Instructions | `CLAUDE.md`, `GEMINI.md`, `COPILOT.md`, `CURSOR.md` | Workspace-specific AI config |
 | IDE Settings    | `.vscode/`, `.idea/`, `.cursor/`, `.windsurf/`      | Local contributor settings   |
 | Planning Docs   | `plan-*.md`, `docs/`, `Planning/`                   | Private roadmap/strategy     |
@@ -90,7 +90,7 @@ If missing required patterns, add them:
 # AI GOVERNANCE (REQUIRED FOR PUBLIC REPOS)
 .agent/
 .claude/
-.failsafe/
+<consumer-governance-dotdir>/
 .qorelogic/
 CLAUDE.md
 GEMINI.md
@@ -136,9 +136,9 @@ Classify artifacts before writing files:
 
 | Class                        | Scope                                                                | Ownership            | Commit Policy                               |
 | ---------------------------- | -------------------------------------------------------------------- | -------------------- | ------------------------------------------- |
-| Core Artifacts               | Shared bootstrap assets required in every workspace                  | FailSafe System      | Distributed by scaffold command             |
+| Core Artifacts               | Shared bootstrap assets required in every workspace                  | a sibling governance repository System      | Distributed by scaffold command             |
 | Generated Custom Artifacts   | Workspace-specific outputs generated from prompts/workflows          | Workspace owner      | Stored in workspace only                    |
-| Proprietary System Artifacts | Internal FailSafe implementation assets and private system internals | FailSafe maintainers | MUST NOT be scaffolded into user workspaces |
+| Proprietary System Artifacts | Internal a sibling governance repository implementation assets and private system internals | a sibling governance repository maintainers | MUST NOT be scaffolded into user workspaces |
 
 Deterministic guardrails:
 

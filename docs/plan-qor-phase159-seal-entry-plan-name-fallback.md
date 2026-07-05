@@ -16,7 +16,7 @@ instead of rc=1.
 `seal_entry_check._main` (substantiate Step 7.7, `|| ABORT`) calls
 `governance_helpers.derive_phase_metadata(args.plan)`, whose strict
 `_PHASE_FILENAME_RE = ^plan-qor-phase(\d+)-([a-z0-9-]+)\.md$` rejects any
-downstream plan name (e.g. FailSafe's `plan-<slug>.md`). On rejection `_main`
+downstream plan name (e.g. the sibling governance repository's `plan-<slug>.md`). On rejection `_main`
 prints `plan path resolution failed` and returns 1, blocking `/qor-substantiate`
 for a cryptographically valid seal. Verified:
 

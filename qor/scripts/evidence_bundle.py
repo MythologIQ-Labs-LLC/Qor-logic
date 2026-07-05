@@ -1,6 +1,6 @@
 """Evidence-bundle reconstruction for a sealed phase (Phase 169; GH #251).
 
-ADR-0018 posture (MS agent-governance-toolkit): audit evidence is
+ADR-0018 posture (an external agent-governance toolkit): audit evidence is
 RECONSTRUCTED on demand from signals already recorded -- ledger seal entry,
 gate artifacts, provenance sidecars, audit history, intent lock, shadow
 events, CHANGELOG section, seal commit/tag -- instead of writing more

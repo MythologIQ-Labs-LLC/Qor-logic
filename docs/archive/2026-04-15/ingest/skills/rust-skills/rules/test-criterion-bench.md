@@ -147,7 +147,7 @@ cargo bench -- --baseline main
 ## Evidence from tokio
 
 ```rust
-// https://github.com/tokio-rs/tokio/blob/master/benches/sync_mpsc.rs
+// github:tokio-rs/tokio/blob/master/benches/sync_mpsc.rs
 use criterion::{criterion_group, criterion_main, Criterion};
 
 fn send_data<T: Default, const SIZE: usize>(

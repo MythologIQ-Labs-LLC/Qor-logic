@@ -12,7 +12,7 @@ This report records the first protocol-driven audit of the processed core skill 
   - aligned audit-report input to `.agent/staging/AUDIT_REPORT.md`
 - `ql-research.md`
   - moved durable research artifacts to `docs/`
-  - removed the hard-coded `failsafe-bridge` memory file assumption
+  - removed the hard-coded `sibling-product-bridge` memory file assumption
 - `ql-substantiate.md`
   - aligned audit-report input to `.agent/staging/AUDIT_REPORT.md`
   - added first-release version fallback
@@ -32,7 +32,7 @@ This report records the first protocol-driven audit of the processed core skill 
 These are worth a later pass but were not changed automatically during this audit:
 
 - Normalize references from `.claude/commands/references/...` to the processed reference contract where appropriate.
-- Review `ql-bootstrap.md` for whether `.failsafe/governance/` is still an intentional core contract or should be consolidated further into `docs/` plus `.agent/staging/`.
+- Review `ql-bootstrap.md` for whether `<legacy-staging>/` is still an intentional core contract or should be consolidated further into `docs/` plus `.agent/staging/`.
 - Review `ql-validate.md` helper-script references and decide whether they are core-repo requirements or should gain manual fallback wording.
 - Review `ql-audit.md`, `ql-organize.md`, and `ql-refactor.md` reference paths for consistency with the processed skill source layout.
 

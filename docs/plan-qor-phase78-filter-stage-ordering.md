@@ -4,7 +4,7 @@
 
 **doc_tier**: standard
 
-**originating_remediation**: GH #47 -- Wave 2 multi-agent review (qa-expert + qor-judge) consistently catches stage-by-stage correctness defects but misses composition-by-composition defects: when stage N depends on an invariant established by stage M (M < N conceptually) but the code runs N before M, candidates violating I survive into N. Concrete reproduction: COREFORGE Skill-Forge V1 dispatcher (META_LEDGER #209) ran tier -> classification -> vendor -> cost filters without invoking validator() first; invalid manifests with low cost dominated selection until operator-caught at PR merge (commit 0999e47).
+**originating_remediation**: GH #47 -- Wave 2 multi-agent review (qa-expert + qor-judge) consistently catches stage-by-stage correctness defects but misses composition-by-composition defects: when stage N depends on an invariant established by stage M (M < N conceptually) but the code runs N before M, candidates violating I survive into N. Concrete reproduction: the sibling consumer workspace's Skill-Forge V1 dispatcher (META_LEDGER #209) ran tier -> classification -> vendor -> cost filters without invoking validator() first; invalid manifests with low cost dominated selection until operator-caught at PR merge (commit 0999e47).
 
 **terms_introduced**:
 - term: pipeline stage dependency graph
@@ -67,12 +67,12 @@ VETO category remains `composition` (or `infrastructure-mismatch` when the missi
 
 ### Affected Files
 
-- `qor/references/doctrine-shadow-genome-countermeasures.md` -- new SG-FilterOrderInversion-A entry catalogueing the pattern, originating recurrence (COREFORGE Skill-Forge V1 dispatcher: tier -> classification -> vendor -> cost without validator-first; META_LEDGER #209; operator-caught at PR merge commit 0999e47), and countermeasure (qor-audit Step 3 Filter-Stage Ordering Coherence sub-pass).
+- `qor/references/doctrine-shadow-genome-countermeasures.md` -- new SG-FilterOrderInversion-A entry catalogueing the pattern, originating recurrence (the sibling consumer workspace's Skill-Forge V1 dispatcher: tier -> classification -> vendor -> cost without validator-first; META_LEDGER #209; operator-caught at PR merge commit 0999e47), and countermeasure (qor-audit Step 3 Filter-Stage Ordering Coherence sub-pass).
 - `tests/test_doctrine_sg_filter_order_inversion_a.py` -- NEW. 2 tests asserting the doctrine carries the SG entry.
 
 ### Changes
 
-SG entry follows the standard format (Pattern / Originating recurrence / Countermeasure / Cross-reference). Pattern description: stage-by-stage correctness review (Wave 2 multi-agent or single-reviewer audit) passes each stage individually but fails to verify that filter-stage composition respects an invariant-dependency graph; invariant-violating candidates survive into downstream stages. Originating recurrence: COREFORGE 2026-05-08 session, validator-not-first in skill_forge dispatcher; operator caught at merge review, regression test `test_dispatch_skips_invalid_skill_and_selects_valid_candidate` locked the invariant.
+SG entry follows the standard format (Pattern / Originating recurrence / Countermeasure / Cross-reference). Pattern description: stage-by-stage correctness review (Wave 2 multi-agent or single-reviewer audit) passes each stage individually but fails to verify that filter-stage composition respects an invariant-dependency graph; invariant-violating candidates survive into downstream stages. Originating recurrence: a sibling consumer workspace 2026-05-08 session, validator-not-first in skill_forge dispatcher; operator caught at merge review, regression test `test_dispatch_skips_invalid_skill_and_selects_valid_candidate` locked the invariant.
 
 ### Unit Tests
 

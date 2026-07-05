@@ -143,7 +143,7 @@ field is set) traces to **SG-007 (self-audit verification scope bias)** and the
 recurring "author-audit momentum" anti-pattern — when the same agent that
 authored a plan also audits it, the audit inherits the author's search-path
 momentum and misses precisely the locations the author would also not check. The
-concrete recurrence is documented in the COREFORGE 3-VETO meta-cycle: META_LEDGER
+concrete recurrence is documented in a sibling consumer workspace's 3-VETO meta-cycle: META_LEDGER
 #200/#201/#203 (consumer ledger) where the plan authoring
 `plan_text_consistency_lint` itself exhibited the very text-drift pattern the
 lint targets. The originating Failure Entry #26 ratified self-application as the

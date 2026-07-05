@@ -47,7 +47,7 @@ Field declaration only; no validation tightening. Existing plans without the fie
 - `tests/test_qor_audit_self_application_pass.py` - NEW. 3 tests asserting the prose names the sub-pass and the helper-or-condition logic.
 - `qor/skills/governance/qor-audit/SKILL.md` - new Step 3.5 between Section 4 Razor Pass and Test Functionality Pass in Step 3 body. Body:
   - States the rule: when `plan_artifact.originating_remediation` is set, the auditor manually performs the discipline the plan introduces, against the plan itself.
-  - References the originating pattern: SG-007 (self-audit verification scope bias) and the COREFORGE 3-VETO meta-recurrence (plan that introduces a lint exhibits the very pattern its lint targets).
+  - References the originating pattern: SG-007 (self-audit verification scope bias) and a sibling consumer workspace's 3-VETO meta-recurrence (plan that introduces a lint exhibits the very pattern its lint targets).
   - Describes dispatch: the auditor reads the plan's `originating_remediation` field via `gate_chain.read_phase_artifact("plan", session_id=sid).get("originating_remediation")`, then applies the named discipline (search for issue body wording, grep the plan for matching patterns, or otherwise enact the discipline) against the plan content.
   - VETO category: `specification-drift` when self-application detects the targeted pattern in the plan itself.
 

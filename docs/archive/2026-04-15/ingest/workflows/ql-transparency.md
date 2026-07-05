@@ -1,6 +1,6 @@
 # QoreLogic Transparency Workflow
 
-Log transparency events to `.failsafe/logs/transparency.jsonl` for audit trail.
+Log transparency events to `<consumer-governance-dotdir>/logs/transparency.jsonl` for audit trail.
 
 ## Purpose
 
@@ -44,7 +44,7 @@ Use the `log-transparency-event` skill to append events to the transparency log.
 ### Query Recent Events
 
 ```
-Read the last N lines from .failsafe/logs/transparency.jsonl
+Read the last N lines from <consumer-governance-dotdir>/logs/transparency.jsonl
 Parse each line as JSON
 Filter by event type, timestamp range, or session ID
 ```
@@ -70,8 +70,8 @@ Filter by event type, timestamp range, or session ID
 Events are retained indefinitely. Consider implementing rotation for high-volume workspaces:
 
 ```
-.failsafe/logs/transparency.jsonl (current)
-.failsafe/logs/transparency.2026-02.jsonl (archived by month)
+<consumer-governance-dotdir>/logs/transparency.jsonl (current)
+<consumer-governance-dotdir>/logs/transparency.2026-02.jsonl (archived by month)
 ```
 
 ## Security Considerations

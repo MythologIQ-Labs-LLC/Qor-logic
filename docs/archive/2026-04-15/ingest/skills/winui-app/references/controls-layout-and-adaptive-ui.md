@@ -5,7 +5,7 @@ tags: controls, layout, adaptive-ui, responsive, forms, lists
 sources:
   - https://learn.microsoft.com/windows/apps/design/layout/responsive-design
   - https://learn.microsoft.com/windows/apps/design/basics/navigation-basics
-  - https://github.com/microsoft/WinUI-Gallery
+  - github:microsoft/WinUI-Gallery
 ---
 
 ## What This Reference Is For

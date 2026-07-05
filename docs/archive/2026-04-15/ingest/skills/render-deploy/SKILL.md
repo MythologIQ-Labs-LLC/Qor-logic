@@ -338,7 +338,7 @@ This will return a URL from your Git provider. **If the URL is SSH format, conve
 
 | SSH Format | HTTPS Format |
 |------------|--------------|
-| `git@github.com:user/repo.git` | `https://github.com/user/repo` |
+| `git@github.com:user/repo.git` | `github:user/repo` |
 | `git@gitlab.com:user/repo.git` | `https://gitlab.com/user/repo` |
 | `git@bitbucket.org:user/repo.git` | `https://bitbucket.org/user/repo` |
 
@@ -351,7 +351,7 @@ https://dashboard.render.com/blueprint/new?repo=<REPOSITORY_URL>
 
 Example:
 ```
-https://dashboard.render.com/blueprint/new?repo=https://github.com/username/repo-name
+https://dashboard.render.com/blueprint/new?repo=github:username/repo-name
 ```
 
 ### Step 6: Guide User

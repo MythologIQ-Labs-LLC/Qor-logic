@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "generated_ts": "2026-04-15T21:43:01Z",
-  "root": "G:/MythologIQ/Qorelogic",
+  "root": "<path-to-local-clone>",
   "paths": [
     {
       "path": "CLAUDE.md",
@@ -7392,23 +7392,23 @@
       "sha256": "62f410a300cf22b3b7f3c5340e303f3d40dbe087f8c09fc09e06a2c0b4e2989b"
     },
     {
-      "path": "docs/archive/2026-04-15/ingest/subagents/hearthlink-backend-dev.md",
+      "path": "docs/archive/2026-04-15/ingest/subagents/host-project-backend-dev.md",
       "sha256": "3135d27072763d8367e8b950c78f14a6eb3394ef935e512d2bec7621b76a03bb"
     },
     {
-      "path": "docs/archive/2026-04-15/ingest/subagents/hearthlink-frontend-dev.md",
+      "path": "docs/archive/2026-04-15/ingest/subagents/host-project-frontend-dev.md",
       "sha256": "643aa134f0092eb2082ab856babe30b9b808c87e6002415c4424caf9b34385c8"
     },
     {
-      "path": "docs/archive/2026-04-15/ingest/subagents/hearthlink-skill-framework.md",
+      "path": "docs/archive/2026-04-15/ingest/subagents/host-project-skill-framework.md",
       "sha256": "953454e2965f7bf6d413b133b169a1e2cabd919c965e43c3f3b7f37e81373654"
     },
     {
-      "path": "docs/archive/2026-04-15/ingest/subagents/hearthlink-skill-template.md",
+      "path": "docs/archive/2026-04-15/ingest/subagents/host-project-skill-template.md",
       "sha256": "31e311a7ab6401ba5f129ef22f72e3722c5966519dbc2c8d02992d7c2076f922"
     },
     {
-      "path": "docs/archive/2026-04-15/ingest/subagents/hearthlink-ui-ux-designer.md",
+      "path": "docs/archive/2026-04-15/ingest/subagents/host-project-ui-ux-designer.md",
       "sha256": "e9c89d6ec58162a410a8ee2459158ac0fc59091d25ad1dc2ad5824b9f30112fc"
     },
     {

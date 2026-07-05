@@ -4,7 +4,7 @@
 
 **doc_tier**: minimal
 
-**originating_remediation**: GH #77 -- two installed skill files fail F244/FX359 provenance schema in the FailSafe extension's release pipeline. Of the two, ONLY `qor-governance-compliance` is sourced from this repo (`qor/skills/governance/qor-governance-compliance/SKILL.md`). The other (`qor-compliance`) is NOT in Qor-logic -- no occurrence in `qor/skills/`, `qor/dist/`, or anywhere else in the tree -- so it must be from a different source (likely FailSafe's own skills bundle) and is out of scope for this repo. Phase 81 closes the in-scope half; cross-reference to file the qor-compliance half against FailSafe.
+**originating_remediation**: GH #77 -- two installed skill files fail F244/FX359 provenance schema in the downstream extension's release pipeline. Of the two, ONLY `qor-governance-compliance` is sourced from this repo (`qor/skills/governance/qor-governance-compliance/SKILL.md`). The other (`qor-compliance`) is NOT in Qor-logic -- no occurrence in `qor/skills/`, `qor/dist/`, or anywhere else in the tree -- so it must be from a different source (likely the sibling governance repository's own skills bundle) and is out of scope for this repo. Phase 81 closes the in-scope half; cross-reference to file the qor-compliance half against a sibling governance repository.
 
 **terms_introduced**: (none)
 
@@ -13,7 +13,7 @@
   - V1 hotfix scope: minimal frontmatter edit + one regression test. No new doctrine, no new glossary terms.
   - Single-file source-of-truth fix; `qor/scripts/dist_compile` regenerates dist variants from the corrected source.
 - non_goals:
-  - No fix for `qor-compliance` (NOT in this repo; file separately against FailSafe upstream).
+  - No fix for `qor-compliance` (NOT in this repo; file separately against the sibling repository upstream).
   - No org-spelling normalization across other skills (mixed `MythologIQ` / `MythologIQ-Labs-LLC` usage in repo; tracked separately if surfaced as a defect).
   - No schema extension; F244/FX359 is the consumer-side schema, not a Qor-logic governance contract.
 - exclusions:
@@ -22,7 +22,7 @@
 
 ## Open Questions
 
-None. GH #77 specifies the exact missing fields (`metadata.source.repository`, `metadata.source.path`) and the schema's URL requirement (`https?://` prefix). Repository value resolved to `https://github.com/MythologIQ-Labs-LLC/Qor-logic` per the canonical git remote (this repo is the actual source-of-truth for the skill, not FailSafe).
+None. GH #77 specifies the exact missing fields (`metadata.source.repository`, `metadata.source.path`) and the schema's URL requirement (`https?://` prefix). Repository value resolved to `https://github.com/MythologIQ-Labs-LLC/Qor-logic` per the canonical git remote (this repo is the actual source-of-truth for the skill, not a sibling governance repository).
 
 ## Feature Inventory Touches
 

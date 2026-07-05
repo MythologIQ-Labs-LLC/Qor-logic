@@ -6,7 +6,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
     path: processed/skills-output/qor-research
 ---
 
@@ -16,7 +16,7 @@ metadata:
   <trigger>/qor-research</trigger>
   <phase>RESEARCH</phase>
   <persona>Analyst</persona>
-  <output>.failsafe/governance/RESEARCH_BRIEF.md with findings + META_LEDGER entry</output>
+  <output><legacy-staging>/RESEARCH_BRIEF.md with findings + META_LEDGER entry</output>
 </skill>
 
 ## Purpose
@@ -103,7 +103,7 @@ Map actual runtime dependencies:
 
 ### Step 5: Cross-Reference with Blueprint
 
-Compare every finding against `.failsafe/governance/ARCHITECTURE_PLAN.md`:
+Compare every finding against `<legacy-staging>/ARCHITECTURE_PLAN.md`:
 
 ```markdown
 ## Blueprint Alignment Check
@@ -117,7 +117,7 @@ Compare every finding against `.failsafe/governance/ARCHITECTURE_PLAN.md`:
 
 ### Step 6: Generate Research Brief
 
-Create `.failsafe/governance/RESEARCH_BRIEF.md`:
+Create `<legacy-staging>/RESEARCH_BRIEF.md`:
 
 ```markdown
 # Research Brief
@@ -154,7 +154,7 @@ Create `.failsafe/governance/RESEARCH_BRIEF.md`:
 
 ## Updated Knowledge
 
-[New information that should be added to memory/failsafe-bridge.md]
+[New information that should be added to a legacy bridge memory file]
 
 ---
 
@@ -163,11 +163,11 @@ _Research complete. Findings are advisory — implementation decisions remain wi
 
 ### Step 7: Update Memory
 
-Update `memory/failsafe-bridge.md` with any new or corrected information discovered during research.
+Update `a legacy bridge memory file` with any new or corrected information discovered during research.
 
 ### Step 8: Update Ledger
 
-Edit: `.failsafe/governance/META_LEDGER.md`
+Edit: `<legacy-staging>/META_LEDGER.md`
 
 Add new entry:
 
@@ -205,13 +205,13 @@ SHA256(content_hash + previous_hash)
 
 **Target**: [what was researched]
 **Findings**: [count] verified, [count] drifts detected
-**Brief Location**: .failsafe/governance/RESEARCH_BRIEF.md
+**Brief Location**: <legacy-staging>/RESEARCH_BRIEF.md
 
 ### Critical Findings
 [List any DRIFT items or breaking changes]
 
 ### Memory Updated
-[What was added/changed in failsafe-bridge.md]
+[What was added/changed in sibling-product-bridge.md]
 
 ---
 
@@ -235,7 +235,7 @@ Research succeeds when:
 - [ ] Recent changes audited for bridge impact
 - [ ] Blueprint cross-referenced for drift
 - [ ] RESEARCH_BRIEF.md created with all findings
-- [ ] memory/failsafe-bridge.md updated
+- [ ] a legacy bridge memory file updated
 - [ ] META_LEDGER.md updated with research entry
 - [ ] All findings include file:line citations
 

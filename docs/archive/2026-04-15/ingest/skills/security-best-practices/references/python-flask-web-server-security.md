@@ -681,7 +681,7 @@ Primary framework documentation:
 
 Werkzeug documentation & advisories:
 - Werkzeug Docs: Utilities (send_file / send_from_directory / safe_join / secure_filename / password hashing) — https://werkzeug.palletsprojects.com/en/stable/utils/
-- GitHub Advisory: CVE-2025-66221 (Werkzeug safe_join Windows device names) — https://github.com/advisories/GHSA-hgf8-39gv-g3f2
+- GitHub Advisory: CVE-2025-66221 (Werkzeug safe_join Windows device names) — github:advisories/GHSA-hgf8-39gv-g3f2
 
 OWASP Cheat Sheet Series:
 - Session Management — https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html

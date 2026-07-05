@@ -9,7 +9,7 @@
 **Gitignore Status**: [Updated/Already Configured]
 
 ### Protected from Public Commit:
-- AI governance directories (`.agent/`, `.claude/`, `.failsafe/`, `.qor/`)
+- AI governance directories (`.agent/`, `.claude/`, `<consumer-governance-dotdir>/`, `.qor/`)
 - AI instruction files (`CLAUDE.md`, `GEMINI.md`, `COPILOT.md`, `CURSOR.md`)
 - Planning documents (`plan-*.md`, `docs/`, `Planning/`)
 - IDE local settings (`.vscode/`, `.idea/`, `.cursor/`, `.windsurf/`)
@@ -27,7 +27,7 @@
 # AI GOVERNANCE
 .agent/
 .claude/
-.failsafe/
+<consumer-governance-dotdir>/
 .qor/
 CLAUDE.md
 GEMINI.md

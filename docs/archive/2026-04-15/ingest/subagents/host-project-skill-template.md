@@ -1,13 +1,13 @@
 ---
-name: coreforge-skill-template
-description: Template for creating COREFORGE-specific agent skills with proper integration, accessibility, and multi-agent coordination.
+name: <app-name>-skill-template
+description: Template for creating host-app-specific agent skills with proper integration, accessibility, and multi-agent coordination.
 license: BSL-1.1
 ---
 
-# COREFORGE Skill Template
+# the host project Skill Template
 
 ## Overview
-Replace this section with a brief description of what your skill does and its value to COREFORGE users.
+Replace this section with a brief description of what your skill does and its value to the host project users.
 
 ## Target Agent
 - **Agent**: [alden|vault|arbiter|synapse]
@@ -26,7 +26,7 @@ Replace this section with a brief description of what your skill does and its va
 **Use Cases**: Specific scenarios where users would trigger this capability
 **Implementation**: Technical approach and considerations
 
-## COREFORGE Integration
+## the host project Integration
 
 ### Backend Implementation (Rust)
 
@@ -623,7 +623,7 @@ pub fn encrypt_sensitive_data(data: &[u8], key: &[u8; 32]) -> Result<Vec<u8>, Cr
   "description": "Skill description",
   "targetAgent": "agent-name",
   "compatibility": {
-    "coreforge": ">=1.3.0"
+    "<app-name>": ">=1.3.0"
   },
   "permissions": [
     "agent:read",
@@ -643,15 +643,15 @@ import zipfile
 import os
 from pathlib import Path
 
-def install_skill(skill_package_path: str, hearthlink_path: str) -> bool:
-    """Install skill package to COREFORGE"""
+def install_skill(skill_package_path: str, host-project_path: str) -> bool:
+    """Install skill package to the host project"""
     try:
         # Extract skill package
         with zipfile.ZipFile(skill_package_path) as zip_ref:
-            zip_ref.extractall(f"{hearthlink_path}/skills/temp")
+            zip_ref.extractall(f"{host-project_path}/skills/temp")
         
         # Read skill manifest
-        with open(f"{hearthlink_path}/skills/temp/skill-manifest.json", 'r') as f:
+        with open(f"{host-project_path}/skills/temp/skill-manifest.json", 'r') as f:
             manifest = json.load(f)
         
         # Validate compatibility
@@ -660,15 +660,15 @@ def install_skill(skill_package_path: str, hearthlink_path: str) -> bool:
             return False
         
         # Install components
-        install_backend_components(f"{hearthlink_path}/skills/temp", manifest)
-        install_frontend_components(f"{hearthlink_path}/skills/temp", manifest)
-        install_assets(f"{hearthlink_path}/skills/temp", manifest)
+        install_backend_components(f"{host-project_path}/skills/temp", manifest)
+        install_frontend_components(f"{host-project_path}/skills/temp", manifest)
+        install_assets(f"{host-project_path}/skills/temp", manifest)
         
         # Register skill
-        register_skill_with_hearthlink(manifest, hearthlink_path)
+        register_skill_with_host-project(manifest, host-project_path)
         
         # Cleanup
-        shutil.rmtree(f"{hearthlink_path}/skills/temp")
+        shutil.rmtree(f"{host-project_path}/skills/temp")
         
         print(f"Skill {manifest['name']} installed successfully")
         return True
@@ -678,8 +678,8 @@ def install_skill(skill_package_path: str, hearthlink_path: str) -> bool:
         return False
 
 def validate_compatibility(manifest: dict) -> bool:
-    """Validate skill compatibility with COREFORGE"""
-    required_version = manifest.get('compatibility', {}).get('coreforge', '0.0.0')
+    """Validate skill compatibility with the host project"""
+    required_version = manifest.get('compatibility', {}).get('<app-name>', '0.0.0')
     # Implement version comparison logic
     return True  # Simplified for example
 ```
@@ -755,11 +755,11 @@ const handleComplexTask = async () => {
 1. **Consistent Error Handling**: Use Result<T, Error> patterns throughout
 2. **Event-Driven Updates**: Emit events for cross-agent communication
 3. **Context Management**: Efficiently manage agent state and conversation history
-4. **Resource Sharing**: Use COREFORGE's shared asset and template systems
+4. **Resource Sharing**: Use the host project's shared asset and template systems
 5. **Progressive Enhancement**: Start with basic functionality, then add features
 
 ### Integration Checklist
-- [ ] Skill follows COREFORGE agent patterns and naming conventions
+- [ ] Skill follows the host project agent patterns and naming conventions
 - [ ] Implements proper error handling with Result types
 - [ ] Supports WCAG 2.1 AA accessibility requirements
 - [ ] Coordinates with other agents through defined interfaces
@@ -768,9 +768,9 @@ const handleComplexTask = async () => {
 - [ ] Optimized for desktop performance constraints
 - [ ] Validates all inputs and sanitizes data
 - [ ] Encrypts sensitive data at rest and in transit
-- [ ] Uses COREFORGE's bridge patterns for frontend integration
+- [ ] Uses the host project's bridge patterns for frontend integration
 - [ ] Emits proper events for cross-agent communication
 - [ ] Handles offline scenarios gracefully
 - [ ] Provides clear error messages and recovery paths
 
-This template provides a comprehensive foundation for creating COREFORGE skills that integrate seamlessly with the multi-agent ecosystem while maintaining high standards for accessibility, performance, and security.
+This template provides a comprehensive foundation for creating the host project skills that integrate seamlessly with the multi-agent ecosystem while maintaining high standards for accessibility, performance, and security.

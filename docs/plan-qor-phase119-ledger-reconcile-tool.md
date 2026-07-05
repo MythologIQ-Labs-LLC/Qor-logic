@@ -21,7 +21,7 @@ None. Model resolved up-front: **attestation-anchor**. The RECONCILIATION entry 
 
 ## Context
 
-GH #148 (umbrella #147; supersedes deferred V2 of #85 + #51). #85 asked for a real reconciliation tool; PR #106 shipped only option D (the `--tolerate-known-grandfathered` read-only stopgap). No `reconcile` subcommand exists in `qor/cli.py`; `RECONCILIATION` is deferred prose only (`doctrine-shadow-genome-countermeasures.md:285`). Consumer workspaces with pre-V1 duplicate-`previous_hash` interleave (Accountable-App-3.0 per #85: #16a/b,#17a/b,#18a/b) still cannot ship a clean strict `verify-ledger`. This phase ships the forward-only RECONCILIATION entry + operator-authorized `reconcile` command so those ledgers verify clean without the CLI flag and without rewriting sealed entries.
+GH #148 (umbrella #147; supersedes deferred V2 of #85 + #51). #85 asked for a real reconciliation tool; PR #106 shipped only option D (the `--tolerate-known-grandfathered` read-only stopgap). No `reconcile` subcommand exists in `qor/cli.py`; `RECONCILIATION` is deferred prose only (`doctrine-shadow-genome-countermeasures.md:285`). Consumer workspaces with pre-V1 duplicate-`previous_hash` interleave (an external QA exemplar's app per #85: #16a/b,#17a/b,#18a/b) still cannot ship a clean strict `verify-ledger`. This phase ships the forward-only RECONCILIATION entry + operator-authorized `reconcile` command so those ledgers verify clean without the CLI flag and without rewriting sealed entries.
 
 ## Feature Inventory Touches
 

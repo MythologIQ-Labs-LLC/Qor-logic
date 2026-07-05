@@ -7,14 +7,14 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-2539%20passing-brightgreen" alt="Tests: 2539 passing">
+  <img src="https://img.shields.io/badge/Tests-2545%20passing-brightgreen" alt="Tests: 2545 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
-  <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
+  <img src="https://img.shields.io/badge/Skills-29-blue" alt="Skills: 29">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-36-blue" alt="Doctrines: 36">
-  <img src="https://img.shields.io/badge/Ledger-406%20entries%20sealed-green" alt="Ledger: 406 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-37-blue" alt="Doctrines: 37">
+  <img src="https://img.shields.io/badge/Ledger-409%20entries%20sealed-green" alt="Ledger: 409 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -415,6 +415,7 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 | [prompt-injection](qor/references/doctrine-prompt-injection.md) | Prompt-injection canary scanning at audit |
 | [prompt-resilience](qor/references/doctrine-prompt-resilience.md) | Autonomy classification + pause-smell detection |
 | [provenance-binding](qor/references/doctrine-provenance-binding.md) | Gate-artifact provenance binding (GAP-GOV-05): per-session HMAC sidecars (Layer A) + CI attestation (Layer B); honest threat-model ceiling |
+| [publication-boundary](qor/references/doctrine-publication-boundary.md) | No tracked file may identify a repository outside Qor-logic; structural lint + operator-local terms overlay |
 | [runtime-principal-fidelity](qor/references/doctrine-runtime-principal-fidelity.md) | Data-API access-control + runtime-principal verification |
 | [shadow-attribution](qor/references/doctrine-shadow-attribution.md) | Shadow skill attribution rules |
 | [shadow-genome-countermeasures](qor/references/doctrine-shadow-genome-countermeasures.md) | Codified recurring failure-pattern countermeasures |

@@ -142,7 +142,7 @@ one delivery-branch pointer bullet.
 
 `SG-DeliveryBranchDrift-A` is appended to the countermeasures doctrine with
 the standard structure (Pattern / Originating recurrence / Countermeasure /
-Cross-reference), citing GH #87 and the Accountable-App-3.0 `RC1.4` evidence.
+Cross-reference), citing GH #87 and an external QA exemplar's `RC1.4` evidence.
 
 ### Unit Tests
 

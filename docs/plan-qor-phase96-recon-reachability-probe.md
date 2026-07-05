@@ -40,7 +40,7 @@ Empty. New script + skill prose + new doctrine entry + tests.
 
 ## Design notes
 
-GH #108 (filed by COREFORGE 2026-05-23) documents a governance-level
+GH #108 (filed by a sibling consumer workspace 2026-05-23) documents a governance-level
 process finding: `/qor-deep-audit-recon`'s Phase 1-3 vectors accept
 **grep-shaped evidence** (file exists, symbol defined, command
 registered, claim string present) as sufficient proof to grade a code
@@ -56,7 +56,7 @@ cycles (`/qor-plan`, `/qor-audit`, `/qor-implement`) inherit the
 misgrading; the gap surfaces only at implementation time, after
 substantial cycle cost.
 
-COREFORGE Phase 371 (persona IPC envelope) is the originating
+a sibling consumer workspace's Phase 371 (persona IPC envelope) is the originating
 recurrence: recon graded `DPF-LIE-01` HIGH purely on grep evidence
 (`DEFAULT_IPC_ENCRYPTION_SCHEME = "AES-256-GCM"` declared; schema fields
 present; zero cipher path), then implementation surfaced runtime
@@ -112,7 +112,7 @@ progressive-disclosure doctrine; SKILL.md gains only the round
 heading + one-paragraph summary + reference pointer).
 
 New `SG-GrepShapedRunclaim-A` doctrine entry catalogs the pattern,
-the COREFORGE Phase 371 originating recurrence, the V1 detector,
+the sibling consumer workspace's Phase 371 originating recurrence, the V1 detector,
 and a V2-reserved enforcement clause (Phase 99 will fill).
 
 **Self-application anchor** (per cluster standard): the dogfooding
@@ -135,7 +135,7 @@ Round 0 heading + the reference pointer.
   Verification prose. One-paragraph summary + reference pointer
   (no inline five-check detail per progressive-disclosure doctrine).
 - `qor/references/recon-reachability-probe.md` — NEW. Detailed
-  five-check protocol, examples, downgrade rule, COREFORGE Phase 371
+  five-check protocol, examples, downgrade rule, a sibling consumer workspace's Phase 371
   originating case study.
 - `qor/references/doctrine-shadow-genome-countermeasures.md` —
   `SG-GrepShapedRunclaim-A` entry after Phase 95's
@@ -245,7 +245,7 @@ pointer; the five-check detail lives in
 `qor/references/recon-reachability-probe.md`.
 
 `SG-GrepShapedRunclaim-A` doctrine entry catalogs the pattern, the
-COREFORGE Phase 371 originating recurrence, the V1 detector, and a
+a sibling consumer workspace's Phase 371 originating recurrence, the V1 detector, and a
 V2-reserved enforcement clause that Phase 99 will fill.
 
 ## Definition of Done
@@ -292,7 +292,7 @@ V2-reserved enforcement clause that Phase 99 will fill.
 ### Deliverable: recon-reachability-probe reference file
 
 - **D1**: A reference file exists carrying the detailed five-check
-  protocol, examples, downgrade rule, and COREFORGE Phase 371
+  protocol, examples, downgrade rule, and a sibling consumer workspace's Phase 371
   originating case study, so the SKILL.md can stay short per the
   progressive-disclosure doctrine.
 - **D2**: `qor/references/recon-reachability-probe.md` exists with
@@ -311,7 +311,7 @@ V2-reserved enforcement clause that Phase 99 will fill.
 ### Deliverable: SG-GrepShapedRunclaim-A doctrine entry
 
 - **D1**: The countermeasures doctrine gains an entry naming the
-  grep-shaped-runclaim pattern, the COREFORGE Phase 371 originating
+  grep-shaped-runclaim pattern, the sibling consumer workspace's Phase 371 originating
   recurrence, the V1 detector, and a V2-reserved enforcement clause.
 - **D2**: `qor/references/doctrine-shadow-genome-countermeasures.md`
   gains a `## SG-GrepShapedRunclaim-A` section after Phase 95's

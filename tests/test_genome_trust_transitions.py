@@ -2,7 +2,7 @@
 
 Records CBT/KBT/IBT trust-level transitions as append-only `trust` nodes linked
 to their triggering evidence + governance node, surfaced in to_dict for the
-downstream (FailSafe) dashboard.
+downstream consumer dashboard.
 """
 from __future__ import annotations
 

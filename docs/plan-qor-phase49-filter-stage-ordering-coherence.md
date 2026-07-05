@@ -4,7 +4,7 @@
 
 **doc_tier**: standard
 
-**originating_remediation**: closes GH #47 (operator-filed 2026-05-10 from COREFORGE session)
+**originating_remediation**: closes GH #47 (operator-filed 2026-05-10 from a sibling consumer-workspace session)
 
 **terms_introduced**:
 - term: Filter-Stage Ordering Coherence Pass
@@ -67,7 +67,7 @@ For Rust / TypeScript / Go code, the discipline is operator-instructional in V1:
 2. What invariant does each stage assume on inputs?
 3. Are the assumed-input invariants enforced by an earlier stage in this function (not by an external `validate()` that may or may not have run)?
 
-**Source incident**: COREFORGE session 2026-05-08T1610-21dfe5; `dispatcher::decide()` filter pipeline accepted invalid manifests because validator ran outside `decide()` (caller responsibility). Operator caught at merge review; fix at commit `0999e47` makes validator the first filter stage. Wave 2 reviewers (qa-expert + qor-judge) flagged the missing test for `DispatchError::ValidatorFailure` but did not probe the structural condition that would make the branch fire. Filed upstream as GH #47.
+**Source incident**: a sibling consumer-workspace session 2026-05-08T1610-21dfe5; `dispatcher::decide()` filter pipeline accepted invalid manifests because validator ran outside `decide()` (caller responsibility). Operator caught at merge review; fix at commit `0999e47` makes validator the first filter stage. Wave 2 reviewers (qa-expert + qor-judge) flagged the missing test for `DispatchError::ValidatorFailure` but did not probe the structural condition that would make the branch fire. Filed upstream as GH #47.
 ```
 
 **`audit.schema.json`** — extend `findings_categories.items.enum`:

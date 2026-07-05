@@ -498,7 +498,7 @@ introduced_in_plan: phase57-gate-written-observer-channel
 
 ```yaml
 term: hook contract
-definition: 'Phase 57 doctrine specifying the gate_written hook event payload, dispatch order (entry-points then config-file), log format (JSONL one-line-per-fire), trust model (consumer-repo trust mirroring .github/workflows/ and .pre-commit-config.yaml), performance characteristics (sub-millisecond no-op when no hooks registered), and SIGINT-propagation invariant (except Exception not BaseException; Phase 57 fix vs. PR #12 origin per SG-BareExceptionSwallowsSignals-A). The contract is the public-API surface that downstream consumers (FailSafe-Pro and any future packages) depend on.'
+definition: 'Phase 57 doctrine specifying the gate_written hook event payload, dispatch order (entry-points then config-file), log format (JSONL one-line-per-fire), trust model (consumer-repo trust mirroring .github/workflows/ and .pre-commit-config.yaml), performance characteristics (sub-millisecond no-op when no hooks registered), and SIGINT-propagation invariant (except Exception not BaseException; Phase 57 fix vs. PR #12 origin per SG-BareExceptionSwallowsSignals-A). The contract is the public-API surface that downstream consumers (a sibling governance repository and any future packages) depend on.'
 home: qor/references/doctrine-hook-contract.md
 referenced_by:
   - qor/scripts/gate_hooks.py
@@ -734,7 +734,7 @@ introduced_in_plan: phase74-audit-pass-extensions
 
 ```yaml
 term: SG-FakeProgress-A
-definition: 'Shadow-genome pattern: UI element with progress semantics animates 0%->100% with no intermediate writes while the backing operation runs silently for >2 seconds. Operator perceives the click as having done nothing. Originating recurrence: FailSafe v5.1.0 Install QorLogic Skills card (META_LEDGER #360/#361/#362/#366). Countermeasure: /qor-audit Ghost UI Pass Live-Progress Invariant sub-rule. Phase 74 wiring (GH #58).'
+definition: 'Shadow-genome pattern: UI element with progress semantics animates 0%->100% with no intermediate writes while the backing operation runs silently for >2 seconds. Operator perceives the click as having done nothing. Originating recurrence: a sibling product''s v5.1.0 Install QorLogic Skills card (META_LEDGER #360/#361/#362/#366). Countermeasure: /qor-audit Ghost UI Pass Live-Progress Invariant sub-rule. Phase 74 wiring (GH #58).'
 home: qor/references/doctrine-shadow-genome-countermeasures.md
 referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
@@ -824,7 +824,7 @@ introduced_in_plan: phase78-filter-stage-ordering
 
 ```yaml
 term: filter-stage ordering coherence
-definition: 'A /qor-audit Step 3 sub-pass (Phase 78 wiring, GH #47) that runs a 4-step procedure on pipeline-shaped functions: identify each filter stage''s preconditions; identify each filter stage''s invariants; construct the pipeline stage dependency graph; verify code execution order is a topological sort. Any inversion VETOes with `composition` category, sub-tag `filter-order-inversion` (or `infrastructure-mismatch` when the missing precondition is an external-state assumption). Catches the COREFORGE Skill-Forge dispatcher pattern (META_LEDGER #209): validator invoked elsewhere instead of as first filter stage, allowing invalid candidates to dominate selection.'
+definition: 'A /qor-audit Step 3 sub-pass (Phase 78 wiring, GH #47) that runs a 4-step procedure on pipeline-shaped functions: identify each filter stage''s preconditions; identify each filter stage''s invariants; construct the pipeline stage dependency graph; verify code execution order is a topological sort. Any inversion VETOes with `composition` category, sub-tag `filter-order-inversion` (or `infrastructure-mismatch` when the missing precondition is an external-state assumption). Catches the sibling consumer workspace''s Skill-Forge dispatcher pattern (META_LEDGER #209): validator invoked elsewhere instead of as first filter stage, allowing invalid candidates to dominate selection.'
 home: qor/skills/governance/qor-audit/SKILL.md
 referenced_by:
   - qor/references/doctrine-shadow-genome-countermeasures.md
@@ -833,7 +833,7 @@ introduced_in_plan: phase78-filter-stage-ordering
 
 ```yaml
 term: SG-FilterOrderInversion-A
-definition: 'Shadow-genome pattern: a pipeline-shaped function composes filter stages out of their dependency order; stage-by-stage correctness review passes each stage individually but misses that an upstream invariant is enforced elsewhere in the codebase instead of as a stage of the same pipeline. Originating recurrence: COREFORGE Skill-Forge V1 dispatcher (META_LEDGER #209): tier -> classification -> vendor -> cost filters without validator-first; invalid manifests with low cost dominated selection; operator-caught at PR #82 merge review (commit 0999e47). Countermeasure: /qor-audit Step 3 Filter-Stage Ordering Coherence sub-pass. Phase 78 wiring (GH #47).'
+definition: 'Shadow-genome pattern: a pipeline-shaped function composes filter stages out of their dependency order; stage-by-stage correctness review passes each stage individually but misses that an upstream invariant is enforced elsewhere in the codebase instead of as a stage of the same pipeline. Originating recurrence: the sibling consumer workspace''s Skill-Forge V1 dispatcher (META_LEDGER #209): tier -> classification -> vendor -> cost filters without validator-first; invalid manifests with low cost dominated selection; operator-caught at PR #82 merge review (commit 0999e47). Countermeasure: /qor-audit Step 3 Filter-Stage Ordering Coherence sub-pass. Phase 78 wiring (GH #47).'
 home: qor/references/doctrine-shadow-genome-countermeasures.md
 referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md

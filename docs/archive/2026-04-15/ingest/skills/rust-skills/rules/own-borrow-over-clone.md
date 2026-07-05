@@ -79,7 +79,7 @@ let y = x;  // Copy, not clone - this is fine
 
 From ripgrep's codebase - uses `Cow` to avoid clones:
 ```rust
-// https://github.com/BurntSushi/ripgrep/blob/master/crates/globset/src/pathutil.rs
+// github:BurntSushi/ripgrep/blob/master/crates/globset/src/pathutil.rs
 pub(crate) fn file_name<'a>(path: &Cow<'a, [u8]>) -> Option<Cow<'a, [u8]>> {
     match *path {
         Cow::Borrowed(path) => Cow::Borrowed(&path[last_slash..]),

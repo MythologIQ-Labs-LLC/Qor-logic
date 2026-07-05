@@ -39,7 +39,7 @@
     "non_goals": [
       "sandboxing",
       "async",
-      "replacing FailSafe-Pro watcher"
+      "replacing a sibling governance repository watcher"
     ],
     "exclusions": [
       "gate-artifact schema changes",

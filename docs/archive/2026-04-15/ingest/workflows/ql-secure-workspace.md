@@ -9,7 +9,7 @@ description: Audit and repair workspace governance configuration. Ensures that p
   <trigger>/ql-secure-workspace</trigger>
   <phase>ALIGN + SECURE</phase>
   <persona>Governor</persona>
-  <output>Repaired .failsafe/workspace-config.json, verified .gitignore</output>
+  <output>Repaired <consumer-governance-dotdir>/workspace-config.json, verified .gitignore</output>
 </skill>
 
 ## Purpose
@@ -28,7 +28,7 @@ The Governor executes the internal migration utility to scan for proprietary ind
 
 ### Step 2: Configuration Repair
 
-If proprietary indicators are found, the Governor verifies the workspace configuration (e.g., `.failsafe/workspace-config.json`).
+If proprietary indicators are found, the Governor verifies the workspace configuration (e.g., `<consumer-governance-dotdir>/workspace-config.json`).
 
 **Action required if:**
 
@@ -48,7 +48,7 @@ The Governor audits the `.gitignore` to ensure it includes the patterns defined 
 
    ```powershell
    # Triggers the governance alignment process
-   vscode.commands.executeCommand('failsafe.secureWorkspace')
+   vscode.commands.executeCommand('sibling-product.secureWorkspace')
    ```
 
 2. Report results to the user with a summary of which paths were secured.

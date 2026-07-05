@@ -100,7 +100,7 @@ fn process_batch(items: &[Item]) -> Vec<Output> {
 ## Evidence from ROC Compiler
 
 ```rust
-// https://github.com/roc-lang/roc/blob/main/crates/compiler/solve/src/to_var.rs
+// github:roc-lang/roc/blob/main/crates/compiler/solve/src/to_var.rs
 std::thread_local! {
     static SCRATCHPAD: RefCell<Option<bumpalo::Bump>> = 
         RefCell::new(Some(bumpalo::Bump::with_capacity(4 * 1024)));

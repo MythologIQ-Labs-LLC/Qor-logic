@@ -9,7 +9,7 @@ Programmatic management of Cloudflare resources: Workers, Pages, D1, KV, R2, DNS
 **Packages:**
 - TypeScript/JS: `@pulumi/cloudflare`
 - Python: `pulumi-cloudflare`
-- Go: `github.com/pulumi/pulumi-cloudflare/sdk/v6/go/cloudflare`
+- Go: `github:pulumi/pulumi-cloudflare/sdk/v6/go/cloudflare`
 - .NET: `Pulumi.Cloudflare`
 
 **Version:** v6.x

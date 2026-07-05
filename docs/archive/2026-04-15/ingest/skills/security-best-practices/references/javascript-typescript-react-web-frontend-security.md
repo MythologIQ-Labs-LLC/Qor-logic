@@ -959,7 +959,7 @@ Dependency tooling references:
 
 Sanitizer reference:
 
-* DOMPurify — `https://github.com/cure53/DOMPurify` ([GitHub][13])
+* DOMPurify — `github:cure53/DOMPurify` ([GitHub][13])
 
 [1]: https://create-react-app.dev/docs/adding-custom-environment-variables/ "Adding Custom Environment Variables | Create React App"
 [2]: https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html "Content Security Policy - OWASP Cheat Sheet Series"
@@ -973,7 +973,7 @@ Sanitizer reference:
 [10]: https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers "Using Service Workers - Web APIs | MDN"
 [11]: https://vite.dev/guide/env-and-mode "Env Variables and Modes | Vite"
 [12]: https://react.dev/reference/react-dom/components/common "Common components (e.g. <div>) – React"
-[13]: https://github.com/cure53/DOMPurify "GitHub - cure53/DOMPurify: DOMPurify - a DOM-only, super-fast, uber-tolerant XSS sanitizer for HTML, MathML and SVG. DOMPurify works with a secure default, but offers a lot of configurability and hooks. Demo:"
+[13]: github:cure53/DOMPurify "GitHub - cure53/DOMPurify: DOMPurify - a DOM-only, super-fast, uber-tolerant XSS sanitizer for HTML, MathML and SVG. DOMPurify works with a secure default, but offers a lot of configurability and hooks. Demo:"
 [14]: https://legacy.reactjs.org/docs/introducing-jsx.html "Introducing JSX – React"
 [15]: https://www.w3.org/TR/trusted-types/ "Trusted Types"
 [16]: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps "

@@ -120,7 +120,7 @@ fn join_with_sep(parts: &[&str], sep: &str) -> String {
 
 From fd (file finder):
 ```rust
-// https://github.com/sharkdp/fd/blob/master/src/walk.rs
+// github:sharkdp/fd/blob/master/src/walk.rs
 struct ReceiverBuffer<'a, W> {
     buffer: Vec<DirEntry>,
     // ...

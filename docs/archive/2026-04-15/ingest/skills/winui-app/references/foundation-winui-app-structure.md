@@ -3,7 +3,7 @@ title: WinUI App Structure
 priority: HIGH
 tags: app-structure, xaml, resources, pages, bindings, csharp
 sources:
-  - https://github.com/microsoft/WinUI-Gallery
+  - github:microsoft/WinUI-Gallery
   - https://learn.microsoft.com/windows/apps/winui/
 ---
 

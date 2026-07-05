@@ -2,7 +2,7 @@
 
 A FEATURE_INDEX is a tracked governance artifact enumerating every user-touchable feature of the product. Cross-referenced against the test surface, it answers a question that per-plan Reality-vs-Promise checks structurally cannot: "is the entire product, not just this plan's slice, covered?"
 
-Source incident: FailSafe v5 (2026-05-06) — a single-phase plan sealed cleanly under `/qor-substantiate` while the wider product surface (commands, routes, UI panels, services, voice substrate) silently shipped without feature-level tests. The seal verdict was "Reality matches Promise" for the plan's subset; framing it as "everything works" was deception by omission. The discipline below closes that gap structurally.
+Source incident: a sibling product v5 (2026-05-06) — a single-phase plan sealed cleanly under `/qor-substantiate` while the wider product surface (commands, routes, UI panels, services, voice substrate) silently shipped without feature-level tests. The seal verdict was "Reality matches Promise" for the plan's subset; framing it as "everything works" was deception by omission. The discipline below closes that gap structurally.
 
 ## Format
 
@@ -55,7 +55,7 @@ The artifact is optional at the framework level (a host repo may not have adopte
 
 A "every src/ change needs a `.spec.ts`" CI rule catches *change-time* gaps. It does not catch *baseline* gaps: features that shipped in earlier releases without a test, or features whose tests rotted into presence-only. The feature index is the canonical surface against which baseline gaps become visible at every seal.
 
-Source incidents: GH #40 (FailSafe v5 baseline coverage gap) and GH #41 (per-feature TDD upstream of #40).
+Source incidents: GH #40 (sibling-product v5 baseline coverage gap) and GH #41 (per-feature TDD upstream of #40).
 
 ## Seal regression gate: fail-closed (Phase 122; GH #155)
 
@@ -67,7 +67,7 @@ The explicit logged escape is `--override`: it emits a `gate_override` shadow ev
 
 A `Surface` column is an optional 7th column naming the user-facing product surface a feature ships on (e.g. `command`, `route`, `settings-card`, `voice`). It exists so that per-surface lifecycle projections (e.g. a Development Tracker reading FEATURE_INDEX + META_LEDGER) get a trustworthy surface↔feature↔release mapping *by construction* at seal time, rather than by unreliable hand re-derivation.
 
-The enforcement contract (motivated by FailSafe#206, gate owned here):
+The enforcement contract (motivated by an external repository's issue, gate owned here):
 
 - **Schema-optional.** The check is doubly gated: it runs only when `FEATURE_INDEX.md` exists AND its header declares a `Surface` column. A repo whose header lacks the column prints `SKIP` + emits `gate_skipped_prerequisite_absent` + exits 0 — the Phase 75 declarative-tolerance / disclosed-skip convention. Existing adopters are never broken by adoption.
 - **WARN-first (V1, shipped).** When the column is present, each non-`n/a` row must carry a `surface` value; a missing tag appends a severity-2 `degradation` shadow event (`details.gate = feature_index_surface_lint`) and does NOT abort (mirrors `dod_check` / `procedural_fidelity`). The parser exposes the value as `row.get("surface")` because `parse_index_rows` is header-driven and tolerates extra columns; the coupled change is an optional `surface` property on `feature_index.schema.json` (which keeps `additionalProperties: false`).

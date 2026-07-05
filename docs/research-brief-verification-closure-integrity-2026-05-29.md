@@ -15,7 +15,7 @@ The biggest finding is a **scope reframe**: this should NOT be built as a new QA
 
 ### 1. Security-tooling salvage — assumption was pessimistic; most pillars already exist
 
-- The three targets (`owasp-top10-auditor`, `sbom-risk-scanner`, `security-permission-audit`) are **prose-only `SKILL.md` stubs archived under `docs/archive/2026-04-15/ingest/...`**; none ship a single `.py`/`.sh`. `security-permission-audit` is Hearthlink/Tauri-specific (`qor/vendor/skills/security-permission-audit/SKILL.md:10-22`) and off-target. Salvage value: **LOW**.
+- The three targets (`owasp-top10-auditor`, `sbom-risk-scanner`, `security-permission-audit`) are **prose-only `SKILL.md` stubs archived under `docs/archive/2026-04-15/ingest/...`**; none ship a single `.py`/`.sh`. `security-permission-audit` is Legacy-project/Tauri-specific (`qor/vendor/skills/security-permission-audit/SKILL.md:10-22`) and off-target. Salvage value: **LOW**.
 - Already live and gating:
   - **secret-scan**: `qor/scripts/secret_scanner.py` (gitleaks-v8 schema, no new deps), wired as a BLOCKING gate at `qor/skills/governance/qor-substantiate/SKILL.md:67,291-298` (Step 4.6.5).
   - **dependency/SBOM**: `qor/scripts/sbom_emit.py` (CycloneDX 1.5) + `qor release sbom` (`qor/cli_handlers/release.py:12-31`) + `.github/workflows/pr-dependency-review.yml:28-31` (fail-on-high) + `qor/scripts/dependency_admission_lint.py:1-35`.

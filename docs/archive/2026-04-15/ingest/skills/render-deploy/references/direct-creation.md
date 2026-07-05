@@ -15,7 +15,7 @@ Use [codebase-analysis.md](codebase-analysis.md) to determine runtime, build/sta
 create_web_service(
   name: "my-api",
   runtime: "node",  # or python, go, rust, ruby, elixir, docker
-  repo: "https://github.com/username/repo",
+  repo: "github:username/repo",
   branch: "main",  # optional, defaults to repo default branch
   buildCommand: "npm ci",
   startCommand: "npm start",
@@ -31,7 +31,7 @@ create_web_service(
 ```
 create_static_site(
   name: "my-frontend",
-  repo: "https://github.com/username/repo",
+  repo: "github:username/repo",
   branch: "main",
   buildCommand: "npm run build",
   publishPath: "dist",  # or build, public, out
@@ -46,7 +46,7 @@ create_static_site(
 create_cron_job(
   name: "daily-cleanup",
   runtime: "node",
-  repo: "https://github.com/username/repo",
+  repo: "github:username/repo",
   schedule: "0 0 * * *",  # Daily at midnight (cron syntax)
   buildCommand: "npm ci",
   startCommand: "node scripts/cleanup.js",

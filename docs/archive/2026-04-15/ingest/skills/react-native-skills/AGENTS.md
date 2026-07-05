@@ -151,7 +151,7 @@ explicit boolean checks.
 
 **Lint rule:** Enable `react/jsx-no-leaked-render` from
 
-[eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-no-leaked-render.md)
+[eslint-plugin-react](github:jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-no-leaked-render.md)
 
 to catch this automatically.
 
@@ -2206,7 +2206,7 @@ Works with `expo-image`, `SolitoImage`, `react-native` Image, or any image
 
 component.
 
-Reference: [https://github.com/nandorojo/galeria](https://github.com/nandorojo/galeria)
+Reference: [github:nandorojo/galeria](github:nandorojo/galeria)
 
 ### 9.7 Use Native Menus for Dropdowns and Context Menus
 
@@ -2893,5 +2893,5 @@ native app.
 4. [https://docs.swmansion.com/react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler)
 5. [https://docs.expo.dev](https://docs.expo.dev)
 6. [https://legendapp.com/open-source/legend-list](https://legendapp.com/open-source/legend-list)
-7. [https://github.com/nandorojo/galeria](https://github.com/nandorojo/galeria)
+7. [github:nandorojo/galeria](github:nandorojo/galeria)
 8. [https://zeego.dev](https://zeego.dev)

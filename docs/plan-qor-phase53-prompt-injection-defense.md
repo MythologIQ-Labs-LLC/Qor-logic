@@ -44,7 +44,7 @@ Subsequent phases reference Phase 53 deliverables but do not depend on them for 
 
 1. **Canary pattern source-of-truth**: should the canary regex catalog live in (a) `qor/references/doctrine-prompt-injection.md` only, (b) a dedicated `qor/scripts/prompt_injection_canaries.py` module with the doctrine importing from it, or (c) a YAML data file at `qor/scripts/prompt_injection_canaries.yaml`? Decision drives where new canaries are added during future sprints. Default: **(b)** Python module — keeps doctrine readable as prose and pattern set diff-reviewable as code; YAML adds parser dep with no benefit since canaries are static.
 2. **Audit-pass positioning**: the new prompt-injection pass runs (a) before OWASP Top 10 Pass, (b) as Step 0.6 between cycle-count escalation and identity activation, or (c) as a parallel-evaluated check during Step 2 state verification? Default: **(a)** before OWASP — keeps Section 3 audit-pass list semantically grouped, lets OWASP findings reference canary hits, and matches existing test-functionality precedence.
-3. **DRIFT-2 scope**: in addition to `qor-substantiate` Step 2 line, sweep includes (a) only the two known drifts, or (b) full `qor/skills/**/SKILL.md` for any `.failsafe/governance/` or `memory/failsafe-bridge.md` reference? Default: **(b)** full sweep — single test enforces, eliminates the class of drift permanently.
+3. **DRIFT-2 scope**: in addition to `qor-substantiate` Step 2 line, sweep includes (a) only the two known drifts, or (b) full `qor/skills/**/SKILL.md` for any `<legacy-staging>/` or `a legacy bridge memory file` reference? Default: **(b)** full sweep — single test enforces, eliminates the class of drift permanently.
 
 Defaults will be encoded unless overridden during audit.
 
@@ -175,9 +175,9 @@ The evaluator is unchanged: it already reads resource attributes from a caller-s
 
 ### Affected Files
 
-- `tests/test_skill_path_canonicalization.py` — NEW: walks `qor/skills/**/*.md`; asserts no occurrence of `.failsafe/governance/` or `memory/failsafe-bridge.md` substrings (forward-only lock).
-- `qor/skills/sdlc/qor-research/SKILL.md` — REPLACE all `.failsafe/governance/` paths with `docs/`; replace `memory/failsafe-bridge.md` references with `docs/SHADOW_GENOME.md` per the canonical knowledge-store path; replace `<output>` line in skill block.
-- `qor/skills/governance/qor-substantiate/SKILL.md` — REPLACE `.failsafe/governance/AUDIT_REPORT.md` with `.agent/staging/AUDIT_REPORT.md` at Step 2.
+- `tests/test_skill_path_canonicalization.py` — NEW: walks `qor/skills/**/*.md`; asserts no occurrence of `<legacy-staging>/` or `a legacy bridge memory file` substrings (forward-only lock).
+- `qor/skills/sdlc/qor-research/SKILL.md` — REPLACE all `<legacy-staging>/` paths with `docs/`; replace `a legacy bridge memory file` references with `docs/SHADOW_GENOME.md` per the canonical knowledge-store path; replace `<output>` line in skill block.
+- `qor/skills/governance/qor-substantiate/SKILL.md` — REPLACE `<legacy-staging>/AUDIT_REPORT.md` with `.agent/staging/AUDIT_REPORT.md` at Step 2.
 - `qor/reliability/intent_lock.py:51` — REPLACE `re.search(r"VERDICT.*PASS", body, re.IGNORECASE)` with anchored multiline regex `re.search(r"^(?:Verdict|VERDICT)\s*[:\-]\s*PASS\s*$", body, re.MULTILINE)`. Closes Apr-16 LOW-4 fully.
 - `tests/test_intent_lock_anchored_pass_check.py` — NEW: locks the regex semantics — accepts canonical forms; rejects substring-only "PASS" mentions in audit body.
 
@@ -190,8 +190,8 @@ The two skill bodies are the only DRIFT sites in the repo (verified by Phase 53 
 ### Unit Tests
 
 - `tests/test_skill_path_canonicalization.py`:
-  - `test_no_skill_references_failsafe_governance` — walk `qor/skills/**/*.md`; for each file, read; assert `.failsafe/governance/` not in content.
-  - `test_no_skill_references_failsafe_bridge_memory` — same walk; assert `memory/failsafe-bridge.md` not in content.
+  - `test_no_skill_references_legacy_governance_dir` — walk `qor/skills/**/*.md`; for each file, read; assert `<legacy-staging>/` not in content.
+  - `test_no_skill_references_legacy_bridge_memory` — same walk; assert `a legacy bridge memory file` not in content.
   - Both tests print the offending file path on failure for triage.
 - `tests/test_intent_lock_anchored_pass_check.py`:
   - `test_audit_body_with_canonical_verdict_line_passes` — body containing `\nVerdict: PASS\n` returns True.

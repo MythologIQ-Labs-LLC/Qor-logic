@@ -41,7 +41,7 @@ All subcommands accept `--scope {repo,global}` (default `repo`); this determines
 8. Step 7.5 calls `bump_version(change_class)` FIRST, then `create_seal_tag(...)` (order matters per Phase 30 constraint; inverted order interdicts on tag-already-exists).
 9. Step 7.6 stamps `CHANGELOG.md`: `## [Unreleased]` -> `## [X.Y.Z] - YYYY-MM-DD`.
 10. **Step 7.7 (Phase 47 wiring)** runs `python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan "$PLAN_PATH"` against the just-written seal entry. Verifies the latest META_LEDGER entry is a SESSION SEAL for the current phase with internally-consistent chain hash and that full chain verification passes. ABORT on non-zero exit leaves the session unsealed; operator amends the ledger (or re-runs Step 7) and re-runs `/qor-substantiate`. Closes SG-AdjacentState-A's bookkeeping-gap subclass — substantiate cycles cannot complete without writing the SESSION SEAL entry. **Phase 159 (GH #223)**: a `--plan` whose filename does not match the qor-internal `plan-qor-phase<N>-<slug>.md` pattern no longer hard-fails; it falls back to the ledger-derived phase (the `--auto` path) and emits a WARN, so downstream workspaces that name plans `plan-<slug>.md` can seal. The fallback still runs the identical GOV-01 `content_hash`<->cited-plan binding, so a real inconsistency still ABORTs.
-11. Step 8 clears `.failsafe/governance/` staging.
+11. Step 8 clears the legacy consumer governance staging directory.
 11. Step 8.5 runs `python -m qor.scripts.dist_compile` (Phase 30 wiring) so variant outputs stay in sync.
 12. Step 9 writes the final report. Step 9.5 auto-stages CHANGELOG + META_LEDGER + SYSTEM_STATE + plan + BACKLOG + src/.
 13. Step 9.6 prompts the operator with four push/merge options.

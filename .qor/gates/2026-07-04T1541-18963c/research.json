@@ -15,8 +15,8 @@
     },
     {
       "topic": "no third taxonomy",
-      "claim": "Declaration = required_gate_artifacts in plan.json (Shape 3); guard = existing risk routing + change_class; PAMA M-classes adopted as rationale only",
-      "citation": "qor/capabilities/risk.py:55-79; bicameral-factory/PAMA.md:269-335"
+      "claim": "Declaration = required_gate_artifacts in plan.json (Shape 3); guard = existing risk routing + change_class; an external mutation-classification doctrine M-classes adopted as rationale only",
+      "citation": "qor/capabilities/risk.py:55-79; a sibling governance repository/an external mutation-classification doctrine.md:269-335"
     },
     {
       "topic": "Governor decisions",
@@ -36,7 +36,7 @@
     "qor/capabilities/risk.py",
     "qor/gates/chain.md",
     "qor/gates/delegation-table.md",
-    "G:/MythologIQ/bicameral-factory/PAMA.md",
+    "an external mutation-classification doctrine",
     "tests/test_gate_chain_completeness.py"
   ],
   "brief_path": "docs\\research-brief-risk-tiered-gate-depth-2026-07-04.md",

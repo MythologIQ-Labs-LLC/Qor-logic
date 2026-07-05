@@ -4,7 +4,7 @@
   "ts": "2026-06-09T00:17:32Z",
   "questions": [
     "How does GH #196 Surface-tag enforcement affect qor-logic systems independently?",
-    "How does it affect qor-logic together with the FailSafe application?"
+    "How does it affect qor-logic together with the a sibling governance repository application?"
   ],
   "findings": [
     {
@@ -24,12 +24,12 @@
     },
     {
       "id": "F4",
-      "claim": "FailSafe owns data (FailSafe#206); qor-logic owns gate; no runtime coupling.",
+      "claim": "a sibling governance repository owns data (a sibling governance repository#206); qor-logic owns gate; no runtime coupling.",
       "status": "verified"
     },
     {
       "id": "F5",
-      "claim": "Cross-repo: V2 fail-closed must wait for FailSafe full surface coverage or its seal breaks.",
+      "claim": "Cross-repo: V2 fail-closed must wait for a sibling governance repository full surface coverage or its seal breaks.",
       "status": "recommendation"
     },
     {

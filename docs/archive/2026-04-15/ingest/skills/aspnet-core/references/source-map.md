@@ -6,7 +6,7 @@ Core sources:
 
 - https://learn.microsoft.com/aspnet/core/
 - https://raw.githubusercontent.com/dotnet/AspNetCore.Docs/main/aspnetcore/toc.yml
-- https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore
+- github:dotnet/AspNetCore.Docs/tree/main/aspnetcore
 
 ## Documentation Tree Mapping
 

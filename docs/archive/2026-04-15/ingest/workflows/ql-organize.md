@@ -115,7 +115,7 @@ Scan current `.gitignore` for standard AI governance patterns.
 
 ### Step 5.2: Apply Privacy Updates
 
-If missing required patterns, add them. Use `.failsafe/workspace-config.json` or `.qorelogic/config.json` to identify workspace-specific privacy requirements.
+If missing required patterns, add them. Use `<consumer-governance-dotdir>/workspace-config.json` or `.qorelogic/config.json` to identify workspace-specific privacy requirements.
 
 ---
 

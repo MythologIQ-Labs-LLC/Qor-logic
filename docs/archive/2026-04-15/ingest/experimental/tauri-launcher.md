@@ -8,7 +8,7 @@ Automates the complex Tauri dev server launch process and handles common failure
 ## Usage
 When user wants to:
 - Start Tauri development mode
-- Test FirstRunSetup or any COREFORGE feature
+- Test FirstRunSetup or any host-app feature
 - Debug why Tauri window won't open
 
 ## What This Skill Does
@@ -70,13 +70,13 @@ for i in {1..60}; do
   fi
 
   # Check for window (platform-specific)
-  if wmctrl -l | grep -i "coreforge" > /dev/null 2>&1; then
+  if wmctrl -l | grep -i "<app-name>" > /dev/null 2>&1; then
     echo "✅ Tauri window detected"
     break
   fi
 
   # On Windows: check for process with window
-  if tasklist /FI "IMAGENAME eq hearthlink.exe" | grep -q "hearthlink.exe"; then
+  if tasklist /FI "IMAGENAME eq <app>.exe" | grep -q "<app>.exe"; then
     echo "✅ Tauri app running"
     break
   fi
@@ -90,8 +90,8 @@ done
 #### Fallback 1: Check Logs
 ```bash
 # If window doesn't appear, check for errors
-tail -50 ~/.local/share/hearthlink/logs/latest.log 2>/dev/null ||
-tail -50 %LOCALAPPDATA%/hearthlink/logs/latest.log 2>/dev/null
+tail -50 ~/.local/share/host-project/logs/latest.log 2>/dev/null ||
+tail -50 %LOCALAPPDATA%/host-project/logs/latest.log 2>/dev/null
 ```
 
 #### Fallback 2: Force Rebuild
@@ -108,7 +108,7 @@ npm run tauri:dev
 # If dev mode fails, try production
 npm run build
 npm run tauri:build
-./src-tauri/target/release/hearthlink
+./src-tauri/target/release/host-project
 ```
 
 ## Expected Output
@@ -141,7 +141,7 @@ npm run tauri:build
 - Waiting for window...
 - ⏱️ 15s - Tauri process running
 - ⏱️ 22s - Window handle detected
-- ✅ COREFORGE window opened successfully
+- ✅ the host project window opened successfully
 
 ### 📊 Status
 - **Dev Server:** Running on http://localhost:3000

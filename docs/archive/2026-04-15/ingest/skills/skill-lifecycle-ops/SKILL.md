@@ -1,6 +1,6 @@
 ﻿---
 name: skill-lifecycle-ops
-description: Synapse skill lifecycle operations for Hearthlink. Use when working on skill registry, resolution, instance management, execution, or related UI and tests.
+description: Synapse skill lifecycle operations for the host project. Use when working on skill registry, resolution, instance management, execution, or related UI and tests.
 ---
 
 # Skill Lifecycle Operations

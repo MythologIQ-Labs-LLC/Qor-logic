@@ -78,12 +78,12 @@ VETO with `ghost-ui` category, sub-tag `live-progress-fake` (prose sub-tag; no s
 
 ### Affected Files
 
-- `qor/references/doctrine-shadow-genome-countermeasures.md` - new SG-FakeProgress-A entry catalogueing the pattern, originating recurrence (FailSafe v5.1.0 install-skills-card 0->100% fake jump over 20-60s wall-clock backing operation), and countermeasure (qor-audit Ghost UI Pass Live-Progress Invariant sub-rule).
+- `qor/references/doctrine-shadow-genome-countermeasures.md` - new SG-FakeProgress-A entry catalogueing the pattern, originating recurrence (a sibling product's v5.1.0 install-skills-card 0->100% fake jump over 20-60s wall-clock backing operation), and countermeasure (qor-audit Ghost UI Pass Live-Progress Invariant sub-rule).
 - `tests/test_doctrine_sg_fake_progress_a.py` - NEW. 2 tests asserting the doctrine carries the SG entry with pattern description and countermeasure cross-reference.
 
 ### Changes
 
-SG entry follows the standard format (Pattern / Originating recurrence / Countermeasure / Cross-reference). Originating recurrence: FailSafe Install QorLogic Skills card UX defect, two prior qor-audit PASS cycles missed it (FailSafe META_LEDGER #361 + #362).
+SG entry follows the standard format (Pattern / Originating recurrence / Countermeasure / Cross-reference). Originating recurrence: a sibling product's Install QorLogic Skills card UX defect, two prior qor-audit PASS cycles missed it (the sibling product's META_LEDGER #361 + #362).
 
 ### Unit Tests
 

@@ -7,7 +7,7 @@ sources:
   - https://learn.microsoft.com/windows/apps/design/accessibility/keyboard-accessibility
   - https://learn.microsoft.com/windows/apps/design/accessibility/high-contrast-themes
   - https://learn.microsoft.com/windows/apps/design/globalizing/globalizing-portal
-  - https://github.com/microsoft/WinUI-Gallery
+  - github:microsoft/WinUI-Gallery
 ---
 
 ## What This Reference Is For

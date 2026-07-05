@@ -100,23 +100,23 @@ git add package.json
 ### Step 7: Build Release Artifacts
 
 ```bash
-cd FailSafe/build
+cd <product>/build
 ./build-release.ps1
 ```
 
 Expected outputs:
-- `FailSafe/artifacts/mythologiq-failsafe-[new_version]-openvsx.vsix`
-- `FailSafe/artifacts/mythologiq-failsafe-[new_version]-vscode.vsix`
+- `<product>/artifacts/mythologiq-sibling-product-[new_version]-openvsx.vsix`
+- `<product>/artifacts/mythologiq-sibling-product-[new_version]-vscode.vsix`
 
 ### Step 8: Inspect Packaged Payloads Before Publish
 
 Inspect the built VSIX files directly. Do not trust source README or package files alone.
 
 ```bash
-tar -xOf FailSafe/artifacts/mythologiq-failsafe-[new_version]-openvsx.vsix extension/readme.md | head -60
-tar -xOf FailSafe/artifacts/mythologiq-failsafe-[new_version]-openvsx.vsix extension.vsixmanifest | grep Description
-tar -xOf FailSafe/artifacts/mythologiq-failsafe-[new_version]-vscode.vsix extension/readme.md | head -60
-tar -xOf FailSafe/artifacts/mythologiq-failsafe-[new_version]-vscode.vsix extension.vsixmanifest | grep Description
+tar -xOf <product>/artifacts/mythologiq-sibling-product-[new_version]-openvsx.vsix extension/readme.md | head -60
+tar -xOf <product>/artifacts/mythologiq-sibling-product-[new_version]-openvsx.vsix extension.vsixmanifest | grep Description
+tar -xOf <product>/artifacts/mythologiq-sibling-product-[new_version]-vscode.vsix extension/readme.md | head -60
+tar -xOf <product>/artifacts/mythologiq-sibling-product-[new_version]-vscode.vsix extension.vsixmanifest | grep Description
 ```
 
 Required verification:
@@ -161,7 +161,7 @@ Add deterministic packaging and publishing protections to `/ql-repo-release` or 
 
 - verify artifact SHA-256 hashes before publish
 - fail release if packaged `readme.md` or `extension.vsixmanifest` does not match expected version and marketplace copy
-- publish only from freshly built artifacts, never from previously cached files in `FailSafe/artifacts/`
+- publish only from freshly built artifacts, never from previously cached files in `<product>/artifacts/`
 - record artifact hashes and inspected filenames in release evidence
 - add marketplace post-publish verification so rendered listing content is checked against the uploaded artifact
 

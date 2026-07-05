@@ -217,7 +217,7 @@ Report the failure learning:
 The Shadow Genome lives at: `docs/SHADOW_GENOME.md`
 
 ```yaml
-# Q-DNA Development Shadow Genome
+# ExampleProject Development Shadow Genome
 # Failed approaches archived for learning
 
 metadata:

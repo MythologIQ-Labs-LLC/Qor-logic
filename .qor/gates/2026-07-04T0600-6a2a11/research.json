@@ -25,30 +25,30 @@
     },
     {
       "topic": "estate fragmentation",
-      "claim": "14+ MythologIQ repos carry governance artifacts; bicameral PAMA M1-M5 mutation classes and PUBLIC-repo governance mirroring are the top absorbable patterns",
-      "citation": "G:/MythologIQ/bicameral-factory/docs/governance/PUBLIC_REPO_GOVERNANCE_AGGREGATION.md"
+      "claim": "14+ estate repositories carry governance artifacts; a sibling repository's mutation-classification doctrine (M1-M5) mutation classes and PUBLIC-repo governance mirroring are the top absorbable patterns",
+      "citation": "an external repository's governance-mirroring design"
     },
     {
-      "topic": "autonomous QA exemplars (Accountable)",
+      "topic": "autonomous QA exemplars (an external QA exemplar)",
       "claim": "Executable lints with allowlists, scheduled drift detection with automatic GH issue lifecycle, risk-stratified coverage, dry-run modes, regression-guard tests named for issues",
-      "citation": "D:/Accountable/accountable-os/scripts/lint-migration-rls.mjs; Accountable-App-3.0/.github/workflows/drift-detection.yml"
+      "citation": "an external QA exemplar's migration lint; an external QA exemplar/.github/workflows/drift-detection.yml"
     },
     {
       "topic": "autonomous QA exemplars (MS toolkit)",
       "claim": "Deterministic fail-closed policy evaluation with no LLM in the decision loop; reconstructible Decision BOM from observability signals; graduated execution rings; independently validates Merkle-chained audit design",
-      "citation": "agent-governance-toolkit docs/adr/0004, 0013, 0017, 0018"
+      "citation": "an external agent-governance toolkit's ADRs 0004/0013/0017/0018"
     }
   ],
   "sources": [
     "docs/META_LEDGER.md",
     "docs/SHADOW_GENOME.md",
     "qor/scripts/gate_chain.py",
-    "G:/MythologIQ/bicameral-factory/docs/governance/PUBLIC_REPO_GOVERNANCE_AGGREGATION.md",
-    "G:/MythologIQ/FailSafe-Pro/scripts/migrate_ledger_v0_14.py",
-    "D:/Accountable/accountable-os/scripts/lint-migration-rls.mjs",
-    "D:/Accountable/Accountable-App-3.0/.github/workflows/drift-detection.yml",
-    "G:/MythologIQ/agent-governance-toolkit/docs/adr/0004-keep-policy-evaluation-deterministic.md",
-    "G:/MythologIQ/agent-governance-toolkit/docs/adr/0018-reconstructible-decision-bom-over-prebuilt.md"
+    "an external repository's governance-mirroring design",
+    "an external repository's ledger-migration script",
+    "an external QA exemplar's migration lint",
+    "an external QA exemplar's drift-detection workflow",
+    "an external agent-governance toolkit's ADR 0004",
+    "an external agent-governance toolkit's ADR 0018"
   ],
   "brief_path": "docs/research-brief-sdlc-perspective-reset-2026-07-04.md",
   "ai_provenance": {

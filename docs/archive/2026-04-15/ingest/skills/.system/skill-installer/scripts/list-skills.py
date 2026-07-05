@@ -55,7 +55,7 @@ def _list_skills(repo: str, path: str, ref: str) -> list[str]:
         if exc.code == 404:
             raise ListError(
                 "Skills path not found: "
-                f"https://github.com/{repo}/tree/{ref}/{path}"
+                f"github:{repo}/tree/{ref}/{path}"
             ) from exc
         raise ListError(f"Failed to fetch skills: HTTP {exc.code}") from exc
     data = json.loads(payload.decode("utf-8"))

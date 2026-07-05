@@ -53,5 +53,5 @@ Every cycle that writes governance SHOULD:
 **Still deferred**: a hard `/qor-implement` block on stale Tier 1, and automatic Tier 3->6 / Tier 4->6 *row mutation* (the shipped V2 detects unarchived rows but does not rewrite tier tables). V1 remains the scaffold + WARN-only `/qor-status` visibility surface (`check_index_drift`, untouched).
 
 Maps to NIST AI RMF MAP-3.1 (trust anchor integrity) and EU AI Act Art. 12
-(record-keeping integrity). Originating proposal: GH #140 (FailSafe 21-stale-doc
+(record-keeping integrity). Originating proposal: GH #140 (a sibling repository's 21-stale-doc
 recurrence).

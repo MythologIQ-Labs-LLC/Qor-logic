@@ -73,7 +73,7 @@ Compile findings into `RESEARCH_BRIEF.md` per the schema in `qor-deep-audit` §P
 
 Before grading any finding HIGH or production-critical, run the reachability probe against the cited surface. Any single probe failure downgrades the finding to `reachability-gap` classification until end-to-end runtime evidence is added. The probe is WARN-only in V1; Phase 99 V2 layers blocking enforcement in `/qor-audit` Step 3 Infrastructure Alignment Pass.
 
-The detailed five-check protocol (importability, test collection, caller graph, packaging, interface match), the downgrade rule, and the COREFORGE Phase 371 originating case study live in `qor/references/recon-reachability-probe.md`. The probe is invoked via `qor-logic scripts reachability_probe --claims <claims.json>`; see `SG-GrepShapedRunclaim-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` for the binding doctrine.
+The detailed five-check protocol (importability, test collection, caller graph, packaging, interface match), the downgrade rule, and the sibling consumer workspace's Phase 371 originating case study live in `qor/references/recon-reachability-probe.md`. The probe is invoked via `qor-logic scripts reachability_probe --claims <claims.json>`; see `SG-GrepShapedRunclaim-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` for the binding doctrine.
 
 ### Phase 3: VERIFICATION (max 3 rounds, per budget)
 

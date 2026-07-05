@@ -1,6 +1,6 @@
 # `gate_written` hook contract (Phase 57)
 
-Phase 57 wires a non-authoritative observer push-channel that fires after every successful `qor.scripts.gate_chain.write_gate_artifact` call. The channel exists so downstream governance-ledger bridges (e.g. FailSafe-Pro) and adjacent tooling can react to gate writes without polling the filesystem. Closes the polling-vs-push gap that prompted PR #12 and addresses OWASP LLM07 (Insecure Plugin Design) at the contract layer.
+Phase 57 wires a non-authoritative observer push-channel that fires after every successful `qor.scripts.gate_chain.write_gate_artifact` call. The channel exists so downstream governance-ledger bridges (e.g. a sibling governance repository) and adjacent tooling can react to gate writes without polling the filesystem. Closes the polling-vs-push gap that prompted PR #12 and addresses OWASP LLM07 (Insecure Plugin Design) at the contract layer.
 
 ## Applicability
 
@@ -78,7 +78,7 @@ Hook dispatch happens synchronously on the calling thread after the gate artifac
 
 ## Phase 57 changes vs. PR #12 origin
 
-The original PR #12 (opened 2026-04-20, B24 from FailSafe-Pro) used `except BaseException` (with `# noqa: BLE001`) in `_invoke_hook_safely` and the `_fire_gate_written_hook` bridge. This swallowed `KeyboardInterrupt` and `SystemExit`, meaning operators could not interrupt a runaway hook with Ctrl-C. With the 30-second per-hook subprocess timeout AND swallow-on-callable-hook, a misbehaving Python entry-point hook could spin indefinitely with SIGKILL the only escape.
+The original PR #12 (opened 2026-04-20, B24 from a sibling governance repository) used `except BaseException` (with `# noqa: BLE001`) in `_invoke_hook_safely` and the `_fire_gate_written_hook` bridge. This swallowed `KeyboardInterrupt` and `SystemExit`, meaning operators could not interrupt a runaway hook with Ctrl-C. With the 30-second per-hook subprocess timeout AND swallow-on-callable-hook, a misbehaving Python entry-point hook could spin indefinitely with SIGKILL the only escape.
 
 Phase 57 fixes this by using `except Exception` (not `BaseException`) in both the dispatcher's per-hook invoke (`gate_hooks._invoke_hook_safely`) and the gate-chain bridge (`gate_chain._fire_gate_written_hook`). `KeyboardInterrupt` and `SystemExit` propagate through the dispatch and out to the calling skill. Operator retains Ctrl-C control over runaway hooks.
 
@@ -92,5 +92,5 @@ This pattern is codified in `qor/references/doctrine-shadow-genome-countermeasur
 - `qor/scripts/gate_hooks.py` — dispatcher implementation (Phase 57).
 - `qor/scripts/gate_chain.py` `_fire_gate_written_hook` — bridge from authoritative write path.
 - `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-BareExceptionSwallowsSignals-A`.
-- PR #12 `feat/b24-gate-written-hooks` — original FailSafe-Pro contribution; superseded by Phase 57.
+- PR #12 `feat/b24-gate-written-hooks` — original a sibling governance repository contribution; superseded by Phase 57.
 - Entry #186 (PR #12 audit VETO) and Entry #187 (Phase 57 plan audit PASS) in `docs/META_LEDGER.md`.

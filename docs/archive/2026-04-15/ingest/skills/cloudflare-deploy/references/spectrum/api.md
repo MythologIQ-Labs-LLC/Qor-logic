@@ -135,7 +135,7 @@ analytics = client.spectrum.analytics.aggregate(
 ## Go SDK
 
 ```go
-import "github.com/cloudflare/cloudflare-go"
+import "github:cloudflare/cloudflare-go"
 
 api, _ := cloudflare.NewWithAPIToken("your-api-token")
 

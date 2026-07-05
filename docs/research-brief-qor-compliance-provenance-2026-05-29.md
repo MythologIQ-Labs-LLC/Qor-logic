@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-`qor-compliance` **does not exist in the Qor-logic repository** — not in `qor/skills/`, not in compiled variants (`qor/dist/`), and not in `qor/dist/manifest.json`. It is a **FailSafe-extension skill** (the archived `compliance` skill carries `license: Proprietary (FailSafe Project)`). Neither acceptance-criteria branch (a) retire nor (b) value-add-fix applies, because Qor-logic does not own the artifact. The #77 "out-of-scope" determination was legitimate and was already grep-verified at Phase 81. **Recommendation: Option (c) — close #151 as not-actionable-in-this-repo and redirect the F244/FX359 fix to the FailSafe skills bundle.**
+`qor-compliance` **does not exist in the Qor-logic repository** — not in `qor/skills/`, not in compiled variants (`qor/dist/`), and not in `qor/dist/manifest.json`. It is a **a sibling governance repository-extension skill** (the archived `compliance` skill carries a proprietary sibling-product license). Neither acceptance-criteria branch (a) retire nor (b) value-add-fix applies, because Qor-logic does not own the artifact. The #77 "out-of-scope" determination was legitimate and was already grep-verified at Phase 81. **Recommendation: Option (c) — close #151 as not-actionable-in-this-repo and redirect the F244/FX359 fix to the a sibling governance repository skills bundle.**
 
 ## Findings
 
@@ -19,19 +19,19 @@
 - `qor/dist/manifest.json`: `grep -c qor-compliance` = 0.
 
 ### F2 — Phase 81 already established external ownership with evidence
-- `docs/plan-qor-phase81-skill-provenance-hotfix.md:7` (originating_remediation GH #77): "The other (`qor-compliance`) is NOT in Qor-logic -- no occurrence in `qor/skills/`, `qor/dist/`, or anywhere else in the tree -- so it must be from a different source (likely FailSafe's own skills bundle) and is out of scope for this repo."
-- `:16` "No fix for `qor-compliance` (NOT in this repo; file separately against FailSafe upstream)."
-- `:18` "F244/FX359 is the consumer-side schema, not a Qor-logic governance contract." The schema belongs to the FailSafe extension's release pipeline, not to Qor-logic.
+- `docs/plan-qor-phase81-skill-provenance-hotfix.md:7` (originating_remediation GH #77): "The other (`qor-compliance`) is NOT in Qor-logic -- no occurrence in `qor/skills/`, `qor/dist/`, or anywhere else in the tree -- so it must be from a different source (likely the sibling governance repository's own skills bundle) and is out of scope for this repo."
+- `:16` "No fix for `qor-compliance` (NOT in this repo; file separately against the sibling repository upstream)."
+- `:18` "F244/FX359 is the consumer-side schema, not a Qor-logic governance contract." The schema belongs to the downstream extension's release pipeline, not to Qor-logic.
 
-### F3 — The "compliance" skill is FailSafe-proprietary
-- `docs/archive/2026-04-15/ingest/.../\_quarantine/compliance/SKILL.md` frontmatter: `name: compliance`, `license: Proprietary (FailSafe Project)`, "Enforce FailSafe physical isolation and environment compliance constraints." This is the FailSafe-bundled skill that installs as `qor-compliance` downstream; it is quarantined/archived here, not a distributed Qor-logic skill. Corroborates the proprietary/out-of-scope classification recorded for the #80 reclassification.
+### F3 — The "compliance" skill is proprietary to the sibling product
+- `docs/archive/2026-04-15/ingest/.../\_quarantine/compliance/SKILL.md` frontmatter: `name: compliance`, a proprietary sibling-product license, "Enforce a sibling governance repository physical isolation and environment compliance constraints." This is the a sibling governance repository-bundled skill that installs as `qor-compliance` downstream; it is quarantined/archived here, not a distributed Qor-logic skill. Corroborates the proprietary/out-of-scope classification recorded for the #80 reclassification.
 
 ### F4 — The in-scope half (`qor-governance-compliance`) is correctly fixed
 - `qor/skills/governance/qor-governance-compliance/SKILL.md:6-8` declares nested `metadata.source.repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic` + `path: qor/skills/governance/qor-governance-compliance`; `:12` `phase: governance`; `:10` `creator: MythologIQ Labs, LLC`.
 - `tests/test_qor_governance_compliance_provenance.py` (F244/FX359 contract: nested source block + https repository + path) — **2 passed**. The F244/FX359 contract is satisfied for the one compliance skill Qor-logic actually owns.
 
 ### F5 — No intra-repo duplicate coverage (AC3)
-- Within Qor-logic there is exactly one compliance skill (`qor-governance-compliance`). There is no second compliance skill to duplicate it. Any overlap between FailSafe's `qor-compliance` and `qor-governance-compliance` is a FailSafe-side concern, outside this repo's control.
+- Within Qor-logic there is exactly one compliance skill (`qor-governance-compliance`). There is no second compliance skill to duplicate it. Any overlap between the sibling governance repository's `qor-compliance` and `qor-governance-compliance` is a consumer-side concern, outside this repo's control.
 
 ## Blueprint Alignment
 
@@ -39,19 +39,19 @@
 |---|---|---|
 | "Determine whether qor-compliance still exists in source" | Absent from `qor/skills/`, `qor/dist/`, `manifest.json` | RESOLVED: does not exist here |
 | AC (a) redundant → retire | Cannot retire — not owned by this repo | N/A (premise off) |
-| AC (b) value-add → fix provenance here | Cannot fix here — F244/FX359 is FailSafe's consumer-side schema; skill is FailSafe's | N/A (premise off) |
+| AC (b) value-add → fix provenance here | Cannot fix here — F244/FX359 is the sibling governance repository's consumer-side schema; skill is the sibling governance repository's | N/A (premise off) |
 | AC (3) no duplicate coverage | Only one compliance skill in-repo; no intra-repo duplication | MATCH |
 | #77 "out-of-scope" call | Grep-verified legitimate (Phase 81) and reproduced 2026-05-29 | MATCH |
 
 ## Recommendations
 
-1. **(High) Close #151 as Option (c): not actionable in Qor-logic.** `qor-compliance` is a FailSafe-extension skill; the F244/FX359 provenance fix must be filed against the FailSafe skills bundle, where the skill's source-of-truth frontmatter lives. The #77 partial-surface closure was correct, not a dodge.
-2. **(Med) File/track the FailSafe-side provenance fix** in the FailSafe repo's tracker (nested `metadata.source.repository/path` + `phase` on FailSafe's `compliance` skill), and link it from #151 before closing, so the half-measure audit's "split the remainder into a tracked issue" counter-control (research-brief-half-measure-closures Rec 4) is satisfied.
+1. **(High) Close #151 as Option (c): not actionable in Qor-logic.** `qor-compliance` is a sibling repository's extension skill; the F244/FX359 provenance fix must be filed against that repository's skills bundle, where the skill's source-of-truth frontmatter lives. The #77 partial-surface closure was correct, not a dodge.
+2. **(Med) File/track the consumer-side provenance fix** in the sibling repository's tracker (nested `metadata.source.repository/path` + `phase` on the sibling governance repository's `compliance` skill), and link it from #151 before closing, so the half-measure audit's "split the remainder into a tracked issue" counter-control (research-brief-half-measure-closures Rec 4) is satisfied.
 3. **(Low) Add a one-line note to #77/#151** recording the grep-evidence (F1) so a future audit does not re-flag the same out-of-scope determination.
 
 ## Updated Knowledge
 
-The half-measure audit flagged #77 as a "partial-surface closure" (one of two named targets fixed, the other declared out-of-scope). This research confirms the out-of-scope half was **correctly** scoped: `qor-compliance` is genuinely external (FailSafe-proprietary). #151 should resolve via redirection to FailSafe, not an in-repo retire/fix. (Memory: this mirrors the #80 reclassification — an out-of-scope proprietary prompt.)
+The half-measure audit flagged #77 as a "partial-surface closure" (one of two named targets fixed, the other declared out-of-scope). This research confirms the out-of-scope half was **correctly** scoped: `qor-compliance` is genuinely external (proprietary to the sibling product). #151 should resolve via redirection to a sibling governance repository, not an in-repo retire/fix. (Memory: this mirrors the #80 reclassification — an out-of-scope proprietary prompt.)
 
 ---
 
@@ -59,10 +59,10 @@ _Research complete. Findings are advisory — the close/redirect decision remain
 
 ## Decision (GH #151 closed, 2026-06-02)
 
-**Resolution: Option (c) — not actionable in this repository.** Confirmed at Phase 134 (operator-directed, this session): `qor-compliance` does not exist in Qor-logic source, `qor/dist`, or `qor/dist/manifest.json` (grep re-verified); it is a FailSafe-extension proprietary skill. The canonical compliance skill *in this repo* is `qor-governance-compliance`, whose F244/FX359 provenance was already fixed in Phase 81 (PR #78, v0.55.1). Therefore:
+**Resolution: Option (c) — not actionable in this repository.** Confirmed at Phase 134 (operator-directed, this session): `qor-compliance` does not exist in Qor-logic source, `qor/dist`, or `qor/dist/manifest.json` (grep re-verified); it is a a sibling governance repository-extension proprietary skill. The canonical compliance skill *in this repo* is `qor-governance-compliance`, whose F244/FX359 provenance was already fixed in Phase 81 (PR #78, v0.55.1). Therefore:
 
 - Neither AC branch (a) retire nor (b) value-add-fix applies — Qor-logic does not own the artifact.
 - No `qor-compliance` skill is created here: doing so would duplicate `qor-governance-compliance`, violating the issue's own "no duplicate coverage" guarantee.
-- The F244/FX359 provenance fix for `qor-compliance` belongs to FailSafe's own skills bundle (upstream).
+- The F244/FX359 provenance fix for `qor-compliance` belongs to the sibling governance repository's own skills bundle (upstream).
 
 No duplicate coverage exists between the two compliance skills (only one, `qor-governance-compliance`, is in-repo). GH #151 is closed on this determination.

@@ -3,7 +3,7 @@
   "session_id": "2026-07-04T0729-4d0fb9",
   "ts": "2026-07-04T07:30:34Z",
   "questions": [
-    "What are the exact mechanics of the Accountable drift-detection + issue-lifecycle pattern?",
+    "What are the exact mechanics of the the external exemplar's drift-detection + issue-lifecycle pattern?",
     "Which Qor-logic health checks are automatable tonight, and what gaps block aggregation?",
     "How should #250 scope split to avoid a half-measure closure?"
   ],
@@ -11,7 +11,7 @@
     {
       "topic": "portable pattern",
       "claim": "Drift-detection recipe is complete: cron + self-test against ephemeral state + JSON-last-line contract + idempotent gh issue search/comment/create/close",
-      "citation": "D:/Accountable/Accountable-App-3.0/.github/workflows/drift-detection.yml lines 3-111; scripts/drift-check.sh lines 7-115"
+      "citation": "an external QA exemplar's drift-detection workflow lines 3-111; scripts/drift-check.sh lines 7-115"
     },
     {
       "topic": "qor surface",
@@ -30,9 +30,9 @@
     }
   ],
   "sources": [
-    "D:/Accountable/Accountable-App-3.0/.github/workflows/drift-detection.yml",
-    "D:/Accountable/Accountable-App-3.0/scripts/drift-check.sh",
-    "D:/Accountable/Orko/poll.py",
+    "an external QA exemplar's drift-detection workflow",
+    "an external QA exemplar workspace/an external QA exemplar/scripts/drift-check.sh",
+    "an external QA exemplar's polling tool",
     "qor/scripts/governance_health.py",
     "qor/scripts/seal_artifacts.py",
     "qor/reliability/gate_chain_completeness.py",

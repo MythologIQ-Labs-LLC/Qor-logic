@@ -28,8 +28,8 @@ client = AsyncCloudflare(api_token=os.environ["CLOUDFLARE_API_TOKEN"])
 
 ```go
 import (
-    "github.com/cloudflare/cloudflare-go/v4"
-    "github.com/cloudflare/cloudflare-go/v4/option"
+    "github:cloudflare/cloudflare-go/v4"
+    "github:cloudflare/cloudflare-go/v4/option"
 )
 
 client := cloudflare.NewClient(
