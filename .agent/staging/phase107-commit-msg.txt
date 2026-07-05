@@ -35,6 +35,6 @@ Plan: docs/plan-qor-phase107-carry-forward-close.md
 Audit: .agent/staging/phase107-AUDIT_REPORT.md (PASS, L3 iter-1)
 Merkle seal: 5fd157469ffb966e1450a3f1048c5d91771474640c9de79cd30adca5c622c0bb
 
-Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+Authored via [Qor-logic SDLC](github:MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

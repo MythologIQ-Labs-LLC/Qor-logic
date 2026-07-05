@@ -1,7 +1,7 @@
 source:
   type: internal
-  system: FailSafe
-  repository: MythologIQ/FailSafe
+  system: Qor-logic
+  repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
 creator:
   name: MythologIQ Labs, LLC
 skill_family:
@@ -12,7 +12,7 @@ license:
 maintainer:
   team: QoreLogic Governance
 imported:
-  bundled_with_failsafe: true
+  bundled_with_governance_dist: true
   date: 2026-02-10
 notes:
   - First-party /ql skill.

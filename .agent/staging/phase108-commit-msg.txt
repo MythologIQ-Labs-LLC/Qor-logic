@@ -30,6 +30,6 @@ Plan: docs/plan-qor-phase108-sbom-lockfile-hotfix.md
 Audit: .agent/staging/phase108-AUDIT_REPORT.md (PASS, L1 hotfix iter-1)
 Merkle seal: 5368335299411c0653842889c3f376256631328af12fb6bfae3e0b70caf1a9f5
 
-Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+Authored via [Qor-logic SDLC](github:MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

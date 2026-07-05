@@ -1,6 +1,6 @@
 ﻿---
 name: playwright-e2e-mocks
-description: Playwright E2E authoring and Tauri mock reliability for Hearthlink. Use when updating tests, selectors, or IPC mocks under tests/e2e.
+description: Playwright E2E authoring and Tauri mock reliability for the host project. Use when updating tests, selectors, or IPC mocks under tests/e2e.
 ---
 
 # Playwright E2E and Tauri Mocks

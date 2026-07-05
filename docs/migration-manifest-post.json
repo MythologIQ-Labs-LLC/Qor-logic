@@ -1,7 +1,7 @@
 {
   "schema_version": "1",
   "generated_ts": "2026-04-15T13:59:18Z",
-  "root": "G:/MythologIQ/Qorelogic",
+  "root": "<path-to-local-clone>",
   "paths": [
     {
       "path": "qor/agents/governance/qor-governor.md",

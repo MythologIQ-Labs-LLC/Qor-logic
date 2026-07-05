@@ -31,6 +31,6 @@ Plan: docs/plan-qor-phase105-dependency-admission-tooling.md
 Audit: .agent/staging/phase105-AUDIT_REPORT.md (PASS, L2 iter-1)
 Merkle seal: e9be44d7fe6a2758d915d290216ff95224b1692034f7aa97f3591f8f0a29b24d
 
-🤖 Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+🤖 Authored via [Qor-logic SDLC](github:MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>

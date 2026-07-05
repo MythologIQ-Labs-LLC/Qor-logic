@@ -58,9 +58,9 @@ OPERATION_KINDS = (
 # New identity function: returns a hashable key that groups equivalent operations.
 # Per-kind contract:
 #   cargo_test / cargo_build : (subcommand, sorted_positional)
-#     -> "cargo test --features X coreforge::skill" and
-#        "cargo test --features Y coreforge::skill" share identity
-#        ("test", ("coreforge::skill",))
+#     -> "cargo test --features X consumerrepo::skill" and
+#        "cargo test --features Y consumerrepo::skill" share identity
+#        ("test", ("consumerrepo::skill",))
 #   python_module: dotted module path only
 #   python_script: (script_relpath, first_arg_or_empty)
 #     -> "python scripts/lint.py --apply X" and
@@ -221,7 +221,7 @@ Append sub-section "Cross-session signature accumulation (Phase 48 wiring)":
   - `test_cross_session_check_returns_none_on_single_veto`
   - `test_cross_session_check_returns_none_on_two_vetos_one_artifact` — per-session would handle.
   - `test_cross_session_check_fires_on_three_same_sig_across_two_artifacts`
-  - `test_cross_session_check_fires_on_four_same_sig_across_three_artifacts` — COREFORGE scenario.
+  - `test_cross_session_check_fires_on_four_same_sig_across_three_artifacts` — a sibling consumer-workspace scenario.
   - `test_cross_session_check_resets_on_pass_break` — PASS audit in window breaks streak.
   - `test_cross_session_check_resets_on_different_signature` — non-matching sig breaks streak.
   - `test_cross_session_check_respects_window_size` — entries outside window not counted.

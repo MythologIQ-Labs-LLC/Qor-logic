@@ -6,7 +6,7 @@ metadata:
   category: governance
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/Qor-logic
+    repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
     path: qor/skills/governance/qor-substantiate
 phase: substantiate
 tone_aware: false
@@ -285,7 +285,7 @@ Fail-closed throttle on stabilization-capacity strain from `origin/main`'s recen
 qor-logic scripts merge_velocity_check --repo-root . --window-days 7 || ABORT
 ```
 
-Exits 0 on `healthy`/`strained`, 1 on `exceeded` (ABORTs; Phase 129 removed the `|| true`). To seal during a deliberate high-velocity window, re-run with `--override` (logged `gate_override` shadow event, `details.gate = merge_velocity_check`). `--shared-core-path` patterns add shared-surface signals. Bicameral originating recurrence + `SG-MergePaceThrottle-A`: `references/seal-gate-ladder.md`.
+Exits 0 on `healthy`/`strained`, 1 on `exceeded` (ABORTs; Phase 129 removed the `|| true`). To seal during a deliberate high-velocity window, re-run with `--override` (logged `gate_override` shadow event, `details.gate = merge_velocity_check`). `--shared-core-path` patterns add shared-surface signals. sibling-workspace originating recurrence + `SG-MergePaceThrottle-A`: `references/seal-gate-ladder.md`.
 
 ### Step 4.6.9: Skill-corpus size-budget lint (Phase 95 wiring; GH #92)
 

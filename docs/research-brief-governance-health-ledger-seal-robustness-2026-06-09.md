@@ -11,7 +11,7 @@
 
 All three issues are genuine, currently-unfixed defects in qor-logic's own tooling (no PR
 addresses them; the May-2026 search hits are coincidental number-substring matches). They were
-filed from a downstream FailSafe remediation, so the local ledger is clean -- but the code paths
+filed from a downstream a sibling governance repository remediation, so the local ledger is clean -- but the code paths
 are shared, so the defects are reproducible here by construction. The three are a coherent
 **governance-health + ledger-seal robustness** cluster touching two files. They interact:
 a #201-corrupted ledger fails `governance_health` at the UTF-8 read (DAMAGED/unreadable) *before*

@@ -51,7 +51,7 @@ None. Issue bodies and remediation handoff specify the required behaviors; the o
 
 `is_placeholder_pattern(value)` returns True for:
 - Strings whose first 16 chars are `0123456789abcdef` in order (or its reverse).
-- Strings where the first 16 chars form a pattern `[ab][12][cd][34]...` (the Issue #54 FailSafe failure mode).
+- Strings where the first 16 chars form a pattern `[ab][12][cd][34]...` (the Issue #54 sibling-product failure mode).
 - Strings with a single repeating bigram across all 64 chars (e.g., `a1a1a1...`).
 - Strings with substring entropy below a conservative threshold (counts of distinct hex digits across 16-char windows).
 
@@ -66,7 +66,7 @@ None. Issue bodies and remediation handoff specify the required behaviors; the o
 - `tests/test_session_seal_markup_recognition.py::test_skipped_summary_distinguishes_session_seal_only_from_no_markup` - constructs a ledger with one bare-prose entry and one Session-Seal-only entry; asserts categorized skip counts.
 - `tests/test_placeholder_pattern_detection.py::test_ascending_hex_pattern_detected` - asserts `is_placeholder_pattern("0123456789abcdef" * 4)` returns True.
 - `tests/test_placeholder_pattern_detection.py::test_repeating_bigram_detected` - asserts `is_placeholder_pattern("a1" * 32)` returns True.
-- `tests/test_placeholder_pattern_detection.py::test_failsafe_failure_mode_pattern_detected` - asserts the literal Issue-#54 FailSafe placeholder hash `a1b2c3d4e5f6...` returns True.
+- `tests/test_placeholder_pattern_detection.py::test_gh54_failure_mode_pattern_detected` - asserts the literal Issue #54 placeholder hash `a1b2c3d4e5f6...` returns True.
 - `tests/test_placeholder_pattern_detection.py::test_real_sha256_digest_passes` - asserts a real digest computed via `hashlib.sha256()` returns False.
 - `tests/test_placeholder_pattern_detection.py::test_low_entropy_threshold` - asserts a 64-hex string using only 3 distinct chars returns True.
 - `tests/test_placeholder_pattern_detection.py::test_verify_flags_entry_with_placeholder_content_hash` - constructs ledger with one entry whose content_hash matches placeholder pattern; asserts FAIL with `placeholder_pattern` reason.
@@ -107,7 +107,7 @@ CLI extension preserves backward compatibility:
 - `tests/test_post_anchor_verify.py::test_explicit_boundary_overrides_auto_detection` - asserts passing `boundary_entry=7` shifts the pre/post split regardless of auto-detection.
 - `tests/test_post_anchor_verify.py::test_empty_ledger_returns_clean` - asserts a ledger with no entries returns 0 with no output.
 - `tests/test_post_anchor_verify.py::test_all_fail_ledger_returns_dirty` - constructs a ledger where every entry fails; asserts non-zero exit and FAILs reported for the post-boundary slice.
-- `tests/test_post_anchor_verify.py::test_corefoge_pattern_passes` - constructs the COREFORGE pattern from Issue #55 (pre-anchor #156-#169 FAIL cluster, post-anchor #170+ clean); asserts post-anchor clean.
+- `tests/test_post_anchor_verify.py::test_corefoge_pattern_passes` - constructs the sibling-workspace pattern from Issue #55 (pre-anchor #156-#169 FAIL cluster, post-anchor #170+ clean); asserts post-anchor clean.
 - `tests/test_post_anchor_verify.py::test_session_seal_entry_counts_as_clean_boundary_candidate` - asserts a Session Seal entry can become the post-anchor boundary when its math verifies.
 - `tests/test_verify_ledger_cli.py::test_cli_accepts_explicit_ledger_path` - invokes `cli.main(["verify-ledger", "--ledger", str(tmp_path / "ledger.md")])` and asserts exit code matches the underlying `verify()` return value.
 - `tests/test_verify_ledger_cli.py::test_cli_post_anchor_flag_routes_to_post_anchor_verify` - asserts the `--post-anchor` flag invokes `verify_post_anchor()` not `verify()`.

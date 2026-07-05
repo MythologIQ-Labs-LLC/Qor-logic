@@ -53,7 +53,7 @@ the modules only resolve when the install venv is active. The Phase
 75 V1 fix (`gate_skipped_prerequisite_absent` declarative tolerance)
 made the failure mode survivable but silent — operators on hosts
 where the venv is not active see SKIP events in the shadow genome
-and (per the originating COREFORGE evidence in the issue) "treat
+and (per the originating consumer-workspace evidence in the issue) "treat
 them as normal, rather than realising the gates are recoverable with
 a one-line venv activation." Seal entries land with quietly-incomplete
 gate coverage; trust in the seal's "all gates ran" claim erodes.
@@ -120,7 +120,7 @@ the broader environment contract that Step Prerequisites depends on.
 - `qor/skills/sdlc/qor-implement/SKILL.md` — same shape.
 - `qor/skills/sdlc/qor-plan/SKILL.md` — same shape.
 - `qor/references/doctrine-shadow-genome-countermeasures.md` — append
-  an `SG-SilentSkipMisconfig-A` entry citing GH #79, the COREFORGE
+  an `SG-SilentSkipMisconfig-A` entry citing GH #79, the sibling consumer workspace
   evidence, and the Phase 90 C+D countermeasure.
 - `tests/test_skill_environment_block.py` — NEW. Behavior tests that
   verify each Python-invoking skill carries both the Environment block
@@ -232,9 +232,9 @@ identical to the legitimate non-Python case, so operators learn to treat SKIPs
 as normal. Seal entries land with quietly-incomplete gate coverage; trust in the
 "all gates ran" claim erodes one silent SKIP at a time.
 
-**Originating recurrence**: COREFORGE consumer session (per GH #79). qor-logic
-0.55.1 installed in venv `D:\Myth-TechForge\Alden_Calindron\venv\` with
-`failsafe-qor-hook`. Skills installed globally to `~/.claude/skills/qor-*/SKILL.md`.
+**Originating recurrence**: sibling consumer-workspace session (per GH #79). qor-logic
+0.55.1 installed in an external workspace's venv with
+`their downstream hook package`. Skills installed globally to `~/.claude/skills/qor-*/SKILL.md`.
 A Claude Code session in a different repo without that venv on PATH ran the
 skills; `python -m qor.reliability.X` raised `ModuleNotFoundError` on every call.
 The session inferred from repeated failures that the modules "were never intended

@@ -4,9 +4,9 @@ priority: MEDIUM
 tags: sources, mapping, lookup, gallery, docs, toolkit
 sources:
   - https://learn.microsoft.com/windows/apps/get-started/samples
-  - https://github.com/microsoft/WinUI-Gallery
-  - https://github.com/microsoft/WindowsAppSDK-Samples
-  - https://github.com/CommunityToolkit/Windows
+  - github:microsoft/WinUI-Gallery
+  - github:microsoft/WindowsAppSDK-Samples
+  - github:CommunityToolkit/Windows
 ---
 
 ## What This Reference Is For

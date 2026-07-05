@@ -1,7 +1,7 @@
 source:
   type: internal
-  system: FailSafe
-  repository: MythologIQ/FailSafe
+  system: Qor-logic
+  repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
   path: .agent/skills/qore-tauri2-testing
 creator:
   name: MythologIQ Labs, LLC
@@ -11,11 +11,11 @@ skill_family:
 license:
   file: ../../../LICENSE
 maintainer:
-  team: FailSafe Governance
+  team: Qor-logic Governance
 imported:
-  bundled_with_failsafe: true
+  bundled_with_governance_dist: true
   date: 2026-02-11
 notes:
-  - Migrated from global Codex runtime skills into FailSafe workspace ownership.
+  - Migrated from global Codex runtime skills into a sibling governance repository workspace ownership.
 
 

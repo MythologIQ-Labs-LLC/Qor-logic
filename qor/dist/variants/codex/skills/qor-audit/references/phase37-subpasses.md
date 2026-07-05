@@ -157,7 +157,7 @@ per-phase intermediate states are required. Per
 For any function or method with a pipeline shape — candidate set -> multiple
 filter stages -> selection — the Judge constructs the **pipeline stage dependency
 graph** and verifies the code executes a topological sort of that graph. Catches
-the COREFORGE-class composition defect from META_LEDGER #209: stage-by-stage
+the consumer-workspace-class composition defect from META_LEDGER #209: stage-by-stage
 correctness review (Wave 2 multi-agent or single-reviewer audit) passes each
 filter individually, but `validate()` is invoked elsewhere instead of as the
 first stage of `decide()`; invalid manifests with low cost score dominate
@@ -192,7 +192,7 @@ ordering coherence** procedure:
 Doctrinal precedent: this is structurally analogous to read-before-write checks
 in static analyzers, lifted to the pipeline-stage abstraction. See
 `qor/references/doctrine-shadow-genome-countermeasures.md`
-`SG-FilterOrderInversion-A` for the originating COREFORGE recurrence (skill_forge
+`SG-FilterOrderInversion-A` for the originating consumer-workspace recurrence (skill_forge
 dispatcher tier -> classification -> vendor -> cost without validator-first) and
 the operator-fix regression test
 (`test_dispatch_skips_invalid_skill_and_selects_valid_candidate`).

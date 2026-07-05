@@ -82,11 +82,19 @@ def capture(args: argparse.Namespace) -> int:
         print("ERROR: audit not PASS", file=sys.stderr)
         return 1
 
+    def _relativize(p: Path) -> str:
+        # Phase 172 (publication boundary): store repo-relative paths so lock
+        # records never reveal the local workspace layout.
+        try:
+            return p.relative_to(repo).as_posix()
+        except ValueError:
+            return p.name  # outside the repo: keep only the leaf name
+
     fingerprint = {
         "session": args.session,
-        "plan_path": str(plan),
+        "plan_path": _relativize(plan),
         "plan_hash": _hash_file(plan),
-        "audit_path": str(audit),
+        "audit_path": _relativize(audit),
         "audit_hash": _hash_file(audit),
         "head_commit": _head_commit(repo),
         "captured_ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -108,12 +116,18 @@ def verify(args: argparse.Namespace) -> int:
 
     data = json.loads(fp_path.read_text(encoding="utf-8"))
 
-    plan = Path(data["plan_path"])
+    def _resolve(recorded: str) -> Path:
+        # Phase 172: records are repo-relative; legacy absolute records
+        # (pre-172 grandfather) resolve as-is.
+        p = Path(recorded)
+        return p if p.is_absolute() else repo / p
+
+    plan = _resolve(data["plan_path"])
     if not plan.is_file() or _hash_file(plan) != data["plan_hash"]:
         print("DRIFT: plan", file=sys.stderr)
         return 1
 
-    audit = Path(data["audit_path"])
+    audit = _resolve(data["audit_path"])
     if not audit.is_file() or _hash_file(audit) != data["audit_hash"]:
         print("DRIFT: audit", file=sys.stderr)
         return 1

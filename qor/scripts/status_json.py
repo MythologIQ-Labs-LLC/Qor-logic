@@ -2,8 +2,8 @@
 
 Phase 165 (GH #240 + #250 part a): runs the read-only check ladder in-process
 and prints human lines followed by exactly ONE JSON object as the final stdout
-line (extractable via `grep '^{' | tail -1`, the Accountable drift-detection
-contract). Exit 0 iff every check passed. `--self-test` validates the
+line (extractable via `grep '^{' | tail -1`, the drift-detection contract of
+an external QA exemplar). Exit 0 iff every check passed. `--self-test` validates the
 aggregation logic against a synthetic pass+fail registry before any consumer
 trusts a live verdict.
 """

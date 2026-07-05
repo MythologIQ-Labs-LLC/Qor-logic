@@ -183,7 +183,7 @@ Qor-logic skill prompts currently produce code-correct, plan-correct, substantia
 ### Round 2 — hallucination scan
 
 - **Hallucination found:** concept-mapping subagent claimed `qor/gates/schema/*.schema.json` "not present in repo scan — either missing or not found." False — 9 schema files glob-visible.
-- **Hallucination found:** topology subagent claimed `qor/skills/meta/qor-deep-audit/SKILL.md` path for delegation context; actual path is `C:\Users\krkna\.claude\skills\qor-deep-audit\SKILL.md` (user scope, not repo). Impact: low — the skill exists, just in a different location than implied. Not a blocking error for remediation.
+- **Hallucination found:** topology subagent claimed `qor/skills/meta/qor-deep-audit/SKILL.md` path for delegation context; actual path is `~/.claude/skills\qor-deep-audit\SKILL.md` (user scope, not repo). Impact: low — the skill exists, just in a different location than implied. Not a blocking error for remediation.
 - **No hallucination:** boundary subagent's 5×5 boundary table claim — spot-checked against CLAUDE.md line 32 ("Skip files >100 KB") and substantiate.md lines 322-330 (NEVER list). Consistent.
 - **No hallucination:** cross-doc subagent's claim about `<phase>` XML tag case inconsistency — confirmed in plan SKILL.md line 21 (`<phase>PLAN</phase>`, uppercase) vs YAML frontmatter line 11 (`phase: plan`, lowercase).
 

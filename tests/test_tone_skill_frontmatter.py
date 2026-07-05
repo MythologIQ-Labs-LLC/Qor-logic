@@ -34,7 +34,6 @@ _EVIDENTIARY_WRITERS = frozenset({
     "qor-deep-audit-recon",
     "qor-deep-audit-remediate",
     "qor-shadow-process",
-    "qor-governance-compliance",
     "qor-process-review-cycle",
     "qor-meta-log-decision",
     "qor-meta-track-shadow",

@@ -1,0 +1,35 @@
+{
+  "phase": "implement",
+  "session_id": "2026-07-04T1840-46e4d9",
+  "ts": "2026-07-05T03:04:23Z",
+  "files_touched": [
+    "qor/scripts/publication_boundary_lint.py",
+    "tests/test_publication_boundary_lint.py",
+    "qor/reliability/intent_lock.py",
+    "qor/references/doctrine-publication-boundary.md",
+    "tests/test_publication_boundary_policy.py",
+    ".gitignore",
+    "qor/skills/governance/qor-audit/SKILL.md",
+    "docs/META_LEDGER.md (entry bodies; hash fields untouched)",
+    ".qor/gates/** (12 artifacts swept, 7 sidecars regenerated)",
+    "docs/archive/** (~300 files anonymized)",
+    "docs/SKILL_REGISTRY.md",
+    "README.md",
+    "CHANGELOG.md",
+    "docs/SYSTEM_STATE.md",
+    "qor/skills/governance/qor-governance-compliance/ (removed)",
+    "qor/dist/** (recompiled)"
+  ],
+  "tests_written": [
+    "tests/test_publication_boundary_lint.py (5 behavioral: abs-path, non-self URL, cross-repo issue shape, terms overlay, clean-file exit 0)",
+    "tests/test_publication_boundary_policy.py (3, authored by the policy-setup pass; green post-remediation)"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.118.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-05T03:04:23Z"
+  }
+}

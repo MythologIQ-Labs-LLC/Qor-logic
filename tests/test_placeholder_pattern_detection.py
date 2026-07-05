@@ -35,10 +35,10 @@ def test_repeating_bigram_detected():
     assert is_placeholder_pattern(value) is True
 
 
-def test_failsafe_failure_mode_pattern_detected():
-    """The literal Issue #54 FailSafe placeholder hash form must be flagged.
+def test_gh54_failure_mode_pattern_detected():
+    """The literal Issue #54 placeholder hash form must be flagged.
 
-    Per the issue body, the FailSafe ledger Entry #331 carried
+    Per the issue body, a sibling product's ledger Entry #331 carried
     `Content Hash: a1b2c3d4e5f6...` — ascending odd-position hex digits
     repeated across the 64-char span. This is the canonical example the
     detector must catch.

@@ -1,6 +1,6 @@
 ---
 name: qore-tauri2-ipc
-description: Tauri Rust IPC command wiring for Hearthlink. Use when adding or changing Tauri commands, invoke handler registration, AuthenticatedRequest payload shapes, or state management in src-tauri.
+description: Tauri Rust IPC command wiring for the host project. Use when adding or changing Tauri commands, invoke handler registration, AuthenticatedRequest payload shapes, or state management in src-tauri.
 creator: MythologIQ Labs, LLC
 ---
 

@@ -3,9 +3,8 @@
 > Output register should match the reader. Hash-chained evidentiary artifacts
 > stay technical; operator-facing prose adapts to the audience.
 
-Inspired by the MIT-licensed `caveman` project
-(https://github.com/JuliusBrussee/caveman). The compression angle there maps
-to a register angle here: same substance, different density of jargon.
+Inspired by the MIT-licensed `caveman` project. The compression angle there
+maps to a register angle here: same substance, different density of jargon.
 
 ## Tiers
 

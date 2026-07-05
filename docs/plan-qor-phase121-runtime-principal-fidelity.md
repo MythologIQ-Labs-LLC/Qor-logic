@@ -23,7 +23,7 @@ None blocking. One resolved design note recorded for the auditor:
 
 ## Context
 
-GH #177 (filed from an Accountable customer-app autonomous cycle; two independent false-PASS instances). Root cause: the verifying principal (`service_role` key, or a `SECURITY DEFINER` RPC running as table owner) has more privilege than the runtime caller (`authenticated`/`anon`), so TDD-Light/integration tests exercise a path that does not exist for real users. `qor-substantiate` returns PASS on code that `42501`s in production. The current skills have no runtime-principal fidelity requirement and no Data-API grant/view check; this phase ships both, fail-closed with disclosed-skip per the operator decision.
+GH #177 (filed from an external QA exemplar's customer-app autonomous cycle; two independent false-PASS instances). Root cause: the verifying principal (`service_role` key, or a `SECURITY DEFINER` RPC running as table owner) has more privilege than the runtime caller (`authenticated`/`anon`), so TDD-Light/integration tests exercise a path that does not exist for real users. `qor-substantiate` returns PASS on code that `42501`s in production. The current skills have no runtime-principal fidelity requirement and no Data-API grant/view check; this phase ships both, fail-closed with disclosed-skip per the operator decision.
 
 ## Feature Inventory Touches
 

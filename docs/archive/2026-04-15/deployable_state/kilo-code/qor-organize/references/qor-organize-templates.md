@@ -5,10 +5,10 @@
 ### Forbidden Paths (NEVER reorganize)
 
 ```
-FORBIDDEN_PATHS = ['.agent/', '.claude/', '.qorelogic/', '.failsafe/']
+FORBIDDEN_PATHS = ['.agent/', '.claude/', '.qorelogic/', '<consumer-governance-dotdir>/']
 ```
 
-### FailSafe Dev Repo Detection
+### Consumer Dev Repo Detection
 
 If ALL present: `src/Genesis/workflows/*.yml`, `build/transform.ps1`, `targets/`
 Then also exclude: `src/`, `qorelogic/`, `build/`, `targets/`, `PROD-Extension/`
@@ -17,11 +17,11 @@ Then also exclude: `src/`, `qorelogic/`, `build/`, `targets/`, `PROD-Extension/`
 
 ```python
 def is_path_safe_to_reorganize(path):
-    FORBIDDEN = ['.agent/', '.claude/', '.qorelogic/', '.failsafe/']
+    FORBIDDEN = ['.agent/', '.claude/', '.qorelogic/', '<consumer-governance-dotdir>/']
     for f in FORBIDDEN:
         if path.startswith(f):
             return False
-    if is_failsafe_dev_repo():
+    if is_consumer_dev_repo():
         for f in ['src/', 'qorelogic/', 'build/', 'targets/', 'PROD-Extension/']:
             if path.startswith(f):
                 return False
@@ -192,7 +192,7 @@ mv "[dest]" "[source]"
 # AI GOVERNANCE
 .agent/
 .claude/
-.failsafe/
+<consumer-governance-dotdir>/
 .qorelogic/
 CLAUDE.md
 GEMINI.md

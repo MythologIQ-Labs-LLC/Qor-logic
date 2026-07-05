@@ -1,6 +1,6 @@
 # Build Doctor Skill
 
-Diagnoses and fixes COREFORGE build configuration issues automatically.
+Diagnoses and fixes the host project's build configuration issues automatically.
 
 ## Purpose
 Prevents 80K+ token debugging sessions by detecting and fixing common build problems:

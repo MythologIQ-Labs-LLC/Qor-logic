@@ -15,7 +15,7 @@
 
 ## Open Questions
 
-None. The lint reuses the existing header-driven parser (`parse_index_rows`), the established WARN-only severity-2 event convention (`procedural_fidelity` / `dod_check`), and the Phase 75 disclosed-skip convention (`governance_index`). The motivating data is FailSafe's (FailSafe#206); the gate is owned here. Grounding in `docs/research-brief-surface-tag-feature-index-2026-06-08.md`.
+None. The lint reuses the existing header-driven parser (`parse_index_rows`), the established WARN-only severity-2 event convention (`procedural_fidelity` / `dod_check`), and the Phase 75 disclosed-skip convention (`governance_index`). The motivating data is the sibling governance repository's (an external repository's issue); the gate is owned here. Grounding in `docs/research-brief-surface-tag-feature-index-2026-06-08.md`.
 
 ## Feature Inventory Touches
 

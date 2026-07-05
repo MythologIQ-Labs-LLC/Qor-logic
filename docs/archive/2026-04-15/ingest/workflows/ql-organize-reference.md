@@ -20,7 +20,7 @@ description: Archetype templates, privacy patterns, and indicator mapping for /q
 .agent/staging/
 .claude/
 .qorelogic/
-.failsafe/
+<consumer-governance-dotdir>/
 
 # Environment Tokens
 .vsce-token
@@ -41,5 +41,5 @@ description: Archetype templates, privacy patterns, and indicator mapping for /q
 |-- .agent/
 |-- .claude/
 |-- .qorelogic/
-`-- .failsafe/
+`-- <consumer-governance-dotdir>/
 ```

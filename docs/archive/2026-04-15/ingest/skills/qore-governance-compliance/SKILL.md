@@ -1,6 +1,6 @@
 ---
 name: qore-governance-compliance
-description: Enforce FailSafe physical isolation and environment compliance constraints across repository structure, platform limits, and security hygiene.
+description: Enforce the downstream product's physical isolation and environment compliance constraints across repository structure, platform limits, and security hygiene.
 creator: MythologIQ Labs, LLC
 license: Proprietary (FailSafe Project)
 ---
@@ -31,9 +31,9 @@ license: Proprietary (FailSafe Project)
 
 ## What This Skill Does
 
-This skill enforces the "FailSafe Golden Rules" for repository integrity:
+This skill enforces the "product Golden Rules" for repository integrity:
 
-1.  **Physical Isolation**: Ensures app code stays in `FailSafe/` and workspace governance stays at the root.
+1.  **Physical Isolation**: Ensures app code stays in `<product>/` and workspace governance stays at the root.
 2.  **Environment Compliance**: Verifies that workflows, agents, and skills meet the technical requirements of Antigravity, VSCode, and Claude (e.g., Antigravity's 250-char description limit).
 3.  **Security Hygiene**: Audits the safety of Marketplace tokens and sensitive files.
 4.  **Structure Integrity**: Validates that all directories match the locked structure in `.qorelogic/workspace.json`.
@@ -49,15 +49,15 @@ When this skill is invoked:
 Verify that the "Isolation Boundary" is intact:
 
 - **Forbidden at Root**: Ensure `src/`, `extension/`, `build/`, `targets/` are NOT at the root level.
-- **Mandatory in FailSafe/**: Ensure the extension project and platform source directories exist in `FailSafe/`.
-- **Root Hygiene**: Check that the root only contains `.agent/`, `.claude/`, `.qorelogic/`, `.failsafe/`, `docs/`, and essential config files.
+- **Mandatory in <product>/**: Ensure the extension project and platform source directories exist in `<product>/`.
+- **Root Hygiene**: Check that the root only contains `.agent/`, `.claude/`, `.qorelogic/`, `<consumer-governance-dotdir>/`, `docs/`, and essential config files.
 
 ### 2. Perform Constraint Audit
 
-Check all workflows in `FailSafe/` for platform-specific violations:
+Check all workflows in `<product>/` for platform-specific violations:
 
-- **Antigravity**: Check all `.md` files in `FailSafe/Antigravity/` for `description` lengths > 250 characters.
-- **VSCode**: Check that `FailSafe/VSCode/` uses the flat `prompts/` structure and `.prompt.md` extensions.
+- **Antigravity**: Check all `.md` files in `<product>/Antigravity/` for `description` lengths > 250 characters.
+- **VSCode**: Check that `<product>/VSCode/` uses the flat `prompts/` structure and `.prompt.md` extensions.
 - **Claude**: Check for XML skill tags if required.
 
 ### 3. Perform Security Audit
@@ -80,26 +80,26 @@ Generate a structured report:
 
 ### Physical Isolation (Protocol-A)
 
-- **Rule**: `FAILSAFE_ISOLATION_BOUNDARY` must be 100% consistent.
-- **Check**: `ls FailSafe/extension` -> If False: ❌ FAIL.
+- **Rule**: `PRODUCT_ISOLATION_BOUNDARY` must be 100% consistent.
+- **Check**: `ls <product>/extension` -> If False: ❌ FAIL.
 - **Check**: `ls extension/` -> If True: ❌ FAIL.
 
 ### Antigravity Description (Protocol-B)
 
 - **Rule**: `GEMINI_DESC_LIMIT` = 250.
-- **Action**: Invoke `FailSafe/build/validate.ps1` to perform character counts.
+- **Action**: Invoke `<product>/build/validate.ps1` to perform character counts.
 
 ### VSCode Flatness (Protocol-C)
 
 - **Rule**: `VSCODE_PROMPT_PATH` = `.github/prompts/`.
-- **Check**: `ls FailSafe/VSCode/Genesis` -> If True: ❌ FAIL (Modules must be flattened to `prompts/`).
+- **Check**: `ls <product>/VSCode/Genesis` -> If True: ❌ FAIL (Modules must be flattened to `prompts/`).
 
 ---
 
 ## Automated Enforcement
 
 The skill should periodically run the automated check script:
-`G:\MythologIQ\FailSafe\.agent\skills\compliance\scripts\verify-compliance.ps1`
+`a sibling repository's .agent\skills\compliance\scripts\verify-compliance.ps1`
 
 ---
 
@@ -108,7 +108,7 @@ The skill should periodically run the automated check script:
 1.  ✅ **Zero Isolation Leaks**: App code never drifts back to the root.
 2.  ✅ **100% Metadata Compliance**: No workflow ever exceeds platform character limits.
 3.  ✅ **Credential Safety**: Marketplace tokens are never committed.
-4.  ✅ **Deployment Readiness**: The `FailSafe/` container is always ready to be packaged.
+4.  ✅ **Deployment Readiness**: The `<product>/` container is always ready to be packaged.
 
 ---
 

@@ -17,6 +17,21 @@ Drop-in instructions for Claude Code (and similar harnesses). Keep responses ter
 - Skip files >100 KB unless explicitly required.
 - Reference by path; do not paste large content inline.
 
+## Public-repository boundary (mandatory)
+
+- Qor-logic is public and standalone.
+- Delete or anonymize every direct reference to a repository outside Qor-logic.
+- Outside repositories may inform private reasoning only.
+- The sole exception is a deliberate public-safe record under `docs/Lessons-Learned/`.
+- This applies retroactively and to code, comments, tests, fixtures, generated
+  output, skills, plans, research, docs, ledgers, changelogs, issues, PRs,
+  releases, and persistable agent output.
+- Never introduce imports, dependencies, destinations, paths, credentials, or
+  operational coupling that identify or hardcode a specific outside
+  repository. Generic operator-configured interfaces are permitted.
+- Canonical contract:
+  [publication-boundary](qor/references/doctrine-publication-boundary.md).
+
 ## Investigation
 
 - Use Glob/Grep to locate before Read.
@@ -42,4 +57,4 @@ Drop-in instructions for Claude Code (and similar harnesses). Keep responses ter
 
 ## Authority
 
-User instructions override this file. Full doctrines: [token-efficiency](qor/references/doctrine-token-efficiency.md), [test-discipline](qor/references/doctrine-test-discipline.md), [test-functionality](qor/references/doctrine-test-functionality.md), [governance-enforcement](qor/references/doctrine-governance-enforcement.md), [attribution](qor/references/doctrine-attribution.md), [eu-ai-act](qor/references/doctrine-eu-ai-act.md), [ai-rmf](qor/references/doctrine-ai-rmf.md). Bundle protocol: [workflow-bundles](qor/gates/workflow-bundles.md). Skill handoff matrix: [delegation-table](qor/gates/delegation-table.md).
+User instructions override this file. Full doctrines: [token-efficiency](qor/references/doctrine-token-efficiency.md), [test-discipline](qor/references/doctrine-test-discipline.md), [test-functionality](qor/references/doctrine-test-functionality.md), [governance-enforcement](qor/references/doctrine-governance-enforcement.md), [publication-boundary](qor/references/doctrine-publication-boundary.md), [attribution](qor/references/doctrine-attribution.md), [eu-ai-act](qor/references/doctrine-eu-ai-act.md), [ai-rmf](qor/references/doctrine-ai-rmf.md). Bundle protocol: [workflow-bundles](qor/gates/workflow-bundles.md). Skill handoff matrix: [delegation-table](qor/gates/delegation-table.md).

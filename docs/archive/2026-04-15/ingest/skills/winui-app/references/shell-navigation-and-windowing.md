@@ -5,8 +5,8 @@ tags: navigationview, titlebar, appwindow, multi-window, shell
 sources:
   - https://learn.microsoft.com/windows/apps/design/basics/navigation-basics
   - https://learn.microsoft.com/windows/apps/design/basics/titlebar-design
-  - https://github.com/microsoft/WinUI-Gallery
-  - https://github.com/microsoft/WindowsAppSDK-Samples/tree/main/Samples/Windowing
+  - github:microsoft/WinUI-Gallery
+  - github:microsoft/WindowsAppSDK-Samples/tree/main/Samples/Windowing
 ---
 
 ## What This Reference Is For

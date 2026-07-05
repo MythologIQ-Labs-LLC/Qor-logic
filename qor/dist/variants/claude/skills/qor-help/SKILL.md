@@ -6,7 +6,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/Qor-logic
+    repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
 
     path: qor/skills/meta/qor-help
 phase: help
@@ -100,7 +100,6 @@ Bundles: /qor-deep-audit, /qor-onboard-codebase, /qor-process-review-cycle
 | Command | Purpose | Typical When |
 |---|---|---|
 | `/qor-shadow-process` | Append a process-failure event to PROCESS_SHADOW_GENOME. | Auto-invoked by override paths; rarely called manually. |
-| `/qor-governance-compliance` | Verify workspace governance compliance (root hygiene, sensitive file checks, structure integrity). | Periodic governance audit; before release. |
 
 ### Migrated qore-* skills
 

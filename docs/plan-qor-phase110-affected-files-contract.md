@@ -23,7 +23,7 @@ None. Issues #133, #134, #135, #136, #137 carry detailed specifications, propose
 
 ## Context
 
-COREFORGE Phase 399 produced four same-family defects in one audit cycle: prose promises whose implementing files were not enumerated in any phase's `### Affected Files` block are by construction unfulfilled. The family lacks a named countermeasure entry, so each sub-leaf (call-graph cascade, persistence cascade) is rediscovered independently. This phase anchors the family doctrine (#136) and ships the auditor-side + author-side countermeasures (#133, #134, #135, #137).
+a sibling consumer workspace's Phase 399 produced four same-family defects in one audit cycle: prose promises whose implementing files were not enumerated in any phase's `### Affected Files` block are by construction unfulfilled. The family lacks a named countermeasure entry, so each sub-leaf (call-graph cascade, persistence cascade) is rediscovered independently. This phase anchors the family doctrine (#136) and ships the auditor-side + author-side countermeasures (#133, #134, #135, #137).
 
 ## Feature Inventory Touches
 
@@ -35,7 +35,7 @@ Empty. Governance tooling + doctrine + skill-prompt enforcement only; no `src/` 
 ### Affected Files
 
 - `tests/test_affected_files_contract_doctrine.py` - NEW. Behavioral check that the doctrine defines the entry and that the three sibling cross-references are bidirectional.
-- `qor/references/doctrine-shadow-genome-countermeasures.md` - AMENDED. Add `SG-AffectedFilesContract-A` entry (text from #136) after `SG-AuthorAuditMomentum-A`; add the new SG id to the cross-reference lines of the two sibling entries that exist in this repo: `SG-CitationDrift-A` and `SG-AuthorAuditMomentum-A`. `SG-EnumerationVerificationGap-A` is a COREFORGE consumer-repo entry (Phase 373) not present in qor-logic; it remains a one-way prose cross-reference in the new entry body with no back-edit (no such entry to edit here).
+- `qor/references/doctrine-shadow-genome-countermeasures.md` - AMENDED. Add `SG-AffectedFilesContract-A` entry (text from #136) after `SG-AuthorAuditMomentum-A`; add the new SG id to the cross-reference lines of the two sibling entries that exist in this repo: `SG-CitationDrift-A` and `SG-AuthorAuditMomentum-A`. `SG-EnumerationVerificationGap-A` is a sibling consumer workspace's consumer-repo entry (Phase 373) not present in qor-logic; it remains a one-way prose cross-reference in the new entry body with no back-edit (no such entry to edit here).
 
 ### Changes
 

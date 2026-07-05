@@ -19,7 +19,7 @@
 - non_goals:
   - Cryptographic signing or sandboxing of hooks. Out of scope; consumers apply repo-level review controls.
   - Async/concurrent hook invocation. Synchronous-by-design for determinism and ordering.
-  - Replacing the FailSafe-Pro filesystem-watcher push channel — Phase 57 ships an *additional* push-channel; consumers may use either.
+  - Replacing the sibling repository's filesystem-watcher push channel — Phase 57 ships an *additional* push-channel; consumers may use either.
   - Bidirectional event flow. Hooks observe; they do not affect the gate write.
 - exclusions:
   - Modifying the gate-artifact schema or write-path semantics. Phase 57 only adds a post-write hook fire.
@@ -38,7 +38,7 @@ Phase 57 reintegrates the PR's API surface (the `GateWrittenEvent` contract, ent
 ## Open Questions
 
 1. **Default fire-on-phase set**: should the hook fire on every successful `write_gate_artifact` call (every phase: research/plan/audit/implement/substantiate/deliver/remediate/etc.), or only on a subset (e.g. only seal-adjacent phases)? Default: **fire on every phase** (matches PR #12; downstream consumers filter by `event.phase` themselves).
-2. **Hook-log location**: `<root>/.qor/hooks/hooks.log` (PR #12 default) or `<root>/.qor/gates/<sid>/hooks.log` (sidecar to the session)? Default: **`<root>/.qor/hooks/hooks.log`** — repo-scoped, append-only, easier for FailSafe-Pro to tail.
+2. **Hook-log location**: `<root>/.qor/hooks/hooks.log` (PR #12 default) or `<root>/.qor/gates/<sid>/hooks.log` (sidecar to the session)? Default: **`<root>/.qor/hooks/hooks.log`** — repo-scoped, append-only, easier for a sibling governance repository to tail.
 3. **Subprocess hook argv**: PR #12 appends `str(event.artifact_path)` as the final argv element. Should `event.payload_sha256` and `event.phase` also be passed? Default: **artifact_path only** — hooks parse the file at the path and extract whatever they need; minimizes argv-size attack surface and matches PR #12.
 
 Defaults will be encoded unless overridden during audit.
@@ -64,7 +64,7 @@ Defaults will be encoded unless overridden during audit.
 
 ### Changes
 
-The Phase 57 module's primary docstring cites Phase 57 and the framework surface it serves (downstream observer push-channel for governance-ledger bridges; OWASP LLM07 Insecure Plugin Design adjacent; closes the polling-vs-push gap that prompted PR #12). The "B24 / FailSafe-Pro origin" attribution moves to `CHANGELOG.md` per Phase 53/54/55/56 docstring discipline.
+The Phase 57 module's primary docstring cites Phase 57 and the framework surface it serves (downstream observer push-channel for governance-ledger bridges; OWASP LLM07 Insecure Plugin Design adjacent; closes the polling-vs-push gap that prompted PR #12). The "B24 / a sibling governance repository origin" attribution moves to `CHANGELOG.md` per Phase 53/54/55/56 docstring discipline.
 
 `_invoke_hook_safely` uses `except Exception` (not `except BaseException`). `KeyboardInterrupt` and `SystemExit` propagate. The `# noqa: BLE001` comment is removed because `Exception` does not trip the BLE001 rule.
 
@@ -150,7 +150,7 @@ The hook fire is wrapped in `try/except Exception` so that no hook failure can b
 - `qor/references/doctrine-hook-contract.md` — NEW: lifts and rewrites PR #12's `hook-contract.md` content under qor-logic doctrine conventions. Sections: `## Applicability`, `## Event payload`, `## Entry-point registration`, `## Config-file format`, `## Invocation order`, `## Log format`, `## Trust model`, `## Performance`, `## Phase 57 changes vs. PR #12 origin`. Adds a Phase 57-specific section explaining the `except Exception` (not `BaseException`) discipline and the SIGINT-propagation contract.
 - `qor/references/glossary.md` — APPEND 2 new terms: `gate_written hook` (post-write observer event), `hook contract` (the doctrine specifying the event payload + dispatch semantics + trust model).
 - `qor/references/doctrine-shadow-genome-countermeasures.md` — APPEND new SG entry `SG-BareExceptionSwallowsSignals-A` codifying the BaseException-swallowing risk class + Phase 57 countermeasure (use `except Exception`; reserve `BaseException` only when explicitly handling `KeyboardInterrupt`/`SystemExit` for cleanup-then-reraise patterns).
-- `CHANGELOG.md` — APPEND `[0.43.0] - 2026-05-XX` entry summarizing Phase 57 (gate_written observer channel; closes PR #12; FailSafe-Pro consumer attribution noted here, NOT in module docstring per Phase 53+ discipline).
+- `CHANGELOG.md` — APPEND `[0.43.0] - 2026-05-XX` entry summarizing Phase 57 (gate_written observer channel; closes PR #12; a sibling governance repository consumer attribution noted here, NOT in module docstring per Phase 53+ discipline).
 
 ### Changes
 

@@ -30,7 +30,7 @@ rust-version = "1.70"
 # Required for crates.io
 description = "A fast, ergonomic HTTP client for Rust"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/username/my-awesome-crate"
+repository = "github:username/my-awesome-crate"
 
 # Highly recommended
 documentation = "https://docs.rs/my-awesome-crate"
@@ -64,7 +64,7 @@ maintenance = { status = "actively-developed" }
 
 | Field | Purpose | Example |
 |-------|---------|---------|
-| `repository` | Link to source code | `https://github.com/user/repo` |
+| `repository` | Link to source code | `github:user/repo` |
 | `documentation` | Link to docs | `https://docs.rs/crate` |
 | `readme` | Path to README | `README.md` |
 | `keywords` | Search terms (max 5) | `["http", "async"]` |

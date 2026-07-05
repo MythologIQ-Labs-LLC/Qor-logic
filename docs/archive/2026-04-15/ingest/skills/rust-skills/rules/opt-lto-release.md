@@ -57,14 +57,14 @@ lto = "off"
 
 ```toml
 # From Anchor (Solana framework)
-# https://github.com/solana-foundation/anchor/blob/master/cli/src/rust_template.rs
+# github:solana-foundation/anchor/blob/master/cli/src/rust_template.rs
 [profile.release]
 overflow-checks = true
 lto = "fat"
 codegen-units = 1
 
 # From sol-trade-sdk
-# https://github.com/0xfnzero/sol-trade-sdk
+# github:0xfnzero/sol-trade-sdk
 [profile.release]
 opt-level = 3
 lto = "fat"

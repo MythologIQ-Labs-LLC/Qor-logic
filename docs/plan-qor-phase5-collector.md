@@ -51,7 +51,7 @@ Config schema (`qor/gates/schema/repos_config.schema.json`):
   "version": "1",
   "meta_repo": "MythologIQ-Labs-LLC/Qor-logic",
   "repos": [
-    {"path": "G:/MythologIQ/Qorlogic", "name": "qor-logic", "enabled": true}
+    {"path": "<path-to-local-clone>", "name": "qor-logic", "enabled": true}
   ],
   "threshold": 10,
   "stale_days": 90

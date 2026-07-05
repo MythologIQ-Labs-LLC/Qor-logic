@@ -1,6 +1,6 @@
 """Normalize legacy META_LEDGER hash markup to the canonical verifiable form.
 
-Phase 170 (GH #252): absorbed from FailSafe-Pro's proven
+Phase 170 (GH #252): absorbed from a sibling governance repository's proven
 ``scripts/migrate_ledger_v0_14.py`` with house discipline added: ``--dry-run``
 (Phase 167 contract), idempotence (canonical input re-migrates byte-stable),
 honest exit codes (1 when partial/no-hash entries remain), and same-path

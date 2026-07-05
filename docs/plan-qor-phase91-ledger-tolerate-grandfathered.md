@@ -15,7 +15,7 @@
   grandfather cutoff (default 207, the same cutoff Phase 76 used for
   `check_previous_hash_uniqueness`). This does NOT fix the ledger — it
   lowers verifier gate severity for the specifically-known failure
-  pattern so consumer workspaces (e.g., Accountable-App-3.0 per GH #85)
+  pattern so consumer workspaces (e.g., an external QA exemplar's app per GH #85)
   can ship clean `verify-ledger` results immediately. Forward-only by
   construction: no past entries are modified; no new ledger entry type
   is introduced; no operator-authorization protocol is needed because
@@ -53,7 +53,7 @@ feature. `feature_inventory_touches`: `[]`.
 
 ## Design notes
 
-GH #85 documents a consumer-workspace blocker: `Accountable-App-3.0` has
+GH #85 documents a consumer-workspace blocker: an external QA exemplar's app has
 six entries (#16a/b, #17a/b, #18a/b) from a Phase-76-era concurrent
 federation race, plus an Entry #20 downstream chain-hash mismatch. The
 canonical Qor-logic META_LEDGER carries the analogous pre-Phase-76

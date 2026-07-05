@@ -50,7 +50,7 @@ abort. Per `qor/references/doctrine-shadow-genome-countermeasures.md`
 ## Step 4.6.8 — Merge-velocity throttle check (Phase 93 wiring; GH #89; fail-closed since Phase 129, GH #153)
 
 Fail-closed throttle on stabilization-capacity strain from `origin/main`'s recent
-merge history. The Bicameral originating recurrence (27 PRs / 14,758 additions /
+merge history. The sibling-workspace originating recurrence (27 PRs / 14,758 additions /
 repair cluster #346-#353 / failing e2e on tail PR #354 in a single window) showed
 that throughput, branch integration, and shared-surface expansion can exceed the
 rate at which the project can reliably absorb changes. The CLI exits 0 on
@@ -114,7 +114,7 @@ missing a surface value appends a severity-2 `degradation` event
 (`details.gate = feature_index_surface_lint`, `details.untagged = [...]`) and
 the seal proceeds. A header without a `Surface` column is a Phase 75
 disclosed-skip (`gate_skipped_prerequisite_absent`); a missing `FEATURE_INDEX.md`
-is a silent skip. The motivating data is FailSafe's (FailSafe#206); the gate
+is a silent skip. The motivating data is the sibling governance repository's (an external repository's issue); the gate
 lives in qor-logic. V2 fail-closed promotion (remove the WARN escape) mirrors the Phase
 114->122 `feature_index_verify` ladder and must wait until the consuming repo
 reports full surface coverage. Per `qor/references/doctrine-feature-inventory.md`

@@ -56,4 +56,4 @@ The pattern is now operative as a complete countermeasure across structure -> de
 - Tag `v0.75.0` at the merge commit.
 - Approve the PyPI deployment in the release workflow environment.
 
-🤖 Authored via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)
+🤖 Authored via [Qor-logic SDLC](github:MythologIQ-Labs-LLC/qor-logic) on [Claude Code](https://claude.com/claude-code)

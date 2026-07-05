@@ -6,7 +6,7 @@ V2 changes vs V1:
   command sections, multi-module python invocations, --apply-vs-check patterns.
 - New `dep_name` operation kind: cross-checks projection-table Imports rows
   against `Cargo.toml [dependencies]` and `requirements{,-dev}.txt`. Catches
-  the original COREFORGE V1 finding (dep named in plan but not declared).
+  the original consumer-workspace V1 finding (dep named in plan but not declared).
 - New `--strict` flag preserves V1 broad-rule for debugging.
 
 Phase 128 (GH #161): V2.3 `--apply` rewrite mode (normalize divergent drift

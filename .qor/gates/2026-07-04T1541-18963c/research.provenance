@@ -1,7 +1,1 @@
-{
-  "alg": "HMAC-SHA256",
-  "hmac_tag": "5f453192fa0fca353a3f2f8281e7b3cff8e959ae575a4267fd99ecf3545c0fa7",
-  "payload_sha256": "7bb20ee1ce4c164cd1f1b11e89ab41c89be7012e15da8bc86c7aa90f625f006d",
-  "phase": "research",
-  "session_id": "2026-07-04T1541-18963c"
-}
+{"alg": "HMAC-SHA256", "hmac_tag": "5f453192fa0fca353a3f2f8281e7b3cff8e959ae575a4267fd99ecf3545c0fa7", "payload_sha256": "adc7651e40bc036e97df206082d7f355bc487b2e482551d427e82fb2b6ed2bd2", "phase": "research", "session_id": "2026-07-04T1541-18963c", "remediated": "phase-172 publication-boundary sweep; hmac_tag stale post-edit"}

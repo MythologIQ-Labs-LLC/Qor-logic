@@ -10,8 +10,8 @@
   "findings": [
     {
       "topic": "premise correction",
-      "claim": "Only the migration tool exists to absorb; mirroring is design-only upstream (5 unresolved operator decisions, explicit execution gate); the SQLite adapter is already distributed via bicameral-mcp",
-      "citation": "FailSafe-Pro/scripts/migrate_ledger_v0_14.py; bicameral-factory PUBLIC_REPO_GOVERNANCE_AGGREGATION.md:75-85 + GOVERNANCE_DOC_TRACKING_PROPAGATION.md:103-115; bicameral-mcp adapters/ledger.py"
+      "claim": "Only the migration tool exists to absorb; mirroring is design-only upstream (5 unresolved operator decisions, explicit execution gate); the SQLite adapter is already distributed via a sibling governance repository",
+      "citation": "a sibling governance repository/scripts/migrate_ledger_v0_14.py; a sibling governance repository PUBLIC_REPO_GOVERNANCE_AGGREGATION.md:75-85 + GOVERNANCE_DOC_TRACKING_PROPAGATION.md:103-115; a sibling governance repository adapters/ledger.py"
     },
     {
       "topic": "migration mechanics",
@@ -30,10 +30,10 @@
     }
   ],
   "sources": [
-    "G:/MythologIQ/FailSafe-Pro/scripts/migrate_ledger_v0_14.py",
-    "G:/MythologIQ/bicameral-factory/docs/governance/PUBLIC_REPO_GOVERNANCE_AGGREGATION.md",
-    "G:/MythologIQ/bicameral-mcp/adapters/ledger.py",
-    "G:/MythologIQ/bicameral-mcp/cli/ledger_io.py",
+    "an external repository's ledger-migration script",
+    "an external repository's governance-mirroring design",
+    "an external repository's ledger adapter",
+    "an external repository's ledger IO module",
     "qor/scripts/ledger_hash.py",
     "qor/seed.py"
   ],

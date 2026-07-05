@@ -6,13 +6,13 @@
 
 ## Open Questions
 
-None. Closes GH #213 (downstream FailSafe blocker). The Shadow Genome graph
+None. Closes GH #213 (downstream consumer blocker). The Shadow Genome graph
 (`qor.scripts.shadow_genome_graph`) emits only the causal layer (checkpoint / state / failure /
 governance); the trust-transition, federation-peer, and learning-maturity surfaces were DECLINED in the
-doctrine as "infrastructure without a consumer" (#139). That premise no longer holds -- FailSafe (#196,
+doctrine as "infrastructure without a consumer" (#139). That premise no longer holds -- a sibling governance repository (#196,
 shipped) is the consumer. Operator decision settled: **emitter-API + derive** -- qor-logic owns the
 canonical schema + recorder methods and surfaces them in `to_dict`; it DERIVES failure-node maturity from
-its own linked data where available; trust-transitions + federation-peer status are fed by the FailSafe
+its own linked data where available; trust-transitions + federation-peer status are fed by the downstream consumer
 adapter through the API. All additions are strictly append-only (the doctrine's core invariant). The
 doctrine's "Scope boundary" section is updated to record that the consumer now exists.
 
@@ -106,13 +106,13 @@ nodes gain a `maturity` field = `{stage, ...annotation}` (OBSERVED when un-annot
 
 ### Affected Files
 
-- `qor/references/doctrine-shadow-genome-graph.md` - update the "Scope boundary" section: the trust / federation / maturity producers are now IN scope (consumer = FailSafe #196 / #213), emitter-API + derive model; record the append-only handling.
+- `qor/references/doctrine-shadow-genome-graph.md` - update the "Scope boundary" section: the trust / federation / maturity producers are now IN scope (consumer = a sibling governance repository #196 / #213), emitter-API + derive model; record the append-only handling.
 
 ## Definition of Done
 
 ### Deliverable: D-genome-producers
 
-- **D1**: the Shadow Genome graph emits trust-transition events, federation-peer status, and failure-node maturity, so FailSafe's render-ready surfaces are sourced.
+- **D1**: the Shadow Genome graph emits trust-transition events, federation-peer status, and failure-node maturity, so the sibling governance repository's render-ready surfaces are sourced.
 - **D2**: `record_trust_transition` / `set_federation_peer` / `annotate_failure_maturity` + `derive_maturity_stage` exist and are append-only; `to_dict` gains `trust_transitions` + `federation_peers` and maturity on failure nodes; `nodes`/`edges` unchanged (back-compat).
 - **D3**: ledger SEAL records #213 closed; the doctrine "Scope boundary" is updated (consumer now exists).
 - **D4**: `test_record_promotion_sets_direction` + `test_to_dict_surfaces_trust_transitions` + `test_latest_state_wins` + `test_derive_stage_ladder` + `test_annotate_non_failure_rejected`.

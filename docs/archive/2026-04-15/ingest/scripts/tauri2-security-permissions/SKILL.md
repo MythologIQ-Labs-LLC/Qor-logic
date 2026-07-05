@@ -1,6 +1,6 @@
 ﻿---
 name: tauri2-security-permissions
-description: Configure and audit Tauri 2.x security for capabilities, window permissions, CSP, and resource access. Use when editing tauri.conf.json, adding or changing Tauri commands/plugins, migrating from allowlist to capabilities, or tightening permissions in Hearthlink.
+description: Configure and audit Tauri 2.x security for capabilities, window permissions, CSP, and resource access. Use when editing tauri.conf.json, adding or changing Tauri commands/plugins, migrating from allowlist to capabilities, or tightening permissions in the host project.
 ---
 
 # Tauri2 Security Permissions

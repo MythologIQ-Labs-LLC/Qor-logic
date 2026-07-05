@@ -1,18 +1,18 @@
 source:
   type: internal
-  system: FailSafe
-  repository: MythologIQ/FailSafe
+  system: Qor-logic
+  repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
 creator:
   name: MythologIQ Labs, LLC
 skill_family:
-  namespace: failsafe
+  namespace: sibling-product
   classification: runtime-audit
 license:
   file: ../../../LICENSE
 maintainer:
-  team: FailSafe UX Reliability
+  team: a sibling governance repository UX Reliability
 imported:
-  bundled_with_failsafe: true
+  bundled_with_governance_dist: true
   date: 2026-02-10
 notes:
-  - First-party FailSafe skill wrapper for Chrome DevTools MCP workflows.
+  - First-party a sibling governance repository skill wrapper for Chrome DevTools MCP workflows.

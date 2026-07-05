@@ -3,7 +3,7 @@
 **Date**: 2026-07-04
 **Analyst**: The Qor-logic Analyst
 **Target**: GH #248 -- short chain for low-risk changes, full ceremony for high-risk (perspective-reset rec 1)
-**Scope**: chain machinery, existing risk axes, PAMA reference, design shapes, Governor decisions
+**Scope**: chain machinery, existing risk axes, an external mutation-classification doctrine (M0-M5 classes) reference, design shapes, Governor decisions
 
 ---
 
@@ -16,7 +16,7 @@ Every change today traverses the six-phase chain (`gate_chain.py:28`) with ~8 ef
 1. **Chain + priors**: `CHAIN = [research, plan, audit, implement, substantiate, validate]` (gate_chain.py:28); `check_prior_artifact` resolves the prior by index (50-99) with the ideation alternative-prior carve-out (102-117) proving substitutable priors are an established pattern.
 2. **Completeness**: `REQUIRED_PHASES = (plan, audit, implement, substantiate)` hardcoded (gate_chain_completeness.py:20); `check()` (52-88) validates each artifact per sealed phase >= 52. A short chain fails it today; the seam is reading a declared set from the session's plan.json with the current tuple as default.
 3. **Existing axes**: `change_class` (hotfix/feature/breaking) lives in plan prose + artifact payloads and drives semver + release-class gates; `risk_grade` (L1/L2/L3) is enum-ed in audit.schema.json:15 and routed by `qor/capabilities/risk.py:55-79` from file paths (L3: substantiate/ledger_hash/hash_guard; L2: META_LEDGER/implement/dependency manifests; L1 default). Tiering composes these rather than adding a third taxonomy: the DECLARATION is the artifact set; the GUARD is risk routing + change_class.
-4. **PAMA reference** (bicameral-factory/PAMA.md:269-335): M0-M5 target classes with default treatments; alignment M0/M1->L1, M2/M3->L2, M4/M5->L3. Adopted as rationale, not as a new field.
+4. **External mutation-classification doctrine reference** (M0-M5 classes; doctrine file sections 269-335): M0-M5 target classes with default treatments; alignment M0/M1->L1, M2/M3->L2, M4/M5->L3. Adopted as rationale, not as a new field.
 5. **Skip precedents**: Phase 75 operator-signaled SKIP + shadow event; Phase 59 advisory-gate override with severity-1 logging. An audit-skip must follow the same discipline: never silent, always evidenced.
 6. **Anchors that must move**: chain.md's "implement reads audit.json (must be PASS)" row; delegation-table audit->implement row; gate_chain_completeness tests (tests/test_gate_chain_completeness.py).
 

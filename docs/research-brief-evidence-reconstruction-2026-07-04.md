@@ -2,7 +2,7 @@
 
 **Date**: 2026-07-04
 **Analyst**: The Qor-logic Analyst
-**Target**: GH #251 -- reconstruct audit evidence on demand from signals already recorded; freeze net-new ceremony artifacts (perspective-reset rec 5; MS agent-governance-toolkit ADR 0018 posture)
+**Target**: GH #251 -- reconstruct audit evidence on demand from signals already recorded; freeze net-new ceremony artifacts (perspective-reset rec 5; an external agent-governance toolkit's ADR 0018 posture)
 **Scope**: per-session signal inventory, existing assemblers, the freeze rule's smallest executable form
 
 ---

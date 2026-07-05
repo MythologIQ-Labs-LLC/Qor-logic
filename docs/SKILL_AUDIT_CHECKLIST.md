@@ -40,7 +40,7 @@ Manual review. Evaluates clarity and reusability.
 |---|---|
 | Vague step | "Consider the architecture" |
 | Subjective criterion | "Code is clean" |
-| Project leak | "Update the FailSafe ledger" |
+| Project leak | "Update the sibling governance repository ledger" |
 | Missing verb | "Error handling" (step without action) |
 
 ---

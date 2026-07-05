@@ -6,7 +6,7 @@ description: Pause governance to use third-party skills with explicit consent
 
 ## Purpose
 
-Explicitly pause FailSafe governance tracking before using third-party skills (e.g., Superpowers, external AI tools). This creates a **consent checkpoint** that:
+Explicitly pause a sibling governance repository governance tracking before using third-party skills (e.g., Superpowers, external AI tools). This creates a **consent checkpoint** that:
 
 1. Records the current system state
 2. Logs `GOVERNANCE_PAUSED` to the ledger

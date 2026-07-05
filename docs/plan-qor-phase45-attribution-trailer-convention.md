@@ -126,7 +126,7 @@ Sections:
 4. **Helper API contract.** Function signatures, default constants, override semantics. Notes that the model arg is required (varies per session) and everything else has a sensible default (rarely changes).
 5. **Emoji exception (narrow).** The CLAUDE.md "no non-ASCII chars in code/data" rule excepts bot-attribution trailer text. Rationale: the `🤖` is the visual GitHub-UI signal that a trailer is bot-authored; dropping it loses continuity with the existing `Generated with [Claude Code]` convention readers already recognize. Exception is scoped — does not extend to commit subject lines, code identifiers, log messages, or any other surface.
 6. **CHANGELOG placement.** The italic attribution line goes beneath the version header, not on it. Preserves the `## [X.Y.Z] - YYYY-MM-DD` parser contract in [changelog_stamp.py](qor/scripts/changelog_stamp.py). Insertion is out of scope for Phase 45; helper exposes the line for future wiring.
-7. **Worked example.** Cites issue #18's BicameralAI MCP PR as the originating use case.
+7. **Worked example.** Cites issue #18's external MCP-project PR as the originating use case.
 
 ### Root `ATTRIBUTION.md` content
 

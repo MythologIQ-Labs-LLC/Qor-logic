@@ -13,7 +13,7 @@ None — all resolved by registry analysis and user directives.
 
 ### Changes
 
-Move Tauri/COREFORGE-specific utilities that have no generic value:
+Move Tauri/host-app-specific utilities that have no generic value:
 
 ```
 ingest/internal/utilities/build-doctor.md         → ingest/experimental/build-doctor.md
@@ -36,21 +36,21 @@ These are preserved (not deleted) but excluded from processing pipeline.
 
 ### Changes
 
-For each overlap pair, extract generic methodology from the utility (discard COREFORGE references) and merge into the third-party agent definition:
+For each overlap pair, extract generic methodology from the utility (discard host-app references) and merge into the third-party agent definition:
 
 **code-reviewer** (483-line utility → enhanced agent):
 - Extract: review process, quality checklists, severity classification, Definition of Done
-- Discard: COREFORGE module names, Alden/Vault/Arbiter references, specific coverage targets
+- Discard: host-app module names, Alden/Vault/Arbiter references, specific coverage targets
 - Merge into: `ingest/third-party/agents/code-reviewer.md`
 
 **accessibility-specialist** (566-line utility → enhanced agent):
 - Extract: WCAG checklist, keyboard nav testing, screen reader compatibility, cognitive accessibility
-- Discard: COREFORGE component names, specific Axe config
+- Discard: host-app component names, specific Axe config
 - Merge into: `ingest/third-party/agents/accessibility-tester.md`
 
 **documentation-scribe** (773-line utility → enhanced agent):
 - Extract: doc standards, API doc patterns, changelog conventions, README structure
-- Discard: COREFORGE-specific examples, module references
+- Discard: host-app-specific examples, module references
 - Merge into: `ingest/third-party/agents/documentation-engineer.md`
 
 After merge, delete consumed utilities from `ingest/internal/utilities/`.
@@ -74,7 +74,7 @@ After merge, delete consumed utilities from `ingest/internal/utilities/`.
 
 For each 400-800+ line utility, extract reusable patterns into a lean reference doc (under 250 lines):
 
-- Strip all COREFORGE/HearthLink project references
+- Strip all the host project/the host project project references
 - Keep: checklists, methodologies, decision frameworks, architectural patterns
 - Discard: project-specific examples, tool configs, team-specific processes
 - Format as reference doc (no `<skill>` block — these are pattern libraries, not invocable skills)

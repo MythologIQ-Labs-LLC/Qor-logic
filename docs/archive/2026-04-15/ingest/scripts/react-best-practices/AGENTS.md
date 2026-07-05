@@ -215,7 +215,7 @@ const [user, config, profile] = await Promise.all([
 
 We can also create all the promises first, and do `Promise.all()` at the end.
 
-Reference: [https://github.com/shuding/better-all](https://github.com/shuding/better-all)
+Reference: [github:shuding/better-all](github:shuding/better-all)
 
 ### 1.3 Prevent Waterfall Chains in API Routes
 
@@ -779,7 +779,7 @@ Use when sequential user actions hit multiple endpoints needing the same data wi
 
 **In traditional serverless:** Each invocation runs in isolation, so consider Redis for cross-process caching.
 
-Reference: [https://github.com/isaacs/node-lru-cache](https://github.com/isaacs/node-lru-cache)
+Reference: [github:isaacs/node-lru-cache](github:isaacs/node-lru-cache)
 
 ### 3.4 Minimize Serialization at RSC Boundaries
 
@@ -2283,7 +2283,7 @@ function Box({ isHighlighted }: { isHighlighted: boolean }) {
 
 Prefer CSS classes over inline styles when possible. CSS files are cached by the browser, and classes provide better separation of concerns and are easier to maintain.
 
-See [this gist](https://gist.github.com/paulirish/5d52fb081b3570c81e3a) and [CSS Triggers](https://csstriggers.com/) for more information on layout-forcing operations.
+See [this gist](https://gist.github:paulirish/5d52fb081b3570c81e3a) and [CSS Triggers](https://csstriggers.com/) for more information on layout-forcing operations.
 
 ### 7.2 Build Index Maps for Repeated Lookups
 
@@ -2928,7 +2928,7 @@ function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
 1. [https://react.dev](https://react.dev)
 2. [https://nextjs.org](https://nextjs.org)
 3. [https://swr.vercel.app](https://swr.vercel.app)
-4. [https://github.com/shuding/better-all](https://github.com/shuding/better-all)
-5. [https://github.com/isaacs/node-lru-cache](https://github.com/isaacs/node-lru-cache)
+4. [github:shuding/better-all](github:shuding/better-all)
+5. [github:isaacs/node-lru-cache](github:isaacs/node-lru-cache)
 6. [https://vercel.com/blog/how-we-optimized-package-imports-in-next-js](https://vercel.com/blog/how-we-optimized-package-imports-in-next-js)
 7. [https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast](https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast)

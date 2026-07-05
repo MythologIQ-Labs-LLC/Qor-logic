@@ -142,7 +142,7 @@ pub fn timeout(&mut self, t: Duration) -> &mut Self { ... }
 ## Evidence from reqwest
 
 ```rust
-// https://github.com/seanmonstar/reqwest/blob/master/src/async_impl/client.rs
+// github:seanmonstar/reqwest/blob/master/src/async_impl/client.rs
 
 #[must_use]
 pub struct ClientBuilder {

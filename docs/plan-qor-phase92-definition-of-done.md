@@ -56,7 +56,7 @@ introduces no `src/` user-facing feature. `feature_inventory_touches`:
 
 GH #86 documents a credibility class failure: multiple Qor phases can
 return PASS while the artifact in question is still a placeholder or a
-lie at runtime. The originating COREFORGE evidence (per the issue body)
+lie at runtime. The originating consumer-workspace evidence (per the issue body)
 named ~5 distinct production-credibility blockers (recovery routines
 hardcoded to `true`, vendor `handle_sync` placeholders, constraint
 checks returning `Ok(())`) that had previously sailed through
@@ -158,7 +158,7 @@ operator-readable home for the contract; the new SG entry catalogs
 the originating pattern.
 
 `SG-DoDImplicit-A` doctrine entry catalogs the lie-shipping pattern,
-the COREFORGE originating recurrence (the ~5 production-credibility
+the sibling-consumer-workspace originating recurrence (the ~5 production-credibility
 blockers from the issue body), and Phase 92's V1 countermeasure. V2
 empirical execution is explicitly named as the unfinished half.
 
@@ -344,7 +344,7 @@ to fail-closed once adoption matures. Cross-reference:
   shape and ledger chain; none require empirical observation of
   runtime behavior. Seal entries land with quietly-incomplete D4
   coverage; trust in "all gates ran" erodes.
-- **Originating recurrence**: COREFORGE consumer session (per GH #86
+- **Originating recurrence**: sibling consumer-workspace session (per GH #86
   body) — ~5 production-credibility blockers (recovery routines
   hardcoded to `true`, vendor `handle_sync` placeholders, constraint
   checks returning `Ok(())`) sailed through `PASS → seal` cycles;

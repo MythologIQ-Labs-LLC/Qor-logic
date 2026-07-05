@@ -148,9 +148,9 @@ Claims-file format (JSON; one object or array):
 `symbol` and `call_site` are optional. `module` and `file_path` are
 required.
 
-## Originating case study: COREFORGE Phase 371
+## Originating case study: a sibling consumer workspace's Phase 371
 
-Per GH #108, Phase 371 of the COREFORGE data-protection foundation
+Per GH #108, Phase 371 of the sibling consumer workspace's data-protection foundation
 remediation graded `DPF-LIE-01` (persona IPC envelope claims
 AES-256-GCM but no cipher code path exists) as HIGH severity purely on
 grep evidence:
@@ -184,7 +184,7 @@ fails (SyntaxError), caller graph fails (no production caller),
 packaging fails (entire `src/` tree marked abandoned per PR #223),
 interface match fails (call site imports symbols not exported).
 
-Operator framing preserved from the original COREFORGE Phase 371
+Operator framing preserved from the original sibling-workspace Phase 371
 cycle:
 
 > "So the right classification is not 'dead code, ignore it.' It is

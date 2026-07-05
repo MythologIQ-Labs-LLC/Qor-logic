@@ -72,8 +72,8 @@ def test_v2_python_script_same_first_arg_different_rest_is_drift():
 def test_v2_cargo_test_same_target_different_flags_is_drift():
     body = (
         "# Plan\n\n"
-        "`cargo test --features X coreforge::skill`\n\n"
-        "`cargo test --features Y coreforge::skill`\n"
+        "`cargo test --features X consumerrepo::skill`\n\n"
+        "`cargo test --features Y consumerrepo::skill`\n"
     )
     findings = lint(body)
     assert len(findings) == 1
@@ -83,8 +83,8 @@ def test_v2_cargo_test_same_target_different_flags_is_drift():
 def test_v2_cargo_test_different_targets_no_drift():
     body = (
         "# Plan\n\n"
-        "`cargo test --release coreforge::module_a`\n\n"
-        "`cargo test --release coreforge::module_b`\n"
+        "`cargo test --release consumerrepo::module_a`\n\n"
+        "`cargo test --release consumerrepo::module_b`\n"
     )
     findings = lint(body)
     assert findings == []

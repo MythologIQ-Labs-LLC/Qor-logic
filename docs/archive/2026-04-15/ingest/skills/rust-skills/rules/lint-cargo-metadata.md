@@ -78,7 +78,7 @@ rust-version = "1.70"
 # Required for cargo lint satisfaction
 description = "A short description of what this crate does"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/user/my-crate"
+repository = "github:user/my-crate"
 
 # Recommended
 documentation = "https://docs.rs/my-crate"

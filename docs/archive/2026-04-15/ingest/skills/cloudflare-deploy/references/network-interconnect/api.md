@@ -195,5 +195,5 @@ curl "https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/cni/interconne
 ## Resources
 
 - [API Docs](https://developers.cloudflare.com/api/resources/network_interconnects/)
-- [TypeScript SDK](https://github.com/cloudflare/cloudflare-typescript)
-- [Python SDK](https://github.com/cloudflare/cloudflare-python)
+- [TypeScript SDK](github:cloudflare/cloudflare-typescript)
+- [Python SDK](github:cloudflare/cloudflare-python)

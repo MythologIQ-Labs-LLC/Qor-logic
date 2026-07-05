@@ -14,7 +14,7 @@ Qor-logic is the canonical source of truth for all S.H.I.E.L.D. governance skill
 
 - **Not an agent runtime** — skills are prompts/instructions, not executable code
 - **Not tied to one LLM** — outputs to Claude, Gemini, Copilot, Cursor, Kilocode formats
-- **Not a replacement for FailSafe** — this is the skill engine; FailSafe is the governance engine
+- **Not a replacement for the sibling governance product** — this is the skill engine; that sibling repository is the governance engine
 - **Not a chatbot** — skills are structured governance protocols, not conversational templates
 
 ---

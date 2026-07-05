@@ -84,7 +84,7 @@ From `netlify status` output, determine:
 git remote show origin
 
 # If Git-based, extract remote URL
-# Format: https://github.com/username/repo or git@github.com:username/repo.git
+# Format: github:username/repo or git@github.com:username/repo.git
 
 # Try to link by Git remote
 npx netlify link --git-remote-url <REMOTE_URL>
@@ -174,7 +174,7 @@ npx netlify login
 # 2. Link site (if needed)
 # Try Git-based linking first
 git remote show origin
-npx netlify link --git-remote-url https://github.com/user/repo
+npx netlify link --git-remote-url github:user/repo
 
 # If no site exists, create new one:
 npx netlify init

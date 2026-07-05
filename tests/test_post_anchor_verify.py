@@ -113,7 +113,7 @@ def test_empty_ledger_returns_clean(tmp_path, capsys):
 def test_corefoge_pre_anchor_cluster_tolerated(tmp_path, capsys):
     """Issue #55 pattern: pre-anchor FAIL cluster, post-anchor clean.
 
-    Mimics COREFORGE's disclosed-edit cluster at entries #156-#169 followed
+    Mimics a sibling workspace's disclosed-edit cluster at entries #156-#169 followed
     by clean post-anchor entries. With operator-pinned boundary at #169,
     the pre-anchor FAILs are tolerated and post-anchor verifies clean.
     """

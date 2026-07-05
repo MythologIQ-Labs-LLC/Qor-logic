@@ -3,8 +3,8 @@ name: Nightly Health
 # Phase 165 (GH #250 part a; GH #240): autonomous governance self-check.
 # Runs the read-only status_json ladder on a bare checkout of main and keeps
 # exactly one "Nightly governance health" issue in sync with the verdict:
-# drift opens/updates it, recovery closes it. Pattern ported from the
-# Accountable drift-detection workflow (self-test before verdict; JSON as the
+# drift opens/updates it, recovery closes it. Pattern ported from an external
+# QA exemplar's drift-detection workflow (self-test before verdict; JSON as the
 # final output line; idempotent gh-issue lifecycle).
 
 # cost justification: one ~2-minute ubuntu job per day (checkout + pip install

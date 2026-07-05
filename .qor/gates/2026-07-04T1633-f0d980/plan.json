@@ -25,7 +25,7 @@
     ],
     "non_goals": [
       "no mirroring code (design-blocked upstream)",
-      "no SQLite absorption (bicameral-mcp product)",
+      "no SQLite absorption (a sibling governance repository product)",
       "no cli.py change"
     ],
     "exclusions": [

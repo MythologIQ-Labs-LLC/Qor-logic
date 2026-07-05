@@ -181,7 +181,7 @@ def is_placeholder_pattern(value: str) -> bool:
 
     Conservative heuristics that flag well-known placeholder shapes without
     rejecting legitimate digests. Phase 66 closes the GH #54 failure mode
-    where the FailSafe ledger Entry #331 used `a1b2c3d4e5f6...` pattern hex
+    where a sibling product's ledger Entry #331 used `a1b2c3d4e5f6...` pattern hex
     and downstream entries chain-verified against that untrusted seed.
     """
     if not isinstance(value, str) or len(value) != 64:
@@ -198,7 +198,7 @@ def is_placeholder_pattern(value: str) -> bool:
     # Heuristic 2: single repeating bigram across all 64 chars.
     if all(lowered[i:i+2] == lowered[0:2] for i in range(0, 64, 2)):
         return True
-    # Heuristic 3: FailSafe-class pattern -- bytes form a constant arithmetic
+    # Heuristic 3: issue-54-class pattern -- bytes form a constant arithmetic
     # progression modulo 256. The GH #54 example `a1b2c3d4e5f6a7b8...` parses
     # as bytes [0xa1, 0xb2, 0xc3, ...] with constant +0x11 delta mod 256.
     # Eight byte-pairs (16 hex chars) suffice to characterize the pattern.
@@ -207,7 +207,7 @@ def is_placeholder_pattern(value: str) -> bool:
     if len(set(byte_diffs)) == 1 and byte_diffs[0] != 0:
         return True
     # Heuristic 4: high or low nibble across first 8 bytes (16 hex chars)
-    # forms a monotonic mod-16 progression. The GH #54 FailSafe pattern
+    # forms a monotonic mod-16 progression. The GH #54 source pattern
     # `a1b2c3d4e5f6a7b8` has low-nibbles [1,2,3,4,5,6,7,8] (monotonic +1)
     # paired with cycling high-nibbles. Either nibble being monotonic is
     # sufficient evidence of operator fabrication.

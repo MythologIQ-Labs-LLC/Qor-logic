@@ -10,7 +10,7 @@
 - limitations: V1 ships a Python-fingerprint heuristic â€” extracts `python ...`
   and `pytest ...` commands from `run:` blocks in `.github/workflows/*.yml`.
   Non-Python checks (custom shell, `cargo`, `npm`, `go`, native binaries)
-  are not candidates; the issue's COREFORGE origination case is a Python
+  are not candidates; the issue's sibling-workspace origination case is a Python
   script (`scripts/architecture/check_test_metadata.py`), so V1 covers the
   motivating failure class. WARN-only (parallels existing Step 0.6
   pre-audit lints `plan_test_lint`, `plan_grep_lint`,
@@ -46,7 +46,7 @@ feature. `feature_inventory_touches`: `[]`.
 
 ## Design notes
 
-GH #91 documents a credibility-class failure: COREFORGE 2026-05-22 ran a
+GH #91 documents a credibility-class failure: a sibling consumer workspace on 2026-05-22 ran a
 10-phase governed remediation stack (Phases 358-369) under
 `/qor-auto-dev-1`; every phase plan's `ci_commands` listed the obvious
 checks (`cargo check` / `cargo test`, `npx tsc`, `npx eslint`,
@@ -71,7 +71,7 @@ top-level doctrine file. No skill-prose escalation beyond Step 0.6.
 The lint reads `.github/workflows/*.yml` (PyYAML is already in the
 test-dep tree; no new runtime dep), enumerates each job's `run:` steps,
 extracts `python ...` / `pytest ...` candidates (the Python fingerprint
-that covers the issue's motivating COREFORGE case and the bulk of
+that covers the issue's motivating consumer-workspace case and the bulk of
 Qor-logic's own CI surface), filters environment-setup boilerplate
 (`pip install`, `git fetch`, `git merge-base`, `echo`, `printf`,
 doc-only `[[ ]]` shell, `BASE_BRANCH=`, `CHANGED=`), and compares each
@@ -111,7 +111,7 @@ with a strip-and-fail negative per
   `ci_coverage_lint` invocation to the WARN-only pre-audit lint block,
   after the existing four lints. Phase 89 wiring paragraph.
 - `qor/references/doctrine-shadow-genome-countermeasures.md` â€” append an
-  `SG-CICoverageDrift-A` paragraph (originating COREFORGE incident
+  `SG-CICoverageDrift-A` paragraph (originating consumer-workspace incident
   citation + Phase 89 countermeasure).
 - `tests/test_ci_coverage_lint.py` â€” NEW. Behavior tests.
 - `tests/test_ci_coverage_lint_wiring.py` â€” NEW. Anchored + strip-and-fail
@@ -266,7 +266,7 @@ Match rule:
 line in the WARN-only pre-audit lint block, placed after the
 existing four lints, and a `Phase 89 wiring (GH #91)` paragraph that
 cites the workflow-vs-plan reconciliation purpose and the
-COREFORGE-class originating incident:
+consumer-workspace-class originating incident:
 
 ```bash
 python -m qor.scripts.ci_coverage_lint --plan "$PLAN_PATH" --workflows-dir .github/workflows || true
@@ -280,7 +280,7 @@ construction (no `python -c "...${VAR}..."` interpolation).
 without parsing actual workflow files; CI jobs the operator forgot to
 list never run via the governed cycle; latent CI failures surface only
 at integration PR time after multiple seals); originating incident
-(COREFORGE 2026-05-22 10-phase stack; `Architecture Guard`
+(a sibling consumer workspace's 2026-05-22 10-phase stack; `Architecture Guard`
 `check_test_metadata.py` failed after 10 seals); countermeasure
 (Phase 89 `qor.scripts.ci_coverage_lint` at `/qor-audit` Step 0.6;
 WARN-only; plan-side `## CI Coverage Exemptions` block for operator

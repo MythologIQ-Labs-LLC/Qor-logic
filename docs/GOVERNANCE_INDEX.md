@@ -1,6 +1,6 @@
 # Governance Index
 
-**Last Reviewed**: 2026-07-04
+**Last Reviewed**: 2026-07-05
 
 A single authoritative map of every governance artifact in Qor-logic, organized
 into six freshness tiers with explicit drift contracts. A stale entry here is
@@ -35,8 +35,11 @@ Stable; changes are explicit doctrine events. Drift signal: rules contradict eac
 | Governance index | `qor/references/doctrine-governance-index.md` |
 | Glossary | `qor/references/glossary.md` |
 | Operator drop-in | `CLAUDE.md` |
+| Agent host drop-in | `AGENTS.md` |
+| Gemini host drop-in | `GEMINI.md` |
 | Contributor guide | `CONTRIBUTING.md` |
 | Attribution policy | `ATTRIBUTION.md` |
+| Publication boundary | `qor/references/doctrine-publication-boundary.md` |
 
 ## Tier 3 — Active Initiative
 

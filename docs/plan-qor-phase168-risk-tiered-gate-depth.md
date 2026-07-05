@@ -9,7 +9,7 @@
 **boundaries**:
 - limitations: The short chain omits ONLY the audit phase (`[plan, implement, substantiate]`); research/ideation remain advisory as today; substantiate's fail-closed gate ladder is unchanged for every tier. The guard consumes the EXISTING axes (risk routing over affected files + change_class) -- no new taxonomy field.
 - non_goals: No change to audit itself; no auto-classification of historical phases (absent field == full chain, grandfathering all 393 entries by construction); no CI workflow change (completeness already runs in CI and reads the new declaration transparently).
-- exclusions: chain.md / delegation-table / doctrine updates via /qor-document at seal; PAMA M-classes cited as rationale only.
+- exclusions: chain.md / delegation-table / doctrine updates via /qor-document at seal; the external mutation-classification doctrine's M-classes cited as rationale only.
 
 ## Open Questions
 

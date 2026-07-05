@@ -1,4 +1,4 @@
-# Roadmap: Phases 55–59 (post-GH-#48-#52 work-stream)
+# Roadmap: Phases 55–59 (post-GH #48-#52 work-stream)
 
 Sequences the 5 unsealed plans authored from GH issues #48–#52 plus operator-raised governance-capability-surface work. Renumbering note: Phase 59 was originally authored as Phase 54 and collided with the in-flight compiler-evaluation-loop seal (v0.54.0, META_LEDGER #157); renumbered 2026-05-11 to the next free slot after Phase 58.
 

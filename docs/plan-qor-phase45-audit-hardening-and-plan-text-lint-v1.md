@@ -245,7 +245,7 @@ Distinct from SG-038 (which targets numerical / enumeration drift in prose vs co
 
 **Verification hint**: lint exits 1 with stderr describing each drift finding (operation kind, line numbers, raw text). Operator either canonicalizes a single site and edits others to match, or amends the plan to acknowledge intentional difference (e.g., split into distinct invocations with different operation targets — V2 identity-grouping deferred to GH #46).
 
-**Source incident**: COREFORGE consumer workspace session 2026-05-08T1610-21dfe5; 3 consecutive VETOs across 2 plans on this signature. Filed upstream as GH #42, #43, #44, #45, #46. V1 lint sealed at COREFORGE META_LEDGER #206; ported upstream in this phase.
+**Source incident**: sibling consumer workspace session 2026-05-08T1610-21dfe5; 3 consecutive VETOs across 2 plans on this signature. Filed upstream as GH #42, #43, #44, #45, #46. V1 lint sealed at the sibling consumer workspace's META_LEDGER #206; ported upstream in this phase.
 ```
 
 **`qor/references/doctrine-governance-enforcement.md`** — append after §10.5:
@@ -263,7 +263,7 @@ Joint hash with skill source means: amendments to the audit skill itself invalid
 
 When a plan declares `originating_remediation` in top-matter (mirrored to `plan.json`), `/qor-audit` Step 3 runs an additional adversarial sub-pass: the Judge manually applies the not-yet-runnable discipline this plan introduces against this plan itself. Findings route to existing finding categories (typically `specification-drift`). Plans that do not declare `originating_remediation` skip this pass with an explicit "skipped" line in the report.
 
-Both mechanisms are advisory at the gate level and do not require operator override; they reduce wasted audit cycles and close the framework's "self-application blind spot" surfaced in COREFORGE's session 2026-05-08.
+Both mechanisms are advisory at the gate level and do not require operator override; they reduce wasted audit cycles and close the framework's "self-application blind spot" surfaced in the sibling consumer workspace's session 2026-05-08.
 ```
 
 ### Unit Tests

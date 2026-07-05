@@ -6,7 +6,7 @@ sources:
   - https://learn.microsoft.com/windows/apps/windows-app-sdk/
   - https://learn.microsoft.com/windows/apps/windows-app-sdk/deploy-packaged-apps
   - https://learn.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps
-  - https://github.com/microsoft/WindowsAppSDK-Samples
+  - github:microsoft/WindowsAppSDK-Samples
 ---
 
 ## What This Reference Is For

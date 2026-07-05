@@ -17,7 +17,7 @@
 - All three regexes use `.*?` under `re.DOTALL`, which sweeps across field boundaries when the immediate field value is fenced rather than inline; subsequent unrelated hex fields (Plan Hash, Audit Hash) are captured instead.
 - `CONTENT_HASH_RE` and `PREV_HASH_RE` accept only the inline-backtick form, not the fenced `= <hex>` form that `CHAIN_HASH_RE` accepts.
 
-Impact documented against COREFORGE ledger Entries #127–#128: verifier returns FAIL on ledgers whose chains are actually correct. The downstream workaround is to scrub prose or rename fields, which is a content-level band-aid over a parser-level bug.
+Impact documented against a sibling consumer workspace's ledger Entries #127–#128: verifier returns FAIL on ledgers whose chains are actually correct. The downstream workaround is to scrub prose or rename fields, which is a content-level band-aid over a parser-level bug.
 
 Issue #13 also flags three stale references in `qor/skills/governance/qor-validate/SKILL.md` to `.claude/commands/scripts/validate-ledger.py`, a path that `qorlogic install` does not produce.
 

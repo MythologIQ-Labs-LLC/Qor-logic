@@ -18,4 +18,4 @@ def github_request(url: str, user_agent: str) -> bytes:
 
 
 def github_api_contents_url(repo: str, path: str, ref: str) -> str:
-    return f"https://api.github.com/repos/{repo}/contents/{path}?ref={ref}"
+    return f"https://api.github:repos/{repo}/contents/{path}?ref={ref}"

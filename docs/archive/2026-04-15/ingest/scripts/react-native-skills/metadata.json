@@ -10,7 +10,7 @@
     "https://docs.swmansion.com/react-native-gesture-handler",
     "https://docs.expo.dev",
     "https://legendapp.com/open-source/legend-list",
-    "https://github.com/nandorojo/galeria",
+    "github:nandorojo/galeria",
     "https://zeego.dev"
   ]
 }

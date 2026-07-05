@@ -6,7 +6,7 @@ metadata:
   category: development
   author: MythologIQ
   source:
-    repository: https://github.com/MythologIQ/QoreLogic
+    repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
     path: processed/skills-output/qor-organize
 ---
 
@@ -30,7 +30,7 @@ Intelligently organize workspaces by detecting project archetype, analyzing conv
 3. **Propose, Don't Prescribe** — User approves before execution
 4. **Incremental Over Wholesale** — Targeted changes beat full restructuring
 5. **Preserve Intent** — Existing meaningful structure is signal
-6. **ISOLATION MANDATORY** — `.agent/`, `.claude/`, `.qorelogic/`, `.failsafe/` are NEVER reorganized
+6. **ISOLATION MANDATORY** — `.agent/`, `.claude/`, `.qorelogic/`, `<consumer-governance-dotdir>/` are NEVER reorganized
 
 ## Execution Protocol
 
@@ -111,7 +111,7 @@ Privacy patterns: `references/qor-organize-templates.md`.
 - **NEVER** move files without user approval
 - **NEVER** delete directories unless explicitly requested
 - **NEVER** touch `.git/`, `node_modules/`, `__pycache__/`, `venv/`
-- **NEVER** reorganize workspace governance directories (`.agent/`, `.claude/`, `.qorelogic/`, `.failsafe/`)
+- **NEVER** reorganize workspace governance directories (`.agent/`, `.claude/`, `.qorelogic/`, `<consumer-governance-dotdir>/`)
 - **NEVER** override detected conventions with personal preference
 - **NEVER** assume archetype without evidence
 - **ALWAYS** detect before proposing

@@ -5,4 +5,4 @@ Always confirm the app's Tauri version before applying guidance.
 
 - https://v2.tauri.app/develop/
 - https://v2.tauri.app/learn/
-- https://github.com/tauri-apps/tauri-action
+- github:tauri-apps/tauri-action

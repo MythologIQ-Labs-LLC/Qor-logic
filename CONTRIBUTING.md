@@ -13,6 +13,17 @@ Read these documents before proposing a change:
 5. [`qor/references/`](qor/references/) - deep-dive doctrines (test discipline, documentation integrity, audit-report language, shadow-genome countermeasures, etc.).
 6. [`qor/references/glossary.md`](qor/references/glossary.md) - canonical terminology; every term Qor-logic uses has exactly one home here.
 
+## Public-repository boundary
+
+All contributions must follow the
+[`publication-boundary doctrine`](qor/references/doctrine-publication-boundary.md).
+Direct references to repositories outside Qor-logic must be deleted or
+anonymized. Outside repositories are private research inputs only and must not
+become names, URLs, paths, dependencies, destinations, or operational coupling
+in tracked or published artifacts. The sole exception is a deliberate,
+public-safe record under `docs/Lessons-Learned/`. The rule applies to historical
+material when it is discovered as well as to new changes.
+
 ## Quickstart: first contribution
 
 ```

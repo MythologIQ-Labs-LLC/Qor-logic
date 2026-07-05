@@ -44,7 +44,7 @@ introduces no `src/` user-facing feature.
 
 ## Design notes
 
-GH #89 documents a process-control failure observed in the Bicameral
+GH #89 documents a process-control failure observed in a sibling
 consumer workspace: 27 PRs merged in a single window, 14,758 additions,
 a repair cluster across #346-#353 addressing stale authoritative SHA
 binding / status lifecycle / preflight noise / schema CI, plus a tail
@@ -117,7 +117,7 @@ substantiate continues). V2 may remove the `|| true` to convert
 
 New `SG-MergePaceThrottle-A` doctrine entry in
 `qor/references/doctrine-shadow-genome-countermeasures.md` catalogs
-the Bicameral originating recurrence, the V1 detector, and the
+the sibling-workspace originating recurrence, the V1 detector, and the
 explicit deferral of enforcement to V2.
 
 **Dogfooding**: this plan's `## CI Commands` covers Qor-logic's full
@@ -251,7 +251,7 @@ PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_
 python -m qor.scripts.merge_velocity_check --repo-root . --window-days 7 || true
 ```
 
-`SG-MergePaceThrottle-A` doctrine entry catalogs the Bicameral
+`SG-MergePaceThrottle-A` doctrine entry catalogs the sibling-workspace
 originating recurrence (27 PRs / 14,758 additions / repair cluster
 #346-#353 / failing e2e on #354), the V1 detector, and the explicit
 deferral of enforcement (hold-feature-merges; require-stabilization-
@@ -298,7 +298,7 @@ Per-deliverable acceptance per `qor/references/doctrine-definition-of-done.md`.
 ### Deliverable: SG-MergePaceThrottle-A doctrine entry
 
 - **D1**: The countermeasures doctrine gains an entry naming the
-  Bicameral originating pattern, the V1 detector, and the V2
+  sibling-workspace originating pattern, the V1 detector, and the V2
   deferral.
 - **D2**: `qor/references/doctrine-shadow-genome-countermeasures.md`
   gains a `## SG-MergePaceThrottle-A` section with Pattern /

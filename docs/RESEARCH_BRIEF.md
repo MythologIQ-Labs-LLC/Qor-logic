@@ -1,7 +1,7 @@
 # RESEARCH BRIEF — PyPI Packaging Readiness
 
 **Scope**: `/qor-deep-audit` Phase 2 synthesis for `pip install qor-logic` + agent-agnostic harness
-**Repo**: `G:\MythologIQ\Qorelogic` @ main `e282ffb` (post-reorg)
+**Repo**: `<path-to-local-clone>` @ main `e282ffb` (post-reorg)
 **Date**: 2026-04-16
 **Bundle state**: Phase 1 recon complete (5 parallel agents, ~25 findings); Phase 1.5 `/qor-organize` branch resolved structural issues; Phase 2 synthesis this document; Phase 3 verification pending; Phases 4-6 remediation pending operator approval
 

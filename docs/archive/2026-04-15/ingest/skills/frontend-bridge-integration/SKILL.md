@@ -1,6 +1,6 @@
 ﻿---
 name: frontend-bridge-integration
-description: Frontend bridge integration for Hearthlink. Use when wiring React/TypeScript bridges to Tauri commands, aligning IPC payload shapes, and updating UI consumers of bridge props.
+description: Frontend bridge integration for the host project. Use when wiring React/TypeScript bridges to Tauri commands, aligning IPC payload shapes, and updating UI consumers of bridge props.
 ---
 
 # Frontend Bridge Integration

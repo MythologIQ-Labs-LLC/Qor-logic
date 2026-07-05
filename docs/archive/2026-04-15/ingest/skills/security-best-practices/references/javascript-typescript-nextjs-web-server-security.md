@@ -1123,7 +1123,7 @@ Primary framework documentation (Next.js):
 Next.js security guidance & advisories:
 
 * Next.js Blog: How to think about security in Next.js — `https://nextjs.org/blog/security-nextjs-server-components-actions`
-* GitHub Security Advisory: Next.js DoS via Server Components / Server Actions (CVE-2026-23864) — `https://github.com/advisories/GHSA-fq29-rrrv-cq2m`
+* GitHub Security Advisory: Next.js DoS via Server Components / Server Actions (CVE-2026-23864) — `github:advisories/GHSA-fq29-rrrv-cq2m`
 * Next.js Blog: Security update (example security advisory context) — `https://nextjs.org/blog/security-update`
 
 General web security references (recommended baseline):
@@ -1140,5 +1140,5 @@ General web security references (recommended baseline):
 [8]: https://nextjs.org/docs/pages/guides/self-hosting?utm_source=chatgpt.com "Guides: Self-Hosting"
 [9]: https://nextjs.org/docs/app/api-reference/functions/cookies "Functions: cookies | Next.js"
 [10]: https://nextjs.org/blog/next-16?utm_source=chatgpt.com "Next.js 16"
-[11]: https://github.com/vercel/next.js/security/advisories/GHSA-9g9p-9gw9-jx7f?utm_source=chatgpt.com "Denial of Service in Image Optimizer · Advisory"
+[11]: github:vercel/next.js/security/advisories/GHSA-9g9p-9gw9-jx7f?utm_source=chatgpt.com "Denial of Service in Image Optimizer · Advisory"
 [12]: https://nextjs.org/docs/pages/guides/authentication "Guides: Authentication | Next.js"

@@ -73,7 +73,7 @@ Specifies:
 
 ### B.2 Migrate qor-deep-audit into the canonical tree
 
-Source: `C:/Users/krkna/.claude/skills/qor-deep-audit/SKILL.md` (verified: 180 lines, 6 phases, no checkpoints).
+Source: the operator's globally installed qor-deep-audit/SKILL.md (verified: 180 lines, 6 phases, no checkpoints).
 
 - Move into `qor/skills/meta/qor-deep-audit/SKILL.md` (canonical SSoT location)
 - Add bundle frontmatter per B.1

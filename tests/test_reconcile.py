@@ -1,7 +1,7 @@
 """Phase 119 (GH #148): reconcile core — detect residual, build proposal,
 append a forward-only RECONCILIATION entry.
 
-Synthetic ledgers reconstruct the #85 Accountable-App-3.0 #16a/b,#17a/b,#18a/b
+Synthetic ledgers reconstruct the #85 external-exemplar #16a/b,#17a/b,#18a/b
 corpus: pairs of entries sharing a previous_hash with forced chain-math
 failures (the consumer blocker). Per doctrine-test-functionality.md every test
 invokes the unit and asserts on its output / observable file state.

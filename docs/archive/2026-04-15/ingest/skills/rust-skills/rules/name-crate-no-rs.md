@@ -51,11 +51,11 @@ name = "windows-sys"       # Platform, not language
 
 ```
 # GitHub repos don't need -rs either
-github.com/user/my-library      # Good
-github.com/user/my-library-rs   # Unnecessary
+github:user/my-library      # Good
+github:user/my-library-rs   # Unnecessary
 
 # Though some do for disambiguation from other language versions
-github.com/rust-lang/rust       # The rust repo itself uses "rust"
+github:rust-lang/rust       # The rust repo itself uses "rust"
 ```
 
 ## Exceptions

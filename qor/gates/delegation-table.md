@@ -54,7 +54,6 @@ These skills are invokable from any phase. They have no chain prior, no chain su
 | `/qor-help` | Any time | Command catalog (display-only) |
 | `/qor-shadow-process` | Auto-invoked by override paths and capability-shortfall handlers | Append-only shadow event recorder |
 | `/qor-ab-run` | Operator wants A/B measurement evidence for persona-vs-stance Identity Activation on stance-critical skills (Phase 39b) | Parallel Task-tool subagent dispatch; produces `docs/phase39-ab-results.md` |
-| `/qor-governance-compliance` | Periodic governance audit; before release | Workspace hygiene + sensitive file checks |
 | `/qor-docs-technical-writing` | Documentation needs structured authoring | Migrated qore-* skill |
 | `/qor-meta-log-decision` | Major decision points (ADR-style) | Migrated qore-* skill |
 | `/qor-meta-track-shadow` | Cross-cycle pattern detection | Migrated qore-* skill |

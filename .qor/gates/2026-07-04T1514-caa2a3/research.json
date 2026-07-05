@@ -39,7 +39,7 @@
     "qor/scripts/governance_index.py",
     "qor/install.py",
     "qor/cli.py",
-    "D:/Accountable/Orko/poll.py"
+    "an external QA exemplar's polling tool"
   ],
   "brief_path": "docs\\research-brief-dry-run-modes-2026-07-04.md",
   "ai_provenance": {

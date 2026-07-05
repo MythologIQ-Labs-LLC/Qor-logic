@@ -1,6 +1,6 @@
 ﻿---
 name: security-permission-audit
-description: Security and permissions auditing for Hearthlink. Use when adding consent checks, auth guards, audit logging, or SecureVault interactions for Tauri commands.
+description: Security and permissions auditing for the host project. Use when adding consent checks, auth guards, audit logging, or SecureVault interactions for Tauri commands.
 ---
 
 # Security and Permission Audit

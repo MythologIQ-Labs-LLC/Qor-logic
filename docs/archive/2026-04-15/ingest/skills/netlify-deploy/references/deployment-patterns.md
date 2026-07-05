@@ -53,7 +53,7 @@ npx netlify deploy --prod
 **Steps**:
 1. Check authentication: `npx netlify status`
 2. Get Git remote: `git remote show origin`
-3. Extract URL (e.g., `https://github.com/user/repo.git`)
+3. Extract URL (e.g., `github:user/repo.git`)
 4. Link by remote: `npx netlify link --git-remote-url <URL>`
 5. If found, linked. If not, run `netlify init`
 
@@ -61,9 +61,9 @@ npx netlify deploy --prod
 ```bash
 git remote show origin
 # * remote origin
-#   Fetch URL: https://github.com/user/my-app.git
+#   Fetch URL: github:user/my-app.git
 
-npx netlify link --git-remote-url https://github.com/user/my-app.git
+npx netlify link --git-remote-url github:user/my-app.git
 # Site linked successfully
 ```
 

@@ -265,7 +265,7 @@ Communication implementation:
 
 Bootloader design:
 - Update mechanisms
-- Failsafe recovery
+- a sibling governance repository recovery
 - Version management
 - Security features
 - Memory layout

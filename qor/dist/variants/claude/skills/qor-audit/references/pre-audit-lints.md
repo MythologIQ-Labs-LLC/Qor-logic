@@ -27,7 +27,7 @@ consume an audit cycle. WARN-only V1 (`|| true`); escape hatches
 
 ## Phase 67 wiring (GH #42) — `plan_text_consistency_lint`
 
-Catches the COREFORGE-class drift pattern — same operation specified differently
+Catches the consumer-workspace-class drift pattern — same operation specified differently
 at multiple plan sites (commands, dependencies, paths). WARN-only at audit time;
 the operator amends drift before the binding Infrastructure Alignment Pass in
 Step 3 would consume an audit cycle. Per
@@ -36,7 +36,7 @@ Step 3 would consume an audit cycle. Per
 ## Phase 89 wiring (GH #91) — `ci_coverage_lint`
 
 Reconciles the plan's `## CI Commands` bullets against the Python-fingerprint
-`run:` steps discovered in `.github/workflows/*.yml`. Catches the COREFORGE-class
+`run:` steps discovered in `.github/workflows/*.yml`. Catches the consumer-workspace-class
 credibility failure where a phase seals "all CI green" while a real GitHub
 Actions job — one the operator simply forgot to enumerate — would fail. WARN-only;
 tag-only workflows are skipped; environment-setup boilerplate is filtered. The

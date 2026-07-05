@@ -17,7 +17,7 @@
 
 ## Origin
 
-Research brief docs/research-brief-evidence-reconstruction-2026-07-04.md (ledger entry #398, session `2026-07-04T1612-9ee76f`); GH #251 (perspective-reset rec 5). Posture source: MS agent-governance-toolkit ADR 0018 (reconstructible decision context; partial reconstruction explicitly surfaced).
+Research brief docs/research-brief-evidence-reconstruction-2026-07-04.md (ledger entry #398, session `2026-07-04T1612-9ee76f`); GH #251 (perspective-reset rec 5). Posture source: an external agent-governance toolkit's ADR 0018 (reconstructible decision context; partial reconstruction explicitly surfaced).
 
 ## Locked Decisions
 

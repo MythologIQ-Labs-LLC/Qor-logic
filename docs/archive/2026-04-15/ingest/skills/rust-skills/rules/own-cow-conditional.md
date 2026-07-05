@@ -55,7 +55,7 @@ fn format_error(code: u32) -> Cow<'static, str> {
 ## Real-World Example from ripgrep
 
 ```rust
-// https://github.com/BurntSushi/ripgrep/blob/master/crates/globset/src/pathutil.rs
+// github:BurntSushi/ripgrep/blob/master/crates/globset/src/pathutil.rs
 pub(crate) fn file_name<'a>(path: &Cow<'a, [u8]>) -> Option<Cow<'a, [u8]>> {
     let last_slash = path.rfind_byte(b'/').map(|i| i + 1).unwrap_or(0);
     match *path {

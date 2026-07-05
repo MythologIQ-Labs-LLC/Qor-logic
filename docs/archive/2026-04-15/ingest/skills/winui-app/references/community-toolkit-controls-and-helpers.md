@@ -3,7 +3,7 @@ title: CommunityToolkit Controls and Helpers
 priority: MEDIUM
 tags: communitytoolkit, controls, helpers, animations, settingscontrols
 sources:
-  - https://github.com/CommunityToolkit/Windows
+  - github:CommunityToolkit/Windows
   - https://learn.microsoft.com/dotnet/communitytoolkit/windows/getting-started
 ---
 

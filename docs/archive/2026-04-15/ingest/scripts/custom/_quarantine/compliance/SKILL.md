@@ -1,6 +1,6 @@
 ---
 name: compliance
-description: Enforce FailSafe physical isolation and environment compliance constraints across repository structure, platform limits, and security hygiene.
+description: Enforce the downstream product's physical isolation and environment compliance constraints across repository structure, platform limits, and security hygiene.
 creator: MythologIQ Labs, LLC
 license: Proprietary (FailSafe Project)
 ---
@@ -49,7 +49,7 @@ When this skill is invoked:
 Verify that the "Isolation Boundary" is intact:
 
 - **Forbidden at Root**: Ensure development source, build scripts, and target constraints are NOT at the root level.
-- **Mandatory in Container**: Ensure the project source directories exist within the designated application container (as defined in `.failsafe/workspace-config.json`).
+- **Mandatory in Container**: Ensure the project source directories exist within the designated application container (as defined in `<consumer-governance-dotdir>/workspace-config.json`).
 - **Root Hygiene**: Check that the root only contains authorized governance directories (`.agent/`, `.claude/`, `.qorelogic/`, etc.) and essential workspace config files.
 
 ### 2. Perform Constraint Audit

@@ -25,8 +25,8 @@ def test_doctrine_carries_sg_fake_progress_a():
     assert "originating recurrence" in lowered, (
         "SG entry must include an Originating recurrence section"
     )
-    assert "failsafe" in lowered, (
-        "Originating recurrence must name FailSafe install-skills-card source incident"
+    assert "install-skills-card" in lowered, (
+        "Originating recurrence must name the install-skills-card source incident"
     )
 
 

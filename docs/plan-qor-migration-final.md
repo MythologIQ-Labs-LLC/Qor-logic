@@ -127,7 +127,7 @@ docs/
 - `deployable state/` (replaced by `qor/dist/`)
 - `processed/`, `compiled/` (empty; deleted)
 - `ingest/skills/ql-*.md` × 10 (superseded by canonical in `kilo-code/` — `ingest` copies are older)
-- `ingest/subagents/hearthlink-*.md` × 5 (project retired)
+- `ingest/subagents/legacy-project-*.md` × 5 (project retired)
 - `ingest/` root itself (fully dispositioned per §2.B; empty shell deleted in Phase 7)
 
 ## 2.B Disposition of `ingest/` subdirectories (V-5 resolution)
@@ -192,11 +192,11 @@ Phase 1 executor iterates `ingest/skills/` in alphabetical order, applies rules 
 | `ui-correction-specialist.md` | `qor/vendor/agents/ui-correction-specialist.md` | — |
 | `ultimate-debugger.md` | `qor/vendor/agents/ultimate-debugger.md` | — |
 | `voice-integration-specialist.md` | `qor/vendor/agents/voice-integration-specialist.md` | — |
-| `hearthlink-backend-dev.md` | **DELETE** | — |
-| `hearthlink-frontend-dev.md` | **DELETE** | — |
-| `hearthlink-skill-framework.md` | **DELETE** | — |
-| `hearthlink-skill-template.md` | **DELETE** | — |
-| `hearthlink-ui-ux-designer.md` | **DELETE** | — |
+| `legacy-project-backend-dev.md` | **DELETE** | — |
+| `legacy-project-frontend-dev.md` | **DELETE** | — |
+| `legacy-project-skill-framework.md` | **DELETE** | — |
+| `legacy-project-skill-template.md` | **DELETE** | — |
+| `legacy-project-ui-ux-designer.md` | **DELETE** | — |
 
 Totals: 13 → `qor/agents/` (2 governance, 5 sdlc, 3 memory, 3 meta); 7 → `qor/vendor/agents/`; 5 deleted. Sum 25.
 
@@ -255,7 +255,7 @@ Totals: 13 → `qor/agents/` (2 governance, 5 sdlc, 3 memory, 3 meta); 7 → `qo
 - `qor/skills/governance/qor-audit/references/adversarial-mode.md` (new)
 - `tests/fixtures/skill_samples/` (new — authored in this phase; seeded with 2 canonical skill .md fixtures + 1 intentionally malformed fixture for validation tests)
 - `kilo-code/qor-course-correct/` (deleted)
-- `ingest/subagents/hearthlink-*.md` × 5 (deleted per §3)
+- `ingest/subagents/legacy-project-*.md` × 5 (deleted per §3)
 
 **Changes**:
 - Canonical source: `kilo-code/qor-*/SKILL.md` (most recent per Ledger #10).
@@ -271,7 +271,7 @@ Totals: 13 → `qor/agents/` (2 governance, 5 sdlc, 3 memory, 3 meta); 7 → `qo
 - `tests/test_skill_inventory.py::test_no_duplicate_skills_across_variants`
 - `tests/test_skill_inventory.py::test_retired_skills_absent` (`qor-course-correct`)
 - `tests/test_agent_inventory.py::test_mapping_is_exhaustive` (every `ingest/subagents/*.md` has disposition)
-- `tests/test_agent_inventory.py::test_no_hearthlink_survives`
+- `tests/test_agent_inventory.py::test_no_legacy-project_survives`
 - `tests/test_agent_inventory.py::test_vendor_agents_count` (7)
 
 **CI validation**: `python -m pytest tests/test_skill_inventory.py tests/test_agent_inventory.py`.
@@ -463,9 +463,9 @@ Totals: 13 → `qor/agents/` (2 governance, 5 sdlc, 3 memory, 3 meta); 7 → `qo
   ```json
   {
     "version": "1",
-    "meta_repo": "MythologIQ/Qorelogic",
+    "meta_repo": "MythologIQ-Labs-LLC/Qor-logic",
     "repos": [
-      {"path": "G:/MythologIQ/Qorelogic", "name": "qorelogic", "enabled": true}
+      {"path": "<path-to-local-clone>", "name": "qorelogic", "enabled": true}
     ],
     "threshold": 10,
     "stale_days": 90
@@ -476,7 +476,7 @@ Totals: 13 → `qor/agents/` (2 governance, 5 sdlc, 3 memory, 3 meta); 7 → `qo
   - For each enabled repo: load `docs/PROCESS_SHADOW_GENOME.md` (JSONL), filter `addressed=false`, tag with `source_repo`.
   - Runs aged-high-severity self-escalation pass (see Phase 4) per-repo, writing new events back to each repo's log.
   - Pools remaining unaddressed entries globally; applies threshold.
-  - If tripped: aggregates into single issue body; invokes `create_shadow_issue.py --consolidated --repo MythologIQ/Qorelogic`; flips matched entries in every source repo atomically.
+  - If tripped: aggregates into single issue body; invokes `create_shadow_issue.py --consolidated --repo MythologIQ-Labs-LLC/Qor-logic`; flips matched entries in every source repo atomically.
   - Missing repo path: logs warning, continues.
 - Scheduling documented in `qor-config-schema.md` (Windows Task Scheduler XML + cron one-liner); not configured by plan.
 
@@ -540,7 +540,7 @@ Totals: 13 → `qor/agents/` (2 governance, 5 sdlc, 3 memory, 3 meta); 7 → `qo
 - `ingest/` root (empty after all §2.B + §3.B migrations; removed)
 - `kilo-code/` top-level (deleted — all migrated)
 - `deployable state/` (deleted — replaced by `qor/dist/`)
-- `ingest/subagents/hearthlink-*.md` × 5 (deleted in Phase 1; verify here)
+- `ingest/subagents/legacy-project-*.md` × 5 (deleted in Phase 1; verify here)
 
 **Changes**:
 - Sweep `docs/` for old path references; replace with new `qor/` paths.
@@ -555,7 +555,7 @@ Totals: 13 → `qor/agents/` (2 governance, 5 sdlc, 3 memory, 3 meta); 7 → `qo
 ```bash
 python -m pytest tests/test_cleanup.py
 ! grep -r "kilo-code/qor-\|deployable state\|processed/\|compiled/\|ingest/" docs/ --exclude-dir=archive
-! grep -rn "hearthlink" qor/
+! grep -rn "legacy-project" qor/
 ```
 
 (Note: `!` prefix inverts exit code — command fails if grep finds matches. All tokens unanchored so inline markdown references like `` `processed/` directory `` are detected.)
@@ -663,7 +663,7 @@ python -m pytest tests/ -m integration                         # live probes (op
 python qor/scripts/check_variant_drift.py                      # exit 0 on clean
 python qor/scripts/ledger_hash.py --verify docs/META_LEDGER.md # chain verification
 ! grep -r "kilo-code/qor-\|deployable state\|processed/\|compiled/\|ingest/" docs/ --exclude-dir=archive
-! grep -rn "hearthlink" qor/
+! grep -rn "legacy-project" qor/
 python -c "import tomllib; tomllib.load(open('pyproject.toml','rb'))"  # pyproject valid
 [ ! -d ingest/ ] && [ ! -d kilo-code/ ] && [ ! -d 'deployable state/' ]  # legacy roots gone
 ```

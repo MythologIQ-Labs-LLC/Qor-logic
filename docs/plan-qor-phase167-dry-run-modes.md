@@ -17,7 +17,7 @@
 
 ## Origin
 
-Research brief docs/research-brief-dry-run-modes-2026-07-04.md (ledger entry #390, session `2026-07-04T1514-caa2a3`); GH #250 part b (final scope item; umbrella #247). Output convention: the Orko `[dry] would <action>` pattern (D:/Accountable/Orko/poll.py:196-243 -- reads always execute, writes guarded, `[dry]` log prefix).
+Research brief docs/research-brief-dry-run-modes-2026-07-04.md (ledger entry #390, session `2026-07-04T1514-caa2a3`); GH #250 part b (final scope item; umbrella #247). Output convention: the external polling tool's `[dry] would <action>` pattern (an external QA exemplar's polling tool:196-243 -- reads always execute, writes guarded, `[dry]` log prefix).
 
 ## Locked Decisions
 
@@ -72,7 +72,7 @@ Uniform contract per surface: compute/render/validate exactly as wet mode; guard
 
 ### Deliverable: dry-run contract across the six surfaces
 
-- **D1**: Every mutating CLI surface can rehearse safely: reads and validation identical, zero side effects, `[dry]` preview of every suppressed mutation (GH #250 part b; the Orko safety pattern).
+- **D1**: Every mutating CLI surface can rehearse safely: reads and validation identical, zero side effects, `[dry]` preview of every suppressed mutation (GH #250 part b; the external polling tool's safety pattern).
 - **D2**: Keyword-defaulted `dry_run` parameters at the write funnels named in LD-1..LD-6; new `session_tool` module; +1 line on cli.py (uninstall flag only).
 - **D3**: GH #250 closes at full scope in this phase's PR (parts a/c shipped Phase 165 with live evidence); CHANGELOG + doctrine currency via /qor-document.
 - **D4**: Each of the 6 tests observes BOTH halves -- zero mutation in dry mode AND real mutation in wet mode -- plus identical validation failure for the changelog surface.

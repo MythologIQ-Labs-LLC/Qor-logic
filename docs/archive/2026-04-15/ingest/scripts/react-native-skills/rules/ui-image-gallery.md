@@ -101,4 +101,4 @@ function Avatar({ url }: { url: string }) {
 Works with `expo-image`, `SolitoImage`, `react-native` Image, or any image
 component.
 
-Reference: [Galeria](https://github.com/nandorojo/galeria)
+Reference: [Galeria](github:nandorojo/galeria)

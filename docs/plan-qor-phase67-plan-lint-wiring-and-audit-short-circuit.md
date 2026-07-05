@@ -13,7 +13,7 @@
   - V1 wires the existing `qor/scripts/plan_text_consistency_lint.py` into qor-plan Step 5 + qor-audit Step 0.6 alongside existing pre-audit lints. No changes to the lint's detection logic.
   - V1 short-circuit uses content-hash comparison against the prior audit gate artifact's `target_content_hash` field. When prior artifact is absent, behavior unchanged.
 - non_goals:
-  - Replacing or extending the lint's detection rules (those live in COREFORGE's source script imported at Phase 55).
+  - Replacing or extending the lint's detection rules (those live in a sibling consumer workspace's source script imported at Phase 55).
   - Cross-session short-circuit (V1 looks only at current session's audit.json).
 - exclusions:
   - No changes to /qor-implement or /qor-substantiate gates.
@@ -34,13 +34,13 @@ None. Both issues specify exact wiring locations and expected behavior; this pla
 
 ### Changes
 
-Three surgical edits + one SG entry. The existing `plan_text_consistency_lint.py` script (sealed at Phase 55) is already callable; this phase wires it into the operator-visible audit + plan flow. Doctrine entry catalogs the cross-iteration recurrence pattern (3-VETO cycle in COREFORGE) for future operator reference.
+Three surgical edits + one SG entry. The existing `plan_text_consistency_lint.py` script (sealed at Phase 55) is already callable; this phase wires it into the operator-visible audit + plan flow. Doctrine entry catalogs the cross-iteration recurrence pattern (3-VETO cycle in a sibling consumer workspace) for future operator reference.
 
 ### Unit Tests
 
 - `tests/test_plan_text_consistency_lint_audit_wiring.py::test_qor_audit_step_0_6_invokes_plan_text_consistency_lint` - reads `qor/skills/governance/qor-audit/SKILL.md`, locates Step 0.6 body, asserts it contains `python -m qor.scripts.plan_text_consistency_lint` invocation alongside the existing plan_test_lint and plan_grep_lint calls.
 - `tests/test_plan_text_consistency_lint_audit_wiring.py::test_qor_plan_step_5_names_consistency_lint_discipline` - reads `qor/skills/sdlc/qor-plan/SKILL.md`, locates Step 5 review checklist, asserts it includes both the discipline statement ("identically at every site") AND the tooling reference to `plan_text_consistency_lint`.
-- `tests/test_plan_text_consistency_lint_audit_wiring.py::test_doctrine_sg_plan_text_drift_a_documented` - reads `qor/references/doctrine-shadow-genome-countermeasures.md`, asserts the `SG-PlanTextDrift-A` entry exists with the canonical pattern description (cites originating COREFORGE 3-VETO cycle).
+- `tests/test_plan_text_consistency_lint_audit_wiring.py::test_doctrine_sg_plan_text_drift_a_documented` - reads `qor/references/doctrine-shadow-genome-countermeasures.md`, asserts the `SG-PlanTextDrift-A` entry exists with the canonical pattern description (cites originating a sibling consumer workspace 3-VETO cycle).
 
 ## Phase 2: qor-audit unchanged-plan short-circuit (GH #45)
 

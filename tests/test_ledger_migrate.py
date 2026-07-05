@@ -1,6 +1,6 @@
 """Phase 170 (GH #252): ledger migration tool tests.
 
-Ports FailSafe-Pro's proven transform with house discipline; the acceptance
+Ports a sibling governance repository's proven transform with house discipline; the acceptance
 bar (LD-3) drives the REAL verifier over pre/post files.
 """
 from __future__ import annotations

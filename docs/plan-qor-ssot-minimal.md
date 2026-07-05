@@ -84,7 +84,7 @@ Explicitly deleted post-migration: `kilo-code/`, `deployable state/`, `processed
 
 ## Phase 1 — Migrate skills, agents, vendor (per §3 + §3.B rules below)
 
-**Subagents (25 files)**: apply §3 mapping table from `plan-qor-migration-final.md` verbatim (13 → qor/agents/, 7 → qor/vendor/agents/, 5 hearthlink → DELETE).
+**Subagents (25 files)**: apply §3 mapping table from `plan-qor-migration-final.md` verbatim (13 → qor/agents/, 7 → qor/vendor/agents/, 5 host-project → DELETE).
 
 **Canonical Qor skills**: move `kilo-code/qor-<name>/` → `qor/skills/<category>/qor-<name>/` per structure above. Retire `qor-course-correct`. Create stubs: `qor/skills/sdlc/qor-remediate/` and `qor/skills/governance/qor-shadow-process/` (SKILL.md minimal — full behavior deferred).
 
@@ -109,7 +109,7 @@ Explicitly deleted post-migration: `kilo-code/`, `deployable state/`, `processed
 - `ingest/third-party/` → `qor/vendor/` (merge)
 - `ingest/workflows/` → DELETE (legacy qor-* alternates; superseded)
 
-**Deletions in this phase**: all five hearthlink-*, ten ingest/skills/qor-*.md, ingest/skills/_quarantine/, ingest/workflows/ (content), `kilo-code/qor-course-correct/`.
+**Deletions in this phase**: all five host-project-*, ten ingest/skills/qor-*.md, ingest/skills/_quarantine/, ingest/workflows/ (content), `kilo-code/qor-course-correct/`.
 
 ## Phase 1.5 — Ledger continuation
 

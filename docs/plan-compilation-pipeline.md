@@ -2,7 +2,7 @@
 
 ## Open Questions
 
-None — target formats are defined in ARCHITECTURE_PLAN.md and validated against existing FailSafe-Pro SKILL.md files.
+None — target formats are defined in ARCHITECTURE_PLAN.md and validated against existing a sibling governance repository-Pro SKILL.md files.
 
 ## Phase 1: Claude Code Compiler (B2)
 
