@@ -1,10 +1,10 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T05:58:43Z
-**Target**: docs/plan-qor-phase176-substantiate-staging-gates.md (Phase 176; GH #262)
-**Risk Grade**: L1
-**Session**: `2026-07-13T0555-0e2b55`
-**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `ebbf6025408f...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
+**Tribunal Date**: 2026-07-13T06:19:54Z
+**Target**: docs/plan-qor-phase177-qa-required-pillars.md (Phase 177; GH #269)
+**Risk Grade**: L2
+**Session**: `2026-07-13T0617-5f93aa`
+**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `e553eef55058...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
 ---
@@ -15,7 +15,7 @@
 
 ### Executive Summary
 
-Single-block prose defect fix: `/qor-substantiate` Step 9.5's documented staging list omits the sealed session's `.qor/gates/<sid>/` directory that the CI completeness gate makes load-bearing. The plan consolidates the seven `git add` lines into two (paying for the gates argument within the 31-byte EXCEEDED-budget headroom), locks the amendment with a wiring test plus a byte-budget invariant test, and lets the identity-copy dist pipeline propagate. All LD citations grep-verified live; a sweep confirmed no existing test locks the exact `git add` lines, so consolidation is safe. No binding-VETO pass fired.
+Opt-in production posture for QA evidence: under `policy="production"` with declared `required_pillars`, a required pillar that is skipped (or failed) fails the verdict, so skipped security/stability/coverage evidence can no longer yield a production-grade PASS -- while the adoption default keeps every existing caller's payload byte-identical (regression-locked). The PASS/FAIL enum stays closed (no third verdict value for strict validators to choke on); the two new artifact fields are additive on a REGISTERED schema (no freeze-lint exposure); the sole verdict consumer (`ac_close_guard`) needs zero changes. All LD citations verified live this session. No binding-VETO pass fired.
 
 ### Audit Results
 
@@ -23,42 +23,48 @@ Single-block prose defect fix: `/qor-substantiate` Step 9.5's documented staging
 **Result**: PASS -- canaries exit 0.
 
 #### Security Pass (L3) / OWASP Top 10 Pass
-**Result**: PASS -- prose + test-only change; the quoted `".qor/gates/$SESSION_ID/"` argument is shell-safe (session ids are path-safety validated at generation; the variable comes from the Step 4.6 canonical helper, argv-resolved per SG-Phase47-A).
+**Result**: PASS
+The change STRENGTHENS the compliance posture (a strict evidence mode where none existed). No credentials, subprocess, or deserialization surfaces. The `ValueError` misconfiguration guard (production with no required set) is fail-closed by design -- a strict posture that requires nothing is rejected, not silently equivalent to adoption (A04 clean).
 
 #### Ghost UI / Live-Progress Pass
 **Result**: PASS -- no UI surface.
 
 #### Section 4 Razor Pass
-**Result**: PASS -- new test file well under limits; SKILL.md shrinks net-of-addition per LD-2 with a post-edit measurement locked by test.
+**Result**: PASS -- verdict block stays a handful of lines; schema fields additive; no file approaches limits.
 
-#### Self-Application Sub-Pass (originating_remediation: GH #262)
-**Result**: PASS -- discipline introduced: the documented procedure must stage the complete evidence set. Applied to the plan's own cycle: this phase's checkpoint stages its session gate dir explicitly (as the prior local checkpoints did), and the amendment makes that documented rather than tribal.
+#### Self-Application Sub-Pass (originating_remediation: GH #269)
+**Result**: PASS
+Discipline introduced: a declared-required evidence pillar cannot be silently skipped. Applied to the plan itself: the plan's own CI commands are declared and run (nothing declared-then-skipped); the phase's D4 tests name the exact acceptance behavior.
 
 #### Test Functionality Pass
 **Result**: PASS
-`test_step_9_5_stages_the_sealed_gate_dir` extracts the fenced block and asserts the gates argument (RED against the current block by construction); `test_skill_stays_under_exceeded_budget` measures the byte invariant; `test_variants_match_canonical_step_9_5` compares extracted slices across variants. The staging test is prose-contract class and carries the required `# prose-lint: ok=` reason per LD-4 (54 precedents); `prose_test_lint --enforce` currently exit 0.
+Seven described tests all invoke `build_payload` (or jsonschema validation) and assert computed verdicts, payload keys, raised exceptions, or validation outcomes. The byte-compat test is the strongest form of backward-compatibility evidence (asserts ABSENCE of new keys plus the old verdict). Closed-enum note: `required_pillars` has no paired `normalize*` function -- inverse-coverage rule not applicable; the schema-validation test provides forward proof. `prose_test_lint --enforce`: not re-run this pass (no prose-reading tests added; the standing 54-exemption state is unchanged by design).
 
 #### Dependency Pass
-**Result**: PASS -- stdlib only.
+**Result**: PASS -- stdlib + existing jsonschema test dependency only.
 
 #### Feature Test Coverage Pass
-**Result**: PASS (exempt) -- prose/tests only.
+**Result**: PASS (exempt) -- evidence tooling only.
 
 #### Infrastructure Alignment Pass
 **Result**: PASS
-LD walk grep-verified live: Stage All Artifacts:591, gate_chain_completeness check:52, EXCEEDED_BYTES:24, SESSION_ID=:232 (corrected pre-verdict from 231), dist identity-copy strategy. Sweep for exact-line locks on the staging block: zero hits. Runtime Contract Walk: 1 WARN-only backward-pass heuristic artifact (dist_compile is CLI-invoked).
+LD walk verified live this session: verdict rule at qa_evidence.py:70, `build_payload` keyword-only signature at :48, `"qa"` registered at SCHEMA_REGISTRY.json:14, close-guard WARN seam at ac_close_guard.py:96-97, `additionalProperties: true` + strict verdict enum in qa.schema.json. qa_evidence confirmed library-only (no argparse/main) -- the brief's CLI item correctly resolved n/a in the plan. Runtime Contract Walk: 0 findings.
 
-#### Filter-Stage Ordering / Orphan / Macro-Architecture Passes
-**Result**: PASS -- no pipeline functions; new test pytest-collected; no module boundaries change.
+#### Filter-Stage Ordering Coherence
+**Result**: PASS
+The verdict computation gains one policy branch after pillar assembly; the misconfiguration guard runs BEFORE the verdict uses the required set (precondition ordering correct).
+
+#### Orphan / Macro-Architecture Passes
+**Result**: PASS -- no new modules; policy logic lives beside the verdict it modifies.
 
 #### Documentation Drift (advisory)
-**Result**: clean (minimal tier).
+**Result**: clean (standard tier, no terms; the doctrine edit is a qualifier on an existing sentence, non-definitional).
 
 ### Violations Found
 
 | ID  | Category | Location | Description |
 | --- | -------- | -------- | ----------- |
-| V1 (remediated pre-verdict) | infrastructure-mismatch | plan LD-3 | `SESSION_ID=` cited at line 231; actual 232. Citation corrected. |
+| (none) | | | |
 
 ## Process Pattern Advisory
 
@@ -68,7 +74,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 176.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 177.
 
 ---
 _This verdict is binding._

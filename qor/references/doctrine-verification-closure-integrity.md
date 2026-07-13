@@ -9,7 +9,9 @@ Counter-control for the half-measure pattern (`SG-HalfMeasureClosure`, umbrella 
 
 ## QA evidence contract
 
-Four pillars: `regression`, `security`, `stability`, `coverage`. Each is `{status: pass|fail|skip, evidence?, metric?, note?}`. `verdict` is FAIL iff any pillar is `fail`; `skip` is visible per-pillar but does not fail the verdict.
+Four pillars: `regression`, `security`, `stability`, `coverage`. Each is `{status: pass|fail|skip, evidence?, metric?, note?}`. Under the default `adoption` policy, `verdict` is FAIL iff any pillar is `fail`; `skip` is visible per-pillar but does not fail the verdict.
+
+**Production policy (Phase 177; GH #269)**: callers preparing release or compliance evidence pass `build_payload(..., policy="production", required_pillars={...})`. Every required pillar must then be `pass` -- a required `skip` (or `fail`) fails the verdict, so declared-required evidence cannot be silently absent from a production-grade PASS. The artifact records `policy` and `required_pillars` so consumers can audit the posture the verdict was computed under; `production` with an empty required set raises (a strict posture that requires nothing is a misconfiguration). Adoption payloads carry neither field and are byte-identical to the pre-177 shape. Wiring the production posture into seal or release gates is deliberate follow-on scope, not implied by this contract.
 
 - **SAST Backend** (Phase 115; #167): the `security` pillar's evidence source. `qor.scripts.sast_scan` is tool-agnostic — a backend is a callable `(paths) -> list[normalized finding dict]`; the default is **bandit** (pure-Python, low supply-chain surface), and a future semgrep backend normalizes into the same shape. When the backend tool is absent the pillar is `status: "skip"` with a note (Phase 75 prerequisite-absent semantics) — never a crash, never a false pass. A finding at/above the `fail_on` severity (default HIGH) sets the pillar `fail`, which fails the overall qa verdict.
 

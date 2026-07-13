@@ -1,0 +1,49 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0617-5f93aa",
+  "ts": "2026-07-13T06:18:37Z",
+  "questions": [
+    "Can an all-skip payload yield PASS today?",
+    "Is the qa schema amendable without freeze friction?",
+    "Who consumes the verdict and how does a production FAIL propagate?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "verdict FAILs only on explicit pillar fail; all-skip -> PASS (verified live)",
+      "source": "qor/scripts/qa_evidence.py:70"
+    },
+    {
+      "id": "F2",
+      "summary": "qa is a REGISTERED schema; additive optional policy/required_pillars fields are freeze-safe; keep the PASS/FAIL enum closed",
+      "source": "qor/gates/SCHEMA_REGISTRY.json:14"
+    },
+    {
+      "id": "F3",
+      "summary": "ac_close_guard WARNs on non-PASS via read_phase_artifact; a production-policy FAIL propagates with zero consumer changes",
+      "source": "qor/scripts/ac_close_guard.py:96"
+    },
+    {
+      "id": "F4",
+      "summary": "adoption default preserves current output byte-for-byte; qa_evidence is a library (no CLI)",
+      "source": "qor/scripts/qa_evidence.py:48"
+    }
+  ],
+  "sources": [
+    "qor/scripts/qa_evidence.py",
+    "qor/gates/schema/qa.schema.json",
+    "qor/gates/SCHEMA_REGISTRY.json",
+    "qor/scripts/ac_close_guard.py",
+    "qor/references/doctrine-verification-closure-integrity.md",
+    "tests/test_qa_evidence.py"
+  ],
+  "brief_path": "docs/research-brief-qa-required-pillars-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.121.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T06:18:37Z"
+  }
+}

@@ -13918,5 +13918,82 @@ Change class: hotfix (v0.121.0 -> v0.121.1). Tests: 3 new in tests/test_substant
 
 ---
 
+### Entry #426: RESEARCH BRIEF -- QA required pillars (GH #269)
+
+**Timestamp**: 2026-07-13T06:18:02Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #269
+**Session**: `2026-07-13T0617-5f93aa`
+**Brief**: docs/research-brief-qa-required-pillars-2026-07-13.md
+
+**Content Hash**: `210d75c03b382fc0e35ba8657a75c969818367cb08b426c4a6406e18faee2713`
+**Previous Hash**: `71aa93ad6acc220c04665617905c1cc79479d615eb37e03e779f4e3cfeedd057`
+**Chain Hash (Merkle seal)**: `ea27b7f77755e2f3e338a119394637f22299d8f7e48fb4471f70a87fb58310b3`
+
+**Decision**: Premise verified live: `qa_evidence.build_payload` fails the verdict only on an explicit pillar `fail` (line 70), so an all-skip security/stability/coverage payload is PASS -- deliberate transparency per the verification-closure doctrine, but no opt-in strict posture exists for release/compliance consumers. Fix shape: adoption-mode default preserving current output byte-for-byte, plus `policy="production"` + `required_pillars` where a required `skip`/missing pillar fails the verdict; artifact records both fields (additive under `additionalProperties: true`; `qa` is a REGISTERED schema so the freeze lint is untouched; the PASS/FAIL enum stays closed -- no third verdict value). `ac_close_guard` consumes the verdict through its existing WARN seam with zero changes. qa_evidence has no CLI (library only) -- the brief's CLI-passthrough item resolves n/a. Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class feature.
+
+---
+
+### Entry #427: GATE TRIBUNAL -- Phase 177 plan PASS (QA required pillars)
+
+**Timestamp**: 2026-07-13T06:19:54Z
+**Phase**: GATE (Phase 177)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase177-qa-required-pillars.md
+**Session**: `2026-07-13T0617-5f93aa`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `1027b4e0ea1cb069099db1390ce63f55c0fbf4bff06e31b1a2b5d87430ce6f79`
+**Previous Hash**: `ea27b7f77755e2f3e338a119394637f22299d8f7e48fb4471f70a87fb58310b3`
+**Chain Hash (Merkle seal)**: `9705b57d90710b42718c0888366bbfdc13feb3cf05038b00ab20327fde9bd2bf`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #426 (GH #269): `build_payload` gains opt-in `policy="production"` + `required_pillars` where a required skip/fail fails the verdict (misconfiguration guard: production with an empty required set raises); adoption default keeps every existing payload byte-identical (regression-locked by test); two additive optional fields on the REGISTERED qa schema (no freeze exposure; PASS/FAIL enum stays closed); zero consumer changes (close-guard WARN seam carries the outcome); doctrine gains the posture qualifier. Zero violations; runtime contract walk 0 findings. Next: `/qor-implement`.
+
+---
+
+### Entry #428: IMPLEMENTATION -- Phase 177 QA required pillars
+
+**Timestamp**: 2026-07-13T06:31:07Z
+**Phase**: IMPLEMENT (Phase 177)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0617-5f93aa`
+**Intent Lock**: `LOCKED: 2026-07-13T0617-5f93aa`
+
+**Content Hash**: `27d7ba20b994c2d10e705177a360e707006ec5f777cdd4322b689d0578f57871`
+**Previous Hash**: `9705b57d90710b42718c0888366bbfdc13feb3cf05038b00ab20327fde9bd2bf`
+**Chain Hash (Merkle seal)**: `6cbfd5960afadb3723e602c238fb38c3f8f3189b9c37fc2106a040001d3a8246`
+
+**Decision**: Phase 177 implemented per plan, TDD-first (7 new behavioral tests red -- 6 failed against the pre-policy verdict, then all 12 green twice). `qa_evidence.build_payload` gains keyword-only `policy="adoption"` + `required_pillars=None`: production validates the required set (non-empty subset of PILLARS, else ValueError) and FAILs the verdict when any required pillar is not `pass`; adoption path byte-identical (no new payload keys -- locked by test_adoption_default_output_unchanged). qa.schema.json gains optional `policy` enum + `required_pillars` array (uniqueItems, minItems 1, closed item enum) -- additive on the registered schema, verdict enum untouched. Doctrine verification-closure-integrity QA contract gains the adoption qualifier + production-policy paragraph incl. the misconfiguration guard and the follow-on note (seal/release wiring deferred, recorded on GH #269). Full suite 2580 passed / 2 skipped. Content hash binds tests/test_qa_evidence.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #429: SESSION SEAL -- Phase 177 QA required pillars (v0.122.0)
+
+**Timestamp**: 2026-07-13T06:32:14Z
+**Phase**: SUBSTANTIATE (Phase 177; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase177-qa-required-pillars.md
+**Session**: `2026-07-13T0617-5f93aa`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `bc5882d43c52`
+
+**Scope**: Phase 177 implemented (feature; research entry #426 -> closes GH #269). QA evidence gains an opt-in production posture: `qa_evidence.build_payload(policy="production", required_pillars={...})` FAILs the verdict when any declared-required pillar is not `pass` -- skipped security/stability/coverage evidence can no longer yield a production-grade PASS -- while the adoption default keeps every existing payload byte-identical (no new keys; regression-locked). Misconfiguration guard: production with an empty/unknown required set raises. Artifact records `policy` + sorted `required_pillars` (two additive optional fields on the REGISTERED qa schema; the strict PASS/FAIL verdict enum is untouched, so existing validators keep working). Zero consumer changes: `ac_close_guard` carries the outcome through its existing WARN seam. Doctrine QA contract gains the adoption qualifier + production paragraph; seal/release wiring of the strict posture is recorded as deliberate follow-on scope on GH #269.
+
+Change class: feature (v0.121.1 -> v0.122.0). Tests: 7 new behavioral in tests/test_qa_evidence.py (byte-compat lock, required-skip FAIL acceptance, required-pass PASS + field recording, fail dominance, optional-skip PASS, ValueError guard both forms, schema validation of both postures), 12 focused passed twice; full suite 2580 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, doc-currency 3 WARNs operator-judged spurious (the doctrine file IS the documentation surface for this contract; no operational verb added), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0555-0e2b55. Audit: solo PASS (entry #427; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (evidence tooling; no user-touchable feature row)
+
+**Content Hash**: `12a1884c5001f95f2052a3527d2f79cb0a91ba07255db9b9b10d5abe362d7700`
+**Previous Hash**: `6cbfd5960afadb3723e602c238fb38c3f8f3189b9c37fc2106a040001d3a8246`
+**Chain Hash (Merkle seal)**: `c7f7096f46ed42400d71a91d17b5d3ed9bb796ab7874a6a92611709c0d362f2b`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 176; v0.121.1; substantiate staging gates; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 177; v0.122.0; QA required pillars; local checkpoint commit only -- remote work held for operator review)

@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.122.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 177 (feature; QA required pillars)**: skipped security, stability, or coverage evidence can no longer yield a production-grade QA PASS (GH #269). `qor.scripts.qa_evidence.build_payload` gains an opt-in `policy="production"` with a declared `required_pillars` set: every required pillar must be `pass` -- a required `skip` or `fail` fails the verdict, and production with an empty required set raises (a strict posture that requires nothing is a misconfiguration). The artifact records `policy` and `required_pillars` (two additive optional fields on the registered qa schema; the PASS/FAIL verdict enum is unchanged) so consumers can audit the posture a verdict was computed under. The default adoption policy keeps every existing payload byte-identical -- skip-visible transparency semantics are untouched, and `ac_close_guard` consumes the outcome through its existing seam with zero changes. Wiring the production posture into seal/release gates is recorded as deliberate follow-on scope on GH #269.
+
 ## [0.121.1] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

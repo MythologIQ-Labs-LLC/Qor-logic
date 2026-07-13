@@ -53,12 +53,33 @@ def build_payload(
     coverage: dict | None = None,
     session_id: str | None = None,
     ts: str | None = None,
+    policy: str = "adoption",
+    required_pillars: set[str] | frozenset[str] | None = None,
 ) -> dict:
     """Assemble a qa.json payload.
 
-    ``verdict`` is FAIL iff any pillar status is ``"fail"``; otherwise PASS
-    (``skip`` does not fail the verdict, but is visible per-pillar).
+    Under the default ``adoption`` policy ``verdict`` is FAIL iff any pillar
+    status is ``"fail"``; otherwise PASS (``skip`` does not fail the verdict,
+    but is visible per-pillar). Phase 177 (GH #269): under
+    ``policy="production"`` every pillar named in ``required_pillars`` must be
+    ``"pass"`` -- a required ``skip`` (or ``fail``) fails the verdict, so
+    skipped security/stability/coverage evidence cannot yield a
+    production-grade PASS. Production with an empty required set is a
+    misconfiguration and raises ``ValueError``. Adoption payloads are
+    byte-identical to the pre-177 output (no new keys).
     """
+    if policy not in ("adoption", "production"):
+        raise ValueError(f"unknown qa policy: {policy!r}")
+    required = frozenset(required_pillars or ())
+    if policy == "production":
+        if not required:
+            raise ValueError(
+                "policy='production' requires a non-empty required_pillars set"
+            )
+        unknown = required - set(PILLARS)
+        if unknown:
+            raise ValueError(f"unknown required pillars: {sorted(unknown)}")
+
     overrides = {"security": security, "stability": stability, "coverage": coverage}
     pillars: dict[str, dict] = {"regression": _regression_pillar(regression_summary)}
     for name in ("security", "stability", "coverage"):
@@ -67,9 +88,19 @@ def build_payload(
         else:
             pillars[name] = {"status": "skip", "note": _DEFERRED_NOTE[name]}
 
-    verdict = "FAIL" if any(p["status"] == "fail" for p in pillars.values()) else "PASS"
+    failed = any(p["status"] == "fail" for p in pillars.values())
+    if policy == "production":
+        required_unmet = any(
+            pillars.get(name, {}).get("status") != "pass" for name in required
+        )
+        verdict = "FAIL" if failed or required_unmet else "PASS"
+    else:
+        verdict = "FAIL" if failed else "PASS"
 
     payload: dict = {"phase": "qa", "verdict": verdict, "pillars": pillars}
+    if policy == "production":
+        payload["policy"] = "production"
+        payload["required_pillars"] = sorted(required)
     if ts is not None:
         payload["ts"] = ts
     if session_id is not None:
