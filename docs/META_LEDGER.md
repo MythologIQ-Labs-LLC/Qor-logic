@@ -14381,5 +14381,82 @@ Change class: hotfix (v0.124.0 -> v0.124.1). Tests: 2 new behavioral (capture-bo
 
 ---
 
+### Entry #450: RESEARCH BRIEF -- Intent-lock verdict forms (GH #263)
+
+**Timestamp**: 2026-07-13T08:38:01Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #263
+**Session**: `2026-07-13T0837-ef73c7`
+**Brief**: docs/research-brief-intent-lock-verdict-forms-2026-07-13.md
+
+**Content Hash**: `5928adfa1853528543b5c3243afe3251aee9774e274b221360b534845313a1fd`
+**Previous Hash**: `4059f16ecfe4dd9cb176ecd2bb6c97bd5b99078c3f1ad5086573f05aa0ecf3f1`
+**Chain Hash (Merkle seal)**: `8021661ce7511e80046c4928c127876b0730a23d5792a1aa71e1270502ab62a4`
+
+**Decision**: `intent_lock._audit_has_pass` (line 59, verified live) rejects markdown-heading verdict forms (`## VERDICT: PASS`) that are in real production use -- this repository's own Phase 173 tribunal hit the rejection live -- and the line-82 error cannot distinguish format-mismatch from genuinely-not-PASS. Headings are structural markdown (cannot appear inside a prose sentence), so an `#{0,6}\s*` prefix preserves the Phase 53 LOW-4 anti-prose anchoring completely; indent-reject and same-line anchoring unchanged. The only other verdict parser (meta_ledger_walker, bold-form value extractor over a different input class) is intentionally distinct -- no synchronization. Test gap: zero heading coverage in the anchored-check suite. Fix: widen + heading accept tests + prose/indent regression locks + a format-hint error naming the expected forms when loose verdict-ish content exists. Next: /qor-auto-dev-1, change_class hotfix.
+
+---
+
+### Entry #451: GATE TRIBUNAL -- Phase 183 plan PASS (intent-lock verdict forms)
+
+**Timestamp**: 2026-07-13T08:39:21Z
+**Phase**: GATE (Phase 183)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase183-intent-lock-verdict-forms.md
+**Session**: `2026-07-13T0837-ef73c7`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `b3ac5a6195a11bd416bca7a676eb82b97cd271b64fbe0fc41bac1427e99c566f`
+**Previous Hash**: `8021661ce7511e80046c4928c127876b0730a23d5792a1aa71e1270502ab62a4`
+**Chain Hash (Merkle seal)**: `a87826a621528d70451dd978e7a8a810410c9cb542795e4f4b670045ccbfaf42`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #450 (GH #263): `#{0,6}\s*` heading prefix on the anchored verdict regex (LOW-4 anti-prose anchors preserved -- no prose sentence starts at column 0 with `#` and ends after PASS); format-hint error distinguishing non-canonical-form from not-PASS (display-only loose probe; decision path unchanged); prose/indent rejections regression-locked post-widening. One infrastructure-mismatch (nonexistent test file in the CI list) corrected pre-verdict; the plan amendment landed as plan-iter2 with iter1 preserved -- the Phase 173 iteration semantics exercised by its own governance. Next: `/qor-implement`.
+
+---
+
+### Entry #452: IMPLEMENTATION -- Phase 183 intent-lock verdict forms
+
+**Timestamp**: 2026-07-13T08:50:09Z
+**Phase**: IMPLEMENT (Phase 183)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0837-ef73c7`
+**Intent Lock**: `LOCKED: 2026-07-13T0837-ef73c7`
+
+**Content Hash**: `ab622be8306ea74ea6083b4aa6b9f7ad3a14e9e8fb03bbc035378d485e2c9374`
+**Previous Hash**: `a87826a621528d70451dd978e7a8a810410c9cb542795e4f4b670045ccbfaf42`
+**Chain Hash (Merkle seal)**: `486d26cd268e1821f84ae76f6c35e9ddac7f260616b5c76ec6a3d0272a4131a3`
+
+**Decision**: Phase 183 implemented per plan, TDD-first (3 tests red, then 29 focused green twice). The heading widening required ONE correction the guardrails caught live: the first draft `#{0,6}\s*` admitted INDENTED verdict lines through the zero-hash branch (the existing LOW-4 indentation regression lock went red); corrected to `(?:#{1,6}[ \t]*)?` -- whitespace legal only after at least one `#`, column-0 anchoring preserved for the plain form. `_verdict_hint` distinguishes non-canonical-form (expected forms named) from not-PASS; display-only, decision path unchanged; wired at the capture error branch. Full suite 2601 passed / 2 skipped. Content hash binds tests/test_intent_lock_anchored_pass_check.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #453: SESSION SEAL -- Phase 183 intent-lock verdict forms (v0.124.2)
+
+**Timestamp**: 2026-07-13T08:51:08Z
+**Phase**: SUBSTANTIATE (Phase 183; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase183-intent-lock-verdict-forms.md
+**Session**: `2026-07-13T0837-ef73c7`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `51b2c1607eb9`
+
+**Scope**: Phase 183 implemented (hotfix; research entry #450 -> closes GH #263). `intent_lock` accepts markdown-heading verdict declarations (`## VERDICT: PASS` and h1-h6 variants) that are in real production use -- the opaque rejection bit this repository's own Phase 173 tribunal live. The Phase 53 LOW-4 anti-prose safety is fully preserved: the first pattern draft was CAUGHT by the existing indentation regression lock (the `#{0,6}\s*` zero-hash branch admitted indented lines) and corrected to `(?:#{1,6}[ \t]*)?` -- whitespace legal only after at least one `#`. New `_verdict_hint` distinguishes "verdict present but non-canonical" (expected forms named) from "genuinely not PASS" in the error message only; the loose probe never influences the verdict decision. The plan itself was amended pre-verdict (nonexistent test file in the CI list) and landed as plan-iter2 with iter1 preserved -- Phase 173's iteration semantics exercised by its own governance. meta_ledger_walker's verdict parser is intentionally distinct (different input class); recorded at disposition.
+
+Change class: hotfix (v0.124.1 -> v0.124.2). Tests: 4 new behavioral (h2/h3 accept, prose+indent regression re-locks, format-hint both branches), red-then-green with one guardrail-caught correction; 29 focused green twice; full suite 2601 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0817-5d9c1c. Audit: solo PASS (entry #451; one pre-verdict citation correction). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (reliability gate UX)
+
+**Content Hash**: `4fd0a485b6e2163c589028c3017933b7f63d75bd2a529dc21c6cdebb2e0e1e46`
+**Previous Hash**: `486d26cd268e1821f84ae76f6c35e9ddac7f260616b5c76ec6a3d0272a4131a3`
+**Chain Hash (Merkle seal)**: `ca5607d0e31fbcabf2e1b5af5ae9acf6b39dc64fb4a6b9e79b508015c222c37f`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 182; v0.124.1; health pre-anchor output; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 183; v0.124.2; intent-lock verdict forms; local checkpoint commit only -- remote work held for operator review)

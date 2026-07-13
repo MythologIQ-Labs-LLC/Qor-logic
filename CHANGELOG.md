@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.124.2] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 183 (hotfix; intent-lock verdict forms)**: `intent_lock` accepts markdown-heading verdict declarations (`## VERDICT: PASS`) that are in real production use, and its rejection error now distinguishes "verdict present but non-canonical" (with the expected forms named) from "genuinely not PASS" (GH #263; the opaque rejection bit this repository's own Phase 173 tribunal live). The Phase 53 anti-prose safety is fully preserved -- headings are structural markdown that cannot appear inside a narrative sentence, indented lines still reject (the existing regression lock caught and corrected an over-wide first draft of the pattern during TDD), and the loose hint probe affects only the error message, never the verdict decision.
+
 ## [0.124.1] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
