@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T0940-f515e2",
+  "ts": "2026-07-13T09:46:21Z",
+  "target": "docs/plan-qor-phase186-provenance-autodetect.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "target_content_hash": "7c781b5085fe0cff26fcd4d6fe1130bcfb8fc835d108fb5f17bfd8687c8c2694",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.4",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T09:46:21Z"
+  }
+}

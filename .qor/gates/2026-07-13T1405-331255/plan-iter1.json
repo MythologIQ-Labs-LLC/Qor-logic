@@ -1,0 +1,28 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T1405-331255",
+  "ts": "2026-07-13T11:44:16Z",
+  "plan_path": "docs/plan-qor-phase190-spec-corpus-phase-a.md",
+  "phases": [
+    "Phase 1: Grammar lint (TDD first)",
+    "Phase 2: Deterministic merge (TDD first)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_spec_lint.py tests/test_spec_merge.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "feature",
+  "originating_remediation": "GH #239",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.128.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T11:44:16Z"
+  }
+}

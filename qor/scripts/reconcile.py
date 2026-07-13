@@ -66,20 +66,33 @@ def build_proposal(ledger_path: Path, *, ts: str) -> dict:
     }
 
 
-def _last_chain_hash(text: str) -> str:
-    """Chain hash of the final entry (the forward link for the new entry)."""
-    entries = _entries(text)
-    if not entries:
-        # Genesis: no prior entry -> all-zeros previous (verify() exempts it).
-        return "0" * 64
-    _, body = entries[-1]
+def _recorded_chain_hash(body: str) -> str | None:
+    """The entry's recorded chain hash / session seal, or None when absent."""
     xh = CHAIN_HASH_RE.search(body)
     if xh:
         return xh.group(1) or xh.group(2)
     seal = SESSION_SEAL_RE.search(body)
     if seal:
         return seal.group(1)
-    raise ValueError("final ledger entry has no parseable chain hash to link off")
+    return None
+
+
+def _last_chain_hash(text: str) -> str:
+    """Chain hash to link the new entry off: the LAST entry carrying recorded
+    hash markup. Phase 180 (GH #234): a deferred-Merkle tail (no-fabrication
+    entries with no hash markup) is a legal state -- the exact state reconcile
+    exists to repair -- so walk backward past it to the last validly
+    chain-hashed entry instead of rejecting the ledger. Only recorded hashes
+    are ever selected; nothing is fabricated."""
+    entries = _entries(text)
+    if not entries:
+        # Genesis: no prior entry -> all-zeros previous (verify() exempts it).
+        return "0" * 64
+    for _, body in reversed(entries):
+        recorded = _recorded_chain_hash(body)
+        if recorded:
+            return recorded
+    raise ValueError("no validly chain-hashed entry found to link off")
 
 
 def append_reconciliation_entry(

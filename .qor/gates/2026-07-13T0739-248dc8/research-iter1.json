@@ -1,0 +1,42 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0739-248dc8",
+  "ts": "2026-07-13T07:40:53Z",
+  "questions": [
+    "Does the deferred-tail failure still reproduce, and where exactly?",
+    "Is the deferred tail a legal state reconcile must accept?",
+    "What is the minimal fix with zero caller changes?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "_last_chain_hash parses only entries[-1]; raises on deferred tails while build_proposal already derives the link-off ancestors",
+      "source": "qor/scripts/reconcile.py:69"
+    },
+    {
+      "id": "F2",
+      "summary": "deferred tails are the legal no-fabrication state reconcile exists to repair; link-off must be the last VALIDLY hashed entry",
+      "source": "qor/scripts/reconcile.py:82"
+    },
+    {
+      "id": "F3",
+      "summary": "backward-walk fallback is self-contained (no signature change); zero deferred-tail test coverage today; independently shippable ahead of #271's parser",
+      "source": "tests/test_reconcile.py"
+    }
+  ],
+  "sources": [
+    "qor/scripts/reconcile.py",
+    "qor/scripts/ledger_hash.py",
+    "tests/test_reconcile.py",
+    "tests/test_cli_reconcile.py"
+  ],
+  "brief_path": "docs/research-brief-reconcile-deferred-tail-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.123.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T07:40:53Z"
+  }
+}

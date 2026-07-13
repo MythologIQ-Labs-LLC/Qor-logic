@@ -45,7 +45,7 @@ State tracking, documentation, decision logs, session tier selection.
 | track-shadow-genome | `qor/skills/memory/track-shadow-genome.md` | Active (migrated) |
 | qor-docs-technical-writing | `qor/skills/memory/qor-docs-technical-writing/` | Active (migrated) |
 
-## meta/ (12)
+## meta/ (13)
 
 Bootstrapping, help, repo management, meta-tracking, workflow bundles, A/B measurement.
 
@@ -63,6 +63,7 @@ Bootstrapping, help, repo management, meta-tracking, workflow bundles, A/B measu
 | qor-deep-audit-recon | `qor/skills/meta/qor-deep-audit-recon/` | Active (recon half of deep-audit; autonomy: autonomous) |
 | qor-deep-audit-remediate | `qor/skills/meta/qor-deep-audit-remediate/` | Active (remediate half of deep-audit; autonomy: autonomous) |
 | qor-onboard-codebase | `qor/skills/meta/qor-onboard-codebase/` | Active (workflow bundle for external codebase intake) |
+| qor-onboard | `qor/skills/meta/qor-onboard/` | Active (workflow bundle; tutorial mode for a first governed session) |
 
 ## custom/ (0)
 

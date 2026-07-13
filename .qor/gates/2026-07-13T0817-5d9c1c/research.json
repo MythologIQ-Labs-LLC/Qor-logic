@@ -1,0 +1,41 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0817-5d9c1c",
+  "ts": "2026-07-13T08:19:00Z",
+  "questions": [
+    "Where does the contradictory output escape?",
+    "Is the verdict already correct?",
+    "What satisfies the boundary-identification acceptance minimally?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "redirect_stdout only at governance_health.py:134,142; verify writes FAIL/TAINTED to stderr (ledger_hash.py:417,429); bleeds into CLI, status_json, nightly summary",
+      "source": "qor/scripts/governance_health.py:134"
+    },
+    {
+      "id": "F2",
+      "summary": "verdict-level tolerance already correct (GH #199 post-anchor fallback)",
+      "source": "qor/scripts/governance_health.py:127"
+    },
+    {
+      "id": "F3",
+      "summary": "suppress stderr + positive tolerance note in the OK reason; structured output defers to GH #271; existing fixture reusable",
+      "source": "tests/test_governance_health_post_anchor_tolerance.py"
+    }
+  ],
+  "sources": [
+    "qor/scripts/governance_health.py",
+    "qor/scripts/ledger_hash.py",
+    "tests/test_governance_health_post_anchor_tolerance.py"
+  ],
+  "brief_path": "docs/research-brief-health-preanchor-output-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T08:19:00Z"
+  }
+}

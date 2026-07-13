@@ -1,0 +1,41 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0837-ef73c7",
+  "ts": "2026-07-13T08:38:34Z",
+  "questions": [
+    "Which verdict forms are rejected and why?",
+    "Does the heading prefix preserve the LOW-4 rationale?",
+    "Do other parsers need synchronizing?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "anchored regex at :59 rejects heading forms; error at :82 cannot distinguish format-mismatch from not-PASS; Phase 173 hit this live",
+      "source": "qor/reliability/intent_lock.py:59"
+    },
+    {
+      "id": "F2",
+      "summary": "headings are structural, not prose-embeddable -- the #{0,6} prefix preserves the anti-prose anchors entirely",
+      "source": "qor/reliability/intent_lock.py:48"
+    },
+    {
+      "id": "F3",
+      "summary": "meta_ledger_walker's verdict parser is a different input class (intentionally distinct); zero heading coverage in the anchored-check tests",
+      "source": "tests/test_intent_lock_anchored_pass_check.py"
+    }
+  ],
+  "sources": [
+    "qor/reliability/intent_lock.py",
+    "tests/test_intent_lock_anchored_pass_check.py",
+    "qor/scripts/meta_ledger_walker.py"
+  ],
+  "brief_path": "docs/research-brief-intent-lock-verdict-forms-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T08:38:34Z"
+  }
+}

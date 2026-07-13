@@ -192,6 +192,7 @@ home: qor/gates/workflow-bundles.md
 referenced_by:
   - CLAUDE.md
   - qor/skills/meta/qor-deep-audit/SKILL.md
+  - qor/skills/meta/qor-onboard/SKILL.md
   - qor/skills/meta/qor-onboard-codebase/SKILL.md
   - qor/skills/governance/qor-process-review-cycle/SKILL.md
   - docs/lifecycle.md
@@ -203,6 +204,8 @@ term: change_class
 definition: A per-plan declaration of version impact -- hotfix, feature, or breaking. Governs the version bump performed at substantiate time by governance_helpers.bump_version.
 home: qor/references/doctrine-governance-enforcement.md
 referenced_by:
+  - qor/skills/meta/qor-onboard/references/tutorial-narration.md
+  - qor/skills/meta/qor-onboard/SKILL.md
   - CLAUDE.md
   - qor/skills/sdlc/qor-plan/SKILL.md
   - qor/skills/sdlc/qor-plan/references/step-extensions.md
@@ -596,6 +599,7 @@ term: ideation readiness
 definition: 'Tenth section of the ideation artifact. The readiness.status enum encodes the routing decision (ready / blocked / research_required / planning_advisory_only) and recommended_next_phase enum (research / plan / hold) determines downstream skill handoff. Status ready + research routes to /qor-research; status ready + plan routes to /qor-plan; status blocked remains in ideation; status research_required overrides recommended_next_phase to research; status planning_advisory_only routes to /qor-plan with advisory flag.'
 home: qor/references/doctrine-ideation-readiness.md
 referenced_by:
+  - qor/skills/meta/qor-onboard/references/tutorial-narration.md
   - qor/skills/sdlc/qor-ideate/SKILL.md
   - qor/gates/delegation-table.md
 introduced_in_plan: phase59-ideation-readiness-phase
@@ -772,6 +776,7 @@ referenced_by:
   - qor/references/doctrine-feature-inventory.md
   - qor/skills/governance/qor-substantiate/references/release-and-tag-timing.md
   - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
 
@@ -789,6 +794,7 @@ referenced_by:
   - qor/skills/governance/qor-process-review-cycle/SKILL.md
   - qor/skills/governance/qor-shadow-process/SKILL.md
   - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
 
@@ -810,6 +816,7 @@ referenced_by:
   - qor/scripts/entry_id.py
   - qor/reliability/seal_entry_check.py
   - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
 introduced_in_plan: phase76-meta-ledger-federation
 ```
 
@@ -1262,4 +1269,21 @@ home: qor/references/doctrine-ledger-concurrency.md
 referenced_by:
   - qor/reliability/ledger_base_currency.py
 introduced_in_plan: phase162-ledger-base-currency
+```
+```yaml
+term: Negative constraint
+definition: 'An explicit prohibition rule injected into weak-tier-deployment skill variants (Phase 187, GH #243) because models running below a skill design tier follow positive structure well but infer implicit negative constraints poorly. Two canonical rules: NR-001 (never reproduce secret-shaped strings; refer by prefix or descriptor) and NR-002 (a mandatory rationale/definition slot with no source fact takes the literal text "not established" instead of an invented fact).'
+home: qor/references/doctrine-negative-constraints.md
+referenced_by:
+  - qor/scripts/dist_compile.py
+  - qor/scripts/model_pinning_lint.py
+introduced_in_plan: phase187-negative-constraints
+```
+```yaml
+term: Repository snapshot
+definition: 'The versioned read-only JSON export of repository-local governance state (Phase 191, GH #270): one document composing session, lifecycle, gate, ledger, seal, health, shadow, and drift facts, where every section carries an explicit state (ok/unknown/error) plus a source pointer, and absence never renders as health. A derived read model -- ledgers and gate artifacts remain authoritative.'
+home: qor/references/snapshot-contract.md
+referenced_by:
+  - qor/scripts/snapshot_export.py
+introduced_in_plan: phase191-snapshot-contract
 ```

@@ -1,0 +1,27 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T0739-248dc8",
+  "ts": "2026-07-13T07:41:34Z",
+  "plan_path": "docs/plan-qor-phase180-reconcile-deferred-tail.md",
+  "phases": [
+    "Phase 1: Fix + regression tests (TDD first)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_reconcile.py tests/test_cli_reconcile.py tests/test_ledger_hash_reconciliation.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "hotfix",
+  "originating_remediation": "GH #234",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.123.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T07:41:34Z"
+  }
+}

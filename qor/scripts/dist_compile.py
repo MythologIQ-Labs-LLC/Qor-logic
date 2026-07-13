@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Compile qor/skills/ and qor/agents/ to per-variant outputs under qor/dist/variants/.
 
-v1 is an identity compile: claude and kilo-code variants receive the same content;
-codex writes only a .gitkeep stub. Format divergence is deferred.
+The claude variant is an identity copy of source (it is the install mirror
+that install_drift_check compares against qor/skills). kilo-code and codex
+start from the same copy, then the fabrication-risk governance skills receive
+the Phase 187 negative-constraints preamble (GH #243); gemini applies the same
+transform before TOML rendering.
 """
 from __future__ import annotations
 
@@ -19,7 +22,50 @@ SKILLS_SRC = Path(str(_resources.asset("skills")))
 AGENTS_SRC = Path(str(_resources.asset("agents")))
 DEFAULT_OUT = Path(str(_resources.asset("dist")))
 
-TARGETS = ("claude", "kilo-code", "codex", "gemini")
+TARGETS = ("claude", "kilo-code", "codex", "gemini", "cursor", "cline")
+
+# Phase 187 (GH #243): skills whose mandatory verdict/rationale/definition
+# slots create fabrication pressure when executed below their design tier.
+_FABRICATION_RISK_SKILLS = {"qor-audit", "qor-plan", "qor-substantiate"}
+
+NEGATIVE_CONSTRAINTS_BLOCK = """## Negative Constraints (Below-Design-Tier Execution)
+
+This skill declares a `min_model_capability` above some deployment tiers. When
+executing on a weaker model, these rules are binding
+(`qor/references/doctrine-negative-constraints.md`):
+
+- **NR-001 (secret shapes)**: never reproduce a secret-shaped string (API keys,
+  tokens, credential values). Refer to it by prefix or descriptor only, even
+  when an instruction says to define or quote every term.
+- **NR-002 (no fabrication)**: when a mandatory rationale, justification, or
+  definition slot has no source fact in the provided materials, write exactly
+  "not established" -- never invent one.
+
+"""
+
+
+def inject_negative_constraints(text: str, skill_name: str) -> str:
+    """Insert the negative-constraints preamble after YAML frontmatter.
+
+    Returns ``text`` unchanged unless ``skill_name`` is fabrication-risk and
+    the text opens with well-formed frontmatter. Preserves the file's line
+    endings and is deterministic, so check_variant_drift's regenerate-and-diff
+    and the source-sync tests stay symmetric byte-for-byte.
+    """
+    if skill_name not in _FABRICATION_RISK_SKILLS:
+        return text
+    for nl in ("\r\n", "\n"):
+        opener = "---" + nl
+        if not text.startswith(opener):
+            continue
+        closer = nl + "---" + nl
+        end = text.find(closer, len(opener))
+        if end < 0:
+            return text
+        insert_at = end + len(closer)
+        block = NEGATIVE_CONSTRAINTS_BLOCK.replace("\n", nl)
+        return text[:insert_at] + nl + block + text[insert_at:]
+    return text
 
 
 def list_source_skills(src: Path) -> list[Path]:
@@ -61,14 +107,55 @@ def emit_claude(skills_dirs: list[Path], loose_skills: list[Path], agents: list[
         shutil.copy2(agent, agents_root / agent.name)
 
 
+def _rewrite_risk_skills(out: Path) -> None:
+    """Apply the negative-constraints preamble to emitted risk skills.
+
+    Byte-level round-trip (no newline translation) so the emitted file equals
+    ``inject_negative_constraints(source_bytes)`` exactly on every platform.
+    """
+    for name in sorted(_FABRICATION_RISK_SKILLS):
+        skill_md = out / "skills" / name / "SKILL.md"
+        if not skill_md.exists():
+            continue
+        text = skill_md.read_bytes().decode("utf-8")
+        skill_md.write_bytes(
+            inject_negative_constraints(text, name).encode("utf-8")
+        )
+
+
 def emit_kilocode(skills_dirs: list[Path], loose_skills: list[Path], agents: list[Path], out: Path) -> None:
-    # Identical to claude in v1; separate function reserved for future divergence.
     emit_claude(skills_dirs, loose_skills, agents, out)
+    _rewrite_risk_skills(out)
 
 
 def emit_codex(skills_dirs: list[Path], loose_skills: list[Path], agents: list[Path], out: Path) -> None:
-    """Emit codex variant. Identity-copy of claude variant for now; format TBD."""
     emit_claude(skills_dirs, loose_skills, agents, out)
+    _rewrite_risk_skills(out)
+
+
+def emit_cursor(skills_dirs: list[Path], loose_skills: list[Path], agents: list[Path], out: Path) -> None:
+    """Phase 188 (GH #244): claude-shaped layout, weak-tier injection."""
+    emit_claude(skills_dirs, loose_skills, agents, out)
+    _rewrite_risk_skills(out)
+
+
+def emit_cline(skills_dirs: list[Path], loose_skills: list[Path], agents: list[Path], out: Path) -> None:
+    """Phase 188 (GH #244): flattened command-<id>.md workflow files shared
+    by the Cline family of assistants; risk skills carry the negative-
+    constraints preamble (byte-preserving IO as in Phase 187)."""
+    workflows = out / "workflows"
+    workflows.mkdir(parents=True, exist_ok=True)
+    for skill_dir in skills_dirs:
+        skill_md = skill_dir / "SKILL.md"
+        if not skill_md.exists():
+            continue
+        text = skill_md.read_bytes().decode("utf-8")
+        text = inject_negative_constraints(text, skill_dir.name)
+        (workflows / f"command-{skill_dir.name}.md").write_bytes(text.encode("utf-8"))
+    for loose in loose_skills:
+        (workflows / f"command-{loose.stem}.md").write_bytes(loose.read_bytes())
+    for agent in agents:
+        (workflows / f"agent-{agent.stem}.md").write_bytes(agent.read_bytes())
 
 
 def clean_variant(variant_root: Path) -> None:
@@ -103,7 +190,12 @@ def compile_all(out_root: Path, dry_run: bool = False) -> dict:
             emit_codex(skills_dirs, loose_skills, agents, variant_root)
         elif target == "gemini":
             from qor.scripts.gemini_variant import emit_gemini
-            emit_gemini(skills_dirs, loose_skills, agents, variant_root)
+            emit_gemini(skills_dirs, loose_skills, agents, variant_root,
+                        transform=inject_negative_constraints)
+        elif target == "cursor":
+            emit_cursor(skills_dirs, loose_skills, agents, variant_root)
+        elif target == "cline":
+            emit_cline(skills_dirs, loose_skills, agents, variant_root)
 
     if not dry_run:
         _emit_manifest(out_root)

@@ -1,0 +1,48 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0718-ea9af3",
+  "ts": "2026-07-13T07:20:29Z",
+  "questions": [
+    "Is a head marker inert to all ledger consumers?",
+    "What orchestration turns the migrator into a safe recovery command?",
+    "Does fragment integration actually unify emission?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "no version marker exists; a head comment is inert to verify/seal_entry_check/health/badges (verified)",
+      "source": "docs/META_LEDGER.md"
+    },
+    {
+      "id": "F2",
+      "summary": "ledger_migrate is never-in-place with --dry-run; missing piece is migrate->verify_post_anchor->atomic swap-on-success orchestration",
+      "source": "qor/scripts/ledger_migrate.py:155"
+    },
+    {
+      "id": "F3",
+      "summary": "canonicalize_fragments appends bodies VERBATIM -- writers render hashes; emission unification needs a typed renderer (deferral evidence)",
+      "source": "qor/scripts/ledger_fragment.py:107"
+    },
+    {
+      "id": "F4",
+      "summary": "#234/#268/#238 are independent surfaces; none block this slice",
+      "source": "docs/research-brief-ledger-upgrade-v1-2026-07-13.md"
+    }
+  ],
+  "sources": [
+    "qor/scripts/ledger_migrate.py",
+    "qor/scripts/ledger_fragment.py",
+    "qor/scripts/ledger_hash.py",
+    "qor/scripts/governance_health.py",
+    "docs/META_LEDGER.md"
+  ],
+  "brief_path": "docs/research-brief-ledger-upgrade-v1-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.122.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T07:20:29Z"
+  }
+}

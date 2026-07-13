@@ -8,13 +8,11 @@ presence-only).
 from __future__ import annotations
 
 import json
-import os
-import sys
 
 import pytest
 
-sys.path.insert(0, "qor/scripts")
-import gate_chain  # noqa: E402  (sys.path adjustment required for direct import)
+from qor.scripts import gate_chain
+from qor.scripts import validate_gate_artifact as vga
 
 
 # Minimal valid plan payload (matches qor/gates/schema/plan.schema.json).
@@ -69,8 +67,10 @@ def test_write_gate_artifact_refuses_when_qor_skill_active_mismatches(tmp_path, 
 def test_write_gate_artifact_succeeds_when_qor_skill_active_matches(tmp_path, monkeypatch):
     """QOR_SKILL_ACTIVE=plan with phase=plan -> write succeeds."""
     monkeypatch.setenv("QOR_SKILL_ACTIVE", "plan")
+    monkeypatch.setenv("QOR_ROOT", str(tmp_path))
     monkeypatch.delenv("QOR_GATE_PROVENANCE_OPTIONAL", raising=False)
     monkeypatch.setattr(gate_chain, "GATES_DIR", tmp_path)
+    monkeypatch.setattr(vga, "GATES_DIR", tmp_path)
     sid = "2026-04-30T0000-test03"
     path = gate_chain.write_gate_artifact(
         phase="plan",
@@ -86,8 +86,10 @@ def test_write_gate_artifact_succeeds_when_qor_skill_active_matches(tmp_path, mo
 def test_qor_gate_provenance_optional_bypasses_check(tmp_path, monkeypatch):
     """QOR_GATE_PROVENANCE_OPTIONAL=1 with no QOR_SKILL_ACTIVE -> succeeds."""
     monkeypatch.setenv("QOR_GATE_PROVENANCE_OPTIONAL", "1")
+    monkeypatch.setenv("QOR_ROOT", str(tmp_path))
     monkeypatch.delenv("QOR_SKILL_ACTIVE", raising=False)
     monkeypatch.setattr(gate_chain, "GATES_DIR", tmp_path)
+    monkeypatch.setattr(vga, "GATES_DIR", tmp_path)
     sid = "2026-04-30T0000-test04"
     path = gate_chain.write_gate_artifact(
         phase="plan",
@@ -103,8 +105,8 @@ def test_write_gate_artifact_emits_valid_provenance_sidecar(tmp_path, monkeypatc
     monkeypatch.setenv("QOR_SKILL_ACTIVE", "plan")
     monkeypatch.setenv("QOR_ROOT", str(tmp_path))  # redirect per-session key dir
     monkeypatch.delenv("QOR_GATE_PROVENANCE_OPTIONAL", raising=False)
-    import validate_gate_artifact as _vga  # noqa: E402
-    monkeypatch.setattr(_vga, "GATES_DIR", tmp_path / ".qor" / "gates")
+    monkeypatch.setattr(gate_chain, "GATES_DIR", tmp_path / ".qor" / "gates")
+    monkeypatch.setattr(vga, "GATES_DIR", tmp_path / ".qor" / "gates")
     sid = "2026-04-30T0000-test06"
     path = gate_chain.write_gate_artifact(
         phase="plan", payload=_valid_plan_payload(sid), session_id=sid

@@ -22,11 +22,17 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import os
 import re
 import subprocess
 import sys
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
+
+# Phase 184 (GH #264): collect-only children exceeded 30s under full-suite
+# CPU load, silently timing out EVERY candidate and returning a false-negative
+# finding. 120s is the reporter-validated budget; env-tunable for slower CI.
+COLLECTION_TIMEOUT = int(os.environ.get("QOR_REACHABILITY_COLLECTION_TIMEOUT", "120"))
 
 
 @dataclass(frozen=True)
@@ -129,7 +135,7 @@ def check_test_collection(claim: Claim, repo_root: Path) -> ReachabilityFinding 
                 cwd=str(repo_root),
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=COLLECTION_TIMEOUT,
             )
         except subprocess.TimeoutExpired:
             continue

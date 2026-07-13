@@ -26,6 +26,8 @@ min_model_capability: opus
   <output>plan-*.md file with incremental phases and unit test descriptions</output>
 </skill>
 
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
+
 ## Governance Health Preflight
 
 <!-- qor:governance-health-preflight -->

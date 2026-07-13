@@ -1,0 +1,39 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T0718-ea9af3",
+  "ts": "2026-07-13T07:21:30Z",
+  "plan_path": "docs/plan-qor-phase179-ledger-upgrade-v1.md",
+  "phases": [
+    "Phase 1: Upgrade module (TDD first)",
+    "Phase 2: Self-application + doc"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ledger_upgrade.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "upgrade normalizes markup only; broken math stays with reconcile/remediate"
+    ],
+    "non_goals": [
+      "No typed entry model/renderer; no emission-path changes (F3 deferral)"
+    ],
+    "exclusions": [
+      "#234 is the next queue item; health-routing prose follow-on"
+    ]
+  },
+  "change_class": "feature",
+  "originating_remediation": "GH #271",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.122.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T07:21:30Z"
+  }
+}

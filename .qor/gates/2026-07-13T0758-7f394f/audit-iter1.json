@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T0758-7f394f",
+  "ts": "2026-07-13T08:01:49Z",
+  "target": "docs/plan-qor-phase181-seed-gitattributes.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "target_content_hash": "97e0abc9ff5922ae1dea9317c540b30b5ac6096e5ecabeaa24d84cccc3538460",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.123.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T08:01:49Z"
+  }
+}

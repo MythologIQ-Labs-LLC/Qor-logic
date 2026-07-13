@@ -7,14 +7,14 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-2555%20passing-brightgreen" alt="Tests: 2555 passing">
+  <img src="https://img.shields.io/badge/Tests-2658%20passing-brightgreen" alt="Tests: 2658 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
-  <img src="https://img.shields.io/badge/Skills-29-blue" alt="Skills: 29">
+  <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-37-blue" alt="Doctrines: 37">
-  <img src="https://img.shields.io/badge/Ledger-413%20entries%20sealed-green" alt="Ledger: 413 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-38-blue" alt="Doctrines: 38">
+  <img src="https://img.shields.io/badge/Ledger-485%20entries%20sealed-green" alt="Ledger: 485 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -35,7 +35,7 @@
 
 Qor-logic is a governance framework that ships curated skills, doctrines, and runtime enforcement to AI coding agents. It covers the full software development lifecycle with hash-chained evidence, machine-enforceable policies, and a process-failure feedback loop.
 
-Supported hosts: **Claude Code**, **Kilo Code**, **Codex** (provisional), **Gemini CLI**.
+Supported hosts: **Claude Code**, **Kilo Code**, **Codex** (provisional), **Gemini CLI**, **Cursor**, and the **Cline family** (Cline / Windsurf / Roo via one flattened workflows layout).
 
 Built around **S.H.I.E.L.D.**, the six lifecycle phases each backed by a skill:
 
@@ -87,7 +87,7 @@ qor-logic install --host codex --scope global --dry-run
 qor-logic install --host codex --scope global
 ```
 
-Repeat the install command for `claude`, `kilo-code`, or `gemini` as needed.
+Repeat the install command for `claude`, `kilo-code`, `gemini`, `cursor`, or `cline` as needed.
 See [operations.md](docs/operations.md#post-pypi-deployment-smoke) for the full
 post-publish smoke checklist.
 
@@ -99,6 +99,8 @@ Supported host layouts:
 | `kilo-code` | `./.kilo/skills/`, `./.kilo/agents/` | Markdown |
 | `codex` | `./.codex/skills/`, `./.codex/agents/` | Markdown |
 | `gemini` | `./.gemini/commands/` | TOML |
+| `cursor` | `./.cursor/skills/`, `./.cursor/agents/` | Markdown |
+| `cline` | `./.clinerules/workflows/` | Markdown (`command-<id>.md`) |
 
 Set `QORLOGIC_PROJECT_DIR` to override the repo root.
 
@@ -234,6 +236,7 @@ Skills live under `qor/skills/<category>/` (the full count is on the Skills badg
 |---|---|
 | `/qor-bootstrap` | Seed a new workspace with governance DNA |
 | `/qor-help` | Conversational command catalog and SDLC navigator |
+| `/qor-onboard` | Tutorial mode: walk the full gate chain on one small real change |
 | `/qor-onboard-codebase` | Absorb an external codebase into governed scope |
 | `/qor-repo-audit` | Repository-level governance audit |
 | `/qor-repo-release` | Delivery-gate / release-ceremony orchestration |
@@ -249,6 +252,8 @@ Skills live under `qor/skills/<category>/` (the full count is on the Skills badg
 | `/qor-deep-audit` | recon (3) + remediate (3) | Pre-release readiness, tech-debt sweep |
 | `/qor-deep-audit-recon` | research + synthesize + verify | Investigation only; ends at a research brief |
 | `/qor-deep-audit-remediate` | plan + implement + validate | Action half; consumes the research brief |
+| `/qor-onboard` | ideate through substantiate (6) | Tutorial: first governed session on one small real change |
+| `/qor-onboard-codebase` | research + organize + audit + plan | Inheriting or merging an external codebase |
 
 ## Governance Model
 
@@ -396,6 +401,7 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 | [communication-tiers](qor/references/doctrine-communication-tiers.md) | Technical / standard / plain output tiers |
 | [compliance-conveyance](qor/references/doctrine-compliance-conveyance.md) | Compliance control matrix + conveyance conformance + ratchet + downstream enforcement SDK |
 | [context-discipline](qor/references/doctrine-context-discipline.md) | Persona scaffolding + measurable-effect contract for SDLC personas |
+| [negative-constraints](qor/references/doctrine-negative-constraints.md) | NR-001/NR-002 negative rules injected into weak-tier compiled variants |
 | [definition-of-done](qor/references/doctrine-definition-of-done.md) | Per-deliverable D1-D4 acceptance criteria |
 | [dependency-admission](qor/references/doctrine-dependency-admission.md) | Dependency admission + cooling-period supply-chain control |
 | [documentation-integrity](qor/references/doctrine-documentation-integrity.md) | Tiered doc topology + glossary + check surface + documentation currency |

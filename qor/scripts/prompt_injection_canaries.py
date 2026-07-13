@@ -163,6 +163,14 @@ def main(argv: list[str] | None = None) -> int:
             "Production audit scanning omits this flag for strict matching."
         ),
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help=(
+            "Disable the Phase 188 hidden-html code-span downgrade: every "
+            "hit blocks, including structural markup inside backtick spans."
+        ),
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -181,14 +189,31 @@ def main(argv: list[str] | None = None) -> int:
         if args.mask_code_blocks:
             content = mask_code_blocks(content)
         hits = scan(content)
-        if hits:
-            total_hits += len(hits)
-            for hit in hits:
+        # Phase 188 (GH #244): the hidden-html class is structural markup, so
+        # a hit fully inside a backtick span is (per live consumer evidence) a
+        # CLI placeholder or countermeasure example -- WARN, not block. The
+        # imperative-instruction classes stay binding everywhere: an
+        # instruction is an instruction wherever it sits.
+        masked = None if args.strict else mask_code_blocks(content)
+        for hit in hits:
+            in_code_span = (
+                masked is not None
+                and hit.canary.class_name == "hidden-html"
+                and masked[hit.span[0]:hit.span[1]].strip() == ""
+            )
+            if in_code_span:
                 print(
-                    f"CANARY HIT [{hit.canary.class_name}] "
+                    f"CANARY WARN [hidden-html/code-span] "
                     f"in {path} at {hit.span}: {hit.matched_text!r}",
                     file=sys.stderr,
                 )
+                continue
+            total_hits += 1
+            print(
+                f"CANARY HIT [{hit.canary.class_name}] "
+                f"in {path} at {hit.span}: {hit.matched_text!r}",
+                file=sys.stderr,
+            )
 
     return 1 if total_hits > 0 else 0
 

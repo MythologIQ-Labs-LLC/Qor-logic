@@ -1,0 +1,20 @@
+source:
+  type: internal
+  system: Qor-logic
+  repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
+  path: .agent/skills/qor-docs-technical-writing
+creator:
+  name: MythologIQ Labs, LLC
+skill_family:
+  namespace: /qor
+  classification: documentation
+license:
+  file: ../../../LICENSE
+maintainer:
+  team: Qor-logic Governance
+imported:
+  bundled_with_governance_dist: true
+  date: 2026-02-11
+notes:
+  - Designated as a first-party documentation skill.
+
