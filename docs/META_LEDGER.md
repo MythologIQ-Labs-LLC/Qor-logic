@@ -14992,5 +14992,81 @@ Change class: feature (v0.128.0 -> v0.129.0). Tests: 14 new (grammar quadrants i
 
 ---
 
+### Entry #482: RESEARCH BRIEF -- Repository snapshot contract (GH #270)
+
+**Timestamp**: 2026-07-13T15:07:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #270
+**Session**: `2026-07-13T1505-e508d3`
+**Brief**: docs/research-brief-snapshot-contract-2026-07-13.md
+
+**Content Hash**: `26b61e535b3870c3976f156cd21d90891596c4c43982c9fcf0f4ad0c0fa8ca38`
+**Previous Hash**: `40e1a034c3942b67e392a8977e5bda07872f809c30c2c4896abbece318ef5573`
+**Chain Hash (Merkle seal)**: `845c53a5e70f7d38403eca66982bb4548f5c22154ed0ede2ef848e6cc59a6976`
+
+**Decision**: GH #270 is unsatisfied by any existing surface: status_json (Phase 165) exports check verdicts only (id/ok/exit/summary; status_json.py:78-105) and governance_snapshot.py (Phase 175) is DNA backup -- a naming collision with zero overlap (the new module is snapshot_export). Every required field mapped to a verified repository-local source: pyproject version, .qor/session/current, ledger tail + last SEAL entry, .qor/gates/<sid>/ latest-iteration artifacts (Phase 173 resolution), shadow JSONL (event_type/severity/addressed line shape verified), governance-health findings, doc-currency rc; repo identifier from LOCAL git config with explicit unavailable-state degradation (no network). Contract publication follows the Phase 169 freeze rule (qor/gates/schema/repository_snapshot.schema.json + SCHEMA_REGISTRY.json registration; jsonschema already a dependency at validate_gate_artifact.py:16). Fail-safe rule made structural: every section is {state: ok|unknown|error, source, ...} -- absence never renders as health. Risk grade L2 (a published external contract). Operator note: an external oversight consumer has upstream dependencies on this contract. Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #483: GATE TRIBUNAL -- Phase 191 snapshot contract
+
+**Timestamp**: 2026-07-13T15:15:10Z
+**Phase**: GATE (Phase 191)
+**Author**: Judge
+**Risk Grade**: L2
+**Session**: `2026-07-13T1505-e508d3`
+**Target**: docs/plan-qor-phase191-snapshot-contract.md
+**Verdict**: PASS
+
+**Content Hash**: `9f9fbc800985e2d512651ed11838692f562b86669ceda60d98208aa56c93c51b`
+**Previous Hash**: `845c53a5e70f7d38403eca66982bb4548f5c22154ed0ede2ef848e6cc59a6976`
+**Chain Hash (Merkle seal)**: `3f857ed9a028b3834dc0e0bda1c65593494b2def15649f8c43c328589385fa4a`
+
+**Decision**: Solo-mode tribunal, L2 depth (published external contract with a known downstream consumer). PASS with zero violations. The two ways external contracts rot are answered structurally: silent-health inference is impossible by construction (the guard wrapper owns section rendering; every section carries state + source) and compatibility drift is fenced by the freeze-rule registry plus documented additive/breaking rules. Exit-code semantics correctly separate "export succeeded" from "repository healthy" -- conflating them would make degraded repositories unobservable. The stale-repository fixture is honestly scoped to the sections' own staleness reporting (disclosed). Both runtime-contract WARNs across this phase's plan are definitional for a consumer-facing CLI. Next: `/qor-implement`.
+
+---
+
+### Entry #484: IMPLEMENTATION -- Phase 191 snapshot contract
+
+**Timestamp**: 2026-07-13T15:44:20Z
+**Phase**: IMPLEMENT (Phase 191)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T1505-e508d3`
+**Intent Lock**: `LOCKED: 2026-07-13T1505-e508d3`
+
+**Content Hash**: `80a6f41ad5d9dd6426ab72364c8fdc9293d7715dbfefad09cf69bcb8113a976b`
+**Previous Hash**: `3f857ed9a028b3834dc0e0bda1c65593494b2def15649f8c43c328589385fa4a`
+**Chain Hash (Merkle seal)**: `cf45324ec2494c519859b5253a85a3ffe126b1f0369b67c243860e8d6b4ff579`
+
+**Decision**: Phase 191 implemented per plan, TDD-first, with ONE fixture-caught fail-safe deepening: the tampered-chain fixture exposed that an all-skipped ledger verification (zero verifiable entries, rc 0) rendered state ok -- the collector now renders `unknown` when nothing was verified, and the fixture was made genuinely verifiable so tampering yields `error` (the LD-2 rule proven by its own test matrix). snapshot_export: build_snapshot composes ten guarded sections (meta/session/lifecycle/gates/ledger/latest_seal/health/shadow/drift/findings), each {state, source, ...}; the health section reuses status_json's in-process runner; the gates section rides the Phase 173 latest-iteration resolver; CLI --out with exit semantics separating export success from repository health. Schema registered in SCHEMA_REGISTRY (freeze lint 0 unjustified); snapshot-contract.md reference + glossary entry + GOVERNANCE_INDEX row. 9 tests green twice (live-value healthy path over THIS repo, jsonschema conformance, four degraded fixtures, determinism modulo generated_ts, tree-hash read-only proof, CLI); full suite 2658 passed / 2 skipped. Content hash binds qor/scripts/snapshot_export.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #485: SESSION SEAL -- Phase 191 repository snapshot contract (v0.130.0)
+
+**Timestamp**: 2026-07-13T15:58:30Z
+**Phase**: SUBSTANTIATE (Phase 191; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase191-snapshot-contract.md
+**Session**: `2026-07-13T1505-e508d3`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `e0887f5e9e86`
+
+**Scope**: Phase 191 implemented (feature; research entry #482 -> GH #270). External operator surfaces get one versioned, read-only JSON contract: snapshot_export composes ten guarded sections, each {state: ok|unknown|error, source, ...} -- the fail-safe rule is structural (the guard wrapper owns rendering), and its own fixture matrix PROVED it mid-implementation: the tampered-chain fixture exposed an all-skipped ledger verification rendering ok; the collector now renders unknown for zero-verified and error for failed verification. Schema at qor/gates/schema/repository_snapshot.schema.json (schemaVersion 1, additive-compatible, consumers ignore unknown fields), registered in SCHEMA_REGISTRY per the freeze rule with the plan's new_ceremony_artifacts justification; compatibility contract + state semantics at qor/references/snapshot-contract.md (GOVERNANCE_INDEX Tier 2 row, glossary term homed). Deterministic modulo generated_ts, read-only (tree-hash proven), zero network; exit semantics separate export success from repository health. Enterprise concepts excluded per the issue boundary. This seal also carries the RELEASE documentation pass over all README surfaces (operator-directed): badges (Doctrines 38, Ledger 485), the six-host support line + layouts table + install line (cursor/cline from Phase 188), workflow-bundle catalog rows (qor-onboard/qor-onboard-codebase), and the operations.md install row.
+
+Change class: feature (v0.129.0 -> v0.130.0). Tests: 9 new (live-value healthy path over THIS repository, jsonschema conformance, four degraded fixtures asserting specific section states with export still succeeding, byte determinism modulo generated_ts, tree-hash read-only proof, CLI), red-then-green twice; full suite 2658 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 140/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS, governance-index advanced + enforce clean, schema-freeze 0 unjustified, feature-inventory 17/17 vs snapshot 2026-07-13T1405-331255, dist recompiled + drift clean (382 files). Audit: solo PASS at L2 depth (entry #483; zero violations; 1 definitional WARN disclosed). Seal commit: LOCAL checkpoint; operator has authorized the consolidated release sequence (single v0.130.0 tag; intermediate versions were never tagged or published).
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (external contract)
+
+**Content Hash**: `2733471242b9de6e877a9b63023b00e736ba3e53bde26c26d438fc28afe50f80`
+**Previous Hash**: `cf45324ec2494c519859b5253a85a3ffe126b1f0369b67c243860e8d6b4ff579`
+**Chain Hash (Merkle seal)**: `c171473c1891338eee4cb58b4f045843158ba713c9b333c92c4ad23878b1e2ce`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 190; v0.129.0; spec corpus Phase A; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 191; v0.130.0; repository snapshot contract; consolidated release sequence authorized by operator)

@@ -1279,3 +1279,11 @@ referenced_by:
   - qor/scripts/model_pinning_lint.py
 introduced_in_plan: phase187-negative-constraints
 ```
+```yaml
+term: Repository snapshot
+definition: 'The versioned read-only JSON export of repository-local governance state (Phase 191, GH #270): one document composing session, lifecycle, gate, ledger, seal, health, shadow, and drift facts, where every section carries an explicit state (ok/unknown/error) plus a source pointer, and absence never renders as health. A derived read model -- ledgers and gate artifacts remain authoritative.'
+home: qor/references/snapshot-contract.md
+referenced_by:
+  - qor/scripts/snapshot_export.py
+introduced_in_plan: phase191-snapshot-contract
+```

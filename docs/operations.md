@@ -9,7 +9,7 @@ The `qor-logic` CLI is the primary install/operation surface. Subcommands:
 | Subcommand | Purpose |
 |---|---|
 | `init` | Write `.qorlogic/config.json` with host + profile + scope selections |
-| `install --host <claude\|kilo-code\|codex\|gemini>` | Copy variant skills/agents to the host's conventional directory |
+| `install --host <claude\|kilo-code\|codex\|gemini\|cursor\|cline>` | Copy variant skills/agents to the host's conventional directory |
 | `uninstall` | Reverse `install` |
 | `list` | List installed skills and agents |
 | `compile` | Rebuild `qor/dist/variants/*` from source skills; emit per-variant manifest |

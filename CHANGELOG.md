@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.130.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 191 (feature; repository snapshot contract)**: external operator surfaces get one versioned, documented, read-only JSON contract for repository governance state (GH #270). `qor/scripts/snapshot_export.py` composes ten guarded sections (meta, session, lifecycle, gates, ledger, latest seal, health, shadow, drift, findings), each carrying `state: ok|unknown|error` plus a `source` pointer -- absence never renders as health (the tampered-chain fixture caught and closed exactly that hole: an all-skipped ledger verification now reads `unknown`, a failed one `error`). Schema published at `qor/gates/schema/repository_snapshot.schema.json` (schemaVersion 1; additive-compatible; registered in SCHEMA_REGISTRY per the freeze rule) with the compatibility contract in `qor/references/snapshot-contract.md`. Deterministic modulo generation timestamp, read-only (tree-hash proven), zero network; the exporter's exit code reports export success, not repository health. Enterprise concepts stay outside the base contract per the issue boundary.
+
 ## [0.129.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

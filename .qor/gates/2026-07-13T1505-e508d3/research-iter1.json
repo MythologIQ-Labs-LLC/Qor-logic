@@ -1,0 +1,53 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T1505-e508d3",
+  "ts": "2026-07-13T11:57:37Z",
+  "questions": [
+    "Does status_json or Phase 175 already satisfy any part of #270?",
+    "Does every required snapshot field have a repository-local source?",
+    "Where does the schema publish under existing conventions?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "status_json.py:78-105 exports verdict rows only; its in-process runner (:44-60) is the right internal engine for the snapshot's health section",
+      "source": "docs/research-brief-snapshot-contract-2026-07-13.md"
+    },
+    {
+      "id": "F2",
+      "summary": "governance_snapshot.py is Phase 175 DNA backup; zero overlap -- new module named snapshot_export to avoid collision",
+      "source": "docs/research-brief-snapshot-contract-2026-07-13.md"
+    },
+    {
+      "id": "F3",
+      "summary": "every required field has a repository-local source: pyproject, session marker, ledger tail/SEAL entries, gates dir, shadow JSONL, health findings, doc-currency; git config for repo id (local, optional)",
+      "source": "docs/research-brief-snapshot-contract-2026-07-13.md"
+    },
+    {
+      "id": "F4",
+      "summary": "schema publication: qor/gates/schema/ + SCHEMA_REGISTRY.json per the Phase 169 freeze rule; jsonschema dependency already present",
+      "source": "docs/research-brief-snapshot-contract-2026-07-13.md"
+    },
+    {
+      "id": "F5",
+      "summary": "fail-safe as structure: per-section state ok|unknown|error + source pointer; absence never renders healthy",
+      "source": "docs/research-brief-snapshot-contract-2026-07-13.md"
+    }
+  ],
+  "sources": [
+    "qor/scripts/status_json.py",
+    "qor/scripts/governance_snapshot.py",
+    "qor/scripts/gate_schema_freeze_lint.py",
+    "qor/scripts/validate_gate_artifact.py",
+    "docs/PROCESS_SHADOW_GENOME_UPSTREAM.md"
+  ],
+  "brief_path": "docs/research-brief-snapshot-contract-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.129.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T11:57:37Z"
+  }
+}
