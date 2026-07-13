@@ -1,0 +1,59 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T1025-96f825",
+  "ts": "2026-07-13T10:11:24Z",
+  "questions": [
+    "Is GH #243 already addressed by a merged PR?",
+    "Where can negative rules attach without breaking size/drift/install gates?",
+    "What does check_variant_drift compare?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "unimplemented: no PR references #243; zero corpus matches for any negative-rule form",
+      "source": "docs/research-brief-negative-constraints-2026-07-13.md"
+    },
+    {
+      "id": "F2",
+      "summary": "dist_compile.py:47-71 identity emitters; module docstring stale (codex identity-copies, test-locked)",
+      "source": "docs/research-brief-negative-constraints-2026-07-13.md"
+    },
+    {
+      "id": "F3",
+      "summary": "check_variant_drift.py:58-66 regenerates via compile_all -- deterministic in-compile injection stays green",
+      "source": "docs/research-brief-negative-constraints-2026-07-13.md"
+    },
+    {
+      "id": "F4",
+      "summary": "install_drift_check.py:29-54 mirrors installs against qor/skills source; claude variant must stay untransformed",
+      "source": "docs/research-brief-negative-constraints-2026-07-13.md"
+    },
+    {
+      "id": "F5",
+      "summary": "headroom lock 39*1024 (test_substantiate_staging_gates.py:48-62) forbids inline rules in qor-audit (39355 B) / qor-substantiate (39321 B)",
+      "source": "docs/research-brief-negative-constraints-2026-07-13.md"
+    },
+    {
+      "id": "F6",
+      "summary": "model_pinning_lint.py:27-52 walk supports an additive WARN-only fabrication-guard scan",
+      "source": "docs/research-brief-negative-constraints-2026-07-13.md"
+    }
+  ],
+  "sources": [
+    "qor/scripts/dist_compile.py",
+    "qor/scripts/check_variant_drift.py",
+    "qor/scripts/install_drift_check.py",
+    "qor/scripts/model_pinning_lint.py",
+    "tests/test_substantiate_staging_gates.py",
+    "tests/test_compile.py"
+  ],
+  "brief_path": "docs/research-brief-negative-constraints-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.125.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T10:11:24Z"
+  }
+}

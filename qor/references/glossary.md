@@ -1266,3 +1266,12 @@ referenced_by:
   - qor/reliability/ledger_base_currency.py
 introduced_in_plan: phase162-ledger-base-currency
 ```
+```yaml
+term: Negative constraint
+definition: 'An explicit prohibition rule injected into weak-tier-deployment skill variants (Phase 187, GH #243) because models running below a skill design tier follow positive structure well but infer implicit negative constraints poorly. Two canonical rules: NR-001 (never reproduce secret-shaped strings; refer by prefix or descriptor) and NR-002 (a mandatory rationale/definition slot with no source fact takes the literal text "not established" instead of an invented fact).'
+home: qor/references/doctrine-negative-constraints.md
+referenced_by:
+  - qor/scripts/dist_compile.py
+  - qor/scripts/model_pinning_lint.py
+introduced_in_plan: phase187-negative-constraints
+```

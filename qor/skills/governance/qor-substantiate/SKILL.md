@@ -27,6 +27,8 @@ min_model_capability: opus
   <output>Updated META_LEDGER.md with final seal, SYSTEM_STATE.md snapshot</output>
 </skill>
 
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
+
 ## Governance Health Preflight
 
 <!-- qor:governance-health-preflight -->

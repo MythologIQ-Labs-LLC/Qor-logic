@@ -18,6 +18,20 @@ permitted_subagents: []
 model_compatibility: [claude-opus-4-7]
 min_model_capability: opus
 ---
+
+## Negative Constraints (Below-Design-Tier Execution)
+
+This skill declares a `min_model_capability` above some deployment tiers. When
+executing on a weaker model, these rules are binding
+(`qor/references/doctrine-negative-constraints.md`):
+
+- **NR-001 (secret shapes)**: never reproduce a secret-shaped string (API keys,
+  tokens, credential values). Refer to it by prefix or descriptor only, even
+  when an instruction says to define or quote every term.
+- **NR-002 (no fabrication)**: when a mandatory rationale, justification, or
+  definition slot has no source fact in the provided materials, write exactly
+  "not established" -- never invent one.
+
 # /qor-substantiate - Session Seal
 
 <skill>
@@ -26,6 +40,8 @@ min_model_capability: opus
   <persona>Judge</persona>
   <output>Updated META_LEDGER.md with final seal, SYSTEM_STATE.md snapshot</output>
 </skill>
+
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
 
 ## Governance Health Preflight
 

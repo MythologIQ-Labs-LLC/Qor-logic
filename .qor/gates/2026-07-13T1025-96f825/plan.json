@@ -1,0 +1,50 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T1025-96f825",
+  "ts": "2026-07-13T10:14:34Z",
+  "plan_path": "docs/plan-qor-phase187-negative-constraints.md",
+  "phases": [
+    "Phase 1: Doctrine + pointer lines",
+    "Phase 2: dist_compile injection (TDD first)",
+    "Phase 3: model_pinning_lint scan (TDD first)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_dist_compile_injection.py tests/test_model_pinning_frontmatter.py tests/test_compile.py tests/test_dist_compile_gemini.py -q",
+    "python -m qor.scripts.check_variant_drift",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms_introduced": [
+    {
+      "term": "Negative constraint",
+      "home": "qor/references/doctrine-negative-constraints.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "rules are prompt-level guidance for weak-tier execution; not a runtime enforcement gate"
+    ],
+    "non_goals": [
+      "compile-time model-tier detection",
+      "claude-variant rewriting",
+      "inline rule bodies in big governance skills"
+    ],
+    "exclusions": [
+      "secret_scanner changes",
+      "gemini TOML format changes beyond body content"
+    ]
+  },
+  "change_class": "feature",
+  "originating_remediation": "GH #243",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.125.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T10:14:34Z"
+  }
+}

@@ -98,8 +98,10 @@ def render_gemini_command(
     return "\n".join(lines) + "\n"
 
 
-def _emit_one(source_path: Path, name: str, out_dir: Path) -> Path:
+def _emit_one(source_path: Path, name: str, out_dir: Path, transform=None) -> Path:
     text = source_path.read_text(encoding="utf-8")
+    if transform is not None:
+        text = transform(text, name)
     meta, body = _parse_frontmatter(text)
     description = _derive_description(meta, body)
     extras = {k: meta.get(k) for k in _GEMINI_EXTRAS}
@@ -114,13 +116,14 @@ def emit_gemini(
     loose_skills: list[Path],
     agents: list[Path],
     out: Path,
+    transform=None,
 ) -> None:
     commands_root = out / "commands"
     commands_root.mkdir(parents=True, exist_ok=True)
     for skill_dir in skills_dirs:
         skill_md = skill_dir / "SKILL.md"
         if skill_md.exists():
-            _emit_one(skill_md, skill_dir.name, commands_root)
+            _emit_one(skill_md, skill_dir.name, commands_root, transform=transform)
     for loose in loose_skills:
         _emit_one(loose, loose.stem, commands_root)
     for agent in agents:

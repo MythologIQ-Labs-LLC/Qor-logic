@@ -1,13 +1,21 @@
-"""Phase 31 Phase 1: dist variants must stay byte-identical to source skills.
+"""Phase 31 Phase 1: dist variants must stay in sync with source skills.
 
 Catches the Phase 28-30 class of dist drift at CI time. If `dist_compile`
 regresses or an operator forgets to recompile after a SKILL.md edit, this
 test fails with the specific mismatching pair.
+
+Phase 187 (GH #243) amends the contract for codex/kilo-code: the
+fabrication-risk skills must equal `inject_negative_constraints(source)`
+(the deliberate weak-tier divergence); every other skill stays
+byte-identical. The claude variant remains fully byte-identical (it is the
+install mirror of source).
 """
 from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+
+from qor.scripts.dist_compile import inject_negative_constraints
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -41,7 +49,13 @@ def _check_variant(variant: str) -> list[str]:
         if not counterpart.exists():
             mismatches.append(f"MISSING: {counterpart.relative_to(REPO_ROOT)}")
             continue
-        if _sha256(source) != _sha256(counterpart):
+        expected = source.read_bytes()
+        if variant in ("codex", "kilo-code"):
+            skill_name = source.parent.name
+            expected = inject_negative_constraints(
+                expected.decode("utf-8"), skill_name
+            ).encode("utf-8")
+        if hashlib.sha256(expected).hexdigest() != _sha256(counterpart):
             mismatches.append(
                 f"DRIFT: {source.relative_to(REPO_ROOT)} vs {counterpart.relative_to(REPO_ROOT)}"
             )

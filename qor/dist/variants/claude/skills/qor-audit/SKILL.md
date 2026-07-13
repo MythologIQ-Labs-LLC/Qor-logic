@@ -27,6 +27,8 @@ min_model_capability: opus
   <output>.agent/staging/AUDIT_REPORT.md with PASS or VETO verdict</output>
 </skill>
 
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
+
 ## Governance Health Preflight
 
 <!-- qor:governance-health-preflight -->

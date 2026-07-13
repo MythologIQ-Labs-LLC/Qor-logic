@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.126.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 187 (feature; negative-constraints doctrine)**: skills that may execute below their design tier now carry explicit negative rules (GH #243). New `qor/references/doctrine-negative-constraints.md` defines NR-001 (never reproduce secret-shaped strings; refer by prefix or descriptor) and NR-002 (a mandatory rationale/definition slot with no source fact takes the literal "not established" -- never an invented fact), grounded in the issue's weak-tier A/B eval evidence. `dist_compile.inject_negative_constraints` inserts the rules preamble into the kilo-code/codex/gemini variants of the fabrication-risk skills (qor-audit, qor-plan, qor-substantiate); the claude variant stays byte-identical to source (it is the install mirror). Source risk skills carry a one-line doctrine pointer (inline bodies do not fit the governance-skill headroom lock), and `model_pinning_lint` gains a WARN-only fabrication-guard scan for risk skills missing the pointer. The Phase 31 variant-sync contract is amended: codex/kilo-code expectations are `inject_negative_constraints(source)` for risk skills, byte-identity everywhere else.
+
 ## [0.125.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

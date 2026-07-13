@@ -14688,5 +14688,81 @@ Change class: feature (v0.124.4 -> v0.125.0). Tests: 3 new (two detect_host ladd
 
 ---
 
+### Entry #466: RESEARCH BRIEF -- Negative-constraints doctrine (GH #243)
+
+**Timestamp**: 2026-07-13T10:33:20Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #243
+**Session**: `2026-07-13T1025-96f825`
+**Brief**: docs/research-brief-negative-constraints-2026-07-13.md
+
+**Content Hash**: `08874f6eddfad41117db3b9655c0b18b5d124328b0d74d33d6c87a423fc8823e`
+**Previous Hash**: `28c1374bbf47d4a0f87f93bce6108ee69cf4462ed16b0e085e31137ba130fc69`
+**Chain Hash (Merkle seal)**: `2cc3d6e8b164b5adfbb30ada4f39c78e7ee45f7bb015edc4b6df57fb65f3d9a0`
+
+**Decision**: GH #243 fully unimplemented (no PR; zero corpus matches for any negative-rule form). Verified surfaces: dist_compile identity emitters (dist_compile.py:47-71; docstring stale vs code -- codex identity-copies, test-locked), check_variant_drift regenerates THROUGH compile_all so deterministic in-compile injection keeps the gate green (check_variant_drift.py:58-66), install_drift_check mirrors installs against qor/skills SOURCE (install_drift_check.py:29-54) so the claude variant must stay untransformed, and the headroom lock (39*1024; qor-audit at 39,355 / qor-substantiate at 39,321) forbids inline source rules -- compile-time injection is the only fitting channel. Shape: doctrine file (NR-001 secret shapes + NR-002 no-fabrication) registered in GOVERNANCE_INDEX + `_inject_negative_constraints` for kilo-code/codex/gemini variants of the three fabrication-risk skills + WARN-only model_pinning_lint extension. Matches the issue's own risk framing (weak-tier execution arrives via kilo/codex/gemini deployment). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #467: GATE TRIBUNAL -- Phase 187 negative constraints
+
+**Timestamp**: 2026-07-13T10:45:10Z
+**Phase**: GATE (Phase 187)
+**Author**: Judge
+**Risk Grade**: L1
+**Session**: `2026-07-13T1025-96f825`
+**Target**: docs/plan-qor-phase187-negative-constraints.md
+**Verdict**: PASS
+
+**Content Hash**: `cc05630f5b220aadf45e60f37b2d3bf9bea1f8547b3e9451ad9f784842d4a8fd`
+**Previous Hash**: `2cc3d6e8b164b5adfbb30ada4f39c78e7ee45f7bb015edc4b6df57fb65f3d9a0`
+**Chain Hash (Merkle seal)**: `968c5770476ff4891b9119f97883b043b0c4b11fad53af1bac2f75e63d5ee825`
+
+**Decision**: Solo-mode tribunal (codex-plugin shortfall emitted; option_b_required false; all plan lints exit 0; canaries clean; runtime contract walk 0 findings). PASS with zero violations. The compile-time injection seam is the only channel that survives all three standing locks simultaneously (headroom bound walks source; check_variant_drift regenerates through compile_all so deterministic transforms hash symmetrically; install_drift_check mirrors qor/skills so the claude variant stays untransformed). Adversarial check on the existing codex==claude lock (tests/test_compile.py:74-81): synthetic non-risk fixture comparing file NAMES -- injection-safe, no lock amendment needed. Test list is fully behavioral including the claude byte-equality negative control. Next: `/qor-implement`.
+
+---
+
+### Entry #468: IMPLEMENTATION -- Phase 187 negative constraints
+
+**Timestamp**: 2026-07-13T11:12:40Z
+**Phase**: IMPLEMENT (Phase 187)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T1025-96f825`
+**Intent Lock**: `LOCKED: 2026-07-13T1025-96f825`
+
+**Content Hash**: `6b9e187551dd57b4d8eb991af53c75c25d0c5106664e43e78737d0db2616ae62`
+**Previous Hash**: `968c5770476ff4891b9119f97883b043b0c4b11fad53af1bac2f75e63d5ee825`
+**Chain Hash (Merkle seal)**: `07bf24b684d9e1090d954b7620432bb91f48dd72d7cb49682f4db0c16fa17949`
+
+**Decision**: Phase 187 implemented per plan, TDD-first, with TWO full-suite-discovered lock amendments and ONE portability deepening. (1) tests/test_install_sync_with_source.py (the Phase 31 byte-identity contract the plan missed) deliberately amended: codex/kilo-code expectation is now `inject_negative_constraints(source)` for risk skills, byte-identical otherwise; claude stays fully byte-identical. (2) README doctrine inventory row added (test_readme_doctrine_inventory). (3) The injector is newline-PRESERVING (CRLF sources round-trip; `_rewrite_risk_skills` does byte-level IO) so emitted bytes equal the test's computed expectation on every platform. Doctrine authored + registered (GOVERNANCE_INDEX row, glossary entry, README row); pointer lines added to the three risk skills (sizes 39,536 / 39,502 / 25,184 -- all under the 39,936 headroom lock); gemini transform hook threaded through `_emit_one`. Lint guard scan live and silent on the corpus. 45 focused green twice; check_variant_drift OK (254 files); full suite 2619 passed / 2 skipped. Content hash binds qor/scripts/dist_compile.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #469: SESSION SEAL -- Phase 187 negative-constraints doctrine (v0.126.0)
+
+**Timestamp**: 2026-07-13T11:20:30Z
+**Phase**: SUBSTANTIATE (Phase 187; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase187-negative-constraints.md
+**Session**: `2026-07-13T1025-96f825`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `930444445878`
+
+**Scope**: Phase 187 implemented (feature; research entry #466 -> GH #243). Weak-tier deployments now receive explicit negative rules: `doctrine-negative-constraints.md` (NR-001 secret shapes / NR-002 no-fabrication, grounded in the issue's A/B eval evidence), injected by `dist_compile.inject_negative_constraints` into the kilo-code/codex/gemini variants of the fabrication-risk skills (qor-audit, qor-plan, qor-substantiate) -- the claude variant stays byte-identical to source because install_drift_check mirrors qor/skills. Source risk skills carry a one-line doctrine pointer (headroom lock forbids inline bodies; post-change sizes 39,536 / 39,502 / 25,184 vs 39,936 bound); `model_pinning_lint` gains a WARN-only fabrication-guard scan (silent on the live corpus). The Phase 31 variant-sync contract was deliberately amended to encode the new expectation (`inject_negative_constraints(source)` for risk skills on codex/kilo-code); the injector preserves source line endings so the byte contract holds cross-platform. Doctrine registered: GOVERNANCE_INDEX row, glossary entry, README inventory row.
+
+Change class: feature (v0.125.0 -> v0.126.0). Tests: 10 new (5 injection incl. the real-corpus compile_all integration with the claude byte-equality negative control; 5 lint incl. live-corpus zero-warning and the risk-set drift lock), red-then-green twice; two full-suite-discovered lock amendments recorded in entry #468; full suite 2619 passed / 2 skipped; check_variant_drift OK (254 files). Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS (standard tier; term "Negative constraint" homed), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0940-f515e2, dist recompiled + drift clean. Audit: solo PASS (entry #467; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (distribution tooling)
+
+**Content Hash**: `da4e2040176111f27d578042069c5125ac8541dc1de399d4697236c91142478d`
+**Previous Hash**: `07bf24b684d9e1090d954b7620432bb91f48dd72d7cb49682f4db0c16fa17949`
+**Chain Hash (Merkle seal)**: `41086608f2eb628f1df53cabdb35623819530c7828fd78bf5ebfda0d36ee3324`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 186; v0.125.0; provenance host autodetect; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 187; v0.126.0; negative-constraints doctrine; local checkpoint commit only -- remote work held for operator review)
