@@ -1,8 +1,7 @@
 """Documentation integrity checks.
 
 Enforces the documentation-integrity doctrine at /qor-substantiate time.
-All parsing uses yaml.safe_load (SG-Phase24-B); every check raises ValueError
-on violation (changelog_stamp idiom; no return codes).
+All parsing uses yaml.safe_load; every check raises ValueError on violation.
 """
 from __future__ import annotations
 
@@ -15,9 +14,9 @@ from typing import Iterable
 import yaml
 
 from qor.scripts import shadow_process
+from qor.scripts.governance_paths import resolve_architecture_authority
 
 _TIERS = ("minimal", "standard", "system", "legacy")
-
 _TIER_REQUIREMENTS: dict[str, tuple[tuple[str, str], ...]] = {
     "minimal": (("README.md", "README.md"),),
     "standard": (
@@ -27,7 +26,6 @@ _TIER_REQUIREMENTS: dict[str, tuple[tuple[str, str], ...]] = {
     "system": (
         ("README.md", "README.md"),
         ("qor/references/glossary.md", "glossary"),
-        ("docs/architecture.md", "architecture.md"),
         ("docs/lifecycle.md", "lifecycle.md"),
         ("docs/operations.md", "operations.md"),
         ("docs/policies.md", "policies.md"),
@@ -51,15 +49,18 @@ class Entry:
 
 def check_topology(tier: str, repo_root: str) -> None:
     if tier not in _TIERS:
-        raise ValueError(
-            f"Unknown doc_tier: {tier!r}. Expected one of {_TIERS}."
-        )
+        raise ValueError(f"Unknown doc_tier: {tier!r}. Expected one of {_TIERS}.")
     root = Path(repo_root)
     for rel_path, label in _TIER_REQUIREMENTS[tier]:
         if not (root / rel_path).exists():
             raise ValueError(
                 f"Tier {tier!r} requires {label} at {rel_path!r}; not found."
             )
+    if tier == "system":
+        try:
+            resolve_architecture_authority(root)
+        except ValueError as exc:
+            raise ValueError(f"Tier 'system' requires one architecture authority: {exc}") from exc
 
 
 def check_glossary(
@@ -68,17 +69,13 @@ def check_glossary(
     repo_root: str | None = None,
 ) -> None:
     entries = parse_glossary(glossary_path)
-    by_term = {e.term: e for e in entries}
+    by_term = {entry.term: entry for entry in entries}
     for term in declared_terms:
         if term not in by_term:
-            raise ValueError(
-                f"Declared term {term!r} has no entry in {glossary_path}."
-            )
+            raise ValueError(f"Declared term {term!r} has no entry in {glossary_path}.")
         entry = by_term[term]
         if not entry.definition.strip():
-            raise ValueError(
-                f"Glossary entry {term!r} has empty definition."
-            )
+            raise ValueError(f"Glossary entry {term!r} has empty definition.")
         if repo_root is not None:
             home_path = Path(repo_root) / entry.home
             if not home_path.exists():
@@ -93,19 +90,19 @@ def check_orphans(
     repo_root: str | None = None,
 ) -> None:
     entries = parse_glossary(glossary_path)
-    for e in entries:
+    for entry in entries:
         if repo_root is not None:
-            home_path = Path(repo_root) / e.home
+            home_path = Path(repo_root) / entry.home
             if not home_path.exists():
                 raise ValueError(
-                    f"Orphan home: {e.term!r} -> {e.home!r} does not exist."
+                    f"Orphan home: {entry.term!r} -> {entry.home!r} does not exist."
                 )
-        if e.referenced_by:
+        if entry.referenced_by:
             continue
-        if e.introduced_in_plan == current_session_plan_tag:
+        if entry.introduced_in_plan == current_session_plan_tag:
             continue
         raise ValueError(
-            f"Orphan concept: {e.term!r} has no referenced_by and was not "
+            f"Orphan concept: {entry.term!r} has no referenced_by and was not "
             f"introduced in current plan ({current_session_plan_tag!r})."
         )
 
@@ -131,9 +128,7 @@ def parse_glossary(glossary_path: str) -> list[Entry]:
             )
         for required in ("term", "definition", "home"):
             if required not in data:
-                raise ValueError(
-                    f"Glossary entry missing {required!r}: {data!r}"
-                )
+                raise ValueError(f"Glossary entry missing {required!r}: {data!r}")
         term = str(data["term"])
         if term in seen:
             raise ValueError(f"duplicate term in glossary: {term!r}")
@@ -152,13 +147,9 @@ def parse_glossary(glossary_path: str) -> list[Entry]:
         )
     return entries
 
-def render_drift_section(plan: dict, repo_root: str) -> str:
-    """Return a '## Documentation Drift' markdown section, or '' if clean.
 
-    Non-blocking advisory for /qor-audit. Reports the same violations that
-    /qor-substantiate would hard-block on, but as warnings -- so operators
-    can fix drift in one pass before seal.
-    """
+def render_drift_section(plan: dict, repo_root: str) -> str:
+    """Return a Documentation Drift section, or an empty string if clean."""
     tier = plan.get("doc_tier", "legacy")
     if tier == "legacy":
         return ""
@@ -168,7 +159,7 @@ def render_drift_section(plan: dict, repo_root: str) -> str:
     except ValueError as exc:
         issues.append(f"- Topology: {exc}")
     glossary_path = str(Path(repo_root) / "qor" / "references" / "glossary.md")
-    declared = [t["term"] for t in plan.get("terms", [])]
+    declared = [term["term"] for term in plan.get("terms", [])]
     try:
         check_glossary(glossary_path, declared_terms=declared, repo_root=repo_root)
     except (ValueError, FileNotFoundError) as exc:
@@ -194,28 +185,22 @@ def render_drift_section(plan: dict, repo_root: str) -> str:
 
 
 def run_all_checks_from_plan(plan: dict, repo_root: str, strict: bool = False) -> None:
-    """Run topology + glossary + orphans against the declared plan state.
-
-    Called by /qor-substantiate Step 4.7. Raises ValueError on first violation
-    (changelog_stamp idiom; no return codes, no silent retry). Legacy tier
-    bypasses all checks. `strict=True` additionally invokes Check Surface D + E
-    from doc_integrity_strict (Phase 30 wiring; lenient by default).
-    """
+    """Run topology, glossary, and orphan checks against declared plan state."""
     tier = plan.get("doc_tier", "legacy")
     if tier == "legacy":
         return
     check_topology(tier, repo_root)
     glossary_path = str(Path(repo_root) / "qor" / "references" / "glossary.md")
-    declared = [t["term"] for t in plan.get("terms", [])]
+    declared = [term["term"] for term in plan.get("terms", [])]
     check_glossary(glossary_path, declared_terms=declared, repo_root=repo_root)
-    plan_slug = plan.get("plan_slug", "")
     check_orphans(
         glossary_path,
-        current_session_plan_tag=plan_slug,
+        current_session_plan_tag=plan.get("plan_slug", ""),
         repo_root=repo_root,
     )
     if strict:
         from qor.scripts import doc_integrity_strict as dis
+
         dis.check_term_drift(glossary_path, repo_root, strict=True)
         dis.check_cross_doc_conflicts(glossary_path, repo_root, strict=True)
 
@@ -225,12 +210,7 @@ def emit_legacy_tier_event(
     rationale: str,
     log_path: Path | None = None,
 ) -> str:
-    """Append a severity-2 degradation event when a plan declares doc_tier:legacy.
-
-    The event_type 'degradation' is reused from the existing shadow_event schema
-    (legacy tier is a standards degradation). details.kind distinguishes it
-    from other degradations.
-    """
+    """Append a severity-2 degradation event when a plan declares legacy tier."""
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     event = {
         "ts": now,
