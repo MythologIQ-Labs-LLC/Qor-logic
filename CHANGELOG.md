@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.121.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 176 (hotfix; substantiate staging gates)**: `/qor-substantiate` Step 9.5's documented staging list now includes the sealed session's `.qor/gates/$SESSION_ID/` directory (GH #262). The CI gate-chain completeness job makes those committed artifacts load-bearing for every sealed phase, but the prose never staged them -- seals passed locally and failed at the merge boundary unless operators staged the directory from tribal knowledge. The seven `git add` lines consolidate to two (paying for the addition inside the 40 KB skill-size budget; the file now sits at 40,935 bytes with the ceiling locked by a new budget-invariant test), and a wiring test pins the gates argument plus variant/canonical equality of the block.
+
 ## [0.121.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -13841,5 +13841,82 @@ Change class: feature (v0.120.1 -> v0.121.0). Tests: 25 behavioral in tests/test
 
 ---
 
+### Entry #422: RESEARCH BRIEF -- Substantiate staging omits gate artifacts (GH #262)
+
+**Timestamp**: 2026-07-13T05:56:37Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #262
+**Session**: `2026-07-13T0555-0e2b55`
+**Brief**: docs/research-brief-substantiate-staging-gates-2026-07-13.md
+
+**Content Hash**: `2bc76f9c965cea252d593b647d34fc4eb376c0f05c419f846ddcf40aa913dde3`
+**Previous Hash**: `18a969e392f471dbb7f851cd8a334fda48c04d00769838975547051cf254be95`
+**Chain Hash (Merkle seal)**: `1a14f6683c8fecda7a3db0681077d6ef66b9f8d9673c95b643830be51c7eb652`
+
+**Decision**: Verified live: qor-substantiate SKILL.md Step 9.5 (lines 589-600) stages seven paths and never `.qor/gates/<sid>/`, while gate_chain_completeness (CI-required) makes exactly those committed files load-bearing -- recent seals include them only via undocumented manual staging. Hard constraint: 31 bytes of headroom before the 40 KB EXCEEDED budget, so the amendment must consolidate the seven `git add` lines into two multi-path lines (~-23 bytes) to pay for the `".qor/gates/$SESSION_ID/"` argument and a Step 4.6 pointer (net ~+12). No test locks the staging list (regression class unguarded); the new wiring test is prose-contract class and carries a prose-lint exemption reason per the 54 precedents. Dist variants propagate via dist_compile identity copy. Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class hotfix.
+
+---
+
+### Entry #423: GATE TRIBUNAL -- Phase 176 plan PASS (substantiate staging gates)
+
+**Timestamp**: 2026-07-13T05:58:43Z
+**Phase**: GATE (Phase 176)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase176-substantiate-staging-gates.md
+**Session**: `2026-07-13T0555-0e2b55`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `32aa2b5ac56660b95f294a5ea71f9e0a5a5ba14506cdad09d1110463c3be4666`
+**Previous Hash**: `1a14f6683c8fecda7a3db0681077d6ef66b9f8d9673c95b643830be51c7eb652`
+**Chain Hash (Merkle seal)**: `8ab55c3ff1ab712b464dc531c0a7fa83280a44c2934285151a2d723d861b7456`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #422 (GH #262): Step 9.5's seven `git add` lines consolidate to two ending with `".qor/gates/$SESSION_ID/"` -- the documented seal procedure finally stages the evidence the CI completeness gate requires -- inside the 31-byte EXCEEDED-budget headroom (net ~+12 bytes; post-edit size locked by a new budget-invariant test). New wiring test (prose-contract class with lint exemption) fails RED against the current block; a third test locks variant/canonical equality of the Step 9.5 slice. Sweep confirmed no existing test pins the old exact lines. One stale citation (SESSION_ID= 231 -> 232) corrected pre-verdict. Next: `/qor-implement`.
+
+---
+
+### Entry #424: IMPLEMENTATION -- Phase 176 substantiate staging gates
+
+**Timestamp**: 2026-07-13T06:07:50Z
+**Phase**: IMPLEMENT (Phase 176)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0555-0e2b55`
+**Intent Lock**: `LOCKED: 2026-07-13T0555-0e2b55`
+
+**Content Hash**: `704e0711cf7df89db5bc5f6229b367e4b371274d344e54c9da47c69e79c71162`
+**Previous Hash**: `8ab55c3ff1ab712b464dc531c0a7fa83280a44c2934285151a2d723d861b7456`
+**Chain Hash (Merkle seal)**: `4b9978f88d88da0a48dc23265bef7d8ee3b0f7e1feb4318458c980eba7578914`
+
+**Decision**: Phase 176 implemented per plan, TDD-first: `tests/test_substantiate_staging_gates.py` (wiring test RED against the seven-path block, budget-invariant test, variant-equality parametrized test) then the Step 9.5 amendment -- seven `git add` lines consolidated to two ending with `".qor/gates/$SESSION_ID/"` plus the `(uses $SESSION_ID from Step 4.6)` pointer. Canonical SKILL.md now 40,935 bytes (25 under the EXCEEDED threshold; the ceiling is test-locked). Variants regenerated via dist_compile; prose lint exit 0 (the new prose-contract tests carry inline exemption reasons per LD-4). Focused 5 passed twice; full suite 2573 passed / 2 skipped. Content hash binds tests/test_substantiate_staging_gates.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #425: SESSION SEAL -- Phase 176 substantiate staging gates (v0.121.1)
+
+**Timestamp**: 2026-07-13T06:08:53Z
+**Phase**: SUBSTANTIATE (Phase 176; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase176-substantiate-staging-gates.md
+**Session**: `2026-07-13T0555-0e2b55`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `c020325afb9d`
+
+**Scope**: Phase 176 implemented (hotfix; research entry #422 -> closes GH #262). `/qor-substantiate` Step 9.5's documented staging list now stages the sealed session's gate artifacts: the seven single-path `git add` lines consolidate to two multi-path lines ending with `".qor/gates/$SESSION_ID/"` (pointer to Step 4.6's canonical `$SESSION_ID` resolution), closing the gap where the CI-required gate-chain completeness job depended on files the prose never staged -- seals passed locally and failed at the merge boundary unless operators staged the directory from tribal knowledge. The amendment pays for itself inside the 40 KB skill-size budget: canonical file at 40,935 bytes (was 40,929; EXCEEDED at 40,960), with the ceiling now TEST-LOCKED so no later prose addition can silently cross it. Dist variants regenerated (identity copies; variant/canonical equality of the Step 9.5 block is parametrized-test-locked). No runtime code changes.
+
+Change class: hotfix (v0.121.0 -> v0.121.1). Tests: 3 new in tests/test_substantiate_staging_gates.py (wiring test RED against the old block by construction, then green; budget invariant; variant equality x3), focused 5 passed twice; full suite 2573 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS (minimal tier), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0515-117975, size-budget 2 standing WARNs (both under EXCEEDED). Audit: solo PASS (entry #423; one stale citation corrected pre-verdict). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (skill prose + tests only)
+
+**Content Hash**: `bc8df25b09655d4a6cd9c085718f120b929cdc35a8fd2bc71cb36e9ac353ef74`
+**Previous Hash**: `4b9978f88d88da0a48dc23265bef7d8ee3b0f7e1feb4318458c980eba7578914`
+**Chain Hash (Merkle seal)**: `71aa93ad6acc220c04665617905c1cc79479d615eb37e03e779f4e3cfeedd057`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 175; v0.121.0; governance-DNA durability; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 176; v0.121.1; substantiate staging gates; local checkpoint commit only -- remote work held for operator review)

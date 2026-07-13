@@ -1,0 +1,47 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0555-0e2b55",
+  "ts": "2026-07-13T05:57:13Z",
+  "questions": [
+    "Does Step 9.5 stage the sealed session's gate artifacts?",
+    "What byte budget constrains the fix?",
+    "Is the staging list test-locked?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "Step 9.5 stages 7 paths, never .qor/gates/<sid>/; CI completeness makes those files load-bearing; recent seals staged them manually outside the prose",
+      "source": "qor/skills/governance/qor-substantiate/SKILL.md:589"
+    },
+    {
+      "id": "F2",
+      "summary": "40,929 bytes vs 40,960 EXCEEDED (31-byte headroom); consolidating the 7 git-add lines to 2 pays for the gates argument (net ~+12)",
+      "source": "qor/scripts/skill_size_budget_lint.py:24"
+    },
+    {
+      "id": "F3",
+      "summary": "no test locks the Step 9.5 staging list; new wiring test needs a prose-lint exemption reason",
+      "source": "tests/test_substantiate_changelog_integration.py:65"
+    },
+    {
+      "id": "F4",
+      "summary": "dist variants are identity copies via dist_compile; canonical edit propagates",
+      "source": "qor/scripts/dist_compile.py"
+    }
+  ],
+  "sources": [
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "qor/reliability/gate_chain_completeness.py",
+    "qor/scripts/skill_size_budget_lint.py",
+    "tests/test_substantiate_changelog_integration.py"
+  ],
+  "brief_path": "docs/research-brief-substantiate-staging-gates-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.121.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T05:57:13Z"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T0555-0e2b55",
+  "ts": "2026-07-13T06:00:01Z",
+  "target": "docs/plan-qor-phase176-substantiate-staging-gates.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "target_content_hash": "bc8df25b09655d4a6cd9c085718f120b929cdc35a8fd2bc71cb36e9ac353ef74",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.121.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T06:00:01Z"
+  }
+}

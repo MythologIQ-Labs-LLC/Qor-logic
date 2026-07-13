@@ -571,15 +571,10 @@ Template: `references/qor-substantiate-templates.md`.
 
 ### Step 9.5: Stage Artifacts (for user commit)
 
-  **Stage All Artifacts**:
+  **Stage All Artifacts** (uses `$SESSION_ID` from Step 4.6):
   ```bash
-  git add CHANGELOG.md
-  git add docs/CONCEPT.md
-  git add docs/ARCHITECTURE_PLAN.md
-  git add docs/META_LEDGER.md
-  git add docs/SYSTEM_STATE.md
-  git add docs/BACKLOG.md
-  git add src/
+  git add CHANGELOG.md docs/CONCEPT.md docs/ARCHITECTURE_PLAN.md docs/META_LEDGER.md
+  git add docs/SYSTEM_STATE.md docs/BACKLOG.md src/ ".qor/gates/$SESSION_ID/"
   ```
 
   **Next Steps**: Review the staged files and then commit and push when ready.
