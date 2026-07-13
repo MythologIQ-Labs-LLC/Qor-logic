@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.124.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 181 (feature; seed .gitattributes)**: `qor-logic seed` now emits a `.gitattributes` pinning governance artifacts (`docs/*.md`, `docs/**/*.md`, `.qor/**`) to `text eol=lf`, completing GH #238's second acceptance criterion (the LF-canonical hashing half shipped in Phases 156-158). Canonical AND working-tree bytes stay LF regardless of host `core.autocrlf`, closing the drift class at the infrastructure level instead of tolerating it at verify time. Re-seed never overwrites an operator-customized file (inherited no-clobber seed mode, regression-locked), the new target flows into governance-health's scaffold-owned set by construction (missing == seed-recoverable), and this repository's own root now carries the identical stanza (self-application, test-locked).
+
 ## [0.123.1] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

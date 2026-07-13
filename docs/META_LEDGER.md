@@ -14227,5 +14227,82 @@ Change class: hotfix (v0.123.0 -> v0.123.1). Tests: 3 new behavioral in tests/te
 
 ---
 
+### Entry #442: RESEARCH BRIEF -- Seed .gitattributes (GH #238 residual)
+
+**Timestamp**: 2026-07-13T07:59:29Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #238 residual
+**Session**: `2026-07-13T0758-7f394f`
+**Brief**: docs/research-brief-seed-gitattributes-2026-07-13.md
+
+**Content Hash**: `86fe08e89ccdcd531c85dc03f4fbb3578cd2621284f1c884d0ed18a541729bcc`
+**Previous Hash**: `641276fb6b6936173facc563af9bb88374bbec0cf775ed44af1cf341f820e817`
+**Chain Hash (Merkle seal)**: `36dbca3b5d29179fefa7c9ffa9ddb90170761aff5caa19ec0e3c33004217c0d6`
+
+**Decision**: GH #238's verify-layer half shipped in Phases 156-158 (LF-canonical hashing; the autocrlf acceptance holds); the residual is the architecture defense: `qor-logic seed` emits no `.gitattributes`, so consumer canonical bytes drift with host settings. Mechanics verified live: `SeedTarget(".gitattributes", "gitattributes.tpl", "file")` + template is the whole mechanism (`_write_file_if_missing` never overwrites -- idempotency free); the new target flows into governance-health's SCAFFOLD_OWNED correctly (missing == seed-recoverable, the right routing), and the pinning test locks EQUALITY derived from SEED_TARGETS itself, so it stays green by construction. Stanza pins `docs/*.md`, `docs/**/*.md`, `.qor/**` to `text eol=lf`. Self-application: this repo's root gains the same stanza (committed blobs already LF; no renormalization needed). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #443: GATE TRIBUNAL -- Phase 181 plan PASS (seed .gitattributes)
+
+**Timestamp**: 2026-07-13T08:00:51Z
+**Phase**: GATE (Phase 181)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase181-seed-gitattributes.md
+**Session**: `2026-07-13T0758-7f394f`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `8c97ce6df0f0d5cc95a54b1244b181edc4459c4d1eee8316151865f84af1a244`
+**Previous Hash**: `36dbca3b5d29179fefa7c9ffa9ddb90170761aff5caa19ec0e3c33004217c0d6`
+**Chain Hash (Merkle seal)**: `98325634b54f0f1a17211d04ccd64397b021f76ef745149e04971c0e6e1d0d8a`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #442 (GH #238 residual): one template + one SeedTarget pins seeded repos' governance artifacts to LF at the infrastructure level; scaffold-owned routing consequence verified CORRECT by construction (equality-pinned derivation); no-overwrite idempotency inherited and regression-locked; repo-root self-application test-locked. Entry point resolved live (seed.seed at qor/seed.py:94). Next: `/qor-implement`.
+
+---
+
+### Entry #444: IMPLEMENTATION -- Phase 181 seed .gitattributes
+
+**Timestamp**: 2026-07-13T08:09:35Z
+**Phase**: IMPLEMENT (Phase 181)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0758-7f394f`
+**Intent Lock**: `LOCKED: 2026-07-13T0758-7f394f`
+
+**Content Hash**: `ad3c973ed0d968e3ff48870def2986daca004822b794a51435f8992e636033c0`
+**Previous Hash**: `98325634b54f0f1a17211d04ccd64397b021f76ef745149e04971c0e6e1d0d8a`
+**Chain Hash (Merkle seal)**: `613fb5c95eee9af9fbaf593df342643439f00ac3a1c42bb61b14cbef74625bc5`
+
+**Decision**: Phase 181 implemented per plan, TDD-first (stanza + self-application tests red, then 27 focused green twice). `qor/templates/gitattributes.tpl` + `SeedTarget(".gitattributes", "gitattributes.tpl", "file")` (no-clobber inherited from `_write_file_if_missing`); repo-root `.gitattributes` self-application. One deliberate-amendment lock the tribunal's caller sweep missed surfaced RED as designed: `tests/test_seed_scaffold.py` pins the seed inventory (EXPECTED_FILES) -- registered `.gitattributes` there (the exact deliberate-registration act the lock exists to force; scaffold-owned equality pinning stayed green by construction as researched). Full suite 2595 passed / 2 skipped. Content hash binds tests/test_seed_gitattributes.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #445: SESSION SEAL -- Phase 181 seed .gitattributes (v0.124.0)
+
+**Timestamp**: 2026-07-13T08:10:31Z
+**Phase**: SUBSTANTIATE (Phase 181; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase181-seed-gitattributes.md
+**Session**: `2026-07-13T0758-7f394f`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `09bd913338b7`
+
+**Scope**: Phase 181 implemented (feature; research entry #442 -> completes GH #238: both acceptance criteria now hold, the LF-canonical hashing half having shipped in Phases 156-158). `qor-logic seed` emits `.gitattributes` pinning `docs/*.md`, `docs/**/*.md`, `.qor/**` to `text eol=lf` -- canonical and working-tree bytes stay LF regardless of host autocrlf, closing the drift class at the infrastructure level. No-clobber on re-seed (inherited `_write_file_if_missing`, regression-locked); the target flows into governance-health's scaffold-owned set by construction (missing == seed-recoverable; equality-pinned derivation stayed green as researched). The seed-inventory lock (tests/test_seed_scaffold.py EXPECTED_FILES) fired RED as designed and was deliberately amended -- the exact registration act it exists to force. Self-application: this repository's root carries the identical stanza, test-locked.
+
+Change class: feature (v0.123.1 -> v0.124.0). Tests: 3 new behavioral in tests/test_seed_gitattributes.py (seeded stanza, operator-customization survival, root self-application) + the inventory amendment; 27 focused green twice; full suite 2595 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0739-248dc8. Audit: solo PASS (entry #443; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance scaffolding)
+
+**Content Hash**: `97e0abc9ff5922ae1dea9317c540b30b5ac6096e5ecabeaa24d84cccc3538460`
+**Previous Hash**: `613fb5c95eee9af9fbaf593df342643439f00ac3a1c42bb61b14cbef74625bc5`
+**Chain Hash (Merkle seal)**: `ae0e9b59ba673b380ef9b548b3e1f47fdf783b7ac14cd6f07a871ccc2a549565`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 180; v0.123.1; reconcile deferred tail; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 181; v0.124.0; seed .gitattributes; local checkpoint commit only -- remote work held for operator review)

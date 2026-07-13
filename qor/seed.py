@@ -29,6 +29,8 @@ SEED_TARGETS: tuple[SeedTarget, ...] = (
     SeedTarget("docs/CONCEPT.md", "CONCEPT.md", "file"),
     SeedTarget("docs/SYSTEM_STATE.md", "SYSTEM_STATE.md", "file"),
     SeedTarget("docs/GOVERNANCE_INDEX.md", "GOVERNANCE_INDEX.md", "file"),
+    # Phase 181 (GH #238): LF-pin governance artifacts against autocrlf drift.
+    SeedTarget(".gitattributes", "gitattributes.tpl", "file"),
     SeedTarget(".agent/staging/.gitkeep", None, "gitkeep"),
     SeedTarget(".qor/gates/.gitkeep", None, "gitkeep"),
     SeedTarget(".qor/session/.gitkeep", None, "gitkeep"),

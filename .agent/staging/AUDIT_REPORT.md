@@ -1,10 +1,10 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T07:41:35Z
-**Target**: docs/plan-qor-phase180-reconcile-deferred-tail.md (Phase 180; GH #234)
+**Tribunal Date**: 2026-07-13T08:00:51Z
+**Target**: docs/plan-qor-phase181-seed-gitattributes.md (Phase 181; GH #238 residual)
 **Risk Grade**: L1
-**Session**: `2026-07-13T0739-248dc8`
-**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `6fbb4f7b37d0...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
+**Session**: `2026-07-13T0758-7f394f`
+**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `6a57132c713c...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
 ---
@@ -15,36 +15,35 @@
 
 ### Executive Summary
 
-Ten-line targeted fix: `_last_chain_hash` gains a backward-walk fallback so a legal deferred-Merkle tail -- the exact no-fabrication state reconcile exists to repair -- no longer blocks the authorize path; the fail-closed boundary is preserved and regression-locked (a ledger with NO hashed entry anywhere still raises, with the error renamed to the true condition). Acceptance runs the FULL authorize path on a synthetic deferred tail and asserts the RECONCILIATION entry links off the last validly hashed ancestor. Defect verified live this session at reconcile.py:69-82. No binding-VETO pass fired.
+Residual completion for GH #238: one seed template + one SeedTarget so seeded repos pin governance artifacts to LF at the infrastructure level (the verify-layer half shipped in Phases 156-158), with repo-root self-application. The scaffold-owned routing consequence was checked and is CORRECT by construction (a missing `.gitattributes` is genuinely seed-recoverable, and the pinning test locks equality derived from SEED_TARGETS itself). Idempotency is inherited from `_write_file_if_missing` (never overwrites) and regression-locked. No binding-VETO pass fired.
 
 ### Audit Results
 
 #### Prompt Injection Pass
 **Result**: PASS -- canaries exit 0.
 
-#### Security Pass (L3) / OWASP Top 10 Pass
-**Result**: PASS
-Link-off selection only; the forward-only, no-rewrite reconciliation contract is untouched. The fallback cannot launder tampering: it selects an EXISTING recorded hash to link off, and the security gate that prevents RECONCILIATION from laundering unique-previous_hash tampering (test_ledger_hash_reconciliation.py) stays in the focused CI set. Fail-closed raise preserved (A04 clean).
+#### Security / OWASP / Ghost UI Passes
+**Result**: PASS -- template emission only; no runtime logic; the no-overwrite mode protects operator customizations (A04 clean).
 
-#### Ghost UI / Razor / Dependency / Feature Coverage Passes
-**Result**: PASS -- ~10 net lines, stdlib, no UI, no feature rows.
+#### Section 4 Razor Pass
+**Result**: PASS -- one tuple entry, one template, three tests.
 
-#### Self-Application Sub-Pass (originating_remediation: GH #234)
-**Result**: PASS -- discipline: never fabricate a hash; link off recorded evidence. The fix embodies it (backward walk selects recorded hashes only).
+#### Self-Application Sub-Pass (originating_remediation: GH #238)
+**Result**: PASS -- the repository root gains the identical stanza, test-locked; the discipline (canonical bytes independent of host settings) applied to the repo that ships it.
 
 #### Test Functionality Pass
 **Result**: PASS
-All three tests invoke build_proposal/append_reconciliation_entry/_last_chain_hash and assert observed outcomes: the appended entry's Previous Hash value (the acceptance), byte-identical file under dry-run, and the raise on the no-hash-anywhere boundary. The acceptance test is red against the current code by the verified repro.
+All three tests invoke `seed.seed()` or parse the live root file and assert content/byte outcomes: the seeded stanza rules, byte-unchanged customization under re-seed, and self-application equivalence. The seeded-stanza test is red until the target exists. Entry point verified live during tribunal: `qor/seed.py:94 def seed(base, *, quiet=False)` (the plan's "verify exact name at implement" resolves to `seed.seed`).
+
+#### Dependency / Feature Coverage Passes
+**Result**: PASS -- none / exempt.
 
 #### Infrastructure Alignment Pass
 **Result**: PASS
-LD walk verified live this session: _last_chain_hash at reconcile.py:69, raise at 82, sole caller append_reconciliation_entry, zero deferred-tail coverage across the three reconcile test files. Runtime Contract Walk: 0 findings.
+LD walk verified live: SEED_TARGETS:25, _write_file_if_missing:55, scaffold_file_targets:47, pinning-test derivation at tests/test_governance_health.py:117, seed():94, no existing template or root file. Runtime Contract Walk: 0 findings.
 
-#### Filter-Stage Ordering Coherence
-**Result**: PASS -- probe order (tail, then backward, then raise) is a straight precedence chain.
-
-#### Orphan / Macro-Architecture Passes
-**Result**: PASS -- no new files beyond tests.
+#### Filter-Stage / Orphan / Macro-Architecture Passes
+**Result**: PASS -- no pipelines; template reached by the seed loop; no boundary changes.
 
 #### Documentation Drift (advisory)
 **Result**: clean (minimal tier).
@@ -63,7 +62,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 180.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 181.
 
 ---
 _This verdict is binding._
