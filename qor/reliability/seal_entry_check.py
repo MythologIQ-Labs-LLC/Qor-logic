@@ -25,17 +25,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from qor.scripts import ledger_hash
+from qor.scripts import ledger_dialect
 from qor.scripts.governance_helpers import derive_phase_metadata
 
 
+# GH #282: the header no longer needs to carry `Phase <N>` inline -- the shared
+# ledger_dialect.entry_phase reads the phase from the header OR a separate
+# `**Phase**:` line, and the shared hash regexes accept the fenced dialect too,
+# so this consumer agrees with ledger_hash and governance_health.
 _ENTRY_HEADER_RE = re.compile(
     r"^### Entry #(\d+):\s*"
     r"(GATE TRIBUNAL|IMPLEMENTATION|SESSION SEAL)"
-    r"[^\n]*?Phase\s*(\d+)",
+    r"([^\n]*)",
     re.MULTILINE,
-)
-_HASH_FIELD_RE = re.compile(
-    r"\*\*(?:Content Hash|Previous Hash|Chain Hash)(?:\s*\([^)]+\))?\*\*:\s*`([0-9a-fA-F]{64})`"
 )
 _PLAN_FIELD_RE = re.compile(r"^\*\*Plan\*\*:\s*(\S+)", re.MULTILINE)
 
@@ -53,17 +55,22 @@ def _parse_latest_entry(text: str) -> dict | None:
         return None
     last = matches[-1]
     block = text[last.start():]
-    hashes = _HASH_FIELD_RE.findall(block)
-    if len(hashes) < 3:
+    content = ledger_dialect.hash_value(ledger_dialect.CONTENT_HASH_RE.search(block))
+    previous = ledger_dialect.hash_value(ledger_dialect.PREV_HASH_RE.search(block))
+    chain = ledger_dialect.hash_value(ledger_dialect.CHAIN_HASH_RE.search(block))
+    if not (content and previous and chain):
+        return None
+    phase = ledger_dialect.entry_phase(last.group(0), block)
+    if phase is None:
         return None
     plan_match = _PLAN_FIELD_RE.search(block)
     return {
         "entry_num": int(last.group(1)),
         "kind": last.group(2),
-        "phase_num": int(last.group(3)),
-        "content_hash": hashes[0],
-        "previous_hash": hashes[1],
-        "chain_hash": hashes[2],
+        "phase_num": phase,
+        "content_hash": content,
+        "previous_hash": previous,
+        "chain_hash": chain,
         "plan_path": plan_match.group(1) if plan_match else None,
         "block": block,
     }
@@ -175,13 +182,10 @@ def check_previous_hash_uniqueness(ledger_path: Path, min_entry_num: int = 207) 
             continue
         block_end = text.find("\n### Entry #", match.end())
         block = text[match.start(): block_end if block_end != -1 else len(text)]
-        prev_match = re.search(
-            r"\*\*Previous Hash(?:\s*\([^)]+\))?\*\*:\s*`([0-9a-fA-F]{64})`",
-            block,
-        )
+        prev_match = ledger_dialect.PREV_HASH_RE.search(block)
         if not prev_match:
             continue
-        prev_hash = prev_match.group(1).lower()
+        prev_hash = ledger_dialect.hash_value(prev_match).lower()
         seen.setdefault(prev_hash, []).append(entry_num)
     errors: list[str] = []
     for prev_hash, nums in sorted(seen.items()):

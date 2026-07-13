@@ -14,6 +14,7 @@ from typing import Iterable
 
 import yaml
 
+from qor.scripts import governance_paths
 from qor.scripts import shadow_process
 
 _TIERS = ("minimal", "standard", "system", "legacy")
@@ -56,6 +57,11 @@ def check_topology(tier: str, repo_root: str) -> None:
         )
     root = Path(repo_root)
     for rel_path, label in _TIER_REQUIREMENTS[tier]:
+        if rel_path == "docs/architecture.md":
+            # GH #282: the architecture slot is the repo's registered authority
+            # (which may be docs/ARCHITECTURE_PLAN.md), not a hardcoded filename.
+            governance_paths.check_architecture_slot(root, tier)
+            continue
         if not (root / rel_path).exists():
             raise ValueError(
                 f"Tier {tier!r} requires {label} at {rel_path!r}; not found."
@@ -196,10 +202,8 @@ def render_drift_section(plan: dict, repo_root: str) -> str:
 def run_all_checks_from_plan(plan: dict, repo_root: str, strict: bool = False) -> None:
     """Run topology + glossary + orphans against the declared plan state.
 
-    Called by /qor-substantiate Step 4.7. Raises ValueError on first violation
-    (changelog_stamp idiom; no return codes, no silent retry). Legacy tier
-    bypasses all checks. `strict=True` additionally invokes Check Surface D + E
-    from doc_integrity_strict (Phase 30 wiring; lenient by default).
+    Called by /qor-substantiate Step 4.7. Raises ValueError on first violation.
+    Legacy tier bypasses; `strict=True` adds Check Surface D + E.
     """
     tier = plan.get("doc_tier", "legacy")
     if tier == "legacy":
@@ -225,12 +229,8 @@ def emit_legacy_tier_event(
     rationale: str,
     log_path: Path | None = None,
 ) -> str:
-    """Append a severity-2 degradation event when a plan declares doc_tier:legacy.
-
-    The event_type 'degradation' is reused from the existing shadow_event schema
-    (legacy tier is a standards degradation). details.kind distinguishes it
-    from other degradations.
-    """
+    """Append a severity-2 degradation event when a plan declares doc_tier:legacy
+    (event_type 'degradation' reused; details.kind distinguishes it)."""
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     event = {
         "ts": now,

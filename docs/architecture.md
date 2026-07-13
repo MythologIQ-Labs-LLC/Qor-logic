@@ -45,6 +45,9 @@ Qor-logic is a prompt system for governance-driven software development. The rep
 |  session.py          -- session_id lifecycle                  |
 |  shadow_process.py   -- append-only shadow event log          |
 |  ledger_hash.py      -- SHA256 chain verification             |
+|  ledger_dialect.py   -- shared hash-markup dialect + boundary |
+|  governance_paths.py -- shared governance-path resolver       |
+|  version_applicability -- early release/non-release check     |
 |  governance_helpers  -- version bump, tag, plan metadata      |
 |  changelog_stamp.py  -- seal-time CHANGELOG rename            |
 |  doc_integrity.py    -- doctrine-documentation-integrity core |

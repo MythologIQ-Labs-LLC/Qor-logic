@@ -1,0 +1,62 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T1819-b134f4",
+  "ts": "2026-07-13T18:19:16Z",
+  "questions": [
+    "How is the architecture authority resolved and where is it hardcoded?",
+    "What exact ledger-markup dialect do the three parsers accept/reject?",
+    "Where and when is version-applicability validated?",
+    "What plan-path allowlist does prompt_injection_canaries enforce?"
+  ],
+  "findings": [
+    {
+      "regression": 1,
+      "unit": "doc_integrity.check_topology",
+      "site": "qor/scripts/doc_integrity.py:30,52-62",
+      "detail": "system tier hardcodes docs/architecture.md; ignores GOVERNANCE_INDEX-registered architecture authority",
+      "status": "DRIFT"
+    },
+    {
+      "regression": 2,
+      "unit": "ledger_hash/seal_entry_check/governance_health",
+      "site": "qor/scripts/ledger_hash.py:151-157,434",
+      "detail": "three parsers diverge; CONTENT_HASH_RE rejects fenced bare-hex; entries >=123 FAIL missing canonical hash markup",
+      "status": "DRIFT"
+    },
+    {
+      "regression": 3,
+      "unit": "governance_helpers.bump_version/version_backends",
+      "site": "qor/scripts/governance_helpers.py:117; qor/scripts/version_backends.py:65",
+      "detail": "version downgrade guard only at substantiate bump; no non-release class; audit cannot catch it",
+      "status": "DRIFT"
+    },
+    {
+      "regression": 4,
+      "unit": "prompt_injection_canaries._validate_path",
+      "site": "qor/scripts/prompt_injection_canaries.py:31-36,122-130",
+      "detail": "allowlist admits only docs/plan-qor-phase*.md; rejects registered plan-<slug>.md before scanning",
+      "status": "DRIFT"
+    }
+  ],
+  "sources": [
+    "qor/scripts/doc_integrity.py",
+    "qor/scripts/governance_index.py",
+    "qor/scripts/ledger_hash.py",
+    "qor/reliability/seal_entry_check.py",
+    "qor/scripts/governance_health.py",
+    "qor/scripts/prompt_injection_canaries.py",
+    "qor/scripts/governance_helpers.py",
+    "qor/scripts/version_backends.py",
+    "docs/GOVERNANCE_INDEX.md",
+    "docs/META_LEDGER.md"
+  ],
+  "brief_path": "docs/research-brief-unify-governance-paths-ledger-dialect-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.132.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T18:19:16Z"
+  }
+}

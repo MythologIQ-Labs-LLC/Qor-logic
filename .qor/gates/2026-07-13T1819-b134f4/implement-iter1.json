@@ -1,0 +1,39 @@
+{
+  "phase": "implement",
+  "session_id": "2026-07-13T1819-b134f4",
+  "ts": "2026-07-13T19:16:10Z",
+  "files_touched": [
+    "qor/scripts/governance_paths.py",
+    "qor/scripts/ledger_dialect.py",
+    "qor/scripts/version_applicability.py",
+    "qor/scripts/doc_integrity.py",
+    "qor/scripts/ledger_hash.py",
+    "qor/reliability/seal_entry_check.py",
+    "qor/scripts/prompt_injection_canaries.py",
+    "qor/scripts/governance_helpers.py",
+    "qor/gates/schema/plan.schema.json",
+    "qor/skills/governance/qor-audit/SKILL.md",
+    "qor/skills/governance/qor-audit/references/version-applicability-pass.md",
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "tests/test_governance_paths.py",
+    "tests/test_ledger_dialect.py",
+    "tests/test_version_applicability.py",
+    "tests/test_doc_integrity.py",
+    "tests/test_prompt_injection_canary.py",
+    "CHANGELOG.md",
+    "docs/architecture.md"
+  ],
+  "test_summary": {
+    "passed": 2713,
+    "failed": 0,
+    "skipped": 2
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.132.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T19:16:10Z"
+  }
+}

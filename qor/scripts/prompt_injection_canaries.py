@@ -26,14 +26,11 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-# Plan-path validation pattern. Restricted to docs/plan-qor-phase*.md plus
-# the four canonical governance files. No traversal segments admitted.
-_GOVERNANCE_FILE_RE = re.compile(
-    r"^(docs/plan-qor-phase\d+[a-z]*-[a-z0-9-]+\.md"
-    r"|docs/(ARCHITECTURE_PLAN|META_LEDGER|CONCEPT)\.md"
-    r"|docs/research-brief-[a-z0-9-]+\.md"
-    r"|qor/references/doctrine-[a-z0-9-]+\.md)$"
-)
+# GH #282: plan-path validation is delegated to the shared governance-path
+# resolver (qor.scripts.governance_paths.resolve_governance_plan_path), which
+# admits the historical docs/plan-qor-phase*.md family, the canonical
+# governance files, AND any index-registered active plan, while still rejecting
+# traversal, outside-root, unsupported-extension, and unregistered paths.
 
 
 @dataclass(frozen=True)
@@ -119,14 +116,25 @@ def scan(content: str) -> list[CanaryHit]:
     return hits
 
 
-def _validate_path(raw: str) -> Path:
-    """Reject paths that escape the governance allowlist."""
-    if not _GOVERNANCE_FILE_RE.match(raw):
+def _validate_path(raw: str, repo_root: str = ".") -> Path:
+    """Reject paths outside the governance allowlist.
+
+    GH #282: delegates to the shared resolver so a registered active plan named
+    `docs/plan-<slug>.md` (not just `docs/plan-qor-phase*.md`) is admitted, while
+    traversal, outside-root, unsupported-extension, and unregistered paths are
+    still rejected before the file is read. The historical phase-plan family and
+    the canonical governance files remain always-allowed.
+    """
+    from qor.scripts.governance_paths import (
+        GovernancePathError,
+        resolve_governance_plan_path,
+    )
+    try:
+        resolve_governance_plan_path(raw, repo_root)
+    except GovernancePathError as exc:
         raise ValueError(
-            f"path not in governance allowlist: {raw!r} "
-            "(allowed: docs/plan-qor-phase*.md, docs/{ARCHITECTURE_PLAN,META_LEDGER,CONCEPT}.md, "
-            "docs/research-brief-*.md, qor/references/doctrine-*.md)"
-        )
+            f"path not in governance allowlist: {raw!r} ({exc})"
+        ) from exc
     return Path(raw)
 
 

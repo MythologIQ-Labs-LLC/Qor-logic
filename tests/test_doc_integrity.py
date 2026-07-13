@@ -146,3 +146,33 @@ def test_check_orphans_allows_term_with_referenced_by(tmp_path):
     doc_integrity.check_orphans(
         str(g), current_session_plan_tag="phase99-other", repo_root=str(tmp_path)
     )
+
+
+# ---------- GH #282: system-tier topology via registered architecture authority ----------
+
+def _system_repo(tmp_path: Path, registered: list[str], make_arch_plan: bool = True) -> None:
+    (tmp_path / "README.md").write_text("# x\n", encoding="utf-8")
+    (tmp_path / "qor" / "references").mkdir(parents=True)
+    (tmp_path / "qor" / "references" / "glossary.md").write_text("# g\n", encoding="utf-8")
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    for name in ("lifecycle.md", "operations.md", "policies.md"):
+        (docs / name).write_text("# x\n", encoding="utf-8")
+    if make_arch_plan:
+        (docs / "ARCHITECTURE_PLAN.md").write_text("# arch plan\n", encoding="utf-8")
+    rows = "\n".join(f"| Doc | `{p}` | stable |" for p in registered)
+    (docs / "GOVERNANCE_INDEX.md").write_text(
+        "# Index\n\n**Last Reviewed**: 2026-07-13\n\n" + rows + "\n", encoding="utf-8"
+    )
+
+
+def test_check_topology_system_passes_with_registered_architecture_plan(tmp_path):
+    """No docs/architecture.md; docs/ARCHITECTURE_PLAN.md is the registered authority."""
+    _system_repo(tmp_path, ["docs/ARCHITECTURE_PLAN.md"])
+    doc_integrity.check_topology("system", str(tmp_path))  # must not raise
+
+
+def test_check_topology_system_fails_when_architecture_authority_unregistered(tmp_path):
+    _system_repo(tmp_path, ["docs/README.md"])  # ARCHITECTURE_PLAN.md present but not registered
+    with pytest.raises(ValueError, match="architecture"):
+        doc_integrity.check_topology("system", str(tmp_path))

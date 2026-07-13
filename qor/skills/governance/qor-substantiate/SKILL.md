@@ -147,14 +147,15 @@ git tag --sort=-v:refname | head -1
 
 ```
 Read: Plan file (docs/Planning/plan-*.md or docs/ARCHITECTURE_PLAN.md)
-Extract: Target Version from plan header
+Extract: change_class from plan header
 ```
 
-<!-- qor:fail-fast-only reason="version-state checks are logic gates; require operator correction" -->
-**INTERDICTION**: If Target Version ≤ Current Tag → ABORT (version already shipped).
-**INTERDICTION**: If governance files reference wrong version → PAUSE (fix before sealing).
+Version-applicability is the SAME shared check the audit ran before PASS (`version_applicability.validate`); a release-class plan whose target could not exceed the current tag never reaches this step.
 
-Log: "Version validated: v[current] → v[target] (change type: [hotfix|feature|breaking])"
+<!-- qor:fail-fast-only reason="version-state checks are logic gates; require operator correction" -->
+**INTERDICTION**: release-class `not verdict.ok` (target ≤ Current Tag) → ABORT (version already shipped); governance files referencing a wrong version → PAUSE.
+
+**Non-release (GH #282)**: `change_class: governance` is `version-not-applicable` -- Step 7.5 skips the bump and Step 9.5.5 skips the tag (no `v{X.Y.Z}`).
 
 ### Step 3: Reality Audit
 
@@ -490,9 +491,14 @@ from pathlib import Path
 plan_path = gh.current_phase_plan_path()              # V-5: lexicographic suffix
 phase_num, slug = gh.derive_phase_metadata(plan_path) # W-3: derive before use
 change_class = gh.parse_change_class(plan_path)       # V-2: bold-form enforced
-# version_backends.bump delegates the python path to gh.bump_version (unchanged
-# tag-collision + downgrade interdiction); node/rust reuse the same guards.
-new_version, backend = version_backends.bump(Path("."), change_class)
+# GH #282: a non-release governance cycle bumps nothing and tags nothing.
+from qor.scripts import version_applicability as va
+if not va.is_release_class(change_class):
+    new_version, backend = None, "none"               # version-not-applicable; skip Step 9.5.5 tag
+else:
+    # version_backends.bump delegates the python path to gh.bump_version (unchanged
+    # tag-collision + downgrade interdiction); node/rust reuse the same guards.
+    new_version, backend = version_backends.bump(Path("."), change_class)
 ```
 
 ### Step 7.6: Stamp CHANGELOG (Phase 27 wiring)
