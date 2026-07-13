@@ -1,7 +1,0 @@
-{
-  "phase": "audit",
-  "session_id": "2026-01-01T0000-aaaaaa",
-  "ts": "2026-01-01T00:00:00Z",
-  "target": "x",
-  "verdict": "PASS"
-}

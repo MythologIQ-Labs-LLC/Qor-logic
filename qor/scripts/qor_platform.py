@@ -30,6 +30,13 @@ KNOWN_HOSTS = ("claude-code", "kilo-code", "codex-standalone", "unknown")
 # ----- Host detection -----
 
 def detect_host() -> str:
+    # Phase 186 (GH #242): signal family enumerated live inside a Claude Code
+    # CLI session -- CLAUDECODE=1 and the CLAUDE_CODE_* family are ambient
+    # there, while CLAUDE_PROJECT_DIR is hook/extension-scoped and absent.
+    if os.environ.get("CLAUDECODE"):
+        return "claude-code"
+    if any(key.startswith("CLAUDE_CODE_") for key in os.environ):
+        return "claude-code"
     if os.environ.get("CLAUDE_PROJECT_DIR"):
         return "claude-code"
     # Future: add kilo-code, codex-standalone env signals when standardized.

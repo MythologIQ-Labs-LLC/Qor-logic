@@ -1,47 +1,69 @@
-# AUDIT REPORT -- Phase 172 (publication-boundary retroactive remediation)
+# AUDIT REPORT
 
-**Verdict**: PASS
+**Tribunal Date**: 2026-07-13T15:14:00Z
+**Target**: docs/plan-qor-phase191-snapshot-contract.md (Phase 191; GH #270)
 **Risk Grade**: L2
-**Target**: docs/plan-qor-phase172-publication-boundary-remediation.md
-**Session**: `2026-07-04T1840-46e4d9`
-**Mode**: solo (option_b_required=false; codex-plugin capability shortfall logged)
+**Session**: `2026-07-13T1505-e508d3`
+**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall emitted; audit_risk_score option_b_required: false)
+**Verdict**: PASS
 
-## Pass Results
+---
 
-| Pass | Result | Notes |
-|---|---|---|
-| Prompt Injection | PASS | canaries exit 0 |
-| Security (L3) | PASS | The phase REDUCES disclosure surface; the operator-local terms file is gitignored by design (a tracked denylist would leak the identities it protects); no credentials, no history rewrite (separately gated) |
-| OWASP Top 10 | PASS | A04: recorded hash fields stay verbatim (no silent rebinding); sidecar regeneration is disclosed in the seal; grandfathered absolute intent-lock records still verify (no fail-open, no breakage) |
-| Ghost UI / Live-Progress | PASS | No UI surface |
-| Section 4 Razor | PASS | Lint <160 lines; intent-lock seam is a small path-normalization change; LD-6 budgets the audit SKILL.md trim |
-| Self-Application | PASS | The plan, brief, and this report are themselves boundary-compliant (counts and classes, never identities); the phase's own artifacts pass the lint it introduces |
-| Test Functionality | PASS | Five lint tests invoke the unit per pattern class incl. the self-reference allowance and both exit codes; intent-lock round-trip updated behaviorally |
-| Dependency | PASS | stdlib only |
-| Macro Architecture | PASS | Lint mirrors the established corpus-lint shape; sweep edits are content-only; the single code seam (intent-lock relative paths) is behavior-preserving with legacy tolerance |
-| Feature Test Coverage | EXEMPT | feature_inventory_touches empty |
-| Infrastructure Alignment | PASS | LD-1 binding reality re-verified (chain math on recorded fields; latest-only plan binding; keyless sidecar digest); intent_lock consumers enumerated (evidence_bundle existence-check only -- path-shape agnostic; CLI capture/verify) |
-| Runtime Contract Walk | WARN-only | Expected WARN on the NEW lint module |
-| Filter-Stage Ordering | PASS | Lint: collect tracked files -> apply patterns -> overlay terms -> report; no ordered dependencies |
-| Orphan Detection | PASS | Lint reached via generic runner + audit ladder + tests |
-| Schema Freeze | PASS | 0 unjustified (no new ceremony artifacts; the disclosure lives in the seal per LD-5) |
+## VERDICT: PASS
 
-## Binding-integrity constraints (binding on implement)
+---
 
-1. Ledger entry BODY edits only; every `Content Hash`/`Previous Hash`/`Chain Hash`/`Entry ID` line byte-verbatim. `ledger_hash verify` + `seal_entry_check` must pass after the sweep.
-2. Every edited gate artifact gets a regenerated `payload_sha256` sidecar; `gate_provenance verify-committed --phase-min 158` must pass.
-3. Legally required attribution text preserved minus location detail.
-4. No tracked file (including the lint, its tests, and this phase's docs) may carry an outside identity.
+### Executive Summary
 
-## Documentation Drift
+L2 grade because this ships a PUBLISHED external contract with a known downstream consumer -- the schema is the API, and the audit's deepest walk went to the two places external contracts rot: silent-health inference and compatibility drift. Both are answered structurally, not conventionally: every section carries `state: ok|unknown|error` plus a source pointer (LD-2 -- a collector CANNOT render absence as health because the guard wrapper owns the rendering), and the compatibility rules (additive keeps schemaVersion, consumers ignore unknown fields, breaking bumps major) live in the registered contract reference, with the schema itself registered under the Phase 169 freeze rule so a future phase cannot add snapshot fields unregistered. The exporter's exit-code semantics are the subtle right call: exit 0 on a successful export of an UNHEALTHY repository (the snapshot reports state, it does not judge it) -- conflating the two would make degraded repositories unobservable, defeating the issue's purpose. No binding-VETO pass fired.
 
-(clean)
+### Audit Results
+
+#### Prompt Injection Pass
+**Result**: PASS -- canaries exit 0 over the four scanned surfaces.
+
+#### Security Pass (L3-depth walk for the external contract)
+**Result**: PASS
+Read-only enforced by test (tree hash before/after); no network by construction (all sources are local files; the git identifier uses local `git config`, subprocess list-form, optional with explicit degradation). The snapshot exposes only repository-local governance facts the repo already publishes to any reader; no secrets surfaces are collected (gate artifacts, ledger headers, event metadata). Enterprise concepts are excluded per the issue's own boundary -- checked as a non-goal, not an afterthought.
+
+#### OWASP Top 10 Pass
+**Result**: PASS -- no deserialization beyond json.loads of repo-owned files inside guarded collectors (malformed input becomes state:error, tested); no shell=True; output written only to the explicit --out path.
+
+#### Ghost UI / Razor / Dependency Passes
+**Result**: PASS -- no UI; the only dependency (jsonschema) is already present (validate_gate_artifact.py:16); the health section REUSES status_json's runner instead of reimplementing the ladder (composition over duplication).
+
+#### Self-Application Sub-Pass (originating_remediation: GH #270)
+**Result**: PASS -- the healthy-repo fixture is THIS repository: the first live snapshot will report the very session that built it, and the test asserts real values (pyproject version, CHANGELOG head) rather than fixture-shaped echoes.
+
+#### Test Functionality Pass
+**Result**: PASS
+Nine tests, every one observing behavior: live-value assertions on the healthy path, jsonschema conformance of actual output, four degraded fixtures each asserting the SPECIFIC section state and that export still succeeds (the fail-safe contract), byte determinism modulo generated_ts, tree immutability, and CLI file/exit behavior. The degraded fixtures cover the issue's required matrix (no-session, malformed, tampered, missing artifacts); "stale" is represented through the lifecycle/health sections' own staleness reporting rather than a synthetic fixture -- honest scope, disclosed here.
+
+#### Infrastructure Alignment Pass
+**Result**: PASS
+Anchors verified live: status_json run_all/runner at :78/:44; the Phase 175 module's non-overlap (DNA backup); the freeze-lint registry seam (gate_schema_freeze_lint.py:6,53) with the plan artifact declaring new_ceremony_artifacts (the lint's designed justification path); jsonschema import at validate_gate_artifact.py:16; Phase 173 latest-iteration resolution for the gates section. The runtime-contract WARN (snapshot_export has no production caller) is definitionally true for a consumer-facing export CLI -- the callers are external; disclosed. Runtime Contract Walk: 1 WARN (disclosed), 0 binding findings.
+
+#### Filter-Stage / Orphan / Macro-Architecture Passes
+**Result**: PASS -- one module of small collectors + one schema + one reference doc; the contract reference is registered in GOVERNANCE_INDEX Tier 2; no coupling into gate authority (derived, not authoritative -- LD from the issue itself).
+
+#### Documentation Drift (advisory)
+**Result**: clean -- standard tier with one term homed at the new contract reference; the glossary entry ships in-phase.
+
+### Violations Found
+
+| ID  | Category | Location | Description |
+| --- | -------- | -------- | ----------- |
+| (none) | | | |
 
 ## Process Pattern Advisory
 
 <!-- qor:veto-pattern-advisory -->
+
 No repeated-VETO pattern detected in the last 2 sealed phases.
 
-## Decision
+### Verdict Hash
 
-PASS (L2, solo). The plan executes both recorded Governor decisions with the binding-integrity constraints made explicit and enforceable at seal (chain verify, latest-seal binding, sidecar re-verification), introduces the only lint shape that does not itself violate the boundary, and closes the intent-lock code seam so the path class cannot regrow. Next: `/qor-implement`.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 191.
+
+---
+_This verdict is binding._

@@ -1,0 +1,53 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T1405-331255",
+  "ts": "2026-07-13T11:43:23Z",
+  "questions": [
+    "Is any part of #239 already shipped?",
+    "What is the correct cycle boundary within the issue's three phases?",
+    "What failure semantics make the merge deterministic under concurrency?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "no spec surfaces exist corpus-wide; plan.schema.json has no spec_deltas; no PR references #239",
+      "source": "docs/research-brief-spec-corpus-2026-07-13.md"
+    },
+    {
+      "id": "F2",
+      "summary": "audit.schema.json:40 specification-drift category is live -- Phase B routes into it without schema change",
+      "source": "docs/research-brief-spec-corpus-2026-07-13.md"
+    },
+    {
+      "id": "F3",
+      "summary": "governance_index unregistered scan covers root+docs only (governance_index.py:54-63); spec-grammar.md reference needs no registration; non-doctrine name preserves the README inventory lock",
+      "source": "docs/research-brief-spec-corpus-2026-07-13.md"
+    },
+    {
+      "id": "F4",
+      "summary": "merge determinism hinges on heading-keyed whole-block replace; absent MODIFIED/REMOVED targets and duplicate ADDED must be loud errors",
+      "source": "docs/research-brief-spec-corpus-2026-07-13.md"
+    },
+    {
+      "id": "F5",
+      "summary": "Phase B/C deferral grounds: seal-gate timing, qor-audit ~1.3 KB headroom, substantiate schema change, qa_evidence coverage-pillar mapping",
+      "source": "docs/research-brief-spec-corpus-2026-07-13.md"
+    }
+  ],
+  "sources": [
+    "qor/gates/schema/audit.schema.json",
+    "qor/gates/schema/plan.schema.json",
+    "qor/scripts/governance_index.py",
+    "qor/scripts/feature_index_verify.py",
+    "qor/scripts/check_variant_drift.py"
+  ],
+  "brief_path": "docs/research-brief-spec-corpus-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.128.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T11:43:23Z"
+  }
+}

@@ -1,0 +1,298 @@
+---
+name: qor-meta-track-shadow
+description: Capture failed approaches in the Qor-logic Shadow Genome to prevent repeat failures and improve governance learning loops.
+creator: MythologIQ Labs, LLC
+license: Proprietary (FailSafe Project)
+phase: meta
+tone_aware: false
+gate_reads: ""
+gate_writes: ""
+---
+# Track Shadow Genome Skill
+## Record Failed Approaches to Prevent Repetition
+
+**Skill Name:** qor-meta-track-shadow
+**Version:** 1.0
+**Purpose:** Implement Qor-logic Shadow Genome for meta-governance - learn from failures
+
+---
+
+## Usage
+
+```
+/qor-meta-track-shadow <context> <attempted_solution> <failure_mode>
+```
+
+Or invoke in conversation:
+> "Let's track this failed approach in the Shadow Genome..."
+
+---
+
+## What This Skill Does
+
+Implements Qor-logic's **Shadow Genome** principle: treating failures as data rather than mistakes.
+Records failed approaches with context, failure mode analysis, and lessons learned to prevent
+repetition.
+
+---
+
+## Skill Instructions
+
+When this skill is invoked, you should:
+
+### 1. Gather Failure Information
+
+Collect comprehensive details about the failed approach:
+
+**Required Information:**
+- **Context:** What were we trying to accomplish?
+- **Attempted Solution:** What approach did we try?
+- **Failure Mode:** Why did it fail? (Use taxonomy below)
+- **Impact:** What was the cost of this failure?
+- **Detection:** How/when was the failure identified?
+
+**Optional Information:**
+- **Alternatives Considered:** What other approaches were evaluated?
+- **Why This Seemed Right:** What made us think this would work?
+- **Remediation:** What actually worked instead?
+
+### 2. Classify Failure Mode
+
+Use Qor-logic failure taxonomy:
+
+| Failure Mode | Description | Example |
+|--------------|-------------|---------|
+| **COMPLEXITY_VIOLATION** | Violated KISS principle | Added ORM when sqlite3 sufficed |
+| **PREMATURE_OPTIMIZATION** | Optimized without data | Implemented caching before bottleneck proven |
+| **HALLUCINATION** | Claimed capability not validated | "Z3 provides 100% coverage" (unproven) |
+| **SECURITY_REGRESSION** | Introduced vulnerability | Broke keyfile integrity validation |
+| **SCOPE_CREEP** | Added unplanned features | Built features for hypothetical use cases |
+| **TECHNICAL_DEBT** | Quick fix created larger problem | Skipped tests to meet deadline |
+| **DEPENDENCY_BLOAT** | Added unnecessary dependencies | 100MB library for one function |
+| **ARCHITECTURE_MISMATCH** | Solution incompatible with design | Synchronous code in async system |
+| **VALIDATION_GAP** | Insufficient testing/verification | Deployed without integration tests |
+| **DOCUMENTATION_DRIFT** | Docs diverged from reality | Spec claimed features not implemented |
+
+### 3. Extract Lesson Learned
+
+Formulate actionable insight:
+
+**Bad Lesson (too vague):**
+> "Be more careful with dependencies"
+
+**Good Lesson (actionable):**
+> "Before adding dependencies >10MB, require: (1) measured bottleneck, (2) no stdlib alternative, (3) usage in 3+ places"
+
+### 4. Identify Correct Approach
+
+Document what worked instead (if known):
+
+- What solution did we actually use?
+- Why was it better?
+- What made the difference?
+- Can this be generalized?
+
+### 5. Update Shadow Genome File
+
+For structured process events (JSONL), classify attribution per `qor/references/doctrine-shadow-attribution.md` before logging. UPSTREAM events (implicating Qor-logic artifacts) go to `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`. LOCAL events (consumer codebase or LLM-intrinsic) go to `docs/PROCESS_SHADOW_GENOME.md`. When in doubt, LOCAL.
+
+For narrative failure entries (markdown), append to `docs/SHADOW_GENOME.md`:
+
+```yaml
+- id: "SG-{sequential_number}"
+  timestamp: "{ISO 8601 timestamp}"
+  context: "{What we were building}"
+  attempted_solution: "{What we tried}"
+  failure_mode: "{From taxonomy above}"
+  why_failed: "{Root cause analysis}"
+  impact: "{Time lost, technical debt created, etc.}"
+  lesson_learned: "{Actionable principle}"
+  correct_approach: "{What worked instead}"
+  related_entries: ["{Links to similar failures if applicable}"]
+  preventability: "{Could this have been caught earlier? How?}"
+```
+
+### 6. Check for Patterns
+
+After adding entry, analyze for repeated failure modes:
+
+**If 3+ entries with same failure_mode:**
+- Create systematic prevention mechanism
+- Add to KISS enforcement rules
+- Update validation checklist
+- Consider architectural change
+
+**Example:**
+> "We've added 3 DEPENDENCY_BLOAT entries. Let's add a CI check that fails on dependencies >50MB without explicit justification."
+
+### 7. Share with Team
+
+Report the failure learning:
+
+```markdown
+## Shadow Genome Entry: SG-{number}
+
+**Failure Mode:** {mode}
+**Impact:** {impact}
+
+**What We Tried:**
+{attempted_solution}
+
+**Why It Failed:**
+{why_failed}
+
+**Lesson Learned:**
+{lesson_learned}
+
+**Moving Forward:**
+{correct_approach}
+
+**Prevention:**
+{How to avoid this in future}
+```
+
+---
+
+## Examples
+
+Concrete event examples (Dependency Bloat / Premature Optimization / Hallucination — SG-001 / SG-002 / SG-003) are documented in `qor/skills/meta/qor-meta-track-shadow/references/example-shadow-genome-events.md` per the progressive-disclosure doctrine (`SG-SkillCorpusGrowth-A`). The reference file shows the YAML body and preventive action created for each failure mode.
+
+---
+
+## Shadow Genome File Structure
+
+The Shadow Genome lives at: `docs/SHADOW_GENOME.md`
+
+```yaml
+# Q-DNA Development Shadow Genome
+# Failed approaches archived for learning
+
+metadata:
+  version: "1.0"
+  created: "2025-12-24"
+  purpose: "Learn from failures, prevent repetition"
+
+statistics:
+  total_entries: 3
+  most_common_failure: "COMPLEXITY_VIOLATION"
+  prevention_rate: "67%" # (patterns detected / total entries)
+
+failures:
+  - id: "SG-001"
+    # ... (as shown in examples)
+
+  - id: "SG-002"
+    # ... (as shown in examples)
+
+patterns_detected:
+  - pattern: "Premature dependency addition"
+    occurrences: 2
+    entries: ["SG-001", "SG-002"]
+    prevention_mechanism: "Require measured bottleneck before new dependencies"
+    status: "ACTIVE"
+
+  - pattern: "Optimization before measurement"
+    occurrences: 1
+    entries: ["SG-002"]
+    prevention_mechanism: "Benchmark-driven optimization only"
+    status: "ACTIVE"
+
+lessons_codified:
+  - lesson: "Check stdlib before external dependencies"
+    related_entries: ["SG-001"]
+    enforced_by: "Architecture review checklist"
+
+  - lesson: "Measure before optimizing"
+    related_entries: ["SG-002"]
+    enforced_by: "Performance testing required for optimization PRs"
+
+  - lesson: "Cite exact numbers, not rounded approximations"
+    related_entries: ["SG-003"]
+    enforced_by: "Sentinel citation validation"
+```
+
+---
+
+## Success Criteria
+
+This skill succeeds when:
+
+1. ✅ **Zero Repeated Failures:** No failure mode occurs twice without prevention mechanism
+2. ✅ **Pattern Detection:** 3+ similar failures trigger systematic prevention
+3. ✅ **Actionable Lessons:** Every entry produces concrete, enforceable rule
+4. ✅ **Team Learning:** Failures shared and discussed, not hidden
+5. ✅ **Continuous Improvement:** Prevention mechanisms reduce failure rate over time
+
+---
+
+## Integration with Qor-logic
+
+This skill implements:
+
+- **Shadow Genome Principle:** "Failure is Data"
+- **Fail Forward:** Anticipated failure yields superior architecture
+- **Progressive Formalization:** Patterns → Rules → Automated enforcement
+- **Divergence Doctrine:** Honest about mistakes, transparent about lessons
+
+---
+
+## When to Use
+
+Invoke this skill:
+
+- ❌ After rejecting a proposed approach
+- ❌ When abandoning implemented solution
+- ❌ After security vulnerability found in review
+- ❌ When scope reduction removes features
+- ❌ After timeline slip due to wrong approach
+- ❌ When complexity violation detected
+- ❌ After any "we should have known better" moment
+
+---
+
+## Output
+
+This skill will:
+
+1. Create/update `docs/SHADOW_GENOME.md`
+2. Add structured entry with all required fields
+3. Analyze for patterns (3+ similar → prevention)
+4. Generate team report
+5. Update prevention mechanisms
+6. Recommend architectural changes if systemic
+
+**Example Output:**
+
+```markdown
+## Shadow Genome Updated
+
+**Entry Added:** SG-004
+**Failure Mode:** SECURITY_REGRESSION
+**Impact:** Critical - keyfile integrity compromise
+**Lesson:** All cryptographic changes require security review + external audit
+
+**Pattern Detected:** 2 security regressions in 4 weeks
+**Prevention Created:** Mandatory security review for all crypto PRs
+
+**File Updated:** docs/SHADOW_GENOME.md
+**Team Notification:** Posted to #development channel
+
+**Action Required:**
+- Update PR template to include security review checkbox
+- Add crypto file watch in CI (auto-assign security reviewer)
+```
+
+---
+
+## Notes
+
+- Shadow Genome is **append-only** - never delete failures
+- Failures are **blameless** - focus on system, not individual
+- Lessons must be **actionable** - vague insights don't help
+- Prevention must be **enforceable** - manual compliance fails
+- **Celebrate failures** that teach us something valuable
+
+---
+
+**Remember:** The goal isn't to avoid all failures. The goal is to never fail the same way twice.
+

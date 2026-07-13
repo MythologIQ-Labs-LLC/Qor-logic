@@ -249,10 +249,11 @@ A closure block does NOT remove the entry or revise its timestamp. The failure p
 
 ### 10.3 Audit history and findings signature (Phase 37)
 
-Every `/qor-audit` gate emission writes two artifacts:
+Every `/qor-audit` gate emission writes three artifacts (Phase 173, GH #237, added the immutable form):
 
-1. **Singleton** `.qor/gates/<sid>/audit.json` — authoritative for chain gating (read by `gate_chain.check_prior_artifact` for `/qor-implement` etc.). Overwritten on re-emission.
-2. **Append-only history** `.qor/gates/<sid>/audit_history.jsonl` — one JSON record per audit in session order. Advisory for stall detection. Schema-validated line-by-line on read.
+1. **Immutable iteration** `.qor/gates/<sid>/audit-iter<N>.json` — one per emission, never overwritten; the evidence a seal binds. Carries its own `.provenance` sidecar.
+2. **Singleton** `.qor/gates/<sid>/audit.json` — byte-identical latest copy, refreshed on re-emission for pre-173 consumers. Resolution (`gate_chain.check_prior_artifact` for `/qor-implement` etc.) prefers the highest iteration and falls back to the singleton for pre-173 session dirs.
+3. **Append-only history** `.qor/gates/<sid>/audit_history.jsonl` — one JSON record per audit in session order, carrying `artifact_filename` (the versioned file; absent pre-173). Advisory for stall detection. Schema-validated line-by-line on read.
 
 The history log is the input to `findings_signature.compute_record`. Every VETO audit carries `findings_categories` (closed 12-value enum in `audit.schema.json`); the signature is the first 16 hex characters of SHA256 over the dedupe-and-sort-joined category list. Audits emitted before Phase 37 lack the `findings_categories` field and resolve to the literal sentinel `"LEGACY"` (not hex-shaped, so no collision with real signatures).
 
@@ -348,3 +349,50 @@ A skill may proceed only after its required governance artifacts classify as hea
 - Inventing an Ungoverned Path Forward (synthesizing a plan, audit, implementation, or seal from assumptions when an artifact is not OK) is invalid.
 
 Maps to NIST AI RMF MAP-3.1 (trust anchor integrity) and EU AI Act Art. 12 (record-keeping integrity). Enforced by `tests/test_governance_prompt_health_coverage.py`, `tests/test_prompt_resilience_lint.py`, and `tests/test_governance_health.py`.
+
+## 16. Governance-state durability (Phase 175; GH #267)
+
+Local governance state has zero inherent durability: in a consumer workspace
+where the DNA files are gitignored, one `git clean -fdx` erases the ledger,
+concept, blueprint, system state, and shadow genome with nothing to detect
+the loss until the next skill entry -- and a naive UNINITIALIZED
+classification then routes toward bootstrap, destroying the recoverable
+history a second time.
+
+Three controls close this:
+
+- **Backup-on-write.** The first governed gate write of every session
+  (`gate_chain.write_gate_artifact` -> `governance_snapshot.ensure_session_backup`)
+  snapshots the five DNA files (`docs/META_LEDGER.md`, `docs/CONCEPT.md`,
+  `docs/ARCHITECTURE_PLAN.md`, `docs/SYSTEM_STATE.md`, `docs/SHADOW_GENOME.md`)
+  to the gitignored `.agent/local-backup/governance/<session_id>/`, idempotent
+  per session via a `.complete` manifest. The hook is best-effort: a failed
+  backup warns and never aborts a governed write (the snapshot is an aid, not
+  an enforcement control).
+- **Recovery-aware routing.** When the health gate finds a workspace that
+  reads as uninitialized, it probes for prior-initialization evidence (a
+  populated local-backup tree, or ledger history in git). With evidence, the
+  finding is `MISSING` with a restore-then-`/qor-remediate` `legal_next` --
+  never `UNINITIALIZED`/bootstrap. A genuinely new workspace (no evidence)
+  keeps the bootstrap path unchanged.
+- **No-clobber restore.** `qor-logic scripts governance_snapshot restore
+  --from <dir>` copies files back but skips any destination that still exists
+  (`--force` overrides), so a restore can never silently destroy state newer
+  than the snapshot. Each restore appends exactly one severity-3
+  `governance-state-loss` shadow event recording the restored and skipped
+  sets.
+
+Loss classes the snapshot survives and does not survive:
+
+| Loss event | Snapshot survives? |
+|---|---|
+| Accidental deletion of `docs/` state | yes |
+| `git clean -fd` (untracked, non-ignored) | yes (backup dir is ignored) |
+| `git clean -fdx` (includes ignored files) | NO -- backups die with the state |
+| Disk loss / new clone | NO -- git history is the only evidence |
+
+The snapshot narrows the loss window; it does not eliminate it. Operators who
+run `git clean -fdx` in a governed workspace should snapshot elsewhere first.
+
+Enforced by `tests/test_governance_snapshot.py` and the Phase 175 additions in
+`tests/test_governance_health.py`.

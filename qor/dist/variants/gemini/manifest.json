@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-07-05T03:20:09Z",
+  "generated_ts": "2026-07-13T12:16:07Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -96,7 +96,7 @@
       "id": "qor-audit.toml",
       "source_path": "commands/qor-audit.toml",
       "install_rel_path": "commands/qor-audit.toml",
-      "sha256": "e1e77a30dd038a677b625708c776d80b4328c308d9e34d7da21ad65c0855f5e4"
+      "sha256": "31d7bc0961a584df1cc48cff3fece967b0c60409dabf63a9f4df6230c4d20713"
     },
     {
       "id": "qor-bootstrap.toml",
@@ -177,6 +177,12 @@
       "sha256": "6db2266d317a1b2e8d4761bdf0ce11abcdfaf7d6873f6aad30386966815b9018"
     },
     {
+      "id": "qor-onboard.toml",
+      "source_path": "commands/qor-onboard.toml",
+      "install_rel_path": "commands/qor-onboard.toml",
+      "sha256": "08c7d310d2b4bf3366e71029012e3045e98d1b9403391620b985d6996b62c583"
+    },
+    {
       "id": "qor-organize.toml",
       "source_path": "commands/qor-organize.toml",
       "install_rel_path": "commands/qor-organize.toml",
@@ -186,7 +192,7 @@
       "id": "qor-plan.toml",
       "source_path": "commands/qor-plan.toml",
       "install_rel_path": "commands/qor-plan.toml",
-      "sha256": "88c31ab8a92a8e05317d2b3a459ee99de9f69d5bfd3ecea115bbd813a637a62a"
+      "sha256": "9983d503698d5da13ad99462e72bef5e1efe34c92743b9d9153ef735bf5274cf"
     },
     {
       "id": "qor-process-review-cycle.toml",
@@ -246,7 +252,7 @@
       "id": "qor-substantiate.toml",
       "source_path": "commands/qor-substantiate.toml",
       "install_rel_path": "commands/qor-substantiate.toml",
-      "sha256": "80264288e8b70ead3be9f6f8eb99de8aa7cdaa3784557f60cab70ac3c3bf8598"
+      "sha256": "fef46445181873ecbb749f577df46c976c3b325d49efa920f84fb6e976965a41"
     },
     {
       "id": "qor-tone.toml",

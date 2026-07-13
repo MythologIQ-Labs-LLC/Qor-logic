@@ -1,6 +1,6 @@
 # Governance Index
 
-**Last Reviewed**: 2026-07-05
+**Last Reviewed**: 2026-07-13
 
 A single authoritative map of every governance artifact in Qor-logic, organized
 into six freshness tiers with explicit drift contracts. A stale entry here is
@@ -40,6 +40,9 @@ Stable; changes are explicit doctrine events. Drift signal: rules contradict eac
 | Contributor guide | `CONTRIBUTING.md` |
 | Attribution policy | `ATTRIBUTION.md` |
 | Publication boundary | `qor/references/doctrine-publication-boundary.md` |
+| Negative constraints | `qor/references/doctrine-negative-constraints.md` |
+| Spec grammar | `qor/references/spec-grammar.md` |
+| Snapshot contract | `qor/references/snapshot-contract.md` |
 
 ## Tier 3 — Active Initiative
 

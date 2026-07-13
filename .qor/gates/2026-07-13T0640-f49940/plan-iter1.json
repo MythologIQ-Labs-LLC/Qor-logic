@@ -1,0 +1,29 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T0640-f49940",
+  "ts": "2026-07-13T06:43:05Z",
+  "plan_path": "docs/plan-qor-phase178-skill-progressive-disclosure.md",
+  "phases": [
+    "Phase 1: Budget guardrail (TDD first -- red against current sizes)",
+    "Phase 2: qor-audit disclosure pass",
+    "Phase 3: qor-substantiate disclosure pass"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_substantiate_staging_gates.py tests/test_skill_corpus_consolidation.py tests/test_skill_doctrine.py tests/test_qor_substantiate_capability_declarations.py tests/test_seal_flow_ordering.py tests/test_substantiate_tag_timing_wired.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "hotfix",
+  "originating_remediation": "GH #266",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.122.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T06:43:05Z"
+  }
+}

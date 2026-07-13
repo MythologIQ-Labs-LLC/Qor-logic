@@ -1,0 +1,212 @@
+---
+name: qor-validate
+description: >-
+  Merkle Chain Validator that recalculates and verifies cryptographic integrity of the project's Meta Ledger. Use when: (1) Verifying chain integrity before handoff, (2) Detecting tampering or corruption, (3) Auditing decision history, or (4) Validating after manual ledger edits.
+metadata:
+  category: governance
+  author: MythologIQ
+  source:
+    repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
+    path: qor/skills/governance/qor-validate
+phase: validate
+tone_aware: false
+autonomy: interactive
+gate_reads: substantiate
+gate_writes: validate
+permitted_tools: [Read, Grep, Glob, Bash]
+permitted_subagents: []
+model_compatibility: [claude-opus-4-7, claude-sonnet-4-6]
+min_model_capability: sonnet
+---
+# /qor-validate - Merkle Chain Validator
+
+<skill>
+  <trigger>/qor-validate</trigger>
+  <phase>ANY</phase>
+  <persona>Judge</persona>
+  <output>Chain validity report with entry-by-entry verification</output>
+</skill>
+
+## Governance Health Preflight
+
+<!-- qor:governance-health-preflight -->
+Run `qor-logic governance-health --profile skill-entry` before reading governance artifacts. If any finding is `DAMAGED` or `INCOMPLETE`, do not continue: report the finding's `path`, `reason`, and `legal_next`. Only `UNINITIALIZED` or scaffold-owned `MISSING` may be resolved by `qor-logic seed` (interactive: offer Y/N; autonomous: seed silently). `DAMAGED` and `INCOMPLETE` always route to `/qor-remediate` or section completion -- never to seed or bootstrap.
+
+## Purpose
+
+Recalculate and verify the cryptographic integrity of the project's Meta Ledger. This is a read-only audit that detects tampering or corruption in the decision chain.
+
+## Execution Protocol
+
+### Step 0: Gate Check (advisory — Phase 8 wiring)
+
+Verify prior-phase artifact exists and is well-formed before proceeding.
+
+```python
+from qor.scripts import gate_chain, session
+
+sid = session.get_or_create()
+result = gate_chain.check_prior_artifact("validate", session_id=sid)
+if not result.found:
+    # Prompt user to override; on confirm:
+    gate_chain.emit_gate_override(
+        current_phase="validate",
+        prior_phase_name="substantiate",
+        reason="user override: substantiate.json not found",
+        session_id=sid,
+    )
+elif not result.valid:
+    gate_chain.emit_gate_override(
+        current_phase="validate",
+        prior_phase_name="substantiate",
+        reason=f"user override: {result.errors}",
+        session_id=sid,
+    )
+```
+
+Override is permitted (advisory gate) but logged as severity-1 `gate_override` event in the Process Shadow Genome.
+
+**Phase 54 wiring**: when `gate_chain.emit_gate_override` raises `OverrideFrictionRequired`, prompt the operator for a written justification (>=50 chars) and re-call `emit_gate_override` with `justification=<text>`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-1.1 + `qor/references/doctrine-eu-ai-act.md` Art. 14.
+
+### Step 1: Identity Activation
+You are now operating as **The Qor-logic Judge** in validation mode.
+
+### Step 2: Load Ledger
+
+```
+Read: docs/META_LEDGER.md
+```
+
+**INTERDICTION**: If ledger does not exist:
+
+<!-- qor:recovery-prompt -->
+Ask the user: "docs/META_LEDGER.md not found. Should I correct it by running 'qor-logic seed' or pause? [Y/n]"
+
+- On Y or empty: run `qor-logic seed` (idempotent), then continue.
+- On N: abort with "Run `qor-logic seed` to create the governance scaffold, then re-run this skill."
+
+### Step 3: Parse Entries
+
+Extract all ledger entries:
+
+Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `CONTENT_HASH_RE`, `PREV_HASH_RE`, `CHAIN_HASH_RE`, `SESSION_SEAL_RE`, `verify()`, `verify_post_anchor()`, and `is_placeholder_pattern()`. CLI: `qor-logic verify-ledger` (default scope = workdir ledger; pass `--ledger PATH` to override).
+
+### Step 4: Verify Chain
+
+Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `CONTENT_HASH_RE`, `PREV_HASH_RE`, `CHAIN_HASH_RE`, `SESSION_SEAL_RE`, `verify()`, `verify_post_anchor()`, and `is_placeholder_pattern()`. CLI: `qor-logic verify-ledger` (default scope = workdir ledger; pass `--ledger PATH` to override).
+
+### Step 4.5: Mode Selection (Phase 66 wiring - GH #54 + #55)
+
+`/qor-validate` runs in one of two modes per consumer-workspace needs:
+
+**Raw mode** (default; `qor-logic verify-ledger`): walks every entry and reports each as `OK Entry #N` / `FAIL Entry #N` / `TAINTED Entry #N: depends on failed predecessor #M` / `Skipped N entries with non-verifiable markup`. The `TAINTED` classification (Phase 66) flags downstream entries whose own chain math is internally consistent only because they chain from a failed predecessor's recorded value -- math consistency alone is not trust. Use raw mode for strict-correctness audits and pre-release gates on canonical ledgers.
+
+**Post-anchor mode** (`qor-logic verify-ledger --post-anchor [--boundary N]`): tolerates documented pre-anchor failures up to a boundary entry, then strict on the post-anchor surface. Pre-boundary FAILs report as `DISCLOSED_PRE_ANCHOR Entry #N`; post-boundary FAILs remain hard errors. Boundary defaults to the highest-numbered cleanly-verifying entry; operator may pin via `--boundary N`. Use post-anchor mode for consumer workspaces with a sealed re-anchor (e.g., a sibling consumer workspace pattern from GH #55).
+
+Both modes recognize Session Seal markup (`**Session Seal**: ... = \`<hex>\``) as a chain-hash source (Phase 66; closes the GH #54 blind spot where Session-Seal-only entries were skipped) and flag placeholder-pattern hashes (ascending hex, repeating bigrams, low entropy) as FAIL.
+
+### Step 4.6: Governance Index ledger cross-check (Phase 120 wiring; GH #149)
+
+Read-only cross-check of `docs/GOVERNANCE_INDEX.md` against the ledger chain (closes #140's deferred `/qor-validate` cross-check). Reports `stale-tier1` (the index's `Last Reviewed` predates the latest sealed entry) and `tier3-unarchived` (a Tier 3 "Active Initiative" row names a `phase <N>` already SESSION-SEALed). Folds into the validation verdict; an absent index prints a `SKIP` line (Phase 75 disclosed-skip) rather than failing.
+
+```bash
+qor-logic governance-index --cross-check-ledger --repo-root .
+```
+
+Non-zero exit signals governance-index drift the operator resolves (refresh `Last Reviewed` via the next `/qor-substantiate`, or archive the sealed Tier 3 row). Per `qor/references/doctrine-governance-index.md` "V2 (Phase 120; GH #149) -- shipped enforcement".
+
+### Step 5: Generate Report
+
+#### If Chain Valid:
+
+Templates: `references/qor-validate-reports.md`.
+
+#### If Chain Broken:
+
+Templates: `references/qor-validate-reports.md`.
+
+### Step 6: Reference Document Verification (Optional)
+
+If chain is valid, optionally verify referenced documents still exist:
+
+```
+Glob: docs/CONCEPT.md
+Glob: docs/ARCHITECTURE_PLAN.md
+Glob: .agent/staging/AUDIT_REPORT.md
+```
+
+Template: `references/qor-validate-reports.md`.
+
+### Step 7: Content Hash Verification (Deep Audit)
+
+For thorough validation, recalculate content hashes:
+
+Reference implementation: `qor/scripts/ledger_hash.py` — exposes `ENTRY_RE`, `CONTENT_HASH_RE`, `PREV_HASH_RE`, `CHAIN_HASH_RE`, `SESSION_SEAL_RE`, `verify()`, `verify_post_anchor()`, and `is_placeholder_pattern()`. CLI: `qor-logic verify-ledger` (default scope = workdir ledger; pass `--ledger PATH` to override).
+
+Template: `references/qor-validate-reports.md`.
+
+## Final Report Summary
+
+Template: `references/qor-validate-reports.md`.
+
+### Step Z: Write Gate Artifact (Phase 11D wiring)
+
+Persist the structured gate artifact at `.qor/gates/<session_id>/validate.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
+
+```python
+from qor.scripts import gate_chain, shadow_process, ai_provenance
+
+# Build payload conforming to qor/gates/schema/validate.schema.json
+payload = {
+    "ts": shadow_process.now_iso(),
+    # ... phase-specific required fields (see schema)
+}
+manifest = ai_provenance.build_manifest(
+    "validate",
+    human_oversight=(
+        ai_provenance.HumanOversight.PASS if payload.get("overall") == "PASS"
+        else ai_provenance.HumanOversight.VETO
+    ),
+)
+gate_chain.write_gate_artifact(
+    phase="validate", payload=payload, session_id=sid, ai_provenance=manifest,
+)
+```
+
+Schema lives at `qor/gates/schema/validate.schema.json`; the helper validates before write. Per Phase 54: validate calls `ai_provenance.build_manifest` with the verdict mapped to `HumanOversight`; closes EU AI Act Art. 14 oversight-signal surface.
+
+## Delegation
+
+Per `qor/gates/delegation-table.md`:
+
+- **Validation complete + PASS** → `/qor-repo-release` or session is sealed (depending on workflow).
+- **Validation FAIL with single defect** → return to `/qor-implement` with scoped fix.
+- **Repeat validation failure across cycles** (3+ same root cause) → `/qor-remediate`. Do NOT keep re-implementing — the issue is process-level, not code-level.
+
+## Constraints
+
+- **NEVER** modify any files during validation
+- **NEVER** skip any entry in the chain
+- **ALWAYS** report exact break location if chain is broken
+- **ALWAYS** lock dataset if chain is compromised
+- **ALWAYS** provide remediation guidance for broken chains
+
+## Success Criteria
+
+Validation succeeds when:
+
+- [ ] All ledger entries parsed and verified
+- [ ] Chain hashes recalculated and compared
+- [ ] Break location identified (if chain is broken)
+- [ ] Referenced documents verified to exist
+- [ ] Validation report generated with entry-by-entry results
+- [ ] Chain status reported (VALID or BROKEN at entry N)
+
+## Integration with S.H.I.E.L.D.
+
+This skill implements:
+
+- **Merkle Chain Verification**: Cryptographic integrity audit of decision history
+- **Read-Only Audit**: Never modifies files, only reports findings
+- **Tamper Detection**: Identifies unauthorized changes to ledger entries
+- **Pre-Delivery Gate**: Validates chain before handoff or release

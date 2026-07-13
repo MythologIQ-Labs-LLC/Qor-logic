@@ -1,0 +1,73 @@
+# Plan: Phase 176 - Substantiate Step 9.5 stages the sealed gate artifacts (GH #262)
+
+**change_class**: hotfix
+
+**doc_tier**: minimal
+
+## Open Questions
+
+(none)
+
+## Origin
+
+Research brief docs/research-brief-substantiate-staging-gates-2026-07-13.md (ledger entry #422, session `2026-07-13T0555-0e2b55`); GH #262. Prose-defect fix: one skill block + one wiring test; no runtime code.
+
+## Locked Decisions
+
+- **LD-1: the defect is the Step 9.5 block itself.**
+  `grep -nE 'Stage All Artifacts' qor/skills/governance/qor-substantiate/SKILL.md -> 591`; the block (lines 589-600, verified live) stages seven paths and never `.qor/gates/<sid>/`, while `gate_chain_completeness` (`grep -nE 'def check' qor/reliability/gate_chain_completeness.py -> 52`) makes the committed gate artifacts load-bearing for every sealed phase >= 52 via the required CI job.
+- **LD-2: the amendment must pay for itself in bytes.**
+  File is 40,929 bytes vs EXCEEDED 40,960 (`grep -nE 'EXCEEDED_BYTES' qor/scripts/skill_size_budget_lint.py -> 24`). Consolidating the seven single-path `git add` lines (~188 bytes) into two multi-path lines ending with `".qor/gates/$SESSION_ID/"` (~165 bytes) plus a short `(uses $SESSION_ID from Step 4.6)` pointer nets ~+12 bytes -- under the threshold. Post-edit byte count is asserted by the new test. The deeper progressive-disclosure trim is GH #266 (queue-later), explicitly out of scope.
+- **LD-3: `$SESSION_ID` is already resolved in-protocol.**
+  `grep -nE 'SESSION_ID=' qor/skills/governance/qor-substantiate/SKILL.md -> 232` (Step 4.6 canonical helper); Step 9.5 runs later in the same ceremony, so referencing the variable adds no new resolution machinery.
+- **LD-4: wiring test is prose-contract class with a lint exemption.**
+  `prose_test_lint --enforce` flags SKILL.md-substring tests without a `# prose-lint: ok=<reason>` comment (54 existing exemptions); the new test carries one. It parses the Step 9.5 section, extracts the fenced bash block, and asserts `.qor/gates/` + `$SESSION_ID` membership AND the under-budget byte count -- both fail RED today.
+- **LD-5: variants propagate mechanically.**
+  Dist variants are identity copies (`qor/scripts/dist_compile.py` emit_claude copy strategy); seal Step 8.5 regenerates them and `check_variant_drift` locks equality -- no per-variant edits.
+
+## Phase 1: Wiring test + Step 9.5 amendment (TDD first)
+
+### Affected Files
+
+- tests/test_substantiate_staging_gates.py - NEW; locks `.qor/gates/` + `$SESSION_ID` in the Step 9.5 bash block and the skill's under-EXCEEDED byte count
+- qor/skills/governance/qor-substantiate/SKILL.md - Step 9.5 block consolidated + gates path added
+- qor/dist/variants/claude/skills/qor-substantiate/SKILL.md - regenerated (dist_compile)
+- qor/dist/variants/codex/skills/qor-substantiate/SKILL.md - regenerated
+- qor/dist/variants/kilo-code/skills/qor-substantiate/SKILL.md - regenerated
+
+### Changes
+
+Step 9.5 block becomes:
+
+    **Stage All Artifacts** (uses `$SESSION_ID` from Step 4.6):
+    ```bash
+    git add CHANGELOG.md docs/CONCEPT.md docs/ARCHITECTURE_PLAN.md docs/META_LEDGER.md
+    git add docs/SYSTEM_STATE.md docs/BACKLOG.md src/ ".qor/gates/$SESSION_ID/"
+    ```
+
+Same seven paths, one addition, two lines. `tests/test_substantiate_staging_gates.py`: `_step_9_5_bash(text) -> str` slices from `### Step 9.5:` to the next `### Step` and extracts the first fenced bash block; `test_step_9_5_stages_the_sealed_gate_dir` asserts `.qor/gates/` and `$SESSION_ID` appear inside a `git add` line of that block (RED today); `test_skill_stays_under_exceeded_budget` asserts `os.path.getsize(SKILL) < 40960` (locks LD-2 so a later prose addition cannot silently cross the threshold); `test_variants_match_canonical_step_9_5` asserts each dist variant's Step 9.5 bash block equals the canonical one (byte-equal slice).
+
+### Unit Tests
+
+- tests/test_substantiate_staging_gates.py::test_step_9_5_stages_the_sealed_gate_dir - the extracted Step 9.5 bash block contains a `git add` argument matching `.qor/gates/` + `$SESSION_ID` (fails RED against the current seven-path block)
+- tests/test_substantiate_staging_gates.py::test_skill_stays_under_exceeded_budget - canonical SKILL.md byte size < 40,960 after the amendment
+- tests/test_substantiate_staging_gates.py::test_variants_match_canonical_step_9_5 - all three dist variants carry the identical Step 9.5 block (regression lock on variant regeneration)
+
+## Feature Inventory Touches
+
+(empty -- governance skill prose only)
+
+## Definition of Done
+
+### Deliverable: complete seal staging list
+
+- **D1**: An operator following Step 9.5 verbatim produces a seal commit that passes the CI gate-chain completeness job -- the sealed session's gate artifacts are staged by the documented procedure, not by tribal knowledge (GH #262).
+- **D2**: Two-line consolidated `git add` block ending with `".qor/gates/$SESSION_ID/"`; canonical file stays under 40,960 bytes; variants regenerated byte-identical.
+- **D3**: Ledger entries for plan/audit/implement/seal; GH #262 disposition recorded; no schema or doctrine changes.
+- **D4**: `test_step_9_5_stages_the_sealed_gate_dir` observes the gates argument (red-then-green); `test_skill_stays_under_exceeded_budget` observes the budget invariant.
+
+## CI Commands
+
+- `python -m pytest tests/test_substantiate_staging_gates.py -q` - focused suite (run twice for determinism)
+- `python -m pytest -q` - full suite; locks skill-corpus consolidation + wiring guardrails
+- `python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md` - ledger chain integrity across the phase's entries

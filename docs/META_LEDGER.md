@@ -1,4 +1,5 @@
 # QoreLogic Meta Ledger
+<!-- qor:meta-ledger-schema=1 -->
 
 ## Chain Status: ACTIVE
 
@@ -13610,5 +13611,1462 @@ environment approval.
 
 ---
 
+### Entry #410: RESEARCH BRIEF -- Iteration-versioned gate artifacts (GH #237)
+
+**Timestamp**: 2026-07-13T03:36:43Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #237 (one seal, one immutable file)
+**Session**: `2026-07-13T0335-8e819f`
+**Brief**: docs/research-brief-gate-artifact-iteration-2026-07-13.md
+
+**Content Hash**: `cf60f2802aebb312414626367271e13e1960ef7826c7368b8fe90b312a3ca0a0`
+**Previous Hash**: `b4c53e8a3e5d94a0d3e4aaa72669ec187a87919ff77b73e57ae1c459a2f5a92e`
+**Chain Hash (Merkle seal)**: `99eab51e94fe041ea41037932d9ed0f8425aed08fd622eb8397643ea9dff8550`
+
+**Decision**: The overwrite defect is confirmed by live repro: `validate_gate_artifact.write_artifact` (line 123) lands every phase artifact on the mutable singleton `.qor/gates/<sid>/<phase>.json`, and a re-run (audit VETO->PASS, substantiate FAIL->SEAL) destroys BOTH the prior bytes and the `<phase>.provenance` sidecar (`gate_provenance.sidecar_path` shares the stem). All seal-side consumers (gate_chain_completeness, gate_provenance.verify_committed, evidence_bundle, tier_guard) read the singleton, so the fix must keep `<phase>.json` as a byte-identical latest copy while the immutable evidence moves to `<phase>-iter<N>.json` (+ its own sidecar; never overwritten; N = max existing + 1). Resolution (`check_prior_artifact` / `read_phase_artifact`) selects the highest iteration with singleton fallback for legacy sessions; `audit_history.jsonl` rows gain `artifact_filename` (audit schema already allows additionalProperties -- no schema amendment, no freeze-lint exposure). Additive, no retroactive migration. Next: /qor-plan.
+
+---
+
+### Entry #411: GATE TRIBUNAL -- Phase 173 plan PASS (iteration-versioned gate artifacts)
+
+**Timestamp**: 2026-07-13T03:45:09Z
+**Phase**: GATE (Phase 173)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase173-gate-artifact-iteration.md
+**Session**: `2026-07-13T0335-8e819f`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `e37655a5a8746d3139b89b242915ad9fee8c10d8f67c5f1bff91d54001b6b860`
+**Previous Hash**: `99eab51e94fe041ea41037932d9ed0f8425aed08fd622eb8397643ea9dff8550`
+**Chain Hash (Merkle seal)**: `2d76a7b1a8d68bbae68ce04aa7a350e7692be2d24a39ddba1189e6d9e9a7739c`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #410 (GH #237): the gate-artifact write path becomes append-only at its single write point -- `write_artifact` emits immutable `<phase>-iter<N>.json` + refreshes the singleton `<phase>.json` as a byte-identical latest copy; sidecar duality keeps `verify_committed`/`evidence_bundle` green; resolution prefers the highest iteration with singleton fallback (legacy sessions grandfathered); `audit_history.jsonl` rows gain `artifact_filename` (additive under additionalProperties, no schema amendment). All 14 LD citations grep-verified live during tribunal; runtime contract walk 0 findings; prose_test_lint exit 0. One SG-AffectedFilesContract-A finding (two exact-path assertions in tests/test_gates.py) remediated by plan amendment pre-verdict; no cycle consumed. Next: `/qor-implement`.
+
+---
+
+### Entry #412: IMPLEMENTATION -- Phase 173 iteration-versioned gate artifacts
+
+**Timestamp**: 2026-07-13T04:03:11Z
+**Phase**: IMPLEMENT (Phase 173)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0335-8e819f`
+**Intent Lock**: `LOCKED: 2026-07-13T0335-8e819f`
+
+**Content Hash**: `21d9e23f4db24395e7aafc519a48fb8eaa2b9da30227c6361ba152733789b2a7`
+**Previous Hash**: `2d76a7b1a8d68bbae68ce04aa7a350e7692be2d24a39ddba1189e6d9e9a7739c`
+**Chain Hash (Merkle seal)**: `77aaf59a0282584f75e0d58894edb7d638dbbe119079ff658882e7552f60f59d`
+
+**Decision**: Phase 173 implemented per plan, TDD-first (10 behavioral tests red -- 8 failed, 2 legacy-fallback locks green by construction -- then all green twice). `validate_gate_artifact.py` (+44 net): `_max_iteration` / `latest_artifact_path` / `next_iteration_path` / `_atomic_write` helpers; `write_artifact` now emits immutable `<phase>-iter<N>.json` (collision advances N, second collision raises FileExistsError -- never overwrites) then refreshes the `<phase>.json` singleton byte-identically, returning the VERSIONED path. `gate_chain.py` (+9 net): resolution (`check_prior_artifact`, `read_phase_artifact`, `_check_short_chain_plan`, `_check_ideation_predecessor`) prefers the highest iteration with singleton fallback; sidecar duality (versioned + singleton `.provenance`); `audit_history.append(..., artifact_filename=<versioned name>)`; hook event binds the versioned path. `audit_history.py`: additive `artifact_filename` kwarg (audit schema `additionalProperties: true`; no schema amendment). Docs: chain.md "Iteration versioning" section; doctrine-governance-enforcement §10.3 three-artifact shape; lifecycle.md layout line. Two exact-path assertions in tests/test_gates.py updated per plan enumeration. Full suite 2553 passed / 2 skipped; `gate_provenance verify-committed` OK (15 sessions); `gate_chain_completeness` OK (114 sessions); ledger chain verified. Pre-existing razor overage in gate_chain.py (3 functions >40 lines incl. docstrings) untouched -- delta ~7 lines, no new function over limit. Content hash binds tests/test_gate_artifact_iteration.py (the phase's acceptance evidence). Next: full-suite verification recorded, then `/qor-substantiate`.
+
+---
+
+### Entry #413: SESSION SEAL -- Phase 173 iteration-versioned gate artifacts (v0.120.0)
+
+**Timestamp**: 2026-07-13T04:09:59Z
+**Phase**: SUBSTANTIATE (Phase 173; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase173-gate-artifact-iteration.md
+**Session**: `2026-07-13T0335-8e819f`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `14de3b4969c0`
+
+**Scope**: Phase 173 implemented (feature; research entry #410 -> closes GH #237, "one seal, one immutable file"). The gate-artifact write path is now append-only at its single write point: `validate_gate_artifact.write_artifact` emits an immutable `.qor/gates/<sid>/<phase>-iter<N>.json` per emission (N = highest existing iteration + 1; a collision advances N and a second collision raises FileExistsError -- the writer never re-targets an existing iteration) and refreshes the unversioned `<phase>.json` as a byte-identical latest copy, returning the VERSIONED path so `gate_chain.write_gate_artifact` binds the provenance sidecar, the gate-written hook event, and the new `audit_history.jsonl` `artifact_filename` field to the exact immutable evidence. Sidecar duality (versioned + refreshed singleton `.provenance`) keeps `gate_provenance verify-committed`, gate-chain completeness, and evidence reconstruction green with zero changes to those consumers. Prior-artifact resolution (`check_prior_artifact`, `read_phase_artifact`, `_check_short_chain_plan`, `_check_ideation_predecessor`) selects the highest iteration and falls back to the singleton for pre-173 session dirs; no retroactive migration (GH #237 requirement). No schema amendment: the audit schema's `additionalProperties: true` admits the additive history field; SCHEMA_REGISTRY untouched (freeze lint 0 findings). Docs: chain.md "Iteration versioning" section, doctrine-governance-enforcement section 10.3 three-artifact shape, lifecycle.md layout line. Live self-application within this very session: research/plan/audit artifacts were written pre-implementation as legacy singletons and resolve via the fallback; implement landed as `implement-iter1.json` and its files_touched amendment as `implement-iter2.json` with iter1 preserved byte-identical -- the grandfathering and iteration paths both exercised in production before sealing. Known follow-up (out of scope, pre-existing): a handful of suite tests write to the LIVE `.qor/gates/` tree under fixed fixture session ids; with versioning they now leave untracked `-iter` pollution per run (cleaned this session; tests should tmp-redirect -- follow-up issue to be filed).
+
+Change class: feature (v0.119.0 -> v0.120.0). Tests: 10 behavioral in `tests/test_gate_artifact_iteration.py` (GH #237 acceptance: `test_rerun_preserves_sealed_iter1_bytes` seals iter-1's hash, re-runs the phase, and verifies the sealed bytes exist and hash identically; plus sidecar immutability, history filename binding, collision advance, hook binding, highest-iteration resolution, legacy fallback, stale-singleton authority), red-then-green, green twice; 2 exact-path assertions in `tests/test_gates.py` updated per the audited plan enumeration. Full suite 2553 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, session-id lint clean, secret-scan clean (staged), procedural-fidelity clean, DoD structural check clean, merge-velocity healthy, size-budget 0 EXCEEDED (2 standing WARNs), data-API SKIP (no SQL migrations, disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory regression gate clean vs snapshot 2026-07-04T1840-46e4d9, doc-currency no warnings, gate-chain completeness + provenance verify-committed clean. Audit: solo PASS (entry #411; codex-plugin shortfall logged). Seal commit HELD: operator has not yet authorized commit/push/release; staged working tree delivered for review.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance write-path hardening; no new user-touchable feature row)
+
+**Content Hash**: `7282b623954f56decde3c3858c7c89922e5852bce7c5df3deb95878938f5722e`
+**Previous Hash**: `77aaf59a0282584f75e0d58894edb7d638dbbe119079ff658882e7552f60f59d`
+**Chain Hash (Merkle seal)**: `537e0d82e6e7ed81143ed24250050eab9d16ba2b2003ff48e1f25c7715766369`
+
+---
+
+### Entry #414: RESEARCH BRIEF -- Gate-dir test hygiene (GH #274)
+
+**Timestamp**: 2026-07-13T04:38:32Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #274 (Phase 173 follow-up)
+**Session**: `2026-07-13T0427-d0d371`
+**Brief**: docs/research-brief-gate-dir-test-hygiene-2026-07-13.md
+
+**Content Hash**: `70d748c0847bc603fabbfdd9fb82fe3126867214ead13fc7ae5aa7a71ff65cfd`
+**Previous Hash**: `537e0d82e6e7ed81143ed24250050eab9d16ba2b2003ff48e1f25c7715766369`
+**Chain Hash (Merkle seal)**: `cc869ffd07aed0bddeb8c99ca3eeb4004c8f686f0e864e8fe8dbb161862bafbd`
+
+**Decision**: Three test files write into the LIVE `.qor/gates/` tree via two defect shapes: (a) doppelganger imports (`sys.path.insert(0, "qor/scripts")` + top-level `import gate_chain`/`import validate_gate_artifact` in test_gate_chain_provenance.py) whose monkeypatches hit a second module object production code never reads; (b) resolver-only patches (`gate_chain.GATES_DIR`) that miss the writer's `validate_gate_artifact.GATES_DIR` (test_qor_ideate_writes_gate_artifact.py), plus the wrong env var (`QORLOGIC_PROJECT_DIR` -- host install dirs, not the gate tree) in test_skill_active_env.py. The five tracked pollution dirs (`2026-01-01T0000-aaaaaa`, `2026-04-30T0000-test03/04/06`, `ideate-e2e`, `ideate-prov`) have ZERO consumers (no ledger seal cites them; no qor/ reference; no test reads their committed bytes) -- untrack them. Conftest-sweep widening (issue proposal item 2) is UNSAFE: patterns wide enough to catch the fixture ids also match tracked historical session dirs; decline with rationale. Remaining offenders (`test-session*` chdir-based) are conftest-swept -- out of scope. Next: /qor-plan (fix 3 files, git rm 5 dirs, subprocess inventory-guard regression test).
+
+---
+
+### Entry #415: GATE TRIBUNAL -- Phase 174 plan PASS (gate-dir test hygiene)
+
+**Timestamp**: 2026-07-13T04:43:02Z
+**Phase**: GATE (Phase 174)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase174-gate-dir-test-hygiene.md
+**Session**: `2026-07-13T0427-d0d371`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `59e10d1346c1f1a32c6ecfdd1ea6c39f0685f342cb26bc63f637cba8520a1fc7`
+**Previous Hash**: `cc869ffd07aed0bddeb8c99ca3eeb4004c8f686f0e864e8fe8dbb161862bafbd`
+**Chain Hash (Merkle seal)**: `8f632e40a4e698e67912f3d955e71cb23a029704635191cab177a7efa4de0e39`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #414 (GH #274): canonical imports + writer-constant (`validate_gate_artifact.GATES_DIR`) and `QOR_ROOT` redirects in the three offender test files; the five zero-consumer pollution fixture dirs are untracked; a subprocess inventory-guard regression test (red against current offenders by construction) snapshots the live gate tree, excluding conftest-sweep-pattern dirs per LD-5, around a real pytest run of the fixed files. All LD greps re-executed live at tribunal. One SG-AffectedFilesContract-A-class finding (missing QOR_ROOT redirect in two of three files -> gitignored live key accretion) remediated by plan amendment pre-verdict; no cycle consumed. Runtime-contract-walk backward WARNs identified as heuristic artifacts for test-only plans (both cited modules are production-imported). Conftest-sweep widening declined per research F6. Next: `/qor-implement`.
+
+---
+
+### Entry #416: IMPLEMENTATION -- Phase 174 gate-dir test hygiene
+
+**Timestamp**: 2026-07-13T05:02:21Z
+**Phase**: IMPLEMENT (Phase 174)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0427-d0d371`
+**Intent Lock**: `LOCKED: 2026-07-13T0427-d0d371`
+
+**Content Hash**: `5973835d0dafddce74a1ab8967d2cc2d6f4ac48a2d13c8338182f71831e17413`
+**Previous Hash**: `8f632e40a4e698e67912f3d955e71cb23a029704635191cab177a7efa4de0e39`
+**Chain Hash (Merkle seal)**: `a98166ccbaffefa1e687e28c08bf77663076dde1c9ee470e14730f14966df1f6`
+
+**Decision**: Phase 174 implemented per plan, TDD-first: the new subprocess inventory guard (`tests/test_gate_dir_hygiene.py`) ran RED against the unfixed offenders (live-tree writes enumerated in its failure output), then the three files were fixed -- tests/test_gate_chain_provenance.py (doppelganger `sys.path.insert` + top-level imports replaced with canonical `qor.scripts` imports; writer-constant `vga.GATES_DIR` + `QOR_ROOT` redirects added to test03/test04/test06), tests/test_qor_ideate_writes_gate_artifact.py (vga.GATES_DIR + QOR_ROOT added to both tests), tests/test_skill_active_env.py (wrong `QORLOGIC_PROJECT_DIR` env replaced with `QOR_ROOT` + both GATES_DIR patches) -- and the guard went GREEN (focused suite 14 passed, twice; red-run pollution restored/cleaned before proceeding). Phase 2: the five zero-consumer pollution fixture dirs (`2026-01-01T0000-aaaaaa`, `2026-04-30T0000-test03/04/06`, `ideate-e2e`, `ideate-prov`) git-rm'd; gate_chain_completeness (115 sessions) and gate_provenance verify-committed (16 sessions) stayed green post-removal. Full suite 2554 passed / 2 skipped with a CLEAN `.qor/gates` tree afterward -- the GH #274 acceptance observed live. Content hash binds tests/test_gate_dir_hygiene.py (the phase's guard evidence). Next: `/qor-substantiate`.
+
+---
+
+### Entry #417: SESSION SEAL -- Phase 174 gate-dir test hygiene (v0.120.1)
+
+**Timestamp**: 2026-07-13T05:04:13Z
+**Phase**: SUBSTANTIATE (Phase 174; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase174-gate-dir-test-hygiene.md
+**Session**: `2026-07-13T0427-d0d371`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `e8e75690395f`
+
+**Scope**: Phase 174 implemented (hotfix; research entry #414 -> closes GH #274, the Phase 173 follow-up). Gate-writing tests no longer touch the live `.qor/gates/` tree. Root causes fixed in three files: tests/test_gate_chain_provenance.py (doppelganger `sys.path.insert(0, "qor/scripts")` + top-level imports whose monkeypatches never reached the canonical modules -- replaced with `from qor.scripts import ...`; writer-constant `validate_gate_artifact.GATES_DIR` + `QOR_ROOT` redirects added to the three writing tests), tests/test_qor_ideate_writes_gate_artifact.py (resolver-only patch -- writer constant + QOR_ROOT added to both tests), tests/test_skill_active_env.py (wrong env var `QORLOGIC_PROJECT_DIR`, which controls host install dirs, replaced with `QOR_ROOT` + both GATES_DIR patches). The five zero-consumer tracked pollution fixture dirs (`2026-01-01T0000-aaaaaa`, `2026-04-30T0000-test03/04/06`, `ideate-e2e`, `ideate-prov`) were git-rm'd; no ledger entry, module, or test reads them (research F5), and gate_chain_completeness (115 sessions) + gate_provenance verify-committed (16 sessions) stayed green after removal. New regression guard tests/test_gate_dir_hygiene.py: snapshots the live gate tree (excluding conftest-sweep-pattern dirs per plan LD-5), runs the three fixed files in a real pytest subprocess, asserts exit 0 + byte-identical snapshots -- observed RED against the pre-fix offenders, GREEN after. Conftest-sweep widening (issue proposal item 2) declined per research F6: patterns wide enough to catch the fixture ids also match tracked historical session dirs. GH #274 acceptance observed live: full suite left `git status` clean of gate-tree mutations.
+
+Change class: hotfix (v0.120.0 -> v0.120.1). Tests: guard + 3 redirected files, 14 passed twice (focused); full suite 2554 passed / 2 skipped with clean tree afterward. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean (staged), merge-velocity healthy, data-API SKIP (no SQL migrations, disclosed), doc-integrity strict PASS (minimal tier), governance-index advanced + enforce clean, DoD structural check clean, procedural-fidelity recorded, gate-chain completeness + provenance verify-committed clean. Audit: solo PASS (entry #415; codex-plugin shortfall logged). Seal commit: LOCAL checkpoint only per operator review-boundary override (one commit per completed issue; no push, no PR, no tag, no remote mutation -- all remote work held for operator review).
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (test hygiene only; no feature surface)
+
+**Content Hash**: `610e6470dd3cbd038d0c123f935bb728badb06ce297914e89b162663f5cd205e`
+**Previous Hash**: `a98166ccbaffefa1e687e28c08bf77663076dde1c9ee470e14730f14966df1f6`
+**Chain Hash (Merkle seal)**: `227468eff5fe9a55071350d98a715734b710a3efc0a53ab99384eb73f9d8a875`
+
+---
+
+### Entry #418: RESEARCH BRIEF -- Governance-DNA durability (GH #267)
+
+**Timestamp**: 2026-07-13T05:16:52Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #267 (backup-on-write + recovery-aware routing)
+**Session**: `2026-07-13T0515-117975`
+**Brief**: docs/research-brief-governance-dna-durability-2026-07-13.md
+
+**Content Hash**: `c68364038294ebf5db23227980fef8f7a5497ff87854f3c708b21a4b9fc66bbb`
+**Previous Hash**: `227468eff5fe9a55071350d98a715734b710a3efc0a53ab99384eb73f9d8a875`
+**Chain Hash (Merkle seal)**: `c6b106fb1333f48ceb5f564a6f53f4a04aeb6f579fb7d46a9e85f634a29c6c47`
+
+**Decision**: The classification gap is binary initialization detection: `governance_health._is_initialized` (lines 87-91) tests only current existence, so total DNA loss reads as UNINITIALIZED and routes to bootstrap over recoverable history (lines 94-98) -- the destructive path the incident narrowly avoided. Zero backup/snapshot infrastructure exists (grep 0 hits). Design constraint: both big governance SKILL.md files sit within 70 bytes of the 40 KB EXCEEDED budget, so the snapshot trigger CANNOT be skill prose -- it lands as a first-write-of-session hook inside `gate_chain.write_gate_artifact` (line 241; best-effort/fail-open, mirroring the Phase 57 hook posture), covering every gate-writing skill with zero SKILL.md bytes. Routing fix: `_classify_missing` consults prior-initialization evidence (git history of the ledger path OR a non-empty `.agent/local-backup/governance/`) and classifies previously-initialized-now-missing as MISSING with a restore-then-remediate legal_next, never bootstrap. `governance-state-loss` joins the shadow-event enum (additive amendment to a registered schema; freeze lint checks presence not content). Doctrine section documents the `git clean` hazard incl. which loss classes the snapshot does NOT survive (`-fdx` removes ignored backups too). Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate).
+
+---
+
+### Entry #419: GATE TRIBUNAL -- Phase 175 plan PASS (governance-DNA durability)
+
+**Timestamp**: 2026-07-13T05:21:16Z
+**Phase**: GATE (Phase 175)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase175-governance-dna-durability.md
+**Session**: `2026-07-13T0515-117975`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `c9f3638d94e3ea84ada95397cebd14d7009a27d2ac0774797dfa879bc4ec31eb`
+**Previous Hash**: `c6b106fb1333f48ceb5f564a6f53f4a04aeb6f579fb7d46a9e85f634a29c6c47`
+**Chain Hash (Merkle seal)**: `933b79848bd0a27231bb799bbdfe4673cf0a1dce327955a7265a601f40fea602`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #418 (GH #267): new `qor/scripts/governance_snapshot.py` (session-scoped DNA backup, no-clobber restore with force escape, prior-initialization evidence probe, CLI); structural first-write-of-session hook inside `gate_chain.write_gate_artifact` (fail-open, zero SKILL.md bytes -- honoring the 31/70-byte EXCEEDED-budget ceilings); `governance_health` routes previously-initialized-now-missing to MISSING + restore-then-remediate, never UNINITIALIZED/bootstrap; `governance-state-loss` joins the shadow-event enum (restore-time emission, additive registered-schema amendment); doctrine section documents the git-clean hazard incl. what the snapshot does NOT survive. Two findings remediated by plan amendment pre-verdict: restore no-clobber default (a restore must never silently destroy state newer than the snapshot) and a stale hook-line citation (306 -> 310, drifted by Phase 173). Next: `/qor-implement` (intent lock next).
+
+---
+
+### Entry #420: IMPLEMENTATION -- Phase 175 governance-DNA durability
+
+**Timestamp**: 2026-07-13T05:46:16Z
+**Phase**: IMPLEMENT (Phase 175)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0515-117975`
+**Intent Lock**: `LOCKED: 2026-07-13T0515-117975`
+
+**Content Hash**: `9e6d6019828bb62dc5ac257713692e82885a563ebad2b159049b237f0496af51`
+**Previous Hash**: `933b79848bd0a27231bb799bbdfe4673cf0a1dce327955a7265a601f40fea602`
+**Chain Hash (Merkle seal)**: `0b1e8e5dbf67357fefd5336042209ba870790938ad95f97305a0442a601df2dd`
+
+**Decision**: Phase 175 implemented per plan, TDD-first (25 behavioral tests red-then-green, green twice). `qor/scripts/governance_snapshot.py` (~190 lines): DNA_FILES snapshot with `.complete` manifest idempotency; NO-CLOBBER `restore` (force escape) emitting one severity-3 `governance-state-loss` event; `prior_initialization_evidence` (backup dir, then `git log -1` list-argv probe); backup/restore/evidence CLI. `gate_chain._ensure_dna_backup` hook wired before the first governed write. `governance_health`: `_NEXT_RESTORE` + `prior_evidence` threading (external `_classify_one` positional callers preserved); previously-initialized-now-missing -> MISSING/restore, never bootstrap. Schema enum + .gitignore additive lines; doctrine section 16. THREE live-evidence hardenings within the hook's audited contract, recorded per the autonomy policy: (1) canonical-session-id gate (the loose path-safety validator admitted synthetic test sids -- observed `sess-12345` backup accretion); (2) pytest-bypass unless QOR_ROOT is explicitly redirected (suite runs generated fresh canonical sids via get_or_create and would accrete ~5 MB of live-DNA copies PER RUN -- observed live, then eliminated: final suite leaves zero accretion); (3) test shadow-log redirection after observing the import-time UPSTREAM_LOG_PATH constant sent 9 test events to the real upstream log (stripped surgically; only the legit audit shortfall event remains). Full suite 2568 passed / 2 skipped, tree clean. Content hash binds tests/test_governance_snapshot.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #421: SESSION SEAL -- Phase 175 governance-DNA durability (v0.121.0)
+
+**Timestamp**: 2026-07-13T05:48:00Z
+**Phase**: SUBSTANTIATE (Phase 175; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase175-governance-dna-durability.md
+**Session**: `2026-07-13T0515-117975`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `1eedf980287a`
+
+**Scope**: Phase 175 implemented (feature; research entry #418 -> closes GH #267). Local governance state gains a durability layer: `qor/scripts/governance_snapshot.py` snapshots the five DNA files to the gitignored `.agent/local-backup/governance/<sid>/` on the first governed gate write of every session (idempotent `.complete` manifest; fail-open -- a failed backup warns, never aborts a write; canonical session ids only; pytest-bypassed unless QOR_ROOT is explicitly redirected, honoring the GH #274 tests-never-touch-operator-state discipline). NO-CLOBBER `restore` (force escape) emits one severity-3 `governance-state-loss` shadow event (new enum value, additive registered-schema amendment). `governance_health` distinguishes previously-initialized-now-missing (git ledger history OR populated backups) from a genuinely new workspace: MISSING + restore-then-/qor-remediate legal_next, never UNINITIALIZED/bootstrap over recoverable history; the genuinely-new path is regression-locked unchanged. Zero SKILL.md bytes added (both big skills sit within 70 bytes of the EXCEEDED budget -- the trigger is structural, in the write path). Docs: doctrine-governance-enforcement section 16 (git-clean hazard table incl. what the snapshot does NOT survive), operations.md operator verbs. Three live-evidence hook hardenings recorded in entry #420's decision log.
+
+Change class: feature (v0.120.1 -> v0.121.0). Tests: 25 behavioral in tests/test_governance_snapshot.py + tests/test_governance_health.py additions (red-then-green, green twice; backup byte-fidelity, idempotency under source mutation, no-clobber vs force, event schema validation, evidence probes, fail-open write survival, routing both ways). Full suite 2568 passed / 2 skipped with zero backup accretion (verified after the pytest-bypass hardening; the pre-hardening run demonstrated ~5 MB/run accretion live). Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, doc-currency warnings resolved by authoring the operations.md section, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0427-d0d371. Audit: solo PASS (entry #419; two findings remediated pre-verdict incl. the no-clobber restore safeguard). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance durability tooling; no user-touchable feature row)
+
+**Content Hash**: `196919c0a2a3da384b179701b71558152b872cba38f9f17aaa4290ad335b3b2e`
+**Previous Hash**: `0b1e8e5dbf67357fefd5336042209ba870790938ad95f97305a0442a601df2dd`
+**Chain Hash (Merkle seal)**: `18a969e392f471dbb7f851cd8a334fda48c04d00769838975547051cf254be95`
+
+---
+
+### Entry #422: RESEARCH BRIEF -- Substantiate staging omits gate artifacts (GH #262)
+
+**Timestamp**: 2026-07-13T05:56:37Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #262
+**Session**: `2026-07-13T0555-0e2b55`
+**Brief**: docs/research-brief-substantiate-staging-gates-2026-07-13.md
+
+**Content Hash**: `2bc76f9c965cea252d593b647d34fc4eb376c0f05c419f846ddcf40aa913dde3`
+**Previous Hash**: `18a969e392f471dbb7f851cd8a334fda48c04d00769838975547051cf254be95`
+**Chain Hash (Merkle seal)**: `1a14f6683c8fecda7a3db0681077d6ef66b9f8d9673c95b643830be51c7eb652`
+
+**Decision**: Verified live: qor-substantiate SKILL.md Step 9.5 (lines 589-600) stages seven paths and never `.qor/gates/<sid>/`, while gate_chain_completeness (CI-required) makes exactly those committed files load-bearing -- recent seals include them only via undocumented manual staging. Hard constraint: 31 bytes of headroom before the 40 KB EXCEEDED budget, so the amendment must consolidate the seven `git add` lines into two multi-path lines (~-23 bytes) to pay for the `".qor/gates/$SESSION_ID/"` argument and a Step 4.6 pointer (net ~+12). No test locks the staging list (regression class unguarded); the new wiring test is prose-contract class and carries a prose-lint exemption reason per the 54 precedents. Dist variants propagate via dist_compile identity copy. Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class hotfix.
+
+---
+
+### Entry #423: GATE TRIBUNAL -- Phase 176 plan PASS (substantiate staging gates)
+
+**Timestamp**: 2026-07-13T05:58:43Z
+**Phase**: GATE (Phase 176)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase176-substantiate-staging-gates.md
+**Session**: `2026-07-13T0555-0e2b55`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `32aa2b5ac56660b95f294a5ea71f9e0a5a5ba14506cdad09d1110463c3be4666`
+**Previous Hash**: `1a14f6683c8fecda7a3db0681077d6ef66b9f8d9673c95b643830be51c7eb652`
+**Chain Hash (Merkle seal)**: `8ab55c3ff1ab712b464dc531c0a7fa83280a44c2934285151a2d723d861b7456`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #422 (GH #262): Step 9.5's seven `git add` lines consolidate to two ending with `".qor/gates/$SESSION_ID/"` -- the documented seal procedure finally stages the evidence the CI completeness gate requires -- inside the 31-byte EXCEEDED-budget headroom (net ~+12 bytes; post-edit size locked by a new budget-invariant test). New wiring test (prose-contract class with lint exemption) fails RED against the current block; a third test locks variant/canonical equality of the Step 9.5 slice. Sweep confirmed no existing test pins the old exact lines. One stale citation (SESSION_ID= 231 -> 232) corrected pre-verdict. Next: `/qor-implement`.
+
+---
+
+### Entry #424: IMPLEMENTATION -- Phase 176 substantiate staging gates
+
+**Timestamp**: 2026-07-13T06:07:50Z
+**Phase**: IMPLEMENT (Phase 176)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0555-0e2b55`
+**Intent Lock**: `LOCKED: 2026-07-13T0555-0e2b55`
+
+**Content Hash**: `704e0711cf7df89db5bc5f6229b367e4b371274d344e54c9da47c69e79c71162`
+**Previous Hash**: `8ab55c3ff1ab712b464dc531c0a7fa83280a44c2934285151a2d723d861b7456`
+**Chain Hash (Merkle seal)**: `4b9978f88d88da0a48dc23265bef7d8ee3b0f7e1feb4318458c980eba7578914`
+
+**Decision**: Phase 176 implemented per plan, TDD-first: `tests/test_substantiate_staging_gates.py` (wiring test RED against the seven-path block, budget-invariant test, variant-equality parametrized test) then the Step 9.5 amendment -- seven `git add` lines consolidated to two ending with `".qor/gates/$SESSION_ID/"` plus the `(uses $SESSION_ID from Step 4.6)` pointer. Canonical SKILL.md now 40,935 bytes (25 under the EXCEEDED threshold; the ceiling is test-locked). Variants regenerated via dist_compile; prose lint exit 0 (the new prose-contract tests carry inline exemption reasons per LD-4). Focused 5 passed twice; full suite 2573 passed / 2 skipped. Content hash binds tests/test_substantiate_staging_gates.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #425: SESSION SEAL -- Phase 176 substantiate staging gates (v0.121.1)
+
+**Timestamp**: 2026-07-13T06:08:53Z
+**Phase**: SUBSTANTIATE (Phase 176; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase176-substantiate-staging-gates.md
+**Session**: `2026-07-13T0555-0e2b55`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `c020325afb9d`
+
+**Scope**: Phase 176 implemented (hotfix; research entry #422 -> closes GH #262). `/qor-substantiate` Step 9.5's documented staging list now stages the sealed session's gate artifacts: the seven single-path `git add` lines consolidate to two multi-path lines ending with `".qor/gates/$SESSION_ID/"` (pointer to Step 4.6's canonical `$SESSION_ID` resolution), closing the gap where the CI-required gate-chain completeness job depended on files the prose never staged -- seals passed locally and failed at the merge boundary unless operators staged the directory from tribal knowledge. The amendment pays for itself inside the 40 KB skill-size budget: canonical file at 40,935 bytes (was 40,929; EXCEEDED at 40,960), with the ceiling now TEST-LOCKED so no later prose addition can silently cross it. Dist variants regenerated (identity copies; variant/canonical equality of the Step 9.5 block is parametrized-test-locked). No runtime code changes.
+
+Change class: hotfix (v0.121.0 -> v0.121.1). Tests: 3 new in tests/test_substantiate_staging_gates.py (wiring test RED against the old block by construction, then green; budget invariant; variant equality x3), focused 5 passed twice; full suite 2573 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS (minimal tier), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0515-117975, size-budget 2 standing WARNs (both under EXCEEDED). Audit: solo PASS (entry #423; one stale citation corrected pre-verdict). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (skill prose + tests only)
+
+**Content Hash**: `bc8df25b09655d4a6cd9c085718f120b929cdc35a8fd2bc71cb36e9ac353ef74`
+**Previous Hash**: `4b9978f88d88da0a48dc23265bef7d8ee3b0f7e1feb4318458c980eba7578914`
+**Chain Hash (Merkle seal)**: `71aa93ad6acc220c04665617905c1cc79479d615eb37e03e779f4e3cfeedd057`
+
+---
+
+### Entry #426: RESEARCH BRIEF -- QA required pillars (GH #269)
+
+**Timestamp**: 2026-07-13T06:18:02Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #269
+**Session**: `2026-07-13T0617-5f93aa`
+**Brief**: docs/research-brief-qa-required-pillars-2026-07-13.md
+
+**Content Hash**: `210d75c03b382fc0e35ba8657a75c969818367cb08b426c4a6406e18faee2713`
+**Previous Hash**: `71aa93ad6acc220c04665617905c1cc79479d615eb37e03e779f4e3cfeedd057`
+**Chain Hash (Merkle seal)**: `ea27b7f77755e2f3e338a119394637f22299d8f7e48fb4471f70a87fb58310b3`
+
+**Decision**: Premise verified live: `qa_evidence.build_payload` fails the verdict only on an explicit pillar `fail` (line 70), so an all-skip security/stability/coverage payload is PASS -- deliberate transparency per the verification-closure doctrine, but no opt-in strict posture exists for release/compliance consumers. Fix shape: adoption-mode default preserving current output byte-for-byte, plus `policy="production"` + `required_pillars` where a required `skip`/missing pillar fails the verdict; artifact records both fields (additive under `additionalProperties: true`; `qa` is a REGISTERED schema so the freeze lint is untouched; the PASS/FAIL enum stays closed -- no third verdict value). `ac_close_guard` consumes the verdict through its existing WARN seam with zero changes. qa_evidence has no CLI (library only) -- the brief's CLI-passthrough item resolves n/a. Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class feature.
+
+---
+
+### Entry #427: GATE TRIBUNAL -- Phase 177 plan PASS (QA required pillars)
+
+**Timestamp**: 2026-07-13T06:19:54Z
+**Phase**: GATE (Phase 177)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase177-qa-required-pillars.md
+**Session**: `2026-07-13T0617-5f93aa`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `1027b4e0ea1cb069099db1390ce63f55c0fbf4bff06e31b1a2b5d87430ce6f79`
+**Previous Hash**: `ea27b7f77755e2f3e338a119394637f22299d8f7e48fb4471f70a87fb58310b3`
+**Chain Hash (Merkle seal)**: `9705b57d90710b42718c0888366bbfdc13feb3cf05038b00ab20327fde9bd2bf`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #426 (GH #269): `build_payload` gains opt-in `policy="production"` + `required_pillars` where a required skip/fail fails the verdict (misconfiguration guard: production with an empty required set raises); adoption default keeps every existing payload byte-identical (regression-locked by test); two additive optional fields on the REGISTERED qa schema (no freeze exposure; PASS/FAIL enum stays closed); zero consumer changes (close-guard WARN seam carries the outcome); doctrine gains the posture qualifier. Zero violations; runtime contract walk 0 findings. Next: `/qor-implement`.
+
+---
+
+### Entry #428: IMPLEMENTATION -- Phase 177 QA required pillars
+
+**Timestamp**: 2026-07-13T06:31:07Z
+**Phase**: IMPLEMENT (Phase 177)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0617-5f93aa`
+**Intent Lock**: `LOCKED: 2026-07-13T0617-5f93aa`
+
+**Content Hash**: `27d7ba20b994c2d10e705177a360e707006ec5f777cdd4322b689d0578f57871`
+**Previous Hash**: `9705b57d90710b42718c0888366bbfdc13feb3cf05038b00ab20327fde9bd2bf`
+**Chain Hash (Merkle seal)**: `6cbfd5960afadb3723e602c238fb38c3f8f3189b9c37fc2106a040001d3a8246`
+
+**Decision**: Phase 177 implemented per plan, TDD-first (7 new behavioral tests red -- 6 failed against the pre-policy verdict, then all 12 green twice). `qa_evidence.build_payload` gains keyword-only `policy="adoption"` + `required_pillars=None`: production validates the required set (non-empty subset of PILLARS, else ValueError) and FAILs the verdict when any required pillar is not `pass`; adoption path byte-identical (no new payload keys -- locked by test_adoption_default_output_unchanged). qa.schema.json gains optional `policy` enum + `required_pillars` array (uniqueItems, minItems 1, closed item enum) -- additive on the registered schema, verdict enum untouched. Doctrine verification-closure-integrity QA contract gains the adoption qualifier + production-policy paragraph incl. the misconfiguration guard and the follow-on note (seal/release wiring deferred, recorded on GH #269). Full suite 2580 passed / 2 skipped. Content hash binds tests/test_qa_evidence.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #429: SESSION SEAL -- Phase 177 QA required pillars (v0.122.0)
+
+**Timestamp**: 2026-07-13T06:32:14Z
+**Phase**: SUBSTANTIATE (Phase 177; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase177-qa-required-pillars.md
+**Session**: `2026-07-13T0617-5f93aa`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `bc5882d43c52`
+
+**Scope**: Phase 177 implemented (feature; research entry #426 -> closes GH #269). QA evidence gains an opt-in production posture: `qa_evidence.build_payload(policy="production", required_pillars={...})` FAILs the verdict when any declared-required pillar is not `pass` -- skipped security/stability/coverage evidence can no longer yield a production-grade PASS -- while the adoption default keeps every existing payload byte-identical (no new keys; regression-locked). Misconfiguration guard: production with an empty/unknown required set raises. Artifact records `policy` + sorted `required_pillars` (two additive optional fields on the REGISTERED qa schema; the strict PASS/FAIL verdict enum is untouched, so existing validators keep working). Zero consumer changes: `ac_close_guard` carries the outcome through its existing WARN seam. Doctrine QA contract gains the adoption qualifier + production paragraph; seal/release wiring of the strict posture is recorded as deliberate follow-on scope on GH #269.
+
+Change class: feature (v0.121.1 -> v0.122.0). Tests: 7 new behavioral in tests/test_qa_evidence.py (byte-compat lock, required-skip FAIL acceptance, required-pass PASS + field recording, fail dominance, optional-skip PASS, ValueError guard both forms, schema validation of both postures), 12 focused passed twice; full suite 2580 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, doc-currency 3 WARNs operator-judged spurious (the doctrine file IS the documentation surface for this contract; no operational verb added), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0555-0e2b55. Audit: solo PASS (entry #427; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (evidence tooling; no user-touchable feature row)
+
+**Content Hash**: `12a1884c5001f95f2052a3527d2f79cb0a91ba07255db9b9b10d5abe362d7700`
+**Previous Hash**: `6cbfd5960afadb3723e602c238fb38c3f8f3189b9c37fc2106a040001d3a8246`
+**Chain Hash (Merkle seal)**: `c7f7096f46ed42400d71a91d17b5d3ed9bb796ab7874a6a92611709c0d362f2b`
+
+---
+
+### Entry #430: RESEARCH BRIEF -- Skill progressive disclosure (GH #266)
+
+**Timestamp**: 2026-07-13T06:41:21Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #266
+**Session**: `2026-07-13T0640-f49940`
+**Brief**: docs/research-brief-skill-progressive-disclosure-2026-07-13.md
+
+**Content Hash**: `c355104f2da39d11af9fea7ee016dfd0f02fa1002e01429718f04b4a40cc4c6c`
+**Previous Hash**: `c7f7096f46ed42400d71a91d17b5d3ed9bb796ab7874a6a92611709c0d362f2b`
+**Chain Hash (Merkle seal)**: `a46deb5b8f045d95c64881fd6855c6b5090456662dfda1bf7997d02372c8bf6e`
+
+**Decision**: Verified live: qor-audit at 40,890 and qor-substantiate at 40,935 bytes vs EXCEEDED 40,960 -- one wiring paragraph from a blocked seal. Safe movable inventory: ~2-3 KB of rationale prose per skill into ALREADY-CITED references (adversarial-mode.md, phase37-subpasses.md, seal-gate-ladder.md), constrained by the full guardrail set (corpus-consolidation spine locks: 9+13+9 audit tokens, 4+12+12 substantiate tokens; tag-timing/seal-flow ordering; capability-declaration 12 step IDs; Phase 176 staging + budget tests; reference-resolution test). GOVERNOR SCOPE DECISION: the issue's "comfortably under 30 KB" aspiration is DEFERRED with rationale -- the named failure mode ("one more paragraph crosses EXCEEDED") is fully removed by >= 2 KB recovered headroom per skill, while 30 KB requires spine restructuring against the lock set (high regression risk, low marginal benefit); a new 39 KB-per-skill budget-invariant test locks the recovered headroom. Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class hotfix.
+
+---
+
+### Entry #431: GATE TRIBUNAL -- Phase 178 plan PASS (skill progressive disclosure)
+
+**Timestamp**: 2026-07-13T06:43:15Z
+**Phase**: GATE (Phase 178)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase178-skill-progressive-disclosure.md
+**Session**: `2026-07-13T0640-f49940`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `2fb8f498ded665e28d934bb256cf9933e0582a8d42d79067c4ec0e9dd42a625f`
+**Previous Hash**: `a46deb5b8f045d95c64881fd6855c6b5090456662dfda1bf7997d02372c8bf6e`
+**Chain Hash (Merkle seal)**: `5570c7c2c75b3d834e256e65a65420901bc7df47c28c5acd21b60bf790af3433`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #430 (GH #266): four rationale blocks per skill relocate into ALREADY-CITED references (no new files, no glossary churn); every guardrail-locked token stays inline byte-exact (the lock set IS the specification -- any reddened guardrail reverts the move by definition); a parametrized 39 KB headroom test, naturally RED against both current files, locks the recovered budget. Governor scope decision (30 KB aspiration deferred, failure-mode rationale) accepted for the issue disposition. Advisory: run the focused guardrail suite between the two skill edits, not only after both. Next: `/qor-implement`.
+
+---
+
+### Entry #432: IMPLEMENTATION -- Phase 178 skill progressive disclosure
+
+**Timestamp**: 2026-07-13T07:08:17Z
+**Phase**: IMPLEMENT (Phase 178)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0640-f49940`
+**Intent Lock**: `LOCKED: 2026-07-13T0640-f49940`
+
+**Content Hash**: `ee99f9aa6f6661dde7477d7cf742bb4b9af83c321dde9338fe65477fe00d98ca`
+**Previous Hash**: `5570c7c2c75b3d834e256e65a65420901bc7df47c28c5acd21b60bf790af3433`
+**Chain Hash (Merkle seal)**: `1bfb47d0d8e751254abc2ff3fcaeb769390874949d9827b67dafec14482b862b`
+
+**Decision**: Phase 178 implemented per plan, TDD-first: the parametrized 39 KB headroom test ran RED against both files (40,890 / 40,935), then the relocation pass (executed by a delegated implementation specialist with strict six-file ownership; verified independently from the observer seat) landed both at 39,355 / 39,321 bytes -- 581/615 bytes of recovered locked headroom, 38.4 KB each. ~1.5 KB rationale per skill moved into already-cited references (adversarial-mode, phase37-subpasses, seal-gate-ladder) as appended titled subsections with inline pointers; where prose was ALREADY verbatim in a reference, the inline copy compressed to a pointer without duplicate appends. The specialist discovered and honored MORE token locks than the plan enumerated (e.g. test_merge_velocity_substantiate_wiring requires a literal backtick-pipe-pipe-true inside Step 4.6.8 prose; option_b_required/Option B tokens; hash-integrity helper names) -- those sentences stayed inline, recorded per the guardrail-is-specification rule (plan LD-1). Verification: 100-test focused guardrail suite green, 772-test skill-referencing sweep green, dist recompiled zero-drift, size-budget lint now 2 WARNs at 38.4 KB (no EXCEEDED proximity). Full suite 2581 passed / 2 skipped. Content hash binds tests/test_substantiate_staging_gates.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #433: SESSION SEAL -- Phase 178 skill progressive disclosure (v0.122.1)
+
+**Timestamp**: 2026-07-13T07:11:19Z
+**Phase**: SUBSTANTIATE (Phase 178; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase178-skill-progressive-disclosure.md
+**Session**: `2026-07-13T0640-f49940`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `b5dc25abb6a0`
+
+**Scope**: Phase 178 implemented (hotfix; research entry #430 -> closes GH #266). Both oversized governance skills recovered locked headroom via progressive disclosure: qor-audit 40,890 -> 39,355 bytes and qor-substantiate 40,935 -> 39,321 (38.4 KB each; EXCEEDED at 40,960), with ~1.5 KB of rationale/narrative per skill relocated into ALREADY-CITED references (adversarial-mode, phase37-subpasses, seal-gate-ladder) as appended titled subsections + inline pointers, and duplicate prose compressed to pointers where a reference already carried it verbatim. Zero contract change: every test-locked step header, ABORT/VETO invariant, command token, prerequisite-table row, ordering constraint, and code block stayed inline byte-exact -- the 100-test guardrail suite is the correctness proof, and the implementation surfaced MORE locks than planned (all honored, entry #432). New parametrized 39 KB headroom test locks the recovered budget for both skills. Phase 135 gotcha reproduced and closed at seal: relocated prose carried `gate_skipped_prerequisite_absent`, SG-HalfSealedClaim-A, and SG-ConcurrentLedgerRace-A into references not in those glossary terms' referenced_by -- three registrations added, strict doc-integrity then PASS. The under-30 KB aspiration is DEFERRED per the recorded rationale (failure mode fully removed by locked headroom; deeper cuts would restructure the test-locked spine).
+
+Change class: hotfix (v0.122.0 -> v0.122.1). Tests: headroom test red-then-green (both parameters); focused guardrail suite 100 passed; 772-test skill-referencing sweep green; full suite 2581 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED (both edited skills), matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS (after the glossary registrations), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0617-5f93aa, dist recompiled zero-drift, size-budget lint 2 WARNs at 38.4 KB (healthy). Audit: solo PASS (entry #431; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (skill prose relocation only)
+
+**Content Hash**: `15eb225392dfbf5dad94592c95a42c9e466aa462c0b44422780083ff01bb0d29`
+**Previous Hash**: `1bfb47d0d8e751254abc2ff3fcaeb769390874949d9827b67dafec14482b862b`
+**Chain Hash (Merkle seal)**: `3b687b6e569ea9bf558062aa2a5f27b47538e968f3bdd26958677288fb58d3e1`
+
+---
+
+### Entry #434: RESEARCH BRIEF -- Ledger upgrade V1 (GH #271 slice)
+
+**Timestamp**: 2026-07-13T07:19:57Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #271 (minimal V1 slice)
+**Session**: `2026-07-13T0718-ea9af3`
+**Brief**: docs/research-brief-ledger-upgrade-v1-2026-07-13.md
+
+**Content Hash**: `c026627af59b742bb2c0c3dcc9c08a0c833882c2023a38633b1387f0c615ec0c`
+**Previous Hash**: `3b687b6e569ea9bf558062aa2a5f27b47538e968f3bdd26958677288fb58d3e1`
+**Chain Hash (Merkle seal)**: `4c4a4f608f651f35fedf77ac472d57fe758fc5d1af1804e599796a3092bdd840`
+
+**Decision**: GH #271's consumer pain (DAMAGED after update, no recovery command) resolves with a small V1: a machine-readable `qor:meta-ledger-schema` marker at the ledger head (verified inert to every consumer: verify, seal_entry_check, governance-health, badge counting) plus a `ledger_upgrade` verb orchestrating the Phase 170 migrator + `verify_post_anchor` acceptance + atomic swap-on-success-only (original byte-untouched on any residual). KEY DEFERRAL EVIDENCE (corrects the issue's implicit assumption): `ledger_fragment.canonicalize_fragments` (lines 107-132, verified live) appends fragment bodies VERBATIM -- the writer still renders hash markup by hand, so swapping the seal flow onto fragments would NOT unify emission; a typed entry renderer (the issue's own Phase-3 scope) is the prerequisite, and the substantiate skill's just-recovered byte budget (Phase 178) argues against a Step 7 rewrite now. Related: #234 is an independent parse fix (queue-next); #268/#238 independent. Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class feature.
+
+---
+
+### Entry #435: GATE TRIBUNAL -- Phase 179 plan PASS (ledger upgrade V1)
+
+**Timestamp**: 2026-07-13T07:21:31Z
+**Phase**: GATE (Phase 179)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase179-ledger-upgrade-v1.md
+**Session**: `2026-07-13T0718-ea9af3`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `d688e8047b685e65296695df078d5caf6ad89e1eacef4b581ab441230573477f`
+**Previous Hash**: `4c4a4f608f651f35fedf77ac472d57fe758fc5d1af1804e599796a3092bdd840`
+**Chain Hash (Merkle seal)**: `aaa2064d07bfe9411b46eb7b8ba9acd6bba5a21a8849b2ee92b693a3ec24b62f`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #434 (GH #271 V1 slice): head schema-version marker (verified inert to all four consumer classes) + `ledger_upgrade` recovery verb orchestrating the never-in-place migrator and post-anchor acceptance under swap-on-success-only atomicity (original byte-untouched + exit 1 on residual; verification strictly precedes the sole destructive stage -- filter-order clean). Emission-API unification DEFERRED on the research's new F3 evidence (fragment bodies append verbatim; a typed renderer is the prerequisite) -- recorded for the issue disposition. Seven behavioral tests incl. the byte-identical failure-safety proof and the live self-application lock. Next: `/qor-implement`.
+
+---
+
+### Entry #436: IMPLEMENTATION -- Phase 179 ledger upgrade V1
+
+**Timestamp**: 2026-07-13T07:30:50Z
+**Phase**: IMPLEMENT (Phase 179)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0718-ea9af3`
+**Intent Lock**: `LOCKED: 2026-07-13T0718-ea9af3`
+
+**Content Hash**: `f16b0cc791e27c194fcdf31a0849c3a8bfcf2586cee6378300d9b3fe3fe8bc82`
+**Previous Hash**: `aaa2064d07bfe9411b46eb7b8ba9acd6bba5a21a8849b2ee92b693a3ec24b62f`
+**Chain Hash (Merkle seal)**: `ef001d3bb7a7070a52b1efd9af90e1d339e52d7caff62b20a4c1bfbaa066b040`
+
+**Decision**: Phase 179 implemented per plan, TDD-first (8 behavioral tests; 7 green immediately against the new module, the live self-application lock red until Phase 2 landed the marker; then 8 green twice). `qor/scripts/ledger_upgrade.py` (~100 lines): `schema_version` (absent marker -> 0), idempotent `ensure_marker`, `upgrade` orchestrating `ledger_migrate.migrate` (fixture reuses the Phase 170 three-format sample construction) + `verify_post_anchor` acceptance on the TEMP + `os.replace` swap only on rc 0 AND changed bytes (no rewrite churn on already-canonical ledgers); temp removed on every branch; CLI exit 0/1. Failure-safety proven by sha256-identical original under an injected chain mismatch. Self-application: `docs/META_LEDGER.md` head carries `qor:meta-ledger-schema=1`, verified inert across the consumer sweep (68 ledger-consumer tests green; chain verify + health gate clean live). operations.md gains the recovery-verb paragraph with the markup-vs-math boundary stated. Full suite 2589 passed / 2 skipped. Content hash binds tests/test_ledger_upgrade.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #437: SESSION SEAL -- Phase 179 ledger upgrade V1 (v0.123.0)
+
+**Timestamp**: 2026-07-13T07:31:51Z
+**Phase**: SUBSTANTIATE (Phase 179; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase179-ledger-upgrade-v1.md
+**Session**: `2026-07-13T0718-ea9af3`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `112432386382`
+
+**Scope**: Phase 179 implemented (feature; research entry #434 -> GH #271 minimal V1; the emission-API unification deferred with the F3 verbatim-append evidence recorded for the issue disposition). One-command consumer recovery for format-damaged ledgers: `qor-logic scripts ledger_upgrade` migrates legacy hash markup to canonical form (Phase 170 migrator reuse: hashes verbatim), stamps the machine-readable `qor:meta-ledger-schema=1` marker (absent == version 0/legacy), verifies the RESULT with the post-anchor acceptance, and swaps atomically ONLY on success -- any residual failure exits 1 with the original byte-untouched (sha256-proven in test). Idempotent (already-canonical ledgers are not rewritten); dry-run writes nothing; temp removed on every branch. Self-application: this repository's own ledger head now carries the version-1 marker, test-locked and verified inert across every consumer class (verify, seal_entry_check, governance-health, badge counting; 68-test consumer sweep). operations.md documents the recovery verb with the markup-vs-math boundary (broken chain MATH stays with reconcile/remediate).
+
+Change class: feature (v0.122.1 -> v0.123.0). Tests: 8 behavioral in tests/test_ledger_upgrade.py (normalize+swap, digest-set equality, byte-identical original under injected failure, idempotency, marker parse, dry-run non-mutation, CLI exit codes, live self-application lock), green twice; full suite 2589 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0640-f49940. Audit: solo PASS (entry #435; zero violations; filter-order clean -- verification strictly precedes the sole destructive stage). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance recovery tooling; dispatches through the existing scripts runner)
+
+**Content Hash**: `2382611eac651d9fe16f3250043a9506b75acbfce6552ad65b7d359c13d64e42`
+**Previous Hash**: `ef001d3bb7a7070a52b1efd9af90e1d339e52d7caff62b20a4c1bfbaa066b040`
+**Chain Hash (Merkle seal)**: `94c8e315e731f7171547a5c59409eb0c60ca9d5b80bb4a8256775934bea0b1a9`
+
+---
+
+### Entry #438: RESEARCH BRIEF -- Reconcile deferred-Merkle tail (GH #234)
+
+**Timestamp**: 2026-07-13T07:40:20Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #234
+**Session**: `2026-07-13T0739-248dc8`
+**Brief**: docs/research-brief-reconcile-deferred-tail-2026-07-13.md
+
+**Content Hash**: `50df1e7fcc6759e813f146440512b53374b690e527f065357ba2d1865be64b11`
+**Previous Hash**: `94c8e315e731f7171547a5c59409eb0c60ca9d5b80bb4a8256775934bea0b1a9`
+**Chain Hash (Merkle seal)**: `1290c000020f0e4b9556f88b5bd90c9841c2e1eb122e25c1e77305778a4d1df7`
+
+**Decision**: Defect verified live: `reconcile._last_chain_hash` (lines 69-82) parses ONLY the literal final entry and raises on a deferred-Merkle tail -- the exact no-fabrication state reconcile exists to repair -- while `build_proposal` already derives the correct link-off ancestors (the information exists; the tail-only parse is the bug). Deferred tails are legal per the no-fabrication discipline; the RECONCILIATION entry must link off the last VALIDLY hashed entry, which a backward walk yields with no signature change and zero caller updates. 365 lines of reconcile tests carry zero deferred-tail coverage. #271's typed parser subsumes this eventually, but the Phase 179 V1 slice deliberately excluded parse rework -- this targeted fix ships independently (per entry #434's overlap note). Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class hotfix.
+
+---
+
+### Entry #439: GATE TRIBUNAL -- Phase 180 plan PASS (reconcile deferred tail)
+
+**Timestamp**: 2026-07-13T07:41:35Z
+**Phase**: GATE (Phase 180)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase180-reconcile-deferred-tail.md
+**Session**: `2026-07-13T0739-248dc8`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `5ad60ddd0234258efc9bbd9a0f9ee9c5da6073abcba5afb52e512b86b294b59a`
+**Previous Hash**: `1290c000020f0e4b9556f88b5bd90c9841c2e1eb122e25c1e77305778a4d1df7`
+**Chain Hash (Merkle seal)**: `8c4cf2e37166f56dd0f6a2e206f9236b526cb26a2f5f0596bdb137899adccdd5`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #438 (GH #234): backward-walk fallback in `_last_chain_hash` so legal deferred-Merkle tails reconcile; fail-closed raise preserved and regression-locked with the error renamed to the true condition; the fallback selects only RECORDED hashes (cannot launder tampering; the reconciliation security gate stays in the focused CI set). Acceptance test runs the full authorize path on a synthetic deferred tail and asserts the link-off ancestor. Next: `/qor-implement`.
+
+---
+
+### Entry #440: IMPLEMENTATION -- Phase 180 reconcile deferred tail
+
+**Timestamp**: 2026-07-13T07:50:17Z
+**Phase**: IMPLEMENT (Phase 180)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0739-248dc8`
+**Intent Lock**: `LOCKED: 2026-07-13T0739-248dc8`
+
+**Content Hash**: `65d2e7dfa199f0faed3a13ddd5ed9019398e75837bc1dc6b5f72ce312712d460`
+**Previous Hash**: `8c4cf2e37166f56dd0f6a2e206f9236b526cb26a2f5f0596bdb137899adccdd5`
+**Chain Hash (Merkle seal)**: `8097927099a3801ca8a2ebab967931619305b0c3eeb1f3f4902a145c0947bde9`
+
+**Decision**: Phase 180 implemented per plan, TDD-first (3 deferred-tail tests red against the tail-only parse, then 18 green twice across the three reconcile suites). `_recorded_chain_hash` helper extracted; `_last_chain_hash` walks `reversed(entries)` selecting only RECORDED hash markup (deferred-Merkle tails -- the legal no-fabrication state -- no longer block authorize); genesis all-zeros behavior unchanged; fail-closed raise preserved with the error renamed to the true condition ("no validly chain-hashed entry found to link off"). Acceptance observed: on a synthetic DIRTY-tail ledger the full build_proposal -> append_reconciliation_entry path succeeds and the RECONCILIATION entry links off the last recorded chain hash; dry-run byte-identical. Full suite 2592 passed / 2 skipped. Content hash binds tests/test_reconcile.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #441: SESSION SEAL -- Phase 180 reconcile deferred tail (v0.123.1)
+
+**Timestamp**: 2026-07-13T07:51:15Z
+**Phase**: SUBSTANTIATE (Phase 180; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase180-reconcile-deferred-tail.md
+**Session**: `2026-07-13T0739-248dc8`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `469e5d9f22c0`
+
+**Scope**: Phase 180 implemented (hotfix; research entry #438 -> closes GH #234). `reconcile authorize` accepts deferred-Merkle tails: `_last_chain_hash` walks backward past hash-less no-fabrication entries to the last RECORDED chain hash / session seal and links the RECONCILIATION entry off it -- recorded evidence only, nothing fabricated; the tamper-laundering security gate (test_ledger_hash_reconciliation) is unchanged and green. Fail-closed boundary preserved: a ledger with no hashed entry anywhere still raises, with the error renamed to the true condition. Genesis behavior unchanged. Zero caller changes (sole caller untouched). Disposition note for GH #234: the GH #271 typed-parser roadmap will absorb the regex family later; this targeted fix ships independently per entry #434's overlap analysis.
+
+Change class: hotfix (v0.123.0 -> v0.123.1). Tests: 3 new behavioral in tests/test_reconcile.py (full authorize path on a synthetic DIRTY tail incl. the link-off assertion, dry-run byte-identity, no-hash-anywhere raise), red-then-green; 18 green twice across the three reconcile suites; full suite 2592 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0718-ea9af3. Audit: solo PASS (entry #439; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance recovery tooling)
+
+**Content Hash**: `eca1cce58645a8f4217d255b08a03fac13c2fabdc96ac73aaaa590fddab521d2`
+**Previous Hash**: `8097927099a3801ca8a2ebab967931619305b0c3eeb1f3f4902a145c0947bde9`
+**Chain Hash (Merkle seal)**: `641276fb6b6936173facc563af9bb88374bbec0cf775ed44af1cf341f820e817`
+
+---
+
+### Entry #442: RESEARCH BRIEF -- Seed .gitattributes (GH #238 residual)
+
+**Timestamp**: 2026-07-13T07:59:29Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #238 residual
+**Session**: `2026-07-13T0758-7f394f`
+**Brief**: docs/research-brief-seed-gitattributes-2026-07-13.md
+
+**Content Hash**: `86fe08e89ccdcd531c85dc03f4fbb3578cd2621284f1c884d0ed18a541729bcc`
+**Previous Hash**: `641276fb6b6936173facc563af9bb88374bbec0cf775ed44af1cf341f820e817`
+**Chain Hash (Merkle seal)**: `36dbca3b5d29179fefa7c9ffa9ddb90170761aff5caa19ec0e3c33004217c0d6`
+
+**Decision**: GH #238's verify-layer half shipped in Phases 156-158 (LF-canonical hashing; the autocrlf acceptance holds); the residual is the architecture defense: `qor-logic seed` emits no `.gitattributes`, so consumer canonical bytes drift with host settings. Mechanics verified live: `SeedTarget(".gitattributes", "gitattributes.tpl", "file")` + template is the whole mechanism (`_write_file_if_missing` never overwrites -- idempotency free); the new target flows into governance-health's SCAFFOLD_OWNED correctly (missing == seed-recoverable, the right routing), and the pinning test locks EQUALITY derived from SEED_TARGETS itself, so it stays green by construction. Stanza pins `docs/*.md`, `docs/**/*.md`, `.qor/**` to `text eol=lf`. Self-application: this repo's root gains the same stanza (committed blobs already LF; no renormalization needed). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #443: GATE TRIBUNAL -- Phase 181 plan PASS (seed .gitattributes)
+
+**Timestamp**: 2026-07-13T08:00:51Z
+**Phase**: GATE (Phase 181)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase181-seed-gitattributes.md
+**Session**: `2026-07-13T0758-7f394f`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `8c97ce6df0f0d5cc95a54b1244b181edc4459c4d1eee8316151865f84af1a244`
+**Previous Hash**: `36dbca3b5d29179fefa7c9ffa9ddb90170761aff5caa19ec0e3c33004217c0d6`
+**Chain Hash (Merkle seal)**: `98325634b54f0f1a17211d04ccd64397b021f76ef745149e04971c0e6e1d0d8a`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #442 (GH #238 residual): one template + one SeedTarget pins seeded repos' governance artifacts to LF at the infrastructure level; scaffold-owned routing consequence verified CORRECT by construction (equality-pinned derivation); no-overwrite idempotency inherited and regression-locked; repo-root self-application test-locked. Entry point resolved live (seed.seed at qor/seed.py:94). Next: `/qor-implement`.
+
+---
+
+### Entry #444: IMPLEMENTATION -- Phase 181 seed .gitattributes
+
+**Timestamp**: 2026-07-13T08:09:35Z
+**Phase**: IMPLEMENT (Phase 181)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0758-7f394f`
+**Intent Lock**: `LOCKED: 2026-07-13T0758-7f394f`
+
+**Content Hash**: `ad3c973ed0d968e3ff48870def2986daca004822b794a51435f8992e636033c0`
+**Previous Hash**: `98325634b54f0f1a17211d04ccd64397b021f76ef745149e04971c0e6e1d0d8a`
+**Chain Hash (Merkle seal)**: `613fb5c95eee9af9fbaf593df342643439f00ac3a1c42bb61b14cbef74625bc5`
+
+**Decision**: Phase 181 implemented per plan, TDD-first (stanza + self-application tests red, then 27 focused green twice). `qor/templates/gitattributes.tpl` + `SeedTarget(".gitattributes", "gitattributes.tpl", "file")` (no-clobber inherited from `_write_file_if_missing`); repo-root `.gitattributes` self-application. One deliberate-amendment lock the tribunal's caller sweep missed surfaced RED as designed: `tests/test_seed_scaffold.py` pins the seed inventory (EXPECTED_FILES) -- registered `.gitattributes` there (the exact deliberate-registration act the lock exists to force; scaffold-owned equality pinning stayed green by construction as researched). Full suite 2595 passed / 2 skipped. Content hash binds tests/test_seed_gitattributes.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #445: SESSION SEAL -- Phase 181 seed .gitattributes (v0.124.0)
+
+**Timestamp**: 2026-07-13T08:10:31Z
+**Phase**: SUBSTANTIATE (Phase 181; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase181-seed-gitattributes.md
+**Session**: `2026-07-13T0758-7f394f`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `09bd913338b7`
+
+**Scope**: Phase 181 implemented (feature; research entry #442 -> completes GH #238: both acceptance criteria now hold, the LF-canonical hashing half having shipped in Phases 156-158). `qor-logic seed` emits `.gitattributes` pinning `docs/*.md`, `docs/**/*.md`, `.qor/**` to `text eol=lf` -- canonical and working-tree bytes stay LF regardless of host autocrlf, closing the drift class at the infrastructure level. No-clobber on re-seed (inherited `_write_file_if_missing`, regression-locked); the target flows into governance-health's scaffold-owned set by construction (missing == seed-recoverable; equality-pinned derivation stayed green as researched). The seed-inventory lock (tests/test_seed_scaffold.py EXPECTED_FILES) fired RED as designed and was deliberately amended -- the exact registration act it exists to force. Self-application: this repository's root carries the identical stanza, test-locked.
+
+Change class: feature (v0.123.1 -> v0.124.0). Tests: 3 new behavioral in tests/test_seed_gitattributes.py (seeded stanza, operator-customization survival, root self-application) + the inventory amendment; 27 focused green twice; full suite 2595 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0739-248dc8. Audit: solo PASS (entry #443; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance scaffolding)
+
+**Content Hash**: `97e0abc9ff5922ae1dea9317c540b30b5ac6096e5ecabeaa24d84cccc3538460`
+**Previous Hash**: `613fb5c95eee9af9fbaf593df342643439f00ac3a1c42bb61b14cbef74625bc5`
+**Chain Hash (Merkle seal)**: `ae0e9b59ba673b380ef9b548b3e1f47fdf783b7ac14cd6f07a871ccc2a549565`
+
+---
+
+### Entry #446: RESEARCH BRIEF -- Health-gate pre-anchor output (GH #268)
+
+**Timestamp**: 2026-07-13T08:18:27Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #268
+**Session**: `2026-07-13T0817-5d9c1c`
+**Brief**: docs/research-brief-health-preanchor-output-2026-07-13.md
+
+**Content Hash**: `c63dd3ff609b6de1ff719954bc940e6e844aa8e38600d0202eeb1be7db3db410`
+**Previous Hash**: `ae0e9b59ba673b380ef9b548b3e1f47fdf783b7ac14cd6f07a871ccc2a549565`
+**Chain Hash (Merkle seal)**: `02e156b44a9ee8830394b026180bc6ab4316117f6f6d55aec5e0fe96233cc40a`
+
+**Decision**: The verdict already tolerates disclosed pre-anchor residuals (GH #199 fallback); the confusion is an output ASYMMETRY verified live: `_ledger_damage` redirects stdout only (governance_health.py:134,142) while `ledger_hash.verify` writes FAIL/TAINTED to STDERR (ledger_hash.py:417,429) -- bleeding raw failure lines into the CLI, status_json (captures both streams), and the nightly step summary, all contradicting the OK verdict. Minimal fix: redirect_stderr beside redirect_stdout at both call sites, and thread a POSITIVE note into the OK finding's reason ("disclosed pre-anchor residuals tolerated; post-anchor band clean") -- satisfying the boundary-identification acceptance without new output formats. Structured/JSON output defers to the GH #271 typed-model roadmap. The existing post-anchor-tolerance fixture is the exact re-anchored synthetic ledger the new capture-both-streams tests need. Next: /qor-auto-dev-1, change_class hotfix.
+
+---
+
+### Entry #447: GATE TRIBUNAL -- Phase 182 plan PASS (health pre-anchor output)
+
+**Timestamp**: 2026-07-13T08:19:46Z
+**Phase**: GATE (Phase 182)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase182-health-preanchor-output.md
+**Session**: `2026-07-13T0817-5d9c1c`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `a945420af489dfd105abe057716273f7b143eaa570e1cf1753fd5b344720a401`
+**Previous Hash**: `02e156b44a9ee8830394b026180bc6ab4316117f6f6d55aec5e0fe96233cc40a`
+**Chain Hash (Merkle seal)**: `260640d324763dd82299c09bcb0a5a7689486ed9c04b5aa486d5ba8cbde592a6`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #446 (GH #268): stderr suppression joins stdout at the two health-gate verification sites (verifier CLIs keep full diagnostics; no signal dropped -- genuine failures still classify DAMAGED with the reason in the finding); the tolerance becomes a positive OK-reason note identifying the disclosed boundary. Structured output deferred to the GH #271 typed-model roadmap. Acceptance test captures BOTH streams on the existing re-anchored fixture (red today via the live bleed). Next: `/qor-implement`.
+
+---
+
+### Entry #448: IMPLEMENTATION -- Phase 182 health pre-anchor output
+
+**Timestamp**: 2026-07-13T08:28:57Z
+**Phase**: IMPLEMENT (Phase 182)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0817-5d9c1c`
+**Intent Lock**: `LOCKED: 2026-07-13T0817-5d9c1c`
+
+**Content Hash**: `55c73e973517aa250bdef66547cd3a372e8d590844a213ac23acdd29f7bd441a`
+**Previous Hash**: `260640d324763dd82299c09bcb0a5a7689486ed9c04b5aa486d5ba8cbde592a6`
+**Chain Hash (Merkle seal)**: `56eb1715fcab9ae71f6c45eb6fe8501bcb00b986eccbbe99b232f7db86d58fbd`
+
+**Decision**: Phase 182 implemented per plan, TDD-first (2 tests red via the live stderr bleed, then 25 focused green incl. the health-gate consumer sweep). `_ledger_damage` -> `(damage, ok_note)` with `redirect_stderr` joining `redirect_stdout` at both verifier calls; the GH #199 tolerated branch returns the positive note; `_damage_reason` threads the pair; `_classify_one`'s OK reason reads "passes health checks (disclosed pre-anchor residuals tolerated; post-anchor band clean)" when tolerated. Verifier CLIs untouched (full diagnostics preserved for direct use); genuine post-anchor failures still DAMAGED (regression-locked). Full suite 2597 passed / 2 skipped. Content hash binds tests/test_governance_health_post_anchor_tolerance.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #449: SESSION SEAL -- Phase 182 health pre-anchor output (v0.124.1)
+
+**Timestamp**: 2026-07-13T08:29:55Z
+**Phase**: SUBSTANTIATE (Phase 182; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase182-health-preanchor-output.md
+**Session**: `2026-07-13T0817-5d9c1c`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `2f373b22f0da`
+
+**Scope**: Phase 182 implemented (hotfix; research entry #446 -> closes GH #268). Governance-health diagnostics now match the verdict: `redirect_stderr` joins `redirect_stdout` at both verifier calls inside `_ledger_damage` (the raw FAIL/TAINTED lines went to stderr and bled into the CLI, status_json, and the nightly step summary while the verdict correctly said OK), and the GH #199 tolerance is surfaced POSITIVELY -- the OK finding's reason reads "passes health checks (disclosed pre-anchor residuals tolerated; post-anchor band clean)" via `(damage, ok_note)` threading through `_damage_reason` into `_classify_one`. No signal dropped: genuine post-anchor failures still classify DAMAGED with the reason in the finding (regression-locked), and the verifier CLIs keep full diagnostics for direct use. Structured/JSON classification output deferred to the GH #271 typed-model roadmap (recorded at disposition).
+
+Change class: hotfix (v0.124.0 -> v0.124.1). Tests: 2 new behavioral (capture-both-streams absence + positive-reason note, red via the live bleed then green) + the existing DAMAGED regression lock; 25 focused green incl. the consumer sweep; full suite 2597 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0758-7f394f. Audit: solo PASS (entry #447; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance gate presentation)
+
+**Content Hash**: `89c5566b57ab6039c44f79c31f388556a2e4f74ce41b9f85cc90aa4571230fce`
+**Previous Hash**: `56eb1715fcab9ae71f6c45eb6fe8501bcb00b986eccbbe99b232f7db86d58fbd`
+**Chain Hash (Merkle seal)**: `4059f16ecfe4dd9cb176ecd2bb6c97bd5b99078c3f1ad5086573f05aa0ecf3f1`
+
+---
+
+### Entry #450: RESEARCH BRIEF -- Intent-lock verdict forms (GH #263)
+
+**Timestamp**: 2026-07-13T08:38:01Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #263
+**Session**: `2026-07-13T0837-ef73c7`
+**Brief**: docs/research-brief-intent-lock-verdict-forms-2026-07-13.md
+
+**Content Hash**: `5928adfa1853528543b5c3243afe3251aee9774e274b221360b534845313a1fd`
+**Previous Hash**: `4059f16ecfe4dd9cb176ecd2bb6c97bd5b99078c3f1ad5086573f05aa0ecf3f1`
+**Chain Hash (Merkle seal)**: `8021661ce7511e80046c4928c127876b0730a23d5792a1aa71e1270502ab62a4`
+
+**Decision**: `intent_lock._audit_has_pass` (line 59, verified live) rejects markdown-heading verdict forms (`## VERDICT: PASS`) that are in real production use -- this repository's own Phase 173 tribunal hit the rejection live -- and the line-82 error cannot distinguish format-mismatch from genuinely-not-PASS. Headings are structural markdown (cannot appear inside a prose sentence), so an `#{0,6}\s*` prefix preserves the Phase 53 LOW-4 anti-prose anchoring completely; indent-reject and same-line anchoring unchanged. The only other verdict parser (meta_ledger_walker, bold-form value extractor over a different input class) is intentionally distinct -- no synchronization. Test gap: zero heading coverage in the anchored-check suite. Fix: widen + heading accept tests + prose/indent regression locks + a format-hint error naming the expected forms when loose verdict-ish content exists. Next: /qor-auto-dev-1, change_class hotfix.
+
+---
+
+### Entry #451: GATE TRIBUNAL -- Phase 183 plan PASS (intent-lock verdict forms)
+
+**Timestamp**: 2026-07-13T08:39:21Z
+**Phase**: GATE (Phase 183)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase183-intent-lock-verdict-forms.md
+**Session**: `2026-07-13T0837-ef73c7`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `b3ac5a6195a11bd416bca7a676eb82b97cd271b64fbe0fc41bac1427e99c566f`
+**Previous Hash**: `8021661ce7511e80046c4928c127876b0730a23d5792a1aa71e1270502ab62a4`
+**Chain Hash (Merkle seal)**: `a87826a621528d70451dd978e7a8a810410c9cb542795e4f4b670045ccbfaf42`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #450 (GH #263): `#{0,6}\s*` heading prefix on the anchored verdict regex (LOW-4 anti-prose anchors preserved -- no prose sentence starts at column 0 with `#` and ends after PASS); format-hint error distinguishing non-canonical-form from not-PASS (display-only loose probe; decision path unchanged); prose/indent rejections regression-locked post-widening. One infrastructure-mismatch (nonexistent test file in the CI list) corrected pre-verdict; the plan amendment landed as plan-iter2 with iter1 preserved -- the Phase 173 iteration semantics exercised by its own governance. Next: `/qor-implement`.
+
+---
+
+### Entry #452: IMPLEMENTATION -- Phase 183 intent-lock verdict forms
+
+**Timestamp**: 2026-07-13T08:50:09Z
+**Phase**: IMPLEMENT (Phase 183)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0837-ef73c7`
+**Intent Lock**: `LOCKED: 2026-07-13T0837-ef73c7`
+
+**Content Hash**: `ab622be8306ea74ea6083b4aa6b9f7ad3a14e9e8fb03bbc035378d485e2c9374`
+**Previous Hash**: `a87826a621528d70451dd978e7a8a810410c9cb542795e4f4b670045ccbfaf42`
+**Chain Hash (Merkle seal)**: `486d26cd268e1821f84ae76f6c35e9ddac7f260616b5c76ec6a3d0272a4131a3`
+
+**Decision**: Phase 183 implemented per plan, TDD-first (3 tests red, then 29 focused green twice). The heading widening required ONE correction the guardrails caught live: the first draft `#{0,6}\s*` admitted INDENTED verdict lines through the zero-hash branch (the existing LOW-4 indentation regression lock went red); corrected to `(?:#{1,6}[ \t]*)?` -- whitespace legal only after at least one `#`, column-0 anchoring preserved for the plain form. `_verdict_hint` distinguishes non-canonical-form (expected forms named) from not-PASS; display-only, decision path unchanged; wired at the capture error branch. Full suite 2601 passed / 2 skipped. Content hash binds tests/test_intent_lock_anchored_pass_check.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #453: SESSION SEAL -- Phase 183 intent-lock verdict forms (v0.124.2)
+
+**Timestamp**: 2026-07-13T08:51:08Z
+**Phase**: SUBSTANTIATE (Phase 183; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase183-intent-lock-verdict-forms.md
+**Session**: `2026-07-13T0837-ef73c7`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `51b2c1607eb9`
+
+**Scope**: Phase 183 implemented (hotfix; research entry #450 -> closes GH #263). `intent_lock` accepts markdown-heading verdict declarations (`## VERDICT: PASS` and h1-h6 variants) that are in real production use -- the opaque rejection bit this repository's own Phase 173 tribunal live. The Phase 53 LOW-4 anti-prose safety is fully preserved: the first pattern draft was CAUGHT by the existing indentation regression lock (the `#{0,6}\s*` zero-hash branch admitted indented lines) and corrected to `(?:#{1,6}[ \t]*)?` -- whitespace legal only after at least one `#`. New `_verdict_hint` distinguishes "verdict present but non-canonical" (expected forms named) from "genuinely not PASS" in the error message only; the loose probe never influences the verdict decision. The plan itself was amended pre-verdict (nonexistent test file in the CI list) and landed as plan-iter2 with iter1 preserved -- Phase 173's iteration semantics exercised by its own governance. meta_ledger_walker's verdict parser is intentionally distinct (different input class); recorded at disposition.
+
+Change class: hotfix (v0.124.1 -> v0.124.2). Tests: 4 new behavioral (h2/h3 accept, prose+indent regression re-locks, format-hint both branches), red-then-green with one guardrail-caught correction; 29 focused green twice; full suite 2601 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0817-5d9c1c. Audit: solo PASS (entry #451; one pre-verdict citation correction). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (reliability gate UX)
+
+**Content Hash**: `4fd0a485b6e2163c589028c3017933b7f63d75bd2a529dc21c6cdebb2e0e1e46`
+**Previous Hash**: `486d26cd268e1821f84ae76f6c35e9ddac7f260616b5c76ec6a3d0272a4131a3`
+**Chain Hash (Merkle seal)**: `ca5607d0e31fbcabf2e1b5af5ae9acf6b39dc64fb4a6b9e79b508015c222c37f`
+
+---
+
+### Entry #454: RESEARCH BRIEF -- Reachability probe timeout (GH #264)
+
+**Timestamp**: 2026-07-13T08:59:17Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #264
+**Session**: `2026-07-13T0858-c7296a`
+**Brief**: docs/research-brief-reachability-timeout-2026-07-13.md
+
+**Content Hash**: `8c43f48be6b26267e98305c5ddeeadd844d1d71141ea96192db00c81b6c7048c`
+**Previous Hash**: `ca5607d0e31fbcabf2e1b5af5ae9acf6b39dc64fb4a6b9e79b508015c222c37f`
+**Chain Hash (Merkle seal)**: `ad9fd3ad9383c1dd27be40ebce48b71e8e4a40140ecf7523e214cbc93e450fe9`
+
+**Decision**: Verified live: `check_test_collection` runs `pytest --collect-only` per candidate with `timeout=30` and `except TimeoutExpired: continue` (reachability_probe.py:132-135) -- under full-suite load every candidate can silently time out and the probe returns a false-negative finding (reporter: 2/2 full-suite failures vs 14/14 isolated; 120s validated clean). The silent-continue is correct for genuine failures; only the budget is wrong (the 30s constant is the outlier vs the 60s harness timeouts). Fix: env-tunable `QOR_REACHABILITY_COLLECTION_TIMEOUT` defaulting to 120; recorder-based tests lock the passed timeout and the override without real waits. Inconclusive-WARN and in-process alternatives rejected (contract/isolation changes). Next: /qor-auto-dev-1, change_class hotfix.
+
+---
+
+### Entry #455: GATE TRIBUNAL -- Phase 184 plan PASS (reachability timeout)
+
+**Timestamp**: 2026-07-13T09:00:27Z
+**Phase**: GATE (Phase 184)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase184-reachability-timeout.md
+**Session**: `2026-07-13T0858-c7296a`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `f9e072e27b7ec8bf63f3a4296551ee0319bfac9ad55d40b2db5d8351b0af1658`
+**Previous Hash**: `ad9fd3ad9383c1dd27be40ebce48b71e8e4a40140ecf7523e214cbc93e450fe9`
+**Chain Hash (Merkle seal)**: `d11e6cd09ea10d1d686edb206e37603f99e0e9b802f7bc030632ae55a7c2dc15`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #454 (GH #264): env-tunable `COLLECTION_TIMEOUT` defaulting to the reporter-validated 120s replaces the load-fragile 30s at the collect-only subprocess; per-candidate silent-continue semantics unchanged; recorder-based tests lock the passed timeout and the override with zero real waits; malformed env fails loudly at import. Next: `/qor-implement`.
+
+---
+
+### Entry #456: IMPLEMENTATION -- Phase 184 reachability timeout
+
+**Timestamp**: 2026-07-13T09:11:04Z
+**Phase**: IMPLEMENT (Phase 184)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0858-c7296a`
+**Intent Lock**: `LOCKED: 2026-07-13T0858-c7296a`
+
+**Content Hash**: `e71cff13e72811ec3a7fb465b78dfc304fa3bdf886ae724772db773dca0304f1`
+**Previous Hash**: `d11e6cd09ea10d1d686edb206e37603f99e0e9b802f7bc030632ae55a7c2dc15`
+**Chain Hash (Merkle seal)**: `336ee06c07af7b4a8b6fefc2a1be38a98993d238629148dc0debfeeebd177a72`
+
+**Decision**: Phase 184 implemented per plan, TDD-first (2 tests red -- one fixture correction mid-red: the candidate-discovery needle wants the dotted module path, not the from-import form -- then 16 focused green twice). `COLLECTION_TIMEOUT = int(os.environ.get("QOR_REACHABILITY_COLLECTION_TIMEOUT", "120"))` module constant with the GH #264 rationale comment; the collect-only call site uses it; the 20s importability budget deliberately unchanged. Recorder-based tests lock the passed timeout kwarg and the env override via module reload (restored after); zero real waits added. Full suite 2603 passed / 2 skipped. Content hash binds tests/test_reachability_probe.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #457: SESSION SEAL -- Phase 184 reachability timeout (v0.124.3)
+
+**Timestamp**: 2026-07-13T09:12:10Z
+**Phase**: SUBSTANTIATE (Phase 184; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase184-reachability-timeout.md
+**Session**: `2026-07-13T0858-c7296a`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `7d47eeef4383`
+
+**Scope**: Phase 184 implemented (hotfix; research entry #454 -> closes GH #264). The reachability probe's collect-only subprocess budget is load-tolerant: `COLLECTION_TIMEOUT` module constant (reporter-validated 120s default; env-tunable via `QOR_REACHABILITY_COLLECTION_TIMEOUT`; malformed values fail loudly at import) replaces the hardcoded 30s that let full-suite CPU load silently exhaust every candidate and return a false-negative `reachability-test-collection-failed` finding. Per-candidate silent-continue semantics unchanged (correct for genuine failures); the 20s importability budget deliberately untouched. Recorder-based tests lock the passed timeout kwarg and the env override -- zero real waits added to the suite.
+
+Change class: hotfix (v0.124.2 -> v0.124.3). Tests: 2 new behavioral (red-then-green; one mid-red fixture correction -- the discovery needle wants the dotted module path); 16 focused green twice; full suite 2603 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0837-ef73c7. Audit: solo PASS (entry #455; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (QA probe reliability)
+
+**Content Hash**: `67d20a9f8fc607e6f9ef1cd1dec73194da801de9eeabc53b6f7a82b56978b394`
+**Previous Hash**: `336ee06c07af7b4a8b6fefc2a1be38a98993d238629148dc0debfeeebd177a72`
+**Chain Hash (Merkle seal)**: `33129eb1dd7f461024516cc402406e6839370ec9408bdd5a5bdaea0a427667fd`
+
+---
+
+### Entry #458: RESEARCH BRIEF -- Keyword-lint scoping (GH #265)
+
+**Timestamp**: 2026-07-13T09:20:09Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #265
+**Session**: `2026-07-13T0919-7937b6`
+**Brief**: docs/research-brief-keyword-lint-scoping-2026-07-13.md
+
+**Content Hash**: `cf612f22ad7e3544c9b06d0bab73e162d9c6988bb2c161c90129ec360c593659`
+**Previous Hash**: `33129eb1dd7f461024516cc402406e6839370ec9408bdd5a5bdaea0a427667fd`
+**Chain Hash (Merkle seal)**: `451143a94fc2806b4d088c303937052da43c035ab14cdfdcf6b842a5dc374840`
+
+**Decision**: Verified live: the SG-033 lint keys keyword-only definitions by BARE NAME with last-write-wins (test_shadow_genome_doctrine.py:15-53) and matches call sites by bare name -- coin-toss attribution under collisions; live in-tree collisions exist (`check`, `scan`) that are benign only by arity accident, and the issue's consumer `_emit` reproduction shows the failure when arities diverge. Resolution rule chosen over the same-file-only minimum: multimap + three tiers (same-file defs take precedence; a tree-UNIQUE name still checks cross-module, preserving today's real coverage; colliding bare names without a same-file def skip as ambiguous). Strictly dominates same-file-only on true-positive retention while eliminating the false-positive class. Synthetic-collision tests prove all three tiers. Next: /qor-auto-dev-1, change_class hotfix.
+
+---
+
+### Entry #459: GATE TRIBUNAL -- Phase 185 plan PASS (keyword-lint scoping)
+
+**Timestamp**: 2026-07-13T09:21:18Z
+**Phase**: GATE (Phase 185)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase185-keyword-lint-scoping.md
+**Session**: `2026-07-13T0919-7937b6`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `17f2dc12453d07b2ababacaa7c331558cef4612e03bb1a5ecef0f88f3248df8c`
+**Previous Hash**: `451143a94fc2806b4d088c303937052da43c035ab14cdfdcf6b842a5dc374840`
+**Chain Hash (Merkle seal)**: `e73eeae490ef188015d90f99520cce25d9c14424c3c46970f9ef3405db374c62`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #458 (GH #265): multimap + three-tier candidate resolution (same-file precedence, tree-unique cross-module, ambiguous skip) in the SG-033 lint -- strictly dominating the issue's same-file-only minimum on true-positive retention while eliminating the collision false-positive class; the ambiguous-skip trade-off recorded for disposition with the attribute-resolution follow-on named. Three synthetic-fixture tests prove the tiers (collision test red today). Next: `/qor-implement`.
+
+---
+
+### Entry #460: IMPLEMENTATION -- Phase 185 keyword-lint scoping
+
+**Timestamp**: 2026-07-13T09:31:41Z
+**Phase**: IMPLEMENT (Phase 185)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0919-7937b6`
+**Intent Lock**: `LOCKED: 2026-07-13T0919-7937b6`
+
+**Content Hash**: `5102981f78a59852706eedbceb3b51a58704e3dc405549e5581bae888f84fde9`
+**Previous Hash**: `e73eeae490ef188015d90f99520cce25d9c14424c3c46970f9ef3405db374c62`
+**Chain Hash (Merkle seal)**: `2165b978fae7483511a1f3f6aadca6d41e1e470effc07215782cd1cdababfc79`
+
+**Decision**: Phase 185 implemented per plan, TDD-first with ONE mid-red design deepening the tests forced: the plan's kwonly-only collection could not see the caller's own PLAIN same-named definition, so the consumer reproduction still resolved cross-module -- the collector now records non-kwonly same-named defs with positional=None as SHADOWING entries (Python scoping honored: a local plain definition shadows a foreign keyword-only one, and names with no kwonly def anywhere are dropped as non-subjects). `_candidates_for` three tiers per plan LD-1; violation requires exceeding EVERY consulted candidate's arity. 18 focused green twice (collision reproduction, same-file overflow, unique-name cross-module retention, plus the live production lint over qor/scripts + tests). Full suite 2606 passed / 2 skipped. Content hash binds tests/test_shadow_genome_doctrine.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #461: SESSION SEAL -- Phase 185 keyword-lint scoping (v0.124.4)
+
+**Timestamp**: 2026-07-13T09:32:40Z
+**Phase**: SUBSTANTIATE (Phase 185; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase185-keyword-lint-scoping.md
+**Session**: `2026-07-13T0919-7937b6`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `840bd9798d67`
+
+**Scope**: Phase 185 implemented (hotfix; research entry #458 -> closes GH #265). The SG-033 keyword-only lint resolves call sites scope-soundly: multimap collection (the single-slot dict's last-write-wins made attribution a coin toss under bare-name collisions) + three-tier `_candidates_for` -- same-file definitions take precedence WITH Python-scoping fidelity (a local PLAIN definition shadows a foreign keyword-only one; the mid-red deepening entry #460 records), a tree-unique keyword-only name is still checked cross-module (retaining coverage same-file-only matching would drop), colliding bare names without a local definition skip as ambiguous. A violation requires exceeding EVERY consulted candidate's positional arity. The consumer's 7-false-positive `_emit` reproduction is now a fixture test; live `check`/`scan` collisions stop being arity accidents. Attribute-resolution remains the recorded follow-on for cross-module colliding names.
+
+Change class: hotfix (v0.124.3 -> v0.124.4). Tests: 3 new fixture tests (collision non-flag, same-file flag, unique-name cross-module flag), red-then-green with the shadowing deepening; 18 focused green twice incl. the live production lint; full suite 2606 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0858-c7296a. Audit: solo PASS (entry #459; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (lint precision)
+
+**Content Hash**: `b7a857a7d71d8eb3361aa369d68cdc38c5b94ffc26c2767cbb851a9950f1e708`
+**Previous Hash**: `2165b978fae7483511a1f3f6aadca6d41e1e470effc07215782cd1cdababfc79`
+**Chain Hash (Merkle seal)**: `053a1bb9d907ab2f4c88518cbc5064a5047028122e140b001cfd0dea9558a2bc`
+
+---
+
+### Entry #462: RESEARCH BRIEF -- Provenance host autodetect (GH #242)
+
+**Timestamp**: 2026-07-13T09:40:48Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #242
+**Session**: `2026-07-13T0940-f515e2`
+**Brief**: docs/research-brief-provenance-autodetect-2026-07-13.md
+
+**Content Hash**: `c00f6f14ce8f6853460fb1cd15b52a6c14b365b0e206d9c0f79e9c9f584e46e6`
+**Previous Hash**: `053a1bb9d907ab2f4c88518cbc5064a5047028122e140b001cfd0dea9558a2bc`
+**Chain Hash (Merkle seal)**: `fb785cd4f9019e1c96a9f924c031c12abd44b921ccca562799e608cf5c0fe098`
+
+**Decision**: Enumerated LIVE inside a real Claude Code session: `CLAUDECODE=1` + the `CLAUDE_CODE_*` family are present while `CLAUDE_PROJECT_DIR` -- the only signal `qor_platform.detect_host` consults (line 33) -- is ABSENT, and NO model-identifying variable exists. The defect demonstrated on itself: every provenance manifest this working session wrote warned "host fell back to 'unknown'" inside the primary supported host. Fix: `detect_host` gains the empirical signal family; `ai_provenance._detect_host` (line 61: cached-marker-only) falls back to FRESH detection when the marker yields nothing. Model half DEFERS honestly -- no ambient signal exists to read, so auto-detection would fabricate; `QOR_MODEL_FAMILY` stays the explicit channel, with this enumeration recorded on GH #242 as the deferral evidence. Host is schema-free-form; no schema change. Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #463: GATE TRIBUNAL -- Phase 186 provenance autodetect
+
+**Timestamp**: 2026-07-13T09:43:30Z
+**Phase**: GATE (Phase 186)
+**Author**: Judge
+**Risk Grade**: L1
+**Session**: `2026-07-13T0940-f515e2`
+**Target**: docs/plan-qor-phase186-provenance-autodetect.md
+**Verdict**: PASS
+
+**Content Hash**: `4bce3b8201dbcbdad7734603d397157a00b3d11e28ce6e5804e335293dbc081d`
+**Previous Hash**: `fb785cd4f9019e1c96a9f924c031c12abd44b921ccca562799e608cf5c0fe098`
+**Chain Hash (Merkle seal)**: `5252179aa810f1c9660a6af731ca75aa04d71d0ce704a48077c6c52e5fadfae1`
+
+**Decision**: Solo-mode tribunal (codex-plugin shortfall emitted; audit_risk_score option_b_required false; pre-audit lints clean; canaries 0; runtime contract walk 0 findings). PASS with zero violations. The plan's signal family is grounded in THIS session's live enumeration -- `CLAUDECODE`/`CLAUDE_CODE_*` present, `CLAUDE_PROJECT_DIR` absent at qor_platform.py:33's only check -- and the manifest-builder fallback (ai_provenance.py:61 reads only the cached marker today) restores truthful host provenance without trusting any env VALUE. The model-half deferral is the honest branch: no ambient signal exists, so auto-detection would fabricate. Two red-today ladder tests + a no-marker manifest integration test observe behavior; the phase self-verifies live when this session's later gate writes record host=claude-code. Next: `/qor-implement`.
+
+---
+
+### Entry #464: IMPLEMENTATION -- Phase 186 provenance autodetect
+
+**Timestamp**: 2026-07-13T09:56:20Z
+**Phase**: IMPLEMENT (Phase 186)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0940-f515e2`
+**Intent Lock**: `LOCKED: 2026-07-13T0940-f515e2`
+
+**Content Hash**: `1a3969be8c157b24448e3dcfe67e21cd3a9b2ca854124a312af882df050a183f`
+**Previous Hash**: `5252179aa810f1c9660a6af731ca75aa04d71d0ce704a48077c6c52e5fadfae1`
+**Chain Hash (Merkle seal)**: `5e26e75d8e314bbd3804e9ddb7abfe458cff9e1928afbf20f8d7dd765440c153`
+
+**Decision**: Phase 186 implemented per plan, TDD-first, no mid-red design changes. `qor_platform.detect_host` gained the LD-1 empirical ladder (`CLAUDECODE`, any `CLAUDE_CODE_*` key, `CLAUDE_PROJECT_DIR` -- most-specific first, values untrusted, presence only); `ai_provenance._detect_host` restructured per LD-2 to fall back to fresh `detect_host()` when the cached marker is absent or yields unknown, so the one-time WARN now fires only when BOTH paths fail. The pre-existing unknown-regression test was widened to clear the whole signal family (it ran inside the very environment the new signals detect). 3 red -> green twice; live self-application observed IN THIS SESSION: the audit gate artifact written before the fix records host=unknown, manifests built after it record host=claude-code with no WARN. Full suite 2609 passed / 2 skipped. Content hash binds qor/scripts/qor_platform.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #465: SESSION SEAL -- Phase 186 provenance host autodetect (v0.125.0)
+
+**Timestamp**: 2026-07-13T10:04:10Z
+**Phase**: SUBSTANTIATE (Phase 186; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase186-provenance-autodetect.md
+**Session**: `2026-07-13T0940-f515e2`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `45df21573dc0`
+
+**Scope**: Phase 186 implemented (feature; research entry #462 -> GH #242 host half). Provenance manifests written inside Claude Code sessions now record host=claude-code without operator env setup: `qor_platform.detect_host` recognizes the live-enumerated ambient signal family (`CLAUDECODE`, any `CLAUDE_CODE_*` key, `CLAUDE_PROJECT_DIR` -- presence checks only, no env VALUE trusted), and `ai_provenance._detect_host` falls back to fresh detection when the cached platform marker is absent or yields unknown, so the one-time WARN fires only when both paths fail. Self-application observed inside THIS session: the audit artifact (written pre-fix) records host=unknown; the implement artifact (written post-fix) records host=claude-code -- the defect and its cure are both persisted in the same gate directory. Model half of GH #242 DEFERRED with evidence: the live enumeration found no ambient model-identifying signal, so auto-detection would fabricate; `QOR_MODEL_FAMILY` stays the explicit channel (deferral to be recorded on GH #242 at operator review).
+
+Change class: feature (v0.124.4 -> v0.125.0). Tests: 3 new (two detect_host ladder cases red-then-green twice + a no-marker build_manifest integration case asserting host and WARN absence); the pre-existing unknown-regression test widened to clear the whole signal family. Focused suites green twice; full suite 2609 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy (shared-core touches 0), data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0919-7937b6, dist recompiled + variant drift clean. Audit: solo PASS (entry #463; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (provenance tooling)
+
+**Content Hash**: `7c781b5085fe0cff26fcd4d6fe1130bcfb8fc835d108fb5f17bfd8687c8c2694`
+**Previous Hash**: `5e26e75d8e314bbd3804e9ddb7abfe458cff9e1928afbf20f8d7dd765440c153`
+**Chain Hash (Merkle seal)**: `28c1374bbf47d4a0f87f93bce6108ee69cf4462ed16b0e085e31137ba130fc69`
+
+---
+
+### Entry #466: RESEARCH BRIEF -- Negative-constraints doctrine (GH #243)
+
+**Timestamp**: 2026-07-13T10:33:20Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #243
+**Session**: `2026-07-13T1025-96f825`
+**Brief**: docs/research-brief-negative-constraints-2026-07-13.md
+
+**Content Hash**: `08874f6eddfad41117db3b9655c0b18b5d124328b0d74d33d6c87a423fc8823e`
+**Previous Hash**: `28c1374bbf47d4a0f87f93bce6108ee69cf4462ed16b0e085e31137ba130fc69`
+**Chain Hash (Merkle seal)**: `2cc3d6e8b164b5adfbb30ada4f39c78e7ee45f7bb015edc4b6df57fb65f3d9a0`
+
+**Decision**: GH #243 fully unimplemented (no PR; zero corpus matches for any negative-rule form). Verified surfaces: dist_compile identity emitters (dist_compile.py:47-71; docstring stale vs code -- codex identity-copies, test-locked), check_variant_drift regenerates THROUGH compile_all so deterministic in-compile injection keeps the gate green (check_variant_drift.py:58-66), install_drift_check mirrors installs against qor/skills SOURCE (install_drift_check.py:29-54) so the claude variant must stay untransformed, and the headroom lock (39*1024; qor-audit at 39,355 / qor-substantiate at 39,321) forbids inline source rules -- compile-time injection is the only fitting channel. Shape: doctrine file (NR-001 secret shapes + NR-002 no-fabrication) registered in GOVERNANCE_INDEX + `_inject_negative_constraints` for kilo-code/codex/gemini variants of the three fabrication-risk skills + WARN-only model_pinning_lint extension. Matches the issue's own risk framing (weak-tier execution arrives via kilo/codex/gemini deployment). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #467: GATE TRIBUNAL -- Phase 187 negative constraints
+
+**Timestamp**: 2026-07-13T10:45:10Z
+**Phase**: GATE (Phase 187)
+**Author**: Judge
+**Risk Grade**: L1
+**Session**: `2026-07-13T1025-96f825`
+**Target**: docs/plan-qor-phase187-negative-constraints.md
+**Verdict**: PASS
+
+**Content Hash**: `cc05630f5b220aadf45e60f37b2d3bf9bea1f8547b3e9451ad9f784842d4a8fd`
+**Previous Hash**: `2cc3d6e8b164b5adfbb30ada4f39c78e7ee45f7bb015edc4b6df57fb65f3d9a0`
+**Chain Hash (Merkle seal)**: `968c5770476ff4891b9119f97883b043b0c4b11fad53af1bac2f75e63d5ee825`
+
+**Decision**: Solo-mode tribunal (codex-plugin shortfall emitted; option_b_required false; all plan lints exit 0; canaries clean; runtime contract walk 0 findings). PASS with zero violations. The compile-time injection seam is the only channel that survives all three standing locks simultaneously (headroom bound walks source; check_variant_drift regenerates through compile_all so deterministic transforms hash symmetrically; install_drift_check mirrors qor/skills so the claude variant stays untransformed). Adversarial check on the existing codex==claude lock (tests/test_compile.py:74-81): synthetic non-risk fixture comparing file NAMES -- injection-safe, no lock amendment needed. Test list is fully behavioral including the claude byte-equality negative control. Next: `/qor-implement`.
+
+---
+
+### Entry #468: IMPLEMENTATION -- Phase 187 negative constraints
+
+**Timestamp**: 2026-07-13T11:12:40Z
+**Phase**: IMPLEMENT (Phase 187)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T1025-96f825`
+**Intent Lock**: `LOCKED: 2026-07-13T1025-96f825`
+
+**Content Hash**: `6b9e187551dd57b4d8eb991af53c75c25d0c5106664e43e78737d0db2616ae62`
+**Previous Hash**: `968c5770476ff4891b9119f97883b043b0c4b11fad53af1bac2f75e63d5ee825`
+**Chain Hash (Merkle seal)**: `07bf24b684d9e1090d954b7620432bb91f48dd72d7cb49682f4db0c16fa17949`
+
+**Decision**: Phase 187 implemented per plan, TDD-first, with TWO full-suite-discovered lock amendments and ONE portability deepening. (1) tests/test_install_sync_with_source.py (the Phase 31 byte-identity contract the plan missed) deliberately amended: codex/kilo-code expectation is now `inject_negative_constraints(source)` for risk skills, byte-identical otherwise; claude stays fully byte-identical. (2) README doctrine inventory row added (test_readme_doctrine_inventory). (3) The injector is newline-PRESERVING (CRLF sources round-trip; `_rewrite_risk_skills` does byte-level IO) so emitted bytes equal the test's computed expectation on every platform. Doctrine authored + registered (GOVERNANCE_INDEX row, glossary entry, README row); pointer lines added to the three risk skills (sizes 39,536 / 39,502 / 25,184 -- all under the 39,936 headroom lock); gemini transform hook threaded through `_emit_one`. Lint guard scan live and silent on the corpus. 45 focused green twice; check_variant_drift OK (254 files); full suite 2619 passed / 2 skipped. Content hash binds qor/scripts/dist_compile.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #469: SESSION SEAL -- Phase 187 negative-constraints doctrine (v0.126.0)
+
+**Timestamp**: 2026-07-13T11:20:30Z
+**Phase**: SUBSTANTIATE (Phase 187; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase187-negative-constraints.md
+**Session**: `2026-07-13T1025-96f825`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `930444445878`
+
+**Scope**: Phase 187 implemented (feature; research entry #466 -> GH #243). Weak-tier deployments now receive explicit negative rules: `doctrine-negative-constraints.md` (NR-001 secret shapes / NR-002 no-fabrication, grounded in the issue's A/B eval evidence), injected by `dist_compile.inject_negative_constraints` into the kilo-code/codex/gemini variants of the fabrication-risk skills (qor-audit, qor-plan, qor-substantiate) -- the claude variant stays byte-identical to source because install_drift_check mirrors qor/skills. Source risk skills carry a one-line doctrine pointer (headroom lock forbids inline bodies; post-change sizes 39,536 / 39,502 / 25,184 vs 39,936 bound); `model_pinning_lint` gains a WARN-only fabrication-guard scan (silent on the live corpus). The Phase 31 variant-sync contract was deliberately amended to encode the new expectation (`inject_negative_constraints(source)` for risk skills on codex/kilo-code); the injector preserves source line endings so the byte contract holds cross-platform. Doctrine registered: GOVERNANCE_INDEX row, glossary entry, README inventory row.
+
+Change class: feature (v0.125.0 -> v0.126.0). Tests: 10 new (5 injection incl. the real-corpus compile_all integration with the claude byte-equality negative control; 5 lint incl. live-corpus zero-warning and the risk-set drift lock), red-then-green twice; two full-suite-discovered lock amendments recorded in entry #468; full suite 2619 passed / 2 skipped; check_variant_drift OK (254 files). Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS (standard tier; term "Negative constraint" homed), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0940-f515e2, dist recompiled + drift clean. Audit: solo PASS (entry #467; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (distribution tooling)
+
+**Content Hash**: `da4e2040176111f27d578042069c5125ac8541dc1de399d4697236c91142478d`
+**Previous Hash**: `07bf24b684d9e1090d954b7620432bb91f48dd72d7cb49682f4db0c16fa17949`
+**Chain Hash (Merkle seal)**: `41086608f2eb628f1df53cabdb35623819530c7828fd78bf5ebfda0d36ee3324`
+
+---
+
+### Entry #470: RESEARCH BRIEF -- Canary code-span nuance + host expansion (GH #244)
+
+**Timestamp**: 2026-07-13T11:48:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #244
+**Session**: `2026-07-13T1145-3ee3e2`
+**Brief**: docs/research-brief-canary-inline-code-2026-07-13.md
+
+**Content Hash**: `71d728a32a54fc1f60ad832c968285c9bc78c3a05504b4db7363351bec15df95`
+**Previous Hash**: `41086608f2eb628f1df53cabdb35623819530c7828fd78bf5ebfda0d36ee3324`
+**Chain Hash (Merkle seal)**: `aef58050c00cd4fa91bbae5f0796a13bbe44e512da7349d014d761694c1d8098`
+
+**Decision**: Both #244 items verified live (scout unavailable; inline verification). Item 1: `--mask-code-blocks` shipped in Phase 53 BEFORE the issue -- the consumer ABORT is the documented strict-at-audit posture (prompt_injection_canaries.py:143-144), so the remaining gap is per-CLASS nuance: hidden-html (the tag alternation, py:98) is structural markup that inside a code span is a placeholder or countermeasure example, while the four instruction classes are imperative anywhere and must stay binding. Shape: CLI-level downgrade of code-span hidden-html hits to WARN (exit unaffected), `--strict` restores; `scan()` stays pure. Item 2: hosts.py `_HOSTS` (:84-89) + dist_compile TARGETS (:22) extend with `cursor` (claude-shaped `.cursor/skills/`) and `cline` (flattened `command-<id>.md` under `.clinerules/workflows/`, serving three assistants); both are weak-tier channels and receive the Phase 187 risk-skill injection. Risk grade L2 (touches an audit-gate security scanner). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #471: GATE TRIBUNAL -- Phase 188 canary code-span + hosts
+
+**Timestamp**: 2026-07-13T11:57:20Z
+**Phase**: GATE (Phase 188)
+**Author**: Judge
+**Risk Grade**: L2
+**Session**: `2026-07-13T1145-3ee3e2`
+**Target**: docs/plan-qor-phase188-canary-code-span-hosts.md
+**Verdict**: PASS
+
+**Content Hash**: `4dec835168544ca0a0481a223919c761079040803220d0f173c19a049892b2fa`
+**Previous Hash**: `aef58050c00cd4fa91bbae5f0796a13bbe44e512da7349d014d761694c1d8098`
+**Chain Hash (Merkle seal)**: `6e9559f2c68198a78590c317431ce5e18884c61a7134738e8a282ef6924aa182`
+
+**Decision**: Solo-mode tribunal, L2 depth (audit-gate security scanner touched). PASS with zero violations. The relaxation is class-scoped (hidden-html only), region-scoped (span fully inside backticks), layer-scoped (CLI only; scan() pure), and reversible (--strict). The four imperative classes stay binding inside code spans -- the tested asymmetry. Live self-application preceded implementation: research entry #470's own body tripped the strict gate from inside backticks and was amended to descriptor form (hash fields untouched, Phase 172 precedent, chain verified) -- the false-positive class demonstrated on the project's own ledger. Host expansion reuses the Phase 187 injection seam; sync contracts extend explicitly. Next: `/qor-implement`.
+
+---
+
+### Entry #472: IMPLEMENTATION -- Phase 188 canary code-span + hosts
+
+**Timestamp**: 2026-07-13T12:26:50Z
+**Phase**: IMPLEMENT (Phase 188)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T1145-3ee3e2`
+**Intent Lock**: `LOCKED: 2026-07-13T1145-3ee3e2`
+
+**Content Hash**: `46481020d8a2b17f5e756ff169a5e0df93006b9d3ec0cab44ec37c848b6386ab`
+**Previous Hash**: `6e9559f2c68198a78590c317431ce5e18884c61a7134738e8a282ef6924aa182`
+**Chain Hash (Merkle seal)**: `2f08a31766eca8eb6716683fb93a868bbe3e445c90eaf0332f3d0924273d3cd3`
+
+**Decision**: Phase 188 implemented per plan, TDD-first, no mid-red design changes. Item 1: `main()` gains `--strict`; a hidden-html hit whose span is whitespace in the masked copy prints `CANARY WARN [hidden-html/code-span]` and is excluded from the exit-1 count; the four imperative classes and unicode-directionality stay binding inside code spans (the asymmetry is a dedicated regression test); `scan()` untouched. The test file never carries the tag literal (assembled at runtime -- NR-001 discipline in the test itself). Item 2: hosts registry grew `_cursor_target` (.cursor, claude-shaped) and `_cline_target` (.clinerules, workflows-only map); TARGETS six-wide; emit_cursor = claude copy + risk-skill injection; emit_cline flattens every skill dir + loose skill to `command-<name>.md` and agents to `agent-<name>.md` with byte-preserving injection; cursor joined the injected-sync contract, cline got the documented exclusion mirroring gemini. 45 focused green twice; check_variant_drift OK (368 files, up from 254 with the two new trees); full suite 2630 passed / 2 skipped. Content hash binds qor/scripts/prompt_injection_canaries.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #473: SESSION SEAL -- Phase 188 canary code-span nuance + host expansion (v0.127.0)
+
+**Timestamp**: 2026-07-13T12:32:40Z
+**Phase**: SUBSTANTIATE (Phase 188; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase188-canary-code-span-hosts.md
+**Session**: `2026-07-13T1145-3ee3e2`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `6efdcbbc0e74`
+
+**Scope**: Phase 188 implemented (feature; research entry #470 -> GH #244, both items). Item 1: the canary CLI downgrades hidden-html hits fully inside backtick spans to `CANARY WARN [hidden-html/code-span]` (visible, non-blocking); `--strict` restores blocking; `scan()` pure; the four imperative classes and unicode-directionality stay binding inside code spans -- the asymmetry has a dedicated regression test, and the phase self-applied twice (research entry #470's body tripped the strict gate from inside backticks pre-implementation and was amended to descriptor form; the new test file assembles the tag literal at runtime rather than carrying it). Item 2: adapter matrix widened to six targets -- `cursor` (.cursor/skills/, claude-shaped) and `cline` (.clinerules/workflows/command-<id>.md, one flattened layout serving three assistants) -- both weak-tier channels carrying the Phase 187 negative-constraints injection; cursor joined the injected-sync contract, cline documented-excluded like gemini; the publication boundary held (the source framework is generic in every artifact).
+
+Change class: feature (v0.126.0 -> v0.127.0). Tests: 11 new (4 canary quadrants, 4 host resolutions, 1 compile integration, cursor sync + cline exclusion), red-then-green twice; full suite 2630 passed / 2 skipped; check_variant_drift OK (368 files). Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T1025-96f825, dist recompiled + drift clean. Audit: solo PASS at L2 depth (entry #471; zero violations; residual risk disclosed: a code-span hidden-html canary no longer blocks by default but stays operator-visible as WARN). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (security lint + distribution)
+
+**Content Hash**: `c197c95fdf43d79d0c8aee2161fb23ee08b95b2b07bdcbd3942709b843b75357`
+**Previous Hash**: `2f08a31766eca8eb6716683fb93a868bbe3e445c90eaf0332f3d0924273d3cd3`
+**Chain Hash (Merkle seal)**: `ae9588103f40fd6ee23b3dc503238d60c961f0706b92148d0b56b48c76922385`
+
+---
+
+### Entry #474: RESEARCH BRIEF -- Onboard tutorial bundle (GH #241)
+
+**Timestamp**: 2026-07-13T12:59:30Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #241
+**Session**: `2026-07-13T1255-08b7e7`
+**Brief**: docs/research-brief-onboard-tutorial-2026-07-13.md
+
+**Content Hash**: `d58121ed21fe1b041b9429b1f757291de63a359a8bef287a629ba163f88144d0`
+**Previous Hash**: `ae9588103f40fd6ee23b3dc503238d60c961f0706b92148d0b56b48c76922385`
+**Chain Hash (Merkle seal)**: `3048d54665a59c5fbe390211aa0fdbcf1510c6bcf9b8381c1ff89c9c114120c9`
+
+**Decision**: GH #241 fully unimplemented; the near-name skill (qor-onboard-codebase) does a DIFFERENT job (external-codebase intake) and extending it would complect two jobs -- a new meta workflow bundle is the un-braided shape. Conventions verified: bundle frontmatter shape from the sibling (type/phases/checkpoints/budget), delegation-table no-analysis rule, registration surfaces (SKILL_REGISTRY 29 skills, README badge Skills-29, delegation-table row), automatic corpus discovery by admission/matrix/dist_compile. Load-bearing risk identified: "define every term at first use" MUST be a glossary-LINKING discipline, not prose definition (the term-drift ABORT class). Acceptance is operator-executed; tests observe the testable core (admission, matrix, structural contract, no-definitional-prose guard). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #475: GATE TRIBUNAL -- Phase 189 onboard tutorial
+
+**Timestamp**: 2026-07-13T13:05:10Z
+**Phase**: GATE (Phase 189)
+**Author**: Judge
+**Risk Grade**: L1
+**Session**: `2026-07-13T1255-08b7e7`
+**Target**: docs/plan-qor-phase189-onboard-tutorial.md
+**Verdict**: PASS
+
+**Content Hash**: `3d3cfdfe169a13f49ffd2f0273af83f6367eb8f7cef61691ff98339a2dd53c97`
+**Previous Hash**: `3048d54665a59c5fbe390211aa0fdbcf1510c6bcf9b8381c1ff89c9c114120c9`
+**Chain Hash (Merkle seal)**: `5798d89c21354ed599aaffeb71f9b0b189575d63cb34e4925334dedf2fe9523b`
+
+**Decision**: Solo-mode tribunal. PASS with zero violations. Markdown-only pedagogy surface: a new meta workflow bundle that orchestrates (never analyzes -- delegation-table rule as LD-4), with the two skill-corpus failure classes pre-neutralized: size via references/ progressive disclosure, term drift via the LD-2 glossary-LINKING discipline plus a test-level guard. D4 is honestly scoped to the machine-checkable core (admission, matrix, structural contract, registration consistency, no-definitional-prose); the issue's full operator flow is recorded as an LLM-executed follow-up validation. The three plan_grep_lint WARNs are new-path notices for a file the plan declares NEW -- disclosed. Next: `/qor-implement`.
+
+---
+
+### Entry #476: IMPLEMENTATION -- Phase 189 onboard tutorial
+
+**Timestamp**: 2026-07-13T13:42:30Z
+**Phase**: IMPLEMENT (Phase 189)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T1255-08b7e7`
+**Intent Lock**: `LOCKED: 2026-07-13T1255-08b7e7`
+
+**Content Hash**: `0b2d9c842592d077e4aa8420e7f78ea6473ef47ec94238e70b645e06921458f0`
+**Previous Hash**: `5798d89c21354ed599aaffeb71f9b0b189575d63cb34e4925334dedf2fe9523b`
+**Chain Hash (Merkle seal)**: `0829f4c0456bb9a8ff89fc44ac9e40ca92056a8c5596c0bc2d0472256c59c8b2`
+
+**Decision**: Phase 189 implemented per plan, TDD-first (all five tests red before the skill existed), with TWO full-suite-discovered corpus-guard conformances: (1) test_persona_sweep requires every persona-tagged skill to carry evidence or a registry entry -- qor-onboard registered in LOAD_BEARING_PENDING_EVIDENCE with its tutorial-guide stance comment (the same path every sibling bundle takes); (2) test_bundles forbids a bundle body naming an unrelated bundle -- the intake-bundle disambiguation reworded to point at the skill registry instead. Skill: qor/skills/meta/qor-onboard/SKILL.md (5.9 KB body; narration + scan prose in references/ per progressive disclosure), phases [ideate..substantiate] in chain order, two operator checkpoints, Review Boundary hold at the publish menu, delegation-only constraint. Registrations: SKILL_REGISTRY meta 13 (total 30), README badge + catalog row, delegation-table bundle row. Corpus now 30 skills; dist propagated to all six variants (382 files, drift clean). 5 focused tests green twice; full suite 2635 passed / 2 skipped. Content hash binds qor/skills/meta/qor-onboard/SKILL.md. Next: `/qor-substantiate`.
+
+---
+
+### Entry #477: SESSION SEAL -- Phase 189 /qor-onboard tutorial bundle (v0.128.0)
+
+**Timestamp**: 2026-07-13T13:52:10Z
+**Phase**: SUBSTANTIATE (Phase 189; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase189-onboard-tutorial.md
+**Session**: `2026-07-13T1255-08b7e7`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `11b927254ae9`
+
+**Scope**: Phase 189 implemented (feature; research entry #474 -> GH #241). The 30th skill: meta workflow bundle `qor-onboard` walks a first-session operator through the full six-phase chain on ONE operator-confirmed trivial change -- improvement-scan menu (candidate classes safest-first, risk criteria, honest-stop on empty scan), per-phase narration beats, two checkpoints (after-ideate, after-audit), delegation-only constraint, and a hard Review Boundary hold at the publish menu. Term-at-first-use is a glossary-LINKING discipline with a test-level guard (the term-drift ABORT class cannot enter the tutorial files); the seal-time strict check itself flagged three term usages, auto-registered as glossary referenced_by lines via the live-check loop (the recorded Phase 178 pattern). Two corpus-guard conformances joined mid-implementation (persona-sweep registry entry with stance comment; bundle-isolation reword -- both existing conventions). Registrations: SKILL_REGISTRY meta 13 / total 30, README badge + catalog row, delegation-table bundle row.
+
+Change class: feature (v0.127.0 -> v0.128.0). Tests: 5 new (admission verdict, matrix broken-count with the new handoffs, structural bundle contract, badge==registry cross-surface invariant, no-definitional-prose guard), red before the skill existed, green twice; full suite 2635 passed / 2 skipped; check_variant_drift OK (382 files; the bundle rides all six variants). Substantiate gates: intent-lock VERIFIED, admission ADMITTED (both qor-substantiate and the new qor-onboard), matrix 140/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS (after referenced_by registration), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T1145-3ee3e2, dist recompiled + drift clean. Audit: solo PASS (entry #475; zero violations). The issue's full acceptance flow (fresh repo + seed + /qor-onboard -> sealed cycle) is operator-executed by nature and recorded here as the follow-up validation for the operator's first live tutorial run. Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (skill corpus)
+
+**Content Hash**: `8c8d174e34f105b89b7f3dac2c7e17aaddf5e22e17736a90884684d4876f5d1f`
+**Previous Hash**: `0829f4c0456bb9a8ff89fc44ac9e40ca92056a8c5596c0bc2d0472256c59c8b2`
+**Chain Hash (Merkle seal)**: `4b1f113d518f11d4a234d753cee99e5b1b58cd7814bdcdec1acb0a2de50dd07e`
+
+---
+
+### Entry #478: RESEARCH BRIEF -- Spec corpus Phase A (GH #239)
+
+**Timestamp**: 2026-07-13T14:10:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #239
+**Session**: `2026-07-13T1405-331255`
+**Brief**: docs/research-brief-spec-corpus-2026-07-13.md
+
+**Content Hash**: `ede621dd4308f63353d716f5c8a4907532e7031da19aadbb46bc8040eef80dc2`
+**Previous Hash**: `4b1f113d518f11d4a234d753cee99e5b1b58cd7814bdcdec1acb0a2de50dd07e`
+**Chain Hash (Merkle seal)**: `d75b94efbf4d7c1057955ecc14f03e7f25eedfe228ae09ced452e143760217f1`
+
+**Decision**: GH #239 fully unimplemented (no PR; no spec surfaces corpus-wide; plan schema carries no spec_deltas; the specification-drift audit category at audit.schema.json:40 is ready for Phase B routing). The issue self-sequences three phases and marks Phase A "small, shippable first" -- this cycle ships exactly that: spec_lint (grammar: Requirement headings with one RFC-2119 statement + GIVEN/WHEN/THEN scenarios) + spec_merge (heading-keyed deterministic ADDED/MODIFIED/REMOVED fold; absent-target and duplicate-ADDED are loud errors -- the dossier's concurrency-conflict surface) + qor/specs/ scaffold + the spec-grammar reference (non-doctrine name keeps the README inventory lock untouched; the fail-closed unregistered scan covers root+docs only, verified at governance_index.py:54-63). Phase B (schema + audit pre-pass + fold-inside-substantiate with ledger hash) and Phase C (per-requirement verify -> qa_evidence coverage pillar) DEFER with recorded grounds: seal-gate timing, near-cap SKILL.md budgets (qor-audit ~1.3 KB headroom), and substantiate schema change. Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #479: GATE TRIBUNAL -- Phase 190 spec corpus Phase A
+
+**Timestamp**: 2026-07-13T14:17:10Z
+**Phase**: GATE (Phase 190)
+**Author**: Judge
+**Risk Grade**: L1
+**Session**: `2026-07-13T1405-331255`
+**Target**: docs/plan-qor-phase190-spec-corpus-phase-a.md
+**Verdict**: PASS
+
+**Content Hash**: `b5c0e50c4d9d2dacc124eb9f45f2d7c4cdbdcdec44dab7c079dfb2037c439dd9`
+**Previous Hash**: `d75b94efbf4d7c1057955ecc14f03e7f25eedfe228ae09ced452e143760217f1`
+**Chain Hash (Merkle seal)**: `9122b928b52ffbcb72fa53341ebabd10bfec41df31af4fb364250f0b15a652d8`
+
+**Decision**: Solo-mode tribunal. PASS with zero violations. The cycle boundary is the design decision and it is right: Phase A ships pure tooling with no chain authority, so every identified risk (seal-gate timing, near-cap SKILL budgets, substantiate schema change) stays in the deferred Phase B. Merge determinism survives adversarial probing precisely because the three ambiguity holes are LOUD errors (absent MODIFIED/REMOVED target, duplicate ADDED) -- silent skips are how concurrent deltas would rot the corpus. The runtime-contract no-production-caller WARN on spec_merge is the A/B boundary made visible; disclosed here and to be resolved by Phase B wiring. Twelve behavioral tests including the cross-module composition guard. Next: `/qor-implement`.
+
+---
+
+### Entry #480: IMPLEMENTATION -- Phase 190 spec corpus Phase A
+
+**Timestamp**: 2026-07-13T14:52:20Z
+**Phase**: IMPLEMENT (Phase 190)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T1405-331255`
+**Intent Lock**: `LOCKED: 2026-07-13T1405-331255`
+
+**Content Hash**: `3b433e1edae92c55e3b4c9c0479808e1192bd2f7826a33e4dd5cf1c0f220952e`
+**Previous Hash**: `9122b928b52ffbcb72fa53341ebabd10bfec41df31af4fb364250f0b15a652d8`
+**Chain Hash (Merkle seal)**: `6d89cf326268fd7e7aac90cc6807f4f2e9b7c690b6f258adc60c2e84d00140c1`
+
+**Decision**: Phase 190 implemented per plan, TDD-first, no mid-red design changes. spec_lint: line-oriented Requirement/Scenario parser with four finding codes (missing-rfc2119, double-rfc2119, missing-scenario, malformed-scenario naming the absent GIVEN/WHEN/THEN bullet); CLI exits 0/1. spec_merge: heading-keyed block model; MODIFIED replaces whole blocks in place (unmodified neighbors keep exact bytes and order), REMOVED deletes, ADDED appends; the three ambiguity holes raise SpecMergeError naming the heading (absent MODIFIED target, absent REMOVED target, duplicate ADDED). qor/specs/README.md scaffold + qor/references/spec-grammar.md contract (non-doctrine name; curated GOVERNANCE_INDEX Tier 2 row). 14 tests green twice on first implementation (including cross-call byte determinism and the composition guard: merged output passes the lint); full suite 2649 passed / 2 skipped. Content hash binds qor/scripts/spec_merge.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #481: SESSION SEAL -- Phase 190 spec corpus Phase A (v0.129.0)
+
+**Timestamp**: 2026-07-13T14:58:40Z
+**Phase**: SUBSTANTIATE (Phase 190; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase190-spec-corpus-phase-a.md
+**Session**: `2026-07-13T1405-331255`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `0109bfc42d45`
+
+**Scope**: Phase 190 implemented (feature; research entry #478 -> GH #239 Phase A). The behavioral-spec toolchain ships with no chain authority: spec_lint (four finding codes over the Requirement/Scenario grammar) + spec_merge (heading-keyed deterministic fold; the three ambiguity holes -- absent MODIFIED target, absent REMOVED target, duplicate ADDED -- raise SpecMergeError naming the heading, so concurrent deltas conflict visibly instead of rotting the corpus) + qor/specs/ scaffold with the brownfield accretion rule + qor/references/spec-grammar.md contract (non-doctrine name preserves the README inventory lock; curated GOVERNANCE_INDEX Tier 2 row; schema-freeze lint clean). DEFERRED with recorded grounds (the issue's own sequencing): Phase B gate-chain wiring (plan spec_deltas, audit grammar pre-pass into the existing specification-drift category, fold-after-PASS inside the seal with ledger hash) and Phase C per-requirement verify (qa_evidence coverage-pillar mapping) -- the runtime-contract no-production-caller WARN on spec_merge is that boundary made visible, disclosed at audit.
+
+Change class: feature (v0.128.0 -> v0.129.0). Tests: 14 new (grammar quadrants incl. double-RFC-2119; merge ADDED/MODIFIED/REMOVED; three loud-error paths asserting type AND heading; order/bytes preservation; cross-call byte determinism; cross-module composition -- merged output passes the lint), red-then-green twice; full suite 2649 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 140/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS, governance-index advanced + enforce clean, schema-freeze 0 unjustified, feature-inventory 17/17 vs snapshot 2026-07-13T1255-08b7e7, dist recompiled + drift clean. Audit: solo PASS (entry #479; zero violations; 1 disclosed WARN). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance tooling)
+
+**Content Hash**: `07fa2b9f93f8b71bcdcd471f6c7fcdb0bceef5a35863b4dedeacef85da21b9d0`
+**Previous Hash**: `6d89cf326268fd7e7aac90cc6807f4f2e9b7c690b6f258adc60c2e84d00140c1`
+**Chain Hash (Merkle seal)**: `40e1a034c3942b67e392a8977e5bda07872f809c30c2c4896abbece318ef5573`
+
+---
+
+### Entry #482: RESEARCH BRIEF -- Repository snapshot contract (GH #270)
+
+**Timestamp**: 2026-07-13T15:07:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #270
+**Session**: `2026-07-13T1505-e508d3`
+**Brief**: docs/research-brief-snapshot-contract-2026-07-13.md
+
+**Content Hash**: `26b61e535b3870c3976f156cd21d90891596c4c43982c9fcf0f4ad0c0fa8ca38`
+**Previous Hash**: `40e1a034c3942b67e392a8977e5bda07872f809c30c2c4896abbece318ef5573`
+**Chain Hash (Merkle seal)**: `845c53a5e70f7d38403eca66982bb4548f5c22154ed0ede2ef848e6cc59a6976`
+
+**Decision**: GH #270 is unsatisfied by any existing surface: status_json (Phase 165) exports check verdicts only (id/ok/exit/summary; status_json.py:78-105) and governance_snapshot.py (Phase 175) is DNA backup -- a naming collision with zero overlap (the new module is snapshot_export). Every required field mapped to a verified repository-local source: pyproject version, .qor/session/current, ledger tail + last SEAL entry, .qor/gates/<sid>/ latest-iteration artifacts (Phase 173 resolution), shadow JSONL (event_type/severity/addressed line shape verified), governance-health findings, doc-currency rc; repo identifier from LOCAL git config with explicit unavailable-state degradation (no network). Contract publication follows the Phase 169 freeze rule (qor/gates/schema/repository_snapshot.schema.json + SCHEMA_REGISTRY.json registration; jsonschema already a dependency at validate_gate_artifact.py:16). Fail-safe rule made structural: every section is {state: ok|unknown|error, source, ...} -- absence never renders as health. Risk grade L2 (a published external contract). Operator note: an external oversight consumer has upstream dependencies on this contract. Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #483: GATE TRIBUNAL -- Phase 191 snapshot contract
+
+**Timestamp**: 2026-07-13T15:15:10Z
+**Phase**: GATE (Phase 191)
+**Author**: Judge
+**Risk Grade**: L2
+**Session**: `2026-07-13T1505-e508d3`
+**Target**: docs/plan-qor-phase191-snapshot-contract.md
+**Verdict**: PASS
+
+**Content Hash**: `9f9fbc800985e2d512651ed11838692f562b86669ceda60d98208aa56c93c51b`
+**Previous Hash**: `845c53a5e70f7d38403eca66982bb4548f5c22154ed0ede2ef848e6cc59a6976`
+**Chain Hash (Merkle seal)**: `3f857ed9a028b3834dc0e0bda1c65593494b2def15649f8c43c328589385fa4a`
+
+**Decision**: Solo-mode tribunal, L2 depth (published external contract with a known downstream consumer). PASS with zero violations. The two ways external contracts rot are answered structurally: silent-health inference is impossible by construction (the guard wrapper owns section rendering; every section carries state + source) and compatibility drift is fenced by the freeze-rule registry plus documented additive/breaking rules. Exit-code semantics correctly separate "export succeeded" from "repository healthy" -- conflating them would make degraded repositories unobservable. The stale-repository fixture is honestly scoped to the sections' own staleness reporting (disclosed). Both runtime-contract WARNs across this phase's plan are definitional for a consumer-facing CLI. Next: `/qor-implement`.
+
+---
+
+### Entry #484: IMPLEMENTATION -- Phase 191 snapshot contract
+
+**Timestamp**: 2026-07-13T15:44:20Z
+**Phase**: IMPLEMENT (Phase 191)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T1505-e508d3`
+**Intent Lock**: `LOCKED: 2026-07-13T1505-e508d3`
+
+**Content Hash**: `80a6f41ad5d9dd6426ab72364c8fdc9293d7715dbfefad09cf69bcb8113a976b`
+**Previous Hash**: `3f857ed9a028b3834dc0e0bda1c65593494b2def15649f8c43c328589385fa4a`
+**Chain Hash (Merkle seal)**: `cf45324ec2494c519859b5253a85a3ffe126b1f0369b67c243860e8d6b4ff579`
+
+**Decision**: Phase 191 implemented per plan, TDD-first, with ONE fixture-caught fail-safe deepening: the tampered-chain fixture exposed that an all-skipped ledger verification (zero verifiable entries, rc 0) rendered state ok -- the collector now renders `unknown` when nothing was verified, and the fixture was made genuinely verifiable so tampering yields `error` (the LD-2 rule proven by its own test matrix). snapshot_export: build_snapshot composes ten guarded sections (meta/session/lifecycle/gates/ledger/latest_seal/health/shadow/drift/findings), each {state, source, ...}; the health section reuses status_json's in-process runner; the gates section rides the Phase 173 latest-iteration resolver; CLI --out with exit semantics separating export success from repository health. Schema registered in SCHEMA_REGISTRY (freeze lint 0 unjustified); snapshot-contract.md reference + glossary entry + GOVERNANCE_INDEX row. 9 tests green twice (live-value healthy path over THIS repo, jsonschema conformance, four degraded fixtures, determinism modulo generated_ts, tree-hash read-only proof, CLI); full suite 2658 passed / 2 skipped. Content hash binds qor/scripts/snapshot_export.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #485: SESSION SEAL -- Phase 191 repository snapshot contract (v0.130.0)
+
+**Timestamp**: 2026-07-13T15:58:30Z
+**Phase**: SUBSTANTIATE (Phase 191; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase191-snapshot-contract.md
+**Session**: `2026-07-13T1505-e508d3`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `e0887f5e9e86`
+
+**Scope**: Phase 191 implemented (feature; research entry #482 -> GH #270). External operator surfaces get one versioned, read-only JSON contract: snapshot_export composes ten guarded sections, each {state: ok|unknown|error, source, ...} -- the fail-safe rule is structural (the guard wrapper owns rendering), and its own fixture matrix PROVED it mid-implementation: the tampered-chain fixture exposed an all-skipped ledger verification rendering ok; the collector now renders unknown for zero-verified and error for failed verification. Schema at qor/gates/schema/repository_snapshot.schema.json (schemaVersion 1, additive-compatible, consumers ignore unknown fields), registered in SCHEMA_REGISTRY per the freeze rule with the plan's new_ceremony_artifacts justification; compatibility contract + state semantics at qor/references/snapshot-contract.md (GOVERNANCE_INDEX Tier 2 row, glossary term homed). Deterministic modulo generated_ts, read-only (tree-hash proven), zero network; exit semantics separate export success from repository health. Enterprise concepts excluded per the issue boundary. This seal also carries the RELEASE documentation pass over all README surfaces (operator-directed): badges (Doctrines 38, Ledger 485), the six-host support line + layouts table + install line (cursor/cline from Phase 188), workflow-bundle catalog rows (qor-onboard/qor-onboard-codebase), and the operations.md install row.
+
+Change class: feature (v0.129.0 -> v0.130.0). Tests: 9 new (live-value healthy path over THIS repository, jsonschema conformance, four degraded fixtures asserting specific section states with export still succeeding, byte determinism modulo generated_ts, tree-hash read-only proof, CLI), red-then-green twice; full suite 2658 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 140/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS, governance-index advanced + enforce clean, schema-freeze 0 unjustified, feature-inventory 17/17 vs snapshot 2026-07-13T1405-331255, dist recompiled + drift clean (382 files). Audit: solo PASS at L2 depth (entry #483; zero violations; 1 definitional WARN disclosed). Seal commit: LOCAL checkpoint; operator has authorized the consolidated release sequence (single v0.130.0 tag; intermediate versions were never tagged or published).
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (external contract)
+
+**Content Hash**: `2733471242b9de6e877a9b63023b00e736ba3e53bde26c26d438fc28afe50f80`
+**Previous Hash**: `cf45324ec2494c519859b5253a85a3ffe126b1f0369b67c243860e8d6b4ff579`
+**Chain Hash (Merkle seal)**: `c171473c1891338eee4cb58b4f045843158ba713c9b333c92c4ad23878b1e2ce`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 172; v0.119.0; publication-boundary doctrine + retroactive remediation; auto-ship authorized, PyPI publish held for operator)
+*Session: SEALED* (Phase 191; v0.130.0; repository snapshot contract; consolidated release sequence authorized by operator)

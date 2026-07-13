@@ -1,0 +1,109 @@
+---
+name: qor-deep-audit-recon
+type: workflow-bundle
+description: >-
+  Reconnaissance + synthesis + verification rounds for a production gap audit. Output is a verified RESEARCH_BRIEF.md ready for remediation planning. Use as the first half of /qor-deep-audit when you want a hard checkpoint between investigation and action.
+autonomy: autonomous
+tone_aware: false
+phases: [recon, synthesis, verification]
+checkpoints: [after-recon, after-synthesis, after-verification]
+budget:
+  max_phases: 3
+  abort_on_token_threshold: 0.7
+  max_iterations_per_phase: 3
+metadata:
+  category: governance
+  author: MythologIQ
+  source:
+    repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
+    path: qor/skills/meta/qor-deep-audit-recon
+phase: meta
+gate_reads: ""
+gate_writes: ""
+---
+
+# /qor-deep-audit-recon — Recon + Synthesis + Verification
+
+<skill>
+  <trigger>/qor-deep-audit-recon</trigger>
+  <phase>meta (workflow bundle, recon half)</phase>
+  <persona>Governor</persona>
+  <output>RESEARCH_BRIEF.md (verified gap inventory, ready for remediation)</output>
+</skill>
+
+## Purpose
+
+The investigation half of `/qor-deep-audit`. Identifies and verifies production gaps without proposing or executing fixes. Output is a single `RESEARCH_BRIEF.md` that the operator reviews before deciding to invoke `/qor-deep-audit-remediate`.
+
+## Environment (Phase 90 wiring; GH #79)
+
+```bash
+# Phase 90 preflight (GH #79): surface qor-logic module misconfiguration
+# once at skill entry. WARN-only -- Phase 75 SKIP fallback still applies.
+if ! python -c "import qor.reliability" 2>/dev/null; then
+  echo "WARN [qor-logic]: modules not importable from $(command -v python). Phase 3 Round 0 (Reachability Probe) will record SKIP per Phase 75. Activate the venv where 'pip show qor-logic' resolves, or 'pipx install qor-logic', to restore the integrity gate." >&2
+fi
+```
+
+This skill invokes `qor-logic scripts reachability_probe` (Phase 96 wiring; GH #108) to run the recon reachability probe at Phase 3 Round 0. The Python interpreter on PATH must have `qor-logic` importable; the preflight above verifies this once at skill entry.
+
+If the import check fails, activate the venv where `pip show qor-logic` resolves, or run `pipx install qor-logic` for a global install. On hosts without Python or where `qor-logic` is not installable (e.g., pure non-Python archetypes), Phase 75 declarative-tolerance applies — the missing-prerequisite gates record SKIP in the seal entry and emit `gate_skipped_prerequisite_absent` events per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-HalfSealedClaim-A`. The Phase 90 preflight surfaces the misconfiguration once at skill entry so the SKIP cascade is operator-visible instead of silent.
+
+## When to use
+
+- You want to scope a production gap without committing to remediation
+- You need an external review of the gap inventory before action
+- You want to absorb an external codebase and understand its true state first
+
+## Phases
+
+### Phase 1: RECONNAISSANCE
+
+Launch parallel subagent investigations per the matrix in `qor/skills/meta/qor-deep-audit/SKILL.md` §Phase 1. Each subagent operates in its own context window; main context receives a structured summary with file:line citations.
+
+**CHECKPOINT — after-recon**: Summarize raw findings count + risk distribution. Prompt: continue / branch (`/qor-organize` if structural issues dominate) / stop with resume marker.
+
+### Phase 2: SYNTHESIS
+
+Compile findings into `RESEARCH_BRIEF.md` per the schema in `qor-deep-audit` §Phase 2 (Executive Summary, Categories, Gap IDs, Summary Matrix, Sprint Plan).
+
+**CHECKPOINT — after-synthesis**: Surface the Summary Matrix. Prompt: continue / scope-down / stop.
+
+### Phase 3 Round 0: Reachability Probe (Phase 96 wiring; GH #108)
+
+Before grading any finding HIGH or production-critical, run the reachability probe against the cited surface. Any single probe failure downgrades the finding to `reachability-gap` classification until end-to-end runtime evidence is added. The probe is WARN-only in V1; Phase 99 V2 layers blocking enforcement in `/qor-audit` Step 3 Infrastructure Alignment Pass.
+
+The detailed five-check protocol (importability, test collection, caller graph, packaging, interface match), the downgrade rule, and the sibling consumer workspace's Phase 371 originating case study live in `qor/references/recon-reachability-probe.md`. The probe is invoked via `qor-logic scripts reachability_probe --claims <claims.json>`; see `SG-GrepShapedRunclaim-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` for the binding doctrine.
+
+### Phase 3: VERIFICATION (max 3 rounds, per budget)
+
+Three rounds of progressive verification per `qor-deep-audit` §Phase 3. After each round update `RESEARCH_BRIEF.md` with CONFIRMED/REFUTED/PARTIAL marks.
+
+**CHECKPOINT — after-verification**: Final brief ready. Prompt: invoke `/qor-deep-audit-remediate` now / hand off the brief / stop.
+
+## Constraints
+
+- **NEVER** propose or execute fixes — that's `/qor-deep-audit-remediate`
+- **NEVER** skip verification rounds
+- **ALWAYS** delegate investigation to subagents (preserves main context budget)
+- **ALWAYS** cite file:line for every claim
+- **ALWAYS** surface checkpoints
+- **MINIMUM** 3 verification rounds before completion
+
+## Success Criteria
+
+- [ ] All subsystems explored via subagents
+- [ ] `RESEARCH_BRIEF.md` exists with categorized, ID'd, verified gaps
+- [ ] All 3 checkpoints surfaced
+- [ ] Each gap has CONFIRMED/REFUTED/PARTIAL status
+- [ ] No budget breaches without resume marker
+
+## Delegation
+
+Per `qor/gates/delegation-table.md`:
+
+- **Brief complete + ready to act** → `/qor-deep-audit-remediate`
+- **Structural issues dominate findings** → `/qor-organize` first, then re-recon
+- **Out-of-scope findings surface** → halt and escalate to user; do NOT silently scope-creep
+
+See `qor/gates/workflow-bundles.md` for bundle protocol details.

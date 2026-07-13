@@ -1,7 +1,0 @@
-{
-  "alg": "HMAC-SHA256",
-  "hmac_tag": "27305ee942f9c9682d11a0ab205d73e15d2b35b86561be78581c5510c0e10212",
-  "payload_sha256": "999569d9b97ac0764bd09faf1a8a75eeeb5a1175219c6d0f0386c069e001dea7",
-  "phase": "ideation",
-  "session_id": "ideate-e2e"
-}

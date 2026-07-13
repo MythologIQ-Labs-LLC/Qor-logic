@@ -1,0 +1,48 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0640-f49940",
+  "ts": "2026-07-13T06:41:56Z",
+  "questions": [
+    "How many bytes of headroom remain and what prose is safely movable?",
+    "Which tests lock which tokens (the constraint set)?",
+    "Is the 30 KB aspiration achievable without spine restructuring?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "audit 40,890 / substantiate 40,935 vs EXCEEDED 40,960 (verified live)",
+      "source": "qor/scripts/skill_size_budget_lint.py:24"
+    },
+    {
+      "id": "F2",
+      "summary": "guardrail inventory: corpus-consolidation spine locks + tag-timing + seal-flow + capability declarations + Phase 176 staging/budget + reference resolution",
+      "source": "tests/test_skill_corpus_consolidation.py"
+    },
+    {
+      "id": "F3",
+      "summary": "~2-3 KB rationale per skill movable into already-cited references",
+      "source": "qor/skills/governance/qor-audit/references/adversarial-mode.md"
+    },
+    {
+      "id": "F4",
+      "summary": "30 KB aspiration deferred: failure mode removed by >=2 KB headroom; spine restructuring risk not justified; new 39 KB invariant test locks the outcome",
+      "source": "docs/research-brief-skill-progressive-disclosure-2026-07-13.md"
+    }
+  ],
+  "sources": [
+    "qor/skills/governance/qor-audit/SKILL.md",
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "tests/test_skill_corpus_consolidation.py",
+    "tests/test_substantiate_staging_gates.py",
+    "qor/scripts/skill_size_budget_lint.py"
+  ],
+  "brief_path": "docs/research-brief-skill-progressive-disclosure-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.122.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T06:41:56Z"
+  }
+}

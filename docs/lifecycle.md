@@ -12,7 +12,7 @@ Defined in [qor/gates/chain.md](../qor/gates/chain.md). Each phase has:
 
 - A **skill** that executes it (`/qor-<phase>` or a bundle).
 - A **persona** that embodies the skill's role (Governor, Judge, Specialist, Fixer, Orchestrator).
-- A **gate artifact** written to `.qor/gates/<session_id>/<phase>.json`, validated against `qor/gates/schema/<phase>.schema.json`.
+- A **gate artifact** written to `.qor/gates/<session_id>/<phase>-iter<N>.json` (immutable, one per emission; Phase 173) with a byte-identical latest copy at `.qor/gates/<session_id>/<phase>.json`, validated against `qor/gates/schema/<phase>.schema.json`.
 - A **prior-phase check** at Step 0 that reads the prior phase's artifact and aborts on absence (operator may override but override is logged as a severity-1 `gate_override` shadow event).
 
 ## Per-phase contracts

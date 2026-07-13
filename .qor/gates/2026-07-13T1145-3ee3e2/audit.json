@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T1145-3ee3e2",
+  "ts": "2026-07-13T10:51:35Z",
+  "target": "docs/plan-qor-phase188-canary-code-span-hosts.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "target_content_hash": "c197c95fdf43d79d0c8aee2161fb23ee08b95b2b07bdcbd3942709b843b75357",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.126.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T10:51:35Z"
+  }
+}

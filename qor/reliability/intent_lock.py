@@ -51,16 +51,33 @@ def _audit_has_pass(audit_path: Path) -> bool:
     Phase 53 (LOW-4): anchored multiline regex. Accepts ``Verdict: PASS`` or
     ``VERDICT: PASS`` (or ``-`` separator) on its own line. Rejects substring
     occurrences of "PASS" inside narrative prose ("If the test does not PASS,
-    then ...") that the prior loose regex incorrectly admitted.
+    then ...") that the prior loose regex incorrectly admitted. Phase 183
+    (GH #263): markdown-heading forms (``## VERDICT: PASS``) are accepted --
+    headings are structural declarations that cannot appear inside a prose
+    sentence, so the anti-prose anchors are preserved.
     """
     body = audit_path.read_text(encoding="utf-8", errors="replace")
     return bool(
         re.search(
-            r"^\**(?:Verdict|VERDICT)\**\s*[:\-]\s*\**PASS\**\s*$",
+            r"^(?:#{1,6}[ \t]*)?\**(?:Verdict|VERDICT)\**\s*[:\-]\s*\**PASS\**\s*$",
             body,
             re.MULTILINE,
         )
     )
+
+
+def _verdict_hint(audit_path: Path) -> str:
+    """Phase 183 (GH #263): distinguish 'verdict present but non-canonical'
+    from 'genuinely not PASS' in the error MESSAGE only -- the loose probe
+    never influences the verdict decision."""
+    body = audit_path.read_text(encoding="utf-8", errors="replace")
+    if re.search(r"verdict[^\n]*pass", body, re.IGNORECASE):
+        return (
+            "ERROR: audit verdict line found but not in a canonical form; "
+            "expected 'Verdict: PASS' (bold or #-heading forms accepted) "
+            "on its own line"
+        )
+    return "ERROR: audit not PASS"
 
 
 def _fingerprint_path(repo: Path, session: str) -> Path:
@@ -79,7 +96,7 @@ def capture(args: argparse.Namespace) -> int:
         print(f"ERROR: audit not found: {audit}", file=sys.stderr)
         return 1
     if not _audit_has_pass(audit):
-        print("ERROR: audit not PASS", file=sys.stderr)
+        print(_verdict_hint(audit), file=sys.stderr)
         return 1
 
     def _relativize(p: Path) -> str:

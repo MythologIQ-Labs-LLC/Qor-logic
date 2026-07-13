@@ -24,9 +24,13 @@ def test_env_restored_to_prior_value(monkeypatch):
 
 
 def test_skill_param_avoids_shell_prefix_provenance_error(tmp_path, monkeypatch):
+    from qor.scripts import validate_gate_artifact as vga
+
     monkeypatch.delenv("QOR_GATE_PROVENANCE_OPTIONAL", raising=False)
     monkeypatch.delenv("QOR_SKILL_ACTIVE", raising=False)
-    monkeypatch.setenv("QORLOGIC_PROJECT_DIR", str(tmp_path))
+    monkeypatch.setenv("QOR_ROOT", str(tmp_path))
+    monkeypatch.setattr(gate_chain, "GATES_DIR", tmp_path / ".qor" / "gates")
+    monkeypatch.setattr(vga, "GATES_DIR", tmp_path / ".qor" / "gates")
     payload = {"ts": "2026-01-01T00:00:00Z", "target": "x", "verdict": "PASS"}
     sid = "2026-01-01T0000-aaaaaa"
     # No ambient env + no skill= -> provenance gate fires.

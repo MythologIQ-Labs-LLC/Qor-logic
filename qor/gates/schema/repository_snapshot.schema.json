@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Qor-logic repository governance snapshot",
+  "description": "Versioned read-only export of repository-local governance state (GH #270; Phase 191). Derived read model: ledgers and gate artifacts remain authoritative. Consumers MUST ignore unknown fields; additive changes keep schemaVersion, breaking changes bump it.",
+  "type": "object",
+  "required": ["meta", "session", "lifecycle", "gates", "ledger",
+               "latest_seal", "health", "shadow", "drift", "findings"],
+  "properties": {
+    "meta": {
+      "allOf": [{"$ref": "#/$defs/section"}],
+      "required": ["schemaVersion", "qor_logic_version", "generated_ts"],
+      "properties": {
+        "schemaVersion": {"const": "1"},
+        "qor_logic_version": {"type": "string"},
+        "repo_identifier": {"type": ["string", "null"]},
+        "generated_ts": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"}
+      }
+    },
+    "session": {"$ref": "#/$defs/section"},
+    "lifecycle": {"$ref": "#/$defs/section"},
+    "gates": {"$ref": "#/$defs/section"},
+    "ledger": {"$ref": "#/$defs/section"},
+    "latest_seal": {"$ref": "#/$defs/section"},
+    "health": {"$ref": "#/$defs/section"},
+    "shadow": {"$ref": "#/$defs/section"},
+    "drift": {"$ref": "#/$defs/section"},
+    "findings": {
+      "allOf": [{"$ref": "#/$defs/section"}],
+      "properties": {
+        "count": {"type": "integer", "minimum": 0},
+        "items": {"type": "array", "items": {"type": "object"}}
+      }
+    }
+  },
+  "$defs": {
+    "section": {
+      "type": "object",
+      "required": ["state", "source"],
+      "properties": {
+        "state": {"enum": ["ok", "unknown", "error"]},
+        "source": {"type": ["string", "null"]},
+        "reason": {"type": "string"}
+      }
+    }
+  }
+}

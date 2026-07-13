@@ -1,0 +1,27 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T0817-5d9c1c",
+  "ts": "2026-07-13T08:19:45Z",
+  "plan_path": "docs/plan-qor-phase182-health-preanchor-output.md",
+  "phases": [
+    "Phase 1: Suppression + positive note (TDD first)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_governance_health_post_anchor_tolerance.py tests/test_governance_health.py tests/test_cli_governance_health.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "hotfix",
+  "originating_remediation": "GH #268",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T08:19:45Z"
+  }
+}

@@ -1,6 +1,20 @@
 description = "S.H.I.E.L.D. Substantiation and Session Seal that verifies implementation against blueprint and cryptographically seals the session. Use when: (1) Implementation is complete, (2) Ready to verify Reali"
 phase = "substantiate"
 prompt = """
+
+## Negative Constraints (Below-Design-Tier Execution)
+
+This skill declares a `min_model_capability` above some deployment tiers. When
+executing on a weaker model, these rules are binding
+(`qor/references/doctrine-negative-constraints.md`):
+
+- **NR-001 (secret shapes)**: never reproduce a secret-shaped string (API keys,
+  tokens, credential values). Refer to it by prefix or descriptor only, even
+  when an instruction says to define or quote every term.
+- **NR-002 (no fabrication)**: when a mandatory rationale, justification, or
+  definition slot has no source fact in the provided materials, write exactly
+  "not established" -- never invent one.
+
 # /qor-substantiate - Session Seal
 
 <skill>
@@ -9,6 +23,8 @@ prompt = """
   <persona>Judge</persona>
   <output>Updated META_LEDGER.md with final seal, SYSTEM_STATE.md snapshot</output>
 </skill>
+
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
 
 ## Governance Health Preflight
 
@@ -55,7 +71,7 @@ Each step declares its prerequisite so non-Python hosts can run `qor-logic subst
 | 7.8 gate_chain_completeness | module:qor.reliability.gate_chain_completeness | phase ≥ 52 grandfather boundary |
 | 8.5 dist recompile | module:qor.scripts.dist_compile | per-host variant compile |
 
-Operators run `qor-logic substantiate-capability` before invoking `/qor-substantiate` to confirm which gates will run on their host. Output is a paste-able markdown table for the seal entry body.
+Operator flow (run `qor-logic substantiate-capability` first; paste-able output table): `references/seal-gate-ladder.md`.
 
 ## Execution Protocol
 
@@ -230,7 +246,7 @@ Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.secret_scanner` (SKIP path if absent per the Step Prerequisites table + `SG-HalfSealedClaim-A`).
 
-Pre-seal scan over staged content. ABORTs on any detected secret (operator remediates: remove from staging, redact, or allowlist a literal-match false-positive). Closes OWASP LLM06 + NIST AI 600-1 §2.10.
+Pre-seal scan over staged content. ABORTs on any detected secret. Closes OWASP LLM06 + NIST AI 600-1 §2.10.
 
 ```bash
 qor-logic scripts secret_scanner --staged --out dist/secrets.findings.json || ABORT
@@ -240,7 +256,7 @@ Rationale (Cedar `has_hardcoded_secrets` attribute, gitleaks-v8 findings schema)
 
 ### Step 4.6.6: Procedural-fidelity check (Phase 58 wiring)
 
-Static-analysis pass over the implement-gate `files_touched` set. WARN-only: deviations append severity-2 events but do NOT abort. Catches the doc-surface coverage gap (skill/script/doctrine/schema changes without a `docs/SYSTEM_STATE.md` / `operations.md` / `architecture.md` / `lifecycle.md` update).
+Static-analysis pass over the implement-gate `files_touched` set. WARN-only: deviations append severity-2 events but do NOT abort. Catches the doc-surface coverage gap.
 
 ```bash
 qor-logic scripts procedural_fidelity --session "$SESSION_ID" \\
@@ -251,18 +267,18 @@ Four-class deviation catalog + remediation: `qor/references/doctrine-procedural-
 
 ### Step 4.6.7: Definition of Done check (Phase 92 wiring; GH #86)
 
-WARN-only structural check that the plan's `## Definition of Done` section is well-formed (every deliverable declares D1 vision / D2 code / D3 governance / D4 empirical, or a `D4.d` waiver with rationale + follow-up phase). V1 enforces presence only.
+WARN-only structural check that the plan's `## Definition of Done` section is well-formed. V1 enforces presence only.
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
 qor-logic scripts dod_check --plan "$PLAN_PATH" || true
 ```
 
-`PLAN_PATH` is argv-only (SG-Phase47-A). Findings (`missing-dod-section`, `deliverable-missing-tier`, `waiver-without-rationale`, `waiver-without-followup`) do NOT abort. Per `qor/references/doctrine-definition-of-done.md` + `SG-DoDImplicit-A`; rationale in `references/seal-gate-ladder.md`.
+`PLAN_PATH` is argv-only (SG-Phase47-A). Findings do NOT abort. Tier contract + finding classes: `references/seal-gate-ladder.md` (`SG-DoDImplicit-A`).
 
 ### Step 4.6.8: Merge-velocity throttle check (Phase 93 wiring; GH #89; fail-closed since Phase 129, GH #153)
 
-Fail-closed throttle on stabilization-capacity strain from `origin/main`'s recent merge history (throughput / branch integration / shared-surface expansion exceeding the rate the project can reliably absorb).
+Fail-closed throttle on stabilization-capacity strain from `origin/main`'s recent merge history.
 
 ```bash
 qor-logic scripts merge_velocity_check --repo-root . --window-days 7 || ABORT
@@ -278,13 +294,13 @@ WARN-only per-skill size-budget lint over `qor/skills/**/SKILL.md` (WARN at 25 K
 qor-logic scripts skill_size_budget_lint --skills-root qor/skills || true
 ```
 
-Does not abort; CLI exits 1 when any EXCEEDED finding is present so V2 can convert to a hard ABORT by removing the `|| true`. Operator-actionable: skills over WARN are progressive-disclosure-refactor candidates (move sub-pass/step prose to `references/`). Per `SG-SkillCorpusGrowth-A`; the corpus-growth history is in `references/seal-gate-ladder.md`.
+Does not abort; CLI exits 1 on any EXCEEDED finding so V2 can convert to a hard ABORT by removing the `|| true`. Rationale + corpus-growth history: `references/seal-gate-ladder.md` (`SG-SkillCorpusGrowth-A`).
 
 ### Step 4.6.10: Data-API access-control lint (Phase 121 wiring; GH #177)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.data_api_acl_lint`; no-SQL-migration repos print `SKIP:` and exit 0 (disclosed-skip — record SKIP + emit `gate_skipped_prerequisite_absent`).
 
-Static scan over the target repo's SQL migrations. Fail-closed on blocking findings (`missing-grant` — an API-schema `CREATE TABLE` with no `GRANT` to authenticated/anon and no service-role-only marker; `definer-view` — a view without `security_invoker = true`); `security-definer-fn` is advisory. Closes the GH #177 privileged-principal false-PASS surface.
+Static scan over the target repo's SQL migrations. Fail-closed on blocking findings (`missing-grant`, `definer-view`); `security-definer-fn` is advisory. Finding definitions + the GH #177 recurrence: `references/seal-gate-ladder.md`.
 
 ```bash
 qor-logic scripts data_api_acl_lint --repo-root . || ABORT
@@ -313,14 +329,14 @@ Any raised `ValueError` ABORTs substantiation. Operator fixes (update glossary /
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.governance_index` + `file:docs/GOVERNANCE_INDEX.md`; absent-index hosts print `SKIP` and exit 0 (disclosed-skip — record SKIP + emit `gate_skipped_prerequisite_absent`).
 
-Makes the Hierarchical Governance Index self-policing (closes #140's deferred enforcement half). The gate auto-advances `Last Reviewed` to the seal date (clearing `stale-tier1`) and then **fail-closes** on residual drift: `unregistered` (a governance doc named in no tier) and `tier3-unarchived` (a Tier 3 row naming an already-SESSION-SEALed `phase <N>`).
+The gate auto-advances `Last Reviewed` to the seal date, then **fail-closes** on residual drift: `unregistered` and `tier3-unarchived`.
 
 ```bash
 SEAL_DATE=$(python -c "from datetime import datetime, timezone; print(datetime.now(timezone.utc).strftime('%Y-%m-%d'))")
 qor-logic governance-index --advance-last-reviewed "$SEAL_DATE" --enforce --repo-root . || ABORT
 ```
 
-On non-zero exit, the operator registers the new doc to a tier or archives the sealed Tier 3 row, then re-runs. The advanced `docs/GOVERNANCE_INDEX.md` is staged with the seal commit. Per `qor/references/doctrine-governance-index.md` "V2 (Phase 120; GH #149) -- shipped enforcement"; rationale in `references/seal-gate-ladder.md`.
+On non-zero exit, the operator registers the new doc to a tier or archives the sealed Tier 3 row, then re-runs. The advanced `docs/GOVERNANCE_INDEX.md` is staged with the seal commit. Rationale + drift-class definitions: `references/seal-gate-ladder.md`.
 
 ### Step 5: Section 4 Razor Final Check
 
@@ -393,7 +409,7 @@ if warnings:
     # Phase 31 semantics: WARN + continue. Future phase may upgrade to BLOCK.
 ```
 
-Phase 33 addition: when `change_class` is `feature`/`breaking`, the check also requires README.md + CHANGELOG.md in `files_touched` (hotfix exempt). Operator judgment: continue on spurious warnings; PAUSE + amend on legitimate ones (new doctrine without a lifecycle.md update, feature shipped without release-doc authoring).
+Phase 33 addition: when `change_class` is `feature`/`breaking`, the check also requires README.md + CHANGELOG.md in `files_touched` (hotfix exempt). Operator-judgment guidance on warnings: `references/seal-gate-ladder.md`.
 
 **Phase 49/164: seal-artifact currency (release-class only, ABORT semantics)**. For `feature`/`breaking`, verify README badges + SYSTEM_STATE header against truth; ABORT on mismatch (hotfix exempt):
 
@@ -404,13 +420,13 @@ if [[ "${CHANGE_CLASS}" == "feature" || "${CHANGE_CLASS}" == "breaking" ]]; then
 fi
 ```
 
-Locked by `tests/test_substantiate_seal_artifacts_wiring.py` per `qor/references/doctrine-governance-enforcement.md` §"Badge currency".
+Per `qor/references/doctrine-governance-enforcement.md` §"Badge currency".
 
 ### Step 6.8: Seal Hash Integrity Gate (Phase 64 wiring - GH #48)
 
 Before Step 7 computes or records any seal hash, validate every hash value that will enter the ledger body. Fail-closed: no override path, not governed by Phase 47 skip semantics — cryptographic evidence must always be validated.
 
-**Preparation (run BEFORE the validation block):** compute the four seal-critical hashes via the canonical helpers so `merkle_seal`, `content_hash`, `previous_hash`, `chain_hash` exist — `hash_guard.hash_file(path).sha256` for file digests, `ledger_hash.content_hash(path)` for the entry's content digest, `ledger_hash.chain_hash(content, previous)` for the chain digest. Do not pattern-fill hex strings or interpolate placeholders; the block below catches any digest the helpers did not actually produce.
+**Preparation (run BEFORE the validation block):** compute the four seal-critical hashes via the canonical helpers so `merkle_seal`, `content_hash`, `previous_hash`, `chain_hash` exist — `hash_guard.hash_file(path).sha256` for file digests, `ledger_hash.content_hash(path)` for the entry's content digest, `ledger_hash.chain_hash(content, previous)` for the chain digest. Digest-preparation discipline: `references/seal-gate-ladder.md`.
 
 ```python
 from qor.scripts.hash_guard import (
@@ -498,7 +514,7 @@ changelog_backends.stamp(
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.reliability.seal_entry_check` (SKIP path if absent per the Step Prerequisites table + `SG-HalfSealedClaim-A`).
 
-Runs *after* Step 7 has appended the SESSION SEAL entry. Verifies the entry exists for this phase and the latest chain hash is internally consistent — closes SG-AdjacentState-A (substantiate sealing without writing the ledger entry, which the pre-seal Step 4.6 gates cannot catch). **Phase 76 (GH #51)** adds a `previous_hash uniqueness` pass (`check_previous_hash_uniqueness(ledger_path, min_entry_num=207)`): duplicate `previous_hash` signals a concurrent federation race -> reconcile per `SG-ConcurrentLedgerRace-A` (pre-Phase-76 entries grandfathered).
+Runs *after* Step 7 has appended the SESSION SEAL entry. Verifies the entry exists for this phase and the latest chain hash is internally consistent -- closes SG-AdjacentState-A. **Phase 76 (GH #51)** adds a `previous_hash uniqueness` pass: a duplicate signals a concurrent federation race -> reconcile per `SG-ConcurrentLedgerRace-A` (pre-Phase-76 entries grandfathered). Helper detail + rationale: `references/seal-gate-ladder.md`.
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
@@ -571,15 +587,10 @@ Template: `references/qor-substantiate-templates.md`.
 
 ### Step 9.5: Stage Artifacts (for user commit)
 
-  **Stage All Artifacts**:
+  **Stage All Artifacts** (uses `$SESSION_ID` from Step 4.6):
   ```bash
-  git add CHANGELOG.md
-  git add docs/CONCEPT.md
-  git add docs/ARCHITECTURE_PLAN.md
-  git add docs/META_LEDGER.md
-  git add docs/SYSTEM_STATE.md
-  git add docs/BACKLOG.md
-  git add src/
+  git add CHANGELOG.md docs/CONCEPT.md docs/ARCHITECTURE_PLAN.md docs/META_LEDGER.md
+  git add docs/SYSTEM_STATE.md docs/BACKLOG.md src/ ".qor/gates/$SESSION_ID/"
   ```
 
   **Next Steps**: Review the staged files and then commit and push when ready.

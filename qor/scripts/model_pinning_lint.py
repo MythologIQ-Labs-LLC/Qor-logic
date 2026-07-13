@@ -24,6 +24,14 @@ from pathlib import Path
 # Canonical capability tier ordering. Lower index = lower capability.
 _CAPABILITY_ORDER: tuple[str, ...] = ("haiku", "sonnet", "opus")
 
+# Phase 187 (GH #243): skills with mandatory verdict/rationale/definition
+# slots must point at the negative-constraints doctrine. Kept as an
+# independent copy of dist_compile's set (equality is test-locked) so the
+# lint stays import-light.
+_FABRICATION_RISK_SKILLS = {"qor-audit", "qor-plan", "qor-substantiate"}
+
+_GUARD_POINTER = "doctrine-negative-constraints"
+
 _FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 _LIST_KEY_RE = re.compile(
     r"^model_compatibility\s*:\s*\[([^\]]*)\]",
@@ -111,7 +119,31 @@ def check(
         warning = _check_one_skill(skill, current_model)
         if warning:
             warnings.append(warning)
+        guard = _check_fabrication_guard(skill)
+        if guard:
+            warnings.append(guard)
     return warnings
+
+
+def _check_fabrication_guard(skill_path: Path) -> ModelPinningWarning | None:
+    """Phase 187 (GH #243): risk skills must carry the doctrine pointer."""
+    skill_name = skill_path.parent.name
+    if skill_name not in _FABRICATION_RISK_SKILLS:
+        return None
+    text = skill_path.read_text(encoding="utf-8", errors="replace")
+    if _GUARD_POINTER in text:
+        return None
+    return ModelPinningWarning(
+        skill=skill_name,
+        declared_min=None,
+        declared_compatibility=tuple(),
+        current_model=None,
+        reason=(
+            "fabrication-risk skill lacks the negative-constraints pointer; "
+            "add the doctrine-negative-constraints reference line "
+            "(NR-001 secret shapes / NR-002 no fabrication)"
+        ),
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
