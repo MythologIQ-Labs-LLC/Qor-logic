@@ -12,6 +12,9 @@ on:
     paths-ignore:
       - "docs/archive/**"
 
+permissions:
+  contents: read
+
 concurrency:
   group: pr-lint-${{ github.event.pull_request.number }}
   cancel-in-progress: true
