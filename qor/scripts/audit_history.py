@@ -31,16 +31,25 @@ def history_path(session_id: str) -> Path:
     return _workdir.gate_dir() / session_id / _HISTORY_FILENAME
 
 
-def append(payload: dict, session_id: str) -> Path:
+def append(
+    payload: dict, session_id: str, artifact_filename: str | None = None
+) -> Path:
     """Validate and append one audit gate payload to the session history log.
 
     Payload must conform to ``audit.schema.json``. The function enforces
     ``phase == "audit"`` and ``session_id`` matching the argument. Returns the
     history path.
+
+    Phase 173 (GH #237): ``artifact_filename`` records the versioned file this
+    emission landed in (e.g. ``audit-iter2.json``), closing the loop between a
+    history row and the immutable evidence bytes on disk. Additive under the
+    audit schema's ``additionalProperties: true``; absent on pre-173 rows.
     """
     record = dict(payload)
     record.setdefault("phase", "audit")
     record.setdefault("session_id", session_id)
+    if artifact_filename is not None:
+        record["artifact_filename"] = artifact_filename
     _vga._validate_data("audit", record)
 
     path = history_path(session_id)

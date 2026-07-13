@@ -77,7 +77,8 @@ def check_prior_artifact(
             errors=["no active session; run qor/scripts/session.py new"],
         )
 
-    artifact = GATES_DIR / sid / f"{prior}.json"
+    # Phase 173 (GH #237): resolve the highest iteration; singleton fallback.
+    artifact = vga.latest_artifact_path(prior, GATES_DIR / sid)
     if not artifact.exists():
         # Phase 59: when checking plan's predecessor, accept ideation.json
         # as a valid alternative to research.json (advisory-gate posture).
@@ -115,7 +116,7 @@ def _check_short_chain_plan(sid: str) -> GateResult | None:
     """
     from qor.scripts import tier_guard
 
-    plan_artifact = GATES_DIR / sid / "plan.json"
+    plan_artifact = vga.latest_artifact_path("plan", GATES_DIR / sid)
     if not plan_artifact.exists():
         return None
     declared = tier_guard.declared_artifacts(plan_artifact)
@@ -136,7 +137,7 @@ def _check_ideation_predecessor(session_id: str | None) -> GateResult | None:
     sid = session_id or session.current()
     if sid is None:
         return None
-    artifact = GATES_DIR / sid / "ideation.json"
+    artifact = vga.latest_artifact_path("ideation", GATES_DIR / sid)
     if not artifact.exists():
         return None
     errs = vga.validate_one("ideation", artifact)
@@ -203,7 +204,8 @@ def read_phase_artifact(phase: str, session_id: str | None = None) -> dict:
     """
     import json as _json
     sid = session_id or session.get_or_create()
-    path = vga.GATES_DIR / sid / f"{phase}.json"
+    # Phase 173 (GH #237): resolve the highest iteration; singleton fallback.
+    path = vga.latest_artifact_path(phase, vga.GATES_DIR / sid)
     if not path.exists():
         raise FileNotFoundError(f"Gate artifact not found: {path}")
     return _json.loads(path.read_text(encoding="utf-8"))
@@ -286,15 +288,21 @@ def write_gate_artifact(
     sid = session_id or session.get_or_create()
     if ai_provenance is not None:
         payload = {**payload, "ai_provenance": ai_provenance}
+    # Phase 173 (GH #237): the writer returns the immutable versioned path
+    # (`<phase>-iter<N>.json`); the singleton beside it is a latest copy.
     path = vga.write_artifact(phase, payload, session_id=sid)
     if phase == "audit":
         from qor.scripts import audit_history
-        audit_history.append(payload, session_id=sid)
+        audit_history.append(payload, session_id=sid, artifact_filename=path.name)
     # GAP-GOV-05 (Phase 158): bind the artifact with a per-session provenance
     # sidecar. Fail-closed -- a sidecar that cannot be written is a security-
     # control failure and MUST propagate (unlike the best-effort gate hook).
+    # Phase 173: sidecar duality -- one for the immutable versioned file, one
+    # refreshed beside the singleton so committed-artifact verification and
+    # evidence reconstruction keep resolving `<phase>.provenance`.
     from qor.scripts import gate_provenance
     gate_provenance.write_sidecar(phase, sid, path)
+    gate_provenance.write_sidecar(phase, sid, path.parent / f"{phase}.json")
     _fire_gate_written_hook(phase, sid, path)
     return path
 

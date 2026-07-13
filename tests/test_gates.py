@@ -280,7 +280,8 @@ def test_write_artifact_rejects_invalid(tmp_path, monkeypatch):
 # ----- V-7 + V-D (Phase 12 v2 audit) gate_chain.write_gate_artifact coverage -----
 
 def test_write_gate_artifact_creates_file_at_correct_path(tmp_path, monkeypatch):
-    """Helper writes to .qor/gates/<sid>/<phase>.json."""
+    """Helper writes .qor/gates/<sid>/<phase>-iter1.json + the <phase>.json
+    latest copy (Phase 173, GH #237)."""
     gates = tmp_path / "gates"
     monkeypatch.setattr(gate_chain, "GATES_DIR", gates)
     monkeypatch.setattr(vga, "GATES_DIR", gates)
@@ -295,8 +296,10 @@ def test_write_gate_artifact_creates_file_at_correct_path(tmp_path, monkeypatch)
         "ci_commands": ["pytest"],
     }
     out = gate_chain.write_gate_artifact("plan", payload, session_id=sid)
-    assert out == gates / sid / "plan.json"
+    assert out == gates / sid / "plan-iter1.json"
     assert out.exists()
+    singleton = gates / sid / "plan.json"
+    assert singleton.read_bytes() == out.read_bytes()
 
 
 def test_write_gate_artifact_validates_payload_against_schema(tmp_path, monkeypatch):
@@ -350,7 +353,7 @@ def test_write_gate_artifact_respects_explicit_session_id(tmp_path, monkeypatch)
         "ci_commands": ["pytest"],
     }
     out = gate_chain.write_gate_artifact("plan", payload, session_id=explicit_sid)
-    assert out == gates / explicit_sid / "plan.json"
+    assert out == gates / explicit_sid / "plan-iter1.json"
     # Marker may or may not exist; but the artifact MUST be at the explicit-sid path
     import json as _json
     data = _json.loads(out.read_text())

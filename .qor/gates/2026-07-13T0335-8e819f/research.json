@@ -1,0 +1,56 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0335-8e819f",
+  "ts": "2026-07-13T03:38:43Z",
+  "questions": [
+    "Where does the gate-artifact singleton overwrite occur and what does it destroy?",
+    "Which consumers read the unversioned <phase>.json path (compat surface)?",
+    "Can audit_history rows carry a versioned filename without a schema amendment?",
+    "How must provenance sidecars behave so verify_committed stays green?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "write_artifact overwrites .qor/gates/<sid>/<phase>.json in place; re-run destroys prior bytes AND <phase>.provenance (live repro)",
+      "source": "qor/scripts/validate_gate_artifact.py:123"
+    },
+    {
+      "id": "F2",
+      "summary": "check_prior_artifact / read_phase_artifact / tier_guard resolve the singleton only",
+      "source": "qor/scripts/gate_chain.py:59"
+    },
+    {
+      "id": "F3",
+      "summary": "audit_history rows carry no filename; audit schema allows additionalProperties so artifact_filename is additive",
+      "source": "qor/scripts/audit_history.py:34"
+    },
+    {
+      "id": "F4",
+      "summary": "gate_chain_completeness, verify_committed, evidence_bundle all join on singleton names; singleton must remain a byte-identical latest copy",
+      "source": "qor/scripts/gate_provenance.py:206"
+    },
+    {
+      "id": "F5",
+      "summary": "atomic-write, QOR_SKILL_ACTIVE provenance binding, and hook fail-open invariants preserved; hook/sidecar should bind the versioned path",
+      "source": "qor/scripts/gate_chain.py:239"
+    }
+  ],
+  "sources": [
+    "qor/scripts/validate_gate_artifact.py",
+    "qor/scripts/gate_chain.py",
+    "qor/scripts/audit_history.py",
+    "qor/scripts/gate_provenance.py",
+    "qor/reliability/gate_chain_completeness.py",
+    "qor/scripts/evidence_bundle.py",
+    "qor/gates/chain.md"
+  ],
+  "brief_path": "docs/research-brief-gate-artifact-iteration-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.119.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T03:38:43Z"
+  }
+}
