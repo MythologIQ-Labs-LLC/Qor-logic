@@ -1,0 +1,16 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-07-13T0817-5d9c1c",
+  "ts": "2026-07-13T08:30:47Z",
+  "verdict": "PASS",
+  "merkle_seal": "4059f16ecfe4dd9cb176ecd2bb6c97bd5b99078c3f1ad5086573f05aa0ecf3f1",
+  "version": "0.124.1",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T08:30:47Z"
+  }
+}

@@ -14304,5 +14304,82 @@ Change class: feature (v0.123.1 -> v0.124.0). Tests: 3 new behavioral in tests/t
 
 ---
 
+### Entry #446: RESEARCH BRIEF -- Health-gate pre-anchor output (GH #268)
+
+**Timestamp**: 2026-07-13T08:18:27Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #268
+**Session**: `2026-07-13T0817-5d9c1c`
+**Brief**: docs/research-brief-health-preanchor-output-2026-07-13.md
+
+**Content Hash**: `c63dd3ff609b6de1ff719954bc940e6e844aa8e38600d0202eeb1be7db3db410`
+**Previous Hash**: `ae0e9b59ba673b380ef9b548b3e1f47fdf783b7ac14cd6f07a871ccc2a549565`
+**Chain Hash (Merkle seal)**: `02e156b44a9ee8830394b026180bc6ab4316117f6f6d55aec5e0fe96233cc40a`
+
+**Decision**: The verdict already tolerates disclosed pre-anchor residuals (GH #199 fallback); the confusion is an output ASYMMETRY verified live: `_ledger_damage` redirects stdout only (governance_health.py:134,142) while `ledger_hash.verify` writes FAIL/TAINTED to STDERR (ledger_hash.py:417,429) -- bleeding raw failure lines into the CLI, status_json (captures both streams), and the nightly step summary, all contradicting the OK verdict. Minimal fix: redirect_stderr beside redirect_stdout at both call sites, and thread a POSITIVE note into the OK finding's reason ("disclosed pre-anchor residuals tolerated; post-anchor band clean") -- satisfying the boundary-identification acceptance without new output formats. Structured/JSON output defers to the GH #271 typed-model roadmap. The existing post-anchor-tolerance fixture is the exact re-anchored synthetic ledger the new capture-both-streams tests need. Next: /qor-auto-dev-1, change_class hotfix.
+
+---
+
+### Entry #447: GATE TRIBUNAL -- Phase 182 plan PASS (health pre-anchor output)
+
+**Timestamp**: 2026-07-13T08:19:46Z
+**Phase**: GATE (Phase 182)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase182-health-preanchor-output.md
+**Session**: `2026-07-13T0817-5d9c1c`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `a945420af489dfd105abe057716273f7b143eaa570e1cf1753fd5b344720a401`
+**Previous Hash**: `02e156b44a9ee8830394b026180bc6ab4316117f6f6d55aec5e0fe96233cc40a`
+**Chain Hash (Merkle seal)**: `260640d324763dd82299c09bcb0a5a7689486ed9c04b5aa486d5ba8cbde592a6`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #446 (GH #268): stderr suppression joins stdout at the two health-gate verification sites (verifier CLIs keep full diagnostics; no signal dropped -- genuine failures still classify DAMAGED with the reason in the finding); the tolerance becomes a positive OK-reason note identifying the disclosed boundary. Structured output deferred to the GH #271 typed-model roadmap. Acceptance test captures BOTH streams on the existing re-anchored fixture (red today via the live bleed). Next: `/qor-implement`.
+
+---
+
+### Entry #448: IMPLEMENTATION -- Phase 182 health pre-anchor output
+
+**Timestamp**: 2026-07-13T08:28:57Z
+**Phase**: IMPLEMENT (Phase 182)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0817-5d9c1c`
+**Intent Lock**: `LOCKED: 2026-07-13T0817-5d9c1c`
+
+**Content Hash**: `55c73e973517aa250bdef66547cd3a372e8d590844a213ac23acdd29f7bd441a`
+**Previous Hash**: `260640d324763dd82299c09bcb0a5a7689486ed9c04b5aa486d5ba8cbde592a6`
+**Chain Hash (Merkle seal)**: `56eb1715fcab9ae71f6c45eb6fe8501bcb00b986eccbbe99b232f7db86d58fbd`
+
+**Decision**: Phase 182 implemented per plan, TDD-first (2 tests red via the live stderr bleed, then 25 focused green incl. the health-gate consumer sweep). `_ledger_damage` -> `(damage, ok_note)` with `redirect_stderr` joining `redirect_stdout` at both verifier calls; the GH #199 tolerated branch returns the positive note; `_damage_reason` threads the pair; `_classify_one`'s OK reason reads "passes health checks (disclosed pre-anchor residuals tolerated; post-anchor band clean)" when tolerated. Verifier CLIs untouched (full diagnostics preserved for direct use); genuine post-anchor failures still DAMAGED (regression-locked). Full suite 2597 passed / 2 skipped. Content hash binds tests/test_governance_health_post_anchor_tolerance.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #449: SESSION SEAL -- Phase 182 health pre-anchor output (v0.124.1)
+
+**Timestamp**: 2026-07-13T08:29:55Z
+**Phase**: SUBSTANTIATE (Phase 182; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase182-health-preanchor-output.md
+**Session**: `2026-07-13T0817-5d9c1c`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `2f373b22f0da`
+
+**Scope**: Phase 182 implemented (hotfix; research entry #446 -> closes GH #268). Governance-health diagnostics now match the verdict: `redirect_stderr` joins `redirect_stdout` at both verifier calls inside `_ledger_damage` (the raw FAIL/TAINTED lines went to stderr and bled into the CLI, status_json, and the nightly step summary while the verdict correctly said OK), and the GH #199 tolerance is surfaced POSITIVELY -- the OK finding's reason reads "passes health checks (disclosed pre-anchor residuals tolerated; post-anchor band clean)" via `(damage, ok_note)` threading through `_damage_reason` into `_classify_one`. No signal dropped: genuine post-anchor failures still classify DAMAGED with the reason in the finding (regression-locked), and the verifier CLIs keep full diagnostics for direct use. Structured/JSON classification output deferred to the GH #271 typed-model roadmap (recorded at disposition).
+
+Change class: hotfix (v0.124.0 -> v0.124.1). Tests: 2 new behavioral (capture-both-streams absence + positive-reason note, red via the live bleed then green) + the existing DAMAGED regression lock; 25 focused green incl. the consumer sweep; full suite 2597 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0758-7f394f. Audit: solo PASS (entry #447; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance gate presentation)
+
+**Content Hash**: `89c5566b57ab6039c44f79c31f388556a2e4f74ce41b9f85cc90aa4571230fce`
+**Previous Hash**: `56eb1715fcab9ae71f6c45eb6fe8501bcb00b986eccbbe99b232f7db86d58fbd`
+**Chain Hash (Merkle seal)**: `4059f16ecfe4dd9cb176ecd2bb6c97bd5b99078c3f1ad5086573f05aa0ecf3f1`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 181; v0.124.0; seed .gitattributes; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 182; v0.124.1; health pre-anchor output; local checkpoint commit only -- remote work held for operator review)

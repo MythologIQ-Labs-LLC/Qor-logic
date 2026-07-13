@@ -1,10 +1,10 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T08:00:51Z
-**Target**: docs/plan-qor-phase181-seed-gitattributes.md (Phase 181; GH #238 residual)
+**Tribunal Date**: 2026-07-13T08:19:46Z
+**Target**: docs/plan-qor-phase182-health-preanchor-output.md (Phase 182; GH #268)
 **Risk Grade**: L1
-**Session**: `2026-07-13T0758-7f394f`
-**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `6a57132c713c...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
+**Session**: `2026-07-13T0817-5d9c1c`
+**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `ae51b73329c6...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
 ---
@@ -15,35 +15,33 @@
 
 ### Executive Summary
 
-Residual completion for GH #238: one seed template + one SeedTarget so seeded repos pin governance artifacts to LF at the infrastructure level (the verify-layer half shipped in Phases 156-158), with repo-root self-application. The scaffold-owned routing consequence was checked and is CORRECT by construction (a missing `.gitattributes` is genuinely seed-recoverable, and the pinning test locks equality derived from SEED_TARGETS itself). Idempotency is inherited from `_write_file_if_missing` (never overwrites) and regression-locked. No binding-VETO pass fired.
+Presentation fix aligning diagnostics with an already-correct verdict: stderr suppression joins the existing stdout suppression at the two health-gate verification call sites (the verifiers' own CLIs keep full diagnostics), and the GH #199 tolerance becomes a POSITIVE note in the OK finding's reason so the disclosed boundary is identified instead of silently absorbed. The verdict logic, DAMAGED escalation, and verifier internals are untouched; the structured-output acceptance defers to the GH #271 typed-model roadmap with the rationale recorded. No binding-VETO pass fired.
 
 ### Audit Results
 
 #### Prompt Injection Pass
 **Result**: PASS -- canaries exit 0.
 
-#### Security / OWASP / Ghost UI Passes
-**Result**: PASS -- template emission only; no runtime logic; the no-overwrite mode protects operator customizations (A04 clean).
+#### Security Pass (L3) / OWASP Top 10 Pass
+**Result**: PASS
+Suppression applies ONLY inside the health gate's classification calls where the result is consumed as a return code -- genuine post-anchor failures still classify DAMAGED with their reason surfaced through the finding (A04: no signal is dropped; it is re-routed from raw stderr to the classified finding, which is the gate's contract).
 
-#### Section 4 Razor Pass
-**Result**: PASS -- one tuple entry, one template, three tests.
+#### Ghost UI / Razor / Dependency / Feature Coverage Passes
+**Result**: PASS -- ~12 net lines; stdlib; exempt.
 
-#### Self-Application Sub-Pass (originating_remediation: GH #238)
-**Result**: PASS -- the repository root gains the identical stanza, test-locked; the discipline (canonical bytes independent of host settings) applied to the repo that ships it.
+#### Self-Application Sub-Pass (originating_remediation: GH #268)
+**Result**: PASS -- discipline: diagnostics must match the classification. The fix's own tests assert BOTH streams, applying the discipline to its verification.
 
 #### Test Functionality Pass
 **Result**: PASS
-All three tests invoke `seed.seed()` or parse the live root file and assert content/byte outcomes: the seeded stanza rules, byte-unchanged customization under re-seed, and self-application equivalence. The seeded-stanza test is red until the target exists. Entry point verified live during tribunal: `qor/seed.py:94 def seed(base, *, quiet=False)` (the plan's "verify exact name at implement" resolves to `seed.seed`).
-
-#### Dependency / Feature Coverage Passes
-**Result**: PASS -- none / exempt.
+The acceptance test runs `_classify_one` under capsys and asserts stream ABSENCE plus the OK status (red today via the live stderr bleed); the note test asserts the reason content; the existing DAMAGED regression test locks the escalation path. All invoke the unit and assert observed output.
 
 #### Infrastructure Alignment Pass
 **Result**: PASS
-LD walk verified live: SEED_TARGETS:25, _write_file_if_missing:55, scaffold_file_targets:47, pinning-test derivation at tests/test_governance_health.py:117, seed():94, no existing template or root file. Runtime Contract Walk: 0 findings.
+LD walk verified live: redirect_stdout at 134/142, stderr writers at ledger_hash.py:417/429/520/529, _ledger_damage at 127, sole `_damage_reason` caller `_classify_one`, external positional `_classify_one` callers unaffected (return type unchanged). Runtime Contract Walk: 0 findings.
 
 #### Filter-Stage / Orphan / Macro-Architecture Passes
-**Result**: PASS -- no pipelines; template reached by the seed loop; no boundary changes.
+**Result**: PASS.
 
 #### Documentation Drift (advisory)
 **Result**: clean (minimal tier).
@@ -62,7 +60,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 181.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 182.
 
 ---
 _This verdict is binding._

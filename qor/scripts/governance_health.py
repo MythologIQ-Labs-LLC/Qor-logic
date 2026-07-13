@@ -124,14 +124,19 @@ def _classify_missing(
     )
 
 
-def _ledger_damage(base: Path, text: str) -> str | None:
-    """Return a damage reason for the ledger, or None when structurally sound."""
+def _ledger_damage(base: Path, text: str) -> tuple[str | None, str | None]:
+    """(damage_reason, ok_note) for the ledger. Phase 182 (GH #268): both
+    verifier calls suppress stderr too -- their raw FAIL/TAINTED diagnostics
+    contradicted an OK verdict when bleeding into the CLI, status_json, and
+    the nightly summary -- and the GH #199 tolerance is surfaced POSITIVELY
+    as the ok_note instead of silently absorbed."""
     has_title = "Meta Ledger" in text or text.lstrip().startswith("# ")
     has_entries = "### Entry" in text
     if not has_title and not has_entries:
-        return "malformed ledger: no recognizable header or entries"
+        return "malformed ledger: no recognizable header or entries", None
     if has_entries:
-        with contextlib.redirect_stdout(io.StringIO()):
+        with contextlib.redirect_stdout(io.StringIO()), \
+                contextlib.redirect_stderr(io.StringIO()):
             rc = _verify_ledger_chain(base / _LEDGER)
         if rc != 0:
             # GH #199: strict verify rejects single-lineage manual-era residuals
@@ -139,11 +144,15 @@ def _ledger_damage(base: Path, text: str) -> str | None:
             # post-anchor surface: a disclosed pre-anchor failure (entry at or
             # below the auto-detected boundary) is tolerated here exactly as it
             # is at release; only a genuine post-anchor failure is real damage.
-            with contextlib.redirect_stdout(io.StringIO()):
+            with contextlib.redirect_stdout(io.StringIO()), \
+                    contextlib.redirect_stderr(io.StringIO()):
                 rc_post = _verify_post_anchor(base / _LEDGER)
             if rc_post != 0:
-                return "ledger chain verification failed"
-    return None
+                return "ledger chain verification failed", None
+            return None, (
+                "disclosed pre-anchor residuals tolerated; post-anchor band clean"
+            )
+    return None, None
 
 
 def _verify_ledger_chain(ledger_path: Path) -> int:
@@ -158,12 +167,12 @@ def _verify_post_anchor(ledger_path: Path) -> int:
     return ledger_hash.verify_post_anchor(ledger_path)
 
 
-def _damage_reason(base: Path, rel_path: str, text: str) -> str | None:
+def _damage_reason(base: Path, rel_path: str, text: str) -> tuple[str | None, str | None]:
     if text.strip() == "":
-        return "file is empty"
+        return "file is empty", None
     if rel_path == _LEDGER:
         return _ledger_damage(base, text)
-    return None
+    return None, None
 
 
 def _ledger_incomplete(text: str) -> str | None:
@@ -197,7 +206,7 @@ def _classify_one(
         text = target.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as exc:
         return ArtifactFinding(rel_path, ArtifactStatus.DAMAGED, f"unreadable: {exc}", _NEXT_REMEDIATE)
-    damage = _damage_reason(base, rel_path, text)
+    damage, ok_note = _damage_reason(base, rel_path, text)
     if damage:
         return ArtifactFinding(rel_path, ArtifactStatus.DAMAGED, damage, _NEXT_REMEDIATE)
     incomplete = _incomplete_reason(rel_path, text)
@@ -205,7 +214,9 @@ def _classify_one(
         return ArtifactFinding(
             rel_path, ArtifactStatus.INCOMPLETE, incomplete, _NEXT_COMPLETE.format(path=rel_path)
         )
-    return ArtifactFinding(rel_path, ArtifactStatus.OK, "passes health checks", "")
+    # Phase 182 (GH #268): surface a tolerated state positively in the reason.
+    reason = f"passes health checks ({ok_note})" if ok_note else "passes health checks"
+    return ArtifactFinding(rel_path, ArtifactStatus.OK, reason, "")
 
 
 def check_governance_health(

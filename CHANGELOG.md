@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.124.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 182 (hotfix; health pre-anchor output)**: governance-health no longer emits raw `FAIL`/`TAINTED` lines that contradict its own OK verdict on a legally re-anchored ledger (GH #268). The verdict already tolerated disclosed pre-anchor residuals (the GH #199 post-anchor fallback), but the verifier calls suppressed stdout only while the FAIL/TAINTED diagnostics go to stderr -- bleeding into the CLI, the status_json aggregator, and the nightly-health step summary. Both streams are now suppressed inside the classification calls (the verifier CLIs keep full diagnostics), and the tolerance is surfaced positively: the OK finding's reason reads "passes health checks (disclosed pre-anchor residuals tolerated; post-anchor band clean)". Genuine post-anchor failures still classify DAMAGED. Structured/JSON classification output is deferred to the GH #271 typed-model roadmap.
+
 ## [0.124.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
