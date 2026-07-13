@@ -1,4 +1,5 @@
 # QoreLogic Meta Ledger
+<!-- qor:meta-ledger-schema=1 -->
 
 ## Chain Status: ACTIVE
 
@@ -14072,5 +14073,82 @@ Change class: hotfix (v0.122.0 -> v0.122.1). Tests: headroom test red-then-green
 
 ---
 
+### Entry #434: RESEARCH BRIEF -- Ledger upgrade V1 (GH #271 slice)
+
+**Timestamp**: 2026-07-13T07:19:57Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #271 (minimal V1 slice)
+**Session**: `2026-07-13T0718-ea9af3`
+**Brief**: docs/research-brief-ledger-upgrade-v1-2026-07-13.md
+
+**Content Hash**: `c026627af59b742bb2c0c3dcc9c08a0c833882c2023a38633b1387f0c615ec0c`
+**Previous Hash**: `3b687b6e569ea9bf558062aa2a5f27b47538e968f3bdd26958677288fb58d3e1`
+**Chain Hash (Merkle seal)**: `4c4a4f608f651f35fedf77ac472d57fe758fc5d1af1804e599796a3092bdd840`
+
+**Decision**: GH #271's consumer pain (DAMAGED after update, no recovery command) resolves with a small V1: a machine-readable `qor:meta-ledger-schema` marker at the ledger head (verified inert to every consumer: verify, seal_entry_check, governance-health, badge counting) plus a `ledger_upgrade` verb orchestrating the Phase 170 migrator + `verify_post_anchor` acceptance + atomic swap-on-success-only (original byte-untouched on any residual). KEY DEFERRAL EVIDENCE (corrects the issue's implicit assumption): `ledger_fragment.canonicalize_fragments` (lines 107-132, verified live) appends fragment bodies VERBATIM -- the writer still renders hash markup by hand, so swapping the seal flow onto fragments would NOT unify emission; a typed entry renderer (the issue's own Phase-3 scope) is the prerequisite, and the substantiate skill's just-recovered byte budget (Phase 178) argues against a Step 7 rewrite now. Related: #234 is an independent parse fix (queue-next); #268/#238 independent. Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class feature.
+
+---
+
+### Entry #435: GATE TRIBUNAL -- Phase 179 plan PASS (ledger upgrade V1)
+
+**Timestamp**: 2026-07-13T07:21:31Z
+**Phase**: GATE (Phase 179)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase179-ledger-upgrade-v1.md
+**Session**: `2026-07-13T0718-ea9af3`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `d688e8047b685e65296695df078d5caf6ad89e1eacef4b581ab441230573477f`
+**Previous Hash**: `4c4a4f608f651f35fedf77ac472d57fe758fc5d1af1804e599796a3092bdd840`
+**Chain Hash (Merkle seal)**: `aaa2064d07bfe9411b46eb7b8ba9acd6bba5a21a8849b2ee92b693a3ec24b62f`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #434 (GH #271 V1 slice): head schema-version marker (verified inert to all four consumer classes) + `ledger_upgrade` recovery verb orchestrating the never-in-place migrator and post-anchor acceptance under swap-on-success-only atomicity (original byte-untouched + exit 1 on residual; verification strictly precedes the sole destructive stage -- filter-order clean). Emission-API unification DEFERRED on the research's new F3 evidence (fragment bodies append verbatim; a typed renderer is the prerequisite) -- recorded for the issue disposition. Seven behavioral tests incl. the byte-identical failure-safety proof and the live self-application lock. Next: `/qor-implement`.
+
+---
+
+### Entry #436: IMPLEMENTATION -- Phase 179 ledger upgrade V1
+
+**Timestamp**: 2026-07-13T07:30:50Z
+**Phase**: IMPLEMENT (Phase 179)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0718-ea9af3`
+**Intent Lock**: `LOCKED: 2026-07-13T0718-ea9af3`
+
+**Content Hash**: `f16b0cc791e27c194fcdf31a0849c3a8bfcf2586cee6378300d9b3fe3fe8bc82`
+**Previous Hash**: `aaa2064d07bfe9411b46eb7b8ba9acd6bba5a21a8849b2ee92b693a3ec24b62f`
+**Chain Hash (Merkle seal)**: `ef001d3bb7a7070a52b1efd9af90e1d339e52d7caff62b20a4c1bfbaa066b040`
+
+**Decision**: Phase 179 implemented per plan, TDD-first (8 behavioral tests; 7 green immediately against the new module, the live self-application lock red until Phase 2 landed the marker; then 8 green twice). `qor/scripts/ledger_upgrade.py` (~100 lines): `schema_version` (absent marker -> 0), idempotent `ensure_marker`, `upgrade` orchestrating `ledger_migrate.migrate` (fixture reuses the Phase 170 three-format sample construction) + `verify_post_anchor` acceptance on the TEMP + `os.replace` swap only on rc 0 AND changed bytes (no rewrite churn on already-canonical ledgers); temp removed on every branch; CLI exit 0/1. Failure-safety proven by sha256-identical original under an injected chain mismatch. Self-application: `docs/META_LEDGER.md` head carries `qor:meta-ledger-schema=1`, verified inert across the consumer sweep (68 ledger-consumer tests green; chain verify + health gate clean live). operations.md gains the recovery-verb paragraph with the markup-vs-math boundary stated. Full suite 2589 passed / 2 skipped. Content hash binds tests/test_ledger_upgrade.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #437: SESSION SEAL -- Phase 179 ledger upgrade V1 (v0.123.0)
+
+**Timestamp**: 2026-07-13T07:31:51Z
+**Phase**: SUBSTANTIATE (Phase 179; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase179-ledger-upgrade-v1.md
+**Session**: `2026-07-13T0718-ea9af3`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `112432386382`
+
+**Scope**: Phase 179 implemented (feature; research entry #434 -> GH #271 minimal V1; the emission-API unification deferred with the F3 verbatim-append evidence recorded for the issue disposition). One-command consumer recovery for format-damaged ledgers: `qor-logic scripts ledger_upgrade` migrates legacy hash markup to canonical form (Phase 170 migrator reuse: hashes verbatim), stamps the machine-readable `qor:meta-ledger-schema=1` marker (absent == version 0/legacy), verifies the RESULT with the post-anchor acceptance, and swaps atomically ONLY on success -- any residual failure exits 1 with the original byte-untouched (sha256-proven in test). Idempotent (already-canonical ledgers are not rewritten); dry-run writes nothing; temp removed on every branch. Self-application: this repository's own ledger head now carries the version-1 marker, test-locked and verified inert across every consumer class (verify, seal_entry_check, governance-health, badge counting; 68-test consumer sweep). operations.md documents the recovery verb with the markup-vs-math boundary (broken chain MATH stays with reconcile/remediate).
+
+Change class: feature (v0.122.1 -> v0.123.0). Tests: 8 behavioral in tests/test_ledger_upgrade.py (normalize+swap, digest-set equality, byte-identical original under injected failure, idempotency, marker parse, dry-run non-mutation, CLI exit codes, live self-application lock), green twice; full suite 2589 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0640-f49940. Audit: solo PASS (entry #435; zero violations; filter-order clean -- verification strictly precedes the sole destructive stage). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance recovery tooling; dispatches through the existing scripts runner)
+
+**Content Hash**: `2382611eac651d9fe16f3250043a9506b75acbfce6552ad65b7d359c13d64e42`
+**Previous Hash**: `ef001d3bb7a7070a52b1efd9af90e1d339e52d7caff62b20a4c1bfbaa066b040`
+**Chain Hash (Merkle seal)**: `94c8e315e731f7171547a5c59409eb0c60ca9d5b80bb4a8256775934bea0b1a9`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 178; v0.122.1; skill progressive disclosure; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 179; v0.123.0; ledger upgrade V1; local checkpoint commit only -- remote work held for operator review)

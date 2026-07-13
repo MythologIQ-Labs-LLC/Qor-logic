@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.123.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 179 (feature; ledger upgrade V1)**: one-command recovery for format-damaged ledgers (GH #271 minimal V1). New `qor.scripts.ledger_upgrade --ledger <path> [--dry-run]` orchestrates the Phase 170 migrator and the post-anchor acceptance verifier under a swap-on-success-only contract: markup normalizes to the canonical form (hashes verbatim -- markup moves, math does not), the machine-readable `qor:meta-ledger-schema` version marker is stamped (absent marker reads as version 0/legacy), verification runs on the RESULT before any write, and the original is byte-untouched with exit 1 on any residual failure. This repository's own ledger now carries the version-1 marker (self-application, test-locked). The issue's deeper emission-API unification is deferred with new evidence recorded on GH #271: the fragment transport appends entry bodies verbatim, so unifying emission requires a typed entry renderer first.
+
 ## [0.122.1] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -88,6 +88,19 @@ The `seal_entry_check` gate fired after Step 7 wrote the seal entry. Three reaso
 
 `qor/scripts/ledger_hash.py verify` reports the first failing entry. Typically caused by hand-editing an entry after seal. Resolution: never hand-edit sealed entries; new decisions get new entries.
 
+For FORMAT damage (legacy hash markup a newer toolkit no longer parses --
+Phase 179; GH #271), one command recovers:
+
+```bash
+qor-logic scripts ledger_upgrade --ledger docs/META_LEDGER.md [--dry-run]
+```
+
+It migrates markup to the canonical form (hashes verbatim -- markup moves,
+math does not), stamps the `qor:meta-ledger-schema` marker, verifies the
+RESULT with the post-anchor acceptance, and swaps atomically only on success;
+any residual failure exits 1 with the original byte-untouched. Broken chain
+MATH stays with reconcile/remediate -- upgrade never corrects hashes.
+
 ## CI considerations
 
 The `.github/workflows/` files configure GitHub Actions:

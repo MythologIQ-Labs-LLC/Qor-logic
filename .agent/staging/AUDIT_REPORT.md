@@ -1,10 +1,10 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T06:43:15Z
-**Target**: docs/plan-qor-phase178-skill-progressive-disclosure.md (Phase 178; GH #266)
+**Tribunal Date**: 2026-07-13T07:21:31Z
+**Target**: docs/plan-qor-phase179-ledger-upgrade-v1.md (Phase 179; GH #271 V1 slice)
 **Risk Grade**: L2
-**Session**: `2026-07-13T0640-f49940`
-**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `95d746546d51...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
+**Session**: `2026-07-13T0718-ea9af3`
+**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `f66a44ddbf33...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
 ---
@@ -15,41 +15,50 @@
 
 ### Executive Summary
 
-Prose-relocation pass with the guardrail-test set explicitly adopted as the specification (LD-1): four rationale blocks per skill move into already-cited references, every spine token stays inline byte-exact, and a new parametrized 39 KB headroom test -- naturally RED against both current files -- locks the recovered budget. The plan's scope decision (defer the 30 KB aspiration; the named failure mode is fully removed by >= 1 KB locked headroom) is evidence-backed by the 45+ locked-token inventory and recorded for the issue disposition. Zero behavioral change; the correctness proof is the existing guardrail suite staying green. No binding-VETO pass fired.
+Minimal V1 slice of the GH #271 roadmap: a head schema-version marker (verified inert to every ledger consumer) and a `ledger_upgrade` recovery verb that orchestrates the existing migrator + post-anchor verifier under a swap-on-success-only atomicity contract -- the original ledger is byte-untouched on any residual failure. The deep emission-API unification is deferred on NEW evidence the research produced (fragment bodies are appended verbatim; unification needs a typed renderer first), recorded for the issue disposition. The plan reuses and orchestrates; it parses nothing itself. No binding-VETO pass fired.
 
 ### Audit Results
 
 #### Prompt Injection Pass
 **Result**: PASS -- canaries exit 0.
 
-#### Security / OWASP / Ghost UI Passes
-**Result**: PASS -- prose relocation only; no runtime surface.
+#### Security Pass (L3) / OWASP Top 10 Pass
+**Result**: PASS
+The upgrade verb touches the MOST sensitive governance artifact, and the plan's safety posture is correct: never-in-place migration (inherited contract), acceptance verification runs on the TEMP before any write to the original, atomic `os.replace` swap, exit-1-and-untouched on failure (A04 fail-closed for the destructive branch), temp residue removed on both branches. Hashes preserved verbatim by the inherited migrator contract -- the verb cannot rewrite chain math by construction.
+
+#### Ghost UI / Live-Progress Pass
+**Result**: PASS -- no UI surface.
 
 #### Section 4 Razor Pass
-**Result**: PASS -- both SKILL.md files SHRINK; reference files grow by appended subsections (references have no size budget by design -- that is the point of progressive disclosure).
+**Result**: PASS -- new module <140 lines; functions small; no existing file grows materially.
 
-#### Self-Application Sub-Pass (originating_remediation: GH #266)
-**Result**: PASS -- discipline: rationale lives in references, contract inline. The plan itself keeps its own binding content (LDs, phases, DoD) inline and cites the brief for narrative -- consistent with the discipline it applies.
+#### Self-Application Sub-Pass (originating_remediation: GH #271)
+**Result**: PASS
+Discipline introduced: the ledger format is versioned and self-healing. Applied to the plan's own repository: Phase 2 puts the marker on THIS ledger and locks it with a live-state test -- the strongest form of self-application available to the slice.
 
 #### Test Functionality Pass
 **Result**: PASS
-The headroom test measures byte size against a bound (red today at 40,890/40,935, green only if the relocation actually happens); the guardrail suite is behavioral-by-construction for this change class: any locked sentence, step header, command token, table ID, ordering constraint, or dangling reference turns a test red. Acceptance question holds: if the relocation silently dropped a binding invariant, test_skill_corpus_consolidation's parametrized token locks fail.
+All seven tests invoke `upgrade`/`schema_version` and assert observed outcomes: canonicalized markup + rc + swap, digest-set equality (the verbatim-hash proof), byte-identical original under failure (sha256 compare) and under idempotent re-run, dry-run non-mutation, marker parse both ways, and the live self-application state. The failure-safety test is the binding one and is red-impossible to fake (asserts on the file bytes, not on a flag).
 
 #### Dependency Pass
-**Result**: PASS -- none.
+**Result**: PASS -- stdlib + in-repo reuse.
 
 #### Feature Test Coverage Pass
-**Result**: PASS (exempt).
+**Result**: PASS (exempt) -- governance tooling.
 
 #### Infrastructure Alignment Pass
 **Result**: PASS
-LD-1 lock-set line ranges verified live (AUDIT_INVARIANTS:65, parametrize:88, SUBST_INVARIANTS:93, parametrize:112, relocated-rationale tests:164/172); sizes verified (40,890/40,935 vs EXCEEDED 40,960 at skill_size_budget_lint.py:24); all four destination references exist and are cited today (test_skill_doctrine resolution holds). Runtime Contract Walk: 0 findings.
+LD walk verified live: ledger_migrate main:155-163 (never-in-place, dry-run), verify_post_anchor:456, canonicalize_fragments verbatim-append:107-132 (the deferral evidence), marker inertness across the four consumer classes. Runtime Contract Walk: 0 findings (ledger_upgrade declared NEW).
 
-#### Filter-Stage / Orphan / Macro-Architecture Passes
-**Result**: PASS -- no code; destinations are existing files.
+#### Filter-Stage Ordering Coherence
+**Result**: PASS
+Pipeline: migrate(temp) -> ensure_marker(temp) -> verify(temp) -> swap. Verification strictly precedes the only destructive stage; the dependency graph is a chain with no inversion.
+
+#### Orphan / Macro-Architecture Passes
+**Result**: PASS -- new module reached via the generic scripts runner + tests; orchestration layer sits above the two reused modules with no cycles.
 
 #### Documentation Drift (advisory)
-**Result**: clean (minimal tier; LD-3 forbids new reference files, so no glossary referenced_by churn).
+**Result**: clean (standard tier, no terms; operations.md paragraph is procedural prose).
 
 ### Violations Found
 
@@ -59,7 +68,7 @@ LD-1 lock-set line ranges verified live (AUDIT_INVARIANTS:65, parametrize:88, SU
 
 ### Advisory (non-VETO)
 
-- The relocation must re-verify the AUDIT_/SUBST_ token lists AFTER each file edit (the plan commits to this in Phase 2/3 Changes); the implement pass should run the focused guardrail suite between the two skills, not only at the end.
+- The live-state test (`test_current_ledger_declares_schema_version`) must run AFTER Phase 2 lands the marker in the same implement pass -- red ordering within the pass is expected and fine.
 
 ## Process Pattern Advisory
 
@@ -69,7 +78,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 178.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 179.
 
 ---
 _This verdict is binding._
