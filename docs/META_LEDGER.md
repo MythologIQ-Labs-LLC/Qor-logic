@@ -14916,5 +14916,81 @@ Change class: feature (v0.127.0 -> v0.128.0). Tests: 5 new (admission verdict, m
 
 ---
 
+### Entry #478: RESEARCH BRIEF -- Spec corpus Phase A (GH #239)
+
+**Timestamp**: 2026-07-13T14:10:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #239
+**Session**: `2026-07-13T1405-331255`
+**Brief**: docs/research-brief-spec-corpus-2026-07-13.md
+
+**Content Hash**: `ede621dd4308f63353d716f5c8a4907532e7031da19aadbb46bc8040eef80dc2`
+**Previous Hash**: `4b1f113d518f11d4a234d753cee99e5b1b58cd7814bdcdec1acb0a2de50dd07e`
+**Chain Hash (Merkle seal)**: `d75b94efbf4d7c1057955ecc14f03e7f25eedfe228ae09ced452e143760217f1`
+
+**Decision**: GH #239 fully unimplemented (no PR; no spec surfaces corpus-wide; plan schema carries no spec_deltas; the specification-drift audit category at audit.schema.json:40 is ready for Phase B routing). The issue self-sequences three phases and marks Phase A "small, shippable first" -- this cycle ships exactly that: spec_lint (grammar: Requirement headings with one RFC-2119 statement + GIVEN/WHEN/THEN scenarios) + spec_merge (heading-keyed deterministic ADDED/MODIFIED/REMOVED fold; absent-target and duplicate-ADDED are loud errors -- the dossier's concurrency-conflict surface) + qor/specs/ scaffold + the spec-grammar reference (non-doctrine name keeps the README inventory lock untouched; the fail-closed unregistered scan covers root+docs only, verified at governance_index.py:54-63). Phase B (schema + audit pre-pass + fold-inside-substantiate with ledger hash) and Phase C (per-requirement verify -> qa_evidence coverage pillar) DEFER with recorded grounds: seal-gate timing, near-cap SKILL.md budgets (qor-audit ~1.3 KB headroom), and substantiate schema change. Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #479: GATE TRIBUNAL -- Phase 190 spec corpus Phase A
+
+**Timestamp**: 2026-07-13T14:17:10Z
+**Phase**: GATE (Phase 190)
+**Author**: Judge
+**Risk Grade**: L1
+**Session**: `2026-07-13T1405-331255`
+**Target**: docs/plan-qor-phase190-spec-corpus-phase-a.md
+**Verdict**: PASS
+
+**Content Hash**: `b5c0e50c4d9d2dacc124eb9f45f2d7c4cdbdcdec44dab7c079dfb2037c439dd9`
+**Previous Hash**: `d75b94efbf4d7c1057955ecc14f03e7f25eedfe228ae09ced452e143760217f1`
+**Chain Hash (Merkle seal)**: `9122b928b52ffbcb72fa53341ebabd10bfec41df31af4fb364250f0b15a652d8`
+
+**Decision**: Solo-mode tribunal. PASS with zero violations. The cycle boundary is the design decision and it is right: Phase A ships pure tooling with no chain authority, so every identified risk (seal-gate timing, near-cap SKILL budgets, substantiate schema change) stays in the deferred Phase B. Merge determinism survives adversarial probing precisely because the three ambiguity holes are LOUD errors (absent MODIFIED/REMOVED target, duplicate ADDED) -- silent skips are how concurrent deltas would rot the corpus. The runtime-contract no-production-caller WARN on spec_merge is the A/B boundary made visible; disclosed here and to be resolved by Phase B wiring. Twelve behavioral tests including the cross-module composition guard. Next: `/qor-implement`.
+
+---
+
+### Entry #480: IMPLEMENTATION -- Phase 190 spec corpus Phase A
+
+**Timestamp**: 2026-07-13T14:52:20Z
+**Phase**: IMPLEMENT (Phase 190)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T1405-331255`
+**Intent Lock**: `LOCKED: 2026-07-13T1405-331255`
+
+**Content Hash**: `3b433e1edae92c55e3b4c9c0479808e1192bd2f7826a33e4dd5cf1c0f220952e`
+**Previous Hash**: `9122b928b52ffbcb72fa53341ebabd10bfec41df31af4fb364250f0b15a652d8`
+**Chain Hash (Merkle seal)**: `6d89cf326268fd7e7aac90cc6807f4f2e9b7c690b6f258adc60c2e84d00140c1`
+
+**Decision**: Phase 190 implemented per plan, TDD-first, no mid-red design changes. spec_lint: line-oriented Requirement/Scenario parser with four finding codes (missing-rfc2119, double-rfc2119, missing-scenario, malformed-scenario naming the absent GIVEN/WHEN/THEN bullet); CLI exits 0/1. spec_merge: heading-keyed block model; MODIFIED replaces whole blocks in place (unmodified neighbors keep exact bytes and order), REMOVED deletes, ADDED appends; the three ambiguity holes raise SpecMergeError naming the heading (absent MODIFIED target, absent REMOVED target, duplicate ADDED). qor/specs/README.md scaffold + qor/references/spec-grammar.md contract (non-doctrine name; curated GOVERNANCE_INDEX Tier 2 row). 14 tests green twice on first implementation (including cross-call byte determinism and the composition guard: merged output passes the lint); full suite 2649 passed / 2 skipped. Content hash binds qor/scripts/spec_merge.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #481: SESSION SEAL -- Phase 190 spec corpus Phase A (v0.129.0)
+
+**Timestamp**: 2026-07-13T14:58:40Z
+**Phase**: SUBSTANTIATE (Phase 190; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase190-spec-corpus-phase-a.md
+**Session**: `2026-07-13T1405-331255`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `0109bfc42d45`
+
+**Scope**: Phase 190 implemented (feature; research entry #478 -> GH #239 Phase A). The behavioral-spec toolchain ships with no chain authority: spec_lint (four finding codes over the Requirement/Scenario grammar) + spec_merge (heading-keyed deterministic fold; the three ambiguity holes -- absent MODIFIED target, absent REMOVED target, duplicate ADDED -- raise SpecMergeError naming the heading, so concurrent deltas conflict visibly instead of rotting the corpus) + qor/specs/ scaffold with the brownfield accretion rule + qor/references/spec-grammar.md contract (non-doctrine name preserves the README inventory lock; curated GOVERNANCE_INDEX Tier 2 row; schema-freeze lint clean). DEFERRED with recorded grounds (the issue's own sequencing): Phase B gate-chain wiring (plan spec_deltas, audit grammar pre-pass into the existing specification-drift category, fold-after-PASS inside the seal with ledger hash) and Phase C per-requirement verify (qa_evidence coverage-pillar mapping) -- the runtime-contract no-production-caller WARN on spec_merge is that boundary made visible, disclosed at audit.
+
+Change class: feature (v0.128.0 -> v0.129.0). Tests: 14 new (grammar quadrants incl. double-RFC-2119; merge ADDED/MODIFIED/REMOVED; three loud-error paths asserting type AND heading; order/bytes preservation; cross-call byte determinism; cross-module composition -- merged output passes the lint), red-then-green twice; full suite 2649 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 140/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS, governance-index advanced + enforce clean, schema-freeze 0 unjustified, feature-inventory 17/17 vs snapshot 2026-07-13T1255-08b7e7, dist recompiled + drift clean. Audit: solo PASS (entry #479; zero violations; 1 disclosed WARN). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance tooling)
+
+**Content Hash**: `07fa2b9f93f8b71bcdcd471f6c7fcdb0bceef5a35863b4dedeacef85da21b9d0`
+**Previous Hash**: `6d89cf326268fd7e7aac90cc6807f4f2e9b7c690b6f258adc60c2e84d00140c1`
+**Chain Hash (Merkle seal)**: `40e1a034c3942b67e392a8977e5bda07872f809c30c2c4896abbece318ef5573`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 189; v0.128.0; /qor-onboard tutorial bundle; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 190; v0.129.0; spec corpus Phase A; local checkpoint commit only -- remote work held for operator review)

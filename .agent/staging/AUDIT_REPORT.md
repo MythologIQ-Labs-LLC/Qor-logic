@@ -1,9 +1,9 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T13:04:00Z
-**Target**: docs/plan-qor-phase189-onboard-tutorial.md (Phase 189; GH #241)
+**Tribunal Date**: 2026-07-13T14:16:00Z
+**Target**: docs/plan-qor-phase190-spec-corpus-phase-a.md (Phase 190; GH #239 Phase A)
 **Risk Grade**: L1
-**Session**: `2026-07-13T1255-08b7e7`
+**Session**: `2026-07-13T1405-331255`
 **Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall emitted; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
@@ -15,7 +15,7 @@
 
 ### Executive Summary
 
-A pedagogy surface with zero runtime footprint: one new meta workflow bundle that ORCHESTRATES the existing six-phase chain on an operator-confirmed trivial change, never analyzing (the delegation-table bundle rule is a Locked Decision, not an aspiration). The two failure classes that sink skill-corpus phases are both pre-neutralized: size (all narration in references/; SKILL.md target under 8 KB, far under the 25 KB WARN) and term drift (LD-2 makes term-at-first-use a glossary-LINKING discipline with a test-level guard over the three new files -- the Phase 135/178 ABORT class cannot re-enter). The three plan_grep_lint WARNs are the lint noting the skill path does not exist YET; the path is declared NEW in Affected Files -- the WARN-only contract working as designed on a new-file plan. No binding-VETO pass fired.
+The cycle boundary IS the design decision, and it is right: the issue self-sequences three phases, Phase A is pure tooling with no chain authority, and every identified risk (seal-gate timing, near-cap SKILL.md budgets, substantiate schema change) lives entirely in Phase B -- shipping A alone means this cycle cannot corrupt a gate. The merge semantics survived adversarial probing: heading-keyed whole-block replacement is deterministic BECAUSE the three ambiguity holes are loud errors (absent MODIFIED target, absent REMOVED target, duplicate ADDED heading) -- the silent-skip alternative is exactly how concurrent deltas would rot the corpus. The runtime-contract WARN (spec_merge has no production caller) is the deferral made visible, not a defect: Phase B is the caller, and the WARN is disclosed here and in the seal. No binding-VETO pass fired.
 
 ### Audit Results
 
@@ -23,27 +23,27 @@ A pedagogy surface with zero runtime footprint: one new meta workflow bundle tha
 **Result**: PASS -- canaries exit 0 over the four scanned surfaces.
 
 #### Security Pass (L3) / OWASP Top 10 Pass
-**Result**: PASS -- markdown-only phase; no code paths, no env, no subprocess. The tutorial's improvement-scan menu explicitly requires operator confirmation before any change is made (no autonomous edits to the operator's repo from a first-session flow).
+**Result**: PASS -- pure text transforms, stdlib only, list-form argv, no deserialization; CLI writes only with an explicit `--write` flag.
 
 #### Ghost UI / Razor / Dependency Passes
-**Result**: PASS -- no UI; no dependencies; the bundle adds exactly three behaviors on top of delegation (scan menu, narration, review-boundary hold).
+**Result**: PASS -- no UI; two small modules with one job each; the lint and merge share the grammar contract but no code (composition proven by a test instead).
 
-#### Self-Application Sub-Pass (originating_remediation: GH #241)
-**Result**: PASS -- the plan practices what the tutorial teaches: terms referenced by glossary home, prose kept in references/, the chain walked by delegation.
+#### Self-Application Sub-Pass (originating_remediation: GH #239)
+**Result**: PASS -- the plan honors the issue's own non-goal (the corpus rides UNDER the chain; no enabler-style authority ships in A) and its own sequencing.
 
 #### Test Functionality Pass
 **Result**: PASS
-The five tests observe behavior where behavior is machine-checkable: admission's verdict on the new skill, the matrix's broken-handoff count with the new handoffs present, the structural contract (frontmatter type + six-phase order + references cited), registration consistency (badge count equals registry row count -- a cross-surface invariant, not a presence check), and the no-definitional-prose guard (locks the LD-2 class). The issue's full acceptance flow is operator-executed by nature; the plan honestly scopes D4 to the testable core and records the LLM-executed validation as follow-up -- the correct boundary, not a waiver dodge.
+Twelve tests, all invoking the units: lint findings per grammar violation class (including the double-RFC-2119 case, not just absence), CLI exit codes with stderr content, the three loud-error merge paths asserting the raised type AND the named heading, order-and-bytes preservation for unmodified neighbors, cross-call determinism (byte-identical outputs), and the composition test (merged output passes the lint) -- which guards the seam the modules share.
 
 #### Infrastructure Alignment Pass
 **Result**: PASS
-Anchors verified live: qor-onboard-codebase frontmatter shape at SKILL.md:3 (type workflow-bundle) with its intake-only phase list; README badge Skills-29 at :14; SKILL_REGISTRY meta section with 29 total; delegation-table bundle section and its no-analysis rule; corpus auto-discovery by admission/matrix/dist_compile (the cline count test computes from source lists -- no count edits needed). The grep-lint WARNs are new-path notices, disclosed above. Runtime Contract Walk: 0 findings.
+Anchors verified live: specification-drift enum at audit.schema.json:40 (Phase B's routing target, untouched here); governance_index unregistered scan scope at :57 (root+docs only -- the non-doctrine reference name needs no registration; the Tier 2 row is curation, not compliance); CLI style precedent at check_variant_drift.py:53. The runtime-contract walk's no-production-caller WARN on spec_merge is the Phase A/B boundary made visible -- disclosed, expected, and resolved by Phase B's wiring. Runtime Contract Walk: 1 WARN (disclosed), 0 binding findings.
 
 #### Filter-Stage / Orphan / Macro-Architecture Passes
-**Result**: PASS -- the bundle slots into the existing meta category; references/ files are cited from SKILL.md (no orphans); no architectural surface changes.
+**Result**: PASS -- two modules + two markdown files; the specs scaffold README signposts the accretion rule; no architectural coupling introduced.
 
 #### Documentation Drift (advisory)
-**Result**: clean (minimal tier; no new glossary terms -- the tutorial links to existing homes by design).
+**Result**: clean (minimal tier; the grammar file introduces format vocabulary, not glossary doctrine terms).
 
 ### Violations Found
 
@@ -59,7 +59,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 189.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 190.
 
 ---
 _This verdict is binding._

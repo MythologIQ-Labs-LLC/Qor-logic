@@ -41,6 +41,7 @@ Stable; changes are explicit doctrine events. Drift signal: rules contradict eac
 | Attribution policy | `ATTRIBUTION.md` |
 | Publication boundary | `qor/references/doctrine-publication-boundary.md` |
 | Negative constraints | `qor/references/doctrine-negative-constraints.md` |
+| Spec grammar | `qor/references/spec-grammar.md` |
 
 ## Tier 3 — Active Initiative
 

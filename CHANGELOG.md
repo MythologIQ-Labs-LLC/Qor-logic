@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.129.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 190 (feature; spec corpus Phase A)**: the living-behavioral-spec toolchain ships without gate-chain authority (GH #239 Phase A per the issue's own sequencing). `qor/scripts/spec_lint.py` validates per-capability specs against the grammar contract (`qor/references/spec-grammar.md`: Requirement headings with exactly one RFC-2119 SHALL/MUST statement and GIVEN/WHEN/THEN scenarios); `qor/scripts/spec_merge.py` folds ADDED/MODIFIED/REMOVED delta documents deterministically by heading-keyed whole-block replacement, with loud `SpecMergeError`s on the three ambiguity holes (absent MODIFIED/REMOVED target, duplicate ADDED) so concurrent deltas conflict visibly. `qor/specs/` scaffold carries the brownfield accretion rule. Phase B (plan-declared deltas, audit grammar pre-pass into the existing specification-drift category, fold inside the seal with ledger hash) and Phase C (per-requirement verify via the qa_evidence coverage pillar) remain the recorded roadmap on GH #239.
+
 ## [0.128.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
