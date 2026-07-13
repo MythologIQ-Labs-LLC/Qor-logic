@@ -33,19 +33,19 @@ The binding contracts /qor-audit cannot violate. ABORT halts the skill at Step 0
 8. Step 3 Infrastructure Alignment Pass grep-verify violation -> VETO with `infrastructure-mismatch` category.
 9. Step 3 Feature Test Declaration Pass violation -> VETO with `feature-test-undeclared` category (Phase 79).
 
-**V2 ramp note** (Phase 99 wiring; GH #108): the Runtime Contract Walk at Step 3 Infrastructure Alignment Pass is NEW but ships WARN-only in V2 (audit-site wrap `|| true`); it is NOT yet on the binding-VETO list above. A V2-of-V2 phase will gather Phase 96 V1 operator-evidence on false-positive rate, then flip the walk's WARN to hard VETO with `runtime-contract-mismatch` category and add it to the inviolable list. See `qor/references/audit-runtime-contract-walk.md` for the walk protocol and `SG-GrepShapedRunclaim-A` in `qor/references/doctrine-shadow-genome-countermeasures.md` for the binding doctrine.
+**V2 ramp note** (Phase 99 wiring; GH #108): the Runtime Contract Walk at Step 3 Infrastructure Alignment Pass ships WARN-only in V2 (audit-site wrap `|| true`); it is NOT yet on the binding-VETO list above. Ramp rationale + hard-VETO promotion plan: `references/phase37-subpasses.md`; walk protocol: `qor/references/audit-runtime-contract-walk.md`.
 
 See Step 0.3 for plan-iteration ABORT, Step 3 for the binding-VETO inventory and per-pass detail, and the Constraints section at file foot for the post-batch-1 contract inventory.
 
 ## Environment (Phase 90 wiring; GH #79)
 
-This skill invokes integrity gates via `qor-logic reliability <module>` / `qor-logic scripts <module>`, which run the module through the CLI's own interpreter and so resolve from any shell. The bare `python -m qor.reliability.<module>` / `python -m qor.scripts.<module>` form remains a valid in-venv fallback. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+This skill invokes integrity gates via `qor-logic reliability <module>` / `qor-logic scripts <module>` (the bare `python -m qor.reliability.<module>` form is a valid in-venv fallback). The interpreter on PATH must have `qor-logic` importable; verify before invocation:
 
 ```bash
 python -c "import qor.reliability"
 ```
 
-If that command fails, activate the venv where `pip show qor-logic` resolves, or run `pipx install qor-logic` for a global install. On hosts without Python or where `qor-logic` is not installable (e.g., pure non-Python archetypes), Phase 75 declarative-tolerance applies — the missing-prerequisite gates record SKIP in the seal entry and emit `gate_skipped_prerequisite_absent` events per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-HalfSealedClaim-A`. The Phase 90 preflight at the top of `## Execution Protocol` below surfaces the misconfiguration once at skill entry so the SKIP cascade is operator-visible instead of silent.
+If that fails, activate the venv where `pip show qor-logic` resolves, or run `pipx install qor-logic`. On hosts where `qor-logic` is not installable, Phase 75 declarative-tolerance applies -- missing-prerequisite gates record SKIP + emit `gate_skipped_prerequisite_absent` (`SG-HalfSealedClaim-A`); the Phase 90 preflight below surfaces the misconfiguration once at skill entry. SKIP-cascade rationale: `references/phase37-subpasses.md`.
 
 ## Execution Protocol
 
@@ -90,7 +90,7 @@ qor-logic scripts plan_iteration_status_lint --plan "$PLAN_PATH" || ABORT
 
 ### Step 0.4: Unchanged-plan short-circuit (Phase 67 wiring - GH #45)
 
-Detect a byte-identical plan re-run (no amendment since the prior VETO): when the content hash matches the prior audit's `target_content_hash`, the same plan produces the same verdict, wasting the cycle and inflating the cycle-count escalator (§10.4).
+Detect a byte-identical plan re-run (no amendment since the prior VETO): when the content hash matches the prior audit's `target_content_hash`, the same plan produces the same verdict and wastes a cycle (escalator, section 10.4).
 
 ```python
 from qor.scripts.qor_audit_runtime import check_unchanged_plan_short_circuit
@@ -107,7 +107,7 @@ if result.should_skip:
     # Skip remaining steps; do NOT emit a new audit gate artifact.
 ```
 
-When verdict carries forward and the operator wants to force re-audit (e.g., dependency drift, doctrine update), they re-run `/qor-plan` to refresh the plan timestamp/content first. The audit gate emission at Step Z records `target_content_hash` so the next invocation can compare.
+To force re-audit after a carry-forward (dependency drift, doctrine update), re-run `/qor-plan` to refresh the plan first; the Step Z gate emission records `target_content_hash` for the comparison.
 
 ### Step 0.5: Cycle-count escalation check (Phase 37 wiring)
 
@@ -131,7 +131,7 @@ See `qor/references/doctrine-governance-enforcement.md` §10.4 "Cycle-count esca
 
 ### Step 0.6: Pre-audit lints (Phase 55 wiring)
 
-Run six pre-audit lints against the plan being audited; surface presence-only test descriptions, infrastructure-mismatch citations, plan-text drift, stale delivery branches, CI-coverage gaps, and workspace-fragility signals BEFORE Step 3 evaluates passes. All are WARN-only (the existing Test Functionality, Infrastructure Alignment, and Filter-Stage passes at Step 3 issue the binding VETOs); the lints catch these classes earlier so the Governor can remediate without consuming an audit cycle. The current ladder runs `plan_test_lint` (Phase 55) + `plan_grep_lint` (Phase 55) + `plan_text_consistency_lint` (Phase 67) + `delivery_branch_lint` (Phase 83) + `ci_coverage_lint` (Phase 89) + `workspace_fragility_check` (Phase 94); future additions extend the same `|| true` WARN-only contract.
+Run the pre-audit lint ladder against the plan being audited; surface presence-only test descriptions, infrastructure-mismatch citations, plan-text drift, stale delivery branches, CI-coverage gaps, and workspace-fragility signals BEFORE Step 3 evaluates passes. All are WARN-only; future additions extend the same `|| true` contract. Ladder history: `references/phase37-subpasses.md`.
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
@@ -194,7 +194,7 @@ PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_
 qor-logic scripts audit_risk_score --plan "$PLAN_PATH"
 ```
 
-`PLAN_PATH` is consumed only as an argv argument; SG-Phase47-A countermeasure honored by construction. When `audit_risk_score` reports `option_b_required: true`, **Option B independent review is mandatory** for this audit — the auditing agent MUST run a fresh-context audit or an `architect-reviewer`/`code-reviewer` subagent (which receives only the plan content), NOT a solo audit, regardless of operator default. The operator may override the mandate only with explicit written justification in the audit report.
+`PLAN_PATH` is argv-only (SG-Phase47-A). When `audit_risk_score` reports `option_b_required: true`, **Option B independent review is mandatory** for this audit -- dispatch a fresh-context audit or an `architect-reviewer` subagent, NOT a solo audit; the operator may override only with written justification in the audit report.
 
 The external-reviewer bridge contract, the full Option A/Option B dispatch protocol (fresh-context / subagent / second-operator), and the SG-007 author-momentum rationale + empirical results live in `references/adversarial-mode.md` (progressive disclosure per GH #92). Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AuthorAuditMomentum-A.
 
@@ -328,7 +328,7 @@ Verify KISS compliance in proposed design:
 
 #### Self-Application Sub-Pass (Phase 68 wiring - GH #44)
 
-When the plan's `originating_remediation` field is set (declared at Phase 68 in `qor/gates/schema/plan.schema.json`), the Judge MUST manually apply the discipline the plan introduces against the plan's own content. This closes the temporal gap between proposing a discipline and the discipline becoming runnable: every plan authored before the new lint/check is implemented is a future audit liability for the same pattern the plan targets.
+When the plan's `originating_remediation` field is set (declared at Phase 68 in `qor/gates/schema/plan.schema.json`), the Judge MUST manually apply the discipline the plan introduces against the plan's own content.
 
 Procedure:
 

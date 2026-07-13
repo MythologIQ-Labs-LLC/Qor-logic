@@ -45,12 +45,22 @@ def test_step_9_5_stages_the_sealed_gate_dir():
     )
 
 
-def test_skill_stays_under_exceeded_budget():
-    # Locks plan LD-2: the GH #262 amendment must pay for itself in bytes so a
-    # seal cannot be blocked by the size-budget EXCEEDED threshold.
-    size = os.path.getsize(CANONICAL)
-    assert size < EXCEEDED_BYTES, (
-        f"qor-substantiate SKILL.md is {size} bytes; EXCEEDED at {EXCEEDED_BYTES}"
+GOVERNANCE_SKILLS = {
+    "qor-audit": REPO / "qor" / "skills" / "governance" / "qor-audit" / "SKILL.md",
+    "qor-substantiate": CANONICAL,
+}
+HEADROOM_BYTES = 39 * 1024  # Phase 178 (GH #266): keep >= 1 KB under EXCEEDED
+
+
+@pytest.mark.parametrize("skill", sorted(GOVERNANCE_SKILLS), ids=str)
+def test_governance_skills_keep_headroom(skill):
+    # Phase 176 locked qor-substantiate under EXCEEDED (GH #262); Phase 178
+    # (GH #266) tightens to a headroom bound for BOTH big governance skills so
+    # a single wiring-paragraph addition can never block the next seal.
+    size = os.path.getsize(GOVERNANCE_SKILLS[skill])
+    assert size < HEADROOM_BYTES, (
+        f"{skill} SKILL.md is {size} bytes; headroom bound {HEADROOM_BYTES} "
+        f"(EXCEEDED at {EXCEEDED_BYTES}) -- run a progressive-disclosure pass"
     )
 
 

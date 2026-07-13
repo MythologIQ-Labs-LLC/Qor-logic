@@ -13995,5 +13995,82 @@ Change class: feature (v0.121.1 -> v0.122.0). Tests: 7 new behavioral in tests/t
 
 ---
 
+### Entry #430: RESEARCH BRIEF -- Skill progressive disclosure (GH #266)
+
+**Timestamp**: 2026-07-13T06:41:21Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #266
+**Session**: `2026-07-13T0640-f49940`
+**Brief**: docs/research-brief-skill-progressive-disclosure-2026-07-13.md
+
+**Content Hash**: `c355104f2da39d11af9fea7ee016dfd0f02fa1002e01429718f04b4a40cc4c6c`
+**Previous Hash**: `c7f7096f46ed42400d71a91d17b5d3ed9bb796ab7874a6a92611709c0d362f2b`
+**Chain Hash (Merkle seal)**: `a46deb5b8f045d95c64881fd6855c6b5090456662dfda1bf7997d02372c8bf6e`
+
+**Decision**: Verified live: qor-audit at 40,890 and qor-substantiate at 40,935 bytes vs EXCEEDED 40,960 -- one wiring paragraph from a blocked seal. Safe movable inventory: ~2-3 KB of rationale prose per skill into ALREADY-CITED references (adversarial-mode.md, phase37-subpasses.md, seal-gate-ladder.md), constrained by the full guardrail set (corpus-consolidation spine locks: 9+13+9 audit tokens, 4+12+12 substantiate tokens; tag-timing/seal-flow ordering; capability-declaration 12 step IDs; Phase 176 staging + budget tests; reference-resolution test). GOVERNOR SCOPE DECISION: the issue's "comfortably under 30 KB" aspiration is DEFERRED with rationale -- the named failure mode ("one more paragraph crosses EXCEEDED") is fully removed by >= 2 KB recovered headroom per skill, while 30 KB requires spine restructuring against the lock set (high regression risk, low marginal benefit); a new 39 KB-per-skill budget-invariant test locks the recovered headroom. Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class hotfix.
+
+---
+
+### Entry #431: GATE TRIBUNAL -- Phase 178 plan PASS (skill progressive disclosure)
+
+**Timestamp**: 2026-07-13T06:43:15Z
+**Phase**: GATE (Phase 178)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase178-skill-progressive-disclosure.md
+**Session**: `2026-07-13T0640-f49940`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `2fb8f498ded665e28d934bb256cf9933e0582a8d42d79067c4ec0e9dd42a625f`
+**Previous Hash**: `a46deb5b8f045d95c64881fd6855c6b5090456662dfda1bf7997d02372c8bf6e`
+**Chain Hash (Merkle seal)**: `5570c7c2c75b3d834e256e65a65420901bc7df47c28c5acd21b60bf790af3433`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #430 (GH #266): four rationale blocks per skill relocate into ALREADY-CITED references (no new files, no glossary churn); every guardrail-locked token stays inline byte-exact (the lock set IS the specification -- any reddened guardrail reverts the move by definition); a parametrized 39 KB headroom test, naturally RED against both current files, locks the recovered budget. Governor scope decision (30 KB aspiration deferred, failure-mode rationale) accepted for the issue disposition. Advisory: run the focused guardrail suite between the two skill edits, not only after both. Next: `/qor-implement`.
+
+---
+
+### Entry #432: IMPLEMENTATION -- Phase 178 skill progressive disclosure
+
+**Timestamp**: 2026-07-13T07:08:17Z
+**Phase**: IMPLEMENT (Phase 178)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0640-f49940`
+**Intent Lock**: `LOCKED: 2026-07-13T0640-f49940`
+
+**Content Hash**: `ee99f9aa6f6661dde7477d7cf742bb4b9af83c321dde9338fe65477fe00d98ca`
+**Previous Hash**: `5570c7c2c75b3d834e256e65a65420901bc7df47c28c5acd21b60bf790af3433`
+**Chain Hash (Merkle seal)**: `1bfb47d0d8e751254abc2ff3fcaeb769390874949d9827b67dafec14482b862b`
+
+**Decision**: Phase 178 implemented per plan, TDD-first: the parametrized 39 KB headroom test ran RED against both files (40,890 / 40,935), then the relocation pass (executed by a delegated implementation specialist with strict six-file ownership; verified independently from the observer seat) landed both at 39,355 / 39,321 bytes -- 581/615 bytes of recovered locked headroom, 38.4 KB each. ~1.5 KB rationale per skill moved into already-cited references (adversarial-mode, phase37-subpasses, seal-gate-ladder) as appended titled subsections with inline pointers; where prose was ALREADY verbatim in a reference, the inline copy compressed to a pointer without duplicate appends. The specialist discovered and honored MORE token locks than the plan enumerated (e.g. test_merge_velocity_substantiate_wiring requires a literal backtick-pipe-pipe-true inside Step 4.6.8 prose; option_b_required/Option B tokens; hash-integrity helper names) -- those sentences stayed inline, recorded per the guardrail-is-specification rule (plan LD-1). Verification: 100-test focused guardrail suite green, 772-test skill-referencing sweep green, dist recompiled zero-drift, size-budget lint now 2 WARNs at 38.4 KB (no EXCEEDED proximity). Full suite 2581 passed / 2 skipped. Content hash binds tests/test_substantiate_staging_gates.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #433: SESSION SEAL -- Phase 178 skill progressive disclosure (v0.122.1)
+
+**Timestamp**: 2026-07-13T07:11:19Z
+**Phase**: SUBSTANTIATE (Phase 178; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase178-skill-progressive-disclosure.md
+**Session**: `2026-07-13T0640-f49940`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `b5dc25abb6a0`
+
+**Scope**: Phase 178 implemented (hotfix; research entry #430 -> closes GH #266). Both oversized governance skills recovered locked headroom via progressive disclosure: qor-audit 40,890 -> 39,355 bytes and qor-substantiate 40,935 -> 39,321 (38.4 KB each; EXCEEDED at 40,960), with ~1.5 KB of rationale/narrative per skill relocated into ALREADY-CITED references (adversarial-mode, phase37-subpasses, seal-gate-ladder) as appended titled subsections + inline pointers, and duplicate prose compressed to pointers where a reference already carried it verbatim. Zero contract change: every test-locked step header, ABORT/VETO invariant, command token, prerequisite-table row, ordering constraint, and code block stayed inline byte-exact -- the 100-test guardrail suite is the correctness proof, and the implementation surfaced MORE locks than planned (all honored, entry #432). New parametrized 39 KB headroom test locks the recovered budget for both skills. Phase 135 gotcha reproduced and closed at seal: relocated prose carried `gate_skipped_prerequisite_absent`, SG-HalfSealedClaim-A, and SG-ConcurrentLedgerRace-A into references not in those glossary terms' referenced_by -- three registrations added, strict doc-integrity then PASS. The under-30 KB aspiration is DEFERRED per the recorded rationale (failure mode fully removed by locked headroom; deeper cuts would restructure the test-locked spine).
+
+Change class: hotfix (v0.122.0 -> v0.122.1). Tests: headroom test red-then-green (both parameters); focused guardrail suite 100 passed; 772-test skill-referencing sweep green; full suite 2581 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED (both edited skills), matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS (after the glossary registrations), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0617-5f93aa, dist recompiled zero-drift, size-budget lint 2 WARNs at 38.4 KB (healthy). Audit: solo PASS (entry #431; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (skill prose relocation only)
+
+**Content Hash**: `15eb225392dfbf5dad94592c95a42c9e466aa462c0b44422780083ff01bb0d29`
+**Previous Hash**: `1bfb47d0d8e751254abc2ff3fcaeb769390874949d9827b67dafec14482b862b`
+**Chain Hash (Merkle seal)**: `3b687b6e569ea9bf558062aa2a5f27b47538e968f3bdd26958677288fb58d3e1`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 177; v0.122.0; QA required pillars; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 178; v0.122.1; skill progressive disclosure; local checkpoint commit only -- remote work held for operator review)

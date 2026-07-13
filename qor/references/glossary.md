@@ -772,6 +772,7 @@ referenced_by:
   - qor/references/doctrine-feature-inventory.md
   - qor/skills/governance/qor-substantiate/references/release-and-tag-timing.md
   - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
 
@@ -789,6 +790,7 @@ referenced_by:
   - qor/skills/governance/qor-process-review-cycle/SKILL.md
   - qor/skills/governance/qor-shadow-process/SKILL.md
   - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
 introduced_in_plan: phase75-skill-capability-declaration
 ```
 
@@ -810,6 +812,7 @@ referenced_by:
   - qor/scripts/entry_id.py
   - qor/reliability/seal_entry_check.py
   - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
 introduced_in_plan: phase76-meta-ledger-federation
 ```
 

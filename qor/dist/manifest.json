@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-07-13T06:33:34Z",
+  "generated_ts": "2026-07-13T07:12:40Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -102,13 +102,13 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/references/adversarial-mode.md",
       "install_rel_path": "skills/qor-audit/references/adversarial-mode.md",
-      "sha256": "13f122c2c7fe9c58fde391eaee2a841222291a85e1ec649f1704d890f034a346"
+      "sha256": "64d024dbd59bbc01835573d421cc91f1de180674a21b7627dc773545e904bf1c"
     },
     {
       "id": "qor-audit",
       "source_path": "skills/qor-audit/references/phase37-subpasses.md",
       "install_rel_path": "skills/qor-audit/references/phase37-subpasses.md",
-      "sha256": "d2e97c79d6d249f71f71d117e63074d9319ba5b2ddb914250e09b0799849f9af"
+      "sha256": "7fb48533451cd0394da89e6f24e289ed551d3e685bb18a4b876449fac1d857cc"
     },
     {
       "id": "qor-audit",
@@ -126,7 +126,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "7702e97d45a19ac46ddc361f949d4e06cce1fb76ad02702ef25359c296248d2c"
+      "sha256": "b480144272bed82b850ab7eb5bd63ce60eaa735ff18abec7fc4920c32ef250f4"
     },
     {
       "id": "qor-bootstrap",
@@ -390,13 +390,13 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
       "install_rel_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
-      "sha256": "16cba0d7b343585fc182efd1358d5e99c7e53584b0fd2ba231a9a09fa574515b"
+      "sha256": "d3a5e22a994e188b05551bac08ff0d3cb45c2b87b3195fd8f5c1ef2b00239870"
     },
     {
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "b4ac9a1a79ccd1299d6fae93053412c2d31641e0b29d123204c7e57a90397226"
+      "sha256": "ae1883ea137ce90c1e641ddc98e7261f4cc72073e86629f0869893b257515751"
     },
     {
       "id": "qor-tone",

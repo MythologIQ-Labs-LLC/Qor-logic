@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.122.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 178 (hotfix; skill progressive disclosure)**: `qor-audit` and `qor-substantiate` SKILL.md no longer sit one wiring paragraph away from the 40 KB EXCEEDED budget that would block a seal (GH #266). ~1.5 KB of rationale/narrative prose per skill relocated into their already-cited `references/` files (adversarial-mode, phase37-subpasses, seal-gate-ladder) with inline pointers; every test-locked step header, command token, ABORT/VETO invariant, prerequisite-table row, and code block stayed inline byte-exact (100-test guardrail suite green). Both files now sit at ~38.4 KB with a new parametrized 39 KB headroom test locking the recovered budget. The issue's deeper under-30 KB aspiration is deferred with recorded rationale: the named failure mode is fully removed by locked headroom, while 30 KB would require restructuring the test-locked binding spine.
+
 ## [0.122.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
