@@ -1,0 +1,54 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T1640-229740",
+  "ts": "2026-07-13T12:52:00Z",
+  "questions": [
+    "Where do delta documents live and when are they consumed?",
+    "Can the near-cap skills carry the wiring steps?",
+    "What can Phase C verify without fabricating semantics?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "delta lifecycle decided: authored at plan (qor/specs/<cap>/deltas/<sid>.md), declared in plan artifact, linted at audit, folded+deleted at seal",
+      "source": "docs/research-brief-spec-corpus-phase-b-2026-07-13.md"
+    },
+    {
+      "id": "F2",
+      "summary": "headroom verified: qor-audit 39536 / qor-substantiate 39502 vs 39936 lock -> pointer-steps only, prose in references/",
+      "source": "docs/research-brief-spec-corpus-phase-b-2026-07-13.md"
+    },
+    {
+      "id": "F3",
+      "summary": "plan.schema.json spec_deltas is additive (new_ceremony_artifacts precedent at :71); substantiate spec_corpus_hash additive; freeze lint covers new schema files only",
+      "source": "docs/research-brief-spec-corpus-phase-b-2026-07-13.md"
+    },
+    {
+      "id": "F4",
+      "summary": "qa_evidence.py:24,30 coverage pillar deferred by design -> Phase C is its producer; verify structure+existence, never semantics",
+      "source": "docs/research-brief-spec-corpus-phase-b-2026-07-13.md"
+    },
+    {
+      "id": "F5",
+      "summary": "self-application: first capability spec (spec-corpus) folded by this session's own seal",
+      "source": "docs/research-brief-spec-corpus-phase-b-2026-07-13.md"
+    }
+  ],
+  "sources": [
+    "qor/gates/schema/plan.schema.json",
+    "qor/gates/schema/audit.schema.json",
+    "qor/scripts/qa_evidence.py",
+    "qor/scripts/spec_lint.py",
+    "qor/scripts/spec_merge.py",
+    "tests/test_substantiate_staging_gates.py"
+  ],
+  "brief_path": "docs/research-brief-spec-corpus-phase-b-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.130.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T12:52:00Z"
+  }
+}

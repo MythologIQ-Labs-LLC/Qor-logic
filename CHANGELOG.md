@@ -10,6 +10,17 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.132.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+Consolidated release: phases 192-193 shipped as one version. Per-phase seals
+are recorded in `docs/META_LEDGER.md` entries #486-#494.
+
+### Added
+- **Phase 193 (feature; canonical ledger emit API + retroactive attestation + structured health)**: closes GH #278 (carrying the #271 emit-API and #268 structured-output remainders plus the operator-directed retroactive normalization). `qor/scripts/ledger_emit.py` is the one typed emission path (render round-trips the verifier's parser; append links off the live tail with the ASCII seal rule enforced at the API). `qor/scripts/ledger_attest_legacy.py` performed the retroactive act: MIGRATION ATTESTATION entry #492 -- emitted through the new API -- binds all 32 pre-convention entries to LF-normalized body digests inside the live chain, and the verifier re-checks them every run (an edited legacy body is now a verification FAILURE). `ledger_hash verify` reports ZERO skipped entries on the live ledger for the first time, with no historical byte changed. `governance_health --format json` emits findings as structured objects (path/status/reason/legal_next) with unchanged exit semantics, composing with the v0.130.0 snapshot contract.
+- **Phase 192 (feature; spec corpus Phase B/C)**: the behavioral-spec toolchain gains gate-chain authority (GH #277, carrying #239's remaining phases). Plans that change contracted behavior author a spec delta (`qor/specs/<capability>/deltas/<session-id>.md`) and declare it in the plan artifact's new additive `spec_deltas` property; `/qor-audit` lints it (`spec_lint --delta`; failures VETO as `specification-drift`, with the no-delta-on-behavior-change judgment documented as a Judge duty); `/qor-substantiate` folds it after the reliability gates via `spec_fold.fold_session_deltas` (stage-all-then-write; conflicts and grammar-violating folds abort with the tree untouched; consumed deltas are deleted -- git history is the archive), recording the folded spec hash in the seal entry and substantiate.json. `spec_requirement_verify` produces the qa_evidence coverage pillar the module had deferred (structure + declared-surface existence; never fabricated semantics). Self-applied: this release's own seal performed the first live fold into `qor/specs/spec-corpus/spec.md`.
+
 ## [0.130.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

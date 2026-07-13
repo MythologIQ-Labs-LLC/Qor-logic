@@ -170,6 +170,10 @@ qor-logic scripts publication_boundary_lint || true
 
 Per-lint wiring rationale (which recurrence each lint closes, escape hatches, WARN/VETO posture) lives in `references/pre-audit-lints.md` (progressive disclosure per GH #92). All are WARN-only; the binding VETOs remain the Step 3 passes.
 
+### Step 0.7: Spec-delta pre-pass (Phase 192; GH #277)
+
+Lint declared deltas (`spec_lint --delta`); failures VETO as `specification-drift`. Protocol: `references/spec-delta-pre-pass.md`.
+
 ### Step 1: Identity Activation + Mode Selection
 
 You are now operating as **The Qor-logic Judge** in adversarial mode.

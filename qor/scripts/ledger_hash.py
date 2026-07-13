@@ -303,6 +303,26 @@ def _attested_reconciled(entries: list[tuple[int, str]]) -> set[int]:
     return attested
 
 
+_ATTESTED_LINE_RE = re.compile(r"^#(\d+)=([0-9a-f]{12})\s*$", re.MULTILINE)
+
+
+def _migration_attested(entries: list[tuple[int, str]]) -> dict[int, tuple[str, int]]:
+    """Phase 193 (GH #278): {legacy_num: (digest12, attesting_entry)} from
+    MIGRATION ATTESTATION entries' **Attested Entries** blocks."""
+    out: dict[int, tuple[str, int]] = {}
+    for num, body in entries:
+        if "**Attested Entries**:" not in body:
+            continue
+        for m in _ATTESTED_LINE_RE.finditer(body):
+            out[int(m.group(1))] = (m.group(2), num)
+    return out
+
+
+def _legacy_body_digest(body: str) -> str:
+    data = body.encode("utf-8").replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()[:12]
+
+
 def _resolve_recorded(body: str) -> tuple[str, str, str] | None:
     """Return (content_val, previous_val, recorded_chain) for an entry body, or
     None when it carries neither canonical Content/Previous/Chain markup nor a
@@ -400,6 +420,7 @@ def verify(
     # when they are genuine duplicate-previous_hash members (security gate).
     reconciled = _attested_reconciled(entries) & _duplicate_previous_hash_members(entries)
 
+    migration_attested = _migration_attested(entries)
     errors = 0
     skipped = 0
     last_failed = 0
@@ -418,6 +439,21 @@ def verify(
                 )
                 errors += 1
                 last_failed = num
+            elif num in migration_attested:
+                # Phase 193 (GH #278): the pre-convention band is digest-bound
+                # by a MIGRATION ATTESTATION entry; re-check the digest so an
+                # edited legacy body is a FAILURE, not a silent skip.
+                digest, attester = migration_attested[num]
+                if _legacy_body_digest(body) == digest:
+                    print(f"OK   Entry #{num}: attested by migration entry #{attester}")
+                else:
+                    print(
+                        f"FAIL Entry #{num}: attestation digest mismatch "
+                        f"(attested {digest} by entry #{attester})",
+                        file=sys.stderr,
+                    )
+                    errors += 1
+                    last_failed = num
             else:
                 skipped += 1
             continue

@@ -1,9 +1,9 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T15:14:00Z
-**Target**: docs/plan-qor-phase191-snapshot-contract.md (Phase 191; GH #270)
+**Tribunal Date**: 2026-07-13T18:26:00Z
+**Target**: docs/plan-qor-phase193-ledger-emit-api.md (Phase 193; GH #278)
 **Risk Grade**: L2
-**Session**: `2026-07-13T1505-e508d3`
+**Session**: `2026-07-13T1815-6e2843`
 **Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall emitted; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
@@ -15,39 +15,36 @@
 
 ### Executive Summary
 
-L2 grade because this ships a PUBLISHED external contract with a known downstream consumer -- the schema is the API, and the audit's deepest walk went to the two places external contracts rot: silent-health inference and compatibility drift. Both are answered structurally, not conventionally: every section carries `state: ok|unknown|error` plus a source pointer (LD-2 -- a collector CANNOT render absence as health because the guard wrapper owns the rendering), and the compatibility rules (additive keeps schemaVersion, consumers ignore unknown fields, breaking bumps major) live in the registered contract reference, with the schema itself registered under the Phase 169 freeze rule so a future phase cannot add snapshot fields unregistered. The exporter's exit-code semantics are the subtle right call: exit 0 on a successful export of an UNHEALTHY repository (the snapshot reports state, it does not judge it) -- conflating the two would make degraded repositories unobservable, defeating the issue's purpose. No binding-VETO pass fired.
+L2 because this touches the VERIFIER -- the one component whose weakening silently weakens everything else. The adversarial walk therefore centered on the attestation extension, and it strengthens rather than relaxes: today the 32-entry band is dead weight (skipped, unexamined, editable without detection); after this phase every legacy body is digest-bound inside the live chain, a mismatch is a FAIL, and the tamper-evidence test drives that path directly. The impossibility argument for the alternative was checked, not assumed: retro-chaining requires the first verifiable entry's recorded Previous Hash to change, which the operator's acceptance forbids byte-for-byte -- attestation is the only chain-preserving path, and the issue's own text sanctions it. The renderer's round-trip test (render -> _resolve_recorded -> verify) is the exact contract that kills the emit/parse drift class at its root. LD-4 repeats the Phase 192 pattern deliberately: the retroactive requirement is met by a sealed artifact in this session, not a promise. No binding-VETO pass fired.
 
 ### Audit Results
 
 #### Prompt Injection Pass
 **Result**: PASS -- canaries exit 0 over the four scanned surfaces.
 
-#### Security Pass (L3-depth walk for the external contract)
+#### Security Pass (L3-depth for the verifier change) / OWASP Top 10 Pass
 **Result**: PASS
-Read-only enforced by test (tree hash before/after); no network by construction (all sources are local files; the git identifier uses local `git config`, subprocess list-form, optional with explicit degradation). The snapshot exposes only repository-local governance facts the repo already publishes to any reader; no secrets surfaces are collected (gate artifacts, ledger headers, event metadata). Enterprise concepts are excluded per the issue's own boundary -- checked as a non-goal, not an afterthought.
-
-#### OWASP Top 10 Pass
-**Result**: PASS -- no deserialization beyond json.loads of repo-owned files inside guarded collectors (malformed input becomes state:error, tested); no shell=True; output written only to the explicit --out path.
+The attestation path can only CONVERT skips into checked entries (digest match -> attested-OK; mismatch -> FAIL; no attestation entry -> behavior unchanged). It cannot absolve a modern entry (the GAP-GOV-09 cutoff FAIL path is untouched) and cannot be forged cheaply (the migration entry itself chain-verifies like any modern entry -- test-locked). ledger_emit enforces the ASCII seal rule at the API (assert_sealable_text) instead of at review time. No deserialization, no subprocess, no network.
 
 #### Ghost UI / Razor / Dependency Passes
-**Result**: PASS -- no UI; the only dependency (jsonschema) is already present (validate_gate_artifact.py:16); the health section REUSES status_json's runner instead of reimplementing the ladder (composition over duplication).
+**Result**: PASS -- stdlib; the renderer composes the existing hash primitives and entry_id rather than re-deriving any of them.
 
-#### Self-Application Sub-Pass (originating_remediation: GH #270)
-**Result**: PASS -- the healthy-repo fixture is THIS repository: the first live snapshot will report the very session that built it, and the test asserts real values (pyproject version, CHANGELOG head) rather than fixture-shaped echoes.
+#### Self-Application Sub-Pass (originating_remediation: GH #278)
+**Result**: PASS -- the migration entry for the real band is emitted THROUGH the new API inside this session's ceremony; the API's first production artifact is the operator-directed retroactive act itself.
 
 #### Test Functionality Pass
 **Result**: PASS
-Nine tests, every one observing behavior: live-value assertions on the healthy path, jsonschema conformance of actual output, four degraded fixtures each asserting the SPECIFIC section state and that export still succeeds (the fail-safe contract), byte determinism modulo generated_ts, tree immutability, and CLI file/exit behavior. The degraded fixtures cover the issue's required matrix (no-session, malformed, tampered, missing artifacts); "stale" is represented through the lifecycle/health sections' own staleness reporting rather than a synthetic fixture -- honest scope, disclosed here.
+Eleven tests, all behavioral: the round-trip contract, chain linkage on a fixture (verify exit 0, zero skips), the ASCII rejection, tail-marker preservation, skip-set equality between collect and verify, attestation clearing skips, the tampered-body FAIL (the load-bearing security property, tested in the direction an attacker would push), the migration entry's own chain verification, the live-ledger zero-skip assertion (red until the LD-4 act, green in the post-seal suite -- the honest sequencing), and JSON shape + exit parity for health.
 
 #### Infrastructure Alignment Pass
 **Result**: PASS
-Anchors verified live: status_json run_all/runner at :78/:44; the Phase 175 module's non-overlap (DNA backup); the freeze-lint registry seam (gate_schema_freeze_lint.py:6,53) with the plan artifact declaring new_ceremony_artifacts (the lint's designed justification path); jsonschema import at validate_gate_artifact.py:16; Phase 173 latest-iteration resolution for the gates section. The runtime-contract WARN (snapshot_export has no production caller) is definitionally true for a consumer-facing export CLI -- the callers are external; disclosed. Runtime Contract Walk: 1 WARN (disclosed), 0 binding findings.
+Anchors verified live: _resolve_recorded at ledger_hash.py:306; hash primitives at :25/:39; the attestation precedent at :293-304 (the new mechanism strengthens it with per-entry digests); derive_entry_id at entry_id.py:16; the current live skip count (32) confirmed this session. The runtime-contract WARN on ledger_emit is the recurring definitional class -- its production caller is the ceremony itself, wired this phase; disclosed. Runtime Contract Walk: 1 WARN (disclosed), 0 binding findings.
 
 #### Filter-Stage / Orphan / Macro-Architecture Passes
-**Result**: PASS -- one module of small collectors + one schema + one reference doc; the contract reference is registered in GOVERNANCE_INDEX Tier 2; no coupling into gate authority (derived, not authoritative -- LD from the issue itself).
+**Result**: PASS -- two new modules + one verify extension + one output format; health JSON composes with (does not duplicate) the snapshot contract per LD-3.
 
 #### Documentation Drift (advisory)
-**Result**: clean -- standard tier with one term homed at the new contract reference; the glossary entry ships in-phase.
+**Result**: clean (minimal tier; no new glossary terms -- MIGRATION ATTESTATION is an entry kind, documented where entry kinds live).
 
 ### Violations Found
 
@@ -63,7 +60,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 191.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 193.
 
 ---
 _This verdict is binding._

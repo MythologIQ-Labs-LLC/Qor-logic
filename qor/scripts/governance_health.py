@@ -296,11 +296,26 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repo-root", default=".", help="workspace root to inspect")
     parser.add_argument("--profile", choices=sorted(PROFILES), default=None, help="named required-artifact set")
     parser.add_argument("--required", nargs="*", default=None, help="explicit required artifact paths")
+    parser.add_argument("--format", choices=("prose", "json"), default="prose",
+                        help="Phase 193 (GH #278): json emits findings as structured objects")
     args = parser.parse_args(argv)
     findings = check_governance_health(Path(args.repo_root), required=_resolve_required(args.profile, args.required))
+    rc = _exit_code(findings)
+    if args.format == "json":
+        import json as _json
+        print(_json.dumps({
+            "profile": args.profile,
+            "overall": "ok" if rc == 0 else "blocked",
+            "findings": [
+                {"path": f.path, "status": f.status.value,
+                 "reason": f.reason, "legal_next": f.legal_next}
+                for f in findings
+            ],
+        }))
+        return rc
     for finding in findings:
         print(f"{finding.status.value.upper():13} {finding.path}  {finding.reason}  -> {finding.legal_next}")
-    return _exit_code(findings)
+    return rc
 
 
 if __name__ == "__main__":  # pragma: no cover

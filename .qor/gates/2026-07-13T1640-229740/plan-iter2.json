@@ -1,0 +1,59 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T1640-229740",
+  "ts": "2026-07-13T13:02:06Z",
+  "plan_path": "docs/plan-qor-phase192-spec-corpus-phase-b.md",
+  "phases": [
+    "Phase 1: Schema + delta lint mode (TDD first)",
+    "Phase 2: Fold runner + requirement verify (TDD first)",
+    "Phase 3: Skill wiring + self-application"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_spec_delta_wiring.py tests/test_spec_fold.py tests/test_spec_lint.py tests/test_spec_merge.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms_introduced": [
+    {
+      "term": "Spec delta",
+      "home": "qor/references/spec-grammar.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "Phase C verifies structure + declared-surface existence, never scenario semantics",
+      "fold requires a PASS audit in the session"
+    ],
+    "non_goals": [
+      "retroactive spec backfill",
+      "semantic scenario verification",
+      "delta authoring automation"
+    ],
+    "exclusions": [
+      "enterprise/federation concepts"
+    ]
+  },
+  "change_class": "feature",
+  "originating_remediation": "GH #277",
+  "feature_inventory_touches": [],
+  "spec_deltas": [
+    {
+      "capability": "spec-corpus",
+      "delta_path": "qor/specs/spec-corpus/deltas/2026-07-13T1640-229740.md",
+      "ops": [
+        "ADDED"
+      ],
+      "evidence": "qor/scripts/spec_fold.py"
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.130.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T13:02:06Z"
+  }
+}
