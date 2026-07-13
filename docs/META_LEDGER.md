@@ -13687,5 +13687,82 @@ Change class: feature (v0.119.0 -> v0.120.0). Tests: 10 behavioral in `tests/tes
 
 ---
 
+### Entry #414: RESEARCH BRIEF -- Gate-dir test hygiene (GH #274)
+
+**Timestamp**: 2026-07-13T04:38:32Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #274 (Phase 173 follow-up)
+**Session**: `2026-07-13T0427-d0d371`
+**Brief**: docs/research-brief-gate-dir-test-hygiene-2026-07-13.md
+
+**Content Hash**: `70d748c0847bc603fabbfdd9fb82fe3126867214ead13fc7ae5aa7a71ff65cfd`
+**Previous Hash**: `537e0d82e6e7ed81143ed24250050eab9d16ba2b2003ff48e1f25c7715766369`
+**Chain Hash (Merkle seal)**: `cc869ffd07aed0bddeb8c99ca3eeb4004c8f686f0e864e8fe8dbb161862bafbd`
+
+**Decision**: Three test files write into the LIVE `.qor/gates/` tree via two defect shapes: (a) doppelganger imports (`sys.path.insert(0, "qor/scripts")` + top-level `import gate_chain`/`import validate_gate_artifact` in test_gate_chain_provenance.py) whose monkeypatches hit a second module object production code never reads; (b) resolver-only patches (`gate_chain.GATES_DIR`) that miss the writer's `validate_gate_artifact.GATES_DIR` (test_qor_ideate_writes_gate_artifact.py), plus the wrong env var (`QORLOGIC_PROJECT_DIR` -- host install dirs, not the gate tree) in test_skill_active_env.py. The five tracked pollution dirs (`2026-01-01T0000-aaaaaa`, `2026-04-30T0000-test03/04/06`, `ideate-e2e`, `ideate-prov`) have ZERO consumers (no ledger seal cites them; no qor/ reference; no test reads their committed bytes) -- untrack them. Conftest-sweep widening (issue proposal item 2) is UNSAFE: patterns wide enough to catch the fixture ids also match tracked historical session dirs; decline with rationale. Remaining offenders (`test-session*` chdir-based) are conftest-swept -- out of scope. Next: /qor-plan (fix 3 files, git rm 5 dirs, subprocess inventory-guard regression test).
+
+---
+
+### Entry #415: GATE TRIBUNAL -- Phase 174 plan PASS (gate-dir test hygiene)
+
+**Timestamp**: 2026-07-13T04:43:02Z
+**Phase**: GATE (Phase 174)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase174-gate-dir-test-hygiene.md
+**Session**: `2026-07-13T0427-d0d371`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `59e10d1346c1f1a32c6ecfdd1ea6c39f0685f342cb26bc63f637cba8520a1fc7`
+**Previous Hash**: `cc869ffd07aed0bddeb8c99ca3eeb4004c8f686f0e864e8fe8dbb161862bafbd`
+**Chain Hash (Merkle seal)**: `8f632e40a4e698e67912f3d955e71cb23a029704635191cab177a7efa4de0e39`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #414 (GH #274): canonical imports + writer-constant (`validate_gate_artifact.GATES_DIR`) and `QOR_ROOT` redirects in the three offender test files; the five zero-consumer pollution fixture dirs are untracked; a subprocess inventory-guard regression test (red against current offenders by construction) snapshots the live gate tree, excluding conftest-sweep-pattern dirs per LD-5, around a real pytest run of the fixed files. All LD greps re-executed live at tribunal. One SG-AffectedFilesContract-A-class finding (missing QOR_ROOT redirect in two of three files -> gitignored live key accretion) remediated by plan amendment pre-verdict; no cycle consumed. Runtime-contract-walk backward WARNs identified as heuristic artifacts for test-only plans (both cited modules are production-imported). Conftest-sweep widening declined per research F6. Next: `/qor-implement`.
+
+---
+
+### Entry #416: IMPLEMENTATION -- Phase 174 gate-dir test hygiene
+
+**Timestamp**: 2026-07-13T05:02:21Z
+**Phase**: IMPLEMENT (Phase 174)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0427-d0d371`
+**Intent Lock**: `LOCKED: 2026-07-13T0427-d0d371`
+
+**Content Hash**: `5973835d0dafddce74a1ab8967d2cc2d6f4ac48a2d13c8338182f71831e17413`
+**Previous Hash**: `8f632e40a4e698e67912f3d955e71cb23a029704635191cab177a7efa4de0e39`
+**Chain Hash (Merkle seal)**: `a98166ccbaffefa1e687e28c08bf77663076dde1c9ee470e14730f14966df1f6`
+
+**Decision**: Phase 174 implemented per plan, TDD-first: the new subprocess inventory guard (`tests/test_gate_dir_hygiene.py`) ran RED against the unfixed offenders (live-tree writes enumerated in its failure output), then the three files were fixed -- tests/test_gate_chain_provenance.py (doppelganger `sys.path.insert` + top-level imports replaced with canonical `qor.scripts` imports; writer-constant `vga.GATES_DIR` + `QOR_ROOT` redirects added to test03/test04/test06), tests/test_qor_ideate_writes_gate_artifact.py (vga.GATES_DIR + QOR_ROOT added to both tests), tests/test_skill_active_env.py (wrong `QORLOGIC_PROJECT_DIR` env replaced with `QOR_ROOT` + both GATES_DIR patches) -- and the guard went GREEN (focused suite 14 passed, twice; red-run pollution restored/cleaned before proceeding). Phase 2: the five zero-consumer pollution fixture dirs (`2026-01-01T0000-aaaaaa`, `2026-04-30T0000-test03/04/06`, `ideate-e2e`, `ideate-prov`) git-rm'd; gate_chain_completeness (115 sessions) and gate_provenance verify-committed (16 sessions) stayed green post-removal. Full suite 2554 passed / 2 skipped with a CLEAN `.qor/gates` tree afterward -- the GH #274 acceptance observed live. Content hash binds tests/test_gate_dir_hygiene.py (the phase's guard evidence). Next: `/qor-substantiate`.
+
+---
+
+### Entry #417: SESSION SEAL -- Phase 174 gate-dir test hygiene (v0.120.1)
+
+**Timestamp**: 2026-07-13T05:04:13Z
+**Phase**: SUBSTANTIATE (Phase 174; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase174-gate-dir-test-hygiene.md
+**Session**: `2026-07-13T0427-d0d371`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `e8e75690395f`
+
+**Scope**: Phase 174 implemented (hotfix; research entry #414 -> closes GH #274, the Phase 173 follow-up). Gate-writing tests no longer touch the live `.qor/gates/` tree. Root causes fixed in three files: tests/test_gate_chain_provenance.py (doppelganger `sys.path.insert(0, "qor/scripts")` + top-level imports whose monkeypatches never reached the canonical modules -- replaced with `from qor.scripts import ...`; writer-constant `validate_gate_artifact.GATES_DIR` + `QOR_ROOT` redirects added to the three writing tests), tests/test_qor_ideate_writes_gate_artifact.py (resolver-only patch -- writer constant + QOR_ROOT added to both tests), tests/test_skill_active_env.py (wrong env var `QORLOGIC_PROJECT_DIR`, which controls host install dirs, replaced with `QOR_ROOT` + both GATES_DIR patches). The five zero-consumer tracked pollution fixture dirs (`2026-01-01T0000-aaaaaa`, `2026-04-30T0000-test03/04/06`, `ideate-e2e`, `ideate-prov`) were git-rm'd; no ledger entry, module, or test reads them (research F5), and gate_chain_completeness (115 sessions) + gate_provenance verify-committed (16 sessions) stayed green after removal. New regression guard tests/test_gate_dir_hygiene.py: snapshots the live gate tree (excluding conftest-sweep-pattern dirs per plan LD-5), runs the three fixed files in a real pytest subprocess, asserts exit 0 + byte-identical snapshots -- observed RED against the pre-fix offenders, GREEN after. Conftest-sweep widening (issue proposal item 2) declined per research F6: patterns wide enough to catch the fixture ids also match tracked historical session dirs. GH #274 acceptance observed live: full suite left `git status` clean of gate-tree mutations.
+
+Change class: hotfix (v0.120.0 -> v0.120.1). Tests: guard + 3 redirected files, 14 passed twice (focused); full suite 2554 passed / 2 skipped with clean tree afterward. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean (staged), merge-velocity healthy, data-API SKIP (no SQL migrations, disclosed), doc-integrity strict PASS (minimal tier), governance-index advanced + enforce clean, DoD structural check clean, procedural-fidelity recorded, gate-chain completeness + provenance verify-committed clean. Audit: solo PASS (entry #415; codex-plugin shortfall logged). Seal commit: LOCAL checkpoint only per operator review-boundary override (one commit per completed issue; no push, no PR, no tag, no remote mutation -- all remote work held for operator review).
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (test hygiene only; no feature surface)
+
+**Content Hash**: `610e6470dd3cbd038d0c123f935bb728badb06ce297914e89b162663f5cd205e`
+**Previous Hash**: `a98166ccbaffefa1e687e28c08bf77663076dde1c9ee470e14730f14966df1f6`
+**Chain Hash (Merkle seal)**: `227468eff5fe9a55071350d98a715734b710a3efc0a53ab99384eb73f9d8a875`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 173; v0.120.0; iteration-versioned gate artifacts; seal commit held for operator authorization)
+*Session: SEALED* (Phase 174; v0.120.1; gate-dir test hygiene; local checkpoint commit only -- remote work held for operator review)

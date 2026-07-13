@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.120.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 174 (hotfix; gate-dir test hygiene)**: gate-writing tests no longer touch the live `.qor/gates/` tree (GH #274, Phase 173 follow-up). Root causes fixed: a doppelganger import in the provenance tests (`sys.path.insert` + top-level `import gate_chain` whose monkeypatches never reached the canonical modules) and resolver-only redirects that missed the writer constant (`validate_gate_artifact.GATES_DIR`) plus the wrong env var (`QORLOGIC_PROJECT_DIR` instead of `QOR_ROOT`). Five zero-consumer tracked pollution dirs under `.qor/gates/` were removed. A new subprocess inventory guard (`tests/test_gate_dir_hygiene.py`) snapshots the live gate tree around a real pytest run of the previously offending files and fails on any byte added, removed, or modified -- red against the pre-fix offenders by construction. A full-suite run now leaves the working tree clean.
+
 ## [0.120.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

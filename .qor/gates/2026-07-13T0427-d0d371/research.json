@@ -1,0 +1,62 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0427-d0d371",
+  "ts": "2026-07-13T04:39:13Z",
+  "questions": [
+    "Which tests write to the live .qor/gates tree, and through which missed-redirect shape?",
+    "Are the tracked fixture dirs consumed by any ledger entry, module, or test read?",
+    "Is conftest-sweep widening a safe backstop?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "test_gate_chain_provenance.py uses doppelganger imports (sys.path.insert + top-level import); patches never reach the canonical writer; test03/test04/test06 write live, test06 rewrites tracked plan.provenance with a tmp-keyed hmac",
+      "source": "tests/test_gate_chain_provenance.py:16"
+    },
+    {
+      "id": "F2",
+      "summary": "test_qor_ideate_writes_gate_artifact.py patches only the resolver constant; writes land via validate_gate_artifact.GATES_DIR into live ideate-e2e/ideate-prov",
+      "source": "tests/test_qor_ideate_writes_gate_artifact.py:35"
+    },
+    {
+      "id": "F3",
+      "summary": "test_skill_active_env.py sets QORLOGIC_PROJECT_DIR (host install dirs) instead of QOR_ROOT and patches no GATES_DIR; live audit write + audit_history row per run",
+      "source": "tests/test_skill_active_env.py:29"
+    },
+    {
+      "id": "F4",
+      "summary": "sid-string lookalikes verified non-offenders (synthetic dirs, pre-write raises, or conftest-swept sids)",
+      "source": "tests/test_gate_chain_completeness.py:46"
+    },
+    {
+      "id": "F5",
+      "summary": "five tracked pollution dirs have zero consumers; safe to git rm",
+      "source": "docs/META_LEDGER.md"
+    },
+    {
+      "id": "F6",
+      "summary": "conftest sweep widening unsafe (would match tracked historical session dirs); decline issue item 2",
+      "source": "tests/conftest.py:27"
+    }
+  ],
+  "sources": [
+    "tests/test_gate_chain_provenance.py",
+    "tests/test_qor_ideate_writes_gate_artifact.py",
+    "tests/test_skill_active_env.py",
+    "tests/test_gate_chain_completeness.py",
+    "tests/test_gate_provenance_bypass_pytest_only.py",
+    "tests/conftest.py",
+    "qor/scripts/validate_gate_artifact.py",
+    "qor/workdir.py",
+    "qor/hosts.py"
+  ],
+  "brief_path": "docs/research-brief-gate-dir-test-hygiene-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.120.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T04:39:13Z"
+  }
+}

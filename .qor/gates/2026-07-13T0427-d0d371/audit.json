@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T0427-d0d371",
+  "ts": "2026-07-13T04:44:24Z",
+  "target": "docs/plan-qor-phase174-gate-dir-test-hygiene.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "target_content_hash": "610e6470dd3cbd038d0c123f935bb728badb06ce297914e89b162663f5cd205e",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.120.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T04:44:24Z"
+  }
+}

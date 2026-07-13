@@ -1,10 +1,10 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T03:45:09Z
-**Target**: docs/plan-qor-phase173-gate-artifact-iteration.md (Phase 173; GH #237)
-**Risk Grade**: L2
-**Session**: `2026-07-13T0335-8e819f`
-**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `ded899758e55...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
+**Tribunal Date**: 2026-07-13T04:43:02Z
+**Target**: docs/plan-qor-phase174-gate-dir-test-hygiene.md (Phase 174; GH #274)
+**Risk Grade**: L1
+**Session**: `2026-07-13T0427-d0d371`
+**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `922ae2aa191b...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
 ---
@@ -15,21 +15,21 @@
 
 ### Executive Summary
 
-The plan makes the gate-artifact evidence chain append-only at its single write point while preserving every seal-side consumer of the unversioned singleton path. All fourteen Locked Decision citations grep-verified live against the current tree during this tribunal. The one material finding surfaced mid-audit -- the writer's return-path change breaks two exact-path assertions in tests/test_gates.py that the Affected Files block did not enumerate (SG-AffectedFilesContract-A) -- was remediated by plan amendment BEFORE verdict emission (no audit gate artifact had been written), and the amended text was re-walked. No binding-VETO pass fired.
+Test-only repo-hygiene plan: canonicalize the imports/redirects in three test files so gate writes land in tmp, untrack five zero-consumer pollution dirs, and add a subprocess inventory-guard regression test that is red against the current offenders by construction. All Locked Decision citations grep-verified live during this tribunal (the research phase verified them hours earlier in the same working session; the tribunal re-executed the greps). One finding surfaced mid-audit -- sidecar writes also mint per-session keys under the gitignored live `.qor/session/keys/` unless `QOR_ROOT` is redirected, and the plan redirected it in only one of the three files -- remediated by plan amendment BEFORE verdict emission (no audit gate artifact had been written). No binding-VETO pass fired.
 
 ### Audit Results
 
 #### Prompt Injection Pass
 **Result**: PASS
-`prompt_injection_canaries` over ARCHITECTURE_PLAN.md, META_LEDGER.md, CONCEPT.md, and the plan: exit 0, no canary hits.
+`prompt_injection_canaries` over ARCHITECTURE_PLAN.md, META_LEDGER.md, CONCEPT.md, and the plan: exit 0.
 
 #### Security Pass (L3)
 **Result**: PASS
-No auth logic, credentials, or bypasses. The Phase 158 provenance posture is strengthened, not weakened: the immutable versioned file receives its own HMAC sidecar; the per-session key handling (`gate_provenance.session_key`) is untouched. No data-API surface (no SQL).
+No auth, credentials, or bypasses; no SQL surface. Untracking the five fixture dirs removes stale committed HMAC sidecars whose keys never existed on any verifier -- a disclosure-surface reduction, not a control change. The Phase 158 provenance controls are untouched.
 
 #### OWASP Top 10 Pass
 **Result**: PASS
-json-only serialization; no subprocess additions; atomic tempfile + `os.replace` writes retained; no fail-open path added (versioned-write collision raises, never silently overwrites).
+The guard's subprocess uses list-form argv (`[sys.executable, "-m", "pytest", ...]`), no shell=True, fixed file arguments (A03 clean). No deserialization; no fail-open (guard fails on nonzero inner exit OR snapshot inequality).
 
 #### Ghost UI Pass (incl. Live-Progress)
 **Result**: PASS
@@ -40,60 +40,60 @@ No UI surface.
 
 | Check | Limit | Blueprint Proposes | Status |
 | --- | --- | --- | --- |
-| Max function lines | 40 | write_artifact split across two helpers + write body; each < 40 | OK |
-| Max file lines | 250 | validate_gate_artifact.py ~182 -> ~225 | OK |
-| Max nesting depth | 3 | <= 3 (glob/parse/max in helpers) | OK |
+| Max function lines | 40 | guard test ~30 lines + `_snapshot` helper ~15 | OK |
+| Max file lines | 250 | new test file well under; offender files shrink (doppelganger scaffolding removed) | OK |
+| Max nesting depth | 3 | <= 3 | OK |
 | Nested ternaries | 0 | 0 | OK |
 
-gate_chain.py stands at 326 lines pre-plan (pre-existing overage; sealed phases 158/168/169 amended it without razor findings); this plan's net delta there is ~8 lines and introduces no new function over limit.
+No production code is touched.
 
-#### Self-Application Sub-Pass (originating_remediation: GH #237)
+#### Self-Application Sub-Pass (originating_remediation: GH #274)
 **Result**: PASS
-Discipline introduced: no emission may overwrite evidence already bound. Applied to the plan's own process: research brief and plan doc are net-new files; ledger entry #410 was appended, not rewritten; no sealed artifact byte is modified by the plan's phases.
+Discipline introduced: tests must not touch the live gate tree. Applied to the plan's own deliverables: the guard test only READS the live tree (snapshots) and delegates writes to a subprocess whose targets are the fixed files; the plan's own lifecycle artifacts are written by governed skills into the CURRENT session dir (runtime state, not test fixtures). No self-violation.
 
 #### Test Functionality Pass
 **Result**: PASS
-All ten described tests invoke the writer/resolver and assert on observed output (byte hashes, filenames in order, resolved payload identity, dispatched event fields). None is presence-only; each survives the acceptance question (silently reverting the versioned write while leaving files in place fails `test_rerun_preserves_sealed_iter1_bytes` and `test_stale_singleton_does_not_shadow_iterations`). `prose_test_lint --enforce`: exit 0 (54 exempted-with-reason, 0 unexplained). No closed-enum taxonomy declared (inverse-coverage rule not applicable).
+The guard invokes the units (executes the three fixed test files in a real pytest subprocess) and asserts on observed behavior: inner exit code 0 AND byte-identical filtered snapshots of the live tree. Acceptance question holds: if any fixed test regressed to a resolver-only patch, the snapshot inequality fails the guard. Redirected existing tests keep their behavioral assertions (ProvenanceError paths, sidecar verify, schema round-trip). `prose_test_lint --enforce`: exit 0 (54 exempted-with-reason, 0 unexplained). No closed-enum taxonomy.
 
 #### Dependency Pass
 **Result**: PASS
-Zero new dependencies; stdlib (`re`, pathlib globbing) only.
+Stdlib only (`subprocess`, `hashlib`, `sys`, `pathlib`).
 
 #### Feature Test Coverage Pass
 **Result**: PASS (exempt)
-`feature_inventory_touches` declared empty; governance tooling only, no FEATURE_INDEX row affected.
+`feature_inventory_touches` declared empty; tests only.
 
 #### Infrastructure Alignment Pass
 **Result**: PASS
-Full LD walk (iter-1) grep-verified live during tribunal: write_artifact:123, os.replace:139, vga.write_artifact call:289, gate_chain_completeness check:52, verify_committed:206, evidence_bundle collectors:80/98/118, tier_guard.declared_artifacts:59, sidecar_path:95, check_prior_artifact:59, read_phase_artifact:198, audit_history.append:34, audit.schema.json additionalProperties:6, _fire_gate_written_hook:302, PHASES:53. `with_suffix` naming claim verified (`audit-iter2.json -> audit-iter2.provenance`). Phase-name grammar claim verified (all PHASES entries `[a-z]+`; `-iter<N>` unambiguous). Caller sweep for the return-path change verified: only tests/test_gates.py holds exact-path equality assertions (two sites), now enumerated in Affected Files. Runtime Contract Walk: 0 findings.
+LD walk grep-verified live: sys.path doppelganger at tests/test_gate_chain_provenance.py:16-17; writer joins at validate_gate_artifact.py:101,176 and delegation at gate_chain.py:293; QOR_ROOT at workdir.py:29 vs QORLOGIC_PROJECT_DIR at hosts.py:8,11; zero consumers of the five fixture identities (META_LEDGER grep 0, qor/ grep 0; completeness/verify_committed walk ledger-referenced sessions only per gate_chain_completeness.py:52 and gate_provenance.py:206); conftest sweep patterns at conftest.py:49-54. Runtime Contract Walk: 2 WARN-only findings ("no production caller imports qor.scripts.gate_chain / validate_gate_artifact") -- spurious for a test-only plan; the walk's backward pass expects production callers for cited modules, but the citations here name test-import targets. Both modules ARE production-imported (gate_chain by qor_audit_runtime, stall_walk, skills; vga by gate_chain itself), so the finding is a walk heuristic artifact, not drift.
 
 #### Filter-Stage Ordering Coherence
 **Result**: PASS
-`write_gate_artifact` pipeline (env-provenance check -> versioned write -> history append -> sidecars -> hook) keeps the versioned path available before every consumer of it; no stage runs before its precondition producer. The sidecar-then-hook order is preserved from the current code.
+No pipeline-shaped function is introduced or modified.
 
 #### Orphan Pass
 **Result**: PASS
-New helpers are called from `write_artifact`/`gate_chain`; new test file collected by pytest; chain.md is a doc. No orphans.
+tests/test_gate_dir_hygiene.py is pytest-collected; no other files created. The removed dirs are, by LD-4, already orphans -- removal is the anti-orphan action.
 
 #### Macro-Level Architecture Pass
 **Result**: PASS
-Versioning logic concentrated at the single existing write point (no second writer); resolution helper lives beside the writer in validate_gate_artifact.py and is consumed by gate_chain (existing import direction; no cycle).
+No module boundaries change; the fix consolidates tests onto the canonical import path (removing a second module identity is a braid REMOVED).
 
 #### Documentation Drift (advisory)
 **Result**: clean
-`doc_integrity.render_drift_section` over the plan artifact: empty (no glossary/topology divergence).
+`doc_integrity.render_drift_section`: empty (doc_tier minimal; no terms).
 
 ### Violations Found
 
 | ID  | Category | Location | Description |
 | --- | -------- | -------- | ----------- |
-| V1 (remediated pre-verdict) | specification-drift | plan Phase 1 Affected Files | Return-path change breaks two exact-path assertions in tests/test_gates.py (test_write_gate_artifact_creates_file_at_correct_path, test_write_gate_artifact_respects_explicit_session_id) not originally enumerated; plan amended to list them before verdict emission. No gate artifact had been written; no audit cycle consumed by the amendment. |
+| V1 (remediated pre-verdict) | specification-drift | plan Phase 1 Changes | Sidecar writes mint per-session keys via `workdir.root()`; without `QOR_ROOT` redirection the fixed provenance/ideate tests would still accrete key files under the gitignored live `.qor/session/keys/`. Plan amended to add the `QOR_ROOT` env redirect to all three files before verdict emission; no audit cycle consumed. |
 
 ### Advisory (non-VETO)
 
-- `ci_coverage_lint`: 12 standing workflow commands not mirrored in the plan's CI Commands (WARN-only; the plan's list covers the behavior this phase changes -- completeness, provenance, ledger verify, full pytest).
-- `workspace_fragility_check`: dirty_gate_artifact_count=12, active_branch_count=150 (standing repo condition; this plan adds no shared-surface risk beyond its narrow scope).
-- `install_drift_check`: repo-scope claude skill install differs from source (operator may re-run `qor-logic install --host claude --scope repo`).
+- `ci_coverage_lint`: 12 standing workflow commands not mirrored in the plan CI list (WARN-only; unchanged standing condition).
+- Runtime Contract Walk backward-pass WARNs are heuristic artifacts for test-only plans (documented above).
+- `test-session*` chdir-based writer tests remain latent same-class offenders but are conftest-swept; explicitly out of #274 scope per research F4.
 
 ## Process Pattern Advisory
 
@@ -103,7 +103,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 173.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 174.
 
 ---
 _This verdict is binding._
