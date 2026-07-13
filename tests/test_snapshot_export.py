@@ -40,8 +40,13 @@ def test_healthy_repo_snapshot():
         version = tomllib.load(fh)["project"]["version"]
     assert snap["meta"]["qor_logic_version"] == version
 
-    assert snap["session"]["state"] == "ok"
-    assert re.match(r"^\d{4}-\d{2}-\d{2}T\d{4}-[0-9a-f]{6}$", snap["session"]["session_id"])
+    # .qor/session/current is operator-local (gitignored): present in live
+    # working trees, absent in CI checkouts. Both are honest states.
+    if (REPO_ROOT / ".qor" / "session" / "current").exists():
+        assert snap["session"]["state"] == "ok"
+        assert re.match(r"^\d{4}-\d{2}-\d{2}T\d{4}-[0-9a-f]{6}$", snap["session"]["session_id"])
+    else:
+        assert snap["session"]["state"] == "unknown"
 
     assert snap["lifecycle"]["state"] == "ok"
     assert snap["lifecycle"]["disposition"] == "SEALED"
