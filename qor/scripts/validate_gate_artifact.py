@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -120,24 +121,69 @@ def validate_all_current_session() -> tuple[int, int, list[str]]:
     return checked, errors, report
 
 
+def _max_iteration(phase: str, session_dir: Path) -> int:
+    """Highest N among <phase>-iter<N>.json in session_dir; 0 when none."""
+    rx = re.compile(rf"^{re.escape(phase)}-iter([0-9]+)\.json$")
+    best = 0
+    if session_dir.is_dir():
+        for candidate in session_dir.glob(f"{phase}-iter*.json"):
+            match = rx.match(candidate.name)
+            if match:
+                best = max(best, int(match.group(1)))
+    return best
+
+
+def latest_artifact_path(phase: str, session_dir: Path) -> Path:
+    """Resolve the highest-iteration versioned artifact; singleton fallback.
+
+    Phase 173 (GH #237): versioned files are authoritative when present;
+    legacy (pre-173) session dirs resolve to the unversioned singleton.
+    The returned path may not exist (caller checks)."""
+    n = _max_iteration(phase, session_dir)
+    if n:
+        return session_dir / f"{phase}-iter{n}.json"
+    return session_dir / f"{phase}.json"
+
+
+def next_iteration_path(phase: str, session_dir: Path) -> Path:
+    """The next free versioned artifact path for this phase + session."""
+    return session_dir / f"{phase}-iter{_max_iteration(phase, session_dir) + 1}.json"
+
+
+def _atomic_write(target: Path, text: str) -> None:
+    import os, tempfile
+    with tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", dir=target.parent, delete=False, suffix=".tmp"
+    ) as tf:
+        tf.write(text)
+        tmp = tf.name
+    os.replace(tmp, target)
+
+
 def write_artifact(phase: str, data: dict, session_id: str | None = None) -> Path:
-    """Helper used by skills: write artifact to .qor/gates/<session>/<phase>.json
-    after validating. Returns written path."""
+    """Helper used by skills: persist a gate artifact after validating.
+
+    Phase 173 (GH #237): writes the immutable `<phase>-iter<N>.json` (never
+    re-targets an existing iteration) and refreshes the `<phase>.json`
+    singleton as a byte-identical latest copy. Returns the VERSIONED path so
+    downstream bindings (provenance sidecar, gate-written hook, audit
+    history) reference the exact immutable evidence."""
     sid = session_id or session.get_or_create()
     data = {"phase": phase, "session_id": sid, **data}
     errs = _validate_data(phase, data)
     if errs:
         raise ValueError(f"Cannot write invalid {phase} artifact: {errs}")
-    out = GATES_DIR / sid / f"{phase}.json"
-    out.parent.mkdir(parents=True, exist_ok=True)
-    import os, tempfile
-    with tempfile.NamedTemporaryFile(
-        mode="w", encoding="utf-8", dir=out.parent, delete=False, suffix=".tmp"
-    ) as tf:
-        json.dump(data, tf, indent=2)
-        tmp = tf.name
-    os.replace(tmp, out)
-    return out
+    session_dir = GATES_DIR / sid
+    session_dir.mkdir(parents=True, exist_ok=True)
+    versioned = next_iteration_path(phase, session_dir)
+    if versioned.exists():
+        versioned = next_iteration_path(phase, session_dir)
+        if versioned.exists():
+            raise FileExistsError(f"gate-artifact iteration collision: {versioned}")
+    text = json.dumps(data, indent=2)
+    _atomic_write(versioned, text)
+    _atomic_write(session_dir / f"{phase}.json", text)
+    return versioned
 
 
 def _validate_data(phase: str, data: dict) -> list[str]:

@@ -249,10 +249,11 @@ A closure block does NOT remove the entry or revise its timestamp. The failure p
 
 ### 10.3 Audit history and findings signature (Phase 37)
 
-Every `/qor-audit` gate emission writes two artifacts:
+Every `/qor-audit` gate emission writes three artifacts (Phase 173, GH #237, added the immutable form):
 
-1. **Singleton** `.qor/gates/<sid>/audit.json` — authoritative for chain gating (read by `gate_chain.check_prior_artifact` for `/qor-implement` etc.). Overwritten on re-emission.
-2. **Append-only history** `.qor/gates/<sid>/audit_history.jsonl` — one JSON record per audit in session order. Advisory for stall detection. Schema-validated line-by-line on read.
+1. **Immutable iteration** `.qor/gates/<sid>/audit-iter<N>.json` — one per emission, never overwritten; the evidence a seal binds. Carries its own `.provenance` sidecar.
+2. **Singleton** `.qor/gates/<sid>/audit.json` — byte-identical latest copy, refreshed on re-emission for pre-173 consumers. Resolution (`gate_chain.check_prior_artifact` for `/qor-implement` etc.) prefers the highest iteration and falls back to the singleton for pre-173 session dirs.
+3. **Append-only history** `.qor/gates/<sid>/audit_history.jsonl` — one JSON record per audit in session order, carrying `artifact_filename` (the versioned file; absent pre-173). Advisory for stall detection. Schema-validated line-by-line on read.
 
 The history log is the input to `findings_signature.compute_record`. Every VETO audit carries `findings_categories` (closed 12-value enum in `audit.schema.json`); the signature is the first 16 hex characters of SHA256 over the dedupe-and-sort-joined category list. Audits emitted before Phase 37 lack the `findings_categories` field and resolve to the literal sentinel `"LEGACY"` (not hex-shaped, so no collision with real signatures).
 

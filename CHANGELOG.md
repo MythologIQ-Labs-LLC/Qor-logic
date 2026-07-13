@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.120.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 173 (feature; iteration-versioned gate artifacts)**: a later gate run can no longer overwrite evidence already bound by a seal (GH #237, "one seal, one immutable file"). Every emission through `gate_chain.write_gate_artifact` now lands in its own immutable `.qor/gates/<sid>/<phase>-iter<N>.json` (collision advances N; the writer never re-targets an existing iteration) with its own provenance sidecar; the unversioned `<phase>.json` is refreshed as a byte-identical latest copy, so every existing consumer of the singleton path (gate-chain completeness, `gate_provenance verify-committed`, evidence reconstruction, tier-guard short-chain reads) keeps working unchanged. Prior-artifact resolution (`check_prior_artifact`, `read_phase_artifact`) selects the highest iteration and falls back to the singleton for pre-173 session dirs (no retroactive migration). `audit_history.jsonl` rows carry the new `artifact_filename` field naming the exact versioned file each audit emission landed in (additive; the audit schema is unchanged). Regression coverage: re-running an audit after VETO produces `audit-iter2.json` while `audit-iter1.json` survives byte-identical, hash-verified (`tests/test_gate_artifact_iteration.py`).
+
 ## [0.119.0] - 2026-07-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

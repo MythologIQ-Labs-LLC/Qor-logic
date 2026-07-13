@@ -13610,5 +13610,82 @@ environment approval.
 
 ---
 
+### Entry #410: RESEARCH BRIEF -- Iteration-versioned gate artifacts (GH #237)
+
+**Timestamp**: 2026-07-13T03:36:43Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #237 (one seal, one immutable file)
+**Session**: `2026-07-13T0335-8e819f`
+**Brief**: docs/research-brief-gate-artifact-iteration-2026-07-13.md
+
+**Content Hash**: `cf60f2802aebb312414626367271e13e1960ef7826c7368b8fe90b312a3ca0a0`
+**Previous Hash**: `b4c53e8a3e5d94a0d3e4aaa72669ec187a87919ff77b73e57ae1c459a2f5a92e`
+**Chain Hash (Merkle seal)**: `99eab51e94fe041ea41037932d9ed0f8425aed08fd622eb8397643ea9dff8550`
+
+**Decision**: The overwrite defect is confirmed by live repro: `validate_gate_artifact.write_artifact` (line 123) lands every phase artifact on the mutable singleton `.qor/gates/<sid>/<phase>.json`, and a re-run (audit VETO->PASS, substantiate FAIL->SEAL) destroys BOTH the prior bytes and the `<phase>.provenance` sidecar (`gate_provenance.sidecar_path` shares the stem). All seal-side consumers (gate_chain_completeness, gate_provenance.verify_committed, evidence_bundle, tier_guard) read the singleton, so the fix must keep `<phase>.json` as a byte-identical latest copy while the immutable evidence moves to `<phase>-iter<N>.json` (+ its own sidecar; never overwritten; N = max existing + 1). Resolution (`check_prior_artifact` / `read_phase_artifact`) selects the highest iteration with singleton fallback for legacy sessions; `audit_history.jsonl` rows gain `artifact_filename` (audit schema already allows additionalProperties -- no schema amendment, no freeze-lint exposure). Additive, no retroactive migration. Next: /qor-plan.
+
+---
+
+### Entry #411: GATE TRIBUNAL -- Phase 173 plan PASS (iteration-versioned gate artifacts)
+
+**Timestamp**: 2026-07-13T03:45:09Z
+**Phase**: GATE (Phase 173)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase173-gate-artifact-iteration.md
+**Session**: `2026-07-13T0335-8e819f`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `e37655a5a8746d3139b89b242915ad9fee8c10d8f67c5f1bff91d54001b6b860`
+**Previous Hash**: `99eab51e94fe041ea41037932d9ed0f8425aed08fd622eb8397643ea9dff8550`
+**Chain Hash (Merkle seal)**: `2d76a7b1a8d68bbae68ce04aa7a350e7692be2d24a39ddba1189e6d9e9a7739c`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #410 (GH #237): the gate-artifact write path becomes append-only at its single write point -- `write_artifact` emits immutable `<phase>-iter<N>.json` + refreshes the singleton `<phase>.json` as a byte-identical latest copy; sidecar duality keeps `verify_committed`/`evidence_bundle` green; resolution prefers the highest iteration with singleton fallback (legacy sessions grandfathered); `audit_history.jsonl` rows gain `artifact_filename` (additive under additionalProperties, no schema amendment). All 14 LD citations grep-verified live during tribunal; runtime contract walk 0 findings; prose_test_lint exit 0. One SG-AffectedFilesContract-A finding (two exact-path assertions in tests/test_gates.py) remediated by plan amendment pre-verdict; no cycle consumed. Next: `/qor-implement`.
+
+---
+
+### Entry #412: IMPLEMENTATION -- Phase 173 iteration-versioned gate artifacts
+
+**Timestamp**: 2026-07-13T04:03:11Z
+**Phase**: IMPLEMENT (Phase 173)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0335-8e819f`
+**Intent Lock**: `LOCKED: 2026-07-13T0335-8e819f`
+
+**Content Hash**: `21d9e23f4db24395e7aafc519a48fb8eaa2b9da30227c6361ba152733789b2a7`
+**Previous Hash**: `2d76a7b1a8d68bbae68ce04aa7a350e7692be2d24a39ddba1189e6d9e9a7739c`
+**Chain Hash (Merkle seal)**: `77aaf59a0282584f75e0d58894edb7d638dbbe119079ff658882e7552f60f59d`
+
+**Decision**: Phase 173 implemented per plan, TDD-first (10 behavioral tests red -- 8 failed, 2 legacy-fallback locks green by construction -- then all green twice). `validate_gate_artifact.py` (+44 net): `_max_iteration` / `latest_artifact_path` / `next_iteration_path` / `_atomic_write` helpers; `write_artifact` now emits immutable `<phase>-iter<N>.json` (collision advances N, second collision raises FileExistsError -- never overwrites) then refreshes the `<phase>.json` singleton byte-identically, returning the VERSIONED path. `gate_chain.py` (+9 net): resolution (`check_prior_artifact`, `read_phase_artifact`, `_check_short_chain_plan`, `_check_ideation_predecessor`) prefers the highest iteration with singleton fallback; sidecar duality (versioned + singleton `.provenance`); `audit_history.append(..., artifact_filename=<versioned name>)`; hook event binds the versioned path. `audit_history.py`: additive `artifact_filename` kwarg (audit schema `additionalProperties: true`; no schema amendment). Docs: chain.md "Iteration versioning" section; doctrine-governance-enforcement §10.3 three-artifact shape; lifecycle.md layout line. Two exact-path assertions in tests/test_gates.py updated per plan enumeration. Full suite 2553 passed / 2 skipped; `gate_provenance verify-committed` OK (15 sessions); `gate_chain_completeness` OK (114 sessions); ledger chain verified. Pre-existing razor overage in gate_chain.py (3 functions >40 lines incl. docstrings) untouched -- delta ~7 lines, no new function over limit. Content hash binds tests/test_gate_artifact_iteration.py (the phase's acceptance evidence). Next: full-suite verification recorded, then `/qor-substantiate`.
+
+---
+
+### Entry #413: SESSION SEAL -- Phase 173 iteration-versioned gate artifacts (v0.120.0)
+
+**Timestamp**: 2026-07-13T04:09:59Z
+**Phase**: SUBSTANTIATE (Phase 173; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase173-gate-artifact-iteration.md
+**Session**: `2026-07-13T0335-8e819f`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `14de3b4969c0`
+
+**Scope**: Phase 173 implemented (feature; research entry #410 -> closes GH #237, "one seal, one immutable file"). The gate-artifact write path is now append-only at its single write point: `validate_gate_artifact.write_artifact` emits an immutable `.qor/gates/<sid>/<phase>-iter<N>.json` per emission (N = highest existing iteration + 1; a collision advances N and a second collision raises FileExistsError -- the writer never re-targets an existing iteration) and refreshes the unversioned `<phase>.json` as a byte-identical latest copy, returning the VERSIONED path so `gate_chain.write_gate_artifact` binds the provenance sidecar, the gate-written hook event, and the new `audit_history.jsonl` `artifact_filename` field to the exact immutable evidence. Sidecar duality (versioned + refreshed singleton `.provenance`) keeps `gate_provenance verify-committed`, gate-chain completeness, and evidence reconstruction green with zero changes to those consumers. Prior-artifact resolution (`check_prior_artifact`, `read_phase_artifact`, `_check_short_chain_plan`, `_check_ideation_predecessor`) selects the highest iteration and falls back to the singleton for pre-173 session dirs; no retroactive migration (GH #237 requirement). No schema amendment: the audit schema's `additionalProperties: true` admits the additive history field; SCHEMA_REGISTRY untouched (freeze lint 0 findings). Docs: chain.md "Iteration versioning" section, doctrine-governance-enforcement section 10.3 three-artifact shape, lifecycle.md layout line. Live self-application within this very session: research/plan/audit artifacts were written pre-implementation as legacy singletons and resolve via the fallback; implement landed as `implement-iter1.json` and its files_touched amendment as `implement-iter2.json` with iter1 preserved byte-identical -- the grandfathering and iteration paths both exercised in production before sealing. Known follow-up (out of scope, pre-existing): a handful of suite tests write to the LIVE `.qor/gates/` tree under fixed fixture session ids; with versioning they now leave untracked `-iter` pollution per run (cleaned this session; tests should tmp-redirect -- follow-up issue to be filed).
+
+Change class: feature (v0.119.0 -> v0.120.0). Tests: 10 behavioral in `tests/test_gate_artifact_iteration.py` (GH #237 acceptance: `test_rerun_preserves_sealed_iter1_bytes` seals iter-1's hash, re-runs the phase, and verifies the sealed bytes exist and hash identically; plus sidecar immutability, history filename binding, collision advance, hook binding, highest-iteration resolution, legacy fallback, stale-singleton authority), red-then-green, green twice; 2 exact-path assertions in `tests/test_gates.py` updated per the audited plan enumeration. Full suite 2553 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, session-id lint clean, secret-scan clean (staged), procedural-fidelity clean, DoD structural check clean, merge-velocity healthy, size-budget 0 EXCEEDED (2 standing WARNs), data-API SKIP (no SQL migrations, disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory regression gate clean vs snapshot 2026-07-04T1840-46e4d9, doc-currency no warnings, gate-chain completeness + provenance verify-committed clean. Audit: solo PASS (entry #411; codex-plugin shortfall logged). Seal commit HELD: operator has not yet authorized commit/push/release; staged working tree delivered for review.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance write-path hardening; no new user-touchable feature row)
+
+**Content Hash**: `7282b623954f56decde3c3858c7c89922e5852bce7c5df3deb95878938f5722e`
+**Previous Hash**: `77aaf59a0282584f75e0d58894edb7d638dbbe119079ff658882e7552f60f59d`
+**Chain Hash (Merkle seal)**: `537e0d82e6e7ed81143ed24250050eab9d16ba2b2003ff48e1f25c7715766369`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 172; v0.119.0; publication-boundary doctrine + retroactive remediation; auto-ship authorized, PyPI publish held for operator)
+*Session: SEALED* (Phase 173; v0.120.0; iteration-versioned gate artifacts; seal commit held for operator authorization)
