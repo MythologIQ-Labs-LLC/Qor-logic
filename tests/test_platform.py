@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -12,13 +13,36 @@ from qor.scripts import qor_platform as qplat
 
 # ----- Host detection -----
 
+def _clear_claude_signals(monkeypatch):
+    """Remove every claude-code host signal from the environment."""
+    monkeypatch.delenv("CLAUDECODE", raising=False)
+    monkeypatch.delenv("CLAUDE_PROJECT_DIR", raising=False)
+    for key in [k for k in os.environ if k.startswith("CLAUDE_CODE_")]:
+        monkeypatch.delenv(key, raising=False)
+
+
 def test_detect_host_claude_code_env(monkeypatch):
+    _clear_claude_signals(monkeypatch)
     monkeypatch.setenv("CLAUDE_PROJECT_DIR", "/some/path")
     assert qplat.detect_host() == "claude-code"
 
 
+def test_detect_host_claudecode_env_alone(monkeypatch):
+    """Phase 186 (GH #242): CLAUDECODE=1 is the ambient CLI signal."""
+    _clear_claude_signals(monkeypatch)
+    monkeypatch.setenv("CLAUDECODE", "1")
+    assert qplat.detect_host() == "claude-code"
+
+
+def test_detect_host_claude_code_family_env_alone(monkeypatch):
+    """Phase 186 (GH #242): any CLAUDE_CODE_* key identifies the host."""
+    _clear_claude_signals(monkeypatch)
+    monkeypatch.setenv("CLAUDE_CODE_ENTRYPOINT", "cli")
+    assert qplat.detect_host() == "claude-code"
+
+
 def test_detect_host_unknown_absent_env(monkeypatch):
-    monkeypatch.delenv("CLAUDE_PROJECT_DIR", raising=False)
+    _clear_claude_signals(monkeypatch)
     assert qplat.detect_host() == "unknown"
 
 

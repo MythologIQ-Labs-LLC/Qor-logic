@@ -155,3 +155,11 @@ framework countermeasure.
 - `qor/gates/schema/audit.schema.json` — audit gate artifact schema (input data lineage)
 - `qor/platform/profiles/claude-code-with-codex.md` — profile that wires the actual invocation (when authored)
 - `qor/references/doctrine-token-efficiency.md` — Codex critique should be summarized at synthesis time, not pasted in full
+
+## Self-Application Sub-Pass temporal-gap rationale (moved from SKILL.md, Phase 178)
+
+The Step 3 Self-Application Sub-Pass closes the temporal gap between proposing
+a discipline and the discipline becoming runnable: every plan authored before
+the new lint/check is implemented is a future audit liability for the same
+pattern the plan targets. The Judge therefore enacts the not-yet-runnable
+discipline manually against the plan's own prose, code blocks, and citations.

@@ -35,3 +35,4 @@ build/
 
 # Phase 172: operator-local publication-boundary identity terms (never tracked)
 .qor/private/
+.agent/local-backup/

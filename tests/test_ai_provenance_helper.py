@@ -109,6 +109,24 @@ def test_build_manifest_warning_suppressible_by_env(monkeypatch, capsys):
     assert "host fell back" not in err
 
 
+def test_build_manifest_autodetects_host_without_marker(monkeypatch, capsys):
+    """Phase 186 (GH #242): when the cached platform marker yields nothing,
+    _detect_host falls back to fresh env detection, so a Claude Code session
+    that never ran apply_profile still records host=claude-code (no WARN)."""
+    from qor.scripts import qor_platform as qplat
+
+    monkeypatch.setattr(qplat, "current", lambda: None)
+    monkeypatch.setenv("CLAUDECODE", "1")
+    monkeypatch.delenv(ai_provenance._QUIET_ENV, raising=False)
+    ai_provenance._warned_keys.clear()
+
+    manifest = ai_provenance.build_manifest(
+        "audit", model_family="y", human_oversight=HumanOversight.PASS,
+    )
+    assert manifest["host"] == "claude-code"
+    assert "host fell back" not in capsys.readouterr().err
+
+
 def test_build_manifest_reads_model_family_from_env(monkeypatch):
     monkeypatch.setenv(ai_provenance._MODEL_ENV, "claude-sonnet-4-6")
     manifest = ai_provenance.build_manifest(

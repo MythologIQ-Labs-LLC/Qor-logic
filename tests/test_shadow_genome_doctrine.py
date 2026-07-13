@@ -12,16 +12,27 @@ DOCTRINE = REPO_ROOT / "qor" / "references" / "doctrine-shadow-genome-countermea
 QOR_PLAN_SKILL = REPO_ROOT / "qor" / "skills" / "sdlc" / "qor-plan" / "SKILL.md"
 
 
-def _collect_keyword_only_functions(root: Path) -> dict[str, tuple[Path, int, list[str]]]:
-    """Return {fn_name: (def_file, lineno, positional_arg_names)}."""
-    out: dict[str, tuple[Path, int, list[str]]] = {}
+def _collect_keyword_only_functions(root: Path) -> dict[str, list[tuple[Path, int, list[str]]]]:
+    """Return {fn_name: [(def_file, lineno, positional_arg_names), ...]}.
+
+    Phase 185 (GH #265): a MULTIMAP -- the old single-slot dict let the last
+    same-named definition in walk order silently win, so call sites were
+    judged against a coin-toss signature under cross-module name collisions.
+    """
+    out: dict[str, list[tuple[Path, int, list[str]]]] = {}
     for py in root.rglob("*.py"):
         tree = ast.parse(py.read_text(encoding="utf-8"))
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.args.kwonlyargs:
-                positional = [a.arg for a in node.args.args]
-                out[node.name] = (py, node.lineno, positional)
-    return out
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                # Non-kwonly same-named defs are recorded with positional=None
+                # so the resolver can honor Python scoping: a local plain
+                # definition SHADOWS a foreign keyword-only one.
+                positional = (
+                    [a.arg for a in node.args.args] if node.args.kwonlyargs else None
+                )
+                out.setdefault(node.name, []).append((py, node.lineno, positional))
+    # Names with no keyword-only definition anywhere are not lint subjects.
+    return {k: v for k, v in out.items() if any(pos is not None for _, _, pos in v)}
 
 
 def _call_name(node: ast.Call) -> str | None:
@@ -32,8 +43,27 @@ def _call_name(node: ast.Call) -> str | None:
     return None
 
 
+def _candidates_for(
+    name: str, call_file: Path,
+    kwonly_fns: dict[str, list[tuple[Path, int, list[str]]]],
+) -> list[tuple[Path, int, list[str]]]:
+    """Phase 185 (GH #265) three-tier resolution: same-file definitions take
+    precedence (a local PLAIN definition shadows a foreign keyword-only one
+    -- Python scoping); a tree-unique keyword-only name is still checked
+    cross-module; colliding bare names without a same-file definition are
+    ambiguous and skip. Entries with positional=None are plain (non-kwonly)
+    shadowing definitions, never violation candidates themselves."""
+    defs = kwonly_fns.get(name, [])
+    same_file = [d for d in defs if d[0] == call_file]
+    if same_file:
+        return [d for d in same_file if d[2] is not None]
+    if len(defs) == 1 and defs[0][2] is not None:
+        return defs
+    return []
+
+
 def _find_positional_violations(
-    kwonly_fns: dict[str, tuple[Path, int, list[str]]],
+    kwonly_fns: dict[str, list[tuple[Path, int, list[str]]]],
     search_roots: list[Path],
 ) -> list[tuple[Path, int, str]]:
     violations: list[tuple[Path, int, str]] = []
@@ -44,11 +74,13 @@ def _find_positional_violations(
                 if not isinstance(node, ast.Call):
                     continue
                 name = _call_name(node)
-                if name not in kwonly_fns:
+                if name is None:
                     continue
-                _, _, positional = kwonly_fns[name]
+                candidates = _candidates_for(name, py, kwonly_fns)
+                if not candidates:
+                    continue
                 concrete_args = [a for a in node.args if not isinstance(a, ast.Starred)]
-                if len(concrete_args) > len(positional):
+                if all(len(concrete_args) > len(pos) for _, _, pos in candidates):
                     violations.append((py, node.lineno, name))
     return violations
 
@@ -225,3 +257,53 @@ def test_doctrine_documents_sg038_prose_code_mismatch():
         "SG-038 section must contain 'prose', 'code block', or 'lockstep' "
         "within 500 chars of the ID"
     )
+
+
+# ----- Phase 185 (GH #265): scope-aware candidate resolution -----
+
+def _write_module(root: Path, name: str, source: str) -> Path:
+    target = root / name
+    target.write_text(source, encoding="utf-8")
+    return target
+
+
+def test_cross_module_name_collision_not_flagged(tmp_path):
+    """GH #265 consumer reproduction: a new module's 5-positional `_emit`
+    must not be judged against another module's keyword-only `_emit`."""
+    _write_module(tmp_path, "mod_a.py",
+        "def _emit(ledger_path, event_type, now, claim_id, tip, **payload):\n"
+        "    return None\n\n"
+        "def caller():\n"
+        "    _emit(1, 2, 3, 4, 5)\n")
+    _write_module(tmp_path, "mod_b.py",
+        "def _emit(findings, *, fail_closed):\n"
+        "    return None\n")
+    fns = _collect_keyword_only_functions(tmp_path)
+    violations = _find_positional_violations(fns, [tmp_path])
+    assert violations == []
+
+
+def test_same_file_violation_still_flagged(tmp_path):
+    """SG-033 core: same-file positional overflow keeps flagging."""
+    _write_module(tmp_path, "mod_c.py",
+        "def helper(a, *, flag):\n"
+        "    return None\n\n"
+        "def caller():\n"
+        "    helper(1, 2)\n")
+    fns = _collect_keyword_only_functions(tmp_path)
+    violations = _find_positional_violations(fns, [tmp_path])
+    assert [(v[2]) for v in violations] == ["helper"]
+
+
+def test_unique_name_cross_module_violation_still_flagged(tmp_path):
+    """Coverage retention: a tree-unique keyword-only name is still checked
+    across modules (the class same-file-only matching would drop)."""
+    _write_module(tmp_path, "mod_d.py",
+        "def unique_gate(a, *, flag):\n"
+        "    return None\n")
+    _write_module(tmp_path, "mod_e.py",
+        "def caller():\n"
+        "    unique_gate(1, 2)\n")
+    fns = _collect_keyword_only_functions(tmp_path)
+    violations = _find_positional_violations(fns, [tmp_path])
+    assert [(v[2]) for v in violations] == ["unique_gate"]

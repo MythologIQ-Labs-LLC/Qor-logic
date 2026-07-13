@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T0919-7937b6",
+  "ts": "2026-07-13T09:22:22Z",
+  "target": "docs/plan-qor-phase185-keyword-lint-scoping.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "target_content_hash": "b7a857a7d71d8eb3361aa369d68cdc38c5b94ffc26c2767cbb851a9950f1e708",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.3",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T09:22:22Z"
+  }
+}

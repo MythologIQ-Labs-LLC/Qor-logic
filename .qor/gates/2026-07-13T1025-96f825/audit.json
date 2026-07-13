@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T1025-96f825",
+  "ts": "2026-07-13T10:15:41Z",
+  "target": "docs/plan-qor-phase187-negative-constraints.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "target_content_hash": "da4e2040176111f27d578042069c5125ac8541dc1de399d4697236c91142478d",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.125.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T10:15:41Z"
+  }
+}

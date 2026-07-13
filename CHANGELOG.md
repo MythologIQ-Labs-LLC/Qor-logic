@@ -10,6 +10,132 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.130.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 191 (feature; repository snapshot contract)**: external operator surfaces get one versioned, documented, read-only JSON contract for repository governance state (GH #270). `qor/scripts/snapshot_export.py` composes ten guarded sections (meta, session, lifecycle, gates, ledger, latest seal, health, shadow, drift, findings), each carrying `state: ok|unknown|error` plus a `source` pointer -- absence never renders as health (the tampered-chain fixture caught and closed exactly that hole: an all-skipped ledger verification now reads `unknown`, a failed one `error`). Schema published at `qor/gates/schema/repository_snapshot.schema.json` (schemaVersion 1; additive-compatible; registered in SCHEMA_REGISTRY per the freeze rule) with the compatibility contract in `qor/references/snapshot-contract.md`. Deterministic modulo generation timestamp, read-only (tree-hash proven), zero network; the exporter's exit code reports export success, not repository health. Enterprise concepts stay outside the base contract per the issue boundary.
+
+## [0.129.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 190 (feature; spec corpus Phase A)**: the living-behavioral-spec toolchain ships without gate-chain authority (GH #239 Phase A per the issue's own sequencing). `qor/scripts/spec_lint.py` validates per-capability specs against the grammar contract (`qor/references/spec-grammar.md`: Requirement headings with exactly one RFC-2119 SHALL/MUST statement and GIVEN/WHEN/THEN scenarios); `qor/scripts/spec_merge.py` folds ADDED/MODIFIED/REMOVED delta documents deterministically by heading-keyed whole-block replacement, with loud `SpecMergeError`s on the three ambiguity holes (absent MODIFIED/REMOVED target, duplicate ADDED) so concurrent deltas conflict visibly. `qor/specs/` scaffold carries the brownfield accretion rule. Phase B (plan-declared deltas, audit grammar pre-pass into the existing specification-drift category, fold inside the seal with ledger hash) and Phase C (per-requirement verify via the qa_evidence coverage pillar) remain the recorded roadmap on GH #239.
+
+## [0.128.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 189 (feature; /qor-onboard tutorial bundle)**: first-session operators can now walk the full gate chain on one small, operator-confirmed real change with narration (GH #241). New meta workflow bundle `qor-onboard` (30th skill) orchestrates ideate -> research -> plan -> audit -> implement -> substantiate by delegation only, with two operator checkpoints, an improvement-scan menu (candidate classes + risk criteria in `references/improvement-scan.md`), per-phase narration beats (`references/tutorial-narration.md`), and a hard Review Boundary hold at the publish menu. Doctrine terms are LINKED to their glossary homes at first use -- never restated (a test-level guard locks the term-drift class out of the tutorial files).
+
+## [0.127.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 188 (feature; canary code-span nuance + adapter-matrix host expansion)**: two hardening items from live consumer-cycle experience (GH #244). The prompt-injection canary CLI now downgrades hidden-html hits that sit fully inside backtick code spans to a visible `CANARY WARN [hidden-html/code-span]` line (structural markup in a code span is a CLI placeholder or countermeasure example, per the consumer's false ABORT); `--strict` restores blocking, `scan()` stays pure, and the four imperative-instruction classes remain binding inside code spans. Host reach widens to six targets: new `cursor` (`.cursor/skills/`, claude-shaped) and `cline` (`.clinerules/workflows/command-<id>.md`, one flattened layout serving the Cline family of assistants) join hosts.py and dist_compile; both are weak-tier channels and carry the Phase 187 negative-constraints injection for the fabrication-risk skills.
+
+## [0.126.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 187 (feature; negative-constraints doctrine)**: skills that may execute below their design tier now carry explicit negative rules (GH #243). New `qor/references/doctrine-negative-constraints.md` defines NR-001 (never reproduce secret-shaped strings; refer by prefix or descriptor) and NR-002 (a mandatory rationale/definition slot with no source fact takes the literal "not established" -- never an invented fact), grounded in the issue's weak-tier A/B eval evidence. `dist_compile.inject_negative_constraints` inserts the rules preamble into the kilo-code/codex/gemini variants of the fabrication-risk skills (qor-audit, qor-plan, qor-substantiate); the claude variant stays byte-identical to source (it is the install mirror). Source risk skills carry a one-line doctrine pointer (inline bodies do not fit the governance-skill headroom lock), and `model_pinning_lint` gains a WARN-only fabrication-guard scan for risk skills missing the pointer. The Phase 31 variant-sync contract is amended: codex/kilo-code expectations are `inject_negative_constraints(source)` for risk skills, byte-identity everywhere else.
+
+## [0.125.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 186 (feature; provenance host autodetect)**: gate-artifact provenance manifests now record `host: claude-code` automatically inside Claude Code sessions (GH #242, host half). `qor_platform.detect_host` recognizes the empirically-enumerated ambient signal family (`CLAUDECODE`, any `CLAUDE_CODE_*` key, `CLAUDE_PROJECT_DIR` -- presence only, values untrusted), and `ai_provenance._detect_host` falls back to fresh env detection when the cached platform marker is absent or yields unknown, so a session that never ran `apply_profile` stops recording false-unknown host provenance. The "host fell back to 'unknown'" WARN now fires only when both paths fail. The model half of GH #242 is deferred with evidence: no ambient model-identifying signal exists to read, so auto-detection would fabricate provenance; `QOR_MODEL_FAMILY` remains the explicit channel.
+
+## [0.124.4] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 185 (hotfix; keyword-lint scoping)**: the SG-033 keyword-only lint no longer produces cross-module false positives from bare-name collisions (GH #265). The old single-slot dict let the last same-named definition in walk order silently win; call sites are now resolved through a scope-aware three-tier rule honoring Python scoping -- same-file definitions take precedence (a local plain definition SHADOWS a foreign keyword-only one), a tree-unique keyword-only name is still checked cross-module (retaining coverage that same-file-only matching would drop), and colliding bare names without a local definition skip as ambiguous. A violation now requires exceeding every consulted candidate's positional arity. Synthetic-fixture tests prove all three tiers, including the consumer's 5-positional-`_emit`-vs-keyword-only-`_emit` reproduction.
+
+## [0.124.3] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 184 (hotfix; reachability probe timeout)**: the reachability probe's `pytest --collect-only` subprocess no longer flips to a false-negative verdict under full-suite CPU load (GH #264). The 30-second per-candidate budget -- exceeded by every candidate on a loaded Windows runner while the silent `TimeoutExpired` continue exhausted the list -- becomes the reporter-validated 120 seconds via a new `COLLECTION_TIMEOUT` module constant, env-tunable through `QOR_REACHABILITY_COLLECTION_TIMEOUT` for slower CI. Per-candidate failure semantics are unchanged; recorder-based tests lock the passed timeout and the override without adding any real waits to the suite.
+
+## [0.124.2] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 183 (hotfix; intent-lock verdict forms)**: `intent_lock` accepts markdown-heading verdict declarations (`## VERDICT: PASS`) that are in real production use, and its rejection error now distinguishes "verdict present but non-canonical" (with the expected forms named) from "genuinely not PASS" (GH #263; the opaque rejection bit this repository's own Phase 173 tribunal live). The Phase 53 anti-prose safety is fully preserved -- headings are structural markdown that cannot appear inside a narrative sentence, indented lines still reject (the existing regression lock caught and corrected an over-wide first draft of the pattern during TDD), and the loose hint probe affects only the error message, never the verdict decision.
+
+## [0.124.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 182 (hotfix; health pre-anchor output)**: governance-health no longer emits raw `FAIL`/`TAINTED` lines that contradict its own OK verdict on a legally re-anchored ledger (GH #268). The verdict already tolerated disclosed pre-anchor residuals (the GH #199 post-anchor fallback), but the verifier calls suppressed stdout only while the FAIL/TAINTED diagnostics go to stderr -- bleeding into the CLI, the status_json aggregator, and the nightly-health step summary. Both streams are now suppressed inside the classification calls (the verifier CLIs keep full diagnostics), and the tolerance is surfaced positively: the OK finding's reason reads "passes health checks (disclosed pre-anchor residuals tolerated; post-anchor band clean)". Genuine post-anchor failures still classify DAMAGED. Structured/JSON classification output is deferred to the GH #271 typed-model roadmap.
+
+## [0.124.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 181 (feature; seed .gitattributes)**: `qor-logic seed` now emits a `.gitattributes` pinning governance artifacts (`docs/*.md`, `docs/**/*.md`, `.qor/**`) to `text eol=lf`, completing GH #238's second acceptance criterion (the LF-canonical hashing half shipped in Phases 156-158). Canonical AND working-tree bytes stay LF regardless of host `core.autocrlf`, closing the drift class at the infrastructure level instead of tolerating it at verify time. Re-seed never overwrites an operator-customized file (inherited no-clobber seed mode, regression-locked), the new target flows into governance-health's scaffold-owned set by construction (missing == seed-recoverable), and this repository's own root now carries the identical stanza (self-application, test-locked).
+
+## [0.123.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 180 (hotfix; reconcile deferred tail)**: `reconcile authorize` no longer fails with "final ledger entry has no parseable chain hash to link off" on a deferred-Merkle tail (GH #234). Entries that legally carry no fabricated hash after the chain goes DIRTY are the exact no-fabrication state reconcile exists to repair; `_last_chain_hash` now walks backward to the last entry with RECORDED hash markup and links the RECONCILIATION entry off it (recorded evidence only -- nothing fabricated; the tamper-laundering security gate is unchanged). A ledger with no hashed entry anywhere still fails closed, with the error renamed to the true condition. Regression coverage runs the full authorize path on a synthetic deferred tail.
+
+## [0.123.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 179 (feature; ledger upgrade V1)**: one-command recovery for format-damaged ledgers (GH #271 minimal V1). New `qor.scripts.ledger_upgrade --ledger <path> [--dry-run]` orchestrates the Phase 170 migrator and the post-anchor acceptance verifier under a swap-on-success-only contract: markup normalizes to the canonical form (hashes verbatim -- markup moves, math does not), the machine-readable `qor:meta-ledger-schema` version marker is stamped (absent marker reads as version 0/legacy), verification runs on the RESULT before any write, and the original is byte-untouched with exit 1 on any residual failure. This repository's own ledger now carries the version-1 marker (self-application, test-locked). The issue's deeper emission-API unification is deferred with new evidence recorded on GH #271: the fragment transport appends entry bodies verbatim, so unifying emission requires a typed entry renderer first.
+
+## [0.122.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 178 (hotfix; skill progressive disclosure)**: `qor-audit` and `qor-substantiate` SKILL.md no longer sit one wiring paragraph away from the 40 KB EXCEEDED budget that would block a seal (GH #266). ~1.5 KB of rationale/narrative prose per skill relocated into their already-cited `references/` files (adversarial-mode, phase37-subpasses, seal-gate-ladder) with inline pointers; every test-locked step header, command token, ABORT/VETO invariant, prerequisite-table row, and code block stayed inline byte-exact (100-test guardrail suite green). Both files now sit at ~38.4 KB with a new parametrized 39 KB headroom test locking the recovered budget. The issue's deeper under-30 KB aspiration is deferred with recorded rationale: the named failure mode is fully removed by locked headroom, while 30 KB would require restructuring the test-locked binding spine.
+
+## [0.122.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 177 (feature; QA required pillars)**: skipped security, stability, or coverage evidence can no longer yield a production-grade QA PASS (GH #269). `qor.scripts.qa_evidence.build_payload` gains an opt-in `policy="production"` with a declared `required_pillars` set: every required pillar must be `pass` -- a required `skip` or `fail` fails the verdict, and production with an empty required set raises (a strict posture that requires nothing is a misconfiguration). The artifact records `policy` and `required_pillars` (two additive optional fields on the registered qa schema; the PASS/FAIL verdict enum is unchanged) so consumers can audit the posture a verdict was computed under. The default adoption policy keeps every existing payload byte-identical -- skip-visible transparency semantics are untouched, and `ac_close_guard` consumes the outcome through its existing seam with zero changes. Wiring the production posture into seal/release gates is recorded as deliberate follow-on scope on GH #269.
+
+## [0.121.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 176 (hotfix; substantiate staging gates)**: `/qor-substantiate` Step 9.5's documented staging list now includes the sealed session's `.qor/gates/$SESSION_ID/` directory (GH #262). The CI gate-chain completeness job makes those committed artifacts load-bearing for every sealed phase, but the prose never staged them -- seals passed locally and failed at the merge boundary unless operators staged the directory from tribal knowledge. The seven `git add` lines consolidate to two (paying for the addition inside the 40 KB skill-size budget; the file now sits at 40,935 bytes with the ceiling locked by a new budget-invariant test), and a wiring test pins the gates argument plus variant/canonical equality of the block.
+
+## [0.121.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 175 (feature; governance-DNA durability)**: local governance state can no longer be lost silently and unrecoverable (GH #267). New `qor.scripts.governance_snapshot`: the first governed gate write of every session snapshots the five DNA files (META_LEDGER, CONCEPT, ARCHITECTURE_PLAN, SYSTEM_STATE, SHADOW_GENOME) to the gitignored `.agent/local-backup/governance/<session-id>/` (idempotent per session; best-effort -- a failed backup warns and never aborts a governed write; canonical session ids only; under pytest the hook runs only against an explicitly redirected `QOR_ROOT`, per the gate-dir hygiene discipline). `restore` is no-clobber by default (`--force` to override) so recovery can never silently destroy state newer than the snapshot, and emits one severity-3 `governance-state-loss` shadow event (new enum value). governance-health now distinguishes "previously initialized, now missing" (git history of the ledger, or populated backups) from a genuinely new workspace: the former classifies MISSING with a restore-then-`/qor-remediate` route -- never UNINITIALIZED/bootstrap over recoverable history. Doctrine section 16 documents the `git clean` hazard table, including what the snapshot does NOT survive (`-fdx`).
+
+## [0.120.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 174 (hotfix; gate-dir test hygiene)**: gate-writing tests no longer touch the live `.qor/gates/` tree (GH #274, Phase 173 follow-up). Root causes fixed: a doppelganger import in the provenance tests (`sys.path.insert` + top-level `import gate_chain` whose monkeypatches never reached the canonical modules) and resolver-only redirects that missed the writer constant (`validate_gate_artifact.GATES_DIR`) plus the wrong env var (`QORLOGIC_PROJECT_DIR` instead of `QOR_ROOT`). Five zero-consumer tracked pollution dirs under `.qor/gates/` were removed. A new subprocess inventory guard (`tests/test_gate_dir_hygiene.py`) snapshots the live gate tree around a real pytest run of the previously offending files and fails on any byte added, removed, or modified -- red against the pre-fix offenders by construction. A full-suite run now leaves the working tree clean.
+
 ## [0.120.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

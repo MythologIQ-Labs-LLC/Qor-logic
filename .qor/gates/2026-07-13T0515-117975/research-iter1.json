@@ -1,0 +1,55 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0515-117975",
+  "ts": "2026-07-13T05:17:25Z",
+  "questions": [
+    "Why does total DNA loss route to bootstrap, and where is the classification decided?",
+    "Does any backup/snapshot/restore infrastructure exist?",
+    "Where can a backup-on-write trigger live given both big SKILL.md files are at the 40KB budget ceiling?",
+    "Does governance-state-loss fit the closed shadow-event enum?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "_is_initialized is binary current-existence; _classify_missing routes total loss to UNINITIALIZED/bootstrap; no git-history or backup consultation",
+      "source": "qor/scripts/governance_health.py:87"
+    },
+    {
+      "id": "F2",
+      "summary": "zero backup/snapshot infrastructure; .agent/local-backup is net-new; .gitignore must gain it",
+      "source": "qor/scripts/governance_health.py:44"
+    },
+    {
+      "id": "F3",
+      "summary": "snapshot trigger must be a first-write-of-session hook in gate_chain.write_gate_artifact (fail-open); skill prose impossible within 31/70-byte headroom",
+      "source": "qor/scripts/gate_chain.py:241"
+    },
+    {
+      "id": "F4",
+      "summary": "governance-state-loss absent from shadow_event enum; additive amendment to a registered schema is freeze-lint-safe",
+      "source": "qor/gates/schema/shadow_event.schema.json"
+    },
+    {
+      "id": "F5",
+      "summary": "session identity + git-history evidence + existing health-gate tests are reusable; no test covers previously-initialized-now-missing",
+      "source": "tests/test_governance_health.py"
+    }
+  ],
+  "sources": [
+    "qor/scripts/governance_health.py",
+    "qor/scripts/gate_chain.py",
+    "qor/scripts/skill_size_budget_lint.py",
+    "qor/gates/schema/shadow_event.schema.json",
+    "tests/test_governance_health.py",
+    ".gitignore"
+  ],
+  "brief_path": "docs/research-brief-governance-dna-durability-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.120.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T05:17:25Z"
+  }
+}

@@ -14,6 +14,7 @@ EXPECTED_FILES = [
     "docs/CONCEPT.md",
     "docs/SYSTEM_STATE.md",
     "docs/GOVERNANCE_INDEX.md",
+    ".gitattributes",  # Phase 181 (GH #238): LF-pinning stanza
     ".agent/staging/.gitkeep",
     ".qor/gates/.gitkeep",
     ".qor/session/.gitkeep",

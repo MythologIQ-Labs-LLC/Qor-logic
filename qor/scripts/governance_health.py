@@ -81,6 +81,11 @@ _PLACEHOLDER_PATTERNS = (
 _NEXT_BOOTSTRAP = "/qor-bootstrap (or `qor-logic seed` when an autonomous skill owns recovery)"
 _NEXT_SEED = "`qor-logic seed` (scaffold-owned artifact; missing scaffold may be seeded)"
 _NEXT_REMEDIATE = "/qor-remediate (must be repaired, never seeded or bootstrapped over)"
+_NEXT_RESTORE = (
+    "restore via `qor-logic scripts governance_snapshot restore --from "
+    ".agent/local-backup/governance/<sid>` (or from git history), then "
+    "/qor-remediate -- never seeded or re-initialized over"
+)
 _NEXT_COMPLETE = "complete the required sections of {path} before continuing (never seeded)"
 
 
@@ -91,8 +96,19 @@ def _is_initialized(base: Path) -> bool:
     return any((base / rel).is_file() for rel in _PROJECT_DNA)
 
 
-def _classify_missing(rel_path: str, initialized: bool) -> ArtifactFinding:
+def _classify_missing(
+    rel_path: str, initialized: bool, prior_evidence: str | None = None
+) -> ArtifactFinding:
     if not initialized:
+        # Phase 175 (GH #267): a workspace that was governed before but lost
+        # its DNA files must never route to bootstrap over recoverable
+        # history -- surface the restore path instead.
+        if prior_evidence:
+            return ArtifactFinding(
+                rel_path, ArtifactStatus.MISSING,
+                f"previously initialized ({prior_evidence}); governance state lost",
+                _NEXT_RESTORE,
+            )
         return ArtifactFinding(
             rel_path, ArtifactStatus.UNINITIALIZED,
             "no ledger and no project DNA present", _NEXT_BOOTSTRAP,
@@ -108,14 +124,19 @@ def _classify_missing(rel_path: str, initialized: bool) -> ArtifactFinding:
     )
 
 
-def _ledger_damage(base: Path, text: str) -> str | None:
-    """Return a damage reason for the ledger, or None when structurally sound."""
+def _ledger_damage(base: Path, text: str) -> tuple[str | None, str | None]:
+    """(damage_reason, ok_note) for the ledger. Phase 182 (GH #268): both
+    verifier calls suppress stderr too -- their raw FAIL/TAINTED diagnostics
+    contradicted an OK verdict when bleeding into the CLI, status_json, and
+    the nightly summary -- and the GH #199 tolerance is surfaced POSITIVELY
+    as the ok_note instead of silently absorbed."""
     has_title = "Meta Ledger" in text or text.lstrip().startswith("# ")
     has_entries = "### Entry" in text
     if not has_title and not has_entries:
-        return "malformed ledger: no recognizable header or entries"
+        return "malformed ledger: no recognizable header or entries", None
     if has_entries:
-        with contextlib.redirect_stdout(io.StringIO()):
+        with contextlib.redirect_stdout(io.StringIO()), \
+                contextlib.redirect_stderr(io.StringIO()):
             rc = _verify_ledger_chain(base / _LEDGER)
         if rc != 0:
             # GH #199: strict verify rejects single-lineage manual-era residuals
@@ -123,11 +144,15 @@ def _ledger_damage(base: Path, text: str) -> str | None:
             # post-anchor surface: a disclosed pre-anchor failure (entry at or
             # below the auto-detected boundary) is tolerated here exactly as it
             # is at release; only a genuine post-anchor failure is real damage.
-            with contextlib.redirect_stdout(io.StringIO()):
+            with contextlib.redirect_stdout(io.StringIO()), \
+                    contextlib.redirect_stderr(io.StringIO()):
                 rc_post = _verify_post_anchor(base / _LEDGER)
             if rc_post != 0:
-                return "ledger chain verification failed"
-    return None
+                return "ledger chain verification failed", None
+            return None, (
+                "disclosed pre-anchor residuals tolerated; post-anchor band clean"
+            )
+    return None, None
 
 
 def _verify_ledger_chain(ledger_path: Path) -> int:
@@ -142,12 +167,12 @@ def _verify_post_anchor(ledger_path: Path) -> int:
     return ledger_hash.verify_post_anchor(ledger_path)
 
 
-def _damage_reason(base: Path, rel_path: str, text: str) -> str | None:
+def _damage_reason(base: Path, rel_path: str, text: str) -> tuple[str | None, str | None]:
     if text.strip() == "":
-        return "file is empty"
+        return "file is empty", None
     if rel_path == _LEDGER:
         return _ledger_damage(base, text)
-    return None
+    return None, None
 
 
 def _ledger_incomplete(text: str) -> str | None:
@@ -171,15 +196,17 @@ def _incomplete_reason(rel_path: str, text: str) -> str | None:
     return None
 
 
-def _classify_one(base: Path, rel_path: str, initialized: bool) -> ArtifactFinding:
+def _classify_one(
+    base: Path, rel_path: str, initialized: bool, prior_evidence: str | None = None
+) -> ArtifactFinding:
     target = base / rel_path
     if not target.is_file():
-        return _classify_missing(rel_path, initialized)
+        return _classify_missing(rel_path, initialized, prior_evidence=prior_evidence)
     try:
         text = target.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as exc:
         return ArtifactFinding(rel_path, ArtifactStatus.DAMAGED, f"unreadable: {exc}", _NEXT_REMEDIATE)
-    damage = _damage_reason(base, rel_path, text)
+    damage, ok_note = _damage_reason(base, rel_path, text)
     if damage:
         return ArtifactFinding(rel_path, ArtifactStatus.DAMAGED, damage, _NEXT_REMEDIATE)
     incomplete = _incomplete_reason(rel_path, text)
@@ -187,7 +214,9 @@ def _classify_one(base: Path, rel_path: str, initialized: bool) -> ArtifactFindi
         return ArtifactFinding(
             rel_path, ArtifactStatus.INCOMPLETE, incomplete, _NEXT_COMPLETE.format(path=rel_path)
         )
-    return ArtifactFinding(rel_path, ArtifactStatus.OK, "passes health checks", "")
+    # Phase 182 (GH #268): surface a tolerated state positively in the reason.
+    reason = f"passes health checks ({ok_note})" if ok_note else "passes health checks"
+    return ArtifactFinding(rel_path, ArtifactStatus.OK, reason, "")
 
 
 def check_governance_health(
@@ -202,7 +231,16 @@ def check_governance_health(
     base = Path(base)
     artifacts = tuple(required) if required is not None else REQUIRED_ARTIFACTS
     initialized = _is_initialized(base)
-    return [_classify_one(base, rel, initialized) for rel in artifacts]
+    # Phase 175 (GH #267): probe prior-initialization evidence only when the
+    # workspace reads as uninitialized (avoids a git subprocess on healthy runs).
+    prior_evidence = None
+    if not initialized:
+        from qor.scripts import governance_snapshot
+        prior_evidence = governance_snapshot.prior_initialization_evidence(base)
+    return [
+        _classify_one(base, rel, initialized, prior_evidence=prior_evidence)
+        for rel in artifacts
+    ]
 
 
 # Severity order for the status health gate: a damaged artifact is the most

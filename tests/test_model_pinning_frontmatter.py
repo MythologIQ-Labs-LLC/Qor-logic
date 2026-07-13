@@ -102,3 +102,52 @@ def test_lint_handles_unset_qor_model_family_env(tmp_path, monkeypatch):
 
 def test_capability_order_is_haiku_sonnet_opus():
     assert _CAPABILITY_ORDER == ("haiku", "sonnet", "opus")
+
+
+# ----- Phase 187 (GH #243): fabrication-guard scan -----
+
+def _make_named_repo(tmp_path: Path, skill_name: str, body: str) -> Path:
+    skill = tmp_path / "qor" / "skills" / "governance" / skill_name / "SKILL.md"
+    skill.parent.mkdir(parents=True)
+    skill.write_text(
+        f"---\nmin_model_capability: opus\n---\n{body}", encoding="utf-8"
+    )
+    return tmp_path
+
+
+def test_fabrication_guard_warns_when_pointer_missing(tmp_path):
+    repo = _make_named_repo(tmp_path, "qor-audit", "# /qor-audit\nno guard here\n")
+    warnings = check(repo, current_model="claude-opus-4-7")
+    guard = [w for w in warnings if "fabrication" in w.reason]
+    assert len(guard) == 1
+    assert guard[0].skill == "qor-audit"
+
+
+def test_fabrication_guard_silent_when_pointer_present(tmp_path):
+    repo = _make_named_repo(
+        tmp_path,
+        "qor-audit",
+        "# /qor-audit\nNegative constraints: "
+        "qor/references/doctrine-negative-constraints.md (NR-001, NR-002).\n",
+    )
+    warnings = check(repo, current_model="claude-opus-4-7")
+    assert not [w for w in warnings if "fabrication" in w.reason]
+
+
+def test_fabrication_guard_ignores_non_risk_skills(tmp_path):
+    repo = _make_named_repo(tmp_path, "qor-ideate", "# /qor-ideate\nno guard\n")
+    warnings = check(repo, current_model="claude-opus-4-7")
+    assert not [w for w in warnings if "fabrication" in w.reason]
+
+
+def test_risk_set_matches_dist_compile():
+    from qor.scripts.dist_compile import _FABRICATION_RISK_SKILLS as compile_set
+    from qor.scripts.model_pinning_lint import _FABRICATION_RISK_SKILLS as lint_set
+    assert compile_set == lint_set
+
+
+def test_fabrication_guard_scan_clean_on_live_corpus():
+    """The real corpus carries the doctrine pointer in every risk skill."""
+    warnings = check(REPO_ROOT, current_model="claude-opus-4-7")
+    guard = [w for w in warnings if "fabrication" in w.reason]
+    assert not guard, f"risk skills missing doctrine pointer: {guard}"

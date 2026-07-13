@@ -79,6 +79,7 @@ Bundles are not invoked AS handoff destinations — operators invoke them direct
 | `/qor-deep-audit-recon` | `/qor-research` (subagents) | Investigation only; ends at RESEARCH_BRIEF |
 | `/qor-deep-audit-remediate` | `/qor-plan` | Action half; consumes RESEARCH_BRIEF |
 | `/qor-onboard-codebase` | `/qor-research` | Inheriting / merging an external codebase |
+| `/qor-onboard` | `/qor-ideate` | Tutorial: first governed session on one small real change |
 | `/qor-process-review-cycle` | `check_shadow_threshold.py` | Periodic process health check |
 
 ## Anti-patterns this prevents

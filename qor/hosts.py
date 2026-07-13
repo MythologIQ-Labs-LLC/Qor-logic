@@ -83,11 +83,30 @@ def _gemini_target(scope: str = "repo") -> HostTarget:
     )
 
 
+def _cursor_target(scope: str = "repo") -> HostTarget:
+    # Phase 188 (GH #244): Cursor consumes a claude-shaped skills layout.
+    base = _scoped_base(".cursor", scope)
+    return HostTarget(name="cursor", base=base, install_map=_skills_agents_map(base))
+
+
+def _cline_target(scope: str = "repo") -> HostTarget:
+    # Phase 188 (GH #244): one flattened workflows layout shared by the
+    # Cline family of assistants (command-<id>.md files).
+    base = _scoped_base(".clinerules", scope)
+    return HostTarget(
+        name="cline",
+        base=base,
+        install_map={"workflows/": base / "workflows"},
+    )
+
+
 _HOSTS: dict[str, Callable[[str], HostTarget]] = {
     "claude": _claude_target,
     "kilo-code": _kilo_target,
     "codex": _codex_target,
     "gemini": _gemini_target,
+    "cursor": _cursor_target,
+    "cline": _cline_target,
 }
 
 

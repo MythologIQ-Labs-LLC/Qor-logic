@@ -1,0 +1,28 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T1255-08b7e7",
+  "ts": "2026-07-13T11:12:11Z",
+  "plan_path": "docs/plan-qor-phase189-onboard-tutorial.md",
+  "phases": [
+    "Phase 1: Skill + references (structure-first)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_onboard_skill.py tests/test_dist_compile_injection.py tests/test_install_sync_with_source.py -q",
+    "python -m qor.scripts.check_variant_drift",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "feature",
+  "originating_remediation": "GH #241",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.127.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T11:12:11Z"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T0817-5d9c1c",
+  "ts": "2026-07-13T08:20:46Z",
+  "target": "docs/plan-qor-phase182-health-preanchor-output.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "target_content_hash": "89c5566b57ab6039c44f79c31f388556a2e4f74ce41b9f85cc90aa4571230fce",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.0",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T08:20:46Z"
+  }
+}

@@ -196,3 +196,42 @@ in static analyzers, lifted to the pipeline-stage abstraction. See
 dispatcher tier -> classification -> vendor -> cost without validator-first) and
 the operator-fix regression test
 (`test_dispatch_skips_invalid_skill_and_selects_valid_candidate`).
+
+---
+
+# Rationale relocated from SKILL.md (Phase 178; GH #266)
+
+## Critical Invariants V2 ramp note -- promotion plan (moved from SKILL.md, Phase 178)
+
+The Runtime Contract Walk at the Step 3 Infrastructure Alignment Pass is NEW
+but ships WARN-only in V2. A V2-of-V2 phase will gather Phase 96 V1
+operator-evidence on false-positive rate, then flip the walk's WARN to hard
+VETO with `runtime-contract-mismatch` category and add it to the inviolable
+Critical Invariants list. Binding doctrine: `SG-GrepShapedRunclaim-A` in
+`qor/references/doctrine-shadow-genome-countermeasures.md`.
+
+## Environment Phase 75 SKIP-cascade rationale (moved from SKILL.md, Phase 178)
+
+`qor-logic reliability <module>` / `qor-logic scripts <module>` run the module
+through the CLI's own interpreter and so resolve from any shell; the bare
+`python -m qor.reliability.<module>` / `python -m qor.scripts.<module>` form
+works only in the venv where `qor-logic` is installed. On hosts without Python
+or where `qor-logic` is not installable (e.g., pure non-Python archetypes),
+Phase 75 declarative-tolerance applies -- the missing-prerequisite gates record
+SKIP in the seal entry and emit `gate_skipped_prerequisite_absent` events per
+`qor/references/doctrine-shadow-genome-countermeasures.md`
+`SG-HalfSealedClaim-A`. The Phase 90 preflight at the top of the Execution
+Protocol surfaces the misconfiguration once at skill entry so the SKIP cascade
+is operator-visible instead of silent.
+
+## Step 0.6 pre-audit lint ladder narrative (moved from SKILL.md, Phase 178)
+
+All Step 0.6 lints are WARN-only: the existing Test Functionality,
+Infrastructure Alignment, and Filter-Stage passes at Step 3 issue the binding
+VETOs; the lints catch these classes earlier so the Governor can remediate
+without consuming an audit cycle. The original six-lint ladder ran
+`plan_test_lint` (Phase 55) + `plan_grep_lint` (Phase 55) +
+`plan_text_consistency_lint` (Phase 67) + `delivery_branch_lint` (Phase 83) +
+`ci_coverage_lint` (Phase 89) + `workspace_fragility_check` (Phase 94); later
+phases extended the same `|| true` WARN-only contract. The SKILL.md Step 0.6
+bash block is the authoritative current ladder.

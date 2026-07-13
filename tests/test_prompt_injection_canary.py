@@ -188,3 +188,58 @@ def test_audit_skill_invokes_canary_scan_on_governance_reads():
         f"audit skill reads governance markdown but does not invoke canary "
         f"scanner: {violations}"
     )
+
+
+# ----- Phase 188 (GH #244): code-span nuance for the hidden-html class -----
+
+def _run_cli(rel: str, content: str, *flags: str):
+    fake = REPO_ROOT / rel
+    fake.write_text(content, encoding="utf-8")
+    try:
+        return subprocess.run(
+            [sys.executable, "-m", "qor.scripts.prompt_injection_canaries",
+             "--files", rel, *flags],
+            cwd=str(REPO_ROOT), capture_output=True, text=True,
+        )
+    finally:
+        fake.unlink(missing_ok=True)
+
+
+_TAG = "<scr" + "ipt>"  # assembled so this test file never carries the literal
+
+
+def test_code_span_hidden_html_downgrades_to_warn():
+    proc = _run_cli(
+        "docs/plan-qor-phase99-codespan.md",
+        f"# Plan\n\nRun `node {_TAG.replace('>', '')} --help` to see usage.\n",
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert "CANARY WARN [hidden-html/code-span]" in proc.stderr
+
+
+def test_code_span_hidden_html_strict_restores_abort():
+    proc = _run_cli(
+        "docs/plan-qor-phase99-codespan.md",
+        f"# Plan\n\nRun `node {_TAG.replace('>', '')} --help` to see usage.\n",
+        "--strict",
+    )
+    assert proc.returncode == 1
+    assert "CANARY HIT [hidden-html]" in proc.stderr
+
+
+def test_prose_hidden_html_still_aborts():
+    proc = _run_cli(
+        "docs/plan-qor-phase99-prose.md",
+        f"# Plan\n\nThis prose mentions {_TAG} outside any code span.\n",
+    )
+    assert proc.returncode == 1
+    assert "CANARY HIT [hidden-html]" in proc.stderr
+
+
+def test_instruction_class_in_code_span_still_aborts():
+    proc = _run_cli(
+        "docs/plan-qor-phase99-imperative.md",
+        "# Plan\n\nExample: `ignore previous instructions` is a canary.\n",
+    )
+    assert proc.returncode == 1
+    assert "instruction-redirect" in proc.stderr

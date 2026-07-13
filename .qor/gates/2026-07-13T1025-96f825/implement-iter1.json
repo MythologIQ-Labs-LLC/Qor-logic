@@ -1,0 +1,34 @@
+{
+  "phase": "implement",
+  "session_id": "2026-07-13T1025-96f825",
+  "ts": "2026-07-13T10:37:24Z",
+  "files_touched": [
+    "qor/references/doctrine-negative-constraints.md",
+    "qor/scripts/dist_compile.py",
+    "qor/scripts/gemini_variant.py",
+    "qor/scripts/model_pinning_lint.py",
+    "qor/skills/governance/qor-audit/SKILL.md",
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "qor/skills/sdlc/qor-plan/SKILL.md",
+    "qor/references/glossary.md",
+    "docs/GOVERNANCE_INDEX.md",
+    "README.md",
+    "tests/test_dist_compile_injection.py",
+    "tests/test_model_pinning_frontmatter.py",
+    "tests/test_install_sync_with_source.py",
+    "qor/dist/"
+  ],
+  "tests_added": [
+    "tests/test_dist_compile_injection.py (5 tests)",
+    "tests/test_model_pinning_frontmatter.py (5 fabrication-guard tests)"
+  ],
+  "test_results": "45 focused green twice; check_variant_drift OK; full suite 2619 passed / 2 skipped",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.125.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T10:37:24Z"
+  }
+}

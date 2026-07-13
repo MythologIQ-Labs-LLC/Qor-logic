@@ -9,7 +9,7 @@ The `qor-logic` CLI is the primary install/operation surface. Subcommands:
 | Subcommand | Purpose |
 |---|---|
 | `init` | Write `.qorlogic/config.json` with host + profile + scope selections |
-| `install --host <claude\|kilo-code\|codex\|gemini>` | Copy variant skills/agents to the host's conventional directory |
+| `install --host <claude\|kilo-code\|codex\|gemini\|cursor\|cline>` | Copy variant skills/agents to the host's conventional directory |
 | `uninstall` | Reverse `install` |
 | `list` | List installed skills and agents |
 | `compile` | Rebuild `qor/dist/variants/*` from source skills; emit per-variant manifest |
@@ -88,6 +88,19 @@ The `seal_entry_check` gate fired after Step 7 wrote the seal entry. Three reaso
 
 `qor/scripts/ledger_hash.py verify` reports the first failing entry. Typically caused by hand-editing an entry after seal. Resolution: never hand-edit sealed entries; new decisions get new entries.
 
+For FORMAT damage (legacy hash markup a newer toolkit no longer parses --
+Phase 179; GH #271), one command recovers:
+
+```bash
+qor-logic scripts ledger_upgrade --ledger docs/META_LEDGER.md [--dry-run]
+```
+
+It migrates markup to the canonical form (hashes verbatim -- markup moves,
+math does not), stamps the `qor:meta-ledger-schema` marker, verifies the
+RESULT with the post-anchor acceptance, and swaps atomically only on success;
+any residual failure exits 1 with the original byte-untouched. Broken chain
+MATH stays with reconcile/remediate -- upgrade never corrects hashes.
+
 ## CI considerations
 
 The `.github/workflows/` files configure GitHub Actions:
@@ -119,6 +132,25 @@ python qor/scripts/session.py new     # creates a fresh session_id
 ```
 
 The substantiate Step Z auto-rotate (Phase 30) is the canonical path; manual rotation is for edge cases (mid-phase debugging, abandoned session cleanup).
+
+## Governance-DNA snapshots (Phase 175; GH #267)
+
+The first governed gate write of every session automatically snapshots the five
+DNA files (META_LEDGER, CONCEPT, ARCHITECTURE_PLAN, SYSTEM_STATE, SHADOW_GENOME)
+to the gitignored `.agent/local-backup/governance/<session-id>/`. Operator verbs:
+
+```bash
+qor-logic scripts governance_snapshot backup --session <sid>     # manual snapshot
+qor-logic scripts governance_snapshot restore --from <dir>       # no-clobber; --force overwrites
+qor-logic scripts governance_snapshot evidence                   # prior-initialization probe
+```
+
+Restore skips any file that still exists (never destroys state newer than the
+snapshot) and appends one severity-3 `governance-state-loss` shadow event. The
+health gate routes previously-initialized-now-missing workspaces to
+restore-then-`/qor-remediate` -- never bootstrap. Full contract incl. the
+`git clean` hazard table: `qor/references/doctrine-governance-enforcement.md`
+section 16 (the snapshot does NOT survive `git clean -fdx`).
 
 ## `gate_written` observer hooks (Phase 57)
 

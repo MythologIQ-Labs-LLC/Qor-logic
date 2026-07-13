@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from qor.scripts import gate_chain
+from qor.scripts import validate_gate_artifact as vga
 from qor.scripts.validate_gate_artifact import validate_one
 
 
@@ -33,6 +34,8 @@ def _minimal_payload(sid: str) -> dict:
 def test_skill_completes_writes_valid_ideation_json(tmp_path, monkeypatch):
     sid = "ideate-e2e"
     monkeypatch.setattr(gate_chain, "GATES_DIR", tmp_path / ".qor" / "gates")
+    monkeypatch.setattr(vga, "GATES_DIR", tmp_path / ".qor" / "gates")
+    monkeypatch.setenv("QOR_ROOT", str(tmp_path))
     monkeypatch.setenv("QOR_SKILL_ACTIVE", "ideation")
     payload = _minimal_payload(sid)
     artifact_path = gate_chain.write_gate_artifact(
@@ -49,6 +52,8 @@ def test_skill_completes_writes_valid_ideation_json(tmp_path, monkeypatch):
 def test_skill_writes_ai_provenance_field(tmp_path, monkeypatch):
     sid = "ideate-prov"
     monkeypatch.setattr(gate_chain, "GATES_DIR", tmp_path / ".qor" / "gates")
+    monkeypatch.setattr(vga, "GATES_DIR", tmp_path / ".qor" / "gates")
+    monkeypatch.setenv("QOR_ROOT", str(tmp_path))
     monkeypatch.setenv("QOR_SKILL_ACTIVE", "ideation")
     payload = _minimal_payload(sid)
     artifact_path = gate_chain.write_gate_artifact(

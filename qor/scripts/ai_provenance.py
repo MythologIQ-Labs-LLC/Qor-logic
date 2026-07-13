@@ -60,17 +60,19 @@ def _read_system_version() -> str:
 
 def _detect_host() -> str:
     try:
-        from qor.scripts.qor_platform import current
+        from qor.scripts import qor_platform
     except ImportError:
         return "unknown"
-    state = current() or {}
-    if not isinstance(state, dict):
-        return "unknown"
-    detected = state.get("detected", {})
-    if not isinstance(detected, dict):
-        return "unknown"
-    host = detected.get("host", "unknown")
-    return host if isinstance(host, str) and host else "unknown"
+    state = qor_platform.current() or {}
+    if isinstance(state, dict):
+        detected = state.get("detected", {})
+        if isinstance(detected, dict):
+            host = detected.get("host", "unknown")
+            if isinstance(host, str) and host and host != "unknown":
+                return host
+    # Phase 186 (GH #242): no marker (or marker says unknown) -- a session
+    # that never ran apply_profile still gets fresh env-signal detection.
+    return qor_platform.detect_host()
 
 
 def _detect_model_family() -> str:

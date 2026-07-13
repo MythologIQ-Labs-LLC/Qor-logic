@@ -1,0 +1,53 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T1505-e508d3",
+  "ts": "2026-07-13T11:58:59Z",
+  "plan_path": "docs/plan-qor-phase191-snapshot-contract.md",
+  "phases": [
+    "Phase 1: Collectors + schema (TDD first)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_snapshot_export.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms_introduced": [
+    {
+      "term": "Repository snapshot",
+      "home": "qor/references/snapshot-contract.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "derived read model; ledger/gates stay authoritative; generated_ts varies"
+    ],
+    "non_goals": [
+      "enterprise concepts per the issue boundary",
+      "state mutation",
+      "network access"
+    ],
+    "exclusions": [
+      "consumer implementations",
+      "hosted-service coupling"
+    ]
+  },
+  "change_class": "feature",
+  "originating_remediation": "GH #270",
+  "feature_inventory_touches": [],
+  "new_ceremony_artifacts": [
+    {
+      "name": "repository_snapshot",
+      "justification": "GH #270 versioned external read contract; registered in SCHEMA_REGISTRY per the Phase 169 freeze rule"
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.129.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T11:58:59Z"
+  }
+}

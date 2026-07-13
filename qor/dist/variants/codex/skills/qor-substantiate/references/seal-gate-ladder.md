@@ -151,3 +151,47 @@ the CI `seal-artifacts currency` step enforce currency where repo state is
 stable. The generators are behaviorally tested against synthetic fixtures in
 `tests/test_seal_artifacts.py`; the `**Phase**:` narrative and `**Chain
 Status**:` prose remain authored content.
+
+---
+
+# Prose relocated from SKILL.md (Phase 178; GH #266)
+
+## Step Prerequisites operator flow (moved from SKILL.md, Phase 178)
+
+Operators run `qor-logic substantiate-capability` before invoking
+`/qor-substantiate` to confirm which gates will run on their host. Output is a
+paste-able markdown table for the seal entry body.
+
+## Step 6.5 documentation-currency operator judgment (moved from SKILL.md, Phase 178)
+
+Phase 31 semantics are WARN + continue. Operator judgment: continue on
+spurious warnings; PAUSE + amend on legitimate ones (new doctrine without a
+lifecycle.md update, feature shipped without release-doc authoring). The Phase
+49/164 release-class badge check is locked by
+`tests/test_substantiate_seal_artifacts_wiring.py` per
+`qor/references/doctrine-governance-enforcement.md` "Badge currency".
+
+## Step 6.8 digest-preparation discipline (moved from SKILL.md, Phase 178)
+
+When preparing the four seal-critical digests, do not pattern-fill hex strings
+or interpolate placeholders; the Step 6.8 validation block catches any digest
+the canonical helpers did not actually produce.
+
+## Step 7.7 post-seal verification detail (moved from SKILL.md, Phase 178)
+
+Step 7.7 closes SG-AdjacentState-A: substantiate sealing without writing the
+ledger entry, which the pre-seal Step 4.6 gates cannot catch. The Phase 76
+previous_hash-uniqueness pass runs
+`check_previous_hash_uniqueness(ledger_path, min_entry_num=207)`; a duplicate
+`previous_hash` signals a concurrent federation race (reconcile per
+`SG-ConcurrentLedgerRace-A`; pre-Phase-76 entries grandfathered).
+
+## Step 4.7.5 fail-closed drift classes (moved from SKILL.md, Phase 178)
+
+The Governance Index gate makes the Hierarchical Governance Index
+self-policing (closing the deferred enforcement half of GH #140): advancing
+`Last Reviewed` to the seal date clears `stale-tier1` by construction;
+`unregistered` means a governance doc named in no tier; `tier3-unarchived`
+means a Tier 3 row naming an already-SESSION-SEALed `phase <N>`. Per
+`qor/references/doctrine-governance-index.md` "V2 (Phase 120; GH #149) --
+shipped enforcement".

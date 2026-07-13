@@ -1,0 +1,27 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-13T0758-7f394f",
+  "ts": "2026-07-13T08:00:50Z",
+  "plan_path": "docs/plan-qor-phase181-seed-gitattributes.md",
+  "phases": [
+    "Phase 1: Template + target + self-application (TDD first)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_seed_gitattributes.py tests/test_governance_health.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "feature",
+  "originating_remediation": "GH #238",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.123.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T08:00:50Z"
+  }
+}

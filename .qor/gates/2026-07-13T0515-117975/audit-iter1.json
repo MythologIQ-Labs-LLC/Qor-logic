@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T0515-117975",
+  "ts": "2026-07-13T05:22:28Z",
+  "target": "docs/plan-qor-phase175-governance-dna-durability.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "target_content_hash": "196919c0a2a3da384b179701b71558152b872cba38f9f17aaa4290ad335b3b2e",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.120.1",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T05:22:28Z"
+  }
+}
