@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-07-13T12:16:07Z",
+  "generated_ts": "2026-07-13T13:11:51Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -96,7 +96,7 @@
       "id": "command-qor-audit.md",
       "source_path": "workflows/command-qor-audit.md",
       "install_rel_path": "workflows/command-qor-audit.md",
-      "sha256": "b516d42413d1096ef9181a1b41d22c411e1c266ef098e5fbc439ba10e2e124e6"
+      "sha256": "5009d5c64653c50b974b029fbc28c2532dbaf0186e76a9959156ad5c8b14e6f7"
     },
     {
       "id": "command-qor-bootstrap.md",
@@ -180,7 +180,7 @@
       "id": "command-qor-onboard.md",
       "source_path": "workflows/command-qor-onboard.md",
       "install_rel_path": "workflows/command-qor-onboard.md",
-      "sha256": "0b2d9c842592d077e4aa8420e7f78ea6473ef47ec94238e70b645e06921458f0"
+      "sha256": "1805ffd9b01e00cea04d52fe2c184a7b1290bd9b41fb15c6d5cc78fa018f2863"
     },
     {
       "id": "command-qor-organize.md",
@@ -192,7 +192,7 @@
       "id": "command-qor-plan.md",
       "source_path": "workflows/command-qor-plan.md",
       "install_rel_path": "workflows/command-qor-plan.md",
-      "sha256": "725019fd0a3f0e9335ccad8ab5acc79709f975f51352acc7ed2b57addda96cc0"
+      "sha256": "2cf23df8c4ebe56f97778e7e8188f59ff994102ea9caf8f805c533e0cba79540"
     },
     {
       "id": "command-qor-process-review-cycle.md",
@@ -252,7 +252,7 @@
       "id": "command-qor-substantiate.md",
       "source_path": "workflows/command-qor-substantiate.md",
       "install_rel_path": "workflows/command-qor-substantiate.md",
-      "sha256": "bd43f447adf216c64c9bdf4cbd4c0371d7ae98f746d889a6f36fa31ba8ad0d47"
+      "sha256": "98086bc6c92a90038e50e7c586417c72d2ea88cf1eeb65762ea799f54a17c2cc"
     },
     {
       "id": "command-qor-tone.md",

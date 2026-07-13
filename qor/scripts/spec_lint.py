@@ -76,6 +76,8 @@ def check(text: str, strict: bool = True) -> list[Finding]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="qor.scripts.spec_lint")
     parser.add_argument("--files", nargs="+", required=True, type=Path)
+    parser.add_argument("--delta", action="store_true",
+                        help="lint delta documents instead of spec files (Phase 192)")
     args = parser.parse_args(argv)
 
     total = 0
@@ -85,10 +87,49 @@ def main(argv: list[str] | None = None) -> int:
         except OSError as exc:
             print(f"ERROR: cannot read {path}: {exc}", file=sys.stderr)
             return 2
-        for f in check(text):
+        for f in (check_delta(text) if args.delta else check(text)):
             total += 1
             print(f"SPEC LINT [{f.code}] {path}:{f.line}: {f.message}", file=sys.stderr)
     return 1 if total else 0
+
+
+# ----- Phase 192 (GH #277): delta document lint --------------------------------
+
+_DELTA_SECTION_RE = re.compile(
+    r"^## (ADDED|MODIFIED|REMOVED) Requirements\s*$", re.MULTILINE
+)
+_DELTA_REMOVED_ITEM_RE = re.compile(r"^[-*]\s*(.+?)\s*$", re.MULTILINE)
+
+
+def check_delta(text: str) -> list[Finding]:
+    """Grammar findings for a delta document (empty list = clean).
+
+    Structure: at least one of the three section heads; ADDED/MODIFIED
+    sections carry complete requirement blocks that pass ``check``;
+    REMOVED carries a non-empty bullet list of headings.
+    """
+    findings: list[Finding] = []
+    matches = list(_DELTA_SECTION_RE.finditer(text))
+    if not matches:
+        return [Finding(1, "delta-no-sections",
+                        "delta has none of the ADDED/MODIFIED/REMOVED sections")]
+    for idx, match in enumerate(matches):
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
+        body = text[match.end():end]
+        line = _line_of(text, match.start())
+        kind = match.group(1)
+        if kind in ("ADDED", "MODIFIED"):
+            if not _REQUIREMENT_RE.search(body):
+                findings.append(Finding(line, "delta-empty-section",
+                                        f"{kind} section carries no requirement block"))
+                continue
+            for f in check(body):
+                findings.append(Finding(f.line, f.code, f"[{kind}] {f.message}"))
+        else:
+            if not _DELTA_REMOVED_ITEM_RE.search(body):
+                findings.append(Finding(line, "delta-empty-section",
+                                        "REMOVED section carries no headings"))
+    return findings
 
 
 if __name__ == "__main__":

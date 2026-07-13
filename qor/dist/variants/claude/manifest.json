@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-07-13T12:16:07Z",
+  "generated_ts": "2026-07-13T13:11:51Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -124,9 +124,15 @@
     },
     {
       "id": "qor-audit",
+      "source_path": "skills/qor-audit/references/spec-delta-pre-pass.md",
+      "install_rel_path": "skills/qor-audit/references/spec-delta-pre-pass.md",
+      "sha256": "4684a124b34a665bbb92078f99c5f5642e80788cb0dbc932c52e1e0994ccde62"
+    },
+    {
+      "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "6ddb5e58bfad3b987f202dffc0e9565627924fe0fc7910c642ae626dd5e31f90"
+      "sha256": "f3c6e18c4c5fdd4ffb60bc6653c7520452721fb8890bcd378dbf5ae15a1950ce"
     },
     {
       "id": "qor-bootstrap",
@@ -258,19 +264,19 @@
       "id": "qor-onboard",
       "source_path": "skills/qor-onboard/references/improvement-scan.md",
       "install_rel_path": "skills/qor-onboard/references/improvement-scan.md",
-      "sha256": "146ec4cd1f24b5e5cc90da873362b0ad1dd58717862057e9d17793cefdc149d3"
+      "sha256": "c12695908706dee97ab5327ce34f856d0a3b1cb6b5f81b90e65b2603a850eed8"
     },
     {
       "id": "qor-onboard",
       "source_path": "skills/qor-onboard/references/tutorial-narration.md",
       "install_rel_path": "skills/qor-onboard/references/tutorial-narration.md",
-      "sha256": "4542e60792b4a64b02f19812ff1e193d9c8923a997eb90b8ef71935c33eaf245"
+      "sha256": "03c59a75473479350f149f9ffd818b6865e295c2f9af84f1fb3fc02c94638c70"
     },
     {
       "id": "qor-onboard",
       "source_path": "skills/qor-onboard/SKILL.md",
       "install_rel_path": "skills/qor-onboard/SKILL.md",
-      "sha256": "0b2d9c842592d077e4aa8420e7f78ea6473ef47ec94238e70b645e06921458f0"
+      "sha256": "1805ffd9b01e00cea04d52fe2c184a7b1290bd9b41fb15c6d5cc78fa018f2863"
     },
     {
       "id": "qor-onboard-codebase",
@@ -292,6 +298,12 @@
     },
     {
       "id": "qor-plan",
+      "source_path": "skills/qor-plan/references/spec-delta-authoring.md",
+      "install_rel_path": "skills/qor-plan/references/spec-delta-authoring.md",
+      "sha256": "33ab98f7c27f41f3a387b3c39be88c60034499b00d479a973dc034345905695c"
+    },
+    {
+      "id": "qor-plan",
       "source_path": "skills/qor-plan/references/step-extensions.md",
       "install_rel_path": "skills/qor-plan/references/step-extensions.md",
       "sha256": "ddeadc120119ae0f52d9474218731ef70a01fa7c57da7d235ba1f43fc6597718"
@@ -300,7 +312,7 @@
       "id": "qor-plan",
       "source_path": "skills/qor-plan/SKILL.md",
       "install_rel_path": "skills/qor-plan/SKILL.md",
-      "sha256": "6a1be58c39f30f49ff0dd9148bbb429dba00f87e91f0ce4b374732ff16d903ec"
+      "sha256": "0f88e96d94a2ea55ce75deb3b59ae9db190194ae1976c5823850d174d18967fa"
     },
     {
       "id": "qor-process-review-cycle",
@@ -408,13 +420,13 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
       "install_rel_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
-      "sha256": "d3a5e22a994e188b05551bac08ff0d3cb45c2b87b3195fd8f5c1ef2b00239870"
+      "sha256": "df905870dff976ea2ccac886758b6b27138948a852869369c13656e4f5fa3a26"
     },
     {
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "c5600aabac6c91982ff8a12965f80ebc2650ef8ebc3dd138817f699ac872e723"
+      "sha256": "c798b48d7848b380847c85d843103fb62740d5f6c7b79d59d82b3f192df2ae32"
     },
     {
       "id": "qor-tone",

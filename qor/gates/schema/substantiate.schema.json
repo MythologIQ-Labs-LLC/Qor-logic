@@ -4,23 +4,75 @@
   "title": "Substantiate Gate Artifact",
   "type": "object",
   "additionalProperties": true,
-  "required": ["phase", "ts", "session_id", "verdict", "merkle_seal"],
+  "required": [
+    "phase",
+    "ts",
+    "session_id",
+    "verdict",
+    "merkle_seal"
+  ],
   "properties": {
-    "phase": { "const": "substantiate" },
-    "ts": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
-    "session_id": { "type": "string", "minLength": 3 },
-    "verdict": { "type": "string", "enum": ["PASS", "FAIL"] },
+    "phase": {
+      "const": "substantiate"
+    },
+    "ts": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
     "reality_check": {
       "type": "object",
       "properties": {
-        "missing": { "type": "array", "items": { "type": "string" } },
-        "unplanned": { "type": "array", "items": { "type": "string" } },
-        "matches": { "type": "integer", "minimum": 0 }
+        "missing": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unplanned": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "matches": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
-    "merkle_seal": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-    "content_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-    "ledger_entry": { "type": "integer", "minimum": 1 },
-    "ai_provenance": { "$ref": "_provenance.schema.json" }
+    "merkle_seal": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ledger_entry": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ai_provenance": {
+      "$ref": "_provenance.schema.json"
+    },
+    "spec_corpus_hash": {
+      "type": "object",
+      "description": "Phase 192 (GH #277): capability -> LF-normalized sha256 of the folded spec, recorded when the seal folded declared deltas.",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    }
   }
 }

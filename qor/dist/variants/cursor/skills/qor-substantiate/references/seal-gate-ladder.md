@@ -195,3 +195,23 @@ self-policing (closing the deferred enforcement half of GH #140): advancing
 means a Tier 3 row naming an already-SESSION-SEALed `phase <N>`. Per
 `qor/references/doctrine-governance-index.md` "V2 (Phase 120; GH #149) --
 shipped enforcement".
+
+## Step 7.9: Spec fold (Phase 192; GH #277)
+
+After the reliability gates and before the seal commit:
+
+```python
+from qor.scripts.spec_fold import fold_session_deltas
+hashes = fold_session_deltas(Path("."), SESSION_ID)  # {} when no deltas declared
+```
+
+- A `SpecMergeError` (conflicting delta) or `FoldError` (fold would produce a
+  grammar-violating spec) ABORTS the seal with the tree untouched; the
+  operator re-plans the delta.
+- On success, each capability's LF-normalized spec sha256 lands in the seal
+  entry as `**Spec Corpus Hash**: <capability>=<hash>` and in
+  substantiate.json's `spec_corpus_hash`; the consumed delta file is deleted
+  (git history is the archive).
+- The coverage pillar: `qor.scripts.spec_requirement_verify.verify_deltas`
+  produces the qa_evidence coverage payload (structure + declared-surface
+  existence; scenario semantics stay a Judge duty at audit).

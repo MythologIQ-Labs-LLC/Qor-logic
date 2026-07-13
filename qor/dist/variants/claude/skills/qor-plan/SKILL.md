@@ -327,6 +327,10 @@ Create plan markdown file with specific requirements:
 - **Unit test descriptions** - Grouped with relevant phases
 - **Affected files summary** - At top of each phase
 
+### Step 3b: Spec delta (Phase 192; GH #277)
+
+When the plan changes contracted behavior, author and declare a spec delta; protocol in `references/spec-delta-authoring.md`.
+
 ### Step 4: Avoid Common Pitfalls
 
 **Do NOT include:**

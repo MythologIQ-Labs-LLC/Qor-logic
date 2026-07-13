@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-07-13T1640-229740",
+  "ts": "2026-07-13T13:13:52Z",
+  "verdict": "PASS",
+  "merkle_seal": "760c4d43f15699b002c85f072ebcb071bb92eafa7b8a48bfe06f3a33c0a8e8b7",
+  "version": "0.131.0",
+  "spec_corpus_hash": {
+    "spec-corpus": "8165203c4f304a353eaa0a6d5d64da55308d3f7bac759e936182c404f93383e8"
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.131.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T13:13:52Z"
+  }
+}

@@ -580,6 +580,10 @@ QOR_SKILL_ACTIVE=substantiate qor-logic reliability gate_chain_completeness \
 
 Argv-form; no shell-variable interpolation (SG-Phase47-A). Runs after Step 7.7 confirms ledger integrity, ensuring this phase's session has all four gate artifacts before the seal commit lands.
 
+### Step 7.9: Spec fold (Phase 192; GH #277)
+
+After the gates: `qor.scripts.spec_fold` folds declared deltas and the seal entry records `**Spec Corpus Hash**`. See `references/seal-gate-ladder.md`.
+
 ### Step 8: Cleanup Staging
 
 Clear: `.agent/staging/` (transient working directory).

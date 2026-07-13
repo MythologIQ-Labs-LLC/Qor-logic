@@ -88,6 +88,24 @@
       "description": "Phase 168 (GH #248, Shape 3 per research entry #394): the gate artifacts THIS phase must produce. Absent == the full chain (grandfathers all prior sessions). The short chain [plan, implement, substantiate] is permitted only for L1-risk hotfix changes (tier_guard verifies at implement time; completeness + provenance verify at seal/CI/merge); declaring it emits a severity-1 gate_override shadow event."
     },
     "ai_provenance": { "$ref": "_provenance.schema.json" },
+    "spec_deltas": {
+      "type": "array",
+      "description": "Phase 192 (GH #277): behavioral spec deltas this plan authors. Each names the capability, the delta document (authored at plan time under qor/specs/<capability>/deltas/), the operations it carries, and optional grep-evidence for the changed surface. Linted at audit (specification-drift on failure); folded into the capability spec inside substantiate after PASS, then the delta file is deleted (git history is the archive).",
+      "items": {
+        "type": "object",
+        "required": ["capability", "delta_path", "ops"],
+        "properties": {
+          "capability": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "delta_path": { "type": "string", "pattern": "^qor/specs/[a-z0-9][a-z0-9-]*/deltas/[^/]+\\.md$" },
+          "ops": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "enum": ["ADDED", "MODIFIED", "REMOVED"] }
+          },
+          "evidence": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
     "feature_inventory_touches": {
       "type": "array",
       "description": "Phase 73 (GH #41): per-feature TDD declaration block. Each entry names a feature touched by this plan, the operation kind, and the test path + descriptor that proves the feature works. Required-when-touching-src/ enforcement is operator discipline in V1; mechanical lint deferred to V2. Empty array is acceptable for plans that touch only docs/governance.",

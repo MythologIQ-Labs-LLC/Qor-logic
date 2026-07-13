@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.131.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 192 (feature; spec corpus Phase B/C)**: the behavioral-spec toolchain gains gate-chain authority (GH #277, carrying #239's remaining phases). Plans that change contracted behavior author a spec delta (`qor/specs/<capability>/deltas/<session-id>.md`) and declare it in the plan artifact's new additive `spec_deltas` property; `/qor-audit` lints it (`spec_lint --delta`; failures VETO as `specification-drift`, with the no-delta-on-behavior-change judgment documented as a Judge duty); `/qor-substantiate` folds it after the reliability gates via `spec_fold.fold_session_deltas` (stage-all-then-write; conflicts and grammar-violating folds abort with the tree untouched; consumed deltas are deleted -- git history is the archive), recording the folded spec hash in the seal entry and substantiate.json. `spec_requirement_verify` produces the qa_evidence coverage pillar the module had deferred (structure + declared-surface existence; never fabricated semantics). Self-applied: this release's own seal performed the first live fold into `qor/specs/spec-corpus/spec.md`.
+
 ## [0.130.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

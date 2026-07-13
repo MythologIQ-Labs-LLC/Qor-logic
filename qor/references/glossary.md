@@ -1287,3 +1287,13 @@ referenced_by:
   - qor/scripts/snapshot_export.py
 introduced_in_plan: phase191-snapshot-contract
 ```
+```yaml
+term: Spec delta
+definition: 'A consumable change document for a capability spec (Phase 192, GH #277): authored at plan time under qor/specs/<capability>/deltas/, declared in the plan gate artifact, linted at audit (specification-drift on failure), folded into the capability spec inside substantiate after the reliability gates, then deleted -- git history is the archive and the corpus is current truth. ADDED/MODIFIED sections carry complete requirement blocks; REMOVED lists headings.'
+home: qor/references/spec-grammar.md
+referenced_by:
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/scripts/spec_fold.py
+  - qor/scripts/spec_requirement_verify.py
+introduced_in_plan: phase192-spec-corpus-phase-b
+```

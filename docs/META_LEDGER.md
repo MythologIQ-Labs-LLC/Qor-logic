@@ -15068,5 +15068,82 @@ Change class: feature (v0.129.0 -> v0.130.0). Tests: 9 new (live-value healthy p
 
 ---
 
+### Entry #486: RESEARCH BRIEF -- Spec corpus Phase B/C (GH #277)
+
+**Timestamp**: 2026-07-13T16:46:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #277
+**Session**: `2026-07-13T1640-229740`
+**Brief**: docs/research-brief-spec-corpus-phase-b-2026-07-13.md
+
+**Content Hash**: `5277f5a1b1a3dc6561de283a30ebbfdb723b264464c34e8e12e05b138f5caff6`
+**Previous Hash**: `c171473c1891338eee4cb58b4f045843158ba713c9b333c92c4ad23878b1e2ce`
+**Chain Hash (Merkle seal)**: `d351a394b92f6963b349686ed60af91b37f80d9fa7aac4bf3d2aad2289ad8798`
+
+**Decision**: Phase A tools gain chain authority. Design gap closed: the delta LIFECYCLE (Phase A defined grammar only) -- deltas live at qor/specs/<capability>/deltas/<session-id>.md, are declared in the plan artifact's additive spec_deltas array, linted at audit (VETO into the live specification-drift category, audit.schema.json:40), FOLDED into the capability spec inside substantiate after PASS, then deleted (git history is the delta archive; the corpus is current-truth). Fold evidence: LF-normalized spec sha256 as a seal-entry Spec Corpus Hash field + additive substantiate.json property (freeze lint governs new schema FILES only, verified). Seam constraints verified live: qor-audit/qor-substantiate have ~400 B headroom each -> two-line pointer-steps with prose in references/. Phase C verifies structure + declared-surface existence per requirement (never semantics -- no fabricated verification) and produces qa_evidence's explicitly-deferred coverage pillar (qa_evidence.py:30). Self-application planned: this cycle authors the first capability spec and its own seal performs the first live fold. Risk L2 (touches the seal ceremony). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #487: GATE TRIBUNAL -- Phase 192 spec corpus Phase B/C
+
+**Timestamp**: 2026-07-13T16:57:30Z
+**Phase**: GATE (Phase 192)
+**Author**: Judge
+**Risk Grade**: L2
+**Session**: `2026-07-13T1640-229740`
+**Target**: docs/plan-qor-phase192-spec-corpus-phase-b.md
+**Verdict**: PASS
+
+**Content Hash**: `81af6801bdac881fc9bbc5842d0873c11031d088c1614bc823140fc3f6e0018f`
+**Previous Hash**: `d351a394b92f6963b349686ed60af91b37f80d9fa7aac4bf3d2aad2289ad8798`
+**Chain Hash (Merkle seal)**: `aea88f8b5b0c88f263f1fc4c885aef8ae7b4821f3cdf30a9c03d67a0ed8f03f4`
+
+**Decision**: Solo-mode tribunal, L2 depth (new authority wired INTO the seal ceremony). PASS with zero violations. The three failure directions of fold authority all hold by test: a conflicting or grammar-violating fold aborts loudly with the tree untouched; the fold reads the session's plan artifact from inside the gated seal so VETO'd work never folds (the original acceptance); delta-free sessions are proven no-ops. The consumable-delta lifecycle closes Phase A's deliberate gap with the right asymmetry (corpus = current truth; git history = archive). The plan-artifact chicken-and-egg resolves via Phase 173 iteration (plan-iter2 re-declares after the schema property exists -- auditable re-issue). Self-application per LD-6: this session's own seal performs the first live fold. Next: `/qor-implement`.
+
+---
+
+### Entry #488: IMPLEMENTATION -- Phase 192 spec corpus Phase B/C
+
+**Timestamp**: 2026-07-13T17:35:40Z
+**Phase**: IMPLEMENT (Phase 192)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T1640-229740`
+**Intent Lock**: `LOCKED: 2026-07-13T1640-229740`
+
+**Content Hash**: `bcd27dd77065e11513529d0cddc0c170322e4f0bd91073edd3c440858b9e3855`
+**Previous Hash**: `aea88f8b5b0c88f263f1fc4c885aef8ae7b4821f3cdf30a9c03d67a0ed8f03f4`
+**Chain Hash (Merkle seal)**: `736306ee9b3695b6f9cdea8c47b9398b71d19b08f7df6aa236c5872d22552995`
+
+**Decision**: Phase 192 implemented per plan with one DISCLOSED order inversion: the Phase 1 schema properties and delta-lint mode were written before their tests (the fold/verify units -- the risk-bearing core -- were strictly red-first per TDD; the schema tests were authored immediately after and verified against rejection cases). One relocation defect caught at red: check_delta appended below the __main__ guard executed after main() on module invocation -- reordered. Shipped: additive plan.spec_deltas (pattern-constrained paths, closed op enum) + substantiate.spec_corpus_hash; spec_lint --delta (section structure + inner blocks reuse check()); spec_fold.fold_session_deltas (stage-all-then-write: every fold must merge AND lint clean before ANY spec is written; SpecMergeError/FoldError abort with the tree untouched; consumed deltas deleted); spec_requirement_verify.verify_deltas -> the qa coverage pillar (status/checked/verified/unverified). Wiring: pointer-steps in qor-plan (25,361 B), qor-audit (39,728 B), qor-substantiate (39,705 B) -- all under their locks -- with prose in references/spec-delta-authoring.md, references/spec-delta-pre-pass.md (Judge semantics duty documented), and the seal-gate-ladder fold section. Self-application staged per LD-6: plan-iter2 declares the live delta (qor/specs/spec-corpus/deltas/2026-07-13T1640-229740.md, 2 requirements); the audit pre-pass and requirement verify both ran live (lint 0; coverage 2/2 pass); the fold executes in this session's seal. 28 focused green twice; full suite 2672 passed / 2 skipped; drift clean (390 files). Content hash binds qor/scripts/spec_fold.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #489: SESSION SEAL -- Phase 192 spec corpus Phase B/C (v0.131.0)
+
+**Timestamp**: 2026-07-13T17:52:20Z
+**Phase**: SUBSTANTIATE (Phase 192; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase192-spec-corpus-phase-b.md
+**Session**: `2026-07-13T1640-229740`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `a3b28cb3a247`
+**Spec Corpus Hash**: spec-corpus=8165203c4f304a353eaa0a6d5d64da55308d3f7bac759e936182c404f93383e8
+
+**Scope**: Phase 192 implemented (feature; research entry #486 -> GH #277, carrying #239's Phases B and C). The spec toolchain gained chain authority: plans declare deltas (additive plan.spec_deltas; pattern-constrained paths, closed op enum), audit lints them (spec_lint --delta; VETO as specification-drift; the no-delta-on-behavior-change judgment documented as a Judge duty), and the seal folds them after the reliability gates (spec_fold: stage-all-then-write, loud aborts with the tree untouched, consumed deltas deleted -- git history is the archive, the corpus is current truth). spec_requirement_verify produces the qa_evidence coverage pillar (structure + declared-surface existence, never semantics). THIS SEAL PERFORMED THE FIRST LIVE FOLD: the session's declared delta (2 requirements) folded into qor/specs/spec-corpus/spec.md (3 requirements, lints clean, delta consumed) -- the Spec Corpus Hash field above is the first of its kind, and the original #239 acceptance ("a sealed change deterministically updates qor/specs/** and the ledger records the folded hash") is met by this very entry. Wiring: pointer-steps in three skills (25,361 / 39,728 / 39,705 B -- all under their locks) with prose in references/; the self-application test asserts BOTH lifecycle states (pending deltas lint as deltas; folded specs lint as specs). Mid-seal fixes disclosed: one divergent-definition reword in the pre-pass reference (the recorded definition-pattern class), one referenced_by registration via the live-check loop, and the self-application test made fold-aware after the live fold consumed its subject.
+
+Change class: feature (v0.130.0 -> v0.131.0). Tests: 14 new (schema accept/reject, delta-lint codes incl. CLI mode, four fold semantics, coverage payload into the real build_payload, wiring-within-budget, both-lifecycle-states lint), fold/verify core strictly red-first (Phase 1 schema order inversion disclosed in entry #488); 28 focused green twice; full suite 2672 passed / 2 skipped pre-fold, post-seal suite validates the folded state. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 140/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS (after the two disclosed fixes), governance-index advanced + enforce clean, schema-freeze 0 unjustified, feature-inventory 17/17 vs snapshot 2026-07-13T1505-e508d3, dist recompiled + drift clean (390 files). Audit: solo PASS at L2 depth (entry #487; zero violations; 1 definitional WARN disclosed). Seal commit: LOCAL checkpoint; release sequencing per the operator's standing consolidated-release direction.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance tooling)
+
+**Content Hash**: `05887e0c66f656877c6de2e1f7afce3add4a25f98077548496ec07b114f90b38`
+**Previous Hash**: `736306ee9b3695b6f9cdea8c47b9398b71d19b08f7df6aa236c5872d22552995`
+**Chain Hash (Merkle seal)**: `760c4d43f15699b002c85f072ebcb071bb92eafa7b8a48bfe06f3a33c0a8e8b7`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 191; v0.130.0; repository snapshot contract; consolidated release sequence authorized by operator)
+*Session: SEALED* (Phase 192; v0.131.0; spec corpus Phase B/C -- first live fold; local checkpoint pending release sequencing)
