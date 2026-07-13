@@ -15145,5 +15145,128 @@ Change class: feature (v0.130.0 -> v0.131.0). Tests: 14 new (schema accept/rejec
 
 ---
 
+### Entry #490: RESEARCH BRIEF -- Ledger emit API + retroactive attestation (GH #278)
+
+**Timestamp**: 2026-07-13T18:17:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #278
+**Session**: `2026-07-13T1815-6e2843`
+**Brief**: docs/research-brief-ledger-emit-api-2026-07-13.md
+
+**Content Hash**: `2efb2c1d3890f51093af8d7db3305d412404310be26bb9e00a059fa7002903ce`
+**Previous Hash**: `760c4d43f15699b002c85f072ebcb071bb92eafa7b8a48bfe06f3a33c0a8e8b7`
+**Chain Hash (Merkle seal)**: `bdd45b1d4d93ea470a8ea67351373530d3f3bc0cf9dc11126e25ddd05440e390`
+
+**Decision**: All three remainders verified. The 32 perpetually-skipped entries carry NO hash markup (pre-convention; _resolve_recorded None at ledger_hash.py:306-323; sub-cutoff skip at :392-405). Retro-hashing them is chain-IMPOSSIBLE without editing post-anchor hash fields (the first verifiable entry's recorded Previous Hash is historical) -- the operator-directed retroactive normalization therefore takes the issue's sanctioned attestation path: ONE MIGRATION ATTESTATION entry binding each legacy body to an LF-normalized digest inside the live chain, with verify extended to re-check digests and report the band as attested (zero skips; any later edit of a legacy body breaks its attestation -- tamper-evidence extended backwards without changing a historical byte). The verifier already carries the attestation precedent (_attested_reconciled :293-304). Emission today is hand-assembly everywhere; ledger_emit.py (typed LedgerEntry + render round-tripping through _resolve_recorded + append via the ledger_hash primitives) becomes the single canonical path, and the live migration entry is emitted THROUGH it (self-application). governance_health gains --format json (findings as objects), composing with -- not duplicating -- the Phase 191 snapshot (which stays ladder-level). Risk L2 (verifier + ledger surface). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #491: GATE TRIBUNAL -- Phase 193 ledger emit API
+
+**Timestamp**: 2026-07-13T18:27:20Z
+**Phase**: GATE (Phase 193)
+**Author**: Judge
+**Risk Grade**: L2
+**Session**: `2026-07-13T1815-6e2843`
+**Target**: docs/plan-qor-phase193-ledger-emit-api.md
+**Verdict**: PASS
+
+**Content Hash**: `9563ba1c753def88c40616ee78b5a664ac8ee37c958c946280ac6f3bc854b634`
+**Previous Hash**: `bdd45b1d4d93ea470a8ea67351373530d3f3bc0cf9dc11126e25ddd05440e390`
+**Chain Hash (Merkle seal)**: `bfab20f17aeade7b5c067606a092ae09db64b05431c5a79b642931d91d62f179`
+
+**Decision**: Solo-mode tribunal, L2 depth (the verifier is touched). PASS with zero violations. The attestation extension STRENGTHENS the verifier: the legacy band goes from skipped-and-editable to digest-bound-and-tamper-evident, the mismatch path is a FAIL driven by a dedicated test, modern-entry enforcement (GAP-GOV-09) is untouched, and the migration entry itself must chain-verify. The retro-chaining impossibility was checked, not assumed (the first verifiable entry's recorded Previous Hash would have to change -- forbidden byte-for-byte by the operator acceptance). The renderer round-trip test kills the emit/parse drift class at its root; LD-4 makes the retroactive requirement a sealed artifact of this session. Next: `/qor-implement`.
+
+### Entry #492: MIGRATION ATTESTATION -- pre-convention band
+
+**Timestamp**: 2026-07-13T18:50:00Z
+**Phase**: MIGRATION
+**Author**: Judge
+**Session**: `2026-07-13T1815-6e2843`
+
+**Content Hash**: `fd5c1d162a266f119e79fab7189862d730d12f8416cff47bddc389a375673522`
+**Previous Hash**: `bfab20f17aeade7b5c067606a092ae09db64b05431c5a79b642931d91d62f179`
+**Chain Hash (Merkle seal)**: `6ea90e7b91ae2321c7e54971901b66e2b2ee3cc52e343e4ed96066e2e43c47ac`
+
+**Decision**: Retroactive normalization (GH #278, operator-directed): the 32 pre-convention entries below carry no hash markup and cannot be retro-chained without editing post-anchor hash fields. Each is bound here to the LF-normalized sha256 (first 12 hex) of its current body; the verifier re-checks these digests, so any later edit of an attested body is a verification FAILURE. History is attested, not rewritten.
+
+**Attested Entries**:
+#1=524e6621beb9
+#2=297d5209fb0e
+#3=87626c1d2956
+#4=af336a93694a
+#5=67aeff999941
+#6=84d429234094
+#7=3d0f332f7746
+#8=d445f312b956
+#9=c32910e5d65b
+#10=2ffceb284a0f
+#11=772d275ffafe
+#68=b3c5b1e61a85
+#70=a004a86f1a32
+#71=c8d6fb4bb4e4
+#72=4de5e2c54a72
+#73=d42806385a42
+#74=bdaf0f9e23d7
+#76=794888f59d6a
+#77=3d8a8a118274
+#78=4a15dee7a27a
+#79=9fdb9e9737e8
+#81=d221d478e80f
+#82=a2ad8f9167f5
+#84=9ae2e1f213a5
+#85=22638649136f
+#86=41a3e82c2d36
+#87=dc146853ae59
+#109=74481d74e309
+#110=c31c173c0991
+#111=1c2854f73d76
+#112=e4d88aa4cd0d
+#122=6ed45cbc0364
+
+---
+
+### Entry #493: IMPLEMENTATION -- Phase 193 ledger emit API
+
+**Timestamp**: 2026-07-13T19:02:30Z
+**Phase**: IMPLEMENT (Phase 193)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T1815-6e2843`
+**Intent Lock**: `LOCKED: 2026-07-13T1815-6e2843`
+
+**Content Hash**: `16875655b3fbd9eec10c486c599b93626c49b4bdc1484d541ed050f9a371329e`
+**Previous Hash**: `6ea90e7b91ae2321c7e54971901b66e2b2ee3cc52e343e4ed96066e2e43c47ac`
+**Chain Hash (Merkle seal)**: `a3528bb82b6c3db9529885c4bf5151ea565c2d6c15f8a0e3a139ad2ee1747f70`
+
+**Decision**: Phase 193 implemented per plan, TDD-first (all three units red before implementation; two fixture-realism corrections at red: placeholder-pattern hashes and a non-hex Previous Hash made the fixtures fail for the wrong reasons -- replaced with computed chain-consistent values; one mid-edit line-mangling repaired). Shipped: ledger_emit (typed LedgerEntry + render round-tripping _resolve_recorded + append linking off the live tail with ASCII enforcement at the API); ledger_attest_legacy (collect_unverifiable mirrors verify's exact skip predicate; the MIGRATION ATTESTATION entry lists #<n>=<digest12> per legacy body and is emitted THROUGH ledger_emit); the verify extension (attested band re-checked every run -- digest match prints attested-OK, mismatch FAILs, modern-entry enforcement untouched); governance_health --format json (findings as structured objects; exit parity test-locked). THE RETROACTIVE ACT IS DONE: entry #492 (immediately preceding this one, emitted by the new API) attests all 32 pre-convention entries; `ledger_hash verify docs/META_LEDGER.md` now reports ZERO skipped -- the whole ledger verifies for the first time, with no historical byte changed. 11 focused green twice (including the live-ledger zero-skip test, red until #492 landed); neighboring ledger suites green; full suite 2683 passed / 2 skipped. Content hash binds qor/scripts/ledger_emit.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #494: SESSION SEAL -- Phase 193 ledger emit API + retroactive attestation (v0.132.0)
+
+**Timestamp**: 2026-07-13T19:12:40Z
+**Phase**: SUBSTANTIATE (Phase 193; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase193-ledger-emit-api.md
+**Session**: `2026-07-13T1815-6e2843`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `df2147886dd5`
+
+**Scope**: Phase 193 implemented (feature; research entry #490 -> GH #278, carrying the #271 emit-API remainder, the #268 structured-output remainder, and the operator-directed retroactive normalization). One canonical emission path: ledger_emit's render round-trips the verifier's parser (the drift class dies at the contract) and append enforces the ASCII seal rule at the API. THE RETROACTIVE REQUIREMENT IS A SEALED FACT: migration entry #492 -- the new API's first production artifact -- binds all 32 pre-convention entries to LF-normalized body digests inside the live chain; the verifier re-checks every digest on every run (an edited legacy body now FAILS verification), and `ledger_hash verify docs/META_LEDGER.md` reports ZERO skipped entries for the first time in the project's history, with no historical byte changed. governance_health --format json ships findings as structured objects with exit parity, composing with the v0.130.0 snapshot contract. Modern-entry enforcement (GAP-GOV-09) untouched; the attestation path can only convert skips into checked entries.
+
+Change class: feature (v0.131.0 -> v0.132.0). Tests: 11 new (renderer round-trip, chain linkage on computed-consistent fixtures, ASCII rejection, tail preservation, skip-set equality, attestation clears skips, tampered-body FAIL, the migration entry's own chain verification, live-ledger zero skips -- red until #492 landed -- and health JSON shape + exit parity), red-then-green twice; full suite 2683 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 140/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T1640-229740, dist recompiled + drift clean (390 files). Audit: solo PASS at L2 depth (entry #491; zero violations). Seal commit: LOCAL checkpoint; release sequencing returns to the operator with #277 and #278 both complete.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (ledger integrity)
+
+**Content Hash**: `fb17101b5e386b4478e91e376e2906501b5eaf33abae1533f2e1bac89d600d6f`
+**Previous Hash**: `a3528bb82b6c3db9529885c4bf5151ea565c2d6c15f8a0e3a139ad2ee1747f70`
+**Chain Hash (Merkle seal)**: `b1c69912886c2598579759053d5e1141d35ad886c64dbde7a4b154e84f62fc04`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 192; v0.131.0; spec corpus Phase B/C -- first live fold; local checkpoint pending release sequencing)
+*Session: SEALED* (Phase 193; v0.132.0; ledger emit API + retroactive attestation -- whole ledger verifies; local checkpoint pending release sequencing)

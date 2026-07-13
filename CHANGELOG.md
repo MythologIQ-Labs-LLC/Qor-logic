@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.132.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 193 (feature; canonical ledger emit API + retroactive attestation + structured health)**: closes GH #278 (carrying the #271 emit-API and #268 structured-output remainders plus the operator-directed retroactive normalization). `qor/scripts/ledger_emit.py` is the one typed emission path (render round-trips the verifier's parser; append links off the live tail with the ASCII seal rule enforced at the API). `qor/scripts/ledger_attest_legacy.py` performed the retroactive act: MIGRATION ATTESTATION entry #492 -- emitted through the new API -- binds all 32 pre-convention entries to LF-normalized body digests inside the live chain, and the verifier re-checks them every run (an edited legacy body is now a verification FAILURE). `ledger_hash verify` reports ZERO skipped entries on the live ledger for the first time, with no historical byte changed. `governance_health --format json` emits findings as structured objects (path/status/reason/legal_next) with unchanged exit semantics, composing with the v0.130.0 snapshot contract.
+
 ## [0.131.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
