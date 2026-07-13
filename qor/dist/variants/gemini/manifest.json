@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-07-13T11:02:19Z",
+  "generated_ts": "2026-07-13T11:33:59Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -175,6 +175,12 @@
       "source_path": "commands/qor-onboard-codebase.toml",
       "install_rel_path": "commands/qor-onboard-codebase.toml",
       "sha256": "6db2266d317a1b2e8d4761bdf0ce11abcdfaf7d6873f6aad30386966815b9018"
+    },
+    {
+      "id": "qor-onboard.toml",
+      "source_path": "commands/qor-onboard.toml",
+      "install_rel_path": "commands/qor-onboard.toml",
+      "sha256": "08c7d310d2b4bf3366e71029012e3045e98d1b9403391620b985d6996b62c583"
     },
     {
       "id": "qor-organize.toml",

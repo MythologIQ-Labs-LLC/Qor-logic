@@ -36,6 +36,7 @@ LOAD_BEARING_PENDING_EVIDENCE = {
     "qor-deep-audit-recon",      # recon persona
     "qor-deep-audit-remediate",  # remediate persona
     "qor-onboard-codebase",      # onboarding specialist
+    "qor-onboard",               # Phase 189: tutorial-guide stance (GH #241)
     "qor-repo-audit",            # repo-level auditor
     "qor-repo-release",          # release engineer
     "qor-ideate",                # Phase 59: ideation Analyst stance

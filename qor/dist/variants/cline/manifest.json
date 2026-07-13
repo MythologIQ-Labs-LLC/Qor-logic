@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-07-13T11:02:19Z",
+  "generated_ts": "2026-07-13T11:33:59Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -175,6 +175,12 @@
       "source_path": "workflows/command-qor-onboard-codebase.md",
       "install_rel_path": "workflows/command-qor-onboard-codebase.md",
       "sha256": "99d431522aa3c5f9d9a9430d56580216de184be9b75c7fa8892fdab53d53cbf7"
+    },
+    {
+      "id": "command-qor-onboard.md",
+      "source_path": "workflows/command-qor-onboard.md",
+      "install_rel_path": "workflows/command-qor-onboard.md",
+      "sha256": "0b2d9c842592d077e4aa8420e7f78ea6473ef47ec94238e70b645e06921458f0"
     },
     {
       "id": "command-qor-organize.md",

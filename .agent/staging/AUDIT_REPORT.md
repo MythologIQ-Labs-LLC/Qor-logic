@@ -1,9 +1,9 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T11:56:00Z
-**Target**: docs/plan-qor-phase188-canary-code-span-hosts.md (Phase 188; GH #244)
-**Risk Grade**: L2
-**Session**: `2026-07-13T1145-3ee3e2`
+**Tribunal Date**: 2026-07-13T13:04:00Z
+**Target**: docs/plan-qor-phase189-onboard-tutorial.md (Phase 189; GH #241)
+**Risk Grade**: L1
+**Session**: `2026-07-13T1255-08b7e7`
 **Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall emitted; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
@@ -15,39 +15,35 @@
 
 ### Executive Summary
 
-L2 grade because item 1 touches an audit-gate security scanner -- so the security pass got the deepest walk. The relaxation is surgically scoped: ONLY the hidden-html class, ONLY hits fully inside backtick spans, ONLY at the CLI layer (`scan()` stays pure and strict), with `--strict` restoring today's behavior. The four imperative-instruction classes and unicode-directionality stay binding inside code spans -- the asymmetry is the design: an instruction is an instruction wherever it sits, while structural markup inside a code span is (per the live consumer evidence) a CLI placeholder or countermeasure example. The phase self-applied before implementation even began: the research entry's own body tripped the strict gate from inside backticks and was amended to descriptor form -- live proof of the false-positive class. Host expansion reuses the Phase 187 injection seam symmetrically. No binding-VETO pass fired.
+A pedagogy surface with zero runtime footprint: one new meta workflow bundle that ORCHESTRATES the existing six-phase chain on an operator-confirmed trivial change, never analyzing (the delegation-table bundle rule is a Locked Decision, not an aspiration). The two failure classes that sink skill-corpus phases are both pre-neutralized: size (all narration in references/; SKILL.md target under 8 KB, far under the 25 KB WARN) and term drift (LD-2 makes term-at-first-use a glossary-LINKING discipline with a test-level guard over the three new files -- the Phase 135/178 ABORT class cannot re-enter). The three plan_grep_lint WARNs are the lint noting the skill path does not exist YET; the path is declared NEW in Affected Files -- the WARN-only contract working as designed on a new-file plan. No binding-VETO pass fired.
 
 ### Audit Results
 
 #### Prompt Injection Pass
-**Result**: PASS -- canaries exit 0 after the entry #470 descriptor amendment (hash fields untouched; Phase 172 body-amendment precedent; chain verified).
+**Result**: PASS -- canaries exit 0 over the four scanned surfaces.
 
-#### Security Pass (L3-depth walk for the scanner change)
-**Result**: PASS
-Attack-surface check of the downgrade: (a) an attacker hiding an imperative canary inside backticks is UNAFFECTED -- instruction classes stay binding; (b) hiding a `system:` HTML comment inside backticks: the hit is still PRINTED as WARN (operator-visible), and the strict flag is available at any call site handling adversarial input; (c) the downgrade requires the span to be FULLY inside a masked region -- straddling spans stay binding; (d) `scan()` consumers (audit skills importing the module) see no behavior change. Residual risk accepted and disclosed: a hidden-html canary wholly inside a code span no longer blocks by default at the CLI; the WARN line preserves detectability.
-
-#### OWASP Top 10 Pass
-**Result**: PASS -- no deserialization, no subprocess change, argv-only paths preserved; the new hosts use the existing `_scoped_base` path construction (no traversal).
+#### Security Pass (L3) / OWASP Top 10 Pass
+**Result**: PASS -- markdown-only phase; no code paths, no env, no subprocess. The tutorial's improvement-scan menu explicitly requires operator confirmation before any change is made (no autonomous edits to the operator's repo from a first-session flow).
 
 #### Ghost UI / Razor / Dependency Passes
-**Result**: PASS -- no UI; stdlib; emit_cursor/emit_cline compose existing functions.
+**Result**: PASS -- no UI; no dependencies; the bundle adds exactly three behaviors on top of delegation (scan menu, narration, review-boundary hold).
 
-#### Self-Application Sub-Pass (originating_remediation: GH #244)
-**Result**: PASS -- the plan itself follows NR-001 descriptor discipline (never spells the tag literal), and the ledger amendment demonstrated the fix's motivating class on the project's own artifacts.
+#### Self-Application Sub-Pass (originating_remediation: GH #241)
+**Result**: PASS -- the plan practices what the tutorial teaches: terms referenced by glossary home, prose kept in references/, the chain walked by delegation.
 
 #### Test Functionality Pass
 **Result**: PASS
-Phase 1 tests observe CLI exit codes AND stderr channel content for all four quadrants (code-span downgrade / strict restore / prose abort / instruction-class-in-code abort -- the asymmetry is directly tested). Phase 2 tests invoke resolve() and compile_all and assert artifact content, including the non-risk byte-equality control and the cline command-count coverage assertion.
+The five tests observe behavior where behavior is machine-checkable: admission's verdict on the new skill, the matrix's broken-handoff count with the new handoffs present, the structural contract (frontmatter type + six-phase order + references cited), registration consistency (badge count equals registry row count -- a cross-surface invariant, not a presence check), and the no-definitional-prose guard (locks the LD-2 class). The issue's full acceptance flow is operator-executed by nature; the plan honestly scopes D4 to the testable core and records the LLM-executed validation as follow-up -- the correct boundary, not a waiver dodge.
 
 #### Infrastructure Alignment Pass
 **Result**: PASS
-Anchors re-walked live: hidden-html pattern at prompt_injection_canaries.py:99; mask_code_blocks at :137 with the strict rationale at :143-144; hosts.py `_HOSTS` at :84 with the docstring already naming Cursor/Windsurf as intended extensions (:4-5); dist_compile TARGETS at :22, `_rewrite_risk_skills` at :74; gemini agent- naming precedent at gemini_variant.py:127. The sync-contract extension names the exact file and mirrors the existing gemini exclusion pattern. Runtime Contract Walk: 0 findings.
+Anchors verified live: qor-onboard-codebase frontmatter shape at SKILL.md:3 (type workflow-bundle) with its intake-only phase list; README badge Skills-29 at :14; SKILL_REGISTRY meta section with 29 total; delegation-table bundle section and its no-analysis rule; corpus auto-discovery by admission/matrix/dist_compile (the cline count test computes from source lists -- no count edits needed). The grep-lint WARNs are new-path notices, disclosed above. Runtime Contract Walk: 0 findings.
 
 #### Filter-Stage / Orphan / Macro-Architecture Passes
-**Result**: PASS -- one new test file; both emitters registered in the existing dispatch chain; publication boundary honored (the source framework is generic everywhere).
+**Result**: PASS -- the bundle slots into the existing meta category; references/ files are cited from SKILL.md (no orphans); no architectural surface changes.
 
 #### Documentation Drift (advisory)
-**Result**: clean (minimal tier; no new doctrine terms -- the injection block and doctrine are Phase 187 artifacts reused unchanged).
+**Result**: clean (minimal tier; no new glossary terms -- the tutorial links to existing homes by design).
 
 ### Violations Found
 
@@ -63,7 +59,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 188.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 189.
 
 ---
 _This verdict is binding._

@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-07-13T11:02:19Z",
+  "generated_ts": "2026-07-13T11:33:59Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -253,6 +253,24 @@
       "source_path": "skills/qor-meta-track-shadow/SOURCE.yml",
       "install_rel_path": "skills/qor-meta-track-shadow/SOURCE.yml",
       "sha256": "73dc345eab34b401146238a8615112d01bd3ec045839825e3940fdfbdd8804bf"
+    },
+    {
+      "id": "qor-onboard",
+      "source_path": "skills/qor-onboard/references/improvement-scan.md",
+      "install_rel_path": "skills/qor-onboard/references/improvement-scan.md",
+      "sha256": "146ec4cd1f24b5e5cc90da873362b0ad1dd58717862057e9d17793cefdc149d3"
+    },
+    {
+      "id": "qor-onboard",
+      "source_path": "skills/qor-onboard/references/tutorial-narration.md",
+      "install_rel_path": "skills/qor-onboard/references/tutorial-narration.md",
+      "sha256": "4542e60792b4a64b02f19812ff1e193d9c8923a997eb90b8ef71935c33eaf245"
+    },
+    {
+      "id": "qor-onboard",
+      "source_path": "skills/qor-onboard/SKILL.md",
+      "install_rel_path": "skills/qor-onboard/SKILL.md",
+      "sha256": "0b2d9c842592d077e4aa8420e7f78ea6473ef47ec94238e70b645e06921458f0"
     },
     {
       "id": "qor-onboard-codebase",

@@ -192,6 +192,7 @@ home: qor/gates/workflow-bundles.md
 referenced_by:
   - CLAUDE.md
   - qor/skills/meta/qor-deep-audit/SKILL.md
+  - qor/skills/meta/qor-onboard/SKILL.md
   - qor/skills/meta/qor-onboard-codebase/SKILL.md
   - qor/skills/governance/qor-process-review-cycle/SKILL.md
   - docs/lifecycle.md
@@ -203,6 +204,8 @@ term: change_class
 definition: A per-plan declaration of version impact -- hotfix, feature, or breaking. Governs the version bump performed at substantiate time by governance_helpers.bump_version.
 home: qor/references/doctrine-governance-enforcement.md
 referenced_by:
+  - qor/skills/meta/qor-onboard/references/tutorial-narration.md
+  - qor/skills/meta/qor-onboard/SKILL.md
   - CLAUDE.md
   - qor/skills/sdlc/qor-plan/SKILL.md
   - qor/skills/sdlc/qor-plan/references/step-extensions.md
@@ -596,6 +599,7 @@ term: ideation readiness
 definition: 'Tenth section of the ideation artifact. The readiness.status enum encodes the routing decision (ready / blocked / research_required / planning_advisory_only) and recommended_next_phase enum (research / plan / hold) determines downstream skill handoff. Status ready + research routes to /qor-research; status ready + plan routes to /qor-plan; status blocked remains in ideation; status research_required overrides recommended_next_phase to research; status planning_advisory_only routes to /qor-plan with advisory flag.'
 home: qor/references/doctrine-ideation-readiness.md
 referenced_by:
+  - qor/skills/meta/qor-onboard/references/tutorial-narration.md
   - qor/skills/sdlc/qor-ideate/SKILL.md
   - qor/gates/delegation-table.md
 introduced_in_plan: phase59-ideation-readiness-phase

@@ -14840,5 +14840,81 @@ Change class: feature (v0.126.0 -> v0.127.0). Tests: 11 new (4 canary quadrants,
 
 ---
 
+### Entry #474: RESEARCH BRIEF -- Onboard tutorial bundle (GH #241)
+
+**Timestamp**: 2026-07-13T12:59:30Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #241
+**Session**: `2026-07-13T1255-08b7e7`
+**Brief**: docs/research-brief-onboard-tutorial-2026-07-13.md
+
+**Content Hash**: `d58121ed21fe1b041b9429b1f757291de63a359a8bef287a629ba163f88144d0`
+**Previous Hash**: `ae9588103f40fd6ee23b3dc503238d60c961f0706b92148d0b56b48c76922385`
+**Chain Hash (Merkle seal)**: `3048d54665a59c5fbe390211aa0fdbcf1510c6bcf9b8381c1ff89c9c114120c9`
+
+**Decision**: GH #241 fully unimplemented; the near-name skill (qor-onboard-codebase) does a DIFFERENT job (external-codebase intake) and extending it would complect two jobs -- a new meta workflow bundle is the un-braided shape. Conventions verified: bundle frontmatter shape from the sibling (type/phases/checkpoints/budget), delegation-table no-analysis rule, registration surfaces (SKILL_REGISTRY 29 skills, README badge Skills-29, delegation-table row), automatic corpus discovery by admission/matrix/dist_compile. Load-bearing risk identified: "define every term at first use" MUST be a glossary-LINKING discipline, not prose definition (the term-drift ABORT class). Acceptance is operator-executed; tests observe the testable core (admission, matrix, structural contract, no-definitional-prose guard). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #475: GATE TRIBUNAL -- Phase 189 onboard tutorial
+
+**Timestamp**: 2026-07-13T13:05:10Z
+**Phase**: GATE (Phase 189)
+**Author**: Judge
+**Risk Grade**: L1
+**Session**: `2026-07-13T1255-08b7e7`
+**Target**: docs/plan-qor-phase189-onboard-tutorial.md
+**Verdict**: PASS
+
+**Content Hash**: `3d3cfdfe169a13f49ffd2f0273af83f6367eb8f7cef61691ff98339a2dd53c97`
+**Previous Hash**: `3048d54665a59c5fbe390211aa0fdbcf1510c6bcf9b8381c1ff89c9c114120c9`
+**Chain Hash (Merkle seal)**: `5798d89c21354ed599aaffeb71f9b0b189575d63cb34e4925334dedf2fe9523b`
+
+**Decision**: Solo-mode tribunal. PASS with zero violations. Markdown-only pedagogy surface: a new meta workflow bundle that orchestrates (never analyzes -- delegation-table rule as LD-4), with the two skill-corpus failure classes pre-neutralized: size via references/ progressive disclosure, term drift via the LD-2 glossary-LINKING discipline plus a test-level guard. D4 is honestly scoped to the machine-checkable core (admission, matrix, structural contract, registration consistency, no-definitional-prose); the issue's full operator flow is recorded as an LLM-executed follow-up validation. The three plan_grep_lint WARNs are new-path notices for a file the plan declares NEW -- disclosed. Next: `/qor-implement`.
+
+---
+
+### Entry #476: IMPLEMENTATION -- Phase 189 onboard tutorial
+
+**Timestamp**: 2026-07-13T13:42:30Z
+**Phase**: IMPLEMENT (Phase 189)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T1255-08b7e7`
+**Intent Lock**: `LOCKED: 2026-07-13T1255-08b7e7`
+
+**Content Hash**: `0b2d9c842592d077e4aa8420e7f78ea6473ef47ec94238e70b645e06921458f0`
+**Previous Hash**: `5798d89c21354ed599aaffeb71f9b0b189575d63cb34e4925334dedf2fe9523b`
+**Chain Hash (Merkle seal)**: `0829f4c0456bb9a8ff89fc44ac9e40ca92056a8c5596c0bc2d0472256c59c8b2`
+
+**Decision**: Phase 189 implemented per plan, TDD-first (all five tests red before the skill existed), with TWO full-suite-discovered corpus-guard conformances: (1) test_persona_sweep requires every persona-tagged skill to carry evidence or a registry entry -- qor-onboard registered in LOAD_BEARING_PENDING_EVIDENCE with its tutorial-guide stance comment (the same path every sibling bundle takes); (2) test_bundles forbids a bundle body naming an unrelated bundle -- the intake-bundle disambiguation reworded to point at the skill registry instead. Skill: qor/skills/meta/qor-onboard/SKILL.md (5.9 KB body; narration + scan prose in references/ per progressive disclosure), phases [ideate..substantiate] in chain order, two operator checkpoints, Review Boundary hold at the publish menu, delegation-only constraint. Registrations: SKILL_REGISTRY meta 13 (total 30), README badge + catalog row, delegation-table bundle row. Corpus now 30 skills; dist propagated to all six variants (382 files, drift clean). 5 focused tests green twice; full suite 2635 passed / 2 skipped. Content hash binds qor/skills/meta/qor-onboard/SKILL.md. Next: `/qor-substantiate`.
+
+---
+
+### Entry #477: SESSION SEAL -- Phase 189 /qor-onboard tutorial bundle (v0.128.0)
+
+**Timestamp**: 2026-07-13T13:52:10Z
+**Phase**: SUBSTANTIATE (Phase 189; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase189-onboard-tutorial.md
+**Session**: `2026-07-13T1255-08b7e7`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `11b927254ae9`
+
+**Scope**: Phase 189 implemented (feature; research entry #474 -> GH #241). The 30th skill: meta workflow bundle `qor-onboard` walks a first-session operator through the full six-phase chain on ONE operator-confirmed trivial change -- improvement-scan menu (candidate classes safest-first, risk criteria, honest-stop on empty scan), per-phase narration beats, two checkpoints (after-ideate, after-audit), delegation-only constraint, and a hard Review Boundary hold at the publish menu. Term-at-first-use is a glossary-LINKING discipline with a test-level guard (the term-drift ABORT class cannot enter the tutorial files); the seal-time strict check itself flagged three term usages, auto-registered as glossary referenced_by lines via the live-check loop (the recorded Phase 178 pattern). Two corpus-guard conformances joined mid-implementation (persona-sweep registry entry with stance comment; bundle-isolation reword -- both existing conventions). Registrations: SKILL_REGISTRY meta 13 / total 30, README badge + catalog row, delegation-table bundle row.
+
+Change class: feature (v0.127.0 -> v0.128.0). Tests: 5 new (admission verdict, matrix broken-count with the new handoffs, structural bundle contract, badge==registry cross-surface invariant, no-definitional-prose guard), red before the skill existed, green twice; full suite 2635 passed / 2 skipped; check_variant_drift OK (382 files; the bundle rides all six variants). Substantiate gates: intent-lock VERIFIED, admission ADMITTED (both qor-substantiate and the new qor-onboard), matrix 140/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS (after referenced_by registration), governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T1145-3ee3e2, dist recompiled + drift clean. Audit: solo PASS (entry #475; zero violations). The issue's full acceptance flow (fresh repo + seed + /qor-onboard -> sealed cycle) is operator-executed by nature and recorded here as the follow-up validation for the operator's first live tutorial run. Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (skill corpus)
+
+**Content Hash**: `8c8d174e34f105b89b7f3dac2c7e17aaddf5e22e17736a90884684d4876f5d1f`
+**Previous Hash**: `0829f4c0456bb9a8ff89fc44ac9e40ca92056a8c5596c0bc2d0472256c59c8b2`
+**Chain Hash (Merkle seal)**: `4b1f113d518f11d4a234d753cee99e5b1b58cd7814bdcdec1acb0a2de50dd07e`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 188; v0.127.0; canary code-span nuance + host expansion; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 189; v0.128.0; /qor-onboard tutorial bundle; local checkpoint commit only -- remote work held for operator review)

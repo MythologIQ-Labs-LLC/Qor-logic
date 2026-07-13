@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.128.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 189 (feature; /qor-onboard tutorial bundle)**: first-session operators can now walk the full gate chain on one small, operator-confirmed real change with narration (GH #241). New meta workflow bundle `qor-onboard` (30th skill) orchestrates ideate -> research -> plan -> audit -> implement -> substantiate by delegation only, with two operator checkpoints, an improvement-scan menu (candidate classes + risk criteria in `references/improvement-scan.md`), per-phase narration beats (`references/tutorial-narration.md`), and a hard Review Boundary hold at the publish menu. Doctrine terms are LINKED to their glossary homes at first use -- never restated (a test-level guard locks the term-drift class out of the tutorial files).
+
 ## [0.127.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
