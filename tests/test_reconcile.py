@@ -112,3 +112,68 @@ def test_build_proposal_empty_when_no_residual(tmp_path):
     led = _write(tmp_path, clean)
     proposal = reconcile.build_proposal(led, ts=TS)
     assert proposal["residual_entry_nums"] == []
+
+
+# ----- Phase 180 (GH #234): deferred-Merkle tails must reconcile -----
+
+def _deferred_entry(num: int, last_valid: str) -> str:
+    """A no-fabrication tail entry: prose Previous Hash, NO chain hash."""
+    return textwrap.dedent(
+        f"""
+
+        ### Entry #{num}: DEFERRED
+
+        **Previous Hash**: chain DIRTY; last validly chain-hashed entry ({last_valid[:12]}...)
+
+        Merkle Seal: DEFERRED to the reconciliation backfill batch (no hash fabricated).
+        """
+    )
+
+
+def _deferred_tail_ledger() -> tuple[str, str]:
+    """Duplicate-prev residual pair followed by hash-less deferred entries;
+    returns (ledger_text, chain hash of the last VALID entry)."""
+    h1 = _hex("H1")
+    valid_chain = chain_hash(_hex("c15"), _hex("prev15"))
+    entries = [
+        _entry(15, _hex("c15"), _hex("prev15")),          # last VALID entry
+        _entry(16, _hex("c16"), h1, chain_override=_hex("bad16")),
+        _entry(17, _hex("c17"), h1, chain_override=_hex("bad17")),
+        _deferred_entry(18, valid_chain),
+        _deferred_entry(19, valid_chain),
+    ]
+    return "# META_LEDGER\n" + "".join(entries), _entry(17, _hex("c17"), h1, chain_override=_hex("bad17"))
+
+
+def test_authorize_succeeds_on_deferred_merkle_tail(tmp_path):
+    """GH #234 acceptance: the full authorize path succeeds when the literal
+    final entries carry no hash markup, linking off the last RECORDED chain
+    hash found walking backward."""
+    text, _ = _deferred_tail_ledger()
+    led = _write(tmp_path, text)
+    proposal = reconcile.build_proposal(led, ts=TS)
+    result = reconcile.append_reconciliation_entry(led, proposal, ts=TS)
+    appended = led.read_text(encoding="utf-8")
+    assert "RECONCILIATION" in appended
+    # Backward walk lands on the LAST entry with recorded markup: #17's
+    # (forced/bad but RECORDED) chain hash -- recorded evidence, not fabrication.
+    assert f"**Previous Hash**: `{_hex('bad17')}`" in appended
+    assert result["entry_num"] == 20
+
+
+def test_authorize_dry_run_on_deferred_tail_writes_nothing(tmp_path):
+    text, _ = _deferred_tail_ledger()
+    led = _write(tmp_path, text)
+    before = led.read_bytes()
+    proposal = reconcile.build_proposal(led, ts=TS)
+    reconcile.append_reconciliation_entry(led, proposal, ts=TS, dry_run=True)
+    assert led.read_bytes() == before
+
+
+def test_last_chain_hash_raises_when_no_entry_has_hashes(tmp_path):
+    """Fail-closed lock: a ledger whose entries ALL lack recorded hash markup
+    still refuses to link off anything (nothing recorded == nothing to link)."""
+    text = "# META_LEDGER\n" + _deferred_entry(1, "0" * 64) + _deferred_entry(2, "0" * 64)
+    import pytest as _pytest
+    with _pytest.raises(ValueError, match="no validly chain-hashed entry"):
+        reconcile._last_chain_hash(text)

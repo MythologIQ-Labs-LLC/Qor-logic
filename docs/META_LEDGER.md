@@ -14150,5 +14150,82 @@ Change class: feature (v0.122.1 -> v0.123.0). Tests: 8 behavioral in tests/test_
 
 ---
 
+### Entry #438: RESEARCH BRIEF -- Reconcile deferred-Merkle tail (GH #234)
+
+**Timestamp**: 2026-07-13T07:40:20Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #234
+**Session**: `2026-07-13T0739-248dc8`
+**Brief**: docs/research-brief-reconcile-deferred-tail-2026-07-13.md
+
+**Content Hash**: `50df1e7fcc6759e813f146440512b53374b690e527f065357ba2d1865be64b11`
+**Previous Hash**: `94c8e315e731f7171547a5c59409eb0c60ca9d5b80bb4a8256775934bea0b1a9`
+**Chain Hash (Merkle seal)**: `1290c000020f0e4b9556f88b5bd90c9841c2e1eb122e25c1e77305778a4d1df7`
+
+**Decision**: Defect verified live: `reconcile._last_chain_hash` (lines 69-82) parses ONLY the literal final entry and raises on a deferred-Merkle tail -- the exact no-fabrication state reconcile exists to repair -- while `build_proposal` already derives the correct link-off ancestors (the information exists; the tail-only parse is the bug). Deferred tails are legal per the no-fabrication discipline; the RECONCILIATION entry must link off the last VALIDLY hashed entry, which a backward walk yields with no signature change and zero caller updates. 365 lines of reconcile tests carry zero deferred-tail coverage. #271's typed parser subsumes this eventually, but the Phase 179 V1 slice deliberately excluded parse rework -- this targeted fix ships independently (per entry #434's overlap note). Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate), change_class hotfix.
+
+---
+
+### Entry #439: GATE TRIBUNAL -- Phase 180 plan PASS (reconcile deferred tail)
+
+**Timestamp**: 2026-07-13T07:41:35Z
+**Phase**: GATE (Phase 180)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase180-reconcile-deferred-tail.md
+**Session**: `2026-07-13T0739-248dc8`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `5ad60ddd0234258efc9bbd9a0f9ee9c5da6073abcba5afb52e512b86b294b59a`
+**Previous Hash**: `1290c000020f0e4b9556f88b5bd90c9841c2e1eb122e25c1e77305778a4d1df7`
+**Chain Hash (Merkle seal)**: `8c4cf2e37166f56dd0f6a2e206f9236b526cb26a2f5f0596bdb137899adccdd5`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #438 (GH #234): backward-walk fallback in `_last_chain_hash` so legal deferred-Merkle tails reconcile; fail-closed raise preserved and regression-locked with the error renamed to the true condition; the fallback selects only RECORDED hashes (cannot launder tampering; the reconciliation security gate stays in the focused CI set). Acceptance test runs the full authorize path on a synthetic deferred tail and asserts the link-off ancestor. Next: `/qor-implement`.
+
+---
+
+### Entry #440: IMPLEMENTATION -- Phase 180 reconcile deferred tail
+
+**Timestamp**: 2026-07-13T07:50:17Z
+**Phase**: IMPLEMENT (Phase 180)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0739-248dc8`
+**Intent Lock**: `LOCKED: 2026-07-13T0739-248dc8`
+
+**Content Hash**: `65d2e7dfa199f0faed3a13ddd5ed9019398e75837bc1dc6b5f72ce312712d460`
+**Previous Hash**: `8c4cf2e37166f56dd0f6a2e206f9236b526cb26a2f5f0596bdb137899adccdd5`
+**Chain Hash (Merkle seal)**: `8097927099a3801ca8a2ebab967931619305b0c3eeb1f3f4902a145c0947bde9`
+
+**Decision**: Phase 180 implemented per plan, TDD-first (3 deferred-tail tests red against the tail-only parse, then 18 green twice across the three reconcile suites). `_recorded_chain_hash` helper extracted; `_last_chain_hash` walks `reversed(entries)` selecting only RECORDED hash markup (deferred-Merkle tails -- the legal no-fabrication state -- no longer block authorize); genesis all-zeros behavior unchanged; fail-closed raise preserved with the error renamed to the true condition ("no validly chain-hashed entry found to link off"). Acceptance observed: on a synthetic DIRTY-tail ledger the full build_proposal -> append_reconciliation_entry path succeeds and the RECONCILIATION entry links off the last recorded chain hash; dry-run byte-identical. Full suite 2592 passed / 2 skipped. Content hash binds tests/test_reconcile.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #441: SESSION SEAL -- Phase 180 reconcile deferred tail (v0.123.1)
+
+**Timestamp**: 2026-07-13T07:51:15Z
+**Phase**: SUBSTANTIATE (Phase 180; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase180-reconcile-deferred-tail.md
+**Session**: `2026-07-13T0739-248dc8`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `469e5d9f22c0`
+
+**Scope**: Phase 180 implemented (hotfix; research entry #438 -> closes GH #234). `reconcile authorize` accepts deferred-Merkle tails: `_last_chain_hash` walks backward past hash-less no-fabrication entries to the last RECORDED chain hash / session seal and links the RECONCILIATION entry off it -- recorded evidence only, nothing fabricated; the tamper-laundering security gate (test_ledger_hash_reconciliation) is unchanged and green. Fail-closed boundary preserved: a ledger with no hashed entry anywhere still raises, with the error renamed to the true condition. Genesis behavior unchanged. Zero caller changes (sole caller untouched). Disposition note for GH #234: the GH #271 typed-parser roadmap will absorb the regex family later; this targeted fix ships independently per entry #434's overlap analysis.
+
+Change class: hotfix (v0.123.0 -> v0.123.1). Tests: 3 new behavioral in tests/test_reconcile.py (full authorize path on a synthetic DIRTY tail incl. the link-off assertion, dry-run byte-identity, no-hash-anywhere raise), red-then-green; 18 green twice across the three reconcile suites; full suite 2592 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0718-ea9af3. Audit: solo PASS (entry #439; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance recovery tooling)
+
+**Content Hash**: `eca1cce58645a8f4217d255b08a03fac13c2fabdc96ac73aaaa590fddab521d2`
+**Previous Hash**: `8097927099a3801ca8a2ebab967931619305b0c3eeb1f3f4902a145c0947bde9`
+**Chain Hash (Merkle seal)**: `641276fb6b6936173facc563af9bb88374bbec0cf775ed44af1cf341f820e817`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 179; v0.123.0; ledger upgrade V1; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 180; v0.123.1; reconcile deferred tail; local checkpoint commit only -- remote work held for operator review)

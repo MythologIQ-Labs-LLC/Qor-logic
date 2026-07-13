@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.123.1] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 180 (hotfix; reconcile deferred tail)**: `reconcile authorize` no longer fails with "final ledger entry has no parseable chain hash to link off" on a deferred-Merkle tail (GH #234). Entries that legally carry no fabricated hash after the chain goes DIRTY are the exact no-fabrication state reconcile exists to repair; `_last_chain_hash` now walks backward to the last entry with RECORDED hash markup and links the RECONCILIATION entry off it (recorded evidence only -- nothing fabricated; the tamper-laundering security gate is unchanged). A ledger with no hashed entry anywhere still fails closed, with the error renamed to the true condition. Regression coverage runs the full authorize path on a synthetic deferred tail.
+
 ## [0.123.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

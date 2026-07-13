@@ -1,0 +1,7 @@
+{
+  "alg": "HMAC-SHA256",
+  "hmac_tag": "d894a62e385e5a0fcccbd56f56264e61d67acb66241fd6227d8cdca5eb81e34f",
+  "payload_sha256": "f3cf8532004dc6b6603a721fc602d1d163f0a04c276d25e0261ac6bbfac51f4d",
+  "phase": "audit",
+  "session_id": "2026-07-13T0739-248dc8"
+}
