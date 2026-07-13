@@ -1,0 +1,18 @@
+source:
+  type: internal
+  system: Qor-logic
+  repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
+creator:
+  name: MythologIQ Labs, LLC
+skill_family:
+  namespace: /qor
+  classification: meta-governance
+license:
+  file: ../../../LICENSE
+maintainer:
+  team: QorLogic Governance
+imported:
+  bundled_with_governance_dist: true
+  date: 2026-02-10
+notes:
+  - First-party /qor skill.

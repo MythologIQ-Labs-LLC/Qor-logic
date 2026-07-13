@@ -1,0 +1,407 @@
+---
+name: qor-implement
+description: >-
+  Specialist Implementation Pass that translates gated blueprint into reality using Section 4 Simplicity Razor and TDD-Light methodology. Use when: (1) Implementing after PASS verdict from /qor-audit, (2) Building features from approved architecture plans, or (3) Creating code under KISS constraints.
+metadata:
+  category: development
+  author: MythologIQ
+  source:
+    repository: https://github.com/MythologIQ-Labs-LLC/Qor-logic
+    path: qor/skills/sdlc/qor-implement
+phase: implement
+tone_aware: false
+autonomy: interactive
+gate_reads: audit
+gate_writes: implement
+permitted_tools: [Read, Grep, Glob, Bash, Edit, Write]
+permitted_subagents: []
+model_compatibility: [claude-opus-4-7]
+min_model_capability: opus
+---
+# /qor-implement - Implementation Pass
+
+<skill>
+  <trigger>/qor-implement</trigger>
+  <phase>implement</phase>
+  <persona>Specialist</persona>
+  <output>Source code in src/, tests in tests/</output>
+</skill>
+
+## Governance Health Preflight
+
+<!-- qor:governance-health-preflight -->
+Run `qor-logic governance-health --profile skill-entry` before reading governance artifacts. If any finding is `DAMAGED` or `INCOMPLETE`, do not continue: report the finding's `path`, `reason`, and `legal_next`. Only `UNINITIALIZED` or scaffold-owned `MISSING` may be resolved by `qor-logic seed` (interactive: offer Y/N; autonomous: seed silently). `DAMAGED` and `INCOMPLETE` always route to `/qor-remediate` or section completion -- never to seed or bootstrap.
+
+## Purpose
+
+Translate the gated blueprint into maintainable reality using strict Section 4 Simplicity Razor constraints and TDD-Light methodology.
+
+## Environment (Phase 90 wiring; GH #79)
+
+This skill invokes integrity gates via `qor-logic reliability <module>` / `qor-logic scripts <module>`, which run the module through the CLI's own interpreter and so resolve from any shell. The bare `python -m qor.reliability.<module>` / `python -m qor.scripts.<module>` form remains a valid in-venv fallback. The Python interpreter on PATH must have `qor-logic` importable; verify before invocation:
+
+```bash
+python -c "import qor.reliability"
+```
+
+If that command fails, activate the venv where `pip show qor-logic` resolves, or run `pipx install qor-logic` for a global install. On hosts without Python or where `qor-logic` is not installable (e.g., pure non-Python archetypes), Phase 75 declarative-tolerance applies — the missing-prerequisite gates record SKIP in the seal entry and emit `gate_skipped_prerequisite_absent` events per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-HalfSealedClaim-A`. The Phase 90 preflight at the top of `## Execution Protocol` below surfaces the misconfiguration once at skill entry so the SKIP cascade is operator-visible instead of silent.
+
+## Execution Protocol
+
+```bash
+# Phase 90 preflight (GH #79): surface qor-logic module misconfiguration
+# once at skill entry. WARN-only -- Phase 75 SKIP fallback still applies.
+if ! python -c "import qor.reliability" 2>/dev/null; then
+  echo "WARN [qor-logic]: modules not importable from $(command -v python). Steps with module: prerequisites will record SKIP per Phase 75. Activate the venv where 'pip show qor-logic' resolves, or 'pipx install qor-logic', to restore the integrity gates." >&2
+fi
+```
+
+### Step 0: Gate Check (advisory — Phase 8 wiring)
+
+Verify prior-phase artifact exists and is well-formed before proceeding.
+
+```python
+from qor.scripts import gate_chain, session
+
+sid = session.get_or_create()
+result = gate_chain.check_prior_artifact("implement", session_id=sid)
+if not result.found:
+    # Prompt user to override; on confirm:
+    gate_chain.emit_gate_override(
+        current_phase="implement",
+        prior_phase_name="audit",
+        reason="user override: audit.json not found",
+        session_id=sid,
+    )
+elif not result.valid:
+    gate_chain.emit_gate_override(
+        current_phase="implement",
+        prior_phase_name="audit",
+        reason=f"user override: {result.errors}",
+        session_id=sid,
+    )
+```
+
+Override is permitted (advisory gate) but logged as severity-1 `gate_override` event in the Process Shadow Genome.
+
+**Phase 54 wiring**: when `gate_chain.emit_gate_override` raises `OverrideFrictionRequired`, prompt the operator for a written justification (>=50 chars) and re-call `emit_gate_override` with `justification=<text>`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-1.1 + `qor/references/doctrine-eu-ai-act.md` Art. 14.
+
+### Step 0.6: Impl-phase scope-boundary warning (Phase 129 wiring; GH #154)
+
+Before building, surface the workspace stabilization-capacity signal so implementation stays within the absorbable scope. WARN-only.
+
+```bash
+qor-logic scripts workspace_fragility_check --repo-root . || true
+```
+
+When `recommended_action` is `narrow_scope`, `hardening_only`, or `branch_only` (high `shared_surface_risk`), keep this pass inside the approved blueprint scope — do not broaden the feature or touch additional shared surface. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-MergePaceThrottle-A.
+
+### Step 1: Identity Activation
+
+You are now operating as **The Qor-logic Specialist**.
+
+Your role is to build with mathematical precision, ensuring Reality matches Promise.
+
+### Step 1.a — Capability check (agent-teams parallel mode, Phase 8 wiring)
+
+```python
+import qor_platform as qplat
+import shadow_process
+
+if qplat.is_available("agent-teams"):
+    # Fan out specialist tracks (frontend/backend/infra) in parallel via TeamCreate;
+    # synthesize results in this skill.
+    mode = "teams"
+else:
+    state = qplat.current() or {}
+    if state.get("detected", {}).get("host") == "claude-code":
+        # claude-code host but agent-teams not declared -> log capability_shortfall
+        shadow_process.append_event({
+            "ts": shadow_process.now_iso(), "skill": "qor-implement", "session_id": sid,
+            "event_type": "capability_shortfall", "severity": 2,
+            "details": {"capability": "agent-teams"},
+            "addressed": False, "issue_url": None, "addressed_ts": None,
+            "addressed_reason": None, "source_entry_id": None,
+        })
+    mode = "sequential"
+```
+
+Contract for `teams` mode (reserved for future harness wiring): `TeamCreate(<spec>) -> [{track, deliverable}, ...]`. Skill synthesizes the track outputs into a single artifact.
+
+### Step 2: Gate Verification
+ 
+```
+Read: .agent/staging/AUDIT_REPORT.md
+```
+
+**INTERDICTION**: If verdict is NOT "PASS":
+
+<!-- qor:fail-fast-only reason="audit verdict is /qor-audit's output, not scaffold; cannot auto-heal" -->
+Abort with "Gate locked. Tribunal audit required. Run /qor-audit first."
+
+**INTERDICTION**: If AUDIT_REPORT.md does not exist:
+
+<!-- qor:fail-fast-only reason="AUDIT_REPORT.md is /qor-audit's output, not scaffold; cannot auto-heal" -->
+Abort with "No audit record found. Run /qor-audit to unlock implementation."
+
+### Step 3: Blueprint Alignment
+
+```
+Read: docs/ARCHITECTURE_PLAN.md
+Read: docs/CONCEPT.md
+```
+
+Extract:
+
+- File tree (what to create)
+- Interface contracts (how it should work)
+- Risk grade (level of caution required)
+
+### Step 4: Build Path Trace
+
+Before creating ANY file:
+
+```
+Read: [entry point - main.tsx, index.ts, package.json]
+```
+
+Verify the target file will be connected to the build path.
+
+**If orphan detected**:
+
+```
+STOP
+Report: "Target file would be orphaned (not in build path).
+Verify import chain or update blueprint."
+```
+
+### Step 5: TDD-Light
+
+**Before writing any core logic**, create a minimal failing test.
+Template: `references/qor-implement-patterns.md`.
+
+**Constraint**: Define exactly ONE success condition that proves Reality matches Promise.
+
+**Test functionality, not presence**: the failing test MUST invoke the unit under test (function call, CLI subprocess, helper render, parser pass) and assert against its output. Tests that only check artifact existence (`assert path.exists()`, `assert <substring> in <file_text>`, `assert hasattr(...)`) do not satisfy TDD-Light. Acceptance question: "If the unit's behavior were silently broken but the artifact still existed, would this test fail?" If no, the test is presence-only and must be rewritten before implementation begins. Per `qor/references/doctrine-test-functionality.md`.
+
+**Per-feature TDD layer (Phase 73 wiring; GH #41)**: in addition to the per-unit TDD above, for each row in the plan's `Feature Inventory Touches` table (declared at `/qor-plan` Step 5):
+
+1. Author the failing **feature-level** test FIRST at the path declared in the plan, with the assertion declared in the plan's `test_descriptor`.
+2. Run it. It MUST fail (red).
+3. Only then implement the feature (route handler, command body, UI surface, service method).
+4. Run it again. It MUST pass (green) before the feature is considered shipped.
+
+The per-unit layer continues to apply for helpers introduced inside the feature implementation. Per-feature TDD covers the user-touchable surface (routes, commands, UI events, services); per-unit TDD covers the helpers. Both must be red-then-green in the same commit. Per `qor/references/doctrine-feature-tdd.md`.
+
+### Step 5.5: Intent Lock Capture (Phase 17 wiring)
+
+Capture a fingerprint of the implementer's intent (plan + PASS audit + HEAD commit) before writing any implementation code. Interdicts drift during implementation.
+
+```bash
+PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
+# Resolve session_id via the canonical helper (reads .qor/session/current AND
+# validates against SESSION_ID_PATTERN per Phase 23 LOW-2 / Phase 50 doctrine)
+SESSION_ID=$(python -c "from qor.scripts.session import current; print(current() or 'default')")
+qor-logic reliability intent_lock capture \
+  --session "$SESSION_ID" \
+  --plan "$PLAN_PATH" \
+  --audit .agent/staging/AUDIT_REPORT.md
+```
+
+On non-zero exit, ABORT implementation and report the intent-lock reason (audit not PASS, missing plan, etc.). Lock is re-verified in `/qor-substantiate` Step 4.6.
+
+### Step 6: Precision Build
+
+Apply the Section 4 Razor to EVERY function and file.
+Checklist: `references/qor-implement-patterns.md`.
+
+#### Code Patterns
+
+Reference code patterns:
+`references/qor-implement-patterns.md`.
+
+### Step 7: Visual Silence (Frontend)
+
+For UI examples, see:
+`references/qor-implement-patterns.md`.
+
+### Step 8: Post-Build Cleanup
+
+Final pass checklist:
+`references/qor-implement-patterns.md`.
+
+### Step 8.5: Documentation Sync (Phase 79 wiring; GH #52)
+
+Closes the doc-lifecycle gap where authoring was structurally deferred to `/qor-substantiate` (Steps 4.7 / 6 / 6.5) when the implementing agent has already lost the context needed to write accurate docs. Authors the docs now, when context is freshest; substantiation's existing currency / integrity checks become verification gates rather than the primary authoring surface.
+
+For every file created or modified in this implementation pass, identify which documentation surfaces should reflect the change and update them in the same commit batch:
+
+1. **`ARCHITECTURE_PLAN.md` file tree**: add new files, remove deleted files, reflect restructured directories. Required when the plan's `doc_tier` is `standard` or `system` AND `src/` files (or other architecture-bearing paths) were touched.
+2. **Architecture docs** (`docs/architecture.md` or domain-specific architecture references): update interface contracts, data flows, dependency tables for new tables, functions, env vars, cron jobs, or modules introduced. Required at `doc_tier: system`; encouraged at `doc_tier: standard`.
+3. **Operations docs** (`docs/operations.md`): document new scripts, env vars, deployment steps, runtime knobs. Required at `doc_tier: system` when operational surfaces were touched.
+4. **Schema docs** (`docs/schema.md` or migration READMEs): document new migrations, RLS policies, function signatures, table additions. Required at `doc_tier: system` when schema-affecting files were touched.
+
+`doc_tier` behavior (read from the plan artifact via `gate_chain.read_phase_artifact("plan", session_id=sid)`):
+- `minimal`: skip Step 8.5 with WARN ("doc_tier=minimal; doc sync skipped; substantiate Step 6.5 will WARN if it detects drift").
+- `standard`: require item 1 + at least the relevant architecture-doc section from item 2.
+- `system`: require items 1-4 as applicable to the files touched in this pass.
+- `legacy`: skip (matches `qor/references/doctrine-documentation-integrity.md` legacy-tier bypass).
+
+The downstream verification gates are unchanged: `/qor-substantiate` Step 4.7 (Documentation Integrity Check, strict glossary/orphan/term-drift), Step 6 (SYSTEM_STATE.md sync), Step 6.5 (Documentation Currency Check, WARN at `standard`, ABORT for README badge currency on release classes per Phase 49), and Step 4.6.6 (procedural fidelity post-hoc catch). Step 8.5 ensures the authoring happens in-context so those gates have something to verify.
+
+Per `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-DocsBackloadedToSubstantiate-A`.
+
+### Step 9: Complexity Self-Check
+
+Before declaring completion:
+
+```
+For each file modified/created:
+  - Count function lines
+  - Count nesting levels
+  - Check for nested ternaries
+  - Verify naming conventions
+  - For every newly-added test in this file, confirm the test body invokes the unit under test (function/method/CLI) and the assertion compares against the call's return value or observable side-effect. Bare `assert <substring> in <file_text>` for the unit's behavior is a presence-only test; flag and rewrite as a functionality test before declaring completion. Per `qor/references/doctrine-test-functionality.md`.
+```
+
+If ANY violation found:
+
+```
+PAUSE
+Report: "Section 4 violation detected. Running self-refactor before completion."
+Apply: Automatic splitting/flattening
+```
+
+### Step 10: Handoff
+
+Template:
+`references/qor-implement-patterns.md`.
+
+### Step 10.5: Mark Blockers Complete
+
+If implementation addressed any blockers in BACKLOG.md:
+
+```
+Read: docs/BACKLOG.md
+Edit: docs/BACKLOG.md
+```
+
+For each addressed blocker, change `- [ ] [ID]` to `- [x] [ID] (v[version] - Complete)`.
+
+### Step 11: Update Ledger
+
+Edit `docs/META_LEDGER.md` — add IMPLEMENTATION entry with files modified, content hash, chain hash.
+
+Template: `references/qor-implement-patterns.md`.
+
+### Step 12.5: Implementation Staging
+
+**Verify Reality = Blueprint**:
+1. Read docs/ARCHITECTURE_PLAN.md file tree
+2. Glob src/** and tests/**
+3. Compare: every planned file exists
+4. Verify: no unplanned orphans in src/
+
+**FEATURE_INDEX update obligation (Phase 73 wiring; GH #40 + #41)**: for each row in the plan's `Feature Inventory Touches` table, update `FEATURE_INDEX.md` in the same commit:
+
+- `NEW`: append a row to the appropriate category section with status `verified` (the feature ships with its green test in this commit per Step 5 per-feature TDD).
+- `MODIFIED`: update the existing row's `Source-of-truth file:line` and/or `Test path` in place.
+- `n/a-justified`: no row change (the entry exists; this plan didn't touch the surface).
+
+Staging fails when the implement pass touches `src/` but does not append/update `FEATURE_INDEX.md` to reflect every declared touch. V1 (this phase): operator discipline; V2 will lint plan declarations against shipped index updates mechanically. Per `qor/references/doctrine-feature-inventory.md`.
+
+IF verification FAILS:
+```
+ABORT: "Implementation incomplete"
+REPORT: Missing/unexpected files
+DO NOT STAGE
+```
+
+IF verification PASSES:
+
+**Auto-Stage**:
+```bash
+git add src/**
+git add tests/**
+git add docs/META_LEDGER.md
+git add docs/BACKLOG.md
+```
+
+**CHANGELOG Check** (if user-facing changes):
+IF CHANGELOG.md not updated AND changes are user-facing:
+- WARN: "Consider updating CHANGELOG.md for user-facing changes"
+
+REPORT: "Implementation verified. X files staged. Ready for commit."
+
+### Step Z: Write Gate Artifact (Phase 11D wiring)
+
+Persist the structured gate artifact at `.qor/gates/<session_id>/implement.json` so downstream phases can read it via `gate_chain.check_prior_artifact`.
+
+```python
+from qor.scripts import gate_chain, shadow_process, ai_provenance
+
+# Build payload conforming to qor/gates/schema/implement.schema.json
+payload = {
+    "ts": shadow_process.now_iso(),
+    # ... phase-specific required fields (see schema)
+}
+manifest = ai_provenance.build_manifest(
+    "implement", human_oversight=ai_provenance.HumanOversight.ABSENT
+)
+gate_chain.write_gate_artifact(
+    phase="implement", payload=payload, session_id=sid, ai_provenance=manifest,
+)
+```
+
+Schema lives at `qor/gates/schema/implement.schema.json`; the helper validates before write. Per Phase 54: every gate-writing skill calls `ai_provenance.build_manifest` and passes the result through `ai_provenance=manifest`; closes EU AI Act Art. 13/50 transparency surface.
+
+## Delegation
+
+Per `qor/gates/delegation-table.md`:
+
+- **Implementation complete** → `/qor-substantiate` (next phase).
+- **Mid-implement Razor bloat detected** (a function or file is growing past Section 4 limits during implementation) → pause and `/qor-refactor`. Do NOT inline a refactor process; refactor owns the file-internal logic shape.
+- **Regression / hallucination / degradation detected** during implement → `/qor-debug` for root-cause analysis; do NOT keep iterating on the same code without diagnosing why prior iterations regressed.
+
+## Constraints
+
+- **NEVER** implement without PASS verdict
+- **NEVER** exceed Section 4 limits - split/refactor instead
+- **NEVER** skip TDD-Light for logic functions
+- **NEVER** leave console.log in code
+- **NEVER** create files not in blueprint without Governor approval
+- **NEVER** add dependencies without proving necessity
+- **ALWAYS** verify build path before creating files
+- **ALWAYS** mark addressed blockers as complete in BACKLOG.md
+- **ALWAYS** handoff to Judge for substantiation
+- **ALWAYS** update ledger with implementation hash
+
+## Success Criteria
+
+Implementation succeeds when:
+
+- [ ] AUDIT_REPORT.md shows PASS verdict
+- [ ] All files from ARCHITECTURE_PLAN.md created
+- [ ] All files connected to build path (no orphans)
+- [ ] Section 4 Razor applied to all functions (<=40 lines)
+- [ ] Section 4 Razor applied to all files (<=250 lines)
+- [ ] Nesting depth <=3 levels for all code
+- [ ] No nested ternaries in any code
+- [ ] TDD-Light tests written for all logic functions
+- [ ] No console.log statements in production code
+- [ ] META_LEDGER.md updated with implementation hash
+- [ ] Handoff to Judge for substantiation
+
+## Integration with Qor-logic
+
+This skill implements:
+
+- **Precision Build**: Mathematical precision matching Reality to Promise
+- **Section 4 Razor**: Strict simplicity constraints on all code
+- **TDD-Light**: Test-driven development for logic functions
+- **Build Path Verification**: Ensures no orphan files created
+- **Hash Chain Continuation**: Updates META_LEDGER with cryptographic linkage
+
+---
+
+**Remember**: Reality must match Promise. Never compromise simplicity for speed.

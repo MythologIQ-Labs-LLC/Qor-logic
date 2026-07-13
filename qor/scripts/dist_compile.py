@@ -22,7 +22,7 @@ SKILLS_SRC = Path(str(_resources.asset("skills")))
 AGENTS_SRC = Path(str(_resources.asset("agents")))
 DEFAULT_OUT = Path(str(_resources.asset("dist")))
 
-TARGETS = ("claude", "kilo-code", "codex", "gemini")
+TARGETS = ("claude", "kilo-code", "codex", "gemini", "cursor", "cline")
 
 # Phase 187 (GH #243): skills whose mandatory verdict/rationale/definition
 # slots create fabrication pressure when executed below their design tier.
@@ -133,6 +133,31 @@ def emit_codex(skills_dirs: list[Path], loose_skills: list[Path], agents: list[P
     _rewrite_risk_skills(out)
 
 
+def emit_cursor(skills_dirs: list[Path], loose_skills: list[Path], agents: list[Path], out: Path) -> None:
+    """Phase 188 (GH #244): claude-shaped layout, weak-tier injection."""
+    emit_claude(skills_dirs, loose_skills, agents, out)
+    _rewrite_risk_skills(out)
+
+
+def emit_cline(skills_dirs: list[Path], loose_skills: list[Path], agents: list[Path], out: Path) -> None:
+    """Phase 188 (GH #244): flattened command-<id>.md workflow files shared
+    by the Cline family of assistants; risk skills carry the negative-
+    constraints preamble (byte-preserving IO as in Phase 187)."""
+    workflows = out / "workflows"
+    workflows.mkdir(parents=True, exist_ok=True)
+    for skill_dir in skills_dirs:
+        skill_md = skill_dir / "SKILL.md"
+        if not skill_md.exists():
+            continue
+        text = skill_md.read_bytes().decode("utf-8")
+        text = inject_negative_constraints(text, skill_dir.name)
+        (workflows / f"command-{skill_dir.name}.md").write_bytes(text.encode("utf-8"))
+    for loose in loose_skills:
+        (workflows / f"command-{loose.stem}.md").write_bytes(loose.read_bytes())
+    for agent in agents:
+        (workflows / f"agent-{agent.stem}.md").write_bytes(agent.read_bytes())
+
+
 def clean_variant(variant_root: Path) -> None:
     if variant_root.exists():
         shutil.rmtree(variant_root)
@@ -167,6 +192,10 @@ def compile_all(out_root: Path, dry_run: bool = False) -> dict:
             from qor.scripts.gemini_variant import emit_gemini
             emit_gemini(skills_dirs, loose_skills, agents, variant_root,
                         transform=inject_negative_constraints)
+        elif target == "cursor":
+            emit_cursor(skills_dirs, loose_skills, agents, variant_root)
+        elif target == "cline":
+            emit_cline(skills_dirs, loose_skills, agents, variant_root)
 
     if not dry_run:
         _emit_manifest(out_root)

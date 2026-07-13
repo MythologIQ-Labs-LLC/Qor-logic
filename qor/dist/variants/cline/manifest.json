@@ -1,0 +1,270 @@
+{
+  "schema_version": "1",
+  "generated_ts": "2026-07-13T11:02:19Z",
+  "files": [
+    {
+      "id": "agent-agent-architect.md",
+      "source_path": "workflows/agent-agent-architect.md",
+      "install_rel_path": "workflows/agent-agent-architect.md",
+      "sha256": "c2249a5e68c402aa693ca2667d067c3e7457c9e48e82f9198f6a3a63a5dd72a5"
+    },
+    {
+      "id": "agent-build-doctor.md",
+      "source_path": "workflows/agent-build-doctor.md",
+      "install_rel_path": "workflows/agent-build-doctor.md",
+      "sha256": "bf0b28f729bcdc76830efa4a10f241cd547bce75ba6af96944e4eb9aba7a6e7c"
+    },
+    {
+      "id": "agent-documentation-scribe.md",
+      "source_path": "workflows/agent-documentation-scribe.md",
+      "install_rel_path": "workflows/agent-documentation-scribe.md",
+      "sha256": "8240c60b16c3e5853495e997b1a199358d991b6fe9379cbeafce72c471e3349e"
+    },
+    {
+      "id": "agent-learning-capture.md",
+      "source_path": "workflows/agent-learning-capture.md",
+      "install_rel_path": "workflows/agent-learning-capture.md",
+      "sha256": "a2b3367fce94cdec68ea830baecf67d5a92cd9df622a77b61705ead3053de245"
+    },
+    {
+      "id": "agent-project-planner.md",
+      "source_path": "workflows/agent-project-planner.md",
+      "install_rel_path": "workflows/agent-project-planner.md",
+      "sha256": "d3d7e45a4e16056c71c537c761fb277866ac53863d38f339c111a4991a331162"
+    },
+    {
+      "id": "agent-qor-fixer.md",
+      "source_path": "workflows/agent-qor-fixer.md",
+      "install_rel_path": "workflows/agent-qor-fixer.md",
+      "sha256": "86256eaba9c153d9512c187aa4b71c27e4f182becd34d48c8bc520493d62a4bb"
+    },
+    {
+      "id": "agent-qor-governor.md",
+      "source_path": "workflows/agent-qor-governor.md",
+      "install_rel_path": "workflows/agent-qor-governor.md",
+      "sha256": "d196b8d1c29fe92224f3315db566e252d1aceb92eb19dc7b936f29a452a9206d"
+    },
+    {
+      "id": "agent-qor-judge.md",
+      "source_path": "workflows/agent-qor-judge.md",
+      "install_rel_path": "workflows/agent-qor-judge.md",
+      "sha256": "af9915ab3580b7fbb1fa34436940a6058554fbc3b8ad332c9638493c926cb9ef"
+    },
+    {
+      "id": "agent-qor-specialist.md",
+      "source_path": "workflows/agent-qor-specialist.md",
+      "install_rel_path": "workflows/agent-qor-specialist.md",
+      "sha256": "79de4279661ee5a0c54358f96f4a4895455af2a390e6964f0cc7077d458a3e6b"
+    },
+    {
+      "id": "agent-qor-strategist.md",
+      "source_path": "workflows/agent-qor-strategist.md",
+      "install_rel_path": "workflows/agent-qor-strategist.md",
+      "sha256": "6fa306bd484be6a57fae3c8d43f0c613794ddf21d0a04bb29d806106ff5b882c"
+    },
+    {
+      "id": "agent-qor-technical-writer.md",
+      "source_path": "workflows/agent-qor-technical-writer.md",
+      "install_rel_path": "workflows/agent-qor-technical-writer.md",
+      "sha256": "bc3e697ba6c084bafc8588b3d7c6804606ec4a63143b578ba05102902c23aaa2"
+    },
+    {
+      "id": "agent-qor-ux-evaluator.md",
+      "source_path": "workflows/agent-qor-ux-evaluator.md",
+      "install_rel_path": "workflows/agent-qor-ux-evaluator.md",
+      "sha256": "e7f32dcd64f4ab7b41330bbb143491f5cc65dfab1ac7562ef000e659de39a82b"
+    },
+    {
+      "id": "agent-system-architect.md",
+      "source_path": "workflows/agent-system-architect.md",
+      "install_rel_path": "workflows/agent-system-architect.md",
+      "sha256": "72161aba2550a35ca16c06f2ce27795f68c07376502840fe4615f2e5db724f00"
+    },
+    {
+      "id": "command-log-decision.md",
+      "source_path": "workflows/command-log-decision.md",
+      "install_rel_path": "workflows/command-log-decision.md",
+      "sha256": "f7d9245149e3512fa69973980ae42e28224980ad785845d087ea02cb44cd0a1e"
+    },
+    {
+      "id": "command-qor-ab-run.md",
+      "source_path": "workflows/command-qor-ab-run.md",
+      "install_rel_path": "workflows/command-qor-ab-run.md",
+      "sha256": "e16bed21b3a821516b6b0b7352207f2c70891ac766296d5becbba9ed9d1a98cb"
+    },
+    {
+      "id": "command-qor-audit.md",
+      "source_path": "workflows/command-qor-audit.md",
+      "install_rel_path": "workflows/command-qor-audit.md",
+      "sha256": "b516d42413d1096ef9181a1b41d22c411e1c266ef098e5fbc439ba10e2e124e6"
+    },
+    {
+      "id": "command-qor-bootstrap.md",
+      "source_path": "workflows/command-qor-bootstrap.md",
+      "install_rel_path": "workflows/command-qor-bootstrap.md",
+      "sha256": "d7848af0a585ef2e3d1feb786ed78210f953d73134f00bcb336f270b4d5b26a2"
+    },
+    {
+      "id": "command-qor-debug.md",
+      "source_path": "workflows/command-qor-debug.md",
+      "install_rel_path": "workflows/command-qor-debug.md",
+      "sha256": "5963b65a619bdace5eed52ac73d9afb64d04498c8b4a39eaa9a9ea70036510f3"
+    },
+    {
+      "id": "command-qor-deep-audit-recon.md",
+      "source_path": "workflows/command-qor-deep-audit-recon.md",
+      "install_rel_path": "workflows/command-qor-deep-audit-recon.md",
+      "sha256": "407569da6bf7845368b57a2fe1d3040200673a26117e8e7b992b13ae5d1924c0"
+    },
+    {
+      "id": "command-qor-deep-audit-remediate.md",
+      "source_path": "workflows/command-qor-deep-audit-remediate.md",
+      "install_rel_path": "workflows/command-qor-deep-audit-remediate.md",
+      "sha256": "307546facb63d0321b64cb1427a403fd0f1f4abeea801a136b83ff72fd1bcc25"
+    },
+    {
+      "id": "command-qor-deep-audit.md",
+      "source_path": "workflows/command-qor-deep-audit.md",
+      "install_rel_path": "workflows/command-qor-deep-audit.md",
+      "sha256": "52cc39eb9efc026c93dc4074308c30361564668a0e8e8f83cc95f3b24452850a"
+    },
+    {
+      "id": "command-qor-docs-technical-writing.md",
+      "source_path": "workflows/command-qor-docs-technical-writing.md",
+      "install_rel_path": "workflows/command-qor-docs-technical-writing.md",
+      "sha256": "75b7e84c68c9296d772927ae2a66bb95aa9692f9dc10f48f082c143f930f28e4"
+    },
+    {
+      "id": "command-qor-document.md",
+      "source_path": "workflows/command-qor-document.md",
+      "install_rel_path": "workflows/command-qor-document.md",
+      "sha256": "c5a23b95ee0e28c975a8a6d9001917aca8ab4f0885b3a467cf0b50a1c366fdd0"
+    },
+    {
+      "id": "command-qor-help.md",
+      "source_path": "workflows/command-qor-help.md",
+      "install_rel_path": "workflows/command-qor-help.md",
+      "sha256": "d1684443706f505b3c61a9e86cceb360bf693a23416a999b0f78fe6f73978e1b"
+    },
+    {
+      "id": "command-qor-ideate.md",
+      "source_path": "workflows/command-qor-ideate.md",
+      "install_rel_path": "workflows/command-qor-ideate.md",
+      "sha256": "88ea02be24f8c47b20e503e806fadbb6aa7fd12ce1818088611ae6100b0155a9"
+    },
+    {
+      "id": "command-qor-implement.md",
+      "source_path": "workflows/command-qor-implement.md",
+      "install_rel_path": "workflows/command-qor-implement.md",
+      "sha256": "05d4f15ca52790c61c1f6d639c3c2b4213b6d5174286606a5c15c81bf47e4adb"
+    },
+    {
+      "id": "command-qor-meta-log-decision.md",
+      "source_path": "workflows/command-qor-meta-log-decision.md",
+      "install_rel_path": "workflows/command-qor-meta-log-decision.md",
+      "sha256": "8ab068c9a174b89fbe14edd292f6b580465a5e9f04a0cb0aff49899ed3411328"
+    },
+    {
+      "id": "command-qor-meta-track-shadow.md",
+      "source_path": "workflows/command-qor-meta-track-shadow.md",
+      "install_rel_path": "workflows/command-qor-meta-track-shadow.md",
+      "sha256": "29e13dce49eb3875004c193a519133eba56e0b3f1e2fbc9699d306e965bea831"
+    },
+    {
+      "id": "command-qor-onboard-codebase.md",
+      "source_path": "workflows/command-qor-onboard-codebase.md",
+      "install_rel_path": "workflows/command-qor-onboard-codebase.md",
+      "sha256": "99d431522aa3c5f9d9a9430d56580216de184be9b75c7fa8892fdab53d53cbf7"
+    },
+    {
+      "id": "command-qor-organize.md",
+      "source_path": "workflows/command-qor-organize.md",
+      "install_rel_path": "workflows/command-qor-organize.md",
+      "sha256": "9ebeb5fac944c38b10307a3eacbfba52ed6fd0a4cf44a74430541565e6a973f0"
+    },
+    {
+      "id": "command-qor-plan.md",
+      "source_path": "workflows/command-qor-plan.md",
+      "install_rel_path": "workflows/command-qor-plan.md",
+      "sha256": "725019fd0a3f0e9335ccad8ab5acc79709f975f51352acc7ed2b57addda96cc0"
+    },
+    {
+      "id": "command-qor-process-review-cycle.md",
+      "source_path": "workflows/command-qor-process-review-cycle.md",
+      "install_rel_path": "workflows/command-qor-process-review-cycle.md",
+      "sha256": "2021d3b1908c5f243752dfffba9f9f3c9b6fcd17a29da9b6a20fe4f1ef1ffcfe"
+    },
+    {
+      "id": "command-qor-refactor.md",
+      "source_path": "workflows/command-qor-refactor.md",
+      "install_rel_path": "workflows/command-qor-refactor.md",
+      "sha256": "f275f78252b7d1c4b9f2461c01b23bfb3293872260a0f501a3d1dc5f90ab11f3"
+    },
+    {
+      "id": "command-qor-remediate.md",
+      "source_path": "workflows/command-qor-remediate.md",
+      "install_rel_path": "workflows/command-qor-remediate.md",
+      "sha256": "9300f37991854bfdc137574f2254dea8c0f79e803aff7cc915d5977c38d77d98"
+    },
+    {
+      "id": "command-qor-repo-audit.md",
+      "source_path": "workflows/command-qor-repo-audit.md",
+      "install_rel_path": "workflows/command-qor-repo-audit.md",
+      "sha256": "42ca4aeb36c8562da96b48377170ee7e6e07152c515e6475bcf22c6010083cc3"
+    },
+    {
+      "id": "command-qor-repo-release.md",
+      "source_path": "workflows/command-qor-repo-release.md",
+      "install_rel_path": "workflows/command-qor-repo-release.md",
+      "sha256": "c1f2612be5a7640bcefc00daf76036a69b5c36206a72253b89460b2fdd0932db"
+    },
+    {
+      "id": "command-qor-repo-scaffold.md",
+      "source_path": "workflows/command-qor-repo-scaffold.md",
+      "install_rel_path": "workflows/command-qor-repo-scaffold.md",
+      "sha256": "66c9f76f4916c23377b3e984b957ce5790b222ad6ab7f30e1c496bb835ca1002"
+    },
+    {
+      "id": "command-qor-research.md",
+      "source_path": "workflows/command-qor-research.md",
+      "install_rel_path": "workflows/command-qor-research.md",
+      "sha256": "94e07f922ab72fadd22c2f4a7ff35c5a9c93011cb6d3cb5cae87f53bca76f04d"
+    },
+    {
+      "id": "command-qor-shadow-process.md",
+      "source_path": "workflows/command-qor-shadow-process.md",
+      "install_rel_path": "workflows/command-qor-shadow-process.md",
+      "sha256": "bf3155ae89a1dfdef2ea8c07f8eb0103ce4a9750ad7b48dcb240a7a807f1fe2d"
+    },
+    {
+      "id": "command-qor-status.md",
+      "source_path": "workflows/command-qor-status.md",
+      "install_rel_path": "workflows/command-qor-status.md",
+      "sha256": "b1106dbad9568537e8b42985c95f7b0636817bcd00c74af67c8f72e63e8298cb"
+    },
+    {
+      "id": "command-qor-substantiate.md",
+      "source_path": "workflows/command-qor-substantiate.md",
+      "install_rel_path": "workflows/command-qor-substantiate.md",
+      "sha256": "bd43f447adf216c64c9bdf4cbd4c0371d7ae98f746d889a6f36fa31ba8ad0d47"
+    },
+    {
+      "id": "command-qor-tone.md",
+      "source_path": "workflows/command-qor-tone.md",
+      "install_rel_path": "workflows/command-qor-tone.md",
+      "sha256": "df67fb03fefa108e9f05ebe9b45453d62c58a4b4eb323b4be07955be844fd1c8"
+    },
+    {
+      "id": "command-qor-validate.md",
+      "source_path": "workflows/command-qor-validate.md",
+      "install_rel_path": "workflows/command-qor-validate.md",
+      "sha256": "668697314d53207d1655bc5811ab793c47db67e4e214d6bff6b6c7fffbbddf98"
+    },
+    {
+      "id": "command-track-shadow-genome.md",
+      "source_path": "workflows/command-track-shadow-genome.md",
+      "install_rel_path": "workflows/command-track-shadow-genome.md",
+      "sha256": "5d23f64387dc3473954accb32e3207b446c60d40e705cf06ff2f361a5e6d4156"
+    }
+  ]
+}

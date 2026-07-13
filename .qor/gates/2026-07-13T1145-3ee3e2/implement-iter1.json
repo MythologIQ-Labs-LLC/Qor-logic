@@ -1,0 +1,30 @@
+{
+  "phase": "implement",
+  "session_id": "2026-07-13T1145-3ee3e2",
+  "ts": "2026-07-13T11:00:57Z",
+  "files_touched": [
+    "qor/scripts/prompt_injection_canaries.py",
+    "qor/hosts.py",
+    "qor/scripts/dist_compile.py",
+    "tests/test_prompt_injection_canary.py",
+    "tests/test_hosts_cursor_cline.py",
+    "tests/test_dist_compile_injection.py",
+    "tests/test_install_sync_with_source.py",
+    "qor/dist/"
+  ],
+  "tests_added": [
+    "tests/test_prompt_injection_canary.py (4 code-span tests)",
+    "tests/test_hosts_cursor_cline.py (4 host tests)",
+    "tests/test_dist_compile_injection.py (1 integration test)",
+    "tests/test_install_sync_with_source.py (cursor sync + cline exclusion)"
+  ],
+  "test_results": "45 focused green twice; check_variant_drift OK (368 files); full suite 2630 passed / 2 skipped",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.126.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T11:00:57Z"
+  }
+}

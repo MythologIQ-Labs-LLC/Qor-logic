@@ -88,3 +88,35 @@ def test_compile_all_injects_weak_tier_variants_only(tmp_path):
         encoding="utf-8"
     )
     assert kilo_ideate == src_ideate
+
+
+# ----- Phase 188 (GH #244): cursor + cline variants -----
+
+def test_compile_all_cursor_and_cline_variants(tmp_path):
+    out = tmp_path / "dist"
+    compile_mod.compile_all(out)
+
+    # cursor: claude-shaped with risk-skill injection
+    cursor_audit = (out / "variants" / "cursor" / "skills" / "qor-audit" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    assert "NR-001" in cursor_audit and "NR-002" in cursor_audit
+    src_ideate = (REPO_ROOT / "qor" / "skills" / "sdlc" / "qor-ideate" / "SKILL.md").read_bytes()
+    cursor_ideate = (out / "variants" / "cursor" / "skills" / "qor-ideate" / "SKILL.md").read_bytes()
+    assert cursor_ideate == src_ideate
+
+    # cline: flattened command files with injection
+    cline_audit = (out / "variants" / "cline" / "workflows" / "command-qor-audit.md").read_text(
+        encoding="utf-8"
+    )
+    assert "NR-001" in cline_audit and "NR-002" in cline_audit
+    workflows = out / "variants" / "cline" / "workflows"
+    commands = sorted(p.name for p in workflows.glob("command-*.md"))
+    skill_dirs = compile_mod.list_source_skills(compile_mod.SKILLS_SRC)
+    loose = compile_mod.list_loose_skills(compile_mod.SKILLS_SRC)
+    assert len(commands) == len(skill_dirs) + len(loose), (
+        f"cline must flatten every skill: {len(commands)} commands vs "
+        f"{len(skill_dirs)} dirs + {len(loose)} loose"
+    )
+    agents = sorted(p.name for p in workflows.glob("agent-*.md"))
+    assert len(agents) == len(compile_mod.list_source_agents(compile_mod.AGENTS_SRC))

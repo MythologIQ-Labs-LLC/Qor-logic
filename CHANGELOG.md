@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.127.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 188 (feature; canary code-span nuance + adapter-matrix host expansion)**: two hardening items from live consumer-cycle experience (GH #244). The prompt-injection canary CLI now downgrades hidden-html hits that sit fully inside backtick code spans to a visible `CANARY WARN [hidden-html/code-span]` line (structural markup in a code span is a CLI placeholder or countermeasure example, per the consumer's false ABORT); `--strict` restores blocking, `scan()` stays pure, and the four imperative-instruction classes remain binding inside code spans. Host reach widens to six targets: new `cursor` (`.cursor/skills/`, claude-shaped) and `cline` (`.clinerules/workflows/command-<id>.md`, one flattened layout serving the Cline family of assistants) join hosts.py and dist_compile; both are weak-tier channels and carry the Phase 187 negative-constraints injection for the fabrication-risk skills.
+
 ## [0.126.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

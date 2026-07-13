@@ -14764,5 +14764,81 @@ Change class: feature (v0.125.0 -> v0.126.0). Tests: 10 new (5 injection incl. t
 
 ---
 
+### Entry #470: RESEARCH BRIEF -- Canary code-span nuance + host expansion (GH #244)
+
+**Timestamp**: 2026-07-13T11:48:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #244
+**Session**: `2026-07-13T1145-3ee3e2`
+**Brief**: docs/research-brief-canary-inline-code-2026-07-13.md
+
+**Content Hash**: `71d728a32a54fc1f60ad832c968285c9bc78c3a05504b4db7363351bec15df95`
+**Previous Hash**: `41086608f2eb628f1df53cabdb35623819530c7828fd78bf5ebfda0d36ee3324`
+**Chain Hash (Merkle seal)**: `aef58050c00cd4fa91bbae5f0796a13bbe44e512da7349d014d761694c1d8098`
+
+**Decision**: Both #244 items verified live (scout unavailable; inline verification). Item 1: `--mask-code-blocks` shipped in Phase 53 BEFORE the issue -- the consumer ABORT is the documented strict-at-audit posture (prompt_injection_canaries.py:143-144), so the remaining gap is per-CLASS nuance: hidden-html (the tag alternation, py:98) is structural markup that inside a code span is a placeholder or countermeasure example, while the four instruction classes are imperative anywhere and must stay binding. Shape: CLI-level downgrade of code-span hidden-html hits to WARN (exit unaffected), `--strict` restores; `scan()` stays pure. Item 2: hosts.py `_HOSTS` (:84-89) + dist_compile TARGETS (:22) extend with `cursor` (claude-shaped `.cursor/skills/`) and `cline` (flattened `command-<id>.md` under `.clinerules/workflows/`, serving three assistants); both are weak-tier channels and receive the Phase 187 risk-skill injection. Risk grade L2 (touches an audit-gate security scanner). Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #471: GATE TRIBUNAL -- Phase 188 canary code-span + hosts
+
+**Timestamp**: 2026-07-13T11:57:20Z
+**Phase**: GATE (Phase 188)
+**Author**: Judge
+**Risk Grade**: L2
+**Session**: `2026-07-13T1145-3ee3e2`
+**Target**: docs/plan-qor-phase188-canary-code-span-hosts.md
+**Verdict**: PASS
+
+**Content Hash**: `4dec835168544ca0a0481a223919c761079040803220d0f173c19a049892b2fa`
+**Previous Hash**: `aef58050c00cd4fa91bbae5f0796a13bbe44e512da7349d014d761694c1d8098`
+**Chain Hash (Merkle seal)**: `6e9559f2c68198a78590c317431ce5e18884c61a7134738e8a282ef6924aa182`
+
+**Decision**: Solo-mode tribunal, L2 depth (audit-gate security scanner touched). PASS with zero violations. The relaxation is class-scoped (hidden-html only), region-scoped (span fully inside backticks), layer-scoped (CLI only; scan() pure), and reversible (--strict). The four imperative classes stay binding inside code spans -- the tested asymmetry. Live self-application preceded implementation: research entry #470's own body tripped the strict gate from inside backticks and was amended to descriptor form (hash fields untouched, Phase 172 precedent, chain verified) -- the false-positive class demonstrated on the project's own ledger. Host expansion reuses the Phase 187 injection seam; sync contracts extend explicitly. Next: `/qor-implement`.
+
+---
+
+### Entry #472: IMPLEMENTATION -- Phase 188 canary code-span + hosts
+
+**Timestamp**: 2026-07-13T12:26:50Z
+**Phase**: IMPLEMENT (Phase 188)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T1145-3ee3e2`
+**Intent Lock**: `LOCKED: 2026-07-13T1145-3ee3e2`
+
+**Content Hash**: `46481020d8a2b17f5e756ff169a5e0df93006b9d3ec0cab44ec37c848b6386ab`
+**Previous Hash**: `6e9559f2c68198a78590c317431ce5e18884c61a7134738e8a282ef6924aa182`
+**Chain Hash (Merkle seal)**: `2f08a31766eca8eb6716683fb93a868bbe3e445c90eaf0332f3d0924273d3cd3`
+
+**Decision**: Phase 188 implemented per plan, TDD-first, no mid-red design changes. Item 1: `main()` gains `--strict`; a hidden-html hit whose span is whitespace in the masked copy prints `CANARY WARN [hidden-html/code-span]` and is excluded from the exit-1 count; the four imperative classes and unicode-directionality stay binding inside code spans (the asymmetry is a dedicated regression test); `scan()` untouched. The test file never carries the tag literal (assembled at runtime -- NR-001 discipline in the test itself). Item 2: hosts registry grew `_cursor_target` (.cursor, claude-shaped) and `_cline_target` (.clinerules, workflows-only map); TARGETS six-wide; emit_cursor = claude copy + risk-skill injection; emit_cline flattens every skill dir + loose skill to `command-<name>.md` and agents to `agent-<name>.md` with byte-preserving injection; cursor joined the injected-sync contract, cline got the documented exclusion mirroring gemini. 45 focused green twice; check_variant_drift OK (368 files, up from 254 with the two new trees); full suite 2630 passed / 2 skipped. Content hash binds qor/scripts/prompt_injection_canaries.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #473: SESSION SEAL -- Phase 188 canary code-span nuance + host expansion (v0.127.0)
+
+**Timestamp**: 2026-07-13T12:32:40Z
+**Phase**: SUBSTANTIATE (Phase 188; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase188-canary-code-span-hosts.md
+**Session**: `2026-07-13T1145-3ee3e2`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `6efdcbbc0e74`
+
+**Scope**: Phase 188 implemented (feature; research entry #470 -> GH #244, both items). Item 1: the canary CLI downgrades hidden-html hits fully inside backtick spans to `CANARY WARN [hidden-html/code-span]` (visible, non-blocking); `--strict` restores blocking; `scan()` pure; the four imperative classes and unicode-directionality stay binding inside code spans -- the asymmetry has a dedicated regression test, and the phase self-applied twice (research entry #470's body tripped the strict gate from inside backticks pre-implementation and was amended to descriptor form; the new test file assembles the tag literal at runtime rather than carrying it). Item 2: adapter matrix widened to six targets -- `cursor` (.cursor/skills/, claude-shaped) and `cline` (.clinerules/workflows/command-<id>.md, one flattened layout serving three assistants) -- both weak-tier channels carrying the Phase 187 negative-constraints injection; cursor joined the injected-sync contract, cline documented-excluded like gemini; the publication boundary held (the source framework is generic in every artifact).
+
+Change class: feature (v0.126.0 -> v0.127.0). Tests: 11 new (4 canary quadrants, 4 host resolutions, 1 compile integration, cursor sync + cline exclusion), red-then-green twice; full suite 2630 passed / 2 skipped; check_variant_drift OK (368 files). Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T1025-96f825, dist recompiled + drift clean. Audit: solo PASS at L2 depth (entry #471; zero violations; residual risk disclosed: a code-span hidden-html canary no longer blocks by default but stays operator-visible as WARN). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (security lint + distribution)
+
+**Content Hash**: `c197c95fdf43d79d0c8aee2161fb23ee08b95b2b07bdcbd3942709b843b75357`
+**Previous Hash**: `2f08a31766eca8eb6716683fb93a868bbe3e445c90eaf0332f3d0924273d3cd3`
+**Chain Hash (Merkle seal)**: `ae9588103f40fd6ee23b3dc503238d60c961f0706b92148d0b56b48c76922385`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 187; v0.126.0; negative-constraints doctrine; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 188; v0.127.0; canary code-span nuance + host expansion; local checkpoint commit only -- remote work held for operator review)

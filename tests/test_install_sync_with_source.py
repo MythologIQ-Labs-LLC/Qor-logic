@@ -50,7 +50,7 @@ def _check_variant(variant: str) -> list[str]:
             mismatches.append(f"MISSING: {counterpart.relative_to(REPO_ROOT)}")
             continue
         expected = source.read_bytes()
-        if variant in ("codex", "kilo-code"):
+        if variant in ("codex", "kilo-code", "cursor"):
             skill_name = source.parent.name
             expected = inject_negative_constraints(
                 expected.decode("utf-8"), skill_name
@@ -83,3 +83,17 @@ def test_gemini_variant_excluded_intentionally():
     parse TOML and compare semantic content. Documented exclusion."""
     gemini_commands = VARIANTS_ROOT / "gemini" / "commands"
     assert gemini_commands.exists(), "Gemini variant should still exist, just in TOML form"
+
+
+def test_cursor_variant_skill_sync():
+    # Phase 188 (GH #244): cursor is claude-shaped and weak-tier (injected).
+    mismatches = _check_variant("cursor")
+    assert not mismatches, "Run `python -m qor.scripts.dist_compile`:\n  " + "\n  ".join(mismatches)
+
+
+def test_cline_variant_excluded_intentionally():
+    """Cline flattens skills to workflows/command-<id>.md files, not
+    SKILL.md dirs; content coverage lives in test_dist_compile_injection.
+    Documented exclusion (mirrors the gemini exclusion above)."""
+    cline_workflows = VARIANTS_ROOT / "cline" / "workflows"
+    assert cline_workflows.exists(), "Cline variant should still exist, just flattened"
