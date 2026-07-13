@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.121.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 175 (feature; governance-DNA durability)**: local governance state can no longer be lost silently and unrecoverable (GH #267). New `qor.scripts.governance_snapshot`: the first governed gate write of every session snapshots the five DNA files (META_LEDGER, CONCEPT, ARCHITECTURE_PLAN, SYSTEM_STATE, SHADOW_GENOME) to the gitignored `.agent/local-backup/governance/<session-id>/` (idempotent per session; best-effort -- a failed backup warns and never aborts a governed write; canonical session ids only; under pytest the hook runs only against an explicitly redirected `QOR_ROOT`, per the gate-dir hygiene discipline). `restore` is no-clobber by default (`--force` to override) so recovery can never silently destroy state newer than the snapshot, and emits one severity-3 `governance-state-loss` shadow event (new enum value). governance-health now distinguishes "previously initialized, now missing" (git history of the ledger, or populated backups) from a genuinely new workspace: the former classifies MISSING with a restore-then-`/qor-remediate` route -- never UNINITIALIZED/bootstrap over recoverable history. Doctrine section 16 documents the `git clean` hazard table, including what the snapshot does NOT survive (`-fdx`).
+
 ## [0.120.1] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

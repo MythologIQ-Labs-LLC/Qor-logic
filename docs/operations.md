@@ -120,6 +120,25 @@ python qor/scripts/session.py new     # creates a fresh session_id
 
 The substantiate Step Z auto-rotate (Phase 30) is the canonical path; manual rotation is for edge cases (mid-phase debugging, abandoned session cleanup).
 
+## Governance-DNA snapshots (Phase 175; GH #267)
+
+The first governed gate write of every session automatically snapshots the five
+DNA files (META_LEDGER, CONCEPT, ARCHITECTURE_PLAN, SYSTEM_STATE, SHADOW_GENOME)
+to the gitignored `.agent/local-backup/governance/<session-id>/`. Operator verbs:
+
+```bash
+qor-logic scripts governance_snapshot backup --session <sid>     # manual snapshot
+qor-logic scripts governance_snapshot restore --from <dir>       # no-clobber; --force overwrites
+qor-logic scripts governance_snapshot evidence                   # prior-initialization probe
+```
+
+Restore skips any file that still exists (never destroys state newer than the
+snapshot) and appends one severity-3 `governance-state-loss` shadow event. The
+health gate routes previously-initialized-now-missing workspaces to
+restore-then-`/qor-remediate` -- never bootstrap. Full contract incl. the
+`git clean` hazard table: `qor/references/doctrine-governance-enforcement.md`
+section 16 (the snapshot does NOT survive `git clean -fdx`).
+
 ## `gate_written` observer hooks (Phase 57)
 
 Phase 57 (v0.43.0) ships a non-authoritative observer push-channel that fires after every successful `qor.scripts.gate_chain.write_gate_artifact` call. Two ways to register a consumer:

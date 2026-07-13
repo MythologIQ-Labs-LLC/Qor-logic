@@ -286,6 +286,10 @@ def write_gate_artifact(
                 f"with phase={phase!r}; skill-phase mismatch."
             )
     sid = session_id or session.get_or_create()
+    # Phase 175 (GH #267): first-write-of-session DNA snapshot. Best-effort --
+    # a failed backup warns, never aborts a governed write (fail-open, like
+    # the Phase 57 gate-written hook).
+    _ensure_dna_backup(sid)
     if ai_provenance is not None:
         payload = {**payload, "ai_provenance": ai_provenance}
     # Phase 173 (GH #237): the writer returns the immutable versioned path
@@ -305,6 +309,29 @@ def write_gate_artifact(
     gate_provenance.write_sidecar(phase, sid, path.parent / f"{phase}.json")
     _fire_gate_written_hook(phase, sid, path)
     return path
+
+
+def _ensure_dna_backup(session_id: str) -> None:
+    """Phase 175 (GH #267): snapshot the governance DNA files once per session
+    before the first governed gate write. Canonical session ids only --
+    production sessions always are, while synthetic test/legacy ids would
+    accrete backups of the live DNA files under every ad-hoc id. Fail-open:
+    KeyboardInterrupt and SystemExit propagate; any other failure warns and
+    never breaks the write."""
+    import sys
+    if not session.SESSION_ID_PATTERN.match(session_id):
+        return
+    # Under pytest, run only when the test explicitly redirects QOR_ROOT --
+    # otherwise every suite run would snapshot the OPERATOR's live DNA files
+    # under each synthetic canonical session id (the GH #274 discipline:
+    # tests must not mutate operator-local state).
+    if _pytest_active() and not os.environ.get("QOR_ROOT"):
+        return
+    try:
+        from qor.scripts import governance_snapshot
+        governance_snapshot.ensure_session_backup(_workdir.root(), session_id)
+    except Exception as exc:
+        print(f"WARN [governance_snapshot]: DNA backup skipped: {exc}", file=sys.stderr)
 
 
 def _fire_gate_written_hook(phase: str, session_id: str, path: "Path") -> None:

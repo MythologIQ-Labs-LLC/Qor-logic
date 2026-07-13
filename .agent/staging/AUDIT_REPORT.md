@@ -1,10 +1,10 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T04:43:02Z
-**Target**: docs/plan-qor-phase174-gate-dir-test-hygiene.md (Phase 174; GH #274)
-**Risk Grade**: L1
-**Session**: `2026-07-13T0427-d0d371`
-**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `922ae2aa191b...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
+**Tribunal Date**: 2026-07-13T05:21:16Z
+**Target**: docs/plan-qor-phase175-governance-dna-durability.md (Phase 175; GH #267)
+**Risk Grade**: L2
+**Session**: `2026-07-13T0515-117975`
+**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `116ef5b3b4b5...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
 ---
@@ -15,85 +15,79 @@
 
 ### Executive Summary
 
-Test-only repo-hygiene plan: canonicalize the imports/redirects in three test files so gate writes land in tmp, untrack five zero-consumer pollution dirs, and add a subprocess inventory-guard regression test that is red against the current offenders by construction. All Locked Decision citations grep-verified live during this tribunal (the research phase verified them hours earlier in the same working session; the tribunal re-executed the greps). One finding surfaced mid-audit -- sidecar writes also mint per-session keys under the gitignored live `.qor/session/keys/` unless `QOR_ROOT` is redirected, and the plan redirected it in only one of the three files -- remediated by plan amendment BEFORE verdict emission (no audit gate artifact had been written). No binding-VETO pass fired.
+The plan gives the five governance DNA files a session-scoped snapshot (triggered structurally inside the governed write path -- zero SKILL.md bytes, honoring the 31/70-byte budget ceilings) and teaches the health gate to distinguish prior-initialization loss from a genuinely new workspace, routing to restore-then-remediate instead of the destructive bootstrap path. Two findings surfaced mid-tribunal and were remediated by plan amendment BEFORE verdict emission: (V1) `restore` lacked a no-clobber default, so a restore could silently destroy state NEWER than the snapshot -- amended to skip-existing-unless-force with a dedicated test; (V2) a stale line citation (`_fire_gate_written_hook` at 306 vs actual 310). No binding-VETO pass fired.
 
 ### Audit Results
 
 #### Prompt Injection Pass
-**Result**: PASS
-`prompt_injection_canaries` over ARCHITECTURE_PLAN.md, META_LEDGER.md, CONCEPT.md, and the plan: exit 0.
+**Result**: PASS -- canaries exit 0 over the four governance files.
 
 #### Security Pass (L3)
 **Result**: PASS
-No auth, credentials, or bypasses; no SQL surface. Untracking the five fixture dirs removes stale committed HMAC sidecars whose keys never existed on any verifier -- a disclosure-surface reduction, not a control change. The Phase 158 provenance controls are untouched.
+No credentials or auth surfaces; the DNA files are public governance artifacts. The restore path's overwrite hazard was closed pre-verdict (no-clobber default). The backup dir is gitignored so operator-local copies are never published.
 
 #### OWASP Top 10 Pass
 **Result**: PASS
-The guard's subprocess uses list-form argv (`[sys.executable, "-m", "pytest", ...]`), no shell=True, fixed file arguments (A03 clean). No deserialization; no fail-open (guard fails on nonzero inner exit OR snapshot inequality).
+Git evidence probe uses list-argv subprocess with `check=False` + 5s timeout (A03 clean). The hook is fail-OPEN by explicit design with precedent (`_fire_gate_written_hook`, gate_chain.py:310): the snapshot is an aid, not a security control, so its failure must not abort a governed write -- an A04 review accepts this because no enforcement decision depends on the backup's existence.
 
-#### Ghost UI Pass (incl. Live-Progress)
-**Result**: PASS
-No UI surface.
+#### Ghost UI / Live-Progress Pass
+**Result**: PASS -- no UI surface.
 
 #### Section 4 Razor Pass
 **Result**: PASS
 
 | Check | Limit | Blueprint Proposes | Status |
 | --- | --- | --- | --- |
-| Max function lines | 40 | guard test ~30 lines + `_snapshot` helper ~15 | OK |
-| Max file lines | 250 | new test file well under; offender files shrink (doppelganger scaffolding removed) | OK |
+| Max function lines | 40 | helper functions each < 30; `_ensure_dna_backup` ~6 | OK |
+| Max file lines | 250 | governance_snapshot.py < 180 | OK |
 | Max nesting depth | 3 | <= 3 | OK |
 | Nested ternaries | 0 | 0 | OK |
 
-No production code is touched.
+gate_chain.py gains ~8 lines (pre-existing file overage unchanged; sealed precedent phases 158/168/169/173).
 
-#### Self-Application Sub-Pass (originating_remediation: GH #274)
+#### Self-Application Sub-Pass (originating_remediation: GH #267)
 **Result**: PASS
-Discipline introduced: tests must not touch the live gate tree. Applied to the plan's own deliverables: the guard test only READS the live tree (snapshots) and delegates writes to a subprocess whose targets are the fixed files; the plan's own lifecycle artifacts are written by governed skills into the CURRENT session dir (runtime state, not test fixtures). No self-violation.
+Discipline introduced: governance state must be recoverable and loss must never route to a destructive re-initialization. The plan's own phases overwrite nothing sealed; the ledger is appended; the restore no-clobber amendment is the discipline applied to the plan's own tooling.
 
 #### Test Functionality Pass
 **Result**: PASS
-The guard invokes the units (executes the three fixed test files in a real pytest subprocess) and asserts on observed behavior: inner exit code 0 AND byte-identical filtered snapshots of the live tree. Acceptance question holds: if any fixed test regressed to a resolver-only patch, the snapshot inequality fails the guard. Redirected existing tests keep their behavioral assertions (ProvenanceError paths, sidecar verify, schema round-trip). `prose_test_lint --enforce`: exit 0 (54 exempted-with-reason, 0 unexplained). No closed-enum taxonomy.
+All twelve described tests invoke units and assert observed outputs (byte hashes, idempotency under source mutation, skip-vs-overwrite actions, event emission validated against the amended schema, routing strings, write-path survival under injected failure). None presence-only. `prose_test_lint --enforce` exit 0 (54 exempted-with-reason). Closed-enum note: the shadow-event enum gains one value but has no paired `normalize*` function -- the inverse-coverage rule does not apply; `test_state_loss_event_validates_against_schema` provides the forward proof.
 
 #### Dependency Pass
-**Result**: PASS
-Stdlib only (`subprocess`, `hashlib`, `sys`, `pathlib`).
+**Result**: PASS -- stdlib + in-repo reuse only.
 
 #### Feature Test Coverage Pass
-**Result**: PASS (exempt)
-`feature_inventory_touches` declared empty; tests only.
+**Result**: PASS (exempt) -- `feature_inventory_touches` empty; governance tooling.
 
 #### Infrastructure Alignment Pass
 **Result**: PASS
-LD walk grep-verified live: sys.path doppelganger at tests/test_gate_chain_provenance.py:16-17; writer joins at validate_gate_artifact.py:101,176 and delegation at gate_chain.py:293; QOR_ROOT at workdir.py:29 vs QORLOGIC_PROJECT_DIR at hosts.py:8,11; zero consumers of the five fixture identities (META_LEDGER grep 0, qor/ grep 0; completeness/verify_committed walk ledger-referenced sessions only per gate_chain_completeness.py:52 and gate_provenance.py:206); conftest sweep patterns at conftest.py:49-54. Runtime Contract Walk: 2 WARN-only findings ("no production caller imports qor.scripts.gate_chain / validate_gate_artifact") -- spurious for a test-only plan; the walk's backward pass expects production callers for cited modules, but the citations here name test-import targets. Both modules ARE production-imported (gate_chain by qor_audit_runtime, stall_walk, skills; vga by gate_chain itself), so the finding is a walk heuristic artifact, not drift.
+LD walk grep-verified live during tribunal: write_gate_artifact:241, _fire_gate_written_hook:310 (corrected pre-verdict from 306), REQUIRED_ARTIFACTS:44, SCAFFOLD_OWNED:57, _classify_missing:94, _NEXT_BOOTSTRAP:81, EXCEEDED_BYTES:24, external `_classify_one` test callers enumerated (tests/test_governance_health_post_anchor_tolerance.py:38, tests/test_feature_index_present_and_verifies.py:18 -- positional signature preserved by keyword-only threading). Enum-lock sweep: no test pins the shadow-event enum contents. Runtime Contract Walk: 3 WARN-only findings -- `governance_snapshot` module-not-found (declared NEW in Affected Files) and two backward-pass heuristic artifacts.
 
 #### Filter-Stage Ordering Coherence
 **Result**: PASS
-No pipeline-shaped function is introduced or modified.
+`write_gate_artifact` pipeline order: provenance check -> DNA backup (best-effort) -> versioned write -> history -> sidecars -> hook. The backup consumes only `sid`, available at its position; no stage precedes its precondition producer.
 
 #### Orphan Pass
-**Result**: PASS
-tests/test_gate_dir_hygiene.py is pytest-collected; no other files created. The removed dirs are, by LD-4, already orphans -- removal is the anti-orphan action.
+**Result**: PASS -- helper reached via gate_chain hook + CLI runner; tests pytest-collected; doctrine is a doc.
 
 #### Macro-Level Architecture Pass
 **Result**: PASS
-No module boundaries change; the fix consolidates tests onto the canonical import path (removing a second module identity is a braid REMOVED).
+Durability logic isolated in one new module; health-gate routing stays in governance_health; the write-path hook is a single seam. No cycles (gate_chain lazily imports the helper; the helper imports only session/shadow_process).
 
 #### Documentation Drift (advisory)
-**Result**: clean
-`doc_integrity.render_drift_section`: empty (doc_tier minimal; no terms).
+**Result**: clean (`render_drift_section` empty; standard tier, no terms).
 
 ### Violations Found
 
 | ID  | Category | Location | Description |
 | --- | -------- | -------- | ----------- |
-| V1 (remediated pre-verdict) | specification-drift | plan Phase 1 Changes | Sidecar writes mint per-session keys via `workdir.root()`; without `QOR_ROOT` redirection the fixed provenance/ideate tests would still accrete key files under the gitignored live `.qor/session/keys/`. Plan amended to add the `QOR_ROOT` env redirect to all three files before verdict emission; no audit cycle consumed. |
+| V1 (remediated pre-verdict) | specification-drift | plan Phase 1 Changes | `restore` lacked a no-clobber default; a restore onto a partially-healthy workspace could silently destroy state newer than the snapshot. Amended: skip-existing-unless-`force`, with `test_restore_no_clobber_skips_existing_files`. |
+| V2 (remediated pre-verdict) | infrastructure-mismatch | plan LD-1 | `_fire_gate_written_hook` cited at line 306; actual 310 (drifted by Phase 173's edits). Citation corrected. |
 
 ### Advisory (non-VETO)
 
-- `ci_coverage_lint`: 12 standing workflow commands not mirrored in the plan CI list (WARN-only; unchanged standing condition).
-- Runtime Contract Walk backward-pass WARNs are heuristic artifacts for test-only plans (documented above).
-- `test-session*` chdir-based writer tests remain latent same-class offenders but are conftest-swept; explicitly out of #274 scope per research F4.
+- Runtime Contract Walk backward WARNs are heuristic artifacts (documented pattern for plans citing modules as test/CLI targets).
+- `ci_coverage_lint` standing 12-command WARN unchanged.
 
 ## Process Pattern Advisory
 
@@ -103,7 +97,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 174.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 175.
 
 ---
 _This verdict is binding._

@@ -13764,5 +13764,82 @@ Change class: hotfix (v0.120.0 -> v0.120.1). Tests: guard + 3 redirected files, 
 
 ---
 
+### Entry #418: RESEARCH BRIEF -- Governance-DNA durability (GH #267)
+
+**Timestamp**: 2026-07-13T05:16:52Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Target**: GH #267 (backup-on-write + recovery-aware routing)
+**Session**: `2026-07-13T0515-117975`
+**Brief**: docs/research-brief-governance-dna-durability-2026-07-13.md
+
+**Content Hash**: `c68364038294ebf5db23227980fef8f7a5497ff87854f3c708b21a4b9fc66bbb`
+**Previous Hash**: `227468eff5fe9a55071350d98a715734b710a3efc0a53ab99384eb73f9d8a875`
+**Chain Hash (Merkle seal)**: `c6b106fb1333f48ceb5f564a6f53f4a04aeb6f579fb7d46a9e85f634a29c6c47`
+
+**Decision**: The classification gap is binary initialization detection: `governance_health._is_initialized` (lines 87-91) tests only current existence, so total DNA loss reads as UNINITIALIZED and routes to bootstrap over recoverable history (lines 94-98) -- the destructive path the incident narrowly avoided. Zero backup/snapshot infrastructure exists (grep 0 hits). Design constraint: both big governance SKILL.md files sit within 70 bytes of the 40 KB EXCEEDED budget, so the snapshot trigger CANNOT be skill prose -- it lands as a first-write-of-session hook inside `gate_chain.write_gate_artifact` (line 241; best-effort/fail-open, mirroring the Phase 57 hook posture), covering every gate-writing skill with zero SKILL.md bytes. Routing fix: `_classify_missing` consults prior-initialization evidence (git history of the ledger path OR a non-empty `.agent/local-backup/governance/`) and classifies previously-initialized-now-missing as MISSING with a restore-then-remediate legal_next, never bootstrap. `governance-state-loss` joins the shadow-event enum (additive amendment to a registered schema; freeze lint checks presence not content). Doctrine section documents the `git clean` hazard incl. which loss classes the snapshot does NOT survive (`-fdx` removes ignored backups too). Next: /qor-auto-dev-1 (plan -> audit -> implement -> substantiate).
+
+---
+
+### Entry #419: GATE TRIBUNAL -- Phase 175 plan PASS (governance-DNA durability)
+
+**Timestamp**: 2026-07-13T05:21:16Z
+**Phase**: GATE (Phase 175)
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase175-governance-dna-durability.md
+**Session**: `2026-07-13T0515-117975`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `c9f3638d94e3ea84ada95397cebd14d7009a27d2ac0774797dfa879bc4ec31eb`
+**Previous Hash**: `c6b106fb1333f48ceb5f564a6f53f4a04aeb6f579fb7d46a9e85f634a29c6c47`
+**Chain Hash (Merkle seal)**: `933b79848bd0a27231bb799bbdfe4673cf0a1dce327955a7265a601f40fea602`
+
+**Decision**: PASS (L2, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #418 (GH #267): new `qor/scripts/governance_snapshot.py` (session-scoped DNA backup, no-clobber restore with force escape, prior-initialization evidence probe, CLI); structural first-write-of-session hook inside `gate_chain.write_gate_artifact` (fail-open, zero SKILL.md bytes -- honoring the 31/70-byte EXCEEDED-budget ceilings); `governance_health` routes previously-initialized-now-missing to MISSING + restore-then-remediate, never UNINITIALIZED/bootstrap; `governance-state-loss` joins the shadow-event enum (restore-time emission, additive registered-schema amendment); doctrine section documents the git-clean hazard incl. what the snapshot does NOT survive. Two findings remediated by plan amendment pre-verdict: restore no-clobber default (a restore must never silently destroy state newer than the snapshot) and a stale hook-line citation (306 -> 310, drifted by Phase 173). Next: `/qor-implement` (intent lock next).
+
+---
+
+### Entry #420: IMPLEMENTATION -- Phase 175 governance-DNA durability
+
+**Timestamp**: 2026-07-13T05:46:16Z
+**Phase**: IMPLEMENT (Phase 175)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-07-13T0515-117975`
+**Intent Lock**: `LOCKED: 2026-07-13T0515-117975`
+
+**Content Hash**: `9e6d6019828bb62dc5ac257713692e82885a563ebad2b159049b237f0496af51`
+**Previous Hash**: `933b79848bd0a27231bb799bbdfe4673cf0a1dce327955a7265a601f40fea602`
+**Chain Hash (Merkle seal)**: `0b1e8e5dbf67357fefd5336042209ba870790938ad95f97305a0442a601df2dd`
+
+**Decision**: Phase 175 implemented per plan, TDD-first (25 behavioral tests red-then-green, green twice). `qor/scripts/governance_snapshot.py` (~190 lines): DNA_FILES snapshot with `.complete` manifest idempotency; NO-CLOBBER `restore` (force escape) emitting one severity-3 `governance-state-loss` event; `prior_initialization_evidence` (backup dir, then `git log -1` list-argv probe); backup/restore/evidence CLI. `gate_chain._ensure_dna_backup` hook wired before the first governed write. `governance_health`: `_NEXT_RESTORE` + `prior_evidence` threading (external `_classify_one` positional callers preserved); previously-initialized-now-missing -> MISSING/restore, never bootstrap. Schema enum + .gitignore additive lines; doctrine section 16. THREE live-evidence hardenings within the hook's audited contract, recorded per the autonomy policy: (1) canonical-session-id gate (the loose path-safety validator admitted synthetic test sids -- observed `sess-12345` backup accretion); (2) pytest-bypass unless QOR_ROOT is explicitly redirected (suite runs generated fresh canonical sids via get_or_create and would accrete ~5 MB of live-DNA copies PER RUN -- observed live, then eliminated: final suite leaves zero accretion); (3) test shadow-log redirection after observing the import-time UPSTREAM_LOG_PATH constant sent 9 test events to the real upstream log (stripped surgically; only the legit audit shortfall event remains). Full suite 2568 passed / 2 skipped, tree clean. Content hash binds tests/test_governance_snapshot.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #421: SESSION SEAL -- Phase 175 governance-DNA durability (v0.121.0)
+
+**Timestamp**: 2026-07-13T05:48:00Z
+**Phase**: SUBSTANTIATE (Phase 175; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase175-governance-dna-durability.md
+**Session**: `2026-07-13T0515-117975`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `1eedf980287a`
+
+**Scope**: Phase 175 implemented (feature; research entry #418 -> closes GH #267). Local governance state gains a durability layer: `qor/scripts/governance_snapshot.py` snapshots the five DNA files to the gitignored `.agent/local-backup/governance/<sid>/` on the first governed gate write of every session (idempotent `.complete` manifest; fail-open -- a failed backup warns, never aborts a write; canonical session ids only; pytest-bypassed unless QOR_ROOT is explicitly redirected, honoring the GH #274 tests-never-touch-operator-state discipline). NO-CLOBBER `restore` (force escape) emits one severity-3 `governance-state-loss` shadow event (new enum value, additive registered-schema amendment). `governance_health` distinguishes previously-initialized-now-missing (git ledger history OR populated backups) from a genuinely new workspace: MISSING + restore-then-/qor-remediate legal_next, never UNINITIALIZED/bootstrap over recoverable history; the genuinely-new path is regression-locked unchanged. Zero SKILL.md bytes added (both big skills sit within 70 bytes of the EXCEEDED budget -- the trigger is structural, in the write path). Docs: doctrine-governance-enforcement section 16 (git-clean hazard table incl. what the snapshot does NOT survive), operations.md operator verbs. Three live-evidence hook hardenings recorded in entry #420's decision log.
+
+Change class: feature (v0.120.1 -> v0.121.0). Tests: 25 behavioral in tests/test_governance_snapshot.py + tests/test_governance_health.py additions (red-then-green, green twice; backup byte-fidelity, idempotency under source mutation, no-clobber vs force, event schema validation, evidence probes, fail-open write survival, routing both ways). Full suite 2568 passed / 2 skipped with zero backup accretion (verified after the pytest-bypass hardening; the pre-hardening run demonstrated ~5 MB/run accretion live). Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, doc-currency warnings resolved by authoring the operations.md section, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0427-d0d371. Audit: solo PASS (entry #419; two findings remediated pre-verdict incl. the no-clobber restore safeguard). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (governance durability tooling; no user-touchable feature row)
+
+**Content Hash**: `196919c0a2a3da384b179701b71558152b872cba38f9f17aaa4290ad335b3b2e`
+**Previous Hash**: `0b1e8e5dbf67357fefd5336042209ba870790938ad95f97305a0442a601df2dd`
+**Chain Hash (Merkle seal)**: `18a969e392f471dbb7f851cd8a334fda48c04d00769838975547051cf254be95`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 174; v0.120.1; gate-dir test hygiene; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 175; v0.121.0; governance-DNA durability; local checkpoint commit only -- remote work held for operator review)

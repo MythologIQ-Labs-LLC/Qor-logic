@@ -174,3 +174,36 @@ def test_html_comment_and_bracket_placeholders_still_flag(tmp_path):
     )
     arch = _find(check_governance_health(tmp_path), "docs/ARCHITECTURE_PLAN.md")
     assert arch.status is ArtifactStatus.INCOMPLETE
+
+
+def test_previously_initialized_loss_routes_to_restore_not_bootstrap(tmp_path):
+    """Phase 175 (GH #267): total DNA loss with prior-initialization evidence
+    (git history) must classify MISSING with a restore route, never bootstrap."""
+    import subprocess
+
+    def git(*args):
+        subprocess.run(["git", *args], cwd=tmp_path, check=True, capture_output=True)
+
+    git("init", "-q")
+    git("config", "user.email", "t@t.local")
+    git("config", "user.name", "t")
+    ledger = tmp_path / "docs" / "META_LEDGER.md"
+    ledger.parent.mkdir(parents=True)
+    ledger.write_text("# L\n\n### Entry #1: X\n", encoding="utf-8")
+    git("add", "docs/META_LEDGER.md")
+    git("commit", "-q", "-m", "genesis")
+    ledger.unlink()  # the git-clean loss scenario
+
+    finding = _find(check_governance_health(tmp_path), "docs/META_LEDGER.md")
+    assert finding.status is ArtifactStatus.MISSING
+    assert "governance_snapshot restore" in finding.legal_next
+    assert "/qor-remediate" in finding.legal_next
+    assert "bootstrap" not in finding.legal_next.lower()
+
+
+def test_never_initialized_workspace_still_routes_to_bootstrap(tmp_path):
+    """Phase 175 regression lock: a genuinely new workspace (no git history,
+    no backup) keeps the UNINITIALIZED -> bootstrap path unchanged."""
+    finding = _find(check_governance_health(tmp_path), "docs/META_LEDGER.md")
+    assert finding.status is ArtifactStatus.UNINITIALIZED
+    assert "bootstrap" in finding.legal_next.lower()
