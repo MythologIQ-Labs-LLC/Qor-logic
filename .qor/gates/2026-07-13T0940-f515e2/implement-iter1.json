@@ -1,0 +1,25 @@
+{
+  "phase": "implement",
+  "session_id": "2026-07-13T0940-f515e2",
+  "ts": "2026-07-13T09:55:23Z",
+  "files_touched": [
+    "qor/scripts/qor_platform.py",
+    "qor/scripts/ai_provenance.py",
+    "tests/test_platform.py",
+    "tests/test_ai_provenance_helper.py"
+  ],
+  "tests_added": [
+    "tests/test_platform.py::test_detect_host_claudecode_env_alone",
+    "tests/test_platform.py::test_detect_host_claude_code_family_env_alone",
+    "tests/test_ai_provenance_helper.py::test_build_manifest_autodetects_host_without_marker"
+  ],
+  "test_results": "focused 48+57 green twice; full suite 2609 passed / 2 skipped",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.4",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T09:55:23Z"
+  }
+}

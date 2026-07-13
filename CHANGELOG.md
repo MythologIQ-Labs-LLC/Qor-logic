@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.125.0] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 186 (feature; provenance host autodetect)**: gate-artifact provenance manifests now record `host: claude-code` automatically inside Claude Code sessions (GH #242, host half). `qor_platform.detect_host` recognizes the empirically-enumerated ambient signal family (`CLAUDECODE`, any `CLAUDE_CODE_*` key, `CLAUDE_PROJECT_DIR` -- presence only, values untrusted), and `ai_provenance._detect_host` falls back to fresh env detection when the cached platform marker is absent or yields unknown, so a session that never ran `apply_profile` stops recording false-unknown host provenance. The "host fell back to 'unknown'" WARN now fires only when both paths fail. The model half of GH #242 is deferred with evidence: no ambient model-identifying signal exists to read, so auto-detection would fabricate provenance; `QOR_MODEL_FAMILY` remains the explicit channel.
+
 ## [0.124.4] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

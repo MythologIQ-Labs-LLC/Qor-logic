@@ -1,0 +1,42 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0940-f515e2",
+  "ts": "2026-07-13T09:41:19Z",
+  "questions": [
+    "Which host/model signals exist in a live Claude Code session?",
+    "Why does the current chain record unknown?",
+    "Is model autodetection honest?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "live enumeration: CLAUDECODE=1 + CLAUDE_CODE_* present; CLAUDE_PROJECT_DIR and any model identifier ABSENT; the session's own manifests all warned host-unknown",
+      "source": "docs/research-brief-provenance-autodetect-2026-07-13.md"
+    },
+    {
+      "id": "F2",
+      "summary": "detect_host consults only CLAUDE_PROJECT_DIR (qor_platform.py:33); _detect_host reads only the cached marker (ai_provenance.py:61)",
+      "source": "qor/scripts/qor_platform.py:33"
+    },
+    {
+      "id": "F3",
+      "summary": "fix: signal-family ladder + fresh-detection fallback; model half defers (no honest source; QOR_MODEL_FAMILY stays explicit)",
+      "source": "qor/scripts/ai_provenance.py:61"
+    }
+  ],
+  "sources": [
+    "qor/scripts/qor_platform.py",
+    "qor/scripts/ai_provenance.py",
+    "tests/test_platform.py",
+    "tests/test_ai_provenance_helper.py"
+  ],
+  "brief_path": "docs/research-brief-provenance-autodetect-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.4",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T09:41:19Z"
+  }
+}

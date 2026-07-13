@@ -1,10 +1,10 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T09:21:18Z
-**Target**: docs/plan-qor-phase185-keyword-lint-scoping.md (Phase 185; GH #265)
+**Tribunal Date**: 2026-07-13T09:41:58Z
+**Target**: docs/plan-qor-phase186-provenance-autodetect.md (Phase 186; GH #242 host half)
 **Risk Grade**: L1
-**Session**: `2026-07-13T0919-7937b6`
-**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `4e775266643f...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
+**Session**: `2026-07-13T0940-f515e2`
+**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `29770868b5bd...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
 ---
@@ -15,31 +15,33 @@
 
 ### Executive Summary
 
-Lint-precision fix with a coverage-retention argument the tribunal examined and accepts: the multimap + three-tier resolution (same-file precedence, tree-unique cross-module, ambiguous skip) strictly dominates the issue's proposed same-file-only minimum -- it eliminates the collision false-positive class (the consumer's 7-hit `_emit` reproduction; live `check`/`scan` collisions are coin-toss today) while retaining unique-name cross-module coverage that same-file-only would silently drop. The trade-off (colliding bare names skip) is the honest boundary of any bare-name heuristic and is recorded for the disposition with the attribute-resolution follow-on named. No binding-VETO pass fired.
+Empirically-grounded transparency fix: the host-detection signal family comes from a LIVE enumeration inside this very Claude Code session (where `CLAUDE_PROJECT_DIR` -- the only signal the code checks -- is absent while `CLAUDECODE`/`CLAUDE_CODE_*` are present), and the manifest builder gains a fresh-detection fallback so a session that never ran `apply_profile` stops recording unknown. The model half is deferred on the HONEST ground the same enumeration establishes: no ambient model signal exists, so auto-detection would fabricate provenance -- exactly what the no-fabrication discipline forbids. The phase carries a built-in live acceptance: this session's own subsequent gate writes flip from the WARN to `host: claude-code`. No binding-VETO pass fired.
 
 ### Audit Results
 
 #### Prompt Injection Pass
 **Result**: PASS -- canaries exit 0.
 
-#### Security / OWASP / Ghost UI Passes
-**Result**: PASS -- test-hosted lint logic only.
+#### Security Pass (L3) / OWASP Top 10 Pass
+**Result**: PASS
+Env-presence checks only; the ladder ADDS truthful detection without trusting any env VALUE (host is derived from key presence, not content). No fabrication path: both detection layers fall through to "unknown" + the existing WARN.
 
-#### Section 4 Razor Pass
-**Result**: PASS -- a `_candidates_for` helper keeps nesting <= 3; net delta ~20 lines in one test file.
+#### Ghost UI / Razor / Dependency / Feature Coverage Passes
+**Result**: PASS -- ~10 net lines; stdlib; exempt.
 
-#### Self-Application Sub-Pass (originating_remediation: GH #265)
-**Result**: PASS -- discipline: attribution must be scope-sound. The fixture tests attribute their own synthetic modules correctly across all three tiers.
+#### Self-Application Sub-Pass (originating_remediation: GH #242)
+**Result**: PASS -- discipline: record what is true, never invent. The plan defers the model half precisely because recording it would require invention; the host half records only what the environment demonstrably declares.
 
 #### Test Functionality Pass
 **Result**: PASS
-All three fixture tests feed synthetic trees to the actual helpers and assert the violations list content: absence under collision (red today via the last-write-wins dict), presence for same-file overflow, presence for unique-name cross-module overflow. The production lint test remains the live net over qor/scripts + tests.
+Ladder tests invoke `detect_host` under controlled env and assert the returned host (two red today); the integration test invokes `build_manifest` with no platform marker and asserts BOTH the manifest field and the absence of the WARN (capsys). Live self-application is observable in-session post-implement.
 
 #### Infrastructure Alignment Pass
-**Result**: PASS -- helper line anchors (15, 35) verified live this session; live collisions (`check`: model_pinning_lint:102 / override_friction:63; `scan`: sast_scan:86 / secret_scanner:140) carried from the verified dossier. Runtime Contract Walk: 0 findings.
+**Result**: PASS
+Anchors verified live: detect_host single-signal at qor_platform.py:33; _detect_host cached-marker-only at ai_provenance.py:61; the provenance schema's free-form host string (no enum, no schema change). The signal family is evidence from THIS session's environment, quoted in the brief. Runtime Contract Walk: 0 findings.
 
 #### Filter-Stage / Orphan / Macro-Architecture Passes
-**Result**: PASS -- candidate resolution is a precedence chain; no new files.
+**Result**: PASS -- ladder precedence is a chain; no new modules.
 
 #### Documentation Drift (advisory)
 **Result**: clean (minimal tier).
@@ -58,7 +60,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 185.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 186.
 
 ---
 _This verdict is binding._

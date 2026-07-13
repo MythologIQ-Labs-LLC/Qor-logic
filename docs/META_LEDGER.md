@@ -14612,5 +14612,81 @@ Change class: hotfix (v0.124.3 -> v0.124.4). Tests: 3 new fixture tests (collisi
 
 ---
 
+### Entry #462: RESEARCH BRIEF -- Provenance host autodetect (GH #242)
+
+**Timestamp**: 2026-07-13T09:40:48Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #242
+**Session**: `2026-07-13T0940-f515e2`
+**Brief**: docs/research-brief-provenance-autodetect-2026-07-13.md
+
+**Content Hash**: `c00f6f14ce8f6853460fb1cd15b52a6c14b365b0e206d9c0f79e9c9f584e46e6`
+**Previous Hash**: `053a1bb9d907ab2f4c88518cbc5064a5047028122e140b001cfd0dea9558a2bc`
+**Chain Hash (Merkle seal)**: `fb785cd4f9019e1c96a9f924c031c12abd44b921ccca562799e608cf5c0fe098`
+
+**Decision**: Enumerated LIVE inside a real Claude Code session: `CLAUDECODE=1` + the `CLAUDE_CODE_*` family are present while `CLAUDE_PROJECT_DIR` -- the only signal `qor_platform.detect_host` consults (line 33) -- is ABSENT, and NO model-identifying variable exists. The defect demonstrated on itself: every provenance manifest this working session wrote warned "host fell back to 'unknown'" inside the primary supported host. Fix: `detect_host` gains the empirical signal family; `ai_provenance._detect_host` (line 61: cached-marker-only) falls back to FRESH detection when the marker yields nothing. Model half DEFERS honestly -- no ambient signal exists to read, so auto-detection would fabricate; `QOR_MODEL_FAMILY` stays the explicit channel, with this enumeration recorded on GH #242 as the deferral evidence. Host is schema-free-form; no schema change. Next: /qor-auto-dev-1, change_class feature.
+
+---
+
+### Entry #463: GATE TRIBUNAL -- Phase 186 provenance autodetect
+
+**Timestamp**: 2026-07-13T09:43:30Z
+**Phase**: GATE (Phase 186)
+**Author**: Judge
+**Risk Grade**: L1
+**Session**: `2026-07-13T0940-f515e2`
+**Target**: docs/plan-qor-phase186-provenance-autodetect.md
+**Verdict**: PASS
+
+**Content Hash**: `4bce3b8201dbcbdad7734603d397157a00b3d11e28ce6e5804e335293dbc081d`
+**Previous Hash**: `fb785cd4f9019e1c96a9f924c031c12abd44b921ccca562799e608cf5c0fe098`
+**Chain Hash (Merkle seal)**: `5252179aa810f1c9660a6af731ca75aa04d71d0ce704a48077c6c52e5fadfae1`
+
+**Decision**: Solo-mode tribunal (codex-plugin shortfall emitted; audit_risk_score option_b_required false; pre-audit lints clean; canaries 0; runtime contract walk 0 findings). PASS with zero violations. The plan's signal family is grounded in THIS session's live enumeration -- `CLAUDECODE`/`CLAUDE_CODE_*` present, `CLAUDE_PROJECT_DIR` absent at qor_platform.py:33's only check -- and the manifest-builder fallback (ai_provenance.py:61 reads only the cached marker today) restores truthful host provenance without trusting any env VALUE. The model-half deferral is the honest branch: no ambient signal exists, so auto-detection would fabricate. Two red-today ladder tests + a no-marker manifest integration test observe behavior; the phase self-verifies live when this session's later gate writes record host=claude-code. Next: `/qor-implement`.
+
+---
+
+### Entry #464: IMPLEMENTATION -- Phase 186 provenance autodetect
+
+**Timestamp**: 2026-07-13T09:56:20Z
+**Phase**: IMPLEMENT (Phase 186)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0940-f515e2`
+**Intent Lock**: `LOCKED: 2026-07-13T0940-f515e2`
+
+**Content Hash**: `1a3969be8c157b24448e3dcfe67e21cd3a9b2ca854124a312af882df050a183f`
+**Previous Hash**: `5252179aa810f1c9660a6af731ca75aa04d71d0ce704a48077c6c52e5fadfae1`
+**Chain Hash (Merkle seal)**: `5e26e75d8e314bbd3804e9ddb7abfe458cff9e1928afbf20f8d7dd765440c153`
+
+**Decision**: Phase 186 implemented per plan, TDD-first, no mid-red design changes. `qor_platform.detect_host` gained the LD-1 empirical ladder (`CLAUDECODE`, any `CLAUDE_CODE_*` key, `CLAUDE_PROJECT_DIR` -- most-specific first, values untrusted, presence only); `ai_provenance._detect_host` restructured per LD-2 to fall back to fresh `detect_host()` when the cached marker is absent or yields unknown, so the one-time WARN now fires only when BOTH paths fail. The pre-existing unknown-regression test was widened to clear the whole signal family (it ran inside the very environment the new signals detect). 3 red -> green twice; live self-application observed IN THIS SESSION: the audit gate artifact written before the fix records host=unknown, manifests built after it record host=claude-code with no WARN. Full suite 2609 passed / 2 skipped. Content hash binds qor/scripts/qor_platform.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #465: SESSION SEAL -- Phase 186 provenance host autodetect (v0.125.0)
+
+**Timestamp**: 2026-07-13T10:04:10Z
+**Phase**: SUBSTANTIATE (Phase 186; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase186-provenance-autodetect.md
+**Session**: `2026-07-13T0940-f515e2`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `45df21573dc0`
+
+**Scope**: Phase 186 implemented (feature; research entry #462 -> GH #242 host half). Provenance manifests written inside Claude Code sessions now record host=claude-code without operator env setup: `qor_platform.detect_host` recognizes the live-enumerated ambient signal family (`CLAUDECODE`, any `CLAUDE_CODE_*` key, `CLAUDE_PROJECT_DIR` -- presence checks only, no env VALUE trusted), and `ai_provenance._detect_host` falls back to fresh detection when the cached platform marker is absent or yields unknown, so the one-time WARN fires only when both paths fail. Self-application observed inside THIS session: the audit artifact (written pre-fix) records host=unknown; the implement artifact (written post-fix) records host=claude-code -- the defect and its cure are both persisted in the same gate directory. Model half of GH #242 DEFERRED with evidence: the live enumeration found no ambient model-identifying signal, so auto-detection would fabricate; `QOR_MODEL_FAMILY` stays the explicit channel (deferral to be recorded on GH #242 at operator review).
+
+Change class: feature (v0.124.4 -> v0.125.0). Tests: 3 new (two detect_host ladder cases red-then-green twice + a no-marker build_manifest integration case asserting host and WARN absence); the pre-existing unknown-regression test widened to clear the whole signal family. Focused suites green twice; full suite 2609 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy (shared-core touches 0), data-API SKIP (disclosed), DoD well-formed, doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0919-7937b6, dist recompiled + variant drift clean. Audit: solo PASS (entry #463; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (provenance tooling)
+
+**Content Hash**: `7c781b5085fe0cff26fcd4d6fe1130bcfb8fc835d108fb5f17bfd8687c8c2694`
+**Previous Hash**: `5e26e75d8e314bbd3804e9ddb7abfe458cff9e1928afbf20f8d7dd765440c153`
+**Chain Hash (Merkle seal)**: `28c1374bbf47d4a0f87f93bce6108ee69cf4462ed16b0e085e31137ba130fc69`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 185; v0.124.4; keyword-lint scoping; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 186; v0.125.0; provenance host autodetect; local checkpoint commit only -- remote work held for operator review)
