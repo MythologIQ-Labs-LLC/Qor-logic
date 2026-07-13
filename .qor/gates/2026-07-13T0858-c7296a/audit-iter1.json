@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-07-13T0858-c7296a",
+  "ts": "2026-07-13T09:01:33Z",
+  "target": "docs/plan-qor-phase184-reachability-timeout.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "target_content_hash": "67d20a9f8fc607e6f9ef1cd1dec73194da801de9eeabc53b6f7a82b56978b394",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.2",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-07-13T09:01:33Z"
+  }
+}

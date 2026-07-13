@@ -1,10 +1,10 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-07-13T08:39:21Z
-**Target**: docs/plan-qor-phase183-intent-lock-verdict-forms.md (Phase 183; GH #263)
+**Tribunal Date**: 2026-07-13T09:00:27Z
+**Target**: docs/plan-qor-phase184-reachability-timeout.md (Phase 184; GH #264)
 **Risk Grade**: L1
-**Session**: `2026-07-13T0837-ef73c7`
-**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `01d2e99471a5...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
+**Session**: `2026-07-13T0858-c7296a`
+**Auditor**: The Qor-logic Judge (solo mode; codex-plugin shortfall event `283765799d3d...` emitted; no external reviewer configured; audit_risk_score option_b_required: false)
 **Verdict**: PASS
 
 ---
@@ -15,30 +15,28 @@
 
 ### Executive Summary
 
-Regex widening with the safety rationale preserved: a `#{0,6}\s*` heading prefix admits the structural markdown verdict forms in real production use (this repository's own Phase 173 tribunal hit the rejection live) while the Phase 53 LOW-4 anti-prose anchors -- same-line, column-0, no indentation -- remain intact; a format-hint error distinguishes "verdict present but non-canonical" from "genuinely not PASS", with the loose probe affecting the MESSAGE only, never the verdict decision. One plan-text finding (a CI command citing a nonexistent test file) was corrected pre-verdict; the amended plan landed as plan-iter2 with iter1 preserved (Phase 173 semantics). No binding-VETO pass fired.
+Budget correction on the collection probe's subprocess: the reporter-validated 120s default replaces the load-fragile 30s, env-tunable for slower hosts, with the silent-continue per-candidate semantics unchanged (correct for genuine failures; only the budget made machine load a verdict input). Tests lock the passed timeout and the override via a recorder -- zero real waits added to the suite. Contract-changing alternatives (inconclusive-WARN, in-process collection) were considered and rejected with reasons in the research. No binding-VETO pass fired.
 
 ### Audit Results
 
 #### Prompt Injection Pass
 **Result**: PASS -- canaries exit 0.
 
-#### Security Pass (L3) / OWASP Top 10 Pass
-**Result**: PASS
-The widening cannot re-open the LOW-4 prose surface: an admitted line must start at column 0 with at most six `#`, contain only the verdict tokens, and end after PASS -- no prose sentence has that shape. The loose hint probe is display-only (A04: the decision path is unchanged; fail-closed on non-match).
+#### Security / OWASP / Ghost UI Passes
+**Result**: PASS -- constant + env read; the env value is int-parsed at import (a malformed value raises loudly at import, fail-closed).
 
-#### Ghost UI / Razor / Dependency / Feature Coverage Passes
-**Result**: PASS -- ~8 net lines; stdlib; exempt.
+#### Section 4 Razor / Dependency / Feature Coverage Passes
+**Result**: PASS -- ~4 net lines; stdlib; exempt.
 
-#### Self-Application Sub-Pass (originating_remediation: GH #263)
-**Result**: PASS -- discipline: gates should reject with actionable errors, not opaque ones. The fix's own failure branch names the accepted forms.
+#### Self-Application Sub-Pass (originating_remediation: GH #264)
+**Result**: PASS -- discipline: verdicts must not depend on machine load; the fix's own tests avoid real waits (no load coupling introduced by the verification either).
 
 #### Test Functionality Pass
 **Result**: PASS
-Heading accept tests invoke `_audit_has_pass` via the capture path and assert the decision; the prose/indent regression locks re-assert the LOW-4 rejections POST-widening; the hint test asserts the exact stderr message class on both branches. All behavioral.
+The recorder test invokes `check_test_collection` and asserts the observed kwarg (red today: 30 is passed); the override test observes the reloaded constant under a monkeypatched env. Both behavioral, no sleeps.
 
 #### Infrastructure Alignment Pass
-**Result**: PASS
-LD walk verified live: pattern at intent_lock.py:59, docstring rationale 48-54, error at 82, meta_ledger_walker's parser intentionally distinct, zero heading coverage in the existing suite. V1 (below) corrected the focused-CI citation to the real intent_lock consumers (test_reliability_scripts.py exists; test_intent_lock.py does not). Runtime Contract Walk: 0 findings.
+**Result**: PASS -- timeout=30 at reachability_probe.py:132 verified live; the 20s importability budget explicitly out of scope with rationale. Runtime Contract Walk: 0 findings.
 
 #### Filter-Stage / Orphan / Macro-Architecture Passes
 **Result**: PASS.
@@ -50,7 +48,7 @@ LD walk verified live: pattern at intent_lock.py:59, docstring rationale 48-54, 
 
 | ID  | Category | Location | Description |
 | --- | -------- | -------- | ----------- |
-| V1 (remediated pre-verdict) | infrastructure-mismatch | plan CI Commands | Cited tests/test_intent_lock.py which does not exist; corrected to tests/test_reliability_scripts.py (a real intent_lock consumer). Plan re-emitted as iter2; iter1 preserved. |
+| (none) | | | |
 
 ## Process Pattern Advisory
 
@@ -60,7 +58,7 @@ No repeated-VETO pattern detected in the last 2 sealed phases.
 
 ### Verdict Hash
 
-SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 183.
+SHA256 of this report is recorded as the Content Hash of the META_LEDGER.md GATE TRIBUNAL entry for Phase 184.
 
 ---
 _This verdict is binding._

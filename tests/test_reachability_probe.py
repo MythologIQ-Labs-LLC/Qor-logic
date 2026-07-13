@@ -295,3 +295,44 @@ def test_probe_self_application_on_broken_fixture_emits_all_five(tmp_path):
         f"expected all five categories; missing {missing}. "
         f"Got categories: {categories}"
     )
+
+
+# ----- Phase 184 (GH #264): load-tolerant collection timeout -----
+
+def test_collection_subprocess_uses_module_timeout(tmp_path, monkeypatch):
+    """The collect-only subprocess must use the module constant (default 120s,
+    reporter-validated under full-suite load) -- not a hardcoded 30."""
+    import subprocess as _subprocess
+    from qor.scripts import reachability_probe as rp
+
+    recorded = {}
+
+    def recorder(*args, **kwargs):
+        recorded.update(kwargs)
+        class R:  # minimal CompletedProcess stand-in
+            returncode = 0
+        return R()
+
+    monkeypatch.setattr(_subprocess, "run", recorder)
+    (tmp_path / "tests").mkdir()
+    (tmp_path / "tests" / "test_x.py").write_text(
+        "import qor.scripts.reachability_probe\n", encoding="utf-8")
+    claim = rp.Claim(module="qor.scripts.reachability_probe", symbol=None,
+                     file_path="qor/scripts/reachability_probe.py")
+    rp.check_test_collection(claim, tmp_path)
+    assert recorded.get("timeout") == rp.COLLECTION_TIMEOUT
+    assert rp.COLLECTION_TIMEOUT == 120
+
+
+def test_collection_timeout_env_override(monkeypatch):
+    import importlib
+    from qor.scripts import reachability_probe as rp
+
+    monkeypatch.setenv("QOR_REACHABILITY_COLLECTION_TIMEOUT", "45")
+    try:
+        importlib.reload(rp)
+        assert rp.COLLECTION_TIMEOUT == 45
+    finally:
+        monkeypatch.delenv("QOR_REACHABILITY_COLLECTION_TIMEOUT", raising=False)
+        importlib.reload(rp)
+        assert rp.COLLECTION_TIMEOUT == 120

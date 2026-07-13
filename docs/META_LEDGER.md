@@ -14458,5 +14458,82 @@ Change class: hotfix (v0.124.1 -> v0.124.2). Tests: 4 new behavioral (h2/h3 acce
 
 ---
 
+### Entry #454: RESEARCH BRIEF -- Reachability probe timeout (GH #264)
+
+**Timestamp**: 2026-07-13T08:59:17Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #264
+**Session**: `2026-07-13T0858-c7296a`
+**Brief**: docs/research-brief-reachability-timeout-2026-07-13.md
+
+**Content Hash**: `8c43f48be6b26267e98305c5ddeeadd844d1d71141ea96192db00c81b6c7048c`
+**Previous Hash**: `ca5607d0e31fbcabf2e1b5af5ae9acf6b39dc64fb4a6b9e79b508015c222c37f`
+**Chain Hash (Merkle seal)**: `ad9fd3ad9383c1dd27be40ebce48b71e8e4a40140ecf7523e214cbc93e450fe9`
+
+**Decision**: Verified live: `check_test_collection` runs `pytest --collect-only` per candidate with `timeout=30` and `except TimeoutExpired: continue` (reachability_probe.py:132-135) -- under full-suite load every candidate can silently time out and the probe returns a false-negative finding (reporter: 2/2 full-suite failures vs 14/14 isolated; 120s validated clean). The silent-continue is correct for genuine failures; only the budget is wrong (the 30s constant is the outlier vs the 60s harness timeouts). Fix: env-tunable `QOR_REACHABILITY_COLLECTION_TIMEOUT` defaulting to 120; recorder-based tests lock the passed timeout and the override without real waits. Inconclusive-WARN and in-process alternatives rejected (contract/isolation changes). Next: /qor-auto-dev-1, change_class hotfix.
+
+---
+
+### Entry #455: GATE TRIBUNAL -- Phase 184 plan PASS (reachability timeout)
+
+**Timestamp**: 2026-07-13T09:00:27Z
+**Phase**: GATE (Phase 184)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase184-reachability-timeout.md
+**Session**: `2026-07-13T0858-c7296a`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `f9e072e27b7ec8bf63f3a4296551ee0319bfac9ad55d40b2db5d8351b0af1658`
+**Previous Hash**: `ad9fd3ad9383c1dd27be40ebce48b71e8e4a40140ecf7523e214cbc93e450fe9`
+**Chain Hash (Merkle seal)**: `d11e6cd09ea10d1d686edb206e37603f99e0e9b802f7bc030632ae55a7c2dc15`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #454 (GH #264): env-tunable `COLLECTION_TIMEOUT` defaulting to the reporter-validated 120s replaces the load-fragile 30s at the collect-only subprocess; per-candidate silent-continue semantics unchanged; recorder-based tests lock the passed timeout and the override with zero real waits; malformed env fails loudly at import. Next: `/qor-implement`.
+
+---
+
+### Entry #456: IMPLEMENTATION -- Phase 184 reachability timeout
+
+**Timestamp**: 2026-07-13T09:11:04Z
+**Phase**: IMPLEMENT (Phase 184)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0858-c7296a`
+**Intent Lock**: `LOCKED: 2026-07-13T0858-c7296a`
+
+**Content Hash**: `e71cff13e72811ec3a7fb465b78dfc304fa3bdf886ae724772db773dca0304f1`
+**Previous Hash**: `d11e6cd09ea10d1d686edb206e37603f99e0e9b802f7bc030632ae55a7c2dc15`
+**Chain Hash (Merkle seal)**: `336ee06c07af7b4a8b6fefc2a1be38a98993d238629148dc0debfeeebd177a72`
+
+**Decision**: Phase 184 implemented per plan, TDD-first (2 tests red -- one fixture correction mid-red: the candidate-discovery needle wants the dotted module path, not the from-import form -- then 16 focused green twice). `COLLECTION_TIMEOUT = int(os.environ.get("QOR_REACHABILITY_COLLECTION_TIMEOUT", "120"))` module constant with the GH #264 rationale comment; the collect-only call site uses it; the 20s importability budget deliberately unchanged. Recorder-based tests lock the passed timeout kwarg and the env override via module reload (restored after); zero real waits added. Full suite 2603 passed / 2 skipped. Content hash binds tests/test_reachability_probe.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #457: SESSION SEAL -- Phase 184 reachability timeout (v0.124.3)
+
+**Timestamp**: 2026-07-13T09:12:10Z
+**Phase**: SUBSTANTIATE (Phase 184; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase184-reachability-timeout.md
+**Session**: `2026-07-13T0858-c7296a`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `7d47eeef4383`
+
+**Scope**: Phase 184 implemented (hotfix; research entry #454 -> closes GH #264). The reachability probe's collect-only subprocess budget is load-tolerant: `COLLECTION_TIMEOUT` module constant (reporter-validated 120s default; env-tunable via `QOR_REACHABILITY_COLLECTION_TIMEOUT`; malformed values fail loudly at import) replaces the hardcoded 30s that let full-suite CPU load silently exhaust every candidate and return a false-negative `reachability-test-collection-failed` finding. Per-candidate silent-continue semantics unchanged (correct for genuine failures); the 20s importability budget deliberately untouched. Recorder-based tests lock the passed timeout kwarg and the env override -- zero real waits added to the suite.
+
+Change class: hotfix (v0.124.2 -> v0.124.3). Tests: 2 new behavioral (red-then-green; one mid-red fixture correction -- the discovery needle wants the dotted module path); 16 focused green twice; full suite 2603 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0837-ef73c7. Audit: solo PASS (entry #455; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (QA probe reliability)
+
+**Content Hash**: `67d20a9f8fc607e6f9ef1cd1dec73194da801de9eeabc53b6f7a82b56978b394`
+**Previous Hash**: `336ee06c07af7b4a8b6fefc2a1be38a98993d238629148dc0debfeeebd177a72`
+**Chain Hash (Merkle seal)**: `33129eb1dd7f461024516cc402406e6839370ec9408bdd5a5bdaea0a427667fd`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 183; v0.124.2; intent-lock verdict forms; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 184; v0.124.3; reachability timeout; local checkpoint commit only -- remote work held for operator review)

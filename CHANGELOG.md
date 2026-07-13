@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.124.3] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 184 (hotfix; reachability probe timeout)**: the reachability probe's `pytest --collect-only` subprocess no longer flips to a false-negative verdict under full-suite CPU load (GH #264). The 30-second per-candidate budget -- exceeded by every candidate on a loaded Windows runner while the silent `TimeoutExpired` continue exhausted the list -- becomes the reporter-validated 120 seconds via a new `COLLECTION_TIMEOUT` module constant, env-tunable through `QOR_REACHABILITY_COLLECTION_TIMEOUT` for slower CI. Per-candidate failure semantics are unchanged; recorder-based tests lock the passed timeout and the override without adding any real waits to the suite.
+
 ## [0.124.2] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
