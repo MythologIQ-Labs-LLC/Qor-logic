@@ -14535,5 +14535,82 @@ Change class: hotfix (v0.124.2 -> v0.124.3). Tests: 2 new behavioral (red-then-g
 
 ---
 
+### Entry #458: RESEARCH BRIEF -- Keyword-lint scoping (GH #265)
+
+**Timestamp**: 2026-07-13T09:20:09Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Target**: GH #265
+**Session**: `2026-07-13T0919-7937b6`
+**Brief**: docs/research-brief-keyword-lint-scoping-2026-07-13.md
+
+**Content Hash**: `cf612f22ad7e3544c9b06d0bab73e162d9c6988bb2c161c90129ec360c593659`
+**Previous Hash**: `33129eb1dd7f461024516cc402406e6839370ec9408bdd5a5bdaea0a427667fd`
+**Chain Hash (Merkle seal)**: `451143a94fc2806b4d088c303937052da43c035ab14cdfdcf6b842a5dc374840`
+
+**Decision**: Verified live: the SG-033 lint keys keyword-only definitions by BARE NAME with last-write-wins (test_shadow_genome_doctrine.py:15-53) and matches call sites by bare name -- coin-toss attribution under collisions; live in-tree collisions exist (`check`, `scan`) that are benign only by arity accident, and the issue's consumer `_emit` reproduction shows the failure when arities diverge. Resolution rule chosen over the same-file-only minimum: multimap + three tiers (same-file defs take precedence; a tree-UNIQUE name still checks cross-module, preserving today's real coverage; colliding bare names without a same-file def skip as ambiguous). Strictly dominates same-file-only on true-positive retention while eliminating the false-positive class. Synthetic-collision tests prove all three tiers. Next: /qor-auto-dev-1, change_class hotfix.
+
+---
+
+### Entry #459: GATE TRIBUNAL -- Phase 185 plan PASS (keyword-lint scoping)
+
+**Timestamp**: 2026-07-13T09:21:18Z
+**Phase**: GATE (Phase 185)
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase185-keyword-lint-scoping.md
+**Session**: `2026-07-13T0919-7937b6`
+**Report**: .agent/staging/AUDIT_REPORT.md
+
+**Content Hash**: `17f2dc12453d07b2ababacaa7c331558cef4612e03bb1a5ecef0f88f3248df8c`
+**Previous Hash**: `451143a94fc2806b4d088c303937052da43c035ab14cdfdcf6b842a5dc374840`
+**Chain Hash (Merkle seal)**: `e73eeae490ef188015d90f99520cce25d9c14424c3c46970f9ef3405db374c62`
+
+**Decision**: PASS (L1, solo; codex-plugin shortfall logged; option_b_required false). Operationalizes research entry #458 (GH #265): multimap + three-tier candidate resolution (same-file precedence, tree-unique cross-module, ambiguous skip) in the SG-033 lint -- strictly dominating the issue's same-file-only minimum on true-positive retention while eliminating the collision false-positive class; the ambiguous-skip trade-off recorded for disposition with the attribute-resolution follow-on named. Three synthetic-fixture tests prove the tiers (collision test red today). Next: `/qor-implement`.
+
+---
+
+### Entry #460: IMPLEMENTATION -- Phase 185 keyword-lint scoping
+
+**Timestamp**: 2026-07-13T09:31:41Z
+**Phase**: IMPLEMENT (Phase 185)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-07-13T0919-7937b6`
+**Intent Lock**: `LOCKED: 2026-07-13T0919-7937b6`
+
+**Content Hash**: `5102981f78a59852706eedbceb3b51a58704e3dc405549e5581bae888f84fde9`
+**Previous Hash**: `e73eeae490ef188015d90f99520cce25d9c14424c3c46970f9ef3405db374c62`
+**Chain Hash (Merkle seal)**: `2165b978fae7483511a1f3f6aadca6d41e1e470effc07215782cd1cdababfc79`
+
+**Decision**: Phase 185 implemented per plan, TDD-first with ONE mid-red design deepening the tests forced: the plan's kwonly-only collection could not see the caller's own PLAIN same-named definition, so the consumer reproduction still resolved cross-module -- the collector now records non-kwonly same-named defs with positional=None as SHADOWING entries (Python scoping honored: a local plain definition shadows a foreign keyword-only one, and names with no kwonly def anywhere are dropped as non-subjects). `_candidates_for` three tiers per plan LD-1; violation requires exceeding EVERY consulted candidate's arity. 18 focused green twice (collision reproduction, same-file overflow, unique-name cross-module retention, plus the live production lint over qor/scripts + tests). Full suite 2606 passed / 2 skipped. Content hash binds tests/test_shadow_genome_doctrine.py. Next: `/qor-substantiate`.
+
+---
+
+### Entry #461: SESSION SEAL -- Phase 185 keyword-lint scoping (v0.124.4)
+
+**Timestamp**: 2026-07-13T09:32:40Z
+**Phase**: SUBSTANTIATE (Phase 185; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase185-keyword-lint-scoping.md
+**Session**: `2026-07-13T0919-7937b6`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `840bd9798d67`
+
+**Scope**: Phase 185 implemented (hotfix; research entry #458 -> closes GH #265). The SG-033 keyword-only lint resolves call sites scope-soundly: multimap collection (the single-slot dict's last-write-wins made attribution a coin toss under bare-name collisions) + three-tier `_candidates_for` -- same-file definitions take precedence WITH Python-scoping fidelity (a local PLAIN definition shadows a foreign keyword-only one; the mid-red deepening entry #460 records), a tree-unique keyword-only name is still checked cross-module (retaining coverage same-file-only matching would drop), colliding bare names without a local definition skip as ambiguous. A violation requires exceeding EVERY consulted candidate's positional arity. The consumer's 7-false-positive `_emit` reproduction is now a fixture test; live `check`/`scan` collisions stop being arity accidents. Attribute-resolution remains the recorded follow-on for cross-module colliding names.
+
+Change class: hotfix (v0.124.3 -> v0.124.4). Tests: 3 new fixture tests (collision non-flag, same-file flag, unique-name cross-module flag), red-then-green with the shadowing deepening; 18 focused green twice incl. the live production lint; full suite 2606 passed / 2 skipped. Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 130/0, secret-scan clean, merge-velocity healthy, data-API SKIP (disclosed), doc-integrity strict PASS, governance-index advanced + enforce clean, feature-inventory 17/17 vs snapshot 2026-07-13T0858-c7296a. Audit: solo PASS (entry #459; zero violations). Seal commit: LOCAL checkpoint only per operator review-boundary override; no push/PR/tag/remote mutation.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (lint precision)
+
+**Content Hash**: `b7a857a7d71d8eb3361aa369d68cdc38c5b94ffc26c2767cbb851a9950f1e708`
+**Previous Hash**: `2165b978fae7483511a1f3f6aadca6d41e1e470effc07215782cd1cdababfc79`
+**Chain Hash (Merkle seal)**: `053a1bb9d907ab2f4c88518cbc5064a5047028122e140b001cfd0dea9558a2bc`
+
+---
+
 *Chain integrity: VALID*
-*Session: SEALED* (Phase 184; v0.124.3; reachability timeout; local checkpoint commit only -- remote work held for operator review)
+*Session: SEALED* (Phase 185; v0.124.4; keyword-lint scoping; local checkpoint commit only -- remote work held for operator review)

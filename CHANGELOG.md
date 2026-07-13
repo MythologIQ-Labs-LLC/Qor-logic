@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.124.4] - 2026-07-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 185 (hotfix; keyword-lint scoping)**: the SG-033 keyword-only lint no longer produces cross-module false positives from bare-name collisions (GH #265). The old single-slot dict let the last same-named definition in walk order silently win; call sites are now resolved through a scope-aware three-tier rule honoring Python scoping -- same-file definitions take precedence (a local plain definition SHADOWS a foreign keyword-only one), a tree-unique keyword-only name is still checked cross-module (retaining coverage that same-file-only matching would drop), and colliding bare names without a local definition skip as ambiguous. A violation now requires exceeding every consulted candidate's positional arity. Synthetic-fixture tests prove all three tiers, including the consumer's 5-positional-`_emit`-vs-keyword-only-`_emit` reproduction.
+
 ## [0.124.3] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

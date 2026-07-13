@@ -1,0 +1,41 @@
+{
+  "phase": "research",
+  "session_id": "2026-07-13T0919-7937b6",
+  "ts": "2026-07-13T09:20:42Z",
+  "questions": [
+    "How do bare-name collisions corrupt attribution?",
+    "Which live collisions exist?",
+    "Which resolution rule maximizes true-positive retention?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "last-write-wins dict + bare-name call matching (lines 15-53); coin-toss under collisions",
+      "source": "tests/test_shadow_genome_doctrine.py:15"
+    },
+    {
+      "id": "F2",
+      "summary": "live collisions check/scan benign only by arity accident; the consumer _emit case shows the failure",
+      "source": "qor/scripts/override_friction.py:63"
+    },
+    {
+      "id": "F3",
+      "summary": "multimap + three-tier resolution (same-file > tree-unique > skip-ambiguous) dominates same-file-only",
+      "source": "docs/research-brief-keyword-lint-scoping-2026-07-13.md"
+    }
+  ],
+  "sources": [
+    "tests/test_shadow_genome_doctrine.py",
+    "qor/scripts/model_pinning_lint.py",
+    "qor/scripts/override_friction.py"
+  ],
+  "brief_path": "docs/research-brief-keyword-lint-scoping-2026-07-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.124.3",
+    "host": "unknown",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-07-13T09:20:42Z"
+  }
+}
