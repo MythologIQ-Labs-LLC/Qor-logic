@@ -17,7 +17,7 @@ from pathlib import Path
 import pytest
 
 from qor.scripts.merge_velocity_check import (
-    VelocityAssessment,
+    _git_log_merges_in_window,
     assess_merge_velocity,
 )
 
@@ -289,6 +289,33 @@ def test_feat_suffix_is_deterministic_and_seed_independent():
     import hashlib
     assert _feat_suffix("feature 3") == hashlib.sha1(b"feature 3").hexdigest()[:8]
     assert _feat_suffix("feature 3") == _feat_suffix("feature 3")
+
+
+# --- Phase 194 remediation: diagnosable git failure (exit-128 CI flake) -----
+
+def test_git_log_failure_surfaces_stderr(tmp_path):
+    """When the underlying ``git log`` exits non-zero, the raised error must
+    carry git's own stderr and the ref/cwd context.
+
+    The historical exit-128 CI flake (see the Phase 161 notes above) was hard
+    to diagnose precisely because ``check=True`` discarded git's stderr. Run
+    against a directory that is not a git repository so ``git log HEAD`` exits
+    128 deterministically, and assert the message quotes git's reason rather
+    than a bare, contextless CalledProcessError.
+    """
+    not_a_repo = tmp_path / "empty"
+    not_a_repo.mkdir()
+    with pytest.raises(RuntimeError) as exc:
+        _git_log_merges_in_window(not_a_repo, window_days=7)
+    msg = str(exc.value).lower()
+    assert "git log" in msg, f"error must name the failed command; got: {exc.value!r}"
+    assert str(not_a_repo).lower() in msg, (
+        f"error must name the cwd for diagnosis; got: {exc.value!r}"
+    )
+    # git's own reason for exit 128 in a non-repo directory.
+    assert "not a git repository" in msg or "128" in msg, (
+        f"error must surface git's stderr/return code; got: {exc.value!r}"
+    )
 
 
 def test_feat_suffix_unique_across_the_exercised_subject_range():
