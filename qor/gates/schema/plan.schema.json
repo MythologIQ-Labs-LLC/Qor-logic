@@ -65,8 +65,8 @@
       }
     },
     "change_class": {
-      "enum": ["hotfix", "feature", "breaking"],
-      "description": "Phase 168 (GH #248): the release class, previously carried only in plan prose (governance_helpers regex). Persisted here so the tier rules below are schema-enforceable."
+      "enum": ["hotfix", "feature", "breaking", "governance"],
+      "description": "Phase 168 (GH #248): the release class, previously carried only in plan prose (governance_helpers regex). Persisted here so the tier rules below are schema-enforceable. GH #282: 'governance' is the explicit non-release / version-not-applicable class for governance-only cycles where a version bump is inappropriate; version_applicability.validate treats it as version-not-applicable and the substantiate bump step skips."
     },
     "new_ceremony_artifacts": {
       "type": "array",

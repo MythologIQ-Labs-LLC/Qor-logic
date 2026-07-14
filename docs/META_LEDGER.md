@@ -15270,3 +15270,72 @@ Change class: feature (v0.131.0 -> v0.132.0). Tests: 11 new (renderer round-trip
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 193; v0.132.0; ledger emit API + retroactive attestation -- whole ledger verifies; local checkpoint pending release sequencing)
+
+### Entry #495: RESEARCH BRIEF -- GH #282 unify governance-path + ledger dialect
+
+**Timestamp**: 2026-07-13T18:18:24Z
+**Phase**: RESEARCH (GH #282)
+**Author**: Analyst
+**Risk Grade**: L3
+**Session**: `2026-07-13T1819-b134f4`
+
+**Content Hash**: `5bd76800d3023af12bcf6de548748b520e1860d052cc11fcc8cad763340739fe`
+**Previous Hash**: `b1c69912886c2598579759053d5e1141d35ad886c64dbde7a4b154e84f62fc04`
+**Chain Hash (research seal)**: `71446a6a22978e90a82cbac8da2546c9d69f7f162e6a572149826b98605a7c99`
+
+**Decision**: Root-caused four cross-gate governance regressions (GH #282) to two shared causes: hardcoded per-gate governance-path assumptions and three divergent ledger-dialect parsers. Empirically confirmed the fenced bare-hex markup gap in CONTENT_HASH_RE and the docs/architecture.md-vs-registered-ARCHITECTURE_PLAN.md topology gap. Recommends one shared canonical-path resolver, one shared versioned ledger-dialect parser, and early version-applicability validation. Brief: docs/research-brief-unify-governance-paths-ledger-dialect-2026-07-13.md. Next: /qor-plan.
+
+### Entry #496: GATE TRIBUNAL -- Phase 194 GH #282 (PASS)
+
+**Timestamp**: 2026-07-13T18:27:25Z
+**Phase**: GATE (Phase 194)
+**Author**: Judge
+**Risk Grade**: L3
+**Plan**: docs/plan-qor-phase194-unify-governance-paths-ledger-dialect.md
+**Session**: `2026-07-13T1819-b134f4`
+**Verdict**: PASS
+
+**Content Hash**: `ad36fcd73e51f8da670d2f0d3438d035543c50b921156ab1ce102b780ec99e4a`
+**Previous Hash**: `71446a6a22978e90a82cbac8da2546c9d69f7f162e6a572149826b98605a7c99`
+**Chain Hash (tribunal seal)**: `3a8134955ed89e9a3af65bb1e2eb26edd53ad4f344357fb63833d8043f2012cb`
+
+**Decision**: PASS at L3. Shared governance-path resolver + shared versioned ledger-dialect parser + early version-applicability validation. All adversarial passes clear: injection clean (after removing a literal canary example from plan prose), security fail-closed preserved (dialect change adds recognized forms only; every rejection retained), OWASP clear, Razor within limits, self-application clean, tests behavioral, no new deps, acyclic module graph, infrastructure grep-verified, filter-stage reject-before-read ordered. Bootstrap-conflict disclosed: none of the edited gates blocks this cycle (plan is phase-tagged + allowlisted; repo uses inline-backtick ledger; doc_tier minimal; feature target 0.133.0 > tag 0.132.0). Next: /qor-implement.
+
+### Entry #497: IMPLEMENTATION -- Phase 194 GH #282
+
+**Timestamp**: 2026-07-13T19:16:10Z
+**Phase**: IMPLEMENT (Phase 194)
+**Author**: Specialist
+**Risk Grade**: L3
+**Session**: `2026-07-13T1819-b134f4`
+**Intent Lock**: `LOCKED: 2026-07-13T1819-b134f4`
+
+**Content Hash**: `0e0c4af12e9ce30e3be1e3ab0b58110a06796cea0ea73d2626741aca87d3d3ba`
+**Previous Hash**: `3a8134955ed89e9a3af65bb1e2eb26edd53ad4f344357fb63833d8043f2012cb`
+**Chain Hash (Merkle seal)**: `280516cd77f338dec54113fea932c9df1407052b1077d980378d7fe469194636`
+
+**Decision**: Implemented Phase 194 per PASS audit (entry #496), TDD-first (three new unit suites red before code). Three shared modules: governance_paths.py (architecture-authority + governance-plan-path resolver; reuses governance_index registration; legacy-literal precedence keeps this repo unchanged; fail-closed on missing/multiple/unregistered/outside-root/unsupported-ext), ledger_dialect.py (single source for inline/=/fenced-bare-hex hash forms + separate **Phase** line + MARKUP_COMPAT_BOUNDARY=123; consumed by ledger_hash, seal_entry_check, and transitively governance_health -- all three now agree), version_applicability.py (release target > highest tag validated before audit PASS; explicit non-release change_class 'governance' = version-not-applicable). Wired: doc_integrity.check_topology (architecture slot via resolver), prompt_injection_canaries._validate_path (resolver; registered plan-<slug>.md admitted, traversal/outside-root/unsupported/unregistered rejected before read), governance_helpers._CHANGE_CLASS_RE (+governance), plan.schema.json enum (+governance), audit+substantiate SKILLs, references/version-applicability-pass.md. No ledger history rewritten; no rejection relaxed (tampered content, malformed hashes, chain mismatch, post-boundary duplicate previous-hash still FAIL -- behaviorally tested). Section 4 held (doc_integrity.py back to 250; both governance SKILLs under 39936 headroom via progressive disclosure). Full suite 2713 passed / 2 skipped; ruff clean; dist recompiled (30 skill dirs); ledger verifies. Content hash binds the plan. Next: /qor-substantiate.
+
+### Entry #498: SESSION SEAL -- Phase 194 unify governance-path + ledger dialect (v0.133.0)
+
+**Timestamp**: 2026-07-13T19:59:46Z
+**Phase**: SUBSTANTIATE (Phase 194; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase194-unify-governance-paths-ledger-dialect.md
+**Session**: `2026-07-13T1819-b134f4`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Entry ID**: `2b164c7f9462`
+
+**Scope**: Phase 194 sealed (feature; research entry #495 -> GH #282). Four cross-gate governance regressions closed with three shared modules that four gates now delegate to: governance_paths (architecture-authority + governance-plan-path resolver, reusing the governance-index registration; legacy-literal precedence keeps this repo byte-unchanged; fail-closed on missing/multiple/unregistered/outside-root/unsupported-extension), ledger_dialect (single source for the inline / = / fenced-bare-hex hash forms + separate **Phase** line + MARKUP_COMPAT_BOUNDARY=123; consumed by ledger_hash, seal_entry_check, and transitively governance_health -- all three now agree), and version_applicability (release target > highest tag validated before audit PASS; explicit non-release change_class 'governance' = version-not-applicable, honored identically by plan/audit/substantiate). No rejection relaxed (tampered content, malformed hashes, chain mismatch, post-boundary duplicate previous-hash still FAIL, behaviorally tested); no adopter ledger history rewritten; the fenced form is additive. Section 4 held (doc_integrity.py 250; both governance SKILLs under the 40 KB budget via progressive disclosure into references/version-applicability-pass.md). Audit: solo PASS at L3 (entry #496; zero violations; bootstrap conflict disclosed -- no edited gate blocks this cycle). Substantiate gates: intent-lock VERIFIED, admission ADMITTED, matrix 140/0, version-applicability release-valid (v0.133.0 > v0.132.0), doc-integrity strict PASS (change_class term adopted), governance-index enforce clean, data-API SKIP (no SQL), merge-velocity healthy, secret-scan clean, feature-inventory 17/17. Change class: feature (v0.132.0 -> v0.133.0). Tests: 27 new across three suites (resolver positives+negatives, three-consumer dialect consistency + preserved rejections, early version-applicability), red-then-green; full suite 2715 collected / 2713 passed / 2 skipped; ruff clean; dist recompiled (30 skill dirs). Content hash binds the plan. Seal commit: LOCAL checkpoint; PR opened for operator review per #282.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0 (ledger integrity)
+
+**Content Hash**: `0e0c4af12e9ce30e3be1e3ab0b58110a06796cea0ea73d2626741aca87d3d3ba`
+**Previous Hash**: `280516cd77f338dec54113fea932c9df1407052b1077d980378d7fe469194636`
+**Chain Hash (Merkle seal)**: `8cd6c3c0b4a963e65eb78fa1ef88522524078d458fe4ded65dcfb610a9ecf8f5`
+
+---
+
+*Chain integrity: VALID*
+*Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

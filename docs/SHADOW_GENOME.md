@@ -1233,4 +1233,28 @@ Structure-without-policy. Candidate SG family entry if it recurs: `SG-StructureW
 
 ---
 
+## 2026-07-13 -- Gate-assumption divergence (GH #282)
+
+**Date**: 2026-07-13
+
+**Surface**: doc_integrity.check_topology, prompt_injection_canaries, and the three ledger parsers (ledger_hash / seal_entry_check / governance_health).
+
+### Findings
+
+Four regressions reproduced downstream shared one shape: a gate re-derived a governance path or ledger dialect with a stricter LOCAL assumption than the authoritative governance-health pre-gate. `check_topology` hardcoded `docs/architecture.md` while the index registered `docs/ARCHITECTURE_PLAN.md`; `prompt_injection_canaries` allowlisted only `docs/plan-qor-phase*.md` and rejected a registered `plan-<slug>.md`; `verify-ledger` rejected fenced bare-hex entries at/after entry 123 for "missing canonical hash markup" while governance-health tolerated them via its post-anchor band; version-applicability was validated only at the substantiate bump, after audit PASS. Empirical probe (2026-07-13): the current `CONTENT_HASH_RE` matches inline-backtick and `= <hex>` forms but NOT a fenced block whose only content is a bare 64-hex line.
+
+### Root Cause Analysis
+
+Each gate grew its own path/dialect assumption independently. Governance-health was made the authoritative pre-gate, but the downstream gates never delegated to a shared resolver/parser, so "health-clean" and "gate-aborts" could both be true at once. The compatibility boundary (`markup_required_cutoff=123`) existed in one parser only; the other two either forked the regex or wrapped a different tolerance.
+
+### Pattern to Avoid
+
+A gate must resolve a governance path or ledger dialect through ONE shared resolver/parser, never a parallel per-gate assumption. When health accepts a repository, no downstream gate may apply a stricter path/dialect rule that health did not. Compatibility boundaries live in the shared parser, once.
+
+### Pattern ID
+
+Gate-assumption-divergence. Candidate SG family entry: `SG-GateAssumptionDivergence-A` -- a downstream gate re-derives a governance path or ledger dialect with a stricter local assumption than the authoritative pre-gate, yielding a health-clean-but-gate-aborts contradiction. Remedy is a shared resolver/parser.
+
+---
+
 *Shadow integrity: ACTIVE*

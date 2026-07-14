@@ -17,7 +17,7 @@ class InterdictionError(RuntimeError):
 
 _PHASE_FILENAME_RE = re.compile(r"^plan-qor-phase(\d+)-([a-z0-9-]+)\.md$")
 _CHANGE_CLASS_RE = re.compile(
-    r"^\*\*change_class\*\*:\s+(hotfix|feature|breaking)\s*$",
+    r"^\*\*change_class\*\*:\s+(hotfix|feature|breaking|governance)\s*$",
     re.MULTILINE,
 )
 _BRANCH_PHASE_RE = re.compile(r"^phase/(\d+)-")

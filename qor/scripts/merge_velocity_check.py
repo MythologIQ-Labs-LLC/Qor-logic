@@ -73,8 +73,16 @@ def _git_log_merges_in_window(repo_root: Path, window_days: int) -> list[tuple[s
             "git", "log", ref, "--merges",
             "--pretty=format:%H%x00%cI%x00%s",
         ],
-        cwd=str(repo_root), capture_output=True, text=True, check=True,
+        cwd=str(repo_root), capture_output=True, text=True,
     )
+    # Do not swallow git's stderr under check=True: the historical exit-128 CI
+    # flake was undiagnosable because the reason (dubious ownership, missing
+    # ref, absent repo) never reached the log. Surface it verbatim.
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"git log {ref} --merges failed (exit {result.returncode}) "
+            f"in {repo_root}: {result.stderr.strip() or '<no stderr>'}"
+        )
     cutoff_epoch = datetime.now(timezone.utc).timestamp() - (window_days * 86400)
     out: list[tuple[str, str]] = []
     for line in result.stdout.splitlines():

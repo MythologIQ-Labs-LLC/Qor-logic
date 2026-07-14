@@ -251,11 +251,15 @@ qor-logic scripts prompt_injection_canaries \\
   || ABORT
 ```
 
-The `${PLAN_PATH}` shell variable is consumed only as an argv argument and is regex-validated against `_GOVERNANCE_FILE_RE` inside the script before use; SG-Phase47-A countermeasure honored by construction (no `python -c "...${VAR}..."` Python-literal interpolation).
+The `${PLAN_PATH}` value is consumed only as an argv argument and validated by the shared resolver (`governance_paths.resolve_governance_plan_path`, GH #282), which rejects traversal, outside-root, unsupported-extension, and unregistered paths before read (SG-Phase47-A honored by construction).
 
 **Any canary hit -> VETO with `prompt-injection` category**.
 
 **Required next action:** Governor: amend the offending file(s) to remove the canary content, re-run `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md`, this is a **Plan-text** ground.
+
+#### Version-Applicability Pass (GH #282)
+
+`version_applicability.validate` on the active plan before PASS: a release-class target that cannot exceed the current tag -> **VETO (`specification-drift`)**; `change_class: governance` is version-not-applicable. Procedure: `references/version-applicability-pass.md`.
 
 #### Security Pass (L3 Violations)
 

@@ -4,3 +4,12 @@
 docs/*.md text eol=lf
 docs/**/*.md text eol=lf
 .qor/** text eol=lf
+
+# Phase 194 (GH #282 remediation): skill markdown carries the same LF pin.
+# The governance skill-size headroom tests measure os.path.getsize (raw bytes),
+# so a host core.autocrlf checkout inflated them ~1 byte/line and tripped the
+# bound on Windows CI while Linux passed. Pinning source + dist-variant skill
+# markdown to LF makes the byte measurement host-independent and keeps the
+# canonical/variant block-equality tests comparing like for like.
+qor/skills/**/*.md text eol=lf
+qor/dist/**/*.md text eol=lf

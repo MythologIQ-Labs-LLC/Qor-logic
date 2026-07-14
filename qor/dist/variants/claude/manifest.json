@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-07-13T13:35:56Z",
+  "generated_ts": "2026-07-13T20:00:54Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -130,9 +130,15 @@
     },
     {
       "id": "qor-audit",
+      "source_path": "skills/qor-audit/references/version-applicability-pass.md",
+      "install_rel_path": "skills/qor-audit/references/version-applicability-pass.md",
+      "sha256": "8d626bc02695d4ef1520b96307b6d8036eff8600eabd85658cbc2a1319cd68db"
+    },
+    {
+      "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "f3c6e18c4c5fdd4ffb60bc6653c7520452721fb8890bcd378dbf5ae15a1950ce"
+      "sha256": "9733c5d8e0b9c5efeaa9e37c900fb7b358920df0ce5c0900489ea710c61155c6"
     },
     {
       "id": "qor-bootstrap",
@@ -300,7 +306,7 @@
       "id": "qor-plan",
       "source_path": "skills/qor-plan/references/spec-delta-authoring.md",
       "install_rel_path": "skills/qor-plan/references/spec-delta-authoring.md",
-      "sha256": "33ab98f7c27f41f3a387b3c39be88c60034499b00d479a973dc034345905695c"
+      "sha256": "ad630d637990448908f91d91abfb8990bc4df720698e4c28ea6cdcbdc9e81f25"
     },
     {
       "id": "qor-plan",
@@ -420,13 +426,13 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
       "install_rel_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
-      "sha256": "df905870dff976ea2ccac886758b6b27138948a852869369c13656e4f5fa3a26"
+      "sha256": "b88ebb0fce06fde9a98b5fbaf69e732423b443602e2851196ccad53ac5f0750f"
     },
     {
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "c798b48d7848b380847c85d843103fb62740d5f6c7b79d59d82b3f192df2ae32"
+      "sha256": "91526109940b4178dc33f6cd5113f60f42baf1f294127b91369c7769addfdb02"
     },
     {
       "id": "qor-tone",

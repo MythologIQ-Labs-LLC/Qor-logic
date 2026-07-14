@@ -201,7 +201,7 @@ introduced_in_plan: phase28-documentation-integrity
 
 ```yaml
 term: change_class
-definition: A per-plan declaration of version impact -- hotfix, feature, or breaking. Governs the version bump performed at substantiate time by governance_helpers.bump_version.
+definition: A per-plan declaration of version impact -- hotfix, feature, or breaking (release classes), or governance (the non-release / version-not-applicable class). Governs the version bump performed at substantiate time by governance_helpers.bump_version; version_applicability applies the same classification before audit PASS.
 home: qor/references/doctrine-governance-enforcement.md
 referenced_by:
   - qor/skills/meta/qor-onboard/references/tutorial-narration.md
@@ -210,6 +210,8 @@ referenced_by:
   - qor/skills/sdlc/qor-plan/SKILL.md
   - qor/skills/sdlc/qor-plan/references/step-extensions.md
   - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/governance/qor-audit/references/version-applicability-pass.md
   - docs/lifecycle.md
   - docs/operations.md
   - docs/policies.md

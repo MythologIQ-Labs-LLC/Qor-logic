@@ -21,6 +21,8 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
+from qor.scripts import ledger_dialect as _dialect
+
 
 def content_hash(path: Path) -> str:
     """SHA256 of the file's bytes with line endings normalized to LF.
@@ -137,37 +139,17 @@ def _atomic_write_json(path: Path, data: dict) -> None:
 
 ENTRY_RE = re.compile(r"^### Entry #(\d+):", re.MULTILINE)
 
-# Phase 41 (issue #13): all three hash fields require the `**Field**` bold anchor,
-# accept either inline-backtick `<hex>` or fenced `= <hex>` forms, and use a bounded
-# non-greedy span that stops at the next `**FieldName**` marker. This prevents the
-# pre-Phase-41 defects where CHAIN_HASH_RE matched prose mentions and where unbounded
-# `.*?` under re.DOTALL swept across field boundaries into unrelated hex values.
-#
-# Phase 44: hash field labels MAY carry an optional parenthetical suffix inside the
-# bold markers (e.g., `**Chain Hash (Merkle seal)**:`, `**Content Hash (session seal)**:`).
-# This is the standard SESSION SEAL convention since Phase 23. The Phase 41 strict
-# anchor `\*\*Field\*\*` did not match these and silently skipped seal entries; the
-# `(?:\s*\([^)]+\))?` segment restores coverage without weakening bold-anchor protection.
-_HASH_SPAN = r"(?:(?!\n\s*\*\*[A-Z])[\s\S])*?"
-_HASH_VALUE = r"(?:`([0-9a-f]{64})`|=\s*([0-9a-f]{64})\b)"
-_FIELD_SUFFIX = r"(?:\s*\([^)]+\))?"
-
-CONTENT_HASH_RE = re.compile(rf"\*\*Content Hash{_FIELD_SUFFIX}\*\*{_HASH_SPAN}{_HASH_VALUE}")
-PREV_HASH_RE = re.compile(rf"\*\*Previous Hash{_FIELD_SUFFIX}\*\*{_HASH_SPAN}{_HASH_VALUE}")
-CHAIN_HASH_RE = re.compile(rf"\*\*Chain Hash{_FIELD_SUFFIX}\*\*{_HASH_SPAN}{_HASH_VALUE}")
-
-# Phase 66 (GH #54): Session Seal markup recognition. Some historical seal
-# entries use the form `**Session Seal**:\n SHA256(content + prev) = \`<hex>\``
-# instead of the canonical `**Chain Hash (...)**: \`<hex>\``. The verifier
-# treats the captured digest as the chain hash for those entries. The bounded
-# span between the field anchor and the digest tolerates multi-line bodies
-# but stops at the next `**Field**` marker, mirroring _HASH_SPAN in the
-# canonical Chain Hash regex.
-SESSION_SEAL_RE = re.compile(
-    r"\*\*Session Seal\*\*"
-    + _HASH_SPAN
-    + r"=\s*`([0-9a-f]{64})`"
-)
+# GH #282: the hash-markup dialect (inline-backtick, `= <hex>`, and fenced
+# bare-hex) and the historical compatibility boundary now live in the shared
+# `ledger_dialect` module, so ledger_hash, seal_entry_check, and
+# governance_health accept exactly one dialect. The Phase 41 bounded-span /
+# bold-anchor protection and the Phase 44 optional-suffix + Phase 66 Session
+# Seal recognition are preserved there. Re-exported here so existing callers
+# (and tests) that reference these names keep working.
+CONTENT_HASH_RE = _dialect.CONTENT_HASH_RE
+PREV_HASH_RE = _dialect.PREV_HASH_RE
+CHAIN_HASH_RE = _dialect.CHAIN_HASH_RE
+SESSION_SEAL_RE = _dialect.SESSION_SEAL_RE
 
 # Phase 119 (GH #148): a RECONCILIATION entry's machine-parseable attestation
 # line, e.g. `**Reconciled Entries**: #16, #17, #18`. verify() honors the
@@ -259,7 +241,7 @@ def find_grandfathered_entries(
         ph = PREV_HASH_RE.search(body)
         if not ph:
             continue
-        prev_val = ph.group(1) or ph.group(2)
+        prev_val = _dialect.hash_value(ph)
         by_prev.setdefault(prev_val, []).append(num)
 
     grandfathered: set[int] = set()
@@ -282,7 +264,7 @@ def _duplicate_previous_hash_members(entries: list[tuple[int, str]]) -> set[int]
         ph = PREV_HASH_RE.search(body)
         if not ph:
             continue
-        by_prev.setdefault(ph.group(1) or ph.group(2), []).append(num)
+        by_prev.setdefault(_dialect.hash_value(ph), []).append(num)
     members: set[int] = set()
     for nums in by_prev.values():
         if len(nums) >= 2:
@@ -337,9 +319,9 @@ def _resolve_recorded(body: str) -> tuple[str, str, str] | None:
         seal_only = SESSION_SEAL_RE.search(body) if not xh else None
         if not (ch and ph and seal_only):
             return None
-    content_val = ch.group(1) or ch.group(2)
-    previous_val = ph.group(1) or ph.group(2)
-    recorded = (xh.group(1) or xh.group(2)) if xh else seal_only.group(1)
+    content_val = _dialect.hash_value(ch)
+    previous_val = _dialect.hash_value(ph)
+    recorded = _dialect.hash_value(xh) if xh else seal_only.group(1)
     return content_val, previous_val, recorded
 
 
@@ -378,7 +360,7 @@ def verify(
     *,
     tolerate_known_grandfathered: bool = False,
     grandfather_cutoff: int = 207,
-    markup_required_cutoff: int = 123,
+    markup_required_cutoff: int = _dialect.MARKUP_COMPAT_BOUNDARY,
 ) -> int:
     """Verify chain integrity of META_LEDGER.md. Returns exit code.
 
@@ -526,9 +508,9 @@ def verify_post_anchor(
                 continue  # unparseable: omitted from post-anchor surface
             recorded = seal_only.group(1)
         else:
-            recorded = xh.group(1) or xh.group(2)
-        content_val = ch.group(1) or ch.group(2)
-        previous_val = ph.group(1) or ph.group(2)
+            recorded = _dialect.hash_value(xh)
+        content_val = _dialect.hash_value(ch)
+        previous_val = _dialect.hash_value(ph)
         if _find_placeholder_field(content_val, previous_val, recorded):
             classifications.append((num, "fail"))
             continue
