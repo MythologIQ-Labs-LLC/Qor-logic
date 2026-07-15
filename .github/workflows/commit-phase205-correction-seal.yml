@@ -99,8 +99,35 @@ jobs:
         run: python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan docs/plan-qor-phase205-codeql-security-baseline.md
       - name: Verify gate completeness
         run: python -m qor.reliability.gate_chain_completeness --phase-min 52
-      - name: Verify derived seal artifacts
-        run: python -m qor.scripts.seal_artifacts --check --repo-root .
+      - name: Evaluate derived seal artifacts
+        id: derived
+        continue-on-error: true
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from qor.scripts.seal_artifacts import check_files
+          mismatches = check_files(Path('.'))
+          Path('seal-artifact-diagnostics.json').write_text(json.dumps({'mismatches': mismatches}, indent=2) + '\n', encoding='utf-8')
+          if mismatches:
+              for mismatch in mismatches:
+                  print(mismatch)
+              raise SystemExit(1)
+          PY
+      - name: Upload derived-artifact diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: phase205-derived-artifact-diagnostics
+          path: seal-artifact-diagnostics.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce derived seal artifacts
+        if: steps.derived.outcome != 'success'
+        run: |
+          echo '::error::Derived seal artifacts remain stale. Review the phase205-derived-artifact-diagnostics artifact.'
+          exit 1
 
       - name: Commit only correction evidence and remove writer
         shell: bash
