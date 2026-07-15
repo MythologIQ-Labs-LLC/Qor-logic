@@ -3,9 +3,16 @@ name: CodeQL
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
   schedule:
+    # cost justification: one weekly extended security scan limits hosted-runner cost while detecting advisory/query updates between code changes.
     - cron: '17 5 * * 1'
   workflow_dispatch:
 
