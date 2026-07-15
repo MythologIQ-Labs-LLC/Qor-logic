@@ -75,9 +75,6 @@ def _make_merge_commit(
         full.parent.mkdir(parents=True, exist_ok=True)
         full.write_text(content + "\n", encoding="utf-8")
     _run(["git", "add", "."], cwd=repo)
-    # The fixture tests merge-graph behavior, not tree-diff semantics. Allowing
-    # an empty synthetic feature commit makes the DAG deterministic even if a
-    # platform or filesystem reports an unchanged tree unexpectedly.
     _run(["git", "commit", "--allow-empty", "-m", f"feat: {subject}"], cwd=repo)
     _run(["git", "checkout", "main"], cwd=repo)
     # Set commit date via env var for the merge commit
@@ -161,7 +158,59 @@ def test_shared_core_touch_counted_for_declared_paths(tmp_path):
             repo, f"other change {i}", files={f"other/file_{i}.py": f"y = {i}"},
         )
     a = assess_merge_velocity(repo, window_days=30, shared_core_paths=("core/ledger/",))
-    assert a.shared_core_touch_count == 3
+    assert a.shared_core_touch_count == 3, (
+        f"expected 3 shared-core touches; got {a.shared_core_touch_count}"
+    )
+
+
+def test_shared_core_touch_zero_when_no_patterns_declared(tmp_path):
+    repo = _make_repo(tmp_path)
+    _make_merge_commit(repo, "feature")
+    a = assess_merge_velocity(repo, window_days=7)
+    assert a.shared_core_touch_count == 0
+
+
+# ---------------------------------------------------------------------------
+# Recommended action mapping
+# ---------------------------------------------------------------------------
+
+
+def test_recommended_action_maps_from_grade(tmp_path):
+    # healthy
+    repo_h = _make_repo(tmp_path / "h")
+    _make_merge_commit(repo_h, "feature")
+    a_h = assess_merge_velocity(repo_h, window_days=7)
+    assert a_h.recommended_action == "merge_ok"
+
+    # strained
+    repo_s = _make_repo(tmp_path / "s")
+    for i in range(12):
+        _make_merge_commit(repo_s, f"feature {i}")
+    a_s = assess_merge_velocity(repo_s, window_days=7)
+    assert a_s.recommended_action == "narrow_scope"
+
+    # exceeded
+    repo_e = _make_repo(tmp_path / "e")
+    for i in range(25):
+        _make_merge_commit(repo_e, f"fix: {i}")
+    a_e = assess_merge_velocity(repo_e, window_days=7)
+    assert a_e.recommended_action == "branch_only"
+
+
+# ---------------------------------------------------------------------------
+# Evidence list
+# ---------------------------------------------------------------------------
+
+
+def test_evidence_list_names_threshold_in_each_fired_signal(tmp_path):
+    repo = _make_repo(tmp_path)
+    for i in range(15):
+        _make_merge_commit(repo, f"feature {i}")
+    a = assess_merge_velocity(repo, window_days=7)
+    # 15 >= strained threshold 10; the evidence list must name the threshold
+    assert any("10" in e and ">=" in e for e in a.evidence), (
+        f"expected evidence string naming the 10-threshold; got: {a.evidence}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -169,41 +218,115 @@ def test_shared_core_touch_counted_for_declared_paths(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def test_merges_outside_window_excluded(tmp_path):
+def test_window_days_arg_filters_merges(tmp_path):
     repo = _make_repo(tmp_path)
-    _make_merge_commit(repo, "recent feature")
-    _make_merge_commit(repo, "old feature", days_ago=60)
-    merges = _git_log_merges_in_window(repo, 30)
-    subjects = [m.subject for m in merges]
-    assert "recent feature" in subjects
-    assert "old feature" not in subjects
+    # 3 recent + 3 old (15 days ago)
+    for i in range(3):
+        _make_merge_commit(repo, f"recent {i}")
+    for i in range(3):
+        _make_merge_commit(repo, f"old {i}", days_ago=15)
+    a_narrow = assess_merge_velocity(repo, window_days=7)
+    a_wide = assess_merge_velocity(repo, window_days=30)
+    assert a_narrow.prs_merged_in_window == 3
+    assert a_wide.prs_merged_in_window == 6
 
 
 # ---------------------------------------------------------------------------
-# CLI behavior
+# CLI
 # ---------------------------------------------------------------------------
 
 
-def test_cli_healthy_exits_zero(tmp_path):
+def test_main_cli_exits_zero_on_healthy(tmp_path):
     repo = _make_repo(tmp_path)
-    _make_merge_commit(repo, "feature one")
+    _make_merge_commit(repo, "feature")
     result = subprocess.run(
-        [sys.executable, "-m", "qor.scripts.merge_velocity_check", "--repo", str(repo)],
-        capture_output=True,
-        text=True,
+        [sys.executable, "-m", "qor.scripts.merge_velocity_check",
+         "--repo-root", str(repo), "--window-days", "7"],
+        capture_output=True, text=True, cwd=str(REPO_ROOT),
     )
-    assert result.returncode == 0
-    assert "healthy" in result.stdout
+    assert result.returncode == 0, (
+        f"healthy should exit 0; got {result.returncode} stderr={result.stderr!r}"
+    )
 
 
-def test_cli_exceeded_exits_one(tmp_path):
+def test_main_cli_exits_one_on_exceeded(tmp_path):
     repo = _make_repo(tmp_path)
     for i in range(25):
-        _make_merge_commit(repo, f"fix: issue {i}")
+        _make_merge_commit(repo, f"fix: {i}")
     result = subprocess.run(
-        [sys.executable, "-m", "qor.scripts.merge_velocity_check", "--repo", str(repo), "--window-days", "7"],
-        capture_output=True,
-        text=True,
+        [sys.executable, "-m", "qor.scripts.merge_velocity_check",
+         "--repo-root", str(repo), "--window-days", "7"],
+        capture_output=True, text=True, cwd=str(REPO_ROOT),
     )
-    assert result.returncode == 1
-    assert "exceeded" in result.stdout
+    assert result.returncode == 1, (
+        f"exceeded should exit 1; got {result.returncode} stdout={result.stdout!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Canonical-repo forward-only guard
+# ---------------------------------------------------------------------------
+
+
+def test_assess_velocity_on_qor_logic_main():
+    """Run the detector on Qor-logic's own main; assert it returns a valid
+    grade and a positive PR count. Does NOT assert a specific grade (data-
+    driven; will shift over time)."""
+    a = assess_merge_velocity(REPO_ROOT, window_days=30)
+    assert a.stabilization_capacity in {"healthy", "strained", "exceeded"}, (
+        f"invalid grade: {a.stabilization_capacity}"
+    )
+    assert a.prs_merged_in_window > 0, (
+        f"canonical repo must have at least one merge in 30-day window; got {a.prs_merged_in_window}"
+    )
+
+
+# --- Phase 161 (GH CI flake): deterministic, seed-independent feat naming ---
+
+def test_feat_suffix_is_deterministic_and_seed_independent():
+    """`_feat_suffix` must be a pure function of the subject -- pinned to sha1, so
+    it does NOT use the PYTHONHASHSEED-randomized builtin hash()."""
+    import hashlib
+    assert _feat_suffix("feature 3") == hashlib.sha1(b"feature 3").hexdigest()[:8]
+    assert _feat_suffix("feature 3") == _feat_suffix("feature 3")
+
+
+# --- Phase 194 remediation: diagnosable git failure (exit-128 CI flake) -----
+
+def test_git_log_failure_surfaces_stderr(tmp_path):
+    """When the underlying ``git log`` exits non-zero, the raised error must
+    carry git's own stderr and the ref/cwd context.
+
+    The historical exit-128 CI flake (see the Phase 161 notes above) was hard
+    to diagnose precisely because ``check=True`` discarded git's stderr. Run
+    against a directory that is not a git repository so ``git log HEAD`` exits
+    128 deterministically, and assert the message quotes git's reason rather
+    than a bare, contextless CalledProcessError.
+    """
+    not_a_repo = tmp_path / "empty"
+    not_a_repo.mkdir()
+    with pytest.raises(RuntimeError) as exc:
+        _git_log_merges_in_window(not_a_repo, window_days=7)
+    msg = str(exc.value).lower()
+    assert "git log" in msg, f"error must name the failed command; got: {exc.value!r}"
+    assert str(not_a_repo).lower() in msg, (
+        f"error must name the cwd for diagnosis; got: {exc.value!r}"
+    )
+    # git's own reason for exit 128 in a non-repo directory.
+    assert "not a git repository" in msg or "128" in msg, (
+        f"error must surface git's stderr/return code; got: {exc.value!r}"
+    )
+
+
+def test_feat_suffix_unique_across_the_exercised_subject_range():
+    """Distinct subjects the suite actually uses must yield distinct suffixes, so
+    no within-repo `git checkout -b feat-<n>` collision (the exit-128 flake) can
+    occur regardless of process seed."""
+    subjects = (
+        [f"feature {i}" for i in range(301)]
+        + [f"fix: {i}" for i in range(301)]
+        + [f"recent {i}" for i in range(301)]
+        + [f"old {i}" for i in range(301)]
+    )
+    suffixes = [_feat_suffix(s) for s in subjects]
+    assert len(set(suffixes)) == len(suffixes)
