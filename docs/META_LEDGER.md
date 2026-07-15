@@ -15349,6 +15349,20 @@ Change class: feature (v0.131.0 -> v0.132.0). Tests: 11 new (renderer round-trip
 
 **Decision**: Pinned Python CodeQL and exact-head CI evidence are implemented. The synthetic merge-history fixture is deterministic across supported Python and Git versions. GitHub Code Security remains a disclosed repository-setting prerequisite for SARIF publication; no bypass, advisory waiver, or personal token was introduced.
 
+### Entry #500: SESSION SEAL -- Phase 205: CodeQL security baseline correction
+
+**Phase**: 205
+**Plan**: docs/plan-qor-phase205-codeql-security-baseline.md
+**Change Class**: feature
+**Status**: PASS
+**SSDF Practices**: PO.4.1, PW.7.2, RV.1.2
+
+**Content Hash**: `c6c2aff3590441e4f1e7c4abb07150aaeb9d52bb16e3b94ac825c31c7561e38b`
+**Previous Hash**: `8b4bd6c7a5dba4d0e681b26d964bf3f0cfd690d443699a9b964c26a300fee417`
+**Chain Hash (Merkle seal)**: `a7b49fbf4dc217971a5501e1298004e0a5d2018f62eb97b84d1d967fc8779b2b`
+
+**Decision**: Corrected the Phase 205 plan schema and canonical seal title; regenerated README and SYSTEM_STATE currency. Prior entries remain immutable historical evidence.
+
 ---
 
 *Chain integrity: VALID*

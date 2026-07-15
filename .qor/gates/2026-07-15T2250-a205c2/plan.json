@@ -1,0 +1,48 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-15T2250-a205c2",
+  "ts": "2026-07-15T22:33:55Z",
+  "plan_path": "docs/plan-qor-phase205-codeql-security-baseline.md",
+  "phases": [
+    "Canonical seal dialect",
+    "Derived artifact currency"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -v",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m qor.scripts.seal_artifacts --check --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "feature",
+  "originating_remediation": "MythologIQ-Labs-LLC/qortara-sdlc#41",
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "GitHub Code Security remains required."
+    ],
+    "non_goals": [
+      "runtime changes",
+      "dependency changes",
+      "merge bypass"
+    ],
+    "exclusions": [
+      "Bicameral repositories",
+      "Knapp-Kevin/Qor"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.133.0",
+    "host": "chatgpt-github-connector",
+    "model_family": "gpt-5.6-thinking",
+    "human_oversight": "absent",
+    "ts": "2026-07-15T22:33:55Z"
+  }
+}
