@@ -1,6 +1,6 @@
 # Plan: Fail-closed CodeQL security baseline (Qortara ecosystem)
 
-**change_class**: governance
+**change_class**: feature
 
 **doc_tier**: minimal
 
@@ -20,6 +20,7 @@ Add a pinned, least-privilege Python CodeQL workflow to Qor-logic, preserve the 
 - `docs/plan-qor-phase205-codeql-security-baseline.md` - bind intent and merge criteria.
 - `.qor/gates/<session>/` - record plan, audit, implementation, and substantiation evidence.
 - `docs/META_LEDGER.md` - append one plan-bound SESSION SEAL through the canonical ledger emitter.
+- `README.md` and `docs/SYSTEM_STATE.md` - regenerate derived seal-artifact counts and current phase metadata.
 
 ### Non-goals
 
@@ -36,24 +37,26 @@ Add a pinned, least-privilege Python CodeQL workflow to Qor-logic, preserve the 
 3. Workflow permissions remain read-only except `security-events: write` for SARIF publication.
 4. Existing pytest commands remain textually unchanged; JUnit is supplied through `PYTEST_ADDOPTS` so the sealed CI command contract remains intact.
 5. Synthetic merge-history tests create the intended DAG deterministically across Python and Git versions.
-6. Merge is allowed only when CodeQL publication, dependency review, citation lint, and the full exact-head CI matrix pass.
+6. Derived README and SYSTEM_STATE seal artifacts are regenerated through `qor.scripts.seal_artifacts`, not hand-edited.
+7. Merge is allowed only when CodeQL publication, dependency review, citation lint, and the full exact-head CI matrix pass.
 
 ## Repository configuration prerequisite
 
 GitHub Code Security and code scanning must accept SARIF for the repository. A locally generated clean CodeQL database is not merge evidence until GitHub publishes the result.
 
-## Validation
+## CI Commands
 
 - `python -m pytest tests/ -v`
 - `python qor/scripts/check_variant_drift.py`
 - `python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md`
 - `python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto`
+- `python -m qor.scripts.seal_artifacts --check --repo-root .`
 - Existing PR Dependency Review
 - Exact-head CodeQL publication
 
 ## Definition of Done
 
 - CodeQL and every existing required workflow pass on the same exact head.
-- The PR body cites this plan, the generated ledger entry number, and the generated 64-character Merkle seal.
-- Gate artifacts and ledger chain verify after commit.
+- The PR body cites this plan, the latest generated ledger entry number, and the latest generated 64-character Merkle seal.
+- Gate artifacts, derived seal artifacts, and ledger chain verify after commit.
 - No bypass, ignored advisory, or unrelated scope expansion is introduced.
