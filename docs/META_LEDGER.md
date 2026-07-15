@@ -15335,6 +15335,20 @@ Change class: feature (v0.131.0 -> v0.132.0). Tests: 11 new (renderer round-trip
 **Previous Hash**: `280516cd77f338dec54113fea932c9df1407052b1077d980378d7fe469194636`
 **Chain Hash (Merkle seal)**: `8cd6c3c0b4a963e65eb78fa1ef88522524078d458fe4ded65dcfb610a9ecf8f5`
 
+### Entry #499: SESSION SEAL Phase 205: CodeQL security baseline
+
+**Phase**: 205
+**Plan**: docs/plan-qor-phase205-codeql-security-baseline.md
+**Change Class**: governance
+**Status**: PASS
+**SSDF Practices**: PO.4.1, PW.7.2, RV.1.2
+
+**Content Hash**: `626ee3d8eecc971afa73c4a751fcb2edb5b625e2d99ff36bfb36b6c3de42b8df`
+**Previous Hash**: `8cd6c3c0b4a963e65eb78fa1ef88522524078d458fe4ded65dcfb610a9ecf8f5`
+**Chain Hash (Merkle seal)**: `8b4bd6c7a5dba4d0e681b26d964bf3f0cfd690d443699a9b964c26a300fee417`
+
+**Decision**: Pinned Python CodeQL and exact-head CI evidence are implemented. The synthetic merge-history fixture is deterministic across supported Python and Git versions. GitHub Code Security remains a disclosed repository-setting prerequisite for SARIF publication; no bypass, advisory waiver, or personal token was introduced.
+
 ---
 
 *Chain integrity: VALID*
