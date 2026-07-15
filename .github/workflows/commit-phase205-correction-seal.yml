@@ -93,12 +93,14 @@ jobs:
           print(json.dumps({'ledger_entry':entry_number,'merkle_seal':seal,'derived_files':changed}))
           PY
 
-      - name: Verify corrected exact tree
-        run: |
-          python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md
-          python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan docs/plan-qor-phase205-codeql-security-baseline.md
-          python -m qor.reliability.gate_chain_completeness --phase-min 52
-          python -m qor.scripts.seal_artifacts --check --repo-root .
+      - name: Verify ledger chain
+        run: python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md
+      - name: Verify plan binding
+        run: python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --plan docs/plan-qor-phase205-codeql-security-baseline.md
+      - name: Verify gate completeness
+        run: python -m qor.reliability.gate_chain_completeness --phase-min 52
+      - name: Verify derived seal artifacts
+        run: python -m qor.scripts.seal_artifacts --check --repo-root .
 
       - name: Commit only correction evidence and remove writer
         shell: bash
