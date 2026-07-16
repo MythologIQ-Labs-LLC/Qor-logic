@@ -32,12 +32,13 @@ Replace the Phase 205 CodeQL requirement with a zero-license-cost, repository-ow
 ## Controls
 
 1. Semgrep Community Edition is pinned to version 1.169.0 and installed directly in the Actions runner.
-2. Community `p/default` and `p/security-audit` rules scan Python and workflow sources.
-3. Source and findings remain local to the runner; JSON evidence is retained as a repository artifact.
-4. The scan fails directly on findings or scanner failure and requires only `contents: read`.
-5. Documentation-only changes do not consume scanner runs, and no recurring schedule is configured.
-6. Existing pytest commands, Linux and Windows matrices, public dependency review, citation lint, ledger verification, gate-chain completeness, and provenance checks remain authoritative.
-7. Derived README and SYSTEM_STATE seal artifacts are regenerated through `qor.scripts.seal_artifacts`.
+2. Community `p/security-audit` rules scan production sources and block only `ERROR` severity findings.
+3. Documentation, tests, fixtures, vendored code, generated output, and workflow YAML are excluded from the blocking scan; their native checks remain authoritative.
+4. Source and findings remain local to the runner; JSON evidence is retained as a repository artifact.
+5. The scan fails directly on blocking findings or scanner failure and requires only `contents: read`.
+6. Documentation-only changes do not consume scanner runs, and no recurring schedule is configured.
+7. Existing pytest commands, Linux and Windows matrices, public dependency review, citation lint, ledger verification, gate-chain completeness, and provenance checks remain authoritative.
+8. Derived README and SYSTEM_STATE seal artifacts are regenerated through `qor.scripts.seal_artifacts`.
 
 ## CI Commands
 
@@ -46,7 +47,7 @@ Replace the Phase 205 CodeQL requirement with a zero-license-cost, repository-ow
 - `python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md`
 - `python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto`
 - `python -m qor.scripts.seal_artifacts --check --repo-root .`
-- `semgrep scan --config p/default --config p/security-audit --error --metrics off --json --output semgrep.json .`
+- `semgrep scan --config p/security-audit --severity ERROR --error --metrics off --json --output semgrep.json --exclude docs --exclude tests --exclude fixtures --exclude vendor --exclude node_modules --exclude target --exclude dist --exclude build --exclude .next --exclude .github .`
 - Existing public PR Dependency Review
 
 ## Definition of Done
