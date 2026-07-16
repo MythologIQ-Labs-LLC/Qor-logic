@@ -35,7 +35,18 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - run: pip install -e ".[dev]"
-      - run: python -m pytest tests/ -v
+      - name: Run test suite with durable diagnostics
+        env:
+          PYTEST_ADDOPTS: "--junitxml=pytest-results.xml"
+        run: python -m pytest tests/ -v
+      - name: Upload pytest diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pytest-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: pytest-results.xml
+          if-no-files-found: warn
+          retention-days: 30
       - run: python qor/scripts/check_variant_drift.py
       - run: python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md
       # GAP-GOV-03: re-verify the COMMITTED seal's content_hash<->plan binding

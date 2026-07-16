@@ -75,7 +75,7 @@ def _make_merge_commit(
         full.parent.mkdir(parents=True, exist_ok=True)
         full.write_text(content + "\n", encoding="utf-8")
     _run(["git", "add", "."], cwd=repo)
-    _run(["git", "commit", "-m", f"feat: {subject}"], cwd=repo)
+    _run(["git", "commit", "--allow-empty", "-m", f"feat: {subject}"], cwd=repo)
     _run(["git", "checkout", "main"], cwd=repo)
     # Set commit date via env var for the merge commit
     env = None

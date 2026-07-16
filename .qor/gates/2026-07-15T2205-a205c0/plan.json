@@ -1,0 +1,51 @@
+{
+  "phase": "plan",
+  "session_id": "2026-07-15T2205-a205c0",
+  "ts": "2026-07-15T22:09:05Z",
+  "plan_path": "docs/plan-qor-phase205-codeql-security-baseline.md",
+  "phases": [
+    "Phase 1: pinned fail-closed CodeQL",
+    "Phase 2: durable exact-head CI evidence",
+    "Phase 3: deterministic synthetic Git history",
+    "Phase 4: canonical plan-bound substantiation"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -v",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "governance",
+  "originating_remediation": "MythologIQ-Labs-LLC/qortara-sdlc#41",
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "GitHub must enable Code Security before SARIF publication can pass."
+    ],
+    "non_goals": [
+      "runtime behavior changes",
+      "dependency changes",
+      "administrative merge bypass"
+    ],
+    "exclusions": [
+      "Bicameral repositories",
+      "Knapp-Kevin/Qor"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.133.0",
+    "host": "chatgpt-github-connector",
+    "model_family": "gpt-5.6-thinking",
+    "human_oversight": "absent",
+    "ts": "2026-07-15T22:09:05Z"
+  }
+}
