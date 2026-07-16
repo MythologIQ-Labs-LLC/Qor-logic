@@ -32,7 +32,7 @@ jobs:
           python-version: '3.12'
           cache: pip
       - name: Install pinned open-source scanner
-        run: python -m pip install semgrep==1.169.0
+        run: pip install semgrep==1.169.0
       - name: Scan production sources for blocking security findings
         id: scan
         continue-on-error: true
@@ -68,5 +68,5 @@ jobs:
       - name: Enforce clean OSS SAST
         if: steps.scan.outcome != 'success'
         run: |
-          echo '::error::Semgrep Community Edition found a blocking security finding or failed to scan. Review semgrep-community-results.'
+          echo 'Semgrep found a blocking finding or failed to scan.'
           exit 1
