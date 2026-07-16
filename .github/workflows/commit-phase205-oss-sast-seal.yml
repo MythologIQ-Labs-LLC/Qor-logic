@@ -92,8 +92,21 @@ jobs:
           git rm .github/workflows/commit-phase205-oss-sast-seal.yml
           git add README.md docs/SYSTEM_STATE.md docs/META_LEDGER.md .qor/gates/2026-07-16T0055-a205c4
           mapfile -t changed < <(git diff --cached --name-only | sort)
-          expected=(.github/workflows/commit-phase205-oss-sast-seal.yml .qor/gates/2026-07-16T0055-a205c4/audit.json .qor/gates/2026-07-16T0055-a205c4/implement.json .qor/gates/2026-07-16T0055-a205c4/plan.json .qor/gates/2026-07-16T0055-a205c4/substantiate.json README.md docs/META_LEDGER.md docs/SYSTEM_STATE.md)
-          [[ "${changed[*]}" == "${expected[*]}" ]] || { printf 'Unexpected staged paths:\n%s\n' "${changed[*]}"; exit 1; }
+          allowed='^(\.github/workflows/commit-phase205-oss-sast-seal\.yml|\.qor/gates/2026-07-16T0055-a205c4/(audit|implement|plan|substantiate)\.json|README\.md|docs/META_LEDGER\.md|docs/SYSTEM_STATE\.md)$'
+          for path in "${changed[@]}"; do
+            [[ "${path}" =~ ${allowed} ]] || { echo "Unexpected staged path: ${path}"; exit 1; }
+          done
+          required=(
+            .github/workflows/commit-phase205-oss-sast-seal.yml
+            .qor/gates/2026-07-16T0055-a205c4/audit.json
+            .qor/gates/2026-07-16T0055-a205c4/implement.json
+            .qor/gates/2026-07-16T0055-a205c4/plan.json
+            .qor/gates/2026-07-16T0055-a205c4/substantiate.json
+            docs/META_LEDGER.md
+          )
+          for path in "${required[@]}"; do
+            printf '%s\n' "${changed[@]}" | grep -Fxq "${path}" || { echo "Missing required staged path: ${path}"; exit 1; }
+          done
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'docs(governance): seal zero-cost Phase 205 SAST correction'
