@@ -15363,6 +15363,20 @@ Change class: feature (v0.131.0 -> v0.132.0). Tests: 11 new (renderer round-trip
 
 **Decision**: Corrected the Phase 205 plan schema and canonical seal title; regenerated README and SYSTEM_STATE currency. Prior entries remain immutable historical evidence.
 
+### Entry #501: SESSION SEAL -- Phase 205: zero-cost OSS SAST correction
+
+**Phase**: 205
+**Plan**: docs/plan-qor-phase205-zero-cost-oss-sast.md
+**Change Class**: feature
+**Status**: PASS
+**SSDF Practices**: PO.4.1, PW.7.2, RV.1.2
+
+**Content Hash**: `dfce71a2da3f72045dce96e3ea39c415e7c08bb18dad1c3b11a3b1e72aa50659`
+**Previous Hash**: `a7b49fbf4dc217971a5501e1298004e0a5d2018f62eb97b84d1d967fc8779b2b`
+**Chain Hash (Merkle seal)**: `44c6be09afda72a2e62c0993141aa408a985324bc66be85ba26099f8f960af1f`
+
+**Decision**: Removed the paid CodeQL and GitHub Code Security requirement. Pinned Semgrep Community Edition now produces local fail-closed evidence with no account, token, SARIF publication, or scheduled scan. Existing native CI, public dependency review, ledger, provenance, and citation controls remain authoritative.
+
 ---
 
 *Chain integrity: VALID*
