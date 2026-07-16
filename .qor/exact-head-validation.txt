@@ -1,0 +1,2 @@
+Temporary human-authored exact-head validation marker for PR #288.
+This file exists only to trigger required workflows after the governance seal was committed by GitHub Actions.
