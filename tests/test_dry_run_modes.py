@@ -43,6 +43,9 @@ def test_seal_artifacts_dry_run_previews_without_writing(tmp_path, capsys):
     from qor.scripts import seal_artifacts
 
     (tmp_path / "docs").mkdir()
+    # Declare the default layout explicitly and leave it empty (#293).
+    for root in ("qor/skills", "qor/agents", "qor/references"):
+        (tmp_path / root).mkdir(parents=True)
     (tmp_path / "README.md").write_text(_README, encoding="utf-8")
     (tmp_path / "docs" / "SYSTEM_STATE.md").write_text(_SYSTEM_STATE, encoding="utf-8")
     (tmp_path / "docs" / "META_LEDGER.md").write_text(_LEDGER, encoding="utf-8")

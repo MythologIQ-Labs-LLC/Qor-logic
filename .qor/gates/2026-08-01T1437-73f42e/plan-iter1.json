@@ -1,0 +1,53 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-01T1437-73f42e",
+  "ts": "2026-08-01T14:41:27Z",
+  "plan_path": "docs/plan-qor-phase206-badge-layout-resolution.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "open_questions": [],
+  "terms": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "boundaries": {
+    "limitations": [
+      "Declared layout is supplied per invocation via kwargs or CLI flags; no layout file, no auto-detection, no persisted config.",
+      "Counting remains a filesystem walk; nothing is cached between calls."
+    ],
+    "non_goals": [
+      "No change to badge rendering, README structure, or the set of counted badge kinds.",
+      "No change to count_tests or count_ledger_entries.",
+      "No new qor/cli.py subcommand.",
+      "No renaming of the PR head branch."
+    ],
+    "exclusions": [
+      "The upstream package line that originated this correction is out of scope; this plan governs only the Qor-logic runtime and its published behavior.",
+      "Historical ledger entries are not rewritten."
+    ]
+  },
+  "phases": [
+    "Reconcile the synthetic seal-artifact fixtures",
+    "Forward the declared layout through the write path",
+    "Repair the pull-request governance surface"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_seal_artifacts.py tests/test_dry_run_modes.py tests/test_badge_layout_resolution.py tests/test_readme_badge_currency.py -q",
+    "python -m pytest tests/ -q",
+    "qor-logic scripts seal_artifacts --check --repo-root . --skip-tests",
+    "qor-logic scripts publication_boundary_lint --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase206-badge-layout-resolution.md"
+  ],
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.133.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-01T14:41:27Z"
+  }
+}

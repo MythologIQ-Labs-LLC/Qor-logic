@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-01T1437-73f42e",
+  "ts": "2026-08-01T14:46:20Z",
+  "target": "docs/plan-qor-phase206-badge-layout-resolution.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "razor-overage",
+    "specification-drift"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.133.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "veto",
+    "ts": "2026-08-01T14:46:20Z"
+  }
+}

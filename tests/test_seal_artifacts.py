@@ -57,6 +57,10 @@ _COUNTS = {"tests": 12, "skills": 4, "agents": 2, "doctrines": 9, "ledger": 3}
 
 def _make_repo(tmp_path: Path) -> Path:
     (tmp_path / "docs").mkdir()
+    # Declare the default layout explicitly and leave it empty: a zero count
+    # here means "declared and empty", never "root unresolved" (#293).
+    for root in ("qor/skills", "qor/agents", "qor/references"):
+        (tmp_path / root).mkdir(parents=True)
     (tmp_path / "README.md").write_text(_README, encoding="utf-8")
     (tmp_path / "docs" / "SYSTEM_STATE.md").write_text(_SYSTEM_STATE, encoding="utf-8")
     (tmp_path / "docs" / "META_LEDGER.md").write_text(_LEDGER, encoding="utf-8")

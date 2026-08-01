@@ -1257,4 +1257,28 @@ Gate-assumption-divergence. Candidate SG family entry: `SG-GateAssumptionDiverge
 
 ---
 
+## 2026-08-01 -- Parameter-smear razor overage (GH #293 / PR #294)
+
+**Date**: 2026-08-01
+
+**Surface**: `qor/scripts/badge_currency.py`, `qor/scripts/seal_artifacts.py` on branch `fix/293-badge-layout-resolution`.
+
+### Findings
+
+Making the badge-count filesystem layout declarable was correct in substance and VETOed on shape. The layout was expressed as six independent parameters (`skills_root`, `skills_pattern`, `agents_root`, `agents_pattern`, `doctrines_root`, `doctrines_pattern`) rather than one value. Repeated across seven signatures, one `_add_layout_args`, one `_layout_kwargs`, and every call site, the repetition alone consumed the line budget: `seal_artifacts.py` went 186 -> 323 lines (cap 250), `seal_artifacts.main` 32 -> 63 (cap 40), `seal_artifacts.update_files` under 30 -> 42 (cap 40), `badge_currency.check_currency` 38 -> 41 (cap 40), and `badge_currency.py` landed exactly at 250 with zero headroom. None of the four units was over on `origin/main`. A second finding in the same audit: the plan's Definition of Done claimed a red-then-green transition for a call site whose `counts` argument is always non-`None`, so the described test could not fail before the change it was meant to justify.
+
+### Root Cause Analysis
+
+Adding a capability by widening signatures is the path of least resistance: each individual parameter addition is small, locally reviewable, and never crosses a threshold on its own. The cost is paid at the sum, and the sum is invisible from any single diff hunk. Nothing in the pre-audit lint ladder measures function or file length, so the overage surfaced only at the Judge's manual Razor pass, after three commits and a full CI cycle had already been spent. The Definition-of-Done error has the same origin: the plan asserted the shape of TDD evidence (fails, then passes) by habit rather than by tracing whether the call site could actually produce a red.
+
+### Pattern to Avoid
+
+When a change adds more than two related parameters to more than one signature, the parameters are a value that has not been named yet. Introduce the value object first, then thread it; do not widen signatures incrementally and reconcile the line budget afterward. Independently: a D4 claiming "test fails before the change" must be traced to the call site that would produce the failure, not assumed from the fact that a test is being added.
+
+### Pattern ID
+
+Parameter-smear. Candidate SG family entry if it recurs: `SG-ParameterSmear-A` -- a single conceptual value is introduced as N loose parameters repeated across signatures and call sites, and the repetition alone breaches the Section 4 file/function caps. Remedy is one immutable carrier threaded as a single keyword. First observed instance; promote to a structured countermeasure with a length-measuring pre-audit lint on second occurrence.
+
+---
+
 *Shadow integrity: ACTIVE*

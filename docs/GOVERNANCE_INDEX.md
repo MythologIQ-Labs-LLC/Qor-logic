@@ -1,6 +1,6 @@
 # Governance Index
 
-**Last Reviewed**: 2026-07-13
+**Last Reviewed**: 2026-08-01
 
 A single authoritative map of every governance artifact in Qor-logic, organized
 into six freshness tiers with explicit drift contracts. A stale entry here is
@@ -76,6 +76,7 @@ Informational, slow-drift. Drift signal: factual claims diverge from current cod
 | Cluster memos | `docs/cluster-*.md` |
 | Skill registry & audits | `docs/SKILL_*.md`, `docs/SHIELD_*.md` |
 | Guides | `docs/MERKLE_ITERATION_GUIDE.md`, `docs/hooks-install.md` |
+| Ecosystem position | `docs/ecosystem-position.md` |
 
 ## Tier 6 — Archived
 
