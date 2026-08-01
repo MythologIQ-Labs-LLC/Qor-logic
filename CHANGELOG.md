@@ -10,6 +10,17 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.134.0] - 2026-08-01
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 206 (feature; declarable badge-count topology)**: closes GH #293. The README count badges (Skills, Agents, Doctrines) were resolved against a hardcoded `qor/` topology, and a missing directory produced `0` rather than an error -- conflating "this repository declares an empty layout" with "this repository's layout could not be resolved", which could seal a release-class phase against false zero counts. The topology is now a declarable value: new `qor/scripts/badge_layout.py` exports a frozen `BadgeLayout` whose field defaults are the existing `qor/skills`, `qor/agents`, and `qor/references` roots, so an adopter that declares nothing sees no change. `badge_currency` and `seal_artifacts` both consume the same value, passed as one `layout` keyword or through the shared `--skills-root` / `--skills-pattern` / `--agents-root` / `--agents-pattern` / `--doctrines-root` / `--doctrines-pattern` flags, so the writer and the checker can never disagree about which topology they measured. An unresolvable root now fails loudly and names itself; a root that resolves and is empty still counts zero. Roots and matched files are confined to both the repository and the declared root, with traversing patterns, absolute patterns, and matched symlinks rejected.
+
+### Changed
+- `seal_artifacts.update_files` requires `counts`. Its `counts=None` fallback was unreachable from the only caller and could not run against a repository without a `tests/` directory (the fallback reached `count_tests`, which shells out to `pytest --collect-only`). Both call sites already supplied `counts`.
+- `badge_currency.check_currency`, `seal_artifacts.collect_counts`, and `seal_artifacts.check_files` take the topology as a single `layout` keyword instead of six separate root and pattern parameters. CLI flag names, defaults, and every rendered badge byte are unchanged.
+
 ## [0.133.0] - 2026-07-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

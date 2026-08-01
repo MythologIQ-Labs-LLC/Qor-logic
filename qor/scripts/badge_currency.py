@@ -17,21 +17,34 @@ import subprocess
 import sys
 from pathlib import Path
 
+from qor.scripts.badge_layout import (
+    DEFAULT_LAYOUT,
+    BadgeLayout,
+    BadgeLayoutError,
+    add_layout_args,
+    layout_from_args,
+)
+
+__all__ = [
+    "DEFAULT_LAYOUT",
+    "BadgeLayout",
+    "BadgeLayoutError",
+    "add_layout_args",
+    "layout_from_args",
+    "check_currency",
+    "count_agents",
+    "count_by_layout",
+    "count_doctrines",
+    "count_ledger_entries",
+    "count_skills",
+    "count_tests",
+    "parse_readme_badges",
+]
+
 _BADGE_RE = re.compile(
     r"badge/(Tests|Ledger|Skills|Agents|Doctrines)-(\d+)",
     re.IGNORECASE,
 )
-
-DEFAULT_SKILLS_ROOT = Path("qor/skills")
-DEFAULT_SKILLS_PATTERN = "**/SKILL.md"
-DEFAULT_AGENTS_ROOT = Path("qor/agents")
-DEFAULT_AGENTS_PATTERN = "**/*.md"
-DEFAULT_DOCTRINES_ROOT = Path("qor/references")
-DEFAULT_DOCTRINES_PATTERN = "doctrine-*.md"
-
-
-class BadgeLayoutError(ValueError):
-    """Configured badge-count layout cannot be resolved safely."""
 
 
 def _resolve_count_root(repo_root: Path, configured_root: Path, label: str) -> Path:
@@ -131,8 +144,8 @@ def count_ledger_entries(ledger_path: Path) -> int:
 
 def count_skills(
     repo_root: Path,
-    root: Path = DEFAULT_SKILLS_ROOT,
-    pattern: str = DEFAULT_SKILLS_PATTERN,
+    root: Path = DEFAULT_LAYOUT.skills_root,
+    pattern: str = DEFAULT_LAYOUT.skills_pattern,
 ) -> int:
     """Count skill files under a declared root and relative glob pattern."""
     return _count_matching(repo_root, root, pattern, "skills")
@@ -140,8 +153,8 @@ def count_skills(
 
 def count_agents(
     repo_root: Path,
-    root: Path = DEFAULT_AGENTS_ROOT,
-    pattern: str = DEFAULT_AGENTS_PATTERN,
+    root: Path = DEFAULT_LAYOUT.agents_root,
+    pattern: str = DEFAULT_LAYOUT.agents_pattern,
 ) -> int:
     """Count agent files under a declared root and relative glob pattern."""
     return _count_matching(repo_root, root, pattern, "agents")
@@ -149,11 +162,22 @@ def count_agents(
 
 def count_doctrines(
     repo_root: Path,
-    root: Path = DEFAULT_DOCTRINES_ROOT,
-    pattern: str = DEFAULT_DOCTRINES_PATTERN,
+    root: Path = DEFAULT_LAYOUT.doctrines_root,
+    pattern: str = DEFAULT_LAYOUT.doctrines_pattern,
 ) -> int:
     """Count doctrine files under a declared root and relative glob pattern."""
     return _count_matching(repo_root, root, pattern, "doctrines")
+
+
+def count_by_layout(repo_root: Path, layout: BadgeLayout) -> dict[str, int]:
+    """Count every filesystem-derived badge kind under one declared layout."""
+    return {
+        "skills": count_skills(repo_root, layout.skills_root, layout.skills_pattern),
+        "agents": count_agents(repo_root, layout.agents_root, layout.agents_pattern),
+        "doctrines": count_doctrines(
+            repo_root, layout.doctrines_root, layout.doctrines_pattern
+        ),
+    }
 
 
 def parse_readme_badges(readme_path: Path) -> dict[str, int]:
@@ -171,21 +195,12 @@ def check_currency(
     tests_tolerance: int = 5,
     skip_tests: bool = False,
     *,
-    skills_root: Path = DEFAULT_SKILLS_ROOT,
-    skills_pattern: str = DEFAULT_SKILLS_PATTERN,
-    agents_root: Path = DEFAULT_AGENTS_ROOT,
-    agents_pattern: str = DEFAULT_AGENTS_PATTERN,
-    doctrines_root: Path = DEFAULT_DOCTRINES_ROOT,
-    doctrines_pattern: str = DEFAULT_DOCTRINES_PATTERN,
+    layout: BadgeLayout = DEFAULT_LAYOUT,
 ) -> list[str]:
     """Return mismatch descriptions; an empty list means current."""
     declared = parse_readme_badges(repo_root / "README.md")
-    truth = {
-        "ledger": count_ledger_entries(ledger_path),
-        "skills": count_skills(repo_root, skills_root, skills_pattern),
-        "agents": count_agents(repo_root, agents_root, agents_pattern),
-        "doctrines": count_doctrines(repo_root, doctrines_root, doctrines_pattern),
-    }
+    truth = {"ledger": count_ledger_entries(ledger_path)}
+    truth.update(count_by_layout(repo_root, layout))
     if not skip_tests:
         truth["tests"] = count_tests(repo_root)
 
@@ -208,31 +223,15 @@ def check_currency(
     return mismatches
 
 
-def _add_layout_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--skills-root", type=Path, default=DEFAULT_SKILLS_ROOT)
-    parser.add_argument("--skills-pattern", default=DEFAULT_SKILLS_PATTERN)
-    parser.add_argument("--agents-root", type=Path, default=DEFAULT_AGENTS_ROOT)
-    parser.add_argument("--agents-pattern", default=DEFAULT_AGENTS_PATTERN)
-    parser.add_argument("--doctrines-root", type=Path, default=DEFAULT_DOCTRINES_ROOT)
-    parser.add_argument("--doctrines-pattern", default=DEFAULT_DOCTRINES_PATTERN)
-
-
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--repo-root", type=Path, default=Path.cwd())
     parser.add_argument("--ledger", type=Path, default=Path("docs/META_LEDGER.md"))
-    _add_layout_args(parser)
+    add_layout_args(parser)
     args = parser.parse_args(argv)
     try:
         mismatches = check_currency(
-            args.repo_root,
-            args.ledger,
-            skills_root=args.skills_root,
-            skills_pattern=args.skills_pattern,
-            agents_root=args.agents_root,
-            agents_pattern=args.agents_pattern,
-            doctrines_root=args.doctrines_root,
-            doctrines_pattern=args.doctrines_pattern,
+            args.repo_root, args.ledger, layout=layout_from_args(args)
         )
     except (BadgeLayoutError, OSError, RuntimeError) as exc:
         print(f"FAIL: badge currency truth could not be resolved: {exc}")

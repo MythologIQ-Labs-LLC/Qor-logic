@@ -41,15 +41,26 @@ def _write_non_qor_repo(tmp_path: Path) -> Path:
     return tmp_path
 
 
-def _layout_kwargs() -> dict[str, Path | str]:
-    return {
-        "skills_root": Path("skills"),
-        "skills_pattern": "**/SKILL.md",
-        "agents_root": Path("skills"),
-        "agents_pattern": "**/agents/*.md",
-        "doctrines_root": Path("governance"),
-        "doctrines_pattern": "doctrine-*.md",
-    }
+def _layout() -> badge_currency.BadgeLayout:
+    """The non-`qor/` topology `_write_non_qor_repo` lays down."""
+    return badge_currency.BadgeLayout(
+        skills_root=Path("skills"),
+        skills_pattern="**/SKILL.md",
+        agents_root=Path("skills"),
+        agents_pattern="**/agents/*.md",
+        doctrines_root=Path("governance"),
+        doctrines_pattern="doctrine-*.md",
+    )
+
+
+_NON_QOR_CLI_FLAGS = [
+    "--skills-root", "skills",
+    "--skills-pattern", "**/SKILL.md",
+    "--agents-root", "skills",
+    "--agents-pattern", "**/agents/*.md",
+    "--doctrines-root", "governance",
+    "--doctrines-pattern", "doctrine-*.md",
+]
 
 
 def _symlink_or_skip(
@@ -69,45 +80,33 @@ def test_missing_default_root_is_resolution_error_not_zero(tmp_path: Path) -> No
 
 def test_declared_non_qor_layout_counts_actual_files(tmp_path: Path) -> None:
     root = _write_non_qor_repo(tmp_path)
-    layout = _layout_kwargs()
+    layout = _layout()
     assert badge_currency.count_skills(
-        root, layout["skills_root"], layout["skills_pattern"]
+        root, layout.skills_root, layout.skills_pattern
     ) == 1
     assert badge_currency.count_agents(
-        root, layout["agents_root"], layout["agents_pattern"]
+        root, layout.agents_root, layout.agents_pattern
     ) == 1
     assert badge_currency.count_doctrines(
-        root, layout["doctrines_root"], layout["doctrines_pattern"]
+        root, layout.doctrines_root, layout.doctrines_pattern
     ) == 1
+    assert badge_currency.count_by_layout(root, layout) == {
+        "skills": 1,
+        "agents": 1,
+        "doctrines": 1,
+    }
     assert badge_currency.check_currency(
         root,
         root / "docs" / "META_LEDGER.md",
         skip_tests=True,
-        **layout,
+        layout=layout,
     ) == []
 
 
 def test_seal_check_propagates_declared_layout(tmp_path: Path) -> None:
     root = _write_non_qor_repo(tmp_path)
     rc = seal_artifacts.main(
-        [
-            "--check",
-            "--repo-root",
-            str(root),
-            "--skip-tests",
-            "--skills-root",
-            "skills",
-            "--skills-pattern",
-            "**/SKILL.md",
-            "--agents-root",
-            "skills",
-            "--agents-pattern",
-            "**/agents/*.md",
-            "--doctrines-root",
-            "governance",
-            "--doctrines-pattern",
-            "doctrine-*.md",
-        ]
+        ["--check", "--repo-root", str(root), "--skip-tests", *_NON_QOR_CLI_FLAGS]
     )
     assert rc == 0
 
@@ -172,6 +171,35 @@ def test_recursive_pattern_does_not_import_symlinked_directory(
     assert badge_currency.count_skills(
         repo, Path("skills"), "**/SKILL.md"
     ) == 0
+
+
+def test_seal_write_regenerates_badges_for_declared_layout(tmp_path: Path) -> None:
+    """`--write` renders the DECLARED layout's truth, not the default roots'.
+
+    The fixture repo has no `qor/` roots at all, so a layout that failed to
+    reach the counters would abort rather than write these values.
+    """
+    root = _write_non_qor_repo(tmp_path)
+    readme = root / "README.md"
+    readme.write_text(
+        readme.read_text(encoding="utf-8")
+        .replace("Skills-1-blue", "Skills-99-blue")
+        .replace('alt="Skills: 1"', 'alt="Skills: 99"'),
+        encoding="utf-8",
+    )
+
+    rc = seal_artifacts.main(
+        [
+            "--write", "--phase", "1", "--snapshot", "2026-07-30",
+            "--repo-root", str(root), "--skip-tests", *_NON_QOR_CLI_FLAGS,
+        ]
+    )
+
+    assert rc == 0
+    written = readme.read_text(encoding="utf-8")
+    assert "Skills-1-blue" in written
+    assert 'alt="Skills: 1"' in written
+    assert "Skills-99" not in written
 
 
 def test_seal_cli_does_not_swallow_unrelated_value_error(
