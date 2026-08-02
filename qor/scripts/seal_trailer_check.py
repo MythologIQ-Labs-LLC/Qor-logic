@@ -20,6 +20,7 @@ import sys
 from pathlib import Path
 
 from qor.scripts.attribution import message_has_full_trailer
+from qor.scripts.attribution_policy import resolve_policy
 
 
 def commit_message(commit: str, repo_root: Path | None = None) -> str:
@@ -34,6 +35,22 @@ def commit_message(commit: str, repo_root: Path | None = None) -> str:
             f"git log failed for commit {commit!r}: {result.stderr.strip()}"
         )
     return result.stdout
+
+
+def _required_clause(model_coauthor: bool) -> str:
+    """Name what the commit had to carry, and the escape when it is strict."""
+    if not model_coauthor:
+        return (
+            "the 'Authored via [Qor-logic SDLC]' line (this repository declares "
+            "attribution.model_coauthor: false, so the 'Co-Authored-By:' line "
+            "is not required)"
+        )
+    return (
+        "both the 'Authored via [Qor-logic SDLC]' line and a 'Co-Authored-By:' "
+        "line (the full qor.scripts.attribution.commit_trailer() output). An "
+        "operator whose policy forbids AI co-author trailers may declare "
+        "attribution.model_coauthor: false in .qorlogic/config.json"
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -53,14 +70,16 @@ def main(argv: list[str] | None = None) -> int:
     except RuntimeError as exc:
         print(f"ERROR [seal-trailer-check] {exc}", file=sys.stderr)
         return 1
-    if message_has_full_trailer(message):
+    policy = resolve_policy(args.repo_root)
+    if message_has_full_trailer(
+        message, require_coauthor=policy.model_coauthor
+    ):
         return 0
     print(
-        f"ERROR [seal-trailer-check] commit {args.commit} is missing the full "
-        f"canonical trailer. A seal commit MUST contain both the "
-        f"'Authored via [Qor-logic SDLC]' line and a 'Co-Authored-By:' line "
-        f"(the full qor.scripts.attribution.commit_trailer() output). Amend "
-        f"the seal commit with the full trailer, then re-run /qor-substantiate.",
+        f"ERROR [seal-trailer-check] commit {args.commit} is missing the "
+        f"required trailer. A seal commit MUST contain "
+        f"{_required_clause(policy.model_coauthor)}. Amend the seal commit, "
+        f"then re-run /qor-substantiate.",
         file=sys.stderr,
     )
     return 1

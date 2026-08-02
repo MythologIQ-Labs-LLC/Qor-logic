@@ -10,6 +10,16 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.135.0] - 2026-08-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 207 (feature; declarable co-author requirement)**: the `Co-Authored-By:` line on a seal commit is now declarable per repository instead of absolute. New `qor/scripts/attribution_policy.py` resolves `.qorlogic/config.json` -> `attribution.model_coauthor`, honored by `commit_trailer(model_coauthor=...)`, `message_has_full_trailer(require_coauthor=...)`, the `/qor-substantiate` Step 9.5.4 guard, and the live-history walk. The `Authored via [Qor-logic SDLC]` line remains mandatory at every setting: the co-author line's documented purpose is GitHub contributor-stats reporting, a reporting convenience, while provenance is carried by the Merkle chain and the gate artifacts. Some operators forbid AI co-author trailers as a standing identity rule, and forcing a choice between that rule and a green seal gate served neither. Resolution is tolerant and fails **closed** — absent file, absent key, malformed document, or non-boolean value all yield the strict default — so every repository that declares nothing is unchanged, and a corrupt config demands more attribution rather than less.
+
+### Fixed
+- **Seal-subject coverage hole**: the live-history seal-trailer walk keyed scope on a phase number parsed from the commit subject and treated an unparseable subject as *out of scope*. The `/qor-substantiate` Step 9.5 template emitted exactly that form (`seal: <plan-slug> - Session substantiated`), so an operator following the documented template was exempted from the guard by accident. Two live seal commits hit the hole, and it is how the Phase 206 seal's deliberate co-author omission passed the suite unnoticed. Both sides are corrected: the template now emits `seal: phase <N> - <plan-slug>`, and an unparseable subject is treated as in scope.
+
 ## [0.134.0] - 2026-08-01
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

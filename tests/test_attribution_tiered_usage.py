@@ -15,8 +15,13 @@ from pathlib import Path
 import pytest
 
 from qor.scripts.attribution import message_has_full_trailer
+from qor.scripts.attribution_policy import resolve_policy
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+# Phase 207: this repository's own declaration governs the co-author half of
+# the seal-commit rule. Absent a declaration this resolves True, so every
+# adopter keeps the historical strict contract.
+_REQUIRE_COAUTHOR = resolve_policy(REPO_ROOT).model_coauthor
 DOCTRINE = REPO_ROOT / "qor" / "references" / "doctrine-attribution.md"
 ATTRIBUTION_MD = REPO_ROOT / "ATTRIBUTION.md"
 CHANGELOG = REPO_ROOT / "CHANGELOG.md"
@@ -135,12 +140,17 @@ def _seal_phase_in_scope(phase_num: int | None) -> bool:
     CHANGELOG check expresses as `CUTOFF_VERSION` 0.36.0, here represented as a
     phase number for commit-subject walks). Disclosed-grandfathered phases are
     excluded.
+
+    Phase 207: an UNPARSEABLE subject (`phase_num is None`) is IN scope, not
+    exempt. It previously returned False, so any seal commit whose subject
+    carried no phase number was silently skipped -- and the documented
+    `/qor-substantiate` Step 9.5 template emitted exactly that subject form.
+    Two live seal commits hit the hole, and it is how the Phase 206 seal's
+    deliberate `Co-Authored-By:` omission passed the suite unnoticed.
     """
-    return (
-        phase_num is not None
-        and phase_num >= 49
-        and phase_num not in _GRANDFATHERED_SEAL_PHASES
-    )
+    if phase_num is None:
+        return True
+    return phase_num >= 49 and phase_num not in _GRANDFATHERED_SEAL_PHASES
 
 
 def test_seal_commits_after_cutoff_have_full_canonical_trailer():
@@ -157,7 +167,9 @@ def test_seal_commits_after_cutoff_have_full_canonical_trailer():
         # the /qor-substantiate Step 9.5.4 seal-trailer guard. Its co-author
         # match is case-insensitive: git trailer keys are case-insensitive and
         # a GitHub-merged commit may render `Co-authored-by:` lowercase.
-        if not message_has_full_trailer(body):
+        # Phase 207: the co-author half is required only when this repository
+        # declares it (.qorlogic/config.json -> attribution.model_coauthor).
+        if not message_has_full_trailer(body, require_coauthor=_REQUIRE_COAUTHOR):
             failures.append(f"{sha[:8]} {subj!r}")
     assert not failures, (
         "Seal commits (Phase 49+) must use full canonical trailer per "
@@ -178,7 +190,11 @@ def test_seal_phase_in_scope_includes_recent_compliant_phases():
 
 def test_seal_phase_in_scope_excludes_below_floor():
     assert _seal_phase_in_scope(48) is False
-    assert _seal_phase_in_scope(None) is False
+
+
+def test_seal_phase_in_scope_includes_unparseable_subject():
+    """Phase 207: an unparseable subject must not be an accidental exemption."""
+    assert _seal_phase_in_scope(None) is True
 
 
 def test_plan_audit_implement_commits_after_cutoff_have_coauthor_line():

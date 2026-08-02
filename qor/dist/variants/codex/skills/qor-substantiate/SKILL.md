@@ -625,9 +625,10 @@ Template: `references/qor-substantiate-templates.md`.
   Example commit message — it MUST end with the full
   `qor.scripts.attribution.commit_trailer()` output (the `Authored via
   [Qor-logic SDLC]` line AND `Co-Authored-By:`); the compact `Co-Authored-By:`-only
-  form is NOT acceptable on a seal commit (Step 9.5.4 verifies this).
+  form is NOT acceptable on a seal commit (Step 9.5.4 verifies this). Subject
+  MUST carry the phase number; co-author line declarable (Phase 207).
   ```
-  seal: [plan-slug] - Session substantiated
+  seal: phase [N] - [plan-slug]
   Merkle seal: [chain-hash]
   Verdict: PASS
   Files: [file-count]
