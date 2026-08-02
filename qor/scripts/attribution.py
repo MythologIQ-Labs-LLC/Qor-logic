@@ -25,18 +25,25 @@ def commit_trailer(
     sdk_url: str | None = None,
     qor_url: str | None = None,
     model_email: str | None = None,
+    model_coauthor: bool = True,
 ) -> str:
-    """Return the commit trailer for Qor-logic-SDLC-authored work."""
+    """Return the commit trailer for Qor-logic-SDLC-authored work.
+
+    `model_coauthor=False` drops the `Co-Authored-By:` line for repositories
+    that declare `attribution.model_coauthor: false` (see
+    `qor.scripts.attribution_policy`). The framework line is never optional.
+    """
     sdk_name = _SDK_NAME if sdk_name is None else sdk_name
     sdk_url = _SDK_URL if sdk_url is None else sdk_url
     qor_url = _QOR_URL if qor_url is None else qor_url
     model_email = _MODEL_EMAIL if model_email is None else model_email
-    return (
+    framework_line = (
         f"\U0001F916 Authored via [Qor-logic SDLC]({qor_url}) "
-        f"on [{sdk_name}]({sdk_url})\n"
-        f"\n"
-        f"Co-Authored-By: {model} <{model_email}>"
+        f"on [{sdk_name}]({sdk_url})"
     )
+    if not model_coauthor:
+        return framework_line
+    return f"{framework_line}\n\nCo-Authored-By: {model} <{model_email}>"
 
 
 def commit_trailer_compact(
@@ -97,19 +104,26 @@ def changelog_attribution_line(*, qor_url: str | None = None) -> str:
     return f"_Built via [Qor-logic SDLC]({qor_url})._"
 
 
-def message_has_full_trailer(message: str) -> bool:
-    """Return True iff a commit message carries the full canonical trailer.
+def message_has_full_trailer(
+    message: str, *, require_coauthor: bool = True
+) -> bool:
+    """Return True iff a commit message carries the required trailer.
 
-    The full trailer (per `commit_trailer`) is the `Authored via [Qor-logic
-    SDLC]` line AND a `Co-Authored-By:` line. This is the single source of
-    truth for the seal-commit trailer predicate, consumed by
+    The `Authored via [Qor-logic SDLC]` line is required unconditionally. The
+    `Co-Authored-By:` line is required only when `require_coauthor` is True
+    (the default), which callers resolve from
+    `qor.scripts.attribution_policy.resolve_policy`. This is the single source
+    of truth for the seal-commit trailer predicate, consumed by
     `qor.scripts.seal_trailer_check` and by
     `tests/test_attribution_tiered_usage.py`. The co-author match is
     case-insensitive: git trailer keys are case-insensitive and a
     GitHub-merged commit may render `Co-authored-by:` lowercase.
     """
     has_qor_line = "Authored via" in message and "Qor-logic" in message
-    has_coauthor = re.search(
+    if not has_qor_line:
+        return False
+    if not require_coauthor:
+        return True
+    return re.search(
         r"^Co-authored-by:", message, re.IGNORECASE | re.MULTILINE
     ) is not None
-    return has_qor_line and has_coauthor

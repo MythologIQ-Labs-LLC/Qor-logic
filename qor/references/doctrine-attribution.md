@@ -30,6 +30,20 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 
 Qor-logic gets first billing; the `Co-Authored-By:` line stays so GitHub's contributor-stats machinery still records the model. The model name is the only required argument; SDK name, SDK URL, Qor-logic URL, and model email all default to module constants and accept kwargs to override.
 
+### Declarable co-author requirement (Phase 207)
+
+The `Authored via [Qor-logic SDLC]` line is never optional. Whether the `Co-Authored-By:` line is *required* is declarable per repository:
+
+```json
+{ "attribution": { "model_coauthor": false } }
+```
+
+in `.qorlogic/config.json` at the repository root, resolved by [qor/scripts/attribution_policy.py](../scripts/attribution_policy.py) and honored by `commit_trailer(model_coauthor=...)`, `message_has_full_trailer(require_coauthor=...)`, the `/qor-substantiate` Step 9.5.4 guard, and the live-history walk in `tests/test_attribution_tiered_usage.py`.
+
+The rationale for making it declarable rather than absolute: the co-author line's stated purpose above is GitHub contributor-stats reporting, which is a convenience. Provenance is carried by the Merkle chain, the gate artifacts, and the framework line. Some operators forbid AI co-author trailers as a standing identity rule, and forcing a choice between that rule and a green seal gate serves neither.
+
+Resolution is tolerant and fails **closed**: an absent file, an absent key, a malformed document, or a non-boolean value all yield the strict default (`model_coauthor: true`), so a corrupt config demands more attribution rather than less, and every repository that declares nothing keeps the historical contract exactly. The file must be **tracked** for CI to honor it.
+
 ### PR-body footer (`pr_footer(model=..., defects_list=..., comparison_doc_path=...)`)
 
 ```
@@ -92,7 +106,7 @@ The canonical strings above define the *content* of attribution. This section de
 
 | Surface | Required form | Helper | Rationale |
 |---|---|---|---|
-| Seal commit (`seal: phase NN ...`) | Full canonical (emoji + Qor-logic SDLC line + `Co-Authored-By:`) | `commit_trailer()` | One per phase. Marks the substantiated artifact. |
+| Seal commit (`seal: phase NN - <slug>`) | Full canonical (emoji + Qor-logic SDLC line + `Co-Authored-By:`), or the framework line alone where `attribution.model_coauthor: false` is declared | `commit_trailer()` | One per phase. Marks the substantiated artifact. The subject MUST carry the phase number; see the coverage note below. |
 | Plan/audit/implement commits | `Co-Authored-By:` only | `commit_trailer_compact()` | Bilineage established by the seal commit they chain into. Low signal-per-commit. |
 | Merge commit | Untouched | n/a | GitHub auto-generates; outside operator authoring surface. |
 | PR description | Full canonical PR-body footer | `pr_footer()` | Reviewer-facing. Highest-context surface. |
@@ -100,5 +114,7 @@ The canonical strings above define the *content* of attribution. This section de
 | GitHub release notes | Once per release | `changelog_attribution_line()` | Same rationale as CHANGELOG. |
 
 Locked by `tests/test_attribution_tiered_usage.py`. The Phase-49 enforcement boundary is expressed two ways for two surfaces: CHANGELOG sections key on version (`≥ 0.36.0`); seal-commit walks key on phase number (`≥ 49`) parsed from the commit subject. Same boundary, different artifact identifiers.
+
+**Seal-subject coverage (Phase 207).** The live-history walk keys scope on a phase number parsed from the seal commit's subject. Until Phase 207 an unparseable subject returned "out of scope", so a seal commit whose subject carried no phase number was silently skipped — and the `/qor-substantiate` Step 9.5 template emitted exactly that form (`seal: <plan-slug> - Session substantiated`). Two live seal commits hit the hole, and it is how the Phase 206 seal's deliberate `Co-Authored-By:` omission passed the suite unnoticed. Both sides are now corrected: the template emits `seal: phase <N> - <plan-slug>`, and an unparseable subject is treated as IN scope rather than exempt.
 
 **Grandfathered seal commits (Phase 85, GH #96).** The phase 82 (`fb052e4`) and phase 83 (`ce138b2`) seal commits were authored locally with only the compact `Co-Authored-By:` line, missing the `Authored via [Qor-logic SDLC]` line. They predate the `/qor-substantiate` Step 9.5.4 seal-trailer guard. Rewriting published `main` history to backfill the line is rejected as disproportionate; the two phases are a disclosed exception in `tests/test_attribution_tiered_usage.py` (`_GRANDFATHERED_SEAL_PHASES`). From Phase 85 onward, Step 9.5.4 runs `qor.scripts.seal_trailer_check` after the seal commit and ABORTs substantiation if the full trailer is absent, so the omission cannot recur.

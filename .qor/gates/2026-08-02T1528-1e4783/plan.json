@@ -1,0 +1,51 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-02T1528-1e4783",
+  "ts": "2026-08-02T15:58:32Z",
+  "plan_path": "docs/plan-qor-phase207-attribution-coauthor-policy.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "open_questions": [],
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "boundaries": {
+    "limitations": [
+      "Policy read from .qorlogic/config.json at repo root only; no env var, no global-scope merge, no per-commit override.",
+      "The policy never suppresses the 'Authored via [Qor-logic SDLC]' line."
+    ],
+    "non_goals": [
+      "No rewriting of published history to add or remove trailers on existing commits.",
+      "No change to pr_footer or changelog_attribution_line.",
+      "No change to the emoji carve-out.",
+      "No new CLI subcommand."
+    ],
+    "exclusions": [
+      "Operator instruction files are out of scope; this changes what Qor-logic requires."
+    ]
+  },
+  "phases": [
+    "Declarable co-author requirement",
+    "Close the seal-subject coverage hole"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_attribution_coauthor_policy.py tests/test_attribution_tiered_usage.py tests/test_attribution_docs_consistency.py tests/test_seal_trailer_guard.py -q",
+    "python -m pytest tests/ -q",
+    "python -m ruff check qor/scripts/attribution_policy.py qor/scripts/attribution.py qor/scripts/seal_trailer_check.py",
+    "qor-logic scripts skill_size_budget_lint --skills-root qor/skills",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase207-attribution-coauthor-policy.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.134.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-02T15:58:32Z"
+  }
+}

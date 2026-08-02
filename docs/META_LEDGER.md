@@ -15471,6 +15471,98 @@ Section 4 restored under the entry #502 VETO: seal_artifacts.py 323 -> 249, badg
 
 **Entry ID**: `22205bd1a4d2`
 
+### Entry #506: GATE TRIBUNAL -- Phase 207 attribution co-author policy (VETO)
+
+**Timestamp**: 2026-08-02T15:59:41Z
+**Phase**: GATE (Phase 207)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase207-attribution-coauthor-policy.md
+**Session**: `2026-08-02T1528-1e4783`
+**Verdict**: VETO
+
+**Content Hash**: `7e6586c96059ddb8eaa7d364762c19b7d21d1f7178fa5061b9eda02603c93f86`
+**Previous Hash**: `df5464da7552ca667d1b54d76db929c642c73d6eec2fac512d4bc87ada9aa88d`
+**Chain Hash (Merkle seal)**: `daf2e79a82cb3d6e7fa4fd4a4e8a7e372d5c75cbdfdb230a1f93ade166f05248`
+
+**Decision**: VETO at L2. One binding ground (specification-drift).
+
+Plan Phase 2 removes the unparseable-subject exemption from _seal_phase_in_scope, which brings the Phase 206 seal commit (subject 'seal: badge-layout-resolution - Session substantiated', no phase number) into the live-history full-trailer walk for the first time. That commit deliberately omits the Co-Authored-By line. It therefore passes only if the declarable policy resolves to model_coauthor=false, and the policy is read from .qorlogic/config.json at the repository root -- a file that does not currently exist in this repository. Verified: 'git check-ignore -v .qorlogic/config.json' reports the path is NOT ignored, so it CAN be tracked and reach CI, but the plan never declares creating it. Implementing the plan exactly as written produces a red suite: Phase 2 widens the guard while Phase 1 supplies only the mechanism to satisfy it, never the declaration. The plan's own D1 -- 'an operator whose policy forbids AI co-author trailers can seal without a gate failure' -- is unreachable in this repository under the declared Affected Files. Per SG-AffectedFilesContract-A every persistence touchpoint must be enumerated; .qorlogic/config.json is the persistence touchpoint the whole policy reads from.
+
+All other passes clear: injection canaries clean, no security or OWASP surface (the policy read is json.loads on a repo-local file with a tolerant parse that fails closed toward REQUIRING attribution), Razor headroom ample (attribution.py 115/250, seal_trailer_check.py 70/250; longest functions 30 and 28), planned tests all invoke units and assert returned strings, resolved policy values, or CLI exit codes, no new dependencies, layering one-directional (attribution_policy does the I/O so attribution.py stays pure as its own doctrine declares), citations grep-verified, the NEW module declared NEW, no orphans. runtime_contract_walk WARNs on attribution_policy are the expected shape for a not-yet-created module.
+
+Required next action: Governor amends the plan to declare .qorlogic/config.json as an Affected File with the attribution.model_coauthor declaration, and states in D3/D4 that the file must be TRACKED for CI to honor the policy. Then re-run /qor-audit.
+
+### Entry #507: GATE TRIBUNAL -- Phase 207 attribution co-author policy (PASS, iter 2)
+
+**Timestamp**: 2026-08-02T16:00:28Z
+**Phase**: GATE (Phase 207)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase207-attribution-coauthor-policy.md
+**Session**: `2026-08-02T1528-1e4783`
+**Verdict**: PASS
+
+**Content Hash**: `04d490243004a3ab26adb5f4b2324db59a7cafe9692972f55bc1600578262df5`
+**Previous Hash**: `daf2e79a82cb3d6e7fa4fd4a4e8a7e372d5c75cbdfdb230a1f93ade166f05248`
+**Chain Hash (Merkle seal)**: `e9c08350ad1cb92de166c0b9d2aa8a843b0f1698b346108618227e779dbe3a00`
+
+**Decision**: PASS at L2, iteration 2. The entry #506 ground is cleared: the plan now declares .qorlogic/config.json as a NEW TRACKED Affected File carrying {"attribution": {"model_coauthor": false}} for this repository, with the reason stated -- Phase 2 widens the guard to cover the Phase 206 seal, and only this declaration makes that seal legal. A fourth deliverable was added whose D4 names the falsifiable observable: removing the file turns the suite red, which is what distinguishes a load-bearing declaration from a decorative one.
+
+All passes clear. Security: the policy resolver is a tolerant json.loads over a repo-local path that returns the STRICT default (require the co-author line) on absent file, absent key, or malformed JSON, so corruption fails toward more attribution, not less; relaxing the co-author requirement provably cannot relax the framework-line requirement, which the plan pins with a dedicated negative test. OWASP clear (A04 fail-closed default; A08 json not yaml/pickle). Razor headroom ample: attribution.py 115/250 with longest function 30, seal_trailer_check.py 70/250 with longest 28, and the new module is small. Tests behavioral throughout -- returned strings, resolved policy values, and a CLI subprocess exit-code pair (same commit exits 1 with no config and 0 with the policy declared) -- no presence-only assertions. No new dependencies. Layering one-directional: attribution_policy performs the I/O so attribution.py stays pure, as that module's own doctrine contract declares. Citations grep-verified; the NEW module and the NEW config file are both declared NEW. Filter-stage order in resolve_policy is a valid topological sort (existence, then parse, then key lookup, then default). No orphans.
+
+Judge note carried to the seal: this phase makes Qor-logic's attribution requirement declarable rather than absolute. The framework line stays mandatory at every setting. The doctrine's own stated rationale for the co-author line is GitHub contributor-stats reporting, which is a convenience, not a governance guarantee -- the Merkle chain and the gate artifacts carry provenance. Next: /qor-implement.
+
+### Entry #508: IMPLEMENTATION -- Phase 207 attribution co-author policy
+
+**Timestamp**: 2026-08-02T16:21:16Z
+**Phase**: IMPLEMENT (Phase 207)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-08-02T1528-1e4783`
+**Intent Lock**: `LOCKED: 2026-08-02T1528-1e4783`
+
+**Content Hash**: `02e5a4490c9c19bb59bce673dcc69c83c453198151af9149eb43dfe3ac4cdafc`
+**Previous Hash**: `e9c08350ad1cb92de166c0b9d2aa8a843b0f1698b346108618227e779dbe3a00`
+**Chain Hash (Merkle seal)**: `6fc5b61b396fc03fdce7bdc3b11dbd3f1c9e6209faf1381e6b77abb08572ecc1`
+
+**Decision**: Implemented Phase 207 per PASS audit (entry #507), TDD-first (all tests red on a missing attribution_policy module, then green).
+
+Phase 1: new qor/scripts/attribution_policy.py exports the frozen AttributionPolicy (one field, model_coauthor, default True) and resolve_policy, reading .qorlogic/config.json -> attribution.model_coauthor. The read is tolerant and fails CLOSED: absent file, absent key, malformed JSON, non-dict document, non-dict section, and non-boolean value all return the strict default, so a corrupt config demands MORE attribution. The I/O lives here because attribution.py is declared pure by its own doctrine contract; the pure helper receives an already-resolved keyword. commit_trailer gained model_coauthor and message_has_full_trailer gained require_coauthor, both keyword-only with strict defaults, so no existing call site changes meaning. seal_trailer_check resolves the policy from --repo-root and its failure message now names the declarable escape instead of only demanding compliance.
+
+Phase 2: _seal_phase_in_scope no longer exempts an unparseable subject. It previously returned False for a subject carrying no phase number, and the /qor-substantiate Step 9.5 template emitted exactly that form, so an operator following the documented template was exempted by accident. Two live seal commits hit the hole, and it is how the Phase 206 seal's deliberate Co-Authored-By omission passed the suite. Both sides corrected: the template now emits 'seal: phase [N] - [plan-slug]', and an unparseable subject is IN scope. The live-history walk resolves this repository's policy so the previously-skipped commits are judged under the declaration rather than skipped.
+
+This repository declares attribution.model_coauthor: false in a TRACKED .qorlogic/config.json (forced by the entry #506 VETO; the file is not gitignored, so CI honors it). The declaration is load-bearing, not decorative: removing it turns test_seal_commits_after_cutoff_have_full_canonical_trailer red, which was verified by moving the file aside and re-running.
+
+Tests: 11 new in tests/test_attribution_coauthor_policy.py -- pure-helper string assertions both ways, the negative that relaxing the co-author requirement can never relax the framework requirement, resolver defaults across four malformed shapes, and a CLI exit-code pair (the same framework-line-only seal commit exits 1 with no config and 0 with the policy declared) plus its mirror that a missing framework line still exits 1 under the relaxed policy. Section 4 held: attribution.py 129, attribution_policy.py 63, seal_trailer_check.py 89, longest function 30 (the failure-message branch was extracted to _required_clause when main reached 43). The substantiate SKILL.md edit was trimmed twice to stay under the 39936-byte headroom lock and is now 39576 LF bytes, net +66 over HEAD. Full suite 2733 passed / 5 skipped, green twice; ruff clean on the three modules. Content hash binds the plan. Next: /qor-substantiate.
+
+### Entry #509: SESSION SEAL -- Phase 207 attribution co-author policy (v0.135.0)
+
+**Timestamp**: 2026-08-02T16:22:35Z
+**Phase**: SUBSTANTIATE (Phase 207; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase207-attribution-coauthor-policy.md
+**Session**: `2026-08-02T1528-1e4783`
+
+**Content Hash**: `02e5a4490c9c19bb59bce673dcc69c83c453198151af9149eb43dfe3ac4cdafc`
+**Previous Hash**: `6fc5b61b396fc03fdce7bdc3b11dbd3f1c9e6209faf1381e6b77abb08572ecc1`
+**Chain Hash (Merkle seal)**: `4689038dc0771fdd99ad676f899e04c82f1fe64d19e3308889eb75f01054bd09`
+
+**Decision**: **Scope**: Phase 207 sealed (feature). Qor-logic required a `Co-Authored-By:` line on every seal commit and offered no way to decline it, so an operator with a standing rule against AI co-author trailers had to choose between that rule and a green seal gate. That requirement is now declarable per repository via .qorlogic/config.json -> attribution.model_coauthor, resolved by the new qor/scripts/attribution_policy.py and honored by commit_trailer, message_has_full_trailer, the Step 9.5.4 guard, and the live-history walk. The 'Authored via [Qor-logic SDLC]' line stays mandatory at every setting -- the co-author line's own documented purpose is GitHub contributor-stats reporting, a convenience, while provenance is carried by the Merkle chain and the gate artifacts. Resolution fails CLOSED across five malformed shapes, so a repository that declares nothing is byte-for-byte unchanged and a corrupt config demands more attribution, not less. attribution.py stays pure as its own doctrine contract declares; the I/O lives in the new module.
+
+**Second defect, found during the audit**: the live-history seal-trailer walk keyed scope on a phase number parsed from the commit subject and treated an unparseable subject as OUT of scope -- while the /qor-substantiate Step 9.5 template emitted exactly that form. An operator following the documented template was exempted from the guard by accident. Two live seal commits hit the hole, and it is precisely how the Phase 206 seal's deliberate co-author omission passed the full suite unnoticed. Both sides corrected: the template emits 'seal: phase [N] - [plan-slug]', and an unparseable subject is now IN scope.
+
+**Audit**: solo, L2, TWO iterations. Iteration 1 VETOed (entry #506, specification-drift): Phase 2 widened the guard to cover the Phase 206 seal, but the plan never declared creating .qorlogic/config.json, so implementing it exactly as written would have produced a red suite -- the widened guard with no declaration to satisfy it. Iteration 2 PASSed (entry #507) after the file was declared a NEW TRACKED Affected File with a fourth deliverable whose D4 names the falsifiable observable. That observable was then verified by experiment: moving the config aside turns test_seal_commits_after_cutoff_have_full_canonical_trailer red, so the declaration is load-bearing rather than decorative.
+
+**Substantiate gates**: intent-lock VERIFIED, admission ADMITTED, skill matrix 30/140/0, secret-scan clean, dod-check clean, merge-velocity healthy, data-API SKIP (no SQL), doc-integrity strict PASS, governance-index enforce clean, skill-size 2 WARN (both under EXCEEDED). Section 4 held: attribution.py 129, attribution_policy.py 63, seal_trailer_check.py 89, longest function 30 after extracting _required_clause when main reached 43. The substantiate SKILL.md sits at 39576 LF bytes against the 39936 headroom lock, net +66 over the prior blob, after two trims; the local CRLF working copy reads 40359 bytes, which is the known Windows measurement artifact the .gitattributes LF pin already neutralizes for CI. Tests: 11 new, red-then-green, full suite 2733 passed / 5 skipped, green twice; ruff clean. Change class: feature (0.134.0 -> 0.135.0). Content hash binds the plan.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1, PW.5.1
+
+**Entry ID**: `af42a8a16e6c`
+
 ---
 
 *Chain integrity: VALID*

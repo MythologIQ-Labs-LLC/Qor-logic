@@ -1,0 +1,20 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-02T1528-1e4783",
+  "ts": "2026-08-02T15:59:40Z",
+  "target": "docs/plan-qor-phase207-attribution-coauthor-policy.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "specification-drift"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.134.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "veto",
+    "ts": "2026-08-02T15:59:40Z"
+  }
+}
