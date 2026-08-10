@@ -1,0 +1,50 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-10T1750-67057b",
+  "ts": "2026-08-10T17:52:59Z",
+  "plan_path": "docs/plan-qor-phase211-github-surface-boundary-scan.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "open_questions": [],
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "boundaries": {
+    "limitations": [
+      "Single-repository, read-only; never edits, closes, or comments. An unattended run applies structural detectors only, because the terms overlay is gitignored by design."
+    ],
+    "non_goals": [
+      "No auto-remediation.",
+      "No change to the detectors, the exemption marker, or the tracked-surface scan.",
+      "No org-scope or multi-repo scanning."
+    ],
+    "exclusions": [
+      "PR review comments, discussions, releases, and wiki are out of scope for this pass."
+    ]
+  },
+  "phases": [
+    "Scan an already-fetched surface",
+    "Fetch, and wire the CLI",
+    "Run it on a schedule"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_github_surface_boundary.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.github_surface --repo MythologIQ-Labs-LLC/Qor-logic",
+    "qor-logic scripts publication_boundary_lint --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase211-github-surface-boundary-scan.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.137.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T17:52:59Z"
+  }
+}

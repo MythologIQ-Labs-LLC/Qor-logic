@@ -15775,6 +15775,82 @@ Section 4 held after a correction: extracting _build_parser pushed badge_currenc
 
 **Entry ID**: `a4d21f6bbccb`
 
+### Entry #519: GATE TRIBUNAL -- Phase 211 GitHub-surface boundary scan (PASS)
+
+**Timestamp**: 2026-08-10T17:53:01Z
+**Phase**: GATE (Phase 211)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase211-github-surface-boundary-scan.md
+**Session**: `2026-08-10T1750-67057b`
+**Verdict**: PASS
+
+**Content Hash**: `fb6b42fcd950dfc3a25228106097222e740dd0b09ef2bd969e29b7dd872c8560`
+**Previous Hash**: `9bc0362ae41e153bd387af8d7349bc96943578fbe90990efb6198291d46ae800`
+**Chain Hash (Merkle seal)**: `3cd09c9f23e75e043d2276df9481a7c56cb6cd4c3185ef8cade04acc7a931ce2`
+
+**Decision**: PASS at L2. The plan closes a blind spot the previous phase's green result concealed: the tracked-surface control is fail-closed and clean, and the GitHub surface was never in scope, so 'boundary clean' was true of files and false of the project. That distinction is stated in the plan rather than glossed.
+
+Four judgments the Judge endorses. LD-2 keeps fetching separable from scanning so no test needs a network -- scan_surface is pure over already-fetched items and delegates to the existing scan_text, which means both surfaces share one detector set and one exemption idiom rather than growing a second dialect. LD-3 correctly refuses the fail-closed CI job: that step runs on fork pull requests with no token, and a scan requiring authentication would fail there for reasons unrelated to the boundary; the scheduled workflow already carries GH_TOKEN and issues:write. LD-4 requires the summary to name which detector classes actually ran, because an unattended run cannot read the gitignored terms overlay and a bare 'clean' would overstate coverage -- the same overstatement the Judge is calling out in the paragraph above. And the plan makes a fetch failure a hard error rather than a clean result, with a test for it; an absent input reported as success is the precise shape of the release failure this project hit days ago.
+
+No auto-remediation is the right non-goal and is argued rather than asserted: rewriting an operator's issue text unattended is not a decision a lint should make. Security surface is read-only with list-form argv and no shell. Tests are behavioral throughout -- returned findings for title-only, body-only, and comment-only leaks, the empty list for a clean surface, both summary forms, and a raising fetcher. No new dependencies; gh is already a governed dependency of this workflow. The NEW module is declared. Next: /qor-implement.
+
+### Entry #520: IMPLEMENTATION -- Phase 211 GitHub-surface boundary scan
+
+**Timestamp**: 2026-08-10T18:14:25Z
+**Phase**: IMPLEMENT (Phase 211)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-08-10T1750-67057b`
+**Intent Lock**: `LOCKED: 2026-08-10T1750-67057b`
+
+**Content Hash**: `0a7f2da580d0e7ea41d6fa1833705d3fe6cf7fb7ab1d0a36796d4b14a845990e`
+**Previous Hash**: `3cd09c9f23e75e043d2276df9481a7c56cb6cd4c3185ef8cade04acc7a931ce2`
+**Chain Hash (Merkle seal)**: `90bc03599c639859212e276984d8cbd469f0f6c8044fcb1210c27460f86595ce`
+
+**Decision**: Implemented Phase 211 per PASS audit (entry #519), TDD-first.
+
+New qor/scripts/github_surface.py scans issue and pull-request titles, bodies, and issue comments. scan_surface is pure over already-fetched items and delegates each item's text to publication_boundary_lint.scan_text, so both surfaces share one detector set and one boundary-lint marker rather than growing a second dialect. Fetching is an injectable seam; no test performs network I/O. A fetch failure exits 2 with the reason named and never reports a clean surface it did not read. The summary states which detector classes ran, because an unattended run cannot read the gitignored terms overlay. Wired to nightly-health.yml, which already carries GH_TOKEN, rather than the fail-closed PR job, which runs on forks without one. Registered in the Phase 89 CI-surface list -- its self-application test caught first the omission and then a mismatch between the registered command string and the workflow invocation.
+
+TWO IN-FLIGHT CORRECTIONS, both surfaced by running the scan against the live surface rather than only against fixtures.
+
+First: the initial live run reported 637 findings, of which 186 of the first 200 were dependabot pull requests naming the upstream repository they bump -- which is the entire content of such a pull request. An unusable control is the exact failure mode this project diagnosed two phases ago. scan_surface now skips machine authors, reusing the pr_citation_lint exemption reasoning and covering both login forms GitHub emits: the dependabot[bot] trailer form and the app/dependabot form gh returns. The first bot check written here was wrong -- it tested only the [bot] suffix and reported 0 percent while dependabot dominated the output.
+
+Second, and a correction to an earlier claim in this session: after the manual sweep the GitHub surface was reported CLEAN. That verification ran the operator terms file only, and the Plus name is not one of the 17 listed terms, so it could never have matched. The structural cross-repo-issue detector immediately found a real leak the term sweep had missed, in a comment on issue #39. The claim was true of 17 identity terms and false of the boundary.
+
+Remediation of what the scan found is outside this plan's declared deliverables and is recorded here rather than left silent: 16 findings across 8 issues and 2 pull requests were resolved -- the missed Plus reference, five self-references written as <repo>#N where a bare #N is the reference, two operator-local absolute paths, and eight malformed markdown links left by an earlier anonymization that replaced link TEXT while leaving the URL target carrying an owner path. The surface now scans to 0 findings, verified by the new tool rather than by grep.
+
+Tests: 11 new, red-then-green. Full suite 2772 passed / 6 skipped, green twice; ruff clean; github_surface.py 134 lines, longest function 22; tracked-surface lint 0 findings. Content hash binds the plan. Next: /qor-substantiate.
+
+### Entry #521: SESSION SEAL -- Phase 211 GitHub-surface boundary scan (v0.138.0)
+
+**Timestamp**: 2026-08-10T18:15:22Z
+**Phase**: SUBSTANTIATE (Phase 211; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase211-github-surface-boundary-scan.md
+**Session**: `2026-08-10T1750-67057b`
+
+**Content Hash**: `0a7f2da580d0e7ea41d6fa1833705d3fe6cf7fb7ab1d0a36796d4b14a845990e`
+**Previous Hash**: `90bc03599c639859212e276984d8cbd469f0f6c8044fcb1210c27460f86595ce`
+**Chain Hash (Merkle seal)**: `28926a3b1e3acd4375f414690691a35d2343358fac838601d7aebda34712c581`
+
+**Decision**: **Scope**: Phase 211 sealed (feature). The publication-boundary control enumerated tracked files, so issue and pull-request titles, bodies, and comments were never in scope. The previous phase reported the tracked surface fail-closed and clean, and that was true of files and false of the project: the GitHub surface had been cleaned by hand twice with nothing holding it, and one issue title survived a body-only anonymization performed the same day. github_surface.py now scans it on a schedule, sharing the same detectors and the same boundary-lint marker so the two surfaces cannot drift into separate dialects.
+
+**Design**: scanning is pure over already-fetched items; fetching is an injectable seam, so no test performs network I/O. A fetch failure exits 2 with the reason named and never reports an unread surface as clean -- the same distinction the release-artifact failure got wrong days ago. The summary states which detector classes ran, because an unattended run cannot read the gitignored terms overlay. It is read-only: a finding is for a human to anonymize, since rewriting an operator's issue text unattended is not a decision a lint should make. It runs in nightly-health.yml, which already carries GH_TOKEN, not the fail-closed PR job, which runs on forks without one.
+
+**Two corrections, both forced by running the scan against the live surface rather than only fixtures.** (1) The first live run reported 637 findings, of which 186 of the first 200 were machine-authored dependency pull requests naming the upstream repository they bump -- which is the entire content of such a pull request. An unusable control is precisely the failure mode diagnosed three phases ago. Machine authors are now skipped, covering both login forms GitHub emits; the first bot check written here was itself wrong, testing only the [bot] suffix and reporting 0 percent while dependabot dominated the output. (2) The manual sweep earlier in this session reported the GitHub surface CLEAN. That verification ran the operator terms file only, and the Plus name is not one of the 17 listed terms, so it could never have matched. The structural detector immediately found a real leak the term sweep had missed, in a comment on issue #39. The claim was true of 17 identity terms and false of the boundary.
+
+**Remediation beyond the declared deliverables**, recorded rather than left silent: 16 findings across 8 issues and 2 pull requests were resolved -- the missed reference, five self-references written as <repo>#N where a bare #N is the reference, two operator-local absolute paths, and eight malformed markdown links left by an earlier anonymization that replaced link TEXT while leaving the URL target carrying an owner path. The surface now scans to 0 findings, verified by the tool rather than by grep.
+
+**Gates**: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, doc-integrity strict PASS, governance-index enforce clean, tracked-surface lint 0 findings. Tests: 11 new, red-then-green; full suite 2772 passed / 6 skipped, green twice; ruff clean; github_surface.py 134 lines with longest function 22. The Phase 89 CI-surface self-application test caught first the missing registration and then a mismatch between the registered command string and the workflow invocation. Change class: feature (0.137.0 -> 0.138.0). Content hash binds the plan.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `1d78194b64dc`
+
 ---
 
 *Chain integrity: VALID*

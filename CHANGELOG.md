@@ -10,6 +10,14 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.138.0] - 2026-08-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 211 (feature; the publication boundary now covers the GitHub surface)**: `publication_boundary_lint` enumerates tracked files, so issue and pull-request titles, bodies, and comments were never examined. That surface had been cleaned by hand twice, and one issue title survived a body-only anonymization performed the same day. New `qor/scripts/github_surface.py` scans it on a schedule via `nightly-health.yml`, sharing the same detectors and the same `boundary-lint: ok=<reason>` marker so the two surfaces cannot drift into separate dialects. Scanning is pure over already-fetched items and fetching is an injectable seam, so no test performs network I/O. A fetch that fails exits non-zero naming the reason and never reports a surface it could not read as clean.
+- The scan is read-only and reports for a human to anonymize — rewriting an operator's issue text unattended is not a decision a lint should make. It runs on a schedule rather than in the fail-closed pull-request job, which executes on forks with no token where an authenticated scan would fail for reasons unrelated to the boundary. Machine-authored items are skipped: a dependency bump names the upstream repository it bumps, and reporting those buries real findings under automation noise. An unattended run cannot read the gitignored identity-term overlay, so its summary names which detector classes actually ran rather than claiming an unqualified "clean".
+
 ## [0.137.0] - 2026-08-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -71,7 +71,25 @@ describing the detector, and frozen archive material. An exception is not a
 place to park prose that should have been anonymized.
 
 **Enforcement.** `publication_boundary_lint` runs fail-closed in CI's
-`gate-chain-completeness` job. Before Phase 208 it could express neither
+`gate-chain-completeness` job. It scans TRACKED FILES only, so issue and
+pull-request titles, bodies, and comments are outside its reach: that surface
+was cleaned by hand twice, and one issue title survived a body-only
+anonymization performed the same day. `qor/scripts/github_surface.py` closes
+that gap on a schedule (`nightly-health.yml`), sharing the same detectors and
+the same `boundary-lint: ok=<reason>` marker so the two surfaces cannot drift
+into separate dialects.
+
+The scheduled scan is read-only and reports for a human to anonymize; rewriting
+an operator's issue text unattended is not a decision a lint should make. It
+does not run in the pull-request job, which executes on forks with no token
+where an authenticated scan would fail for reasons unrelated to the boundary.
+Machine-authored items are skipped -- a dependency bump names the upstream
+repository it bumps, and reporting those buries real findings under automation
+noise (186 of the first 200 live findings were exactly that). An unattended run
+cannot read the gitignored terms overlay, so it applies the structural
+detectors and its summary says which classes ran: a bare "clean" would overstate
+what was checked, and a term-only sweep provably misses references the
+structural detectors catch. Before Phase 208 it could express neither
 standing exception above, so it reported granted exceptions as violations,
 stayed permanently red, and was wired to no gate — a control nobody can satisfy
 is a control nobody enforces. CI runs the structural detectors only; the

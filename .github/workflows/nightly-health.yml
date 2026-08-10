@@ -39,6 +39,18 @@ jobs:
       - run: pip install -e ".[dev]"
       - name: Checker self-test (fail fast before trusting a verdict)
         run: python -m qor.scripts.status_json --self-test
+      - name: publication boundary (GitHub surface)
+        # Phase 211: the tracked-surface lint scans `git ls-files`, so issue and
+        # pull-request titles, bodies, and comments were never examined -- the
+        # surface was cleaned by hand twice, and one issue title survived a
+        # body-only anonymization the same day. This runs here rather than in
+        # the fail-closed PR job because that job runs on forks with no token.
+        # Reports only; a finding is for a human to anonymize. The identity-term
+        # overlay is gitignored, so this applies the structural detectors and
+        # says so in its summary rather than claiming an unqualified "clean".
+        run: python -m qor.scripts.github_surface --repo "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Aggregate governance health
         id: health
         run: |
