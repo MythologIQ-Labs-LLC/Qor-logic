@@ -24,7 +24,7 @@ def _item(kind="issue", number=7, field="body", text=""):
 # -------- scanning --------
 
 def test_scans_title_and_body_and_comments():
-    leak = "see https://github.com/OtherOwner/other-repo for context\n"
+    leak = "see https://github.com/OtherOwner/other-repo for context\n"  # boundary-lint: ok=detector-own-fixture
     for field in ("title", "body", "comment"):
         findings = scan_surface([_item(field=field, text=leak)], terms=[])
         assert len(findings) == 1, (field, findings)
@@ -44,7 +44,7 @@ def test_reports_clean_for_a_surface_with_no_findings():
 def test_honors_the_exemption_marker_per_line():
     text = (
         "https://github.com/OtherOwner/other-repo  <!-- boundary-lint: ok=documented -->\n"
-        "https://github.com/OtherOwner/other-repo unmarked\n"
+        "https://github.com/OtherOwner/other-repo unmarked\n"  # boundary-lint: ok=detector-own-fixture
     )
     findings = scan_surface([_item(text=text)], terms=[])
     assert len(findings) == 1, findings
@@ -52,7 +52,7 @@ def test_honors_the_exemption_marker_per_line():
 
 
 def test_applies_identity_terms_when_supplied():
-    text = "SomeProduct and https://github.com/OtherOwner/other-repo\n"
+    text = "SomeProduct and https://github.com/OtherOwner/other-repo\n"  # boundary-lint: ok=detector-own-fixture
 
     structural_only = scan_surface([_item(text=text)], terms=[])
     assert len(structural_only) == 1
@@ -72,7 +72,7 @@ def _fetcher(items):
 
 
 def test_cli_reports_findings_from_an_injected_fetcher(capsys):
-    items = [_item(text="https://github.com/OtherOwner/other-repo\n")]
+    items = [_item(text="https://github.com/OtherOwner/other-repo\n")]  # boundary-lint: ok=detector-own-fixture
     rc = main(["--repo", "owner/name"], fetcher=_fetcher(items))
     out = capsys.readouterr().out
     assert rc == 1
@@ -136,7 +136,7 @@ def test_bot_authored_items_are_not_scanned():
 
 
 def test_scan_skips_items_from_machine_authors():
-    leak = "bumps https://github.com/pypa/gh-action-pypi-publish from 1 to 2\n"
+    leak = "bumps https://github.com/pypa/gh-action-pypi-publish from 1 to 2\n"  # boundary-lint: ok=detector-own-fixture
     human = SurfaceItem("pr", 1, "body", leak, author="a-human")
     bot = SurfaceItem("pr", 2, "body", leak, author="app/dependabot")
 
