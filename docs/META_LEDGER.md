@@ -15697,6 +15697,84 @@ Tests: 3 new, red-then-green; full suite 2737 passed / 5 skipped, green twice; r
 
 **Entry ID**: `cf7fa25b6410`
 
+### Entry #516: GATE TRIBUNAL -- Phase 210 config-backed layout resolution (PASS)
+
+**Timestamp**: 2026-08-10T17:20:57Z
+**Phase**: GATE (Phase 210)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase210-config-backed-layout-resolution.md
+**Session**: `2026-08-10T1641-119722`
+**Verdict**: PASS
+
+**Content Hash**: `5871b801b5be5e1a94ea5b255873479effe075430789381891194299d37ab3e9`
+**Previous Hash**: `5adeded390516fa6a93b3cf1fdd4509ca5ba5f7e207d75fb8d59f99d57a90bb3`
+**Chain Hash (Merkle seal)**: `853874fe0023f0cc69d51d0a174eba75d768a5e6cadcc3a02b2da40889c0fb42`
+
+**Decision**: PASS at L2. The plan closes the reachability half of GH #293, reported as GH #299, and both of its load-bearing claims were verified against the tree rather than accepted from the report: neither the substantiate Step 6.5 invocation nor the CI step passes a layout flag, and every flag in add_layout_args defaults to the real layout value.
+
+LD-2 is the point that makes this plan correct rather than merely additive. Introducing a config channel WITHOUT changing the flag defaults to None would ship a configuration surface that can never apply, because an unset flag is indistinguishable from one set to the default and would win every comparison. The plan couples the two changes and says why. A plan that shipped the channel alone would have looked complete and been inert.
+
+LD-3 is the security-relevant judgment and the Judge endorses its framing: routing a new input channel into an already-validated function inherits the containment guarantee but does not test it, and every existing negative test drives flags. The plan gives the config channel its own traversal, absolute-outside, and symlinked-root negatives. This is the pass most likely to be skipped on the reasoning that the guard is unchanged, and skipping it would leave a future eager resolution free to move outside the guard undetected.
+
+LD-4 prevents a second tolerant parser of the same file. Two independent tolerant parses degrade differently under identical malformed input, which is a defect that only appears when someone relies on the agreement. Extracting one reader and re-asserting the Phase 207 contract through it is correct.
+
+Security and OWASP clear: confinement stays in _resolve_count_root and _count_matching, config supplies candidate values only, and every malformed shape degrades to the default so a hostile or corrupt config cannot turn a failing seal into a passing one -- the plan states that as an acceptance criterion and tests it. Razor headroom ample (badge_layout.py 62 lines). Tests behavioral throughout, including two that execute the governed argv verbatim, which is the only assertion that actually proves reachability. No new dependencies; the NEW module is declared. Next: /qor-implement.
+
+### Entry #517: IMPLEMENTATION -- Phase 210 config-backed layout resolution (GH #299)
+
+**Timestamp**: 2026-08-10T17:35:07Z
+**Phase**: IMPLEMENT (Phase 210)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-08-10T1641-119722`
+**Intent Lock**: `LOCKED: 2026-08-10T1641-119722`
+
+**Content Hash**: `b5faae18ba81153fd6bd7dc9c8e610be83a98fe100a3ff5f2b759d4533ce2514`
+**Previous Hash**: `853874fe0023f0cc69d51d0a174eba75d768a5e6cadcc3a02b2da40889c0fb42`
+**Chain Hash (Merkle seal)**: `6891e2c8963ebde04ae6b38db713ce3ae81c5927f042b8deea73a185a409e594`
+
+**Decision**: Implemented Phase 210 per PASS audit (entry #516), TDD-first. Closes GH #299, the reachability half of GH #293 that Phase 206 left open.
+
+Phase 1: new qor/scripts/qorlogic_config.py is the ONE tolerant reader of .qorlogic/config.json. load_section is total -- absent file, unreadable path, invalid JSON, non-object document, and non-object section all return the empty mapping and nothing raises. attribution_policy delegates to it; its public surface and semantics are unchanged, re-asserted by a test that walks the Phase 207 contract through the extracted reader. Two independent tolerant parses of one file would have degraded differently under identical malformed input.
+
+Phase 2: add_layout_args now defaults every flag to None, and layout_from_args resolves each of the six keys as flag > config layout.<key> > qor/-rooted default. The default change is not cosmetic: while defaults equalled the real layout values an unset flag was indistinguishable from one set to the default and won every comparison, so a config channel added alone would have been inert. Resolution is per key, so a config declaring only skills_root leaves the other five at their defaults, and every malformed or wrong-typed value degrades rather than raising.
+
+Containment was re-proven through the NEW channel rather than inherited. Every Phase 206 negative drives flags; a later change resolving config roots eagerly would move resolution outside the guard with nothing to notice. Four negatives now enter with no flags set: parent-traversing root, absolute root outside the repository, parent-traversing pattern, and a root reached through a symlinked directory. Confinement itself was not touched -- config supplies candidates only.
+
+Phase 3: two tests execute the governed argv verbatim. seal_artifacts main with exactly ['--check', '--repo-root', <path>, '--skip-tests'] -- the argv substantiate Step 6.5 and the CI step use -- exits 1 on a non-qor repo with no config and 0 with the layout declared; the --write argv is covered the same way. No skill or workflow edit was required, which is the point of resolving inside layout_from_args: both governed invocations already pass --repo-root, the only input resolution needs. badge_currency gained a _build_parser symmetric with seal_artifacts so a test can assert both entry points resolve equal layouts from identical argv and config.
+
+Section 4 held after a correction: extracting _build_parser pushed badge_currency.py to 255, over the 250 cap; the __all__ block was compacted and it is now 246. All five touched modules clean (badge_layout 84, qorlogic_config 35, attribution_policy 51, seal_artifacts 249; longest function 33). Tests: 24 new across two suites, red-then-green -- the two governed-invocation tests were red for exactly the reported reason. Full suite 2761 passed / 6 skipped, green twice; ruff clean; boundary lint 0 findings. This repository declares no layout section, so its own seals resolve by the default path and are byte-unchanged. Content hash binds the plan. Next: /qor-substantiate.
+
+### Entry #518: SESSION SEAL -- Phase 210 config-backed layout resolution (v0.137.0)
+
+**Timestamp**: 2026-08-10T17:36:05Z
+**Phase**: SUBSTANTIATE (Phase 210; feature)
+**Author**: Judge
+**Change class**: feature
+**Plan**: docs/plan-qor-phase210-config-backed-layout-resolution.md
+**Session**: `2026-08-10T1641-119722`
+
+**Content Hash**: `b5faae18ba81153fd6bd7dc9c8e610be83a98fe100a3ff5f2b759d4533ce2514`
+**Previous Hash**: `6891e2c8963ebde04ae6b38db713ce3ae81c5927f042b8deea73a185a409e594`
+**Chain Hash (Merkle seal)**: `9bc0362ae41e153bd387af8d7349bc96943578fbe90990efb6198291d46ae800`
+
+**Decision**: **Scope**: Phase 210 sealed (feature). Closes GH #299 -- the reachability half of GH #293 that Phase 206 shipped without. Phase 206 made the badge layout declarable and fail-loud, which closed the dangerous half (a missing root raises instead of reporting a synthetic zero), but CLI flags were the only channel and NO governed invocation passes one: substantiate Step 6.5 and the CI step both call seal_artifacts --check --repo-root . with no layout arguments. A repository whose skills are not under qor/ failed the release-class seal gate on every feature/breaking phase while the abort message told the operator to declare a layout the governed path could not carry. A shipped, published capability was unreachable in practice.
+
+**Resolution**: each of the six keys resolves independently as CLI flag > .qorlogic/config.json layout.<key> > qor/-rooted default, inside layout_from_args -- which both the checker and the writer already call with the --repo-root the governed invocations already pass. No skill or workflow edit was required; that is the point of resolving there rather than at the call sites. Flag defaults became None in the same change, and this is load-bearing: while defaults equalled the real layout values an unset flag was indistinguishable from one set to the default and won every comparison, so a config channel added alone would have been inert.
+
+**Discipline points**: (1) One tolerant reader. New qorlogic_config.load_section is total across absent file, unreadable path, invalid JSON, non-object document, and non-object section; the Phase 207 attribution policy now delegates to it with semantics re-asserted through the extraction. Two independent tolerant parses of one file degrade differently under identical malformed input. (2) Containment was re-proven through the NEW channel rather than inherited. Every prior negative drives flags; a later change resolving config roots eagerly would move resolution outside the guard undetected. Four negatives now enter with no flags set: traversing root, absolute root outside the repository, traversing pattern, and a root reached through a symlinked directory. Confinement itself was untouched -- config supplies candidates only. (3) The acceptance criterion is executed, not described: two tests run the governed argv verbatim and assert exit 1 without a config and exit 0 with one.
+
+**Correction during implementation**: extracting a symmetric _build_parser pushed badge_currency.py to 255 lines, over the 250 cap. The __all__ block was compacted; the file is now 246. All five touched modules are within Section 4 (badge_layout 84, qorlogic_config 35, attribution_policy 51, seal_artifacts 249; longest function 33).
+
+**Gates**: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, doc-integrity strict PASS, governance-index enforce clean, boundary lint 0 findings. Tests: 24 new across two suites, red-then-green, with the two governed-invocation tests red for exactly the reported reason; full suite 2761 passed / 6 skipped, green twice; ruff clean. This repository declares no layout section, so its own seals resolve by the default path and are byte-unchanged. Change class: feature (0.136.1 -> 0.137.0). Content hash binds the plan.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `a4d21f6bbccb`
+
 ---
 
 *Chain integrity: VALID*

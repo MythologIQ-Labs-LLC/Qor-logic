@@ -26,18 +26,9 @@ from qor.scripts.badge_layout import (
 )
 
 __all__ = [
-    "DEFAULT_LAYOUT",
-    "BadgeLayout",
-    "BadgeLayoutError",
-    "add_layout_args",
-    "layout_from_args",
-    "check_currency",
-    "count_agents",
-    "count_by_layout",
-    "count_doctrines",
-    "count_ledger_entries",
-    "count_skills",
-    "count_tests",
+    "DEFAULT_LAYOUT", "BadgeLayout", "BadgeLayoutError", "add_layout_args",
+    "layout_from_args", "check_currency", "count_agents", "count_by_layout",
+    "count_doctrines", "count_ledger_entries", "count_skills", "count_tests",
     "parse_readme_badges",
 ]
 
@@ -223,12 +214,18 @@ def check_currency(
     return mismatches
 
 
-def main(argv: list[str] | None = None) -> int:
+def _build_parser() -> argparse.ArgumentParser:
+    """Symmetric with seal_artifacts._build_parser so both entry points resolve
+    a layout from one declaration and cannot drift (Phase 210)."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--repo-root", type=Path, default=Path.cwd())
     parser.add_argument("--ledger", type=Path, default=Path("docs/META_LEDGER.md"))
     add_layout_args(parser)
-    args = parser.parse_args(argv)
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _build_parser().parse_args(argv)
     try:
         mismatches = check_currency(
             args.repo_root, args.ledger, layout=layout_from_args(args)

@@ -16,11 +16,12 @@ corrupt config demands more attribution rather than less.
 """
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from pathlib import Path
 
-CONFIG_RELPATH = Path(".qorlogic") / "config.json"
+from qor.scripts.qorlogic_config import CONFIG_RELPATH, load_section
+
+__all__ = ["AttributionPolicy", "DEFAULT_POLICY", "CONFIG_RELPATH", "resolve_policy"]
 
 
 @dataclass(frozen=True)
@@ -44,20 +45,7 @@ def resolve_policy(repo_root: Path | None = None) -> AttributionPolicy:
     Returns `DEFAULT_POLICY` unless the file exists, parses, and declares the
     key as a genuine boolean.
     """
-    root = Path.cwd() if repo_root is None else Path(repo_root)
-    config_path = root / CONFIG_RELPATH
-    if not config_path.is_file():
-        return DEFAULT_POLICY
-    try:
-        data = json.loads(config_path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return DEFAULT_POLICY
-    if not isinstance(data, dict):
-        return DEFAULT_POLICY
-    section = data.get("attribution")
-    if not isinstance(section, dict):
-        return DEFAULT_POLICY
-    declared = section.get("model_coauthor")
+    declared = load_section(repo_root, "attribution").get("model_coauthor")
     if not isinstance(declared, bool):
         return DEFAULT_POLICY
     return AttributionPolicy(model_coauthor=declared)

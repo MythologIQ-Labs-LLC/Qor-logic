@@ -10,6 +10,18 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.137.0] - 2026-08-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 210 (feature; the declared badge layout is now reachable)**: closes #299. Phase 210's predecessor made the badge/seal layout declarable and fail-loud, but CLI flags were the only channel and no governed invocation passes one — `/qor-substantiate` Step 6.5 and the CI step both call `seal_artifacts --check --repo-root .` with no layout arguments. A repository whose skills, agents, or doctrines are not under `qor/` therefore failed the release-class seal gate on every feature/breaking phase, while the abort message instructed the operator to declare a layout the governed path could not carry. Each of the six keys now resolves independently as **CLI flag > `.qorlogic/config.json` `layout.<key>` > `qor/`-rooted default**, inside `layout_from_args`, which both the checker and the writer already call with the `--repo-root` the governed invocations already pass — so no skill or workflow edit was needed to reach it.
+
+### Changed
+- Layout flag defaults are now `None`. This is load-bearing rather than cosmetic: while each default equalled the real layout value, an unset flag was indistinguishable from one explicitly set to the default and won every comparison, so a configuration channel introduced on its own would have been inert.
+- New `qor/scripts/qorlogic_config.py` is the single tolerant reader of `.qorlogic/config.json`; the attribution policy added in the previous release now delegates to it with its semantics unchanged. Two independent tolerant parses of one file would degrade differently under identical malformed input.
+- Resolution is per key and total: a config declaring only `skills_root` leaves the other five at their defaults, and an absent file, invalid JSON, non-object document or section, or a wrong-typed, empty, or blank value each degrades to the default rather than raising. A broken operator config must not break a gate, and must not turn a failing seal into a passing one. Declaring a root is not trusting it — containment, pattern-traversal rejection, and symlink rejection still apply, asserted by negatives that enter through the configuration channel rather than inheriting the flag-channel tests.
+
 ## [0.136.1] - 2026-08-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

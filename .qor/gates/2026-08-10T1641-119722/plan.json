@@ -1,0 +1,50 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-10T1641-119722",
+  "ts": "2026-08-10T17:20:56Z",
+  "plan_path": "docs/plan-qor-phase210-config-backed-layout-resolution.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "open_questions": [],
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "boundaries": {
+    "limitations": [
+      "One repository-local file; no org scope, inheritance, env var, or auto-detection. Undeclared keys keep their qor/-rooted default."
+    ],
+    "non_goals": [
+      "No change to counting, confinement, or fail-loud semantics.",
+      "No change to CLI flag names.",
+      "No new CLI subcommand."
+    ],
+    "exclusions": [
+      "Org-scoped or multi-repository layout policy is out of scope for the public line by design."
+    ]
+  },
+  "phases": [
+    "One tolerant config reader",
+    "Config-backed, per-key layout resolution",
+    "Prove the governed flow reaches it"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qorlogic_config.py tests/test_badge_layout_config.py -q",
+    "python -m pytest tests/test_badge_layout_resolution.py tests/test_seal_artifacts.py tests/test_attribution_coauthor_policy.py -q",
+    "python -m pytest tests/ -q",
+    "qor-logic scripts publication_boundary_lint --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase210-config-backed-layout-resolution.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.136.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T17:20:56Z"
+  }
+}
