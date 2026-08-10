@@ -15619,6 +15619,84 @@ Result: tracked non-vendor findings 85 -> 0 across 42 -> 0 files; the lint exits
 
 **Entry ID**: `a3c870cdcfc9`
 
+### Entry #513: GATE TRIBUNAL -- Phase 209 release retention + hermetic git fixtures (PASS)
+
+**Timestamp**: 2026-08-10T16:01:11Z
+**Phase**: GATE (Phase 209)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase209-release-retention-and-hermetic-git.md
+**Session**: `2026-08-10T1524-46bc30`
+**Verdict**: PASS
+
+**Content Hash**: `fb107dd02c67715115c0f6a85ca5f6b2b84713897af3a952299f30c63e764d87`
+**Previous Hash**: `838a835252209ca553d9a2a5f1beb94f41cb8b9181d4a8101199ce7161811554`
+**Chain Hash (Merkle seal)**: `09b45230dfcca224af9bde48f0d90c8b65f9f6086b6393e72079660518672e8b`
+
+**Decision**: PASS at L2. Two reliability defects, each root-caused to evidence rather than symptom.
+
+LD-1 is measured, not inferred: the v0.135.0 release-dist artifact carried expires_at 2026-08-09T16:37:11Z under retention-days 7 and the pypi approval landed 2026-08-10T15:38Z. The publish failure named the artifact toolkit, which is the wrong cause -- the build had succeeded and its output was garbage-collected while an unbounded human gate held. Raising to 30 matches the two sibling workflows and preserves the build/publish split, so the published bytes remain the ones the CI gate verified.
+
+LD-2 and LD-3 are the honest shape of a flake fix. The plan states plainly that the CI failure was NOT reproduced locally (12 of 12 passes, sequential runner, no xdist or random ordering) and that isolating ambient git configuration removes a mechanism rather than proving the symptom gone. That is the correct claim to make; a plan asserting the flake is fixed would be unfalsifiable. The mechanism is real and independently objectionable: scratch repositories inherit global and system git config, and this repository's own CI logs show actions/checkout installing includeIf entries pointing at credential files it later tears down. Environment coupling in a fixture violates doctrine-test-discipline regardless of whether it produced this exit code.
+
+Two judgments the Judge specifically endorses. First, no retry: the plan names retries as a non-goal and gives the reason -- a retry converts a real failure into a slow pass and destroys the signal. Second, all four scratch-repo modules are treated rather than only the one that flaked; fixing the observed instance and leaving three identical latent couplings is the half-measure pattern this project has already catalogued.
+
+The D4.d waiver on retention is legitimate and correctly formed: artifact expiry is a platform behavior with no CI-observable assertion short of waiting a week, and asserting the literal YAML value would be exactly the presence-only test doctrine-test-functionality rejects. The rationale and the absence of a required follow-on are both stated. Every other planned test asserts a returned value or a raised message. Razor headroom ample; no new dependencies; the new support module is declared NEW. Next: /qor-implement.
+
+### Entry #514: IMPLEMENTATION -- Phase 209 release retention + hermetic git fixtures
+
+**Timestamp**: 2026-08-10T16:14:02Z
+**Phase**: IMPLEMENT (Phase 209)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-08-10T1524-46bc30`
+**Intent Lock**: `LOCKED: 2026-08-10T1524-46bc30`
+
+**Content Hash**: `643bc5e20669cc35fe3a6d0fba39a40fe3ace3b354b19196bedcb9ba638432c0`
+**Previous Hash**: `09b45230dfcca224af9bde48f0d90c8b65f9f6086b6393e72079660518672e8b`
+**Chain Hash (Merkle seal)**: `904a20ff60b8bfdae454919b59ca07f8647bb0672029b443ccd1635d9b0ced71`
+
+**Decision**: Implemented Phase 209 per PASS audit (entry #513), TDD-first (three isolation tests red on a missing support module, then green).
+
+Phase 1: release.yml release-dist retention 7 -> 30, matching ci.yml and oss-sast.yml, with the measured cause recorded inline so the next reader sees why. No change to the build/publish split, so the published bytes remain the ones the CI gate verified.
+
+Phase 2: new tests/support/git_fixture.py provides scratch_env() and run_git(). scratch_env points GIT_CONFIG_GLOBAL and GIT_CONFIG_SYSTEM at a nonexistent path (git reads a missing config as empty), sets GIT_CONFIG_NOSYSTEM, and supplies its own committer/author identity, so a scratch repo cannot borrow or be perturbed by ambient configuration. It returns a fresh mutable dict, so the merge-velocity date-backdating path extends it with GIT_AUTHOR_DATE / GIT_COMMITTER_DATE instead of rebuilding from os.environ. run_git raises RuntimeError carrying git's stderr, stdout, argv, exit code, and cwd -- closing for fixtures the gap Phase 194 closed only for the production path, where check=True captured stderr onto an exception whose __str__ never prints it.
+
+All four scratch-repo modules migrated, not just the one that flaked: merge_velocity_check, workspace_fragility_check, substantiate_changelog_integration, reliability_scripts. The last of these previously ran its git setup with check=False, so a broken fixture surfaced later as a confusing assertion failure rather than at the point of failure; it now raises where it breaks.
+
+Honest limitation, restated from the plan: the observed CI exit-2 was NOT reproduced locally (12 of 12 passes; pytest runs sequentially here with no xdist and no random ordering), so this removes a mechanism rather than proving the symptom gone. The mechanism is real and independently worth removing -- this repository's own CI logs show actions/checkout installing includeIf entries pointing at credential files it tears down at job cleanup, i.e. ambient config mutating underneath a running test. No retry was added anywhere; a retry would convert a real failure into a slow pass and destroy the signal. If the failure recurs, it will now report git's own reason.
+
+Tests: 3 new, red-then-green; full suite 2737 passed / 5 skipped, green twice; ruff clean on the new files; boundary lint 0 findings. Content hash binds the plan. Next: /qor-substantiate.
+
+### Entry #515: SESSION SEAL -- Phase 209 release retention + hermetic git fixtures (v0.136.1)
+
+**Timestamp**: 2026-08-10T16:14:52Z
+**Phase**: SUBSTANTIATE (Phase 209; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase209-release-retention-and-hermetic-git.md
+**Session**: `2026-08-10T1524-46bc30`
+
+**Content Hash**: `643bc5e20669cc35fe3a6d0fba39a40fe3ace3b354b19196bedcb9ba638432c0`
+**Previous Hash**: `904a20ff60b8bfdae454919b59ca07f8647bb0672029b443ccd1635d9b0ced71`
+**Chain Hash (Merkle seal)**: `5adeded390516fa6a93b3cf1fdd4509ca5ba5f7e207d75fb8d59f99d57a90bb3`
+
+**Decision**: **Scope**: Phase 209 sealed (hotfix). Two reliability defects surfaced by this session's own operation, each root-caused to evidence rather than symptom.
+
+**Release-artifact expiry**: release-dist carried retention-days 7 while the pypi environment gate has no bounded wait. Measured on the v0.135.0 run -- artifact created 2026-08-02T16:37:12Z, expires_at 2026-08-09T16:37:11Z, approval 2026-08-10T15:38Z, roughly 23 hours late. The publish failure named the artifact toolkit, which is the wrong cause: the build had succeeded and its output was garbage-collected under an open human gate. Retention is now 30, matching ci.yml and oss-sast.yml; the build/publish split is untouched so published bytes remain CI-verified. v0.134.0 and v0.136.0 escaped only because they were approved the same day.
+
+**Hermetic git fixtures**: scratch repositories inherited the machine's global and system git config. New tests/support/git_fixture.py excludes it (GIT_CONFIG_GLOBAL and GIT_CONFIG_SYSTEM at a nonexistent path, GIT_CONFIG_NOSYSTEM, own identity) and raises with git's own stderr, argv, exit code, and cwd. All four scratch-repo modules migrated -- merge_velocity_check, workspace_fragility_check, substantiate_changelog_integration, reliability_scripts -- rather than only the one observed to flake; the last of these had been running its git setup with check=False, so a broken fixture surfaced later as a confusing assertion rather than at the break.
+
+**Stated limitation**: the observed CI exit-2 was NOT reproduced locally (12 of 12 passes; sequential runner, no xdist, no random ordering). This removes a mechanism, not a proven symptom. The mechanism is real and independently worth removing: this repository's CI logs show actions/checkout installing includeIf entries pointing at credential files it tears down at job cleanup, i.e. ambient config mutating underneath a running test. No retry was added anywhere -- a retry converts a real failure into a slow pass and destroys the signal. If it recurs, it will now report git's reason instead of a bare exit code.
+
+**Gates**: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, doc-integrity strict PASS, governance-index enforce clean, boundary lint 0 findings. Tests: 3 new, red-then-green; full suite 2737 passed / 5 skipped, green twice; ruff clean on the new files. The retention deliverable carries a disclosed D4.d waiver: artifact expiry is a platform behavior with no CI-observable assertion short of waiting a week, and asserting the literal YAML value would be the presence-only shape doctrine-test-functionality rejects. Change class: hotfix (0.136.0 -> 0.136.1). Content hash binds the plan.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `cf7fa25b6410`
+
 ---
 
 *Chain integrity: VALID*

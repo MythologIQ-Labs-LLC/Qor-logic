@@ -13,13 +13,14 @@ from qor.scripts.workspace_fragility_check import (
     assess_workspace_fragility,
 )
 
+from tests.support.git_fixture import run_git, scratch_env
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 def _run(cmd: list[str], cwd: Path) -> str:
-    return subprocess.run(
-        cmd, cwd=str(cwd), capture_output=True, text=True, check=True,
-    ).stdout
+    """Hermetic, diagnosable git for scratch repos (Phase 209)."""
+    return run_git(cmd, cwd, env=scratch_env())
 
 
 def _make_repo(tmp_path: Path) -> Path:

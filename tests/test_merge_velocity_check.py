@@ -16,6 +16,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.support.git_fixture import run_git, scratch_env
 from qor.scripts.merge_velocity_check import (
     _git_log_merges_in_window,
     assess_merge_velocity,
@@ -25,10 +26,13 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 def _run(cmd: list[str], cwd: Path, env: dict | None = None) -> str:
-    result = subprocess.run(
-        cmd, cwd=str(cwd), capture_output=True, text=True, check=True, env=env,
-    )
-    return result.stdout
+    """Run git hermetically, surfacing git's own reason on failure (Phase 209).
+
+    Ambient global/system config is excluded so a CI runner's `includeIf`
+    entries -- installed by actions/checkout and torn down at job cleanup --
+    cannot alter fixture behavior mid-run.
+    """
+    return run_git(cmd, cwd, env=env or scratch_env())
 
 
 def _make_repo(tmp_path: Path) -> Path:
@@ -82,8 +86,9 @@ def _make_merge_commit(
     if days_ago > 0:
         when = datetime.now(timezone.utc) - timedelta(days=days_ago)
         date_str = when.strftime("%Y-%m-%dT%H:%M:%S")
-        import os
-        env = {**os.environ, "GIT_AUTHOR_DATE": date_str, "GIT_COMMITTER_DATE": date_str}
+        env = scratch_env(
+            GIT_AUTHOR_DATE=date_str, GIT_COMMITTER_DATE=date_str
+        )
     _run(["git", "merge", "--no-ff", branch, "-m", subject], cwd=repo, env=env)
 
 

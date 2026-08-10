@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 """
 
 
+from tests.support.git_fixture import run_git, scratch_env
+
+
 def _git_available() -> bool:
     try:
         subprocess.run(
@@ -66,34 +69,19 @@ def test_stamped_changelog_included_in_auto_stage(tmp_path):
     """Mirror the /qor-substantiate Step 9.5 auto-stage block and confirm
     the stamped CHANGELOG appears in ``git diff --cached --name-only``."""
     from qor.scripts.changelog_stamp import apply_stamp
-    subprocess.run(
-        ["git", "init", "-q"], check=True, cwd=tmp_path, capture_output=True,
-    )
-    subprocess.run(
-        ["git", "config", "user.email", "test@example.com"],
-        check=True, cwd=tmp_path, capture_output=True,
-    )
-    subprocess.run(
-        ["git", "config", "user.name", "test"],
-        check=True, cwd=tmp_path, capture_output=True,
-    )
+    # Phase 209: hermetic git -- ambient config cannot alter this fixture.
+    env = scratch_env()
+    run_git(["git", "init", "-q"], cwd=tmp_path, env=env)
     cl = tmp_path / "CHANGELOG.md"
     cl.write_text(_SAMPLE, encoding="utf-8")
-    subprocess.run(
-        ["git", "add", "CHANGELOG.md"], check=True, cwd=tmp_path, capture_output=True,
-    )
-    subprocess.run(
-        ["git", "commit", "-m", "initial", "-q"],
-        check=True, cwd=tmp_path, capture_output=True,
-    )
+    run_git(["git", "add", "CHANGELOG.md"], cwd=tmp_path, env=env)
+    run_git(["git", "commit", "-m", "initial", "-q"], cwd=tmp_path, env=env)
 
     # Stamp in place -> CHANGELOG.md is now modified
     apply_stamp(cl, "0.18.0", "2026-05-01")
 
     # Mirror Step 9.5 auto-stage (just the CHANGELOG line for this test)
-    subprocess.run(
-        ["git", "add", "CHANGELOG.md"], check=True, cwd=tmp_path, capture_output=True,
-    )
+    run_git(["git", "add", "CHANGELOG.md"], cwd=tmp_path, env=env)
 
     # Assert stamped CHANGELOG is staged for the next commit
     result = subprocess.run(

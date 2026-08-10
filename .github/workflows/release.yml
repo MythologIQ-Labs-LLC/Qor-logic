@@ -68,7 +68,12 @@ jobs:
           name: release-dist
           path: dist/
           if-no-files-found: error
-          retention-days: 7
+          # Phase 209: the `pypi` environment gate has no bounded wait, so a
+          # 7-day window let the v0.135.0 artifact expire ~23h before its
+          # approval landed; publish then failed with the toolkit's generic
+          # "Artifact not found", naming the wrong cause. 30 matches ci.yml
+          # and oss-sast.yml.
+          retention-days: 30
 
   publish:
     needs: build
