@@ -61,4 +61,4 @@ def test_no_compliance_regression_vs_prior_release():
         import pytest
         pytest.skip("no v* release tags available")
     regs = cr.ratchet_check(repo, base)
-    assert regs == [], "compliance regression vs %s:\n  %s" % (base, "\n  ".join(regs))
+    assert regs == [], "compliance regression vs %s:\n  %s" % (base, "\n  ".join(regs))  # boundary-lint: ok=printf-format-not-a-path

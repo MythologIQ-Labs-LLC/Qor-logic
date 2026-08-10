@@ -302,7 +302,7 @@ def test_collector_subprocess_chain(tmp_path, monkeypatch):
         "threshold": 10, "stale_days": 90,
     }
 
-    fake_url = "https://github.com/meta/repo/issues/77"
+    fake_url = "https://github.com/meta/repo/issues/77"  # boundary-lint: ok=synthetic-fixture-url
 
     def fake_run(cmd, *args, **kwargs):
         # check_shadow_threshold per repo: exit 10 (breach)

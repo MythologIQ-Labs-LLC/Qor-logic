@@ -46,7 +46,7 @@ description: Edge cases
 ---
 # edge
 
-Path: C:\\\\Users\\\\x
+Path: C:\\\\Users\\\\x  # boundary-lint: ok=synthetic-fixture-path
 Triple: """this is a triple quote"""
 Trailing backslash\\
 '''

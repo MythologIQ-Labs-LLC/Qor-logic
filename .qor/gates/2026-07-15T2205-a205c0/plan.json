@@ -18,7 +18,7 @@
   "open_questions": [],
   "doc_tier": "minimal",
   "change_class": "governance",
-  "originating_remediation": "MythologIQ-Labs-LLC/qortara-sdlc#41",
+  "originating_remediation": "an upstream governance-line remediation item",
   "required_gate_artifacts": [
     "plan",
     "audit",
@@ -36,8 +36,8 @@
       "administrative merge bypass"
     ],
     "exclusions": [
-      "Bicameral repositories",
-      "Knapp-Kevin/Qor"
+      "repositories outside this one",
+      "unrelated personal repositories"
     ]
   },
   "ai_provenance": {

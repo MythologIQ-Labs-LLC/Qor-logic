@@ -100,6 +100,17 @@ jobs:
         # is unavailable for the Tests-badge collect; that badge is verified
         # at seal time (substantiate Step 6.5) where the dev env exists.
         run: python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .
+      - name: publication boundary
+        # Phase 208: fail-closed from here on. The control shipped in Phase 172
+        # but could not express the two exceptions its own doctrine grants --
+        # the `license: Proprietary` attribution lines and the `qor/vendor/`
+        # third-party tree -- so it reported granted exceptions as violations,
+        # stayed permanently red, and was wired to no gate. Both grants are now
+        # expressible, the tracked surface is clean, and the control is
+        # enforceable. Note this runs WITHOUT the operator terms overlay
+        # (.qor/private/ is gitignored), so CI enforces the structural
+        # detectors; identity terms are verified locally.
+        run: python -m qor.scripts.publication_boundary_lint --repo-root .
 
   provenance-attest:
     # Phase 158 wiring (GAP-GOV-05): non-forgeable gate-artifact provenance.

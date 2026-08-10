@@ -298,7 +298,7 @@ Concrete invocation examples (Architecture L2, Security L3, Scope Change L2) are
 Located at: `docs/META_LEDGER.md`
 
 ```markdown
-# Q-DNA Development Meta-Ledger
+# Development Meta-Ledger
 ## Auditable Decision Trail
 
 **Version:** 1.0
@@ -326,7 +326,7 @@ Located at: `docs/META_LEDGER.md`
 **Approver:** System
 
 ### Decision
-Initialize Meta-Ledger for Q-DNA development governance.
+Initialize Meta-Ledger for development governance.
 
 ### Hash Chain
 ```

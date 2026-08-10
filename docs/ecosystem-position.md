@@ -12,14 +12,14 @@ It defines lifecycle doctrine and evidence meaning. It does not own a complete c
 flowchart LR
     Repo[Repository Context]
     Logic[Qor-logic]
-    FailSafe[FailSafe]
-    Plus[Qor-logic-plus]
-    SDLC[Qortara SDLC]
+    Product[Adjacent Governance Product]
+    Extended[Extended Governance Line]
+    Vertical[Delivery Vertical]
     Runtime[Supported Runtime Profiles]
 
     Repo --> Logic
-    Logic --> FailSafe
-    Logic --> Plus
+    Logic --> Product
+    Logic --> Extended
     Logic --> SDLC
     Logic --> Runtime
 ```
@@ -57,7 +57,7 @@ The arrows represent consumption of versioned lifecycle, gate, policy, skill, an
 
 ## Does not own
 
-- organization actors, delegated authority, work claims, conflicts, admission, resources, or release sequencing owned by Qor-logic-plus;
+- organization actors, delegated authority, work claims, conflicts, admission, resources, or release sequencing owned by the extended governance line;
 - a complete editor, web, desktop, or hosted product;
 - tenant identity, billing, subscriptions, or fleet operations;
 - operator read models owned by Qor Oversight;
@@ -83,7 +83,7 @@ A compatibility adapter must declare:
 2. Publish conformance fixtures for each supported host and consumer.
 3. Define compatibility floors and explicit deprecation policy.
 4. Separate portable semantics from host-specific presentation and orchestration.
-5. Complete the contracts required by the first Qortara SDLC vertical slice.
+5. Complete the contracts required by the first delivery-vertical slice.
 6. Add documentation checks that prevent consumers from claiming Qor authority they do not own.
 
 ## Public disclosure boundary

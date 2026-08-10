@@ -44,6 +44,40 @@ paths, personal data, or unnecessary operational details.
 Moving ordinary research, planning, attribution, or integration prose into the
 lessons-learned directory to evade this rule is prohibited.
 
+## Standing exceptions and how to record one (Phase 208)
+
+Two exceptions are granted outright, both because the text is legally required
+and is not this project's to rewrite:
+
+1. **Third-party attribution under `qor/vendor/`.** The lint skips this tree
+   structurally; no marker is needed.
+2. **`license:` lines naming a proprietary owner** in skill frontmatter and in
+   the frozen `docs/archive/` tree.
+
+Beyond those, a line that legitimately names an outside identity records the
+exception where it applies:
+
+```
+<any line> # boundary-lint: ok=<reason>
+```
+
+The marker suppresses findings for **that line only**. There is no wildcard, no
+per-file form, and no directory suppression. A reason is required; a bare
+`ok=` does not suppress. The comment character is not part of the pattern, so
+the same marker works in Markdown (`<!-- ... -->`), Python (`# ...`), and YAML.
+
+Legitimate uses are narrow: a detector's own test fixtures, a specification
+describing the detector, and frozen archive material. An exception is not a
+place to park prose that should have been anonymized.
+
+**Enforcement.** `publication_boundary_lint` runs fail-closed in CI's
+`gate-chain-completeness` job. Before Phase 208 it could express neither
+standing exception above, so it reported granted exceptions as violations,
+stayed permanently red, and was wired to no gate — a control nobody can satisfy
+is a control nobody enforces. CI runs the structural detectors only; the
+identity-term overlay at `.qor/private/boundary-terms.txt` is gitignored and
+verified locally.
+
 ## Agent obligations
 
 Every agent operating in this repository MUST:

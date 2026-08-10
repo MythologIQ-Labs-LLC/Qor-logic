@@ -10,6 +10,17 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.136.0] - 2026-08-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 208 (feature; publication-boundary sweep and enforcement)**: `publication_boundary_lint` shipped in Phase 172 but could express neither of the two exceptions its own doctrine grants -- the `license: Proprietary` attribution lines and the `qor/vendor/` third-party tree -- so it reported granted exceptions as violations, stayed permanently red, and was consequently wired to no workflow, no substantiate step, and no compliance control. A fail-closed control nobody can satisfy is a control nobody enforces. Both grants are now expressible: `qor/vendor/` is a structural carve-out, and any other legitimate line records its exception inline with `boundary-lint: ok=<reason>` (per-line only, reason required, no wildcard or directory form, comment-syntax agnostic so one marker works in Markdown, Python, and YAML).
+
+### Changed
+- The tracked surface was swept clean: 85 findings across 42 files reduced to zero. 27 were the doctrine-granted license lines; 18 in generated `qor/dist/` cleared from 2 source edits via `dist_compile`; 15 were stale tracked copies of installed skills, now untracked and gitignored since `qor-logic install` regenerates them; the rest were historical plan files, three Phase 205 gate artifacts (hash fields byte-untouched, chain still complete), frozen archive material, and detector test fixtures. `docs/ecosystem-position.md` and `docs/integrations/qor-oversight.md` were anonymized to generic roles by operator decision, both having been authored deliberately to name sibling products.
+- The lint now runs fail-closed in CI's `gate-chain-completeness` job, registered in the Phase 89 CI-surface list. CI enforces the structural detectors; the identity-term overlay stays gitignored and is verified locally.
+
 ## [0.135.0] - 2026-08-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

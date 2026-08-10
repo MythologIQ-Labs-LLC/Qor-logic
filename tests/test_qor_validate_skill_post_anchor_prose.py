@@ -55,7 +55,7 @@ def test_skill_source_url_uses_labs_llc():
     )
     # And the old URL must be absent.
     for line in body.splitlines():
-        if "github.com/MythologIQ/Qor-logic" in line and "Labs-LLC" not in line:
+        if "github.com/MythologIQ/Qor-logic" in line and "Labs-LLC" not in line:  # boundary-lint: ok=negative-assertion-fixture
             raise AssertionError(
                 f"stale source URL found: {line!r}; should be MythologIQ-Labs-LLC"
             )

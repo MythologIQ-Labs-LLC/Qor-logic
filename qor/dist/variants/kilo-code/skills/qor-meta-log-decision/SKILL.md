@@ -2,7 +2,7 @@
 name: qor-meta-log-decision
 description: Record major engineering decisions into the Qor-logic meta-ledger with rationale, risk grading, and auditable evidence.
 creator: MythologIQ Labs, LLC
-license: Proprietary (FailSafe Project)
+license: Proprietary (FailSafe Project)  # boundary-lint: ok=legally-required-attribution
 phase: meta
 tone_aware: false
 gate_reads: ""
@@ -305,7 +305,7 @@ Concrete invocation examples (Architecture L2, Security L3, Scope Change L2) are
 Located at: `docs/META_LEDGER.md`
 
 ```markdown
-# Q-DNA Development Meta-Ledger
+# Development Meta-Ledger
 ## Auditable Decision Trail
 
 **Version:** 1.0
@@ -333,7 +333,7 @@ Located at: `docs/META_LEDGER.md`
 **Approver:** System
 
 ### Decision
-Initialize Meta-Ledger for Q-DNA development governance.
+Initialize Meta-Ledger for development governance.
 
 ### Hash Chain
 ```

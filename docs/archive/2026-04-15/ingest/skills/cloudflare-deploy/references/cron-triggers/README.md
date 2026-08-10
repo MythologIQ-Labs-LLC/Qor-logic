@@ -33,7 +33,7 @@ Schedule Workers execution using cron expressions. Runs on Cloudflare's global n
 0 9 * * MON-FRI    # Weekdays 9am UTC
 0 0 1 * *          # Monthly 1st midnight UTC
 0 9 L * *          # Last day of month 9am UTC
-0 10 * * MON#2     # 2nd Monday 10am UTC
+0 10 * * MON#2     # 2nd Monday 10am UTC  <!-- boundary-lint: ok=frozen-archive-cron-syntax-not-a-repo-reference -->
 */10 9-17 * * MON-FRI  # Every 10min, 9am-5pm weekdays
 ```
 

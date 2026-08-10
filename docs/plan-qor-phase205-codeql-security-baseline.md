@@ -1,10 +1,10 @@
-# Plan: Fail-closed CodeQL security baseline (Qortara ecosystem)
+# Plan: Fail-closed CodeQL security baseline
 
 **change_class**: feature
 
 **doc_tier**: minimal
 
-**originating_remediation**: MythologIQ-Labs-LLC/qortara-sdlc#41
+**originating_remediation**: an upstream governance-line remediation item
 
 ## Objective
 
@@ -28,7 +28,7 @@ Add a pinned, least-privilege Python CodeQL workflow to Qor-logic, preserve the 
 - No runtime product behavior changes.
 - No reduction of existing CI, dependency-review, ledger, provenance, or governance controls.
 - No administrative merge bypass, advisory waiver, or personal-access-token substitution.
-- No changes to Bicameral or repositories outside MythologIQ Labs' Qortara scope.
+- No changes to repositories outside this one.
 
 ## Controls
 

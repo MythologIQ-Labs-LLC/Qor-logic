@@ -1,10 +1,10 @@
-# Plan: Zero-cost OSS SAST correction for the Qortara ecosystem
+# Plan: Zero-cost OSS SAST correction
 
 **change_class**: feature
 
 **doc_tier**: minimal
 
-**originating_remediation**: MythologIQ-Labs-LLC/qortara-sdlc#41
+**originating_remediation**: an upstream governance-line remediation item
 
 ## Objective
 
@@ -27,7 +27,7 @@ Replace the Phase 205 CodeQL requirement with a zero-license-cost, repository-ow
 - No dependency change to Qor-logic itself.
 - No reduction of the existing CI, public dependency-review, ledger, provenance, citation, or governance controls.
 - No paid GitHub security entitlement, Semgrep platform account, security-platform token, scheduled scanner, advisory waiver, PAT, or administrative merge bypass.
-- No changes to Bicameral or repositories outside MythologIQ Labs' Qortara scope.
+- No changes to repositories outside this one.
 
 ## Controls
 

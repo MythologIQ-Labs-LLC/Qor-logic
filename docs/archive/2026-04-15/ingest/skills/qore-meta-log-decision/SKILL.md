@@ -2,7 +2,7 @@
 name: qore-meta-log-decision
 description: Record major engineering decisions into the QoreLogic meta-ledger with rationale, risk grading, and auditable evidence.
 creator: MythologIQ Labs, LLC
-license: Proprietary (FailSafe Project)
+license: Proprietary (FailSafe Project)  # boundary-lint: ok=legally-required-attribution
 ---
 # Log Decision Skill
 ## Implement Meta-Ledger for Auditable Decision Tracking

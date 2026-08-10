@@ -170,7 +170,7 @@ powershell -ExecutionPolicy Bypass -File <path-to-skill>/scripts/take_screenshot
 - Explicit path:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File <path-to-skill>/scripts/take_screenshot.ps1 -Path "C:\Temp\screen.png"
+powershell -ExecutionPolicy Bypass -File <path-to-skill>/scripts/take_screenshot.ps1 -Path "C:\Temp\screen.png"  <!-- boundary-lint: ok=frozen-archive-example-path -->
 ```
 
 - Pixel region (x,y,w,h):
