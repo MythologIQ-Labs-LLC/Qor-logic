@@ -57,7 +57,7 @@ take the honest `cannot-automate:` route instead.
 
 `publication_boundary_lint` enumerates tracked files; `github_surface` reads
 issue and pull-request text. Neither reads refs. The retained unmerged branch
-`security/qortara-codeql-baseline` carries an identity term in its name, on a
+the leaking branch name carries an identity term in its name, on a
 public remote. Found while enumerating for LD-1 and remediated here rather than
 left standing, because it is a live leak; building a ref-surface detector is a
 follow-on and explicitly out of scope.
@@ -71,7 +71,7 @@ None tracked. The change is to remote refs.
 ### Changes
 
 Delete the 111 refs proven reachable from `origin/main`, tip SHAs recorded
-first. Rename `security/qortara-codeql-baseline` to a neutral name, preserving
+first. Rename the leaking branch name to a neutral name, preserving
 its commits (create-then-delete; the branch is unmerged and its work is kept).
 Enumerate the remaining unmerged refs in the seal entry for separate triage.
 
@@ -139,7 +139,7 @@ label.
 ### Deliverable: the leaking ref name
 
 - **D1**: No public ref name carries an identity term.
-- **D2**: `security/qortara-codeql-baseline` renamed, commits preserved.
+- **D2**: the leaking branch name renamed, commits preserved.
 - **D3**: Seal entry records that refs are a third surface no detector reads,
   and that a ref-surface detector is a declared follow-on.
 - **D4**: `git ls-remote --heads origin` shows no identity term in any name,

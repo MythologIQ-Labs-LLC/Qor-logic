@@ -1307,4 +1307,34 @@ Conversation-carried-debt-drift. Candidate SG family entry if it recurs: `SG-Car
 
 ---
 
+## 2026-08-10 -- A remedy reported as a mechanism, defended by a null result
+
+**Date**: 2026-08-10
+
+**Surface**: Phase 209's hermetic git fixtures, and the intermittent exit-128 failure they were believed to address.
+
+### Findings
+
+Phase 209 pinned `GIT_CONFIG_GLOBAL` and `GIT_CONFIG_SYSTEM` to a nonexistent path, on the theory that `actions/checkout` installs `includeIf` entries pointing at credential files it removes during job cleanup -- ambient configuration mutating underneath a running test. Its seal recorded the change as having removed the mechanism.
+
+It had not. The real cause, root-caused independently and adopted here as GH #308, is git's auto-maintenance: git >= 2.5x runs `git maintenance run --auto --detach` after commit/merge, and because it daemonizes, `git repack -d` keeps rewriting the scratch repository's object store after the foreground call has returned. Auto-maintenance is a built-in default, not a configured behavior, so removing configuration cannot suppress it -- not "did not", cannot. The same remedy was attempted upstream and failed.
+
+Two further claims made in support of Phase 209 were also wrong. A parallelism hypothesis was offered to explain why the failure appeared elsewhere and not here; two of the eight upstream occurrences ran under a plain serial run. And the supporting evidence -- twelve consecutive local passes -- came from a host running git 2.52, a version the analysis names structurally immune, against CI's 2.54.
+
+### Root Cause Analysis
+
+The failure was never reproduced, so nothing constrained the hypothesis. A plausible mechanism was identified, a remedy for that mechanism was shipped, and the absence of recurrence was then read as support. Each step is individually reasonable and the chain is circular: an unreproduced bug cannot confirm a fix, and a host that cannot exhibit the behavior cannot supply evidence either way.
+
+The null result is the sharpest part. Twelve passes were reported as weak-but-real evidence of non-reproduction. They were evidence of nothing, because the mechanism cannot fire at that git version. Presenting a structurally impossible observation as a weak positive is worse than reporting no evidence, because it invites the reader to update on it.
+
+### Pattern to Avoid
+
+Do not describe a remedy as having removed a mechanism unless the mechanism was demonstrated. "Removes a suspected cause" and "fixes the defect" are different claims and a seal entry must not blur them. Before offering a negative result as evidence, establish that the environment could have produced a positive one -- name the version, platform, or configuration that would exhibit the behavior, and say whether the observing host has it. A fix for an unreproduced failure should ship with its falsification condition stated, so the next occurrence adjudicates it instead of being absorbed as noise.
+
+### Pattern ID
+
+Unfalsified-remedy. Candidate SG family entry if it recurs: `SG-UnfalsifiedRemedy-A` -- a plausible fix for an unreproduced failure is sealed as the mechanism removed, and a null result from an environment structurally incapable of exhibiting the failure is cited in support. Remedy is to state the falsification condition and the observing environment's capability alongside any such fix. First observed instance; promote to a structured countermeasure on second occurrence.
+
+---
+
 *Shadow integrity: ACTIVE*
