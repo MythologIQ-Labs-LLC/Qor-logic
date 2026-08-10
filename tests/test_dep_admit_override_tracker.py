@@ -86,7 +86,7 @@ def test_tracker_emit_issue_builds_rollup_body(mixed_ledger, monkeypatch):
 
     class _MockResult:
         returncode = 0
-        stdout = "https://github.com/org/repo/issues/42"
+        stdout = "https://github.com/org/repo/issues/42"  # boundary-lint: ok=synthetic-fixture-url
         stderr = ""
 
     def _mock_subprocess_run(argv, **kwargs):
@@ -96,7 +96,7 @@ def test_tracker_emit_issue_builds_rollup_body(mixed_ledger, monkeypatch):
     monkeypatch.setattr(tracker.subprocess, "run", _mock_subprocess_run)
     url = tracker.emit_rollup_issue(due_rows)
 
-    assert url == "https://github.com/org/repo/issues/42"
+    assert url == "https://github.com/org/repo/issues/42"  # boundary-lint: ok=synthetic-fixture-url
     assert len(calls) == 1
     argv = calls[0]
     assert argv[0] == "gh"

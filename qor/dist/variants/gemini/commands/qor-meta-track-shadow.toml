@@ -157,7 +157,7 @@ Concrete event examples (Dependency Bloat / Premature Optimization / Hallucinati
 The Shadow Genome lives at: `docs/SHADOW_GENOME.md`
 
 ```yaml
-# Q-DNA Development Shadow Genome
+# Development Shadow Genome
 # Failed approaches archived for learning
 
 metadata:

@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-02T16:23:08Z",
+  "generated_ts": "2026-08-10T15:10:34Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -240,7 +240,7 @@
       "id": "qor-meta-log-decision",
       "source_path": "skills/qor-meta-log-decision/SKILL.md",
       "install_rel_path": "skills/qor-meta-log-decision/SKILL.md",
-      "sha256": "06f65e31232a9c76ee86b1afa9bff56d90894caad71582b74c0544b01f2d14de"
+      "sha256": "157d517e8efc542d7f7eb7bdeca3db03238cb84c9d1cb192fbc314be4601c2cc"
     },
     {
       "id": "qor-meta-log-decision",
@@ -258,7 +258,7 @@
       "id": "qor-meta-track-shadow",
       "source_path": "skills/qor-meta-track-shadow/SKILL.md",
       "install_rel_path": "skills/qor-meta-track-shadow/SKILL.md",
-      "sha256": "84a0ac67a0f0be8b3b5c78a2586a2a5d2166a451bb183ed57e07414d84245e12"
+      "sha256": "f2c4248b94cb4f867866486800a4817a1662dd5232d4b93dd8d122b28511ca86"
     },
     {
       "id": "qor-meta-track-shadow",

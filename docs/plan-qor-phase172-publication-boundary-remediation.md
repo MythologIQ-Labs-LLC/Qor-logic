@@ -43,7 +43,7 @@ Research brief docs/research-brief-publication-boundary-remediation-2026-07-04.m
 
 - tests/test_publication_boundary_lint.py::test_flags_absolute_local_paths - synthetic tracked file with a drive-letter path and a `/Users/` path -> both flagged with file:line
 - tests/test_publication_boundary_lint.py::test_flags_foreign_github_urls_not_self - own-repo URL passes; a different owner/repo URL is flagged
-- tests/test_publication_boundary_lint.py::test_flags_cross_repo_issue_shape - `SomeRepo#123` flagged; own `#123` bare reference passes
+- tests/test_publication_boundary_lint.py::test_flags_cross_repo_issue_shape - `SomeRepo#123` flagged; own `#123` bare reference passes  <!-- boundary-lint: ok=lint-own-detector-specification -->
 - tests/test_publication_boundary_lint.py::test_local_terms_file_overlay - with a tmp terms file, listed identity terms are flagged; without it, only structural findings appear
 - tests/test_publication_boundary_lint.py::test_exit_codes - clean tree fixture exits 0; any finding exits 1
 - (existing intent-lock suite) - capture writes relative paths; verify passes on both relative and legacy-absolute records

@@ -1,0 +1,51 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-10T1441-005fab",
+  "ts": "2026-08-10T14:44:00Z",
+  "plan_path": "docs/plan-qor-phase208-publication-boundary-sweep.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "open_questions": [],
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "boundaries": {
+    "limitations": [
+      "Exemption marker is per-line and requires a written reason; no wildcard, no per-file or directory suppression."
+    ],
+    "non_goals": [
+      "No rewriting of qor/vendor/.",
+      "No change to the four structural detectors or the terms overlay.",
+      "No renaming of skills or files."
+    ],
+    "exclusions": [
+      "Untracked and gitignored surfaces are out of scope."
+    ]
+  },
+  "phases": [
+    "Give the lint an exemption idiom",
+    "Record the exceptions the doctrine already grants",
+    "Anonymize what genuinely names outside repositories",
+    "Make the clean state enforceable"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_publication_boundary_lint.py -q",
+    "python -m pytest tests/ -q",
+    "qor-logic scripts publication_boundary_lint --repo-root .",
+    "qor-logic reliability gate_chain_completeness --repo-root . --phase-min 52",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase208-publication-boundary-sweep.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.135.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T14:44:00Z"
+  }
+}

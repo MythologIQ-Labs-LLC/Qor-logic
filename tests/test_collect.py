@@ -209,7 +209,7 @@ def test_build_issue_body_sorts_repos_alphabetically():
 
 def test_dispatch_calls_gh_correctly(monkeypatch):
     captured = {}
-    fake_url = "https://github.com/meta/repo/issues/99"
+    fake_url = "https://github.com/meta/repo/issues/99"  # boundary-lint: ok=synthetic-fixture-url
 
     def fake_run(cmd, *args, **kwargs):
         captured["cmd"] = cmd

@@ -2,7 +2,7 @@
 name: qor-meta-track-shadow
 description: Capture failed approaches in the Qor-logic Shadow Genome to prevent repeat failures and improve governance learning loops.
 creator: MythologIQ Labs, LLC
-license: Proprietary (FailSafe Project)
+license: Proprietary (FailSafe Project)  # boundary-lint: ok=legally-required-attribution
 phase: meta
 tone_aware: false
 gate_reads: ""
@@ -164,7 +164,7 @@ Concrete event examples (Dependency Bloat / Premature Optimization / Hallucinati
 The Shadow Genome lives at: `docs/SHADOW_GENOME.md`
 
 ```yaml
-# Q-DNA Development Shadow Genome
+# Development Shadow Genome
 # Failed approaches archived for learning
 
 metadata:

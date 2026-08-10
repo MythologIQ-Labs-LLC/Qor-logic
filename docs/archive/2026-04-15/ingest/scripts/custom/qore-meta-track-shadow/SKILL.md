@@ -2,7 +2,7 @@
 name: qore-meta-track-shadow
 description: Capture failed approaches in the QoreLogic Shadow Genome to prevent repeat failures and improve governance learning loops.
 creator: MythologIQ Labs, LLC
-license: Proprietary (FailSafe Project)
+license: Proprietary (FailSafe Project)  # boundary-lint: ok=legally-required-attribution
 ---
 # Track Shadow Genome Skill
 ## Record Failed Approaches to Prevent Repetition

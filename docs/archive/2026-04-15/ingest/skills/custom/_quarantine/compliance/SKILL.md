@@ -2,7 +2,7 @@
 name: compliance
 description: Enforce the downstream product's physical isolation and environment compliance constraints across repository structure, platform limits, and security hygiene.
 creator: MythologIQ Labs, LLC
-license: Proprietary (FailSafe Project)
+license: Proprietary (FailSafe Project)  # boundary-lint: ok=legally-required-attribution
 ---
 # Compliance Skill
 

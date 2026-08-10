@@ -21,9 +21,21 @@ _SELF_REPO = "MythologIQ-Labs-LLC/Qor-logic"
 _ABS_PATH_RE = re.compile(r"(?<![\w./-])(?:[A-Za-z]:[/\\]|/Users/|/home/)[\w./\\-]+")
 _GH_URL_RE = re.compile(r"github\.com/([\w.-]+/[\w.-]+)")
 _CROSS_ISSUE_RE = re.compile(r"\b([A-Z][\w-]{2,})#\d+\b")
+# Phase 208: record an exception the doctrine already grants, on the line that
+# earns it. Mirrors prose_test_lint's `# prose-lint: ok=<reason>` allowlist; the
+# comment prefix is dropped so one marker works in Markdown, Python, and YAML.
+# The reason is required (`\S`), so an empty marker cannot silence the control.
+# Scope is per line: no wildcard, no per-file or directory suppression.
+_ALLOW_RE = re.compile(r"boundary-lint:\s*ok=(\S[^\s>]*)")
 
 _TEXT_SUFFIXES = {".md", ".py", ".json", ".jsonl", ".yml", ".yaml", ".toml", ".txt", ".cfg", ".ini"}
 _SKIP_PARTS = {".git", "node_modules", "__pycache__"}
+# Phase 208: the second exception doctrine-publication-boundary already grants.
+# `qor/vendor/` is third-party material whose upstream attribution is legally
+# required text, so its identities are not this repository's to anonymize. The
+# grant predates this lint; expressing it here is what lets the control reach a
+# satisfiable state and therefore be wired to a gate.
+_CARVE_OUT_PREFIXES = ("qor/vendor/",)
 
 
 def _tracked_files(repo_root: Path, no_git: bool) -> list[Path]:
@@ -50,6 +62,8 @@ def _load_terms(terms_file: Path | None) -> list[str]:
 def scan_text(rel: str, text: str, terms: list[str]) -> list[str]:
     findings: list[str] = []
     for i, line in enumerate(text.splitlines(), start=1):
+        if _ALLOW_RE.search(line):
+            continue
         for m in _ABS_PATH_RE.finditer(line):
             findings.append(f"[boundary] {rel}:{i}: absolute local path: {m.group(0)[:60]}")
         for m in _GH_URL_RE.finditer(line):
@@ -84,6 +98,8 @@ def main(argv: list[str] | None = None) -> int:
         except OSError:
             continue
         rel = str(path.relative_to(root))
+        if rel.replace("\\", "/").startswith(_CARVE_OUT_PREFIXES):
+            continue
         findings.extend(scan_text(rel, text, terms))
     for f in findings[:200]:
         print(f)

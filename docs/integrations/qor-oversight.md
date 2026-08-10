@@ -6,7 +6,7 @@
 
 Qor Oversight is a system-agnostic operator interface that may consume repository-local governance state emitted by Qor-logic. Qor Oversight is not part of Qor-logic, does not replace its CLI or governance artifacts, and is not an authority over repository-local governance semantics.
 
-- Qor Oversight: https://github.com/MythologIQ-Labs-LLC/qor-oversight
+- Operator interface: an external, system-agnostic consumer of emitted governance state (not distributed with Qor-logic)
 - Canonical snapshot work: issue #270
 
 ## Responsibility boundary

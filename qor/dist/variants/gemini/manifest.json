@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-02T16:23:08Z",
+  "generated_ts": "2026-08-10T15:10:34Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -162,13 +162,13 @@
       "id": "qor-meta-log-decision.toml",
       "source_path": "commands/qor-meta-log-decision.toml",
       "install_rel_path": "commands/qor-meta-log-decision.toml",
-      "sha256": "fb91c6989390ce89a3102ff040929d0b878848b51ae8fc7300dece6fcaf8d5c6"
+      "sha256": "7c42f82e6881e3f7748612c6eeb6aee8d65e0d4c1358dec81158eba6330b2801"
     },
     {
       "id": "qor-meta-track-shadow.toml",
       "source_path": "commands/qor-meta-track-shadow.toml",
       "install_rel_path": "commands/qor-meta-track-shadow.toml",
-      "sha256": "47a81d324ea454e89315501dd86629dea5751115d0d793b183ee465d1c57ad84"
+      "sha256": "d71bed744b19a422c65479f375f43be6524bf15481aea1a86547531547aea46e"
     },
     {
       "id": "qor-onboard-codebase.toml",
