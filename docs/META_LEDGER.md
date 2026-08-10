@@ -15851,6 +15851,108 @@ Tests: 11 new, red-then-green. Full suite 2772 passed / 6 skipped, green twice; 
 
 **Entry ID**: `1d78194b64dc`
 
+### Entry #522: RESEARCH BRIEF -- outstanding-concerns cluster (phases 206-211)
+
+**Timestamp**: 2026-08-10T18:55:10Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Session**: `2026-08-10T1836-311272`
+
+**Content Hash**: `63575061ccc577abdf78fbd65995c0b32157029c657136719fb577dc7febc8c9`
+**Previous Hash**: `28926a3b1e3acd4375f414690691a35d2343358fac838601d7aebda34712c581`
+**Chain Hash (Merkle seal)**: `954b7c04e22c6170a210ba3c26284350212bda527145c60ec06debe90590b55b`
+
+**Decision**: Investigated the six outstanding concerns carried in conversation across phases 206-211, to determine which are real, which line owns them, and the correct GitHub recording shape.
+
+FOUR are real and untracked: the merge_velocity flake (three recorded occurrences, phases 161/194/206, not the single incident reported; Phase 209 removed the ambient-config mechanism but it was never reproduced, so a watch condition is the honest artifact), the merged-branch backlog (111 of 129 remote heads are merged into main, not the 6 reported -- that figure counted only this session), ruff (not a declared project tool anywhere -- absent from pyproject dev extras, pre-commit, and every workflow -- carrying 254 findings, so this is an adopt-or-decline decision rather than a gap in an adopted control), and the sg_closure_lint retrofit (10 of 40 entries uncited, all in the legacy numeric-ID generation SG-016 through SG-038, each needing an enforcer citation or a cannot-automate decision).
+
+TWO are not defects. Governance-skill headroom was already closed by GH #266 in Phase 178 with a test-enforced 39936-byte lock; both skills measure under it (39416 and 39576), and Phase 207 breaching the lock and being forced to trim is the control working, not evidence of a problem. Operator install drift is machine state under a path gitignored by design since Phase 208, fixed by one command. Filing either would re-open solved work.
+
+NO umbrella issue. The #247 pattern fits a cluster with a shared cause -- all six of its follow-ons descended from research entry #378. These four share only the session that surfaced them, and forcing an umbrella would be cargo-culting the shape. Four independent issues, all public solo-developer-first line; none is org-scoped or enterprise-shaped. PR #296 is unrelated and ready to merge.
+
+Four of the six carried items had drifted in magnitude or status by re-examination, which is recorded in the Shadow Genome as the process finding: debt held only in session narrative has no verification surface, so magnitudes decay and closures elsewhere cannot reach it. Paired with a narrower recurrence from the same session -- reporting a tool's result as a property of the system, which produced three overstated 'clean' claims. Brief: docs/research-brief-outstanding-concerns-2026-08-10.md. Next: /qor-auto-dev-1.
+
+### Entry #523: GATE TRIBUNAL -- Phase 212 branch backlog + SG enforcer retrofit (PASS)
+
+**Timestamp**: 2026-08-10T19:00:42Z
+**Phase**: GATE (Phase 212)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase212-branch-backlog-and-sg-enforcer-retrofit.md
+**Session**: `2026-08-10T1836-311272`
+**Verdict**: PASS
+
+**Content Hash**: `f3c04841d66591633502bc780c2bd0906f39e69cb4b836c7426c2f7e3bafec5f`
+**Previous Hash**: `954b7c04e22c6170a210ba3c26284350212bda527145c60ec06debe90590b55b`
+**Chain Hash (Merkle seal)**: `13ae519bc9133f189ffce872e112b4b781b4db531c63356a6b67e27c00f39719`
+
+**Decision**: PASS at L2. Two mechanical items from research entry #522, correctly scoped and correctly bounded.
+
+The destructive half is the one that needed scrutiny and it is handled well. Deletion is driven by a per-ref 'git merge-base --is-ancestor <tip> origin/main' proof rather than the porcelain 'branch -r --merged', which reflects a possibly stale remote-tracking view -- the plan states that reasoning rather than treating the two as interchangeable. Tip SHAs are recorded before deletion, so every removal is recoverable. Exclusions are explicit and each carries a reason: sixteen genuinely unmerged, one open-pull-request head, and main. Nothing unmerged is deleted.
+
+LD-3 is the judgment that keeps the retrofit honest. The lint would fall silent for a citation pointing at a test that does not actually fail when the pattern recurs, which is the GH #147 'advisory shipped, enforcer deferred' shape one level more deceptive. The plan requires each citation be verified against reintroduction and routes judgment-shaped patterns to an honest cannot-automate decision instead. It also refuses to write ten new enforcers under a cleanup banner, which would be a far larger change wearing a small label -- the correct call, and the reason the WARN-to-ABORT conversion is deferred rather than bundled.
+
+LD-4 surfaces a third publication surface nobody was reading. The tracked-file lint enumerates files and the surface scan reads issue and pull-request text; neither reads refs, and a retained unmerged branch carries an identity term in its name on a public remote. Remediating the live leak here while declaring a ref-surface detector a follow-on is the right split.
+
+change_class governance is correct: no code ships, no version bump is appropriate, and the schema carries that class explicitly for exactly this shape. Tests are behavioral -- the retrofit test asserts the lint's own count rather than the presence of citation text, which is what stops a cosmetic edit from passing. The two excluded issues are named with reasons. No new dependencies. Next: /qor-implement.
+
+### Entry #524: IMPLEMENTATION -- Phase 212 branch backlog + SG enforcer retrofit
+
+**Timestamp**: 2026-08-10T19:21:00Z
+**Phase**: IMPLEMENT (Phase 212)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-08-10T1836-311272`
+**Intent Lock**: `LOCKED: 2026-08-10T1836-311272`
+
+**Content Hash**: `22e46e9ae0fac4b4b41dfdfa5e36e19964d43e7b489b73907a2a61f2c0446fad`
+**Previous Hash**: `13ae519bc9133f189ffce872e112b4b781b4db531c63356a6b67e27c00f39719`
+**Chain Hash (Merkle seal)**: `7abb7c0cdba557e937b0447bc923b06ede2d51c94bbacdd757d46c7b0b8202f4`
+
+**Decision**: Implemented Phase 212 per PASS audit (entry #523), closing GH #303 and GH #305 from research entry #522.
+
+Phase 1 (GH #303): 129 remote heads -> 18. Each of the 111 deletions was proven by a per-ref 'git merge-base --is-ancestor <tip> origin/main' rather than by the porcelain --merged view, and every tip SHA was recorded before deletion so each is recoverable. Retained with reasons: 16 genuinely unmerged, one open-pull-request head, and main. Nothing unmerged was deleted. Also renamed one retained branch whose NAME carried an identity term (create-then-delete at the same SHA, unmerged work preserved) -- refs are a third publication surface that neither the tracked-file lint nor the GitHub-surface scan reads; a ref-surface detector is a declared follow-on, not bundled here.
+
+Phase 2 (GH #305): all ten legacy numeric-ID entries annotated -- six cite a real enforcer, four record a cannot-automate decision with a reason. sg_closure_lint reports 0 of 40 uncited. The cited six are plan_grep_lint (SG-016), plan_signature_widening_caller_lint (SG-021), the AST node-family tests (SG-034), prose_test_lint plus the proximity negative-path test (SG-035), the moved-not-copied test (SG-037), and plan_text_consistency_lint (SG-038). The declined four are genuinely judgment-shaped: which existing mechanism is relevant (SG-017), a flag's validity knowable only by invoking the tool (SG-019), a schema-design choice made before code exists (SG-032), and an assertion about when an author considered doctrine binding (SG-036). No new enforcers were written; inventing ten under a cleanup banner would be a far larger change wearing a small label.
+
+A trap was avoided and is locked against: tests/test_shadow_genome_doctrine.py references every SG ID, but it asserts the DOCTRINE MENTIONS them -- it does not fail when a pattern recurs. Citing it would have silenced the lint without stopping anything. test_the_doctrine_presence_test_is_not_used_as_an_enforcer pins that.
+
+TWO IN-FLIGHT CORRECTIONS. (1) The resolvable-target test initially flagged three unresolvable paths; on inspection all three sat in 'Cross-reference' and 'Originating recurrence' prose naming other workspaces' artifacts or lints proposed and never built. That was a false positive in MY test, not a doctrine defect; the test was narrowed to **Enforcer** lines only. (2) The full suite then failed on test_plans_declare_change_class: 'governance' has been a valid class in the plan schema and governance_helpers._CHANGE_CLASS_RE since Phase 194 (GH #282), but the test regex at tests/test_skill_doctrine.py:234 was never updated, so a schema-valid plan failed. Aligned. That rule lives in three places and two of them had drifted.
+
+Tests: 4 new, red-then-green. Full suite 2776 passed / 6 skipped, green twice; ruff clean on the touched test files. All three surfaces verified: tracked files 0 findings, GitHub surface 0, ref names 0 against the operator overlay. Content hash binds the plan. Next: /qor-substantiate.
+
+### Entry #525: SESSION SEAL -- Phase 212 branch backlog + SG enforcer retrofit (governance)
+
+**Timestamp**: 2026-08-10T19:21:54Z
+**Phase**: SUBSTANTIATE (Phase 212; governance)
+**Author**: Judge
+**Change class**: governance
+**Plan**: docs/plan-qor-phase212-branch-backlog-and-sg-enforcer-retrofit.md
+**Session**: `2026-08-10T1836-311272`
+
+**Content Hash**: `22e46e9ae0fac4b4b41dfdfa5e36e19964d43e7b489b73907a2a61f2c0446fad`
+**Previous Hash**: `7abb7c0cdba557e937b0447bc923b06ede2d51c94bbacdd757d46c7b0b8202f4`
+**Chain Hash (Merkle seal)**: `f1e3649118a0ba875c827f1e2d3fc4de56fd66e97386293395d264129484c061`
+
+**Decision**: **Scope**: Phase 212 sealed (governance; version not applicable). Closes GH #303 and GH #305, the two mechanical items from research entry #522. GH #302 (watch condition, nothing to implement) and GH #304 (operator policy decision on adopting a linter) were deliberately not touched.
+
+**Branch backlog**: 129 remote heads -> 18. Each of the 111 deletions was proven by a per-ref merge-base ancestry check against origin/main rather than the porcelain --merged view, which reflects a possibly stale remote-tracking state; tip SHAs were recorded first, so every deletion is recoverable by SHA. Retained: 16 genuinely unmerged (agent/fix-governance-path-discovery, claude/busy-williams-270b35, docs/ecosystem-position-2026-07, feat/b24-gate-written-hooks, hotfix/phase-56-version-bump, hygiene/dependabot-github-actions, phase/194-unify-governance-paths-ledger-dialect, phase/34, phase/35, phase/55, phase/56, phase/57, phase/59, phase/70, phase/71, security/codeql-baseline), one open-pull-request head, and main. Enumerated for separate triage, not judged here.
+
+**A third publication surface**: one retained branch carried an identity term in its NAME. Neither the tracked-file lint (which enumerates files) nor the GitHub-surface scan (which reads issue and pull-request text) reads refs. It was renamed at the same SHA, preserving its unmerged work; ref names now scan clean against the operator overlay. A ref-surface detector is a declared follow-on, not bundled.
+
+**Enforcer retrofit**: all ten legacy numeric-ID entries annotated -- six cite a real enforcer, four record a cannot-automate decision with a reason; sg_closure_lint reports 0 of 40 uncited. No new enforcers were written, because inventing ten under a cleanup banner would be a far larger change wearing a small label. The trap avoided: test_shadow_genome_doctrine.py references every SG ID but asserts the doctrine MENTIONS them; it does not fail when a pattern recurs, so citing it would have silenced the lint without stopping anything. A test now pins that it can never be used as a citation.
+
+**Two in-flight corrections.** The resolvable-target test first flagged three unresolvable paths; all three sat in Cross-reference and Originating-recurrence prose naming other workspaces' artifacts or lints proposed and never built -- a false positive in the new test, narrowed to Enforcer lines. Then the full suite failed on test_plans_declare_change_class: 'governance' has been schema-valid and helper-valid since Phase 194 (GH #282) while the test regex was never updated, so a schema-valid plan failed its own doctrine test. One rule living in three places, two of which had drifted -- the same shape as the defects this session has repeatedly surfaced.
+
+**Gates**: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, doc-integrity strict PASS, governance-index enforce clean. Tests: 4 new, red-then-green; full suite 2776 passed / 6 skipped, green twice; ruff clean. All three surfaces verified clean: tracked files 0, GitHub surface 0, ref names 0. Change class governance -- no code ships and no version bump applies. Content hash binds the plan.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**SSDF Practices**: PO.1.4, PS.2.1
+
+**Entry ID**: `5a59650adc20`
+
 ---
 
 *Chain integrity: VALID*

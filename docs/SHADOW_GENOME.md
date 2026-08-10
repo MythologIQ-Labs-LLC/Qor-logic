@@ -1281,4 +1281,30 @@ Parameter-smear. Candidate SG family entry if it recurs: `SG-ParameterSmear-A` -
 
 ---
 
+## 2026-08-10 -- Conversation-carried debt drifts
+
+**Date**: 2026-08-10
+
+**Surface**: Session-summary tracking of outstanding concerns across phases 206-211.
+
+### Findings
+
+Six outstanding items were carried in conversation across a long multi-phase session and re-examined at the end. Four of the six were misstated by the time they were re-checked: merged-branch backlog reported as 6 when the real figure was 111 of 129 remote heads; ruff reported as "runs in no workflow" when it is not a declared project tool at all and carries 254 findings; a governance-skill headroom concern that GH #266 had already closed with a currently-holding test-enforced lock; and a test flake reported as a single occurrence when three appear in the record across phases 161, 194, and 206. Only one item (the sg_closure retrofit) survived re-examination unchanged, and one (operator install drift) was never a repository concern.
+
+### Root Cause Analysis
+
+An item recorded only in a conversation summary has no verification surface. Nothing re-measures it, nothing contradicts it, and each restatement copies the previous one rather than the underlying fact. Magnitudes drift because they were sampled once, at the moment of noticing, from whatever window was open -- the branch count came from the current session's branches, not from `git ls-remote`. Status drifts because a closed issue elsewhere in the tracker cannot reach a note that lives in chat.
+
+The second pattern is narrower and shares a shape with an error made twice earlier in the same session: a tool's result was reported as a property of the system. "ruff clean" was true of the files individually checked and false as a project property; "GitHub surface clean" was true of 17 identity terms and false of the boundary; a tracked-surface lint reported clean on a surface that did not yet include the file being added.
+
+### Pattern to Avoid
+
+Record a finding in the tracker at the moment it is found, not at the end of the session, and record the measurement that produced it (the command and its output) rather than the conclusion alone. When re-raising carried debt, re-measure before restating -- a carried number is a claim about the past, not the present. And when reporting a control as clean, name the instrument and its scope: "clean" without an instrument is an unfalsifiable claim.
+
+### Pattern ID
+
+Conversation-carried-debt-drift. Candidate SG family entry if it recurs: `SG-CarriedDebtDrift-A` -- an outstanding item tracked only in session narrative is restated with drifted magnitude or stale status, including items already closed. Remedy is same-moment tracker recording with the producing measurement attached. First observed instance; promote to a structured countermeasure on second occurrence.
+
+---
+
 *Shadow integrity: ACTIVE*

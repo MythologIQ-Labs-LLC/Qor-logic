@@ -231,7 +231,10 @@ QOR_SUBSTANTIATE_SKILL = SKILLS_ROOT / "governance" / "qor-substantiate" / "SKIL
 
 _PHASE_NN_RE = re.compile(r"^plan-qor-phase(\d+)")
 _CHANGE_CLASS_BOLD_RE = re.compile(
-    r"^\*\*change_class\*\*:\s+(hotfix|feature|breaking)\s*$", re.MULTILINE,
+    # Phase 194 (GH #282) added the non-release `governance` class to the plan
+    # schema and governance_helpers._CHANGE_CLASS_RE; this regex was not updated,
+    # so a schema-valid plan failed here (surfaced by Phase 212).
+    r"^\*\*change_class\*\*:\s+(hotfix|feature|breaking|governance)\s*$", re.MULTILINE,
 )
 
 
@@ -262,7 +265,7 @@ def test_plans_declare_change_class():
         if not _CHANGE_CLASS_BOLD_RE.search(text):
             missing.append(plan.name)
     assert not missing, (
-        "Plans with phase>=13 must declare `**change_class**: <hotfix|feature|breaking>` "
+        "Plans with phase>=13 must declare `**change_class**: <hotfix|feature|breaking|governance>` "
         "(bold per V-2):\n  " + "\n  ".join(missing)
     )
 

@@ -1,0 +1,50 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-10T1836-311272",
+  "ts": "2026-08-10T19:00:40Z",
+  "plan_path": "docs/plan-qor-phase212-branch-backlog-and-sg-enforcer-retrofit.md",
+  "change_class": "governance",
+  "doc_tier": "standard",
+  "open_questions": [],
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "boundaries": {
+    "limitations": [
+      "Deletion covers refs proven reachable from origin/main only; the unmerged remainder is enumerated, not judged.",
+      "Retrofit covers the ten legacy entries; it does not convert the lint to fail-closed."
+    ],
+    "non_goals": [
+      "No WARN-to-ABORT conversion of sg_closure_lint.",
+      "No deletion of any unmerged branch.",
+      "No new detector for the ref surface."
+    ],
+    "exclusions": [
+      "GH #302 is a watch condition; GH #304 is an operator policy decision. Neither is touched."
+    ]
+  },
+  "phases": [
+    "Retire the merged branch backlog",
+    "Retrofit the ten legacy enforcer citations"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_sg_closure_retrofit.py -q",
+    "python -m pytest tests/ -q",
+    "qor-logic scripts sg_closure_lint",
+    "qor-logic scripts workspace_fragility_check --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase212-branch-backlog-and-sg-enforcer-retrofit.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T19:00:40Z"
+  }
+}
