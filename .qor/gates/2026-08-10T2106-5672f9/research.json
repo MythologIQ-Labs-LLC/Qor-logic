@@ -1,0 +1,63 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-10T2106-5672f9",
+  "ts": "2026-08-10T22:47:49Z",
+  "questions": [
+    "Does the upstream fix compose with the Phase 209 hermetic fixture, or is it shadowed by it?",
+    "Do all git-invoking tests inherit the env layer, or do some construct env from scratch?",
+    "Can this host verify the fix at all, given its git version?"
+  ],
+  "findings": [
+    {
+      "item": "mechanism",
+      "verdict": "adopted from GH #308, not re-derived",
+      "evidence": "git >= 2.5x runs 'git maintenance run --auto --detach' after commit/merge; it daemonizes and repack -d keeps deleting loose objects and shard dirs after the foreground call returns"
+    },
+    {
+      "item": "Phase 209 remedy cannot suppress it",
+      "verdict": "confirmed in principle",
+      "evidence": "auto-maintenance is a built-in default, not a configured behavior, so pinning GIT_CONFIG_GLOBAL/SYSTEM cannot disable it; upstream tried the same approach and it failed"
+    },
+    {
+      "item": "env-config layer composes with Phase 209 pinning",
+      "verdict": "EMPIRICALLY PROVEN on this host",
+      "evidence": "with GIT_CONFIG_GLOBAL/SYSTEM pinned to a nonexistent path plus GIT_CONFIG_COUNT/KEY_0/VALUE_0, 'git config --get maintenance.auto' returns 'false' rc0; without the layer it is unset rc1"
+    },
+    {
+      "item": "coverage of an autouse fixture",
+      "verdict": "total",
+      "evidence": "scratch_env() builds from {**os.environ}; 14 test files shell out to git and every env dict derives from os.environ, including the two that build their own"
+    },
+    {
+      "item": "collision risk",
+      "verdict": "none",
+      "evidence": "GIT_CONFIG_COUNT/GIT_CONFIG_KEY appear nowhere in tests/ or qor/"
+    },
+    {
+      "item": "this host cannot validate the fix's effect",
+      "verdict": "git 2.52.0, structurally immune",
+      "evidence": "GH #308 correlates the behavior with git version and names 2.52 immune vs CI 2.54.0; the obvious pack-count regression test would pass vacuously here"
+    },
+    {
+      "item": "change class",
+      "verdict": "governance (version not applicable)",
+      "evidence": "pyproject packages include = ['qor*']; tests are not shipped, so nothing consumer-visible changes"
+    }
+  ],
+  "sources": [
+    "GH #308",
+    "tests/support/git_fixture.py",
+    "tests/conftest.py",
+    "pyproject.toml:70-71",
+    "git --version = 2.52.0.windows.1"
+  ],
+  "brief_path": "GH #308 (upstream root-cause analysis adopted as the research artifact)",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T22:47:49Z"
+  }
+}

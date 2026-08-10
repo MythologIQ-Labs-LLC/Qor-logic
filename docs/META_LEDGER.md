@@ -16039,6 +16039,92 @@ Result: ruff reports zero over qor/ and tests/, with no baseline file. Full suit
 
 **Entry ID**: `9759100adeb1`
 
+### Entry #529: GATE TRIBUNAL -- Phase 214 git auto-maintenance guard (PASS)
+
+**Timestamp**: 2026-08-10T22:49:28Z
+**Phase**: GATE (Phase 214)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase214-git-auto-maintenance-guard.md
+**Session**: `2026-08-10T2106-5672f9`
+**Verdict**: PASS
+
+**Content Hash**: `e48774c31f75a38b80bbd7225dba30d6b5a93207a661a75dc8ab554508c34484`
+**Previous Hash**: `351f231f83b4c5fb375bc4ccd4ae5820d6ef3be69c41fa0b6d97c61f9c20a991`
+**Chain Hash (Merkle seal)**: `84839114b1d546f71e61961e5f5901272b02d753040217f160f5b8d487a408b2`
+
+**Decision**: PASS at L2. A plan whose premise is the correction of a fix this project shipped three phases ago, and which says so in its Locked Decisions rather than in a footnote.
+
+LD-2 is the one the Judge weighed hardest. Phase 209 pinned GIT_CONFIG_GLOBAL and GIT_CONFIG_SYSTEM on an ambient-config theory and its seal described the mechanism as removed. Auto-maintenance is a built-in default, so that remedy cannot suppress it -- not 'did not', cannot. Upstream tried the same approach and it failed. The plan states this as its premise instead of quietly layering a second fix on top, which is the difference between correcting a record and burying one.
+
+LD-3 is load-bearing and was verified rather than reasoned. Any guard written as a global or system config file would be read out of scope BY THE PROJECT'S OWN Phase 209 pinning -- the previous fix would have silently defeated this one. The env-config layer survives that pinning, and the plan proves it on this host: maintenance.auto resolves to false at exit 0 with the layer and is unset at exit 1 without it. A plan that had merely asserted composition would have been VETOed.
+
+LD-5 is the honest handling of a host that cannot see the bug. This machine runs git 2.52, which the upstream analysis names structurally immune against CI's 2.54. The obvious regression test -- pack-file count after N merges -- would pass vacuously here, which is exactly where it would most often be run, and would therefore assert nothing at the moment it appeared to. Asserting the guard is IN EFFECT goes red on every platform when the fixture is absent. This is the second time in this session a test has been narrowed after noticing it would pass for the wrong reason.
+
+LD-1 declines to re-derive a root cause established upstream by A/B counterfactual (15/25 baseline versus 0/25 guarded, twice) that this repository has no failing case to reproduce. Adopting the finding and citing it is stronger than manufacturing a local derivation from no evidence.
+
+LD-4's coverage argument was checked: fourteen files shell out to git and every environment they pass derives from os.environ, including the two that build their own dicts, so an autouse fixture reaches all of them plus future callers who will not know this hazard exists. The append-rather-than-assume-index-0 detail is small and correct. change_class governance is right -- packages are 'qor*', tests do not ship, nothing consumer-visible changes. The D4.d waiver on the narrative entry is legitimate and correctly formed. Next: /qor-implement.
+
+### Entry #530: IMPLEMENTATION -- Phase 214 git auto-maintenance guard (GH #308)
+
+**Timestamp**: 2026-08-10T23:07:39Z
+**Phase**: IMPLEMENT (Phase 214)
+**Author**: Specialist
+**Risk Grade**: L2
+**Session**: `2026-08-10T2106-5672f9`
+**Intent Lock**: `LOCKED: 2026-08-10T2106-5672f9`
+
+**Content Hash**: `a51e45f0705a3fd8de17104369d268277246de6892edda1ffa6a9a04e289cf9d`
+**Previous Hash**: `84839114b1d546f71e61961e5f5901272b02d753040217f160f5b8d487a408b2`
+**Chain Hash (Merkle seal)**: `735a34f24f9b8f9856e3aee3feeda5d39377114c9f489b074264da3068556a43`
+
+**Decision**: Implemented Phase 214 per PASS audit (entry #529), adopting the GH #308 fix.
+
+Phase 1: an autouse _git_no_auto_maintenance fixture in tests/conftest.py sets maintenance.auto=false through git's ENV-CONFIG layer (GIT_CONFIG_COUNT / KEY_n / VALUE_n), APPENDING at the next free index rather than assuming 0. The env layer is required, not stylistic: scratch_env() from Phase 209 pins GIT_CONFIG_GLOBAL, GIT_CONFIG_SYSTEM, and GIT_CONFIG_NOSYSTEM, so a guard written as a global or system config entry would be read out of scope -- the previous fix would have silently defeated this one. Composition was proven on this host before implementing: maintenance.auto resolves to 'false' at exit 0 with the layer and is unset at exit 1 without it.
+
+Three tests, all red before the fixture and green after. They assert the guard is IN EFFECT rather than asserting pack counts, because this host runs git 2.52 -- the version GH #308 names structurally immune against CI's 2.54 -- so the obvious outcome test would pass vacuously exactly where it is most often run. Falsified rather than assumed: removing the fixture turns all three red on this immune host.
+
+Phase 2: docs/SHADOW_GENOME.md records the process pattern -- a plausible remedy for an unreproduced failure sealed as 'the mechanism removed', with a null result from an environment structurally incapable of producing a positive cited in support. Phase 209's twelve local passes were not weak evidence; they were no evidence, and were presented as the former.
+
+REMEDIATION BEYOND THE DECLARED SCOPE, recorded rather than left silent. The post-change boundary lint surfaced 7 findings, both leaks introduced by Phase 212 and already on main: (1) .claude/CLAUDE.md, an operator-local host instruction file carrying identity terms, was swept into the Phase 212 seal commit by git add -A and published to a public repository -- untracked, and .gitignore widened from .claude/skills/ to .claude/ since the repository's own instructions live in the tracked root CLAUDE.md; (2) the Phase 212 plan named the pre-rename branch in prose while documenting the rename, anonymized now.
+
+Both were missed for the same reason, for the third time this session: the boundary lint scans git ls-files, so a file added in the same change is invisible until after commit, and the seal ceremony runs the lint BEFORE staging. CI could not catch either because identity terms need the gitignored overlay, so CI applies structural detectors only. Filed as GH #309 rather than patched opportunistically here.
+
+Full suite 2784 passed / 6 skipped, green twice; ruff clean; boundary lint 0 findings. Content hash binds the plan. Next: /qor-substantiate.
+
+### Entry #531: SESSION SEAL -- Phase 214 git auto-maintenance guard (governance)
+
+**Timestamp**: 2026-08-10T23:08:31Z
+**Phase**: SUBSTANTIATE (Phase 214; governance)
+**Author**: Judge
+**Change class**: governance
+**Plan**: docs/plan-qor-phase214-git-auto-maintenance-guard.md
+**Session**: `2026-08-10T2106-5672f9`
+
+**Content Hash**: `a51e45f0705a3fd8de17104369d268277246de6892edda1ffa6a9a04e289cf9d`
+**Previous Hash**: `735a34f24f9b8f9856e3aee3feeda5d39377114c9f489b074264da3068556a43`
+**Chain Hash (Merkle seal)**: `70c7e9e993224f6c95cdbaaa5e39598e45d98ff9c6d3ea5b6481f7c68654369b`
+
+**Decision**: **Scope**: Phase 214 sealed (governance; version not applicable -- packages are 'qor*' and tests do not ship). Adopts the GH #308 fix for the intermittent exit-128 failures in test_merge_velocity_check.py.
+
+**Mechanism, adopted not re-derived**: git >= 2.5x runs 'git maintenance run --auto --detach' after commit/merge. Because it daemonizes, 'git repack -d' keeps rewriting the scratch repository's object store AFTER the foreground call has returned, deleting loose objects and their shard directories while the fixture's next call is using them. GH #308 established this with an A/B counterfactual (15/25 baseline failures, 0/25 guarded, twice) that this repository has no failing case to reproduce; manufacturing a local derivation from no evidence would have produced a weaker artifact.
+
+**This phase's premise is a correction of Phase 209.** That phase pinned GIT_CONFIG_GLOBAL and GIT_CONFIG_SYSTEM on an ambient-config theory and its seal described the mechanism as removed. Auto-maintenance is a built-in default, not a configured behavior, so that remedy CANNOT suppress it -- upstream tried the same approach and it failed. Two supporting claims were also wrong: a parallelism hypothesis (two of eight upstream occurrences ran serial) and twelve local passes offered as evidence of non-reproduction, from a host running git 2.52 that the analysis names structurally immune. That was not weak evidence; it was none, presented as the former.
+
+**The guard had to use git's env-config layer**, and this is the sharp edge: scratch_env() pins GIT_CONFIG_GLOBAL / SYSTEM / NOSYSTEM, so a guard written as a global or system entry would be read out of scope -- Phase 209's fix would have silently defeated Phase 214's. Composition was proven before implementing (maintenance.auto = 'false' rc0 with the layer, unset rc1 without). The fixture appends at the next free index rather than assuming 0.
+
+**The tests assert the guard is in effect, not an outcome.** This host's git predates the behavior, so the obvious pack-count test would pass vacuously exactly where it is most often run. Falsified rather than assumed: removing the fixture turns all three red on this immune host.
+
+**Remediation beyond declared scope**, recorded rather than left silent. The post-change boundary lint surfaced two leaks that Phase 212 had already put on main: .claude/CLAUDE.md, an operator-local host instruction file carrying identity terms, swept into that seal commit by 'git add -A' and published to a public repository (untracked; .gitignore widened from .claude/skills/ to .claude/), and the Phase 212 plan naming the pre-rename branch in prose while documenting the rename (anonymized). Both were missed for the same reason, for the THIRD time in this session: the lint scans git ls-files, so a file added in the same change is invisible until after commit, and the ceremony runs the lint before staging. CI could not catch either, because identity terms require the gitignored overlay and CI therefore applies structural detectors only. Filed as GH #309 rather than patched opportunistically. This seal ran the lint AFTER staging.
+
+**Gates**: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, doc-integrity strict PASS, governance-index enforce clean, boundary lint 0 findings post-staging, sg_closure 0 of 40 uncited. Tests: 3 new, red-then-green, falsification confirmed; full suite 2784 passed / 6 skipped, green twice; ruff clean. Content hash binds the plan.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**SSDF Practices**: PO.1.4, PS.2.1
+
+**Entry ID**: `e6715f0f51c9`
+
 ---
 
 *Chain integrity: VALID*
