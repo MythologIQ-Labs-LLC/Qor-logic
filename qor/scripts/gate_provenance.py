@@ -33,7 +33,6 @@ import hashlib
 import hmac
 import json
 import secrets
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 

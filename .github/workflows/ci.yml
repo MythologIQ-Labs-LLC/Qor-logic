@@ -89,7 +89,8 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - run: pip install -e .
+      # [dev] carries ruff, which the publication-boundary and ruff steps below use.
+      - run: pip install -e ".[dev]"
       - name: Verify gate-chain completeness for sealed phases >= 52
         run: python -m qor.reliability.gate_chain_completeness --phase-min 52
       - name: seal-artifacts currency
@@ -100,6 +101,13 @@ jobs:
         # is unavailable for the Tests-badge collect; that badge is verified
         # at seal time (substantiate Step 6.5) where the dev env exists.
         run: python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .
+      - name: ruff
+        # Phase 213 (GH #304): pyflakes only, adopted narrowly and landed at
+        # zero. The full default set found 254 issues and zero real defects, so
+        # the case rests on unused-import rot and on being the only check here
+        # that reads Python for correctness -- every other lint in this repo is
+        # governance-semantic. No baseline file, deliberately.
+        run: python -m ruff check qor/ tests/
       - name: publication boundary
         # Phase 208: fail-closed from here on. The control shipped in Phase 172
         # but could not express the two exceptions its own doctrine grants --

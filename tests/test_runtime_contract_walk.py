@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 from qor.scripts.runtime_contract_walk import (
-    WalkFinding,
     extract_python_modules_from_plan,
     walk_backward,
     walk_forward,

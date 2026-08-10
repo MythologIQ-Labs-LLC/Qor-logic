@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 
 def _stage_variant(dist_root: Path, host: str, skill_body: str) -> None:

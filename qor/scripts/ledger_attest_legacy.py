@@ -16,7 +16,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import re
-import sys
 from pathlib import Path
 
 from qor.scripts.ledger_emit import LedgerEntry, append

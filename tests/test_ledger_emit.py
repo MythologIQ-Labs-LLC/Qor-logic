@@ -1,7 +1,6 @@
 """Phase 193 (GH #278): typed ledger entry renderer + append."""
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 

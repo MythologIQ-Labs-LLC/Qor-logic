@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import hashlib
 
-import pytest
 
 from qor.scripts.ledger_hash import is_placeholder_pattern
 

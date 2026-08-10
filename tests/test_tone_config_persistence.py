@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 
 def test_init_tone_plain_writes_config(tmp_path):

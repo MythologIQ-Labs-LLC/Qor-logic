@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 
 def test_codex_host_resolves():
@@ -34,7 +33,7 @@ def test_register_host_custom():
 def test_register_host_overrides_builtin():
     """register_host can override a built-in host."""
     from qor.hosts import HostTarget, register_host, resolve
-    original = resolve("codex", scope="global")
+    resolve("codex", scope="global")
     def _custom_codex(scope: str = "repo") -> HostTarget:
         base = Path("/tmp/codex-custom")
         return HostTarget(

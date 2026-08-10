@@ -15,7 +15,7 @@ import sys
 import textwrap
 from pathlib import Path
 
-from qor.scripts.dod_check import CheckFinding, check_plan
+from qor.scripts.dod_check import check_plan
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 

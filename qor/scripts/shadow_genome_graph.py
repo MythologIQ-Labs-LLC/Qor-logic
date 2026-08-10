@@ -20,7 +20,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import sys
 from collections import Counter
 from dataclasses import dataclass, field
 from enum import Enum

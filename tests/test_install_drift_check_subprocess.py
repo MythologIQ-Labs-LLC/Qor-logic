@@ -36,8 +36,8 @@ def test_install_drift_check_main_emits_qor_logic_fix_string_via_subprocess(tmp_
     # Source-grounded assertion (sanity check that source is correct).
     idc_src = (REPO_ROOT / "qor" / "scripts" / "install_drift_check.py").read_text(encoding="utf-8")
     assert "qor-logic install" in idc_src, (
-        f"install_drift_check.py source must print 'qor-logic install' on drift; "
-        f"otherwise main() output won't satisfy the contract."
+        "install_drift_check.py source must print 'qor-logic install' on drift; "
+        "otherwise main() output won't satisfy the contract."
     )
     assert "qorlogic install" not in idc_src, (
         "install_drift_check.py source must not contain legacy 'qorlogic install'"

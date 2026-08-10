@@ -16,7 +16,6 @@ import textwrap
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-from qor.scripts import ledger_hash
 from qor.scripts.ledger_hash import (
     chain_hash,
     find_grandfathered_entries,

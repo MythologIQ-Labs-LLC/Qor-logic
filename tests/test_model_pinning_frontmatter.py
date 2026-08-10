@@ -2,10 +2,8 @@
 from __future__ import annotations
 
 import re
-import textwrap
 from pathlib import Path
 
-import pytest
 
 from qor.scripts.model_pinning_lint import (
     _CAPABILITY_ORDER,

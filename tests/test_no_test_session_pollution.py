@@ -1,7 +1,6 @@
 """Phase 58: regression — no `.qor/gates/test*` pollution after suite runs."""
 from __future__ import annotations
 
-import inspect
 import re
 from pathlib import Path
 

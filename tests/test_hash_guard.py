@@ -6,8 +6,6 @@ require_toolkit_modules raises hard when crypto modules are absent.
 from __future__ import annotations
 
 import hashlib
-import json
-from pathlib import Path
 
 import pytest
 

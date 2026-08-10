@@ -1,8 +1,6 @@
 """Tests for Phase 2 compile pipeline + drift check."""
 from __future__ import annotations
 
-import shutil
-from pathlib import Path
 
 import pytest
 

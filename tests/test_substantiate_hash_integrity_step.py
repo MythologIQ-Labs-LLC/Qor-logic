@@ -22,7 +22,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import pytest
 
 SKILL_PATH = Path("qor/skills/governance/qor-substantiate/SKILL.md")
 STEP_6_8_HEADING = "### Step 6.8: Seal Hash Integrity Gate"

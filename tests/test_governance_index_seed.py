@@ -1,7 +1,6 @@
 """Phase 112 (#140): GOVERNANCE_INDEX scaffold + registry coupling."""
 from __future__ import annotations
 
-from pathlib import Path
 
 from qor import seed
 from qor.scripts import governance_health

@@ -2,12 +2,7 @@
 from __future__ import annotations
 
 import hashlib
-import json
-import re
-import sys
-from datetime import datetime, timezone
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -19,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 def test_medium1_valid_repo_path_accepted():
     """Repo path with qor/ marker is accepted."""
     from qor.scripts.collect_shadow_genomes import validate_repo_path
-    tmp = Path(__file__).parent  # has qor/ sibling
+    Path(__file__).parent  # has qor/ sibling
     # Use repo root which has qor/ dir
     assert validate_repo_path(REPO_ROOT) is True
 
@@ -62,8 +57,6 @@ def test_medium3_atomic_append_uses_locking(tmp_path, monkeypatch):
     target = tmp_path / "test.jsonl"
     target.write_text("", encoding="utf-8")
 
-    lock_acquired = []
-    original_atomic = shadow_process._atomic_append
 
     # The locking is internal; verify no crash and file is written
     shadow_process._atomic_append(target, '{"test": true}\n')
@@ -195,7 +188,6 @@ def test_low4_verdict_regex_matches_correctly():
 
 def test_low5_uses_timezone_aware_datetime():
     """intent-lock capture uses timezone-aware datetime, not utcnow()."""
-    import ast
     src = (REPO_ROOT / "qor" / "reliability" / "intent_lock.py").read_text(encoding="utf-8")
     assert "utcnow()" not in src
     assert "datetime.now(timezone.utc)" in src or "dt.datetime.now(dt.timezone.utc)" in src

@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 from qor.scripts.skill_size_budget_lint import (
-    SizeFinding,
     check_skills,
 )
 

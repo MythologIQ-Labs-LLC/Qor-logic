@@ -4,7 +4,7 @@ from __future__ import annotations
 import pytest
 
 from qor.compiler.compile import _PROVIDERS, compile_prompt
-from qor.compiler.types import CompiledPrompt, ParsedIntent, PromptIR, TargetProfile
+from qor.compiler.types import CompiledPrompt, TargetProfile
 
 
 def test_compile_prompt_with_anthropic_target_returns_compiled_prompt():

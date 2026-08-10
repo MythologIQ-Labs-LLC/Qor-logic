@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import importlib.util
 import pathlib
-import pytest
 
 from qor.scripts import validate_gate_artifact as vga
 

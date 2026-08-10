@@ -41,6 +41,5 @@ def test_scripts_importable_as_package():
     """Key script modules import via package path."""
     from qor.scripts import shadow_process
     from qor.scripts import session
-    from qor.scripts import gate_chain
     assert callable(shadow_process.compute_id)
     assert callable(session.generate_id)

@@ -19,7 +19,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from qor.scripts import hash_guard, ledger_hash
+from qor.scripts import ledger_hash
 
 
 def _digest(seed: bytes) -> str:

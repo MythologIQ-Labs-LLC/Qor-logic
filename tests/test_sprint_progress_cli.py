@@ -1,12 +1,10 @@
 """Phase 54: sprint-progress CLI tests."""
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 from pathlib import Path
 
-import pytest
 
 from qor.scripts import sprint_progress
 

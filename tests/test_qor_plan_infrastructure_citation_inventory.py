@@ -1,7 +1,6 @@
 """Phase 72 P1: qor-plan Step 2 Infrastructure Citation Inventory."""
 from pathlib import Path
 
-import pytest
 
 SKILL = Path("qor/skills/sdlc/qor-plan/SKILL.md")
 

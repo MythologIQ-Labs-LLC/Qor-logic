@@ -13,11 +13,9 @@ import sys
 import textwrap
 from pathlib import Path
 
-import pytest
 
 from qor.scripts.reachability_probe import (
     Claim,
-    ReachabilityFinding,
     check_caller_graph,
     check_claim,
     check_importability,

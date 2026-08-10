@@ -8,12 +8,9 @@ Functionality tests:
 """
 from __future__ import annotations
 
-import io
 import re
-import sys
 import tomllib
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 

@@ -12,7 +12,6 @@ dispatch); this module handles the data reduction and markdown emission.
 from __future__ import annotations
 
 import json
-import re
 import statistics
 
 

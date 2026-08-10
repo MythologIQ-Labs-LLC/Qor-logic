@@ -3,10 +3,8 @@ from __future__ import annotations
 
 import json
 
-import pytest
 
 from qor.scripts.host_capability import (
-    CheckResult,
     check_step_prerequisites,
     check_qor_logic_freshness,
     emit_prerequisite_absent_event,

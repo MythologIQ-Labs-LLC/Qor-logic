@@ -1,7 +1,6 @@
 """Phase 23 Track C: NIST SSDF evidence framework tests."""
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 import pytest

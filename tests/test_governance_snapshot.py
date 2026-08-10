@@ -10,10 +10,8 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
-import sys
 from pathlib import Path
 
-import pytest
 
 from qor.scripts import gate_chain, governance_snapshot as gs
 from qor.scripts import shadow_process

@@ -30,7 +30,7 @@ def test_qor_audit_carries_critical_invariants_block():
         f"qor-audit SKILL.md must carry {INVARIANTS_HEADING!r} block"
     )
     assert V2_RAMP_NOTE in text, (
-        f"qor-audit invariants block must include the Phase 99 V2 ramp framing note"
+        "qor-audit invariants block must include the Phase 99 V2 ramp framing note"
     )
 
 
@@ -92,5 +92,5 @@ def test_governance_skills_with_binding_gates_carry_invariants_block():
             failures.append(str(skill_md.relative_to(REPO_ROOT)))
     assert not failures, (
         "Governance skills with binding-gate declarations must carry "
-        f"'## Critical Invariants' block:\n  " + "\n  ".join(failures)
+        "'## Critical Invariants' block:\n  " + "\n  ".join(failures)
     )

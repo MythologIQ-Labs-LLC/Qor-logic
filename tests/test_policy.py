@@ -6,12 +6,11 @@ from qor.policy import (
     Constraint,
     Decision,
     EntityUID,
-    EvalResult,
     Policy,
     Request,
     evaluate,
 )
-from qor.policy.parser import parse_policies, parse_policy
+from qor.policy.parser import parse_policies
 
 
 def test_entity_uid_creation():

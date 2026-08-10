@@ -6,7 +6,6 @@ per-tier instructions, not merely declare the flag.
 """
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 from yaml import safe_load

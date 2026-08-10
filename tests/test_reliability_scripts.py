@@ -14,7 +14,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 from tests.support.git_fixture import run_git, scratch_env

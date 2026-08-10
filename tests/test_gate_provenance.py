@@ -13,7 +13,6 @@ Every test invokes the unit and asserts on its output / raised exception
 from __future__ import annotations
 
 import hashlib
-import hmac
 import json
 from pathlib import Path
 

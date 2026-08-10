@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 import subprocess
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 
 import pytest
 
@@ -347,7 +346,7 @@ def test_append_event_classifies_upstream(tmp_path):
          mock.patch.object(shadow_process, "LOCAL_LOG_PATH", local):
         e = make_event()
         del e["id"]
-        eid = shadow_process.append_event(e, attribution="UPSTREAM")
+        shadow_process.append_event(e, attribution="UPSTREAM")
     assert shadow_process.read_events(upstream)
     assert not local.exists()
 

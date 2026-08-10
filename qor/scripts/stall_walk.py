@@ -19,7 +19,6 @@ Reset conditions (any one breaks the consecutive run):
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 from qor import workdir as _workdir
 from qor.scripts import audit_history, findings_signature

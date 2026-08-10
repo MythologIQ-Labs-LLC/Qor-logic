@@ -15953,6 +15953,92 @@ Tests: 4 new, red-then-green. Full suite 2776 passed / 6 skipped, green twice; r
 
 **Entry ID**: `5a59650adc20`
 
+### Entry #526: GATE TRIBUNAL -- Phase 213 narrow ruff adoption (PASS)
+
+**Timestamp**: 2026-08-10T20:10:38Z
+**Phase**: GATE (Phase 213)
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase213-narrow-ruff-adoption.md
+**Session**: `2026-08-10T1935-0ab93f`
+**Verdict**: PASS
+
+**Content Hash**: `b16c9feadfb37a06efdbdb32c8fb5572e882b9623c84cfa4397d5b94408c7931`
+**Previous Hash**: `f1e3649118a0ba875c827f1e2d3fc4de56fd66e97386293395d264129484c061`
+**Chain Hash (Merkle seal)**: `466b4992ebb3f26dbc9c56650b253704d6bcc5b2a89668dec954c66d682af9a7`
+
+**Decision**: PASS at L1. An adoption plan that argues honestly against its own headline is unusual and correct.
+
+LD-1 states the decisive fact first: the empirical yield is ZERO. The only rule class that can indicate a live NameError fired twice, and both hits are deliberately seeded detector fixtures marked NOT EXECUTABLE. A plan that led with 'ruff finds 254 problems' would have been sales copy; this one names 195 unused imports as rot and orthogonal coverage as the actual case, and rests on nothing stronger. The Judge would have VETOed a defect-count justification.
+
+LD-2 is the load-bearing constraint. This project has diagnosed the permanently-red-control failure twice in one session -- publication_boundary_lint wired to no gate because it could not express its own exceptions, and sg_closure_lint carrying ten uncited entries for a generation. A baseline file would have been a third instance, and the plan refuses one: it lands at zero or it does not land. Narrow scope is what makes zero reachable rather than aspirational.
+
+LD-3 corrects an error made earlier in the same session and says so. The fourteen '# noqa: secret-scan' directives are this project's own suppressions, matched by literal token at secret_scanner.py:84; they suppress real findings and characterizing them as malformed was wrong. Resolving via ruff's external setting rather than editing them is the only safe route -- editing would have silently disabled fourteen secret-scan suppressions while appearing to tidy lint noise.
+
+LD-4 is the right epistemics for a 195-file auto-fix: an import kept for its side effect is invisible to any static rule, so the evidence is the suite green before and after, not the auto-fixer's confidence. Ruff honoring __all__ is verified rather than assumed.
+
+Scope discipline holds: E rules excluded with the reason stated (24 findings, zero defects), no formatter, and the Section 4 Razor deliberately left outside ruff because ruff cannot express a file-line cap -- a lesser plan would have claimed ruff subsumes it. Tests are behavioral and include a narrowing lock, so a later broadening is a visible edit rather than drift. L1 risk: config plus mechanical removals, gated by a full suite. Next: /qor-implement.
+
+### Entry #527: IMPLEMENTATION -- Phase 213 narrow ruff adoption (GH #304)
+
+**Timestamp**: 2026-08-10T20:39:32Z
+**Phase**: IMPLEMENT (Phase 213)
+**Author**: Specialist
+**Risk Grade**: L1
+**Session**: `2026-08-10T1935-0ab93f`
+**Intent Lock**: `LOCKED: 2026-08-10T1935-0ab93f`
+
+**Content Hash**: `d8011f7a4d5cb18a68c5ff929465ec81cdb862ca6185dbff4dba90f7dc07df92`
+**Previous Hash**: `466b4992ebb3f26dbc9c56650b253704d6bcc5b2a89668dec954c66d682af9a7`
+**Chain Hash (Merkle seal)**: `06a1a93286698717a74cefb046c9fcaa14ecebd311c6cb07f276335f1fd05ac0`
+
+**Decision**: Implemented Phase 213 per PASS audit (entry #526), closing GH #304.
+
+Phase 1: ruff added to the dev extra (the second dev dependency this project has ever declared) with [tool.ruff] selecting F only, excluding tests/fixtures/ab_corpus by path, and declaring secret-scan external. The config carries its own reasoning inline so a later reader sees why the narrowing exists rather than assuming it was laziness.
+
+Phase 2: 207 auto-fixed, then the 18 remaining F841 unused-variable findings resolved per shape rather than by blanket deletion. Where the right-hand side was a call, the call was PRESERVED and only the dead binding dropped -- 13 of those, because the call's side effect or its raise on bad input is what the test exercises; deleting the line would have silently removed the assertion. The remaining 5 were pure literals or comprehensions with no side effect and were removed outright. Nothing was suppressed.
+
+LD-4 discharged empirically: the full suite reported 2776 passed both before and after the auto-fix, identical, so the 207 import removals are PROVEN inert rather than assumed so on the auto-fixer's confidence. An import kept for a side effect is invisible to any static rule; only the suite can speak to it.
+
+Phase 3: four tests -- ruff declared in the dev extra, select pinned to exactly ['F'] with the fixture exclusion and the external declaration asserted, no baseline file present, and the live tree clean. The select assertion is the narrowing lock: broadening later becomes a visible edit that fails a test rather than a quiet drift. CI runs it fail-closed in gate-chain-completeness, registered in the Phase 89 CI-surface list.
+
+Two config corrections during implementation: ruff deprecated top-level 'external' in favour of lint.external, and the misplacement meant the setting was silently inert -- the secret-scan collision warning reappeared until it moved, which is how it was caught. This also confirms the LD-3 correction: those 14 directives are the project's own suppressions matched by literal token at secret_scanner.py, not malformed ruff directives; editing them would have disabled 14 real secret-scan suppressions under the guise of tidying lint noise.
+
+Result: ruff reports zero over qor/ and tests/, with no baseline file. Full suite 2780 passed / 6 skipped, green twice. Content hash binds the plan. Next: /qor-substantiate.
+
+### Entry #528: SESSION SEAL -- Phase 213 narrow ruff adoption (v0.138.1)
+
+**Timestamp**: 2026-08-10T20:40:49Z
+**Phase**: SUBSTANTIATE (Phase 213; hotfix)
+**Author**: Judge
+**Change class**: hotfix
+**Plan**: docs/plan-qor-phase213-narrow-ruff-adoption.md
+**Session**: `2026-08-10T1935-0ab93f`
+
+**Content Hash**: `d8011f7a4d5cb18a68c5ff929465ec81cdb862ca6185dbff4dba90f7dc07df92`
+**Previous Hash**: `06a1a93286698717a74cefb046c9fcaa14ecebd311c6cb07f276335f1fd05ac0`
+**Chain Hash (Merkle seal)**: `351f231f83b4c5fb375bc4ccd4ae5820d6ef3be69c41fa0b6d97c61f9c20a991`
+
+**Decision**: **Scope**: Phase 213 sealed (hotfix). Closes GH #304 by adopting ruff narrowly rather than answering the adopt-or-decline question in the abstract.
+
+**The yield was zero, and the seal says so.** The full default rule set produced 254 findings and no real defects: F821, the only class that can indicate a live NameError, fired twice and both hits are deliberately seeded detector fixtures marked NOT EXECUTABLE. Adoption rests on two narrower claims -- 195 unused imports were genuine rot, and nothing else in this repository reads Python for correctness, since every other lint here is governance-semantic (prose, citations, boundary, closure, doc integrity). A defect-count justification would have been false.
+
+**Landed at zero with no baseline file**, and that constraint drove the scope. An uncleaned baseline becomes a permanently-red control -- the failure mode repaired twice earlier in this same session, in publication_boundary_lint (wired to no gate because it could not express its own doctrine's exceptions) and sg_closure_lint (ten uncited entries for a generation). A third instance of a twice-diagnosed pattern would have been poor judgment. Tests assert both that no baseline file exists and that select is exactly ['F'], so broadening later is a visible edit that fails a test rather than a quiet drift.
+
+**The 18 judgment items were resolved per shape, never suppressed.** Where the unused binding's right-hand side was a call, the CALL was preserved and only the dead name dropped (13 of 18), because the call's side effect or its raise on bad input is what the test exercises -- deleting those lines would have silently removed assertions while satisfying the linter. The other 5 were pure values with no side effect and were removed outright.
+
+**LD-4 discharged empirically**: the suite reported 2776 passed both before and after the 207-file auto-fix, identical, so the import removals are proven inert rather than trusted. An import kept for a side effect is invisible to any static rule; only the suite can speak to it.
+
+**Correction carried from earlier in this session**: the 14 '# noqa: secret-scan' directives were characterized as malformed and suppressing nothing. That was wrong. They are this project's own secret-scanner suppressions, matched by literal token in secret_scanner.py, and they suppress real findings. Declaring the code external to ruff is the correct resolution; editing them would have disabled 14 live suppressions under the guise of tidying lint noise. A config misplacement -- ruff deprecated top-level 'external' in favour of lint.external -- left the setting silently inert until the returning collision warning exposed it.
+
+**Gates**: intent-lock VERIFIED, secret-scan clean, merge-velocity healthy, doc-integrity strict PASS, governance-index enforce clean. Tests: 4 new, full suite 2780 passed / 6 skipped, green twice; ruff reports zero. Change class: hotfix (0.138.0 -> 0.138.1). Content hash binds the plan.
+
+**Feature Inventory**: Total: 17 / verified: 17 / unverified: 0 / n/a: 0
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Entry ID**: `9759100adeb1`
+
 ---
 
 *Chain integrity: VALID*

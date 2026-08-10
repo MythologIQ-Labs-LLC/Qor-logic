@@ -1,7 +1,7 @@
 """Phase 58: verification request artifact."""
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from qor.capabilities.context import GovernanceContextPacket, build_context_packet

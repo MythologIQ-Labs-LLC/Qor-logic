@@ -10,6 +10,21 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.138.1] - 2026-08-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 213 (hotfix; narrow ruff adoption)**: closes #304. `ruff` was not a declared tool of this project — absent from the dev extra, from pre-commit, and from every workflow — while its output was occasionally quoted in review as though it were authoritative. It is now declared, configured, and enforced fail-closed in CI, scoped deliberately to pyflakes (`select = ["F"]`).
+
+  The narrowing is a decision, not an omission. The full default rule set produced **254 findings and zero real defects**: the only class that can indicate a live `NameError` fired twice, both in `tests/fixtures/ab_corpus/` files headed "SEEDED TEST DEFECT -- NOT EXECUTABLE". The 24 `E` style findings carried no defect either. Adoption therefore rests on two narrower claims — 195 unused imports were genuine rot, and nothing else here reads Python for correctness, since every other lint in this repository is governance-semantic. The Section 4 Razor stays outside ruff, which cannot express a file-line cap.
+
+### Fixed
+- 195 unused imports removed and 18 unused locals resolved. Where the unused binding's right-hand side was a call, the **call was preserved** and only the dead name dropped — its side effect, or its raise on bad input, is what the test exercises, so deleting the line would have silently removed the assertion.
+- `[tool.ruff.lint] external = ["secret-scan"]` declares that `# noqa: secret-scan` belongs to this project's own secret scanner, which matches that literal token. Ruff had been parsing those 14 directives as malformed ones of its own. They suppress real findings and must never be "tidied" away.
+
+**Landed at zero, with no baseline file.** An uncleaned baseline becomes a permanently-red control — the failure mode already repaired twice in this line, in the publication-boundary lint and the shadow-genome closure lint. A test asserts no baseline file exists, and another pins `select` to exactly `["F"]` so broadening later is a visible edit rather than a drift.
+
 ## [0.138.0] - 2026-08-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

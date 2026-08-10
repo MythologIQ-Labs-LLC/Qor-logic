@@ -6,7 +6,6 @@ silently-dropped entry or a missing back-reference fails the suite.
 """
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 _DOCTRINE = Path(__file__).resolve().parent.parent / "qor" / "references" / "doctrine-shadow-genome-countermeasures.md"

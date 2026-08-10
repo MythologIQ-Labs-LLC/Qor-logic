@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 
 from qor.scripts import plan_feature_tdd_lint as ftl
 

@@ -40,7 +40,7 @@ def test_workflow_uses_dependency_review_action_sha_pinned():
         for line in text.splitlines()
     )
     assert annotated, (
-        f"dependency-review-action SHA pin must carry a '# vX.Y.Z' annotation comment"
+        "dependency-review-action SHA pin must carry a '# vX.Y.Z' annotation comment"
     )
 
 

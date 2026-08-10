@@ -7,7 +7,6 @@ by (event_type, skill, session_id) for downstream pattern classification.
 """
 from __future__ import annotations
 
-from pathlib import Path
 
 from qor.scripts import shadow_process
 

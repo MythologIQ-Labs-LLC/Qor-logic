@@ -1,13 +1,9 @@
 """Phase 46 feature_index_verify behavior tests."""
 from __future__ import annotations
 
-import json
-from pathlib import Path
 
-import pytest
 
 from qor.scripts.feature_index_verify import (
-    IndexSummary,
     parse_index_rows,
     tally,
     write_seal_snapshot,
