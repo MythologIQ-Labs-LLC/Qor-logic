@@ -31,6 +31,23 @@ def test_ruff_is_a_declared_dev_dependency():
     )
 
 
+def test_the_ci_job_running_ruff_installs_it():
+    """Declaration is not availability.
+
+    The first version of this suite asserted only that ruff appears in the dev
+    extra. The `gate-chain-completeness` job installed the base package, so CI
+    failed with "No module named ruff" while the test passed -- checking the
+    thing rather than the thing as CI sees it.
+    """
+    workflow = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    job = workflow.split("gate-chain-completeness:", 1)[1]
+    job = job.split("provenance-attest:", 1)[0]
+    assert "python -m ruff check" in job, "expected the ruff step in this job"
+    assert 'pip install -e ".[dev]"' in job, (
+        "the job that runs ruff must install the extra that provides it"
+    )
+
+
 def test_ruff_config_selects_pyflakes_only():
     """Broadening the rule set must be a deliberate edit, not a drift."""
     ruff = _config()["tool"]["ruff"]
