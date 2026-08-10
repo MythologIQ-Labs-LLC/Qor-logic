@@ -46,6 +46,12 @@ def _init_git_repo(path: Path) -> None:
     """
     env = scratch_env()
     run_git(["git", "init", "-q"], cwd=path, env=env)
+    # Persist identity INTO the repo, not only into this helper's environment:
+    # later helpers in this module invoke git without it, and an env-only
+    # identity would leave them relying on ambient config -- exactly the
+    # coupling this phase removes.
+    run_git(["git", "config", "user.email", "fixture@example.invalid"], cwd=path, env=env)
+    run_git(["git", "config", "user.name", "Qor Fixture"], cwd=path, env=env)
     (path / "seed.txt").write_text("seed", encoding="utf-8")
     run_git(["git", "add", "seed.txt"], cwd=path, env=env)
     run_git(["git", "commit", "-q", "-m", "seed"], cwd=path, env=env)
