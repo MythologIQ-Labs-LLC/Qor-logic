@@ -10,6 +10,14 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.136.1] - 2026-08-10
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 209 (hotfix; release-artifact retention)**: the `release-dist` artifact carried `retention-days: 7` while the `pypi` environment gate has no bounded wait. A v0.135.0 approval landed roughly 23 hours after the artifact expired, and `publish` failed with the artifact toolkit's generic "Artifact not found" -- which reads as a build or upload defect when the build had succeeded and its output had simply been garbage-collected. Retention is now 30, matching `ci.yml` and `oss-sast.yml`. The build/publish split is unchanged, so the published bytes remain the ones the CI gate verified.
+- **Phase 209 (hotfix; hermetic git fixtures)**: scratch-repo test fixtures inherited the machine's global and system git configuration -- environment coupling that `doctrine-test-discipline.md` forbids, and not merely untidy on CI, where `actions/checkout` installs `includeIf` entries pointing at credential files it removes during job cleanup. New `tests/support/git_fixture.py` supplies `scratch_env()` (ambient config excluded, own identity) and `run_git()` (raises with git's own stderr, argv, exit code, and cwd). All four scratch-repo modules were migrated, not only the one observed to flake. This closes for fixtures the diagnosability gap Phase 194 closed for the production path, where `check=True` captures stderr onto an exception whose `__str__` never prints it. No retry was introduced; a retry converts a real failure into a slow pass and destroys the signal.
+
 ## [0.136.0] - 2026-08-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

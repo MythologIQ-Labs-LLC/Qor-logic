@@ -17,6 +17,8 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+from tests.support.git_fixture import run_git, scratch_env
+
 RELIABILITY_DIR = REPO_ROOT / "qor" / "reliability"
 INTENT_LOCK = RELIABILITY_DIR / "intent_lock.py"
 SKILL_ADMISSION = RELIABILITY_DIR / "skill_admission.py"
@@ -35,13 +37,18 @@ def _run(cmd: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess
 
 
 def _init_git_repo(path: Path) -> None:
-    """Initialize a minimal git repo at path with one commit."""
-    _run(["git", "init", "-q"], cwd=path)
-    _run(["git", "config", "user.email", "test@example.com"], cwd=path)
-    _run(["git", "config", "user.name", "test"], cwd=path)
+    """Initialize a minimal git repo at path with one commit.
+
+    Phase 209: hermetic -- ambient global/system git config is excluded, and a
+    failing git command raises with git's own reason instead of being silently
+    ignored (this helper previously ran with check=False, so a broken fixture
+    surfaced later as a confusing assertion failure).
+    """
+    env = scratch_env()
+    run_git(["git", "init", "-q"], cwd=path, env=env)
     (path / "seed.txt").write_text("seed", encoding="utf-8")
-    _run(["git", "add", "seed.txt"], cwd=path)
-    _run(["git", "commit", "-q", "-m", "seed"], cwd=path)
+    run_git(["git", "add", "seed.txt"], cwd=path, env=env)
+    run_git(["git", "commit", "-q", "-m", "seed"], cwd=path, env=env)
 
 
 # ---- Track 1: intent-lock (4 tests) ----

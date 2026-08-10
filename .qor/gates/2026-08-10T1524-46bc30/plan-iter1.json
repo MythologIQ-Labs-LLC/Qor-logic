@@ -1,0 +1,49 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-10T1524-46bc30",
+  "ts": "2026-08-10T16:01:09Z",
+  "plan_path": "docs/plan-qor-phase209-release-retention-and-hermetic-git.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "open_questions": [],
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "boundaries": {
+    "limitations": [
+      "Removes a mechanism for the observed CI failure; cannot prove the symptom gone since it was never reproduced locally."
+    ],
+    "non_goals": [
+      "No retry logic anywhere.",
+      "No change to merge-velocity grading thresholds.",
+      "No change to what the release publishes or how it is built."
+    ],
+    "exclusions": [
+      "Fixtures invoking git against the live REPO_ROOT are out of scope."
+    ]
+  },
+  "phases": [
+    "Raise the release-artifact retention",
+    "Hermetic, diagnosable git fixtures"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_git_fixture_isolation.py -q",
+    "python -m pytest tests/test_merge_velocity_check.py tests/test_workspace_fragility_check.py tests/test_substantiate_changelog_integration.py tests/test_reliability_scripts.py -q",
+    "python -m pytest tests/ -q",
+    "qor-logic scripts publication_boundary_lint --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase209-release-retention-and-hermetic-git.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.136.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T16:01:09Z"
+  }
+}
