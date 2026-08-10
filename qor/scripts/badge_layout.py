@@ -9,8 +9,10 @@ signature (Phase 206; audit entry #502 Ground 1).
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, fields, replace
 from pathlib import Path
+
+from qor.scripts.qorlogic_config import load_section
 
 
 class BadgeLayoutError(ValueError):
@@ -37,26 +39,46 @@ DEFAULT_LAYOUT = BadgeLayout()
 
 
 def add_layout_args(parser: argparse.ArgumentParser) -> None:
-    """Declare the six layout flags on any CLI that counts badge kinds."""
-    parser.add_argument("--skills-root", type=Path, default=DEFAULT_LAYOUT.skills_root)
-    parser.add_argument("--skills-pattern", default=DEFAULT_LAYOUT.skills_pattern)
-    parser.add_argument("--agents-root", type=Path, default=DEFAULT_LAYOUT.agents_root)
-    parser.add_argument("--agents-pattern", default=DEFAULT_LAYOUT.agents_pattern)
-    parser.add_argument(
-        "--doctrines-root", type=Path, default=DEFAULT_LAYOUT.doctrines_root
-    )
-    parser.add_argument(
-        "--doctrines-pattern", default=DEFAULT_LAYOUT.doctrines_pattern
-    )
+    """Declare the six layout flags on any CLI that counts badge kinds.
+
+    Every default is `None` so an UNSET flag stays distinguishable from one set
+    to the default value. While the defaults were the real layout values, a
+    flag always arrived populated and no lower-precedence source could ever
+    win, which would have made the config channel inert (Phase 210, GH #299).
+    """
+    for name in ("skills", "agents", "doctrines"):
+        parser.add_argument(f"--{name}-root", type=Path, default=None)
+        parser.add_argument(f"--{name}-pattern", default=None)
+
+
+def _declared(section: dict, key: str, cast=None):
+    """Return a usable config value for `key`, or None to fall through."""
+    value = section.get(key)
+    if not isinstance(value, str) or not value.strip():
+        return None
+    return cast(value) if cast else value
 
 
 def layout_from_args(args: argparse.Namespace) -> BadgeLayout:
-    """Build one layout value from the flags declared by `add_layout_args`."""
-    return BadgeLayout(
-        skills_root=args.skills_root,
-        skills_pattern=args.skills_pattern,
-        agents_root=args.agents_root,
-        agents_pattern=args.agents_pattern,
-        doctrines_root=args.doctrines_root,
-        doctrines_pattern=args.doctrines_pattern,
-    )
+    """Resolve one layout as flag > `.qorlogic/config.json` > `qor/` default.
+
+    Resolution is per key: a config declaring only `skills_root` leaves the
+    other five at their defaults. Every malformed shape degrades to the default
+    rather than raising -- a broken operator config must not break a gate.
+
+    Declaring a root is not trusting it. Values resolved here are candidates;
+    repository containment, pattern traversal, and symlink rejection remain in
+    `badge_currency._resolve_count_root` / `_count_matching`.
+    """
+    section = load_section(getattr(args, "repo_root", None), "layout")
+    resolved = {}
+    for field in fields(BadgeLayout):
+        flag = getattr(args, field.name, None)
+        if flag is not None:
+            resolved[field.name] = flag
+            continue
+        cast = Path if field.name.endswith("_root") else None
+        declared = _declared(section, field.name, cast)
+        if declared is not None:
+            resolved[field.name] = declared
+    return replace(DEFAULT_LAYOUT, **resolved)
