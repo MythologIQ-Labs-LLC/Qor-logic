@@ -5,7 +5,6 @@ import ast
 import re
 from pathlib import Path
 
-import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCTRINE = REPO_ROOT / "qor" / "references" / "doctrine-shadow-genome-countermeasures.md"

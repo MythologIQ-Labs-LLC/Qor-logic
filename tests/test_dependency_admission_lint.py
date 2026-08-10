@@ -98,7 +98,7 @@ def test_lint_clears_violation_when_override_entry_present(monkeypatch, fixed_no
     base_lockfile = ""
     current_lockfile = "fresh-pkg==9.9.9 \\\n    --hash=sha256:" + "c" * 64 + "\n"
     upload_time = (fixed_now - timedelta(days=5)).isoformat().replace("+00:00", "Z")
-    ledger = textwrap.dedent(f"""\
+    ledger = textwrap.dedent("""\
         ### Entry #999: IMPLEMENTATION
 
         **Timestamp**: 2026-05-24T00:00:00Z

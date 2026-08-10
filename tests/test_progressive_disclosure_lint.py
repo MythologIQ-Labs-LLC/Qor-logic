@@ -5,7 +5,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 
 from qor.scripts import progressive_disclosure_lint as pdl
 from qor.scripts import corpus_consolidation_report as ccr

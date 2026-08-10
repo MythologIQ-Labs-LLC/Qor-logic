@@ -10,7 +10,6 @@ import tomllib
 from pathlib import Path
 
 import jsonschema
-import pytest
 
 from qor.scripts.snapshot_export import build_snapshot
 

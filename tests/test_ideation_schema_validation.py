@@ -64,7 +64,7 @@ def _minimal_valid() -> dict:
 
 
 def test_validates_minimal_ideation_artifact():
-    schema = _load_schema()
+    _load_schema()
     payload = _minimal_valid()
     _validator().validate(payload)  # no exception
 
@@ -74,7 +74,7 @@ def test_validates_minimal_ideation_artifact():
     "boundaries", "governance_profile", "readiness",
 ])
 def test_rejects_artifact_missing_required_field(missing_field):
-    schema = _load_schema()
+    _load_schema()
     payload = _minimal_valid()
     del payload[missing_field]
     with pytest.raises(jsonschema.ValidationError):
@@ -82,7 +82,7 @@ def test_rejects_artifact_missing_required_field(missing_field):
 
 
 def test_readiness_status_enum_rejects_unknown_value():
-    schema = _load_schema()
+    _load_schema()
     payload = _minimal_valid()
     payload["readiness"]["status"] = "definitely_ready"
     with pytest.raises(jsonschema.ValidationError):
@@ -90,7 +90,7 @@ def test_readiness_status_enum_rejects_unknown_value():
 
 
 def test_governance_profile_risk_grade_enum_rejects_L5():
-    schema = _load_schema()
+    _load_schema()
     payload = _minimal_valid()
     payload["governance_profile"]["risk_grade"] = "L5"
     with pytest.raises(jsonschema.ValidationError):
@@ -98,7 +98,7 @@ def test_governance_profile_risk_grade_enum_rejects_L5():
 
 
 def test_failure_remediation_return_phase_enum_rejects_unknown():
-    schema = _load_schema()
+    _load_schema()
     payload = _minimal_valid()
     payload["failure_remediation"] = [{
         "failure_class": "config-drift",
@@ -111,7 +111,7 @@ def test_failure_remediation_return_phase_enum_rejects_unknown():
 
 
 def test_assumptions_optional():
-    schema = _load_schema()
+    _load_schema()
     payload = _minimal_valid()
     # No "assumptions" key — must still validate
     assert "assumptions" not in payload

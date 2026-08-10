@@ -8,7 +8,6 @@ will promote to ABORT once Cedar-based admission enforcement lands.
 from __future__ import annotations
 
 import re
-import sys
 import textwrap
 from pathlib import Path
 

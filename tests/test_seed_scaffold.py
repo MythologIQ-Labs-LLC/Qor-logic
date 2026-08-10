@@ -1,10 +1,7 @@
 """Phase 25 Phase 1: qor.seed scaffold primitive."""
 from __future__ import annotations
 
-import json
-from pathlib import Path
 
-import pytest
 
 
 EXPECTED_FILES = [

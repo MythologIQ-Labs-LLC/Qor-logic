@@ -244,7 +244,7 @@ def test_changelog_post_cutoff_versions_have_attribution_line():
             failures.append(f"v{'.'.join(map(str, version))}")
     assert not failures, (
         "CHANGELOG versions ≥ 0.36.0 must include '_Built via [Qor-logic SDLC](...)._'"
-        f" within 15 lines of the version header:\n  " + "\n  ".join(failures)
+        " within 15 lines of the version header:\n  " + "\n  ".join(failures)
     )
 
 

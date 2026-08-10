@@ -1,6 +1,5 @@
 """Phase 75 P3: shadow_event schema gains gate_skipped_prerequisite_absent."""
 import json
-import hashlib
 from pathlib import Path
 
 import pytest

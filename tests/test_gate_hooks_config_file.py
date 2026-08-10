@@ -1,7 +1,6 @@
 """Phase 57: .qor/hooks.yaml parse + dotted-path + subprocess-argv resolution."""
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest

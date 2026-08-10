@@ -2,10 +2,7 @@
 from __future__ import annotations
 
 import json
-import os
-from pathlib import Path
 
-import pytest
 
 from qor.scripts import gate_chain
 from qor.scripts import validate_gate_artifact as vga

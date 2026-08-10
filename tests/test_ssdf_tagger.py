@@ -5,9 +5,7 @@ returned values.
 """
 from __future__ import annotations
 
-from pathlib import Path
 
-import pytest
 
 
 def test_module_importable_with_canonical_api():

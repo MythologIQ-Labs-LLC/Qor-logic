@@ -66,7 +66,6 @@ def test_append_event_requires_attribution_or_log_path():
 
 
 def test_collector_warns_on_legacy_only(tmp_path, capsys):
-    import sys
     from qor.scripts import collect_shadow_genomes as collect
 
     repo = tmp_path / "repo1"
@@ -88,7 +87,7 @@ def test_collector_warns_on_legacy_only(tmp_path, capsys):
     event["id"] = shadow_process.compute_id(event)
     legacy.write_text(json.dumps(event) + "\n", encoding="utf-8")
 
-    events = collect.read_repo_shadow(repo)
+    collect.read_repo_shadow(repo)
     captured = capsys.readouterr()
     assert "legacy log present" in captured.err
 

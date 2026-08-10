@@ -7,7 +7,6 @@ referenced_by: list (no re-orphaning across phases).
 """
 from __future__ import annotations
 
-import re
 import sys
 from pathlib import Path
 

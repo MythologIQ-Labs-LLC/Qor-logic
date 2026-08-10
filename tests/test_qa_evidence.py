@@ -6,7 +6,6 @@ derived from an actual IndexSummary.
 """
 from __future__ import annotations
 
-import json
 
 import pytest
 

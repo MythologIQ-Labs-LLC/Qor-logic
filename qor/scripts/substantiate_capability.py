@@ -21,7 +21,6 @@ import re
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
 
 
 _TABLE_HEADER_RE = re.compile(r"^\|\s*Step\s*\|\s*Requires\s*\|\s*Notes\s*\|", re.MULTILINE)

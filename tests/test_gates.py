@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import json
-import re
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -376,5 +375,4 @@ def test_write_gate_artifact_returns_path(tmp_path, monkeypatch):
         "ci_commands": ["pytest"],
     }
     result = gate_chain.write_gate_artifact("plan", payload, session_id=sid)
-    from pathlib import Path
     assert isinstance(result, Path)

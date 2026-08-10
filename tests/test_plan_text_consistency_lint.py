@@ -11,11 +11,8 @@ Verifies:
 """
 from __future__ import annotations
 
-import subprocess
-import sys
 from pathlib import Path
 
-import pytest
 
 from qor.scripts.plan_text_consistency_lint import lint, main
 

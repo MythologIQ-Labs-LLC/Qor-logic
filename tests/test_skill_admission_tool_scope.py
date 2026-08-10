@@ -1,10 +1,9 @@
 """Phase 55: skill admission tool-scope enforcement tests."""
 from __future__ import annotations
 
-import textwrap
 from pathlib import Path
 
-from qor.reliability.skill_admission import check_admission, check_tool_scope
+from qor.reliability.skill_admission import check_tool_scope
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 

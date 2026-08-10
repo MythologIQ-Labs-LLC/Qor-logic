@@ -12,9 +12,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import pytest
 
-from tests._helpers import proximity as _proximity, strip_section as _strip_section
+from tests._helpers import proximity as _proximity
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 

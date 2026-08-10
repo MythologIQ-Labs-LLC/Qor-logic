@@ -9,7 +9,6 @@ SKILL.md frontmatter + body. Tests verify:
 """
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 

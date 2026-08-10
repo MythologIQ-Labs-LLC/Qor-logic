@@ -7,7 +7,7 @@ from pathlib import Path
 
 import jsonschema
 
-from qor.capabilities.risk import RiskRoutingReport, route_risk
+from qor.capabilities.risk import route_risk
 
 
 SCHEMA = (

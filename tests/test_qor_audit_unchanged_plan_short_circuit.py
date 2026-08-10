@@ -111,7 +111,6 @@ def test_skill_prose_documents_short_circuit_behavior():
     end = skill.find("### Step 0.5", start + 10)
     if end < 0:
         end = skill.find("### Step 0.6", start + 10)
-    block = skill[start:end] if end > 0 else skill[start:]
     # The block (or its successor sub-step) must reference short-circuit or unchanged plan.
     # Allow the wiring to land at Step 0, 0.5, or a new Step 0.7.
     full_step0_region = skill[start:skill.find("### Step 1:", start)]

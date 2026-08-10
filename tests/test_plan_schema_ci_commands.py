@@ -1,11 +1,9 @@
 """Tests for plan.schema.json ci_commands slot (Phase 38 B22)."""
 from __future__ import annotations
 
-import json
 import pathlib
 import re
 
-import pytest
 
 from qor.scripts import validate_gate_artifact as vga
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qor-logic"
-version = "0.138.0"
+version = "0.138.1"
 description = "Qor-logic S.H.I.E.L.D. governance skills for Claude Code, Kilo Code, and future AI coding hosts"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -25,8 +25,35 @@ classifiers = [
 dependencies = ["jsonschema>=4", "PyYAML>=6"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "ruff>=0.6"]
 sast = ["bandit>=1.7"]
+
+[tool.ruff]
+# Phase 213 (GH #304). Narrow by decision, not by omission.
+#
+# Pyflakes only. The full default set produced 254 findings and ZERO real
+# defects: the sole class that can indicate a live NameError (F821) fired twice,
+# both in deliberately seeded detector fixtures. The 24 `E` style findings
+# carried no defect either, so they are excluded rather than baselined.
+#
+# The Section 4 Razor stays outside ruff -- it caps FILE and FUNCTION length,
+# which no ruff rule expresses. It remains the Judge's pass plus the existing
+# length-lock tests.
+#
+# This adoption landed at zero. There is no baseline file, deliberately: an
+# uncleaned baseline becomes a permanently-red control, the failure mode this
+# project repaired twice in publication_boundary_lint and sg_closure_lint.
+target-version = "py311"
+# Deliberately defective code, used as detector fixtures.
+exclude = ["tests/fixtures/ab_corpus"]
+# `# noqa: secret-scan` belongs to this project's own secret_scanner
+# (secret_scanner.py matches that literal token). Declaring it external stops
+# ruff parsing it as a malformed directive of its own. These suppress real
+# findings and must never be "tidied".
+
+[tool.ruff.lint]
+select = ["F"]
+external = ["secret-scan"]
 
 [project.scripts]
 qor-logic = "qor.cli:main"

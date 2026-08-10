@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 
 VARIANT_PATHS = {
     "claude": Path("qor/dist/variants/claude/skills/qor-substantiate/SKILL.md"),

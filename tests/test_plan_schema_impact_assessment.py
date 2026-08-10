@@ -1,7 +1,6 @@
 """Phase 54: plan schema accepts impact_assessment + high_risk_target."""
 from __future__ import annotations
 
-from copy import deepcopy
 
 import pytest
 

@@ -1,7 +1,6 @@
 """Phase 54: AI provenance helper tests."""
 from __future__ import annotations
 
-import os
 
 import pytest
 

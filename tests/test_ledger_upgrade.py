@@ -11,7 +11,6 @@ import hashlib
 import re
 from pathlib import Path
 
-import pytest
 
 from qor.scripts import ledger_upgrade as lu
 

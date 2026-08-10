@@ -13,7 +13,6 @@ honored here on the next check within the same session.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 
 from qor import workdir as _workdir
 from qor.scripts import session, stall_walk

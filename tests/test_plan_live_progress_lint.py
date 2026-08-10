@@ -7,7 +7,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 from qor.scripts import plan_live_progress_lint as lpl
 

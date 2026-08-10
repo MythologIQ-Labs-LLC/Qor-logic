@@ -3,8 +3,6 @@ from __future__ import annotations
 
 import json
 import subprocess
-import sys
-from pathlib import Path
 
 import pytest
 
@@ -258,7 +256,6 @@ def test_flip_per_repo_groups_invocations(tmp_path, monkeypatch):
     # Two subprocess calls, one per source_repo
     assert len(calls) == 2
     # Each call targets the correct cwd
-    cwd_by_ids = {c["cwd"]: [arg for i, arg in enumerate(c["cmd"]) if c["cmd"][i-1] == "--events"] for c in calls}
     assert summary == {"a": 1, "b": 1}  # default fallback, mocked output
 
 

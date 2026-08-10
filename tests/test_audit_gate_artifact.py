@@ -8,7 +8,6 @@ gate_chain.write_gate_artifact with fields matching qor/gates/schema/audit.schem
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 
 import jsonschema

@@ -14,9 +14,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import tempfile
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 # GAP-SEC-07: single canonical path-safety validator lives in session.py;

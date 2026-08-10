@@ -13,12 +13,9 @@ from __future__ import annotations
 
 from qor.compiler.governance.gate import GovernanceGate, GovernanceViolation
 from qor.compiler.intent_parser import parse_intent
-from qor.compiler.protocol import ProviderCompiler
 from qor.compiler.providers.anthropic import AnthropicCompiler
 from qor.compiler.types import (
     CompiledPrompt,
-    ContextContract,
-    EvaluationContract,
     GovernanceContract,
     OutputContract,
     PromptIR,

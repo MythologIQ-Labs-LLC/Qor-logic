@@ -3,9 +3,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 
-from qor.scripts.meta_ledger_walker import walk, last_n_audit_entries, LedgerRecord
+from qor.scripts.meta_ledger_walker import walk, last_n_audit_entries
 
 
 def _ledger(tmp_path: Path, body: str) -> Path:

@@ -1,9 +1,7 @@
 """Phase 76 P1: entry_id helper tests (GH #51)."""
 from __future__ import annotations
 
-import os
 
-import pytest
 
 from qor.scripts import entry_id
 

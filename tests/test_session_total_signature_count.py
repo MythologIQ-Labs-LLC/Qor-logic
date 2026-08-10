@@ -11,8 +11,6 @@ counts across the entire session history) and `check_session_total`
 """
 from __future__ import annotations
 
-import json
-from pathlib import Path
 
 import pytest
 

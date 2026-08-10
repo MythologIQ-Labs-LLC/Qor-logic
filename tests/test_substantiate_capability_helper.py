@@ -1,7 +1,6 @@
 """Phase 75 P1: substantiate_capability helper tests."""
 from pathlib import Path
 
-import pytest
 
 from qor.scripts import substantiate_capability as sc
 

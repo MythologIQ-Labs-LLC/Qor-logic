@@ -10,7 +10,7 @@ from __future__ import annotations
 import textwrap
 from pathlib import Path
 
-from qor.scripts.dod_record import DodRecord, parse_plan
+from qor.scripts.dod_record import parse_plan
 
 
 def _write_plan(tmp_path: Path, body: str) -> Path:

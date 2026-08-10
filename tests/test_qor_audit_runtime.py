@@ -2,9 +2,7 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
-import pytest
 
 from qor.scripts import qor_audit_runtime as runtime
 from qor.scripts import qor_platform as qplat
@@ -143,7 +141,7 @@ def test_emit_gate_override_writes_sev1_event(tmp_path, monkeypatch):
     monkeypatch.setattr(shadow_process, "LOG_PATH", log)
     monkeypatch.setattr(shadow_process, "UPSTREAM_LOG_PATH", log)
 
-    eid = runtime.emit_gate_override("missing plan artifact", "s-id")
+    runtime.emit_gate_override("missing plan artifact", "s-id")
     events = shadow_process.read_events(log)
     assert len(events) == 1
     assert events[0]["event_type"] == "gate_override"

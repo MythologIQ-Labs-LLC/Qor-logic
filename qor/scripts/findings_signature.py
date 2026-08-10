@@ -21,7 +21,6 @@ import hashlib
 import json
 from pathlib import Path
 
-from qor.scripts import validate_gate_artifact as _vga
 
 
 LEGACY_SENTINEL = "LEGACY"

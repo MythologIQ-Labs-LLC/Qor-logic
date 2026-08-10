@@ -1,7 +1,6 @@
 """Phase 57: gate_hooks.dispatch_gate_written behavior tests."""
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from types import SimpleNamespace
 

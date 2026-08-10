@@ -98,7 +98,7 @@ def test_explicit_boundary_overrides_auto_detection(tmp_path, capsys):
     ch2 = lh.chain_hash(c2, ch1)
     body = _entry(1, c1, p1, ch1) + _entry(2, c2, ch1, ch2)
     p = _write(tmp_path, body)
-    rc = lh.verify_post_anchor(p, boundary_entry=1)
+    lh.verify_post_anchor(p, boundary_entry=1)
     out = capsys.readouterr().out
     assert "boundary=#1" in out
 

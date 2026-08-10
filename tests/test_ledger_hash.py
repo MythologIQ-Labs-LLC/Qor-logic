@@ -5,10 +5,8 @@ Previously had zero direct test coverage.
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
-import pytest
 
 from qor.scripts import ledger_hash as lh
 
@@ -171,7 +169,7 @@ def test_verify_detects_tampered_chain_hash(tmp_path):
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
     content_b = _digest(b"b")
-    chain_b = lh.chain_hash(content_b, chain_a)
+    lh.chain_hash(content_b, chain_a)
 
     fake_ledger.write_text(f"""# Test ledger
 
@@ -729,7 +727,7 @@ def test_verify_real_ledger_no_silent_skips_for_modern_entries(capsys):
             silent_skips.append(num)
 
     assert not silent_skips, (
-        f"Modern entries with hash markup that did NOT verify (silent skip):\n  "
+        "Modern entries with hash markup that did NOT verify (silent skip):\n  "
         + "\n  ".join(f"#{n}" for n in silent_skips)
         + "\nAdd to legitimate_skip_whitelist with rationale, or fix the regex."
     )

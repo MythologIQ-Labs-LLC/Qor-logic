@@ -1,0 +1,50 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-10T1935-0ab93f",
+  "ts": "2026-08-10T20:10:35Z",
+  "plan_path": "docs/plan-qor-phase213-narrow-ruff-adoption.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "open_questions": [],
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "boundaries": {
+    "limitations": [
+      "Pyflakes F rules only; no style, import-sorting, complexity, bugbear, or formatter. The Section 4 Razor stays outside ruff, which cannot express a file-line cap."
+    ],
+    "non_goals": [
+      "No baseline file and no blanket noqa sweep -- it lands at zero or it does not land.",
+      "No reformatting.",
+      "No change to the project's own '# noqa: secret-scan' convention."
+    ],
+    "exclusions": [
+      "tests/fixtures/ab_corpus holds deliberately defective detector fixtures; excluded by path."
+    ]
+  },
+  "phases": [
+    "Declare the tool and its scope",
+    "Land at zero",
+    "Gate it"
+  ],
+  "ci_commands": [
+    "python -m ruff check qor/ tests/",
+    "python -m pytest tests/test_ruff_adoption.py -q",
+    "python -m pytest tests/ -q",
+    "qor-logic scripts publication_boundary_lint --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase213-narrow-ruff-adoption.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T20:10:35Z"
+  }
+}

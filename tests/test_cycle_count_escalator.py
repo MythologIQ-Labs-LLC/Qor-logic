@@ -3,9 +3,7 @@ from __future__ import annotations
 
 import json
 import unittest.mock as mock
-from pathlib import Path
 
-import pytest
 
 from qor.scripts import cycle_count_escalator as cce, audit_history
 

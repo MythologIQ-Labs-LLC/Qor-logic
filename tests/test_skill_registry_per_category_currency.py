@@ -136,7 +136,7 @@ def test_registry_lists_every_actual_skill_md_for_each_category():
             if skill_name not in listed_skills:
                 missing.append(f"{category}/{skill_name}")
     assert not missing, (
-        f"Registry must list every actual skill .md by name. Missing:\n  "
+        "Registry must list every actual skill .md by name. Missing:\n  "
         + "\n  ".join(missing)
     )
 

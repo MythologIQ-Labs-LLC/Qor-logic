@@ -6,7 +6,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
 
 from qor.scripts.spec_lint import check_delta
 from qor.scripts.validate_gate_artifact import _validate_data as validate_payload

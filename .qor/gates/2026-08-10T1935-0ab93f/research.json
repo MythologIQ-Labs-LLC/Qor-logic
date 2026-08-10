@@ -1,0 +1,63 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-10T1935-0ab93f",
+  "ts": "2026-08-10T20:08:11Z",
+  "questions": [
+    "What are the 254 ruff findings actually made of?",
+    "Does ruff catch any real defect in this codebase?",
+    "What is the cheapest adoption that lands at zero rather than a baseline?"
+  ],
+  "findings": [
+    {
+      "item": "rule mix",
+      "verdict": "cosmetic-dominated",
+      "evidence": "195 F401 unused-import (77%), 19 F841, 15 E402, 11 F541, 6 E741, 2 F821, rest trivial"
+    },
+    {
+      "item": "real defects found",
+      "verdict": "zero",
+      "evidence": "F821 is the only class that can indicate a live NameError; both hits are in tests/fixtures/ab_corpus/owasp-violation/, marked SEEDED TEST DEFECT -- NOT EXECUTABLE"
+    },
+    {
+      "item": "orthogonality",
+      "verdict": "genuine",
+      "evidence": "every existing lint here is governance-semantic (prose, citations, boundary, closure, doc integrity); none reads Python for correctness"
+    },
+    {
+      "item": "narrow scope cost",
+      "verdict": "207 auto-fixable, 19 judgment",
+      "evidence": "ruff check --select F --exclude tests/fixtures/ab_corpus lands at zero with no baseline"
+    },
+    {
+      "item": "baseline risk",
+      "verdict": "decisive against broad adoption",
+      "evidence": "an uncleaned baseline becomes a permanently-red control -- the failure mode repaired twice this session in publication_boundary_lint and sg_closure_lint"
+    },
+    {
+      "item": "noqa collision",
+      "verdict": "CORRECTION to an earlier claim",
+      "evidence": "14 '# noqa: secret-scan' directives are this project's OWN secret_scanner suppressions (secret_scanner.py:84 matches the literal token). They are not malformed and do suppress real findings; ruff warns only because it parses '# noqa:' as its own. Resolved by ruff's external= config, not by editing them"
+    },
+    {
+      "item": "line assignment",
+      "verdict": "public solo-first",
+      "evidence": "single-repo code quality; nothing org-scoped"
+    }
+  ],
+  "sources": [
+    "ruff check --statistics",
+    "tests/fixtures/ab_corpus/owasp-violation/",
+    "qor/scripts/secret_scanner.py:84",
+    "pyproject.toml:28",
+    "GH #304"
+  ],
+  "brief_path": "docs/research-brief-outstanding-concerns-2026-08-10.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T20:08:11Z"
+  }
+}

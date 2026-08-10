@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import sys
 
-import pytest
 
 from qor.compiler.providers.anthropic import AnthropicCompiler
 from qor.compiler.types import (

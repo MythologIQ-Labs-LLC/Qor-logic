@@ -1,7 +1,6 @@
 """Phase 57: hook errors must not break the authoritative write path."""
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 

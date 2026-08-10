@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 from qor.scripts.workspace_fragility_check import (
-    FragilityAssessment,
     assess_workspace_fragility,
 )
 

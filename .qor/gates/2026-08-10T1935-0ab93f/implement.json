@@ -1,0 +1,27 @@
+{
+  "phase": "implement",
+  "session_id": "2026-08-10T1935-0ab93f",
+  "ts": "2026-08-10T20:39:31Z",
+  "files_touched": [
+    "pyproject.toml",
+    ".github/workflows/ci.yml",
+    "tests/test_ruff_adoption.py",
+    "docs/plan-qor-phase89-ci-commands-reconciliation.md",
+    "docs/plan-qor-phase213-narrow-ruff-adoption.md",
+    "docs/META_LEDGER.md",
+    "qor/ and tests/ (207 auto-fixed imports + 18 unused-variable resolutions)"
+  ],
+  "test_summary": {
+    "passed": 2780,
+    "failed": 0,
+    "skipped": 6
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T20:39:31Z"
+  }
+}

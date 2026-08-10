@@ -1,7 +1,6 @@
 """Phase 106: tests for the session ID convention lint (WARN-only at substantiate)."""
 from __future__ import annotations
 
-import pytest
 
 from qor.scripts import session_id_lint
 

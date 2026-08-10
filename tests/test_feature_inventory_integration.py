@@ -1,9 +1,7 @@
 """Phase 46 integration: feature-inventory verification scenarios."""
 from __future__ import annotations
 
-from pathlib import Path
 
-import pytest
 
 from qor.scripts.feature_index_verify import tally, write_seal_snapshot, parse_index_rows
 

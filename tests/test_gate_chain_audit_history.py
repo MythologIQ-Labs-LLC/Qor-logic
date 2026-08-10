@@ -1,9 +1,7 @@
 """Tests for gate_chain integration with audit_history (Phase 37 Phase 1)."""
 from __future__ import annotations
 
-import json
 import unittest.mock as mock
-from pathlib import Path
 
 import pytest
 

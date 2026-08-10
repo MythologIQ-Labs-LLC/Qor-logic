@@ -4,7 +4,6 @@ Each policy returns (violations, warnings) tuples. The gate aggregates.
 """
 from __future__ import annotations
 
-import re
 
 from qor.compiler.types import PromptIR
 

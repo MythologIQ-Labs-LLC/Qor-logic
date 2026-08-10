@@ -2,13 +2,10 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
-import pytest
 
 from qor.scripts.host_capability import (
     CheckResult,
-    PrereqSummary,
     FreshnessResult,
     check_module,
     check_file,
