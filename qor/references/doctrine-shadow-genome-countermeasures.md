@@ -12,6 +12,8 @@ Writing `src/migrations/versions/` because "most repos use that" without checkin
 
 **Verification hint**: `ls <proposed_root>` or `grep <symbol> --include=*.toml` before the plan cites a path.
 
+**Enforcer**: `qor/scripts/plan_grep_lint.py` -- flags a sealed-infrastructure citation inside a Locked-Decision block that carries no paired grep-evidence, so a path cited without proof of existence fails the pre-audit ladder.
+
 ## SG-017 / SG-020: inventing security controls without surveying existing mechanism
 
 Claiming "role-based privilege" or `SECURITY DEFINER` enforces tenant isolation without reading the schema or existing policies.
@@ -19,6 +21,8 @@ Claiming "role-based privilege" or `SECURITY DEFINER` enforces tenant isolation 
 **Countermeasure**: Grep the existing schema/code for the concrete security mechanism before proposing one. If the mechanism is absent, state that clearly — do not invent one that sounds plausible.
 
 **Verification hint**: `grep -rn "SECURITY DEFINER\|REVOKE\|RLS_POLICIES" src/` before any security claim.
+
+**cannot-automate:** deciding which existing mechanism is the relevant one for a proposed control is a design judgment; a lint cannot know whether a surveyed mechanism actually covers the surface being secured. Enforced by the audit Security pass, which is a human/judge reading.
 
 ## SG-019: CLI flag portability assumption
 
@@ -28,6 +32,8 @@ Assuming `-k` works on both `ruff` and `mypy` because pytest accepts it. Tool CL
 
 **Verification hint**: `<tool> --help | grep <flag>` for every flag cited.
 
+**cannot-automate:** a flag's validity is knowable only by invoking the specific tool version on the operator's host. Executing arbitrary third-party tools to validate cited flags is a larger hazard than the drift it would catch.
+
 ## SG-021: multi-layer edit compression
 
 Writing "add to `RLS_POLICIES`" in a plan, which compresses "edit these 4 files" into a single verb that hides which files actually receive the edit.
@@ -36,6 +42,8 @@ Writing "add to `RLS_POLICIES`" in a plan, which compresses "edit these 4 files"
 
 **Verification hint**: `grep -rn "<target_symbol>" --include=*.py` produces the file list; the plan disposes of each.
 
+**Enforcer**: `qor/scripts/plan_signature_widening_caller_lint.py` -- requires every caller file of a widened signature to appear in the plan's Affected Files, so a compressed 'add to X' that hides sibling edits fails.
+
 ## SG-032: batch-split-write coverage gap
 
 Lookup-table-based write-back (e.g., `src_map.get(e["id"])`) drops records created mid-cycle. Newly minted records have no prior identity in the lookup and silently fall through the filter.
@@ -43,6 +51,8 @@ Lookup-table-based write-back (e.g., `src_map.get(e["id"])`) drops records creat
 **Countermeasure**: Either (a) classify records at creation time with explicit file/bucket assignment; or (b) add a default bucket in the split for unmatched records. Never rely on a post-hoc lookup to assign records that didn't exist when the lookup was built.
 
 **Verification hint**: review-time question — "can any record in this batch have no prior identity in the lookup?" If yes, the plan must specify the fallback. Source incident: Phase 14 v2 (Entry #32 V-1).
+
+**cannot-automate:** whether a record needs classification at creation or a default bucket is a schema-design judgment made before any code exists to lint. The doctrine states the choice; nothing mechanical can make it.
 
 ## SG-033: positional-to-keyword breakage
 
@@ -60,6 +70,8 @@ AST-based code analysis walkers that check only `ast.FunctionDef` miss `ast.Asyn
 
 **Verification hint**: ast-based tests should include a Rule-4 negative-path test with each family (e.g., `test_star_unpack_call_not_flagged`, `test_async_keyword_only_functions_detected`). Source incident: Phase 15 v1 (Entry #36 V-1 + V-4).
 
+**Enforcer**: `tests/test_shadow_genome_doctrine.py::test_async_keyword_only_functions_detected` and `::test_star_unpack_call_not_flagged` -- exercise the omitted node families (`AsyncFunctionDef`, `Starred`) directly, so a walker that handles only the sync or unstarred form fails.
+
 ## SG-035: doctrine-content test unanchored
 
 Tests asserting `"keyword-only" in body` pass when the doctrine section they claim to verify is missing entirely but the keyword co-occurs elsewhere. Violates W-1 literal-keyword discipline.
@@ -67,6 +79,8 @@ Tests asserting `"keyword-only" in body` pass when the doctrine section they cla
 **Countermeasure**: Anchor keyword checks to the section header (regex proximity or markdown header parsing). A doctrine test that passes with its subject section removed does not enforce what it claims.
 
 **Verification hint**: use `re.search(r"<SG-ID>.{0,500}<keyword>", body, re.DOTALL)` or parse headers. Include a negative-path test (e.g., `test_proximity_anchor_fails_when_section_missing`) that strips the section and proves the test fails. Source incident: Phase 15 v1 (Entry #36 V-2).
+
+**Enforcer**: `qor/scripts/prose_test_lint.py` (flags presence-only assertions) and `tests/test_shadow_genome_doctrine.py::test_proximity_anchor_fails_when_section_missing` -- the latter strips the section and proves the anchored check fails, which an unanchored keyword check would not.
 
 ## SG-036: doctrine adoption grace period
 
@@ -76,6 +90,8 @@ A doctrine codified in phase N does not become automatically load-bearing in pha
 
 **Verification hint**: plan body contains phrases like "grounded via `wc -l`" or "verified 2026-MM-DD" for every file-size/phrase-location claim. Source incident: Phase 16 v1 (Entry #40 V-1).
 
+**cannot-automate:** a grace-period claim is an assertion about when an author considered doctrine binding. No artifact records intent, so no check can contradict it.
+
 ## SG-037: knowledge-surface drift
 
 Doctrine tests anchored to a single file produce false negatives when refactoring moves knowledge across files. The test asserts `"phase/" in SKILL_A.read_text()`; refactor extracts the content to a companion references file; test fails even though the knowledge surface was preserved.
@@ -84,6 +100,8 @@ Doctrine tests anchored to a single file produce false negatives when refactorin
 
 **Verification hint**: test reads `skill_body + extensions_body` before asserting. When a skill moves content to a reference file, update the associated doctrine tests in the same commit. Source incident: Phase 16 Track C refactor (Entry #42 implementation note).
 
+**Enforcer**: `tests/test_shadow_genome_doctrine.py::test_step_extensions_content_moved_not_copied` -- asserts extracted anchors appear in the companion reference AND are absent from the skill, so a knowledge surface that drifts by duplication fails.
+
 ## SG-038: prose-code mismatch in plans
 
 A plan document encodes the same spec in two places: prose descriptions and code blocks. These drift independently when the author edits mid-draft. Prose says "test covers 11 IDs"; code block lists 9; implementer following the code produces partial coverage while prose claims full.
@@ -91,6 +109,8 @@ A plan document encodes the same spec in two places: prose descriptions and code
 **Countermeasure**: When a plan updates a list, enumeration, or count, grep the plan for every occurrence of that element and update all copies in lockstep. Prose, code blocks, and success criteria must cite the same values.
 
 **Verification hint**: Judge cross-checks prose claims against code blocks during audit; any mismatch is VETO-grade. Optional future enforcement: lint plans for prose+code consistency on named enumerations. Source incident: Phase 17a v1 (Entry #44 V-1).
+
+**Enforcer**: `qor/scripts/plan_text_consistency_lint.py` -- groups command/path assertions and fails on divergent sites, so a plan updating a list in one place and not another fails before audit.
 
 ## SG-InfrastructureMismatch: plan claims contradict current repository infrastructure
 

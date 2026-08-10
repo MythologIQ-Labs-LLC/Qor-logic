@@ -1,0 +1,72 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-10T1836-311272",
+  "ts": "2026-08-10T18:55:35Z",
+  "questions": [
+    "Which carried concerns are real defects vs accepted debt?",
+    "Which line owns each -- public solo-first or enterprise?",
+    "Umbrella + follow-ons, or individual issues?"
+  ],
+  "findings": [
+    {
+      "item": "merge_velocity flake",
+      "verdict": "REAL - track with watch condition",
+      "evidence": "three occurrences: 829d17c (phase 161), 58fe2fa (phase 194/PR284), phase 206 merge; Phase 209 removed ambient-config mechanism, never reproduced"
+    },
+    {
+      "item": "merged-branch backlog",
+      "verdict": "REAL - track",
+      "evidence": "git ls-remote --heads origin = 129; git branch -r --merged origin/main = 111 merged, 18 unmerged; reported figure of 6 counted only this session"
+    },
+    {
+      "item": "ruff enforcement",
+      "verdict": "REAL - track as adopt-or-decline DECISION",
+      "evidence": "absent from pyproject.toml:28 dev extras, pre-commit, and every workflow; ruff check qor/ tests/ = 254 errors, 210 auto-fixable"
+    },
+    {
+      "item": "sg_closure_lint uncited enforcers",
+      "verdict": "REAL - track",
+      "evidence": "10 of 40: SG-016/017/019/021/032/034/035/036/037/038, all legacy numeric-ID generation; cannot-automate escape at sg_closure_lint.py:27; WARN-only"
+    },
+    {
+      "item": "governance-skill headroom",
+      "verdict": "NOT A DEFECT - do not file",
+      "evidence": "GH #266 closed Phase 178 with a test-enforced 39936-byte lock; measured 39416 and 39576 LF bytes, both under; Phase 207 breach failed the suite and was trimmed = control working"
+    },
+    {
+      "item": "operator install drift",
+      "verdict": "NOT A REPOSITORY CONCERN - do not file",
+      "evidence": "install_drift_check reports one missing local install under .claude/skills/, gitignored by design since Phase 208; fixed by qor-logic install"
+    },
+    {
+      "item": "recording shape",
+      "verdict": "four individual issues, no umbrella",
+      "evidence": "GH #247 umbrella descended from one cause (research entry #378); these four share only the session that surfaced them"
+    },
+    {
+      "item": "line assignment",
+      "verdict": "all four public solo-developer-first",
+      "evidence": "none is org-scoped, multi-repo, or enterprise-shaped per the estate routing rule"
+    }
+  ],
+  "sources": [
+    "qor/scripts/sg_closure_lint.py:27",
+    "pyproject.toml:28",
+    "tests/test_merge_velocity_check.py:19",
+    "829d17c",
+    "58fe2fa",
+    "GH #266",
+    "GH #247",
+    "GH #249",
+    "docs/SHADOW_GENOME.md"
+  ],
+  "brief_path": "docs/research-brief-outstanding-concerns-2026-08-10.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-10T18:55:35Z"
+  }
+}
