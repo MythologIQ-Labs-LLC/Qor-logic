@@ -10,6 +10,19 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.140.0] - 2026-08-11
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 217 (feature; installed skill-corpus drift)**: rescopes #314. 27 of 30 skills differed between this repository and the operator's installed copies. The tool that detects exactly this has existed since Phase 32, works correctly, and did not fire -- it was wired at `--scope repo` while the install was global, wrapped in `|| echo`, and run only at plan time.
+
+  The defect was noise, not silence. Pointing at a directory that does not exist produced **30 findings per run**, one `missing install` per source skill, all expected and none meaningful, which hid the 27 real mismatches behind them. A control whose default output is guaranteed-irrelevant trains the operator past it, so noise and silence fail identically.
+
+  `install_drift_check` gains `installed_scopes()` and `scope="auto"`; an absent scope now reports **once** rather than 30 times. New `skill_corpus.digest()` hashes the installed `SKILL.md` set so `/qor-substantiate` Step 4.6.13 can record which ceremony produced each seal -- across 543 prior entries, nothing answered "which skills ran this?".
+
+  Disclosure, not enforcement: the skill running the check is part of the corpus under test, so the drift most worth catching is the drift that removes the catcher. Enforcement is tracked at #320 rather than deferred to an unfiled V2.
+
 ## [0.139.0] - 2026-08-11
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

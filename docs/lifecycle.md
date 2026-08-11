@@ -154,3 +154,26 @@ so a valid checkpoint never outranks a live-writer conflict or an authority
 request. Revision comparison is string equality, never git ancestry --
 `intent_lock` keeps its Phase 43 ancestry tolerance and the two are not folded
 together. Contract: `qor/references/doctrine-execution-continuity.md`.
+
+## Installed skill-corpus drift (Phase 217; GH #314)
+
+`qor-logic install` writes a copy of each `SKILL.md` into the host's skills
+directory; that copy, not the repo source, is what actually executes.
+
+| Module | Responsibility |
+|---|---|
+| `qor/scripts/install_drift_check.py` | `installed_scopes()` discovery; `check(scope="auto")` compares source against every scope that has an install |
+| `qor/scripts/skill_corpus.py` | `digest(host, scope)` over the sorted `(skill name, sha256)` pairs of the installed set |
+
+An absent scope reports once as not-installed rather than once per source skill.
+Reporting per-skill produced 30 guaranteed-irrelevant findings on every run,
+which collapsed under `|| echo` into one warning and hid 27 real mismatches.
+
+`/qor-substantiate` Step 4.6.13 records the digest, scope, and drift count in
+the seal entry. Disclosure, not ABORT: the skill running the check is part of
+the corpus under test, so the drift most worth catching is the drift that
+removes the catcher. Enforcement is tracked at GH #320.
+
+Note that `qor-logic install` ships from `qor/dist/variants/` while the drift
+check compares against `qor/skills/` source, so a stale `dist` makes the two
+disagree. Run `dist_compile` before `install`.

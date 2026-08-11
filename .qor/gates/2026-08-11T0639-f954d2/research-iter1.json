@@ -1,0 +1,58 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-11T0639-f954d2",
+  "ts": "2026-08-11T06:47:18Z",
+  "questions": [
+    "Why did install_drift_check not fire?",
+    "How far apart are repo and installed?",
+    "Does local gate evidence describe the repo?",
+    "Do seals record their own ceremony?"
+  ],
+  "findings": [
+    {
+      "id": "tool-correct",
+      "status": "MATCH",
+      "detail": "install_drift_check finds 27/30 at scope=global, exit 1",
+      "source": "qor/scripts/install_drift_check.py"
+    },
+    {
+      "id": "wiring-inert",
+      "status": "DRIFT",
+      "detail": "one call at qor-plan:125; --scope repo (absent dir), || echo, plan-phase only",
+      "source": "qor/skills/sdlc/qor-plan/SKILL.md:125"
+    },
+    {
+      "id": "installed-over-lock",
+      "status": "DRIFT",
+      "detail": "installed qor-substantiate 40512 B vs 39936 lock and 40000 EXCEEDED; 204 lines differ",
+      "source": "<host-skills-dir>/qor-substantiate/SKILL.md"
+    },
+    {
+      "id": "local-evidence-invalid",
+      "status": "DRIFT",
+      "detail": "GH #314 was filed against the repo on installed-only text",
+      "source": "docs/META_LEDGER.md #536/#540"
+    },
+    {
+      "id": "no-ceremony-provenance",
+      "status": "DRIFT",
+      "detail": "no skill-corpus digest in substantiate schema or seal_artifacts",
+      "source": "qor/gates/schema/substantiate.schema.json"
+    }
+  ],
+  "sources": [
+    "qor/scripts/install_drift_check.py",
+    "qor/skills/sdlc/qor-plan/SKILL.md:125",
+    "tests/test_substantiate_staging_gates.py",
+    "qor/gates/schema/substantiate.schema.json"
+  ],
+  "brief_path": "docs/research-brief-installed-skill-drift-2026-08-11.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.139.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-11T06:47:18Z"
+  }
+}
