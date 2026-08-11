@@ -1,0 +1,32 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-08-11T1904-581fb2",
+  "ts": "2026-08-11T19:50:02Z",
+  "phase_number": 219,
+  "change_class": "feature",
+  "plan_path": "docs/plan-qor-phase219-unseen-surface-gates.md",
+  "ledger_entry": 553,
+  "version": "0.142.0",
+  "verdict": "PASS",
+  "merkle_seal": "96883a29460304e5ab41562dbc809ab11a13ac1735b74320c0d2c1b1bafefa6c",
+  "skill_corpus": {
+    "digest": "427fab4737524588bbfbbbcfa45a8cc131617186d15deb523d206b9b3a527954",
+    "scope": "global",
+    "drift_count": 0
+  },
+  "boundary_scope": "structural+identity",
+  "gates_skipped": [
+    {
+      "gate": "data_api_acl_lint",
+      "reason": "no SQL migrations"
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.142.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-08-11T19:50:09Z"
+  }
+}

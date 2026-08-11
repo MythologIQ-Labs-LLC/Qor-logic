@@ -10,6 +10,23 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.142.0] - 2026-08-11
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 219 (feature; unseen-surface gates)**: closes #309, #311, #312.
+
+  **#309** -- the boundary lint scanned `git ls-files`, which reads the *index*. Staged files were therefore always covered; **untracked** files were not, and untracked is the state every artifact is in when a phase produces it. The issue proposed adding a `--staged` mode, which would have narrowed the surface to a subset of existing coverage and caught none of the four documented misses. Untracked-not-ignored files are now scanned (`--exclude-standard`, so ignored files and the private overlay stay out).
+
+  The deeper gap was ordering: `/qor-audit` ran the lint WARN-only over a tree predating implementation, CI ran it fail-closed but structural-only, and the seal ceremony did not run it at all. No fail-closed, identity-aware run ever saw a phase's new files before they were committed. New `/qor-substantiate` Step 4.6.14 runs it fail-closed **after** staging.
+
+  The lint now reports its detector scope (`structural` or `structural+identity`) and the seal records it. CI cannot load the identity overlay -- it is gitignored by design, since a tracked denylist of private identifiers in a public repository publishes the strings it suppresses -- so an unqualified "0 findings" means less there than locally. That asymmetry is permanent; making it legible is the remedy.
+
+  **#311** -- `seal_artifacts --write` refused to run when `SYSTEM_STATE.md` lacked the header markers, while the sibling `--check` printed *re-run `--write`* as the remediation. A repository adopting the toolkit could not bootstrap out of the state. `--write` now seeds whichever marker is absent, inserted positionally under the title rather than appended: both patterns are line-anchored, so a marker at end-of-file satisfies the regex while producing a document whose header sits below its narrative.
+
+  **#312** -- `SG-GrepAbsenceAsIntegrationAbsence-A` recorded: a module's absence from an importer's symbols read as an absent control, when the two connect through an intermediary by design. The inverse of `SG-GrepShapedRunclaim-A`, and cross-linked to it -- having only the false-positive half on record did not prevent the false-negative mistake.
+
 ## [0.141.0] - 2026-08-11
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

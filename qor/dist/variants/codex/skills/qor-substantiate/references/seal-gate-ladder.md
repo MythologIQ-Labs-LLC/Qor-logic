@@ -289,3 +289,42 @@ Scope is `auto` rather than a fixed value because the original control was wired
 at `--scope repo` while the operator installed globally, producing 30
 guaranteed-irrelevant findings per run and hiding 27 real ones.
 
+## Step 4.6.12 execution-continuity: separation of acceptances
+
+Implementation verification, merge authorization, release authorization, and
+deployment acceptance are four decisions, not one. A `verified` continuity
+outcome speaks only to the first, and collapsing them is how a passing test
+becomes a deployment warrant.
+
+The pinned contract version is recorded at seal, and what is recorded is that
+Qor-logic ASSERTS conformance rather than verifying it -- checking conformance
+would require holding the upstream schema the ownership boundary forbids
+copying. Stating that ceiling is the countermeasure to GH #314's shape, where a
+declaration read as a guarantee.
+
+Checkpoint and receipt artifacts are referenced by path and digest. Duplicating
+their bodies into ledger prose would create a second copy that drifts from the
+artifact it describes, and the ledger would then carry two answers to one
+question.
+
+## Step 4.6.14 publication boundary: why the seal runs it after staging
+
+`/qor-audit` Step 0.6 runs the boundary lint WARN-only, over a tree that
+predates implementation. CI runs it fail-closed but structural-only, because the
+identity-terms overlay is gitignored by design -- a tracked denylist of private
+identifiers in a public repository publishes the strings it exists to suppress.
+
+Before Phase 219 nothing in between: no fail-closed, identity-aware run ever saw
+implementation's new files before they were committed. Four leaks passed four
+green runs that way, each time with the operator running the lint and it
+reporting clean. It was clean, of the surface it could see.
+
+The seal step closes that window. It runs AFTER staging so the phase's artifacts
+are present, and it is fail-closed because a WARN here would reproduce the
+audit-time invocation it exists to supplement.
+
+The recorded `boundary_scope` distinguishes `structural` from
+`structural+identity`. An unqualified "0 findings" from CI and from a local run
+mean different things; a seal that does not say which one it got is not evidence
+about identity terms.
+

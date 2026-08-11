@@ -101,11 +101,23 @@ def test_render_system_state_header_updates_number_and_date():
     assert "**Prior phase**: Phase 6 (feature)." in out
 
 
-def test_render_system_state_header_raises_on_missing_marker():
-    import pytest
+def test_render_system_state_header_seeds_missing_markers():
+    """GH #311: this asserted `raises(ValueError)` and encoded the defect as a
+    contract.
 
-    with pytest.raises(ValueError):
-        render_system_state_header("no header markers here", phase=8, snapshot="2026-07-04")
+    `--check` tells the operator to re-run `--write` when markers are missing,
+    and `--write` was the raiser, so the documented remediation could not close
+    its own loop. A repository adopting the toolkit could not bootstrap out.
+    Seeding is the same substitution over an empty prior state.
+
+    Argument validation is unaffected -- see
+    `test_seal_artifacts_marker_seeding.py::test_malformed_snapshot_still_raises`.
+    """
+    out = render_system_state_header("no header markers here", phase=8, snapshot="2026-07-04")
+
+    assert "**Snapshot**: 2026-07-04" in out
+    assert "**Phase**: Phase 8" in out
+    assert "no header markers here" in out
 
 
 def test_update_files_writes_and_reports_changed_paths(tmp_path):

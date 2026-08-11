@@ -16678,6 +16678,105 @@ Also noted: governance_helpers.bump_version left a stray pyproject.toml.tmp when
 **Next**: #309, #314, #320 remain open.
 
 
+### Entry #551: RESEARCH BRIEF -- unseen-surface gates (GH #309, #311, #312)
+
+**Timestamp**: 2026-08-11T19:10:00Z
+**Phase**: RESEARCH (Phase 219)
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-11T1904-581fb2`
+
+**Content Hash**: `04631df95029991f1c82c5cb9b9e68fe117250a5abc91f796efb5f3b7f6e3279`
+**Previous Hash**: `f02dd7547c676b1815451961c376e4405eeef19574d57e22479abf7d63cd48b9`
+**Chain Hash (Merkle seal)**: `aace0d8deb03da2be8c4b4fcb6b495a6dc873a64d3380c5275f03cdcebb5fe53`
+
+**Decision**: All three are real. #309 is MIS-STATED in a way that changes the remedy, and the correction came from running the lint rather than reading its source.
+
+#309 SURFACE CORRECTED. The filed title says the lint misses files staged but not yet committed. Staged files are in fact SCANNED -- git ls-files reads the index, and a git-added file is in the index. UNTRACKED files are invisible. Counterfactual against a probe file carrying a structural violation: untracked returns 0 findings at rc 0; staged returns 1 finding at rc 1. The seal ceremony runs the lint BEFORE git add, which is precisely when new files are untracked.
+
+All four known misses fit the corrected reading, including this session own: research-iter1.json carried an operator path, reported clean while the gate directory was untracked, and surfaced only after git add -A.
+
+THE CONSEQUENCE IS THAT THE PROPOSED REMEDY DOES NOTHING. The issue suggests adding a --staged mode like the secret scanner. A --staged mode narrows the surface to the index, which is a subset of what is already scanned, so it would not have caught any of the four. The real fixes are to scan untracked-but-not-ignored files and to move the ceremony call to after staging -- the issue second suggestion, which is correct.
+
+#309 GAP 2 IS STRUCTURAL AND CANNOT BE CLOSED BY SCANNING. .gitignore:37 ignores .qor/private/, so the terms overlay is absent in CI by design: a tracked denylist of private identifiers in a public repository would publish the strings it exists to suppress. CI runs the four structural detectors only, and both cited identity leaks were invisible to it correctly. No scope widening fixes this. The honest response is to state that the local gate is AUTHORITATIVE for identity terms while CI is authoritative only for structural patterns, and to record in the seal which of the two ran. A gate whose coverage differs by environment should say so where the evidence lands.
+
+#311 CONFIRMED at seal_artifacts.py:67-72 and it is a closed loop: the remediation the sibling --check prints is re-run --write, and --write is the raiser. A repository whose SYSTEM_STATE.md never carried the markers cannot bootstrap out. Two details from the upstream fix are worth preserving: insert positionally under the title rather than appending, because both patterns are line-anchored under MULTILINE and a marker at end-of-file satisfies the regex while producing a document whose header block is not its header; and seed only the missing marker, since a file with one and not the other is half-migrated rather than broken. An existing test asserts raises(ValueError) on that path -- it encoded the defect as a contract and must change.
+
+#312 CONFIRMED as the inverse of SG-GrepShapedRunclaim-A, which covers grep-shaped evidence producing a false positive. The proposed entry covers the false negative: a module absence from an importer symbols read as an absent control when the two connect through an intermediary by design. Both reduce to accepting a lexical result as a semantic one, and having only the positive half on record demonstrably did not prevent the negative-half mistake. The generalizable tell: the claim under test came from an ADR, and ADRs are written in the vocabulary of authorities and consumption rather than imports, so testing an architectural claim by import graph is a category error from the first step.
+
+FOURTH CORRECTION THIS SESSION where a written claim disagreed with the same claim executed -- #314 premise, #316 mechanism, the 510 ledger gap, and now #309 surface. Stable enough to name: a defect report written from reading is a hypothesis, not a finding. Candidate Shadow Genome framing on one more recurrence. Brief: docs/research-brief-unseen-surface-gates-2026-08-11.md. Next: /qor-plan.
+
+
+### Entry #552: GATE TRIBUNAL -- Phase 219 unseen-surface gates (PASS)
+
+**Timestamp**: 2026-08-11T19:25:00Z
+**Phase**: GATE (Phase 219)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase219-unseen-surface-gates.md
+**Session**: `2026-08-11T1904-581fb2`
+**Verdict**: PASS
+
+**Content Hash**: `0d0759783d2ab98739864758dc516d9edf01b3591fc3069ad09e34b6393d5dd3`
+**Previous Hash**: `aace0d8deb03da2be8c4b4fcb6b495a6dc873a64d3380c5275f03cdcebb5fe53`
+**Chain Hash (Merkle seal)**: `d7da40ba5b4da0ea080e738fd58e0459dbdc5a3ee8a55e4748a06dabb77bcfaf`
+
+**Decision**: PASS at L2, first iteration. The ground the Judge expected to sustain did not survive measurement.
+
+THE EXPECTED GROUND. LD-3 asserts a disclosure pass on qor-substantiate will free room for a new step, and the file sits at 39908 bytes with 28 of slack. Phase 215 established that this exact file can run out of movable prose: it found 1219 bytes of explanatory text against a 1176-byte requirement, a 43-byte margin, and that near-miss is why LD-5 of that plan exists. Asserting feasibility without measuring it looked like the same error one phase later. Measured: 4015 bytes movable explanatory, 2372 operative, against a need of roughly 400 to 600. Phases 216 and 217 added explanatory prose alongside their operative steps, so the file has MORE slack now than when Phase 215 nearly exhausted it. The ground does not hold, and LD-3 sequencing -- pass first, step second, extend the pass if the step does not fit -- is correct construction regardless.
+
+THE PLAN CORRECTS ITS OWN SOURCE ISSUE, AND THAT IS THE POINT. GH #309 says the lint misses files STAGED but not committed and proposes a staged-only mode. Verified by counterfactual: untracked yields 0 findings at rc 0, staged yields 1 at rc 1. git ls-files reads the index, so staged files are already scanned; narrowing to the index would cover a subset of what exists today and would have caught NONE of the four documented misses. The issue further says the seal ceremony runs the lint before staging -- it does not run it at all. The only skill invocation is /qor-audit Step 0.6, WARN-only, over a tree predating implementation; CI runs fail-closed but structural-only because the terms overlay is gitignored by design.
+
+The real gap is that NO fail-closed, identity-aware run ever sees implementation new files before they are committed. That is why four leaks passed four green runs. A plan implementing the issue as written would have shipped a no-op and closed the defect.
+
+Three further grounds were considered and rejected. That correcting the source issue is scope creep: rejected -- LD-1 does not widen the work, it prevents building the wrong thing. That disclosure rather than coverage for identity terms is a half-measure: rejected -- a tracked denylist of private identifiers in a public repository publishes the strings it suppresses, so this is a constraint to state rather than a gap to close, and LD-4 makes the asymmetry legible where evidence lands instead of leaving two meanings of zero findings looking identical. That #311 and #312 are unrelated riders: rejected -- all three are one shape.
+
+NOTED RISK, NOT A GROUND. The new seal step posture is stated in the Definition of Done as fail-closed but Phase 3 Affected Files describes it only as a new step running the lint after staging. The two are consistent and the DoD binds, so this is not a defect -- but the implementer must wire it as an ABORT. A WARN-only step would reproduce the audit-time invocation this phase exists to supplement, passing D2 while failing D1.
+
+Binding on implementation: LD-6, each fix ships a test that FAILS against HEAD. LD-3 ordering is equally binding. Next: /qor-implement.
+
+
+### Entry #553: SESSION SEAL -- Phase 219 unseen-surface gates (v0.142.0)
+
+**Timestamp**: 2026-08-11T20:00:00Z
+**Phase**: SUBSTANTIATE (Phase 219; feature)
+**Author**: Judge
+**Change class**: feature
+**Entry ID**: `9a4d916debb6`
+**Plan**: docs/plan-qor-phase219-unseen-surface-gates.md
+**Session**: `2026-08-11T1904-581fb2`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Feature Inventory**: Total: 21 / verified: 21 / unverified: 0 / n/a: 0
+**Skill Corpus**: digest `427fab4737524588` scope `global` drift_count 0
+**Boundary Scope**: structural+identity (0 findings, post-staging)
+
+**Content Hash**: `0d0759783d2ab98739864758dc516d9edf01b3591fc3069ad09e34b6393d5dd3`
+**Previous Hash**: `d7da40ba5b4da0ea080e738fd58e0459dbdc5a3ee8a55e4748a06dabb77bcfaf`
+**Chain Hash (Merkle seal)**: `96883a29460304e5ab41562dbc809ab11a13ac1735b74320c0d2c1b1bafefa6c`
+
+**Decision**: **Scope**: Phase 219 sealed as v0.142.0, closing GH #309, #311, #312.
+
+**THE FILED DEFECT WAS WRONG TWICE, AND BOTH CORRECTIONS CHANGED THE WORK.** GH #309 says the boundary lint misses files STAGED but not committed, and proposes a --staged mode. Counterfactual: untracked yields 0 findings at rc 0, staged yields 1 at rc 1. git ls-files reads the index, so staged files were always scanned; a --staged mode would have narrowed the surface to a subset of existing coverage and caught NONE of the four documented misses. The issue also says the seal ceremony runs the lint before staging -- it did not run it at all. Implementing the issue as written would have shipped a no-op and closed the defect.
+
+**The real gap was ordering.** /qor-audit ran it WARN-only over a tree predating implementation; CI ran it fail-closed but structural-only; the seal ran nothing. No fail-closed, identity-aware run ever saw a phase new files before they were committed, which is why four leaks passed four green runs. New Step 4.6.14 runs it fail-closed AFTER staging, and this seal is its first execution: 0 findings at scope structural+identity.
+
+**Detector scope now travels with the result.** CI cannot load the identity overlay -- gitignored by design, since a tracked denylist of private identifiers in a public repository publishes the strings it suppresses. That asymmetry is permanent. An unqualified zero from CI and from a local run meant different things and looked identical; the lint now reports structural or structural+identity and the seal records it. Disclosure, not coverage, because coverage is impossible here.
+
+**THE DISCLOSURE PASS TOOK THREE ROUNDS, AND LD-3 IS WHY IT WORKED.** qor-substantiate sat at 39908 bytes with 28 of slack. Round one recovered 148 (slack 176), round two 216 more (slack 392), the step then breached by 133, and round three recovered 208 to land 39861 with 75 slack. LD-3 bound the implementer to EXTEND the pass rather than compress the step; without it the step -- which is the deliverable -- would have been shaved to fit. Entry #545 predicted this file would need a disclosure pass for its next step, and the audit measured 4015 bytes of movable prose before endorsing the approach rather than assuming it.
+
+**#311**: --write now seeds whichever header marker is absent, inserted positionally under the title. Both patterns are line-anchored, so a marker appended at end-of-file satisfies the regex while producing a document whose header sits below its narrative. Only the missing marker is seeded; a file with one and not the other is half-migrated. test_render_system_state_header_raises_on_missing_marker had encoded the defect as a contract and was rewritten -- the plan named that test in advance. The malformed-snapshot raise is untouched: it validates the caller argument, not the document.
+
+**#312**: SG-GrepAbsenceAsIntegrationAbsence-A recorded and cross-linked with SG-GrepShapedRunclaim-A. Having only the false-positive half on record did not prevent the false-negative mistake, which is the argument for entering both. The generalizable tell: the claim came from an ADR, and ADRs are written in the vocabulary of authorities and consumption rather than imports, so testing one by import graph is a category error before any grep runs.
+
+**THE AUDIT NOTED RISK IS NOW PINNED BY A TEST.** The plan stated fail-closed in the Definition of Done but described the step only as running the lint after staging. test_boundary_step_is_fail_closed extracts the invocation line and asserts ABORT present, || true absent -- so passing D2 while failing D1 is no longer reachable.
+
+**TWO PROCESS DEFECTS, NOW COUNTED RATHER THAN EXCUSED.** intent_lock has been overridden in FOUR consecutive phases (216-219) and plan.json backfilled at seal in TWO (218, 219). Both have one root cause: driving the canonical skills manually skips their artifact-writing steps -- /qor-implement Step 5.5 and /qor-plan Step Z. The gates catch it every time and are overridden every time, which is the definition of a control being trained around. Verified rather than asserted: three prior intent_lock overrides are recorded in PROCESS_SHADOW_GENOME.md, this is the fourth. Recorded at severity 2 and filed as a process defect rather than overridden a fourth time in silence. Substantive claims were verified independently -- plan hash equals the hash bound by audit #552, and verdict_reconcile (shipped last phase) reports 0 findings between report and artifact.
+
+**Gates**: intent_lock NO LOCK (4th override, equivalent verified); skill_admission ADMITTED; gate_skill_matrix 30/140/0; secret_scanner 0; dod_check 0; merge_velocity healthy; data_api_acl disclosed-SKIP; skill_size_budget 0 EXCEEDED; doc_integrity strict PASS after 1 glossary term; governance_index 0; feature_index 21/21; sg_closure_lint 40/0; ruff clean; install drift 0 after resync; boundary 0 at structural+identity post-staging. Full suite 2877 passed / 6 skipped.
+
+**Next**: #314, #320 remain; the process-defect issue is filed this cycle.
+
+
 ---
 
 *Chain integrity: VALID*

@@ -64,14 +64,39 @@ def render_readme_badges(text: str, counts: dict[str, int]) -> str:
     return text
 
 
+def _seed_marker(text: str, line: str) -> str:
+    """Insert a header marker directly under the `# ` title.
+
+    Positional, not appended: both marker patterns are line-anchored under
+    ``re.MULTILINE``, so a marker written at end-of-file satisfies the regex
+    while producing a document whose header block sits below its narrative. The
+    next ``--write`` would then find and rewrite that.
+    """
+    lines = text.splitlines(keepends=True)
+    for index, existing in enumerate(lines):
+        if existing.startswith("# "):
+            lines.insert(index + 1, f"\n{line}\n")
+            return "".join(lines)
+    return f"{line}\n{text}"
+
+
 def render_system_state_header(text: str, phase: int, snapshot: str) -> str:
-    """Rewrite the Snapshot date and Phase number; preserve all narrative."""
+    """Rewrite the Snapshot date and Phase number; preserve all narrative.
+
+    Seeds whichever marker is absent rather than raising (GH #311). ``--check``
+    tells the operator to re-run ``--write`` on missing markers, and ``--write``
+    was the raiser, so the documented remediation could not close its own loop;
+    a repository adopting the toolkit could not bootstrap out of the state.
+
+    Seeding is the same substitution over an empty prior state. Only the missing
+    marker is seeded: a file carrying one and not the other is half-migrated,
+    not broken, and an existing marker keeps its position.
+    """
     _dt.date.fromisoformat(snapshot)
-    if not _HEADER_PHASE_RE.search(text) or not _SNAPSHOT_RE.search(text):
-        raise ValueError(
-            "SYSTEM_STATE header markers missing: need '**Snapshot**: YYYY-MM-DD' "
-            "and '**Phase**: Phase N' lines"
-        )
+    if not _SNAPSHOT_RE.search(text):
+        text = _seed_marker(text, "**Snapshot**: 0000-00-00")
+    if not _HEADER_PHASE_RE.search(text):
+        text = _seed_marker(text, "**Phase**: Phase 0")
     text = _SNAPSHOT_RE.sub(
         lambda match: f"{match.group(1)}{snapshot}", text, count=1
     )

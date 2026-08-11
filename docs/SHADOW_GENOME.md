@@ -1461,6 +1461,73 @@ fail against the pre-fix revision. Enforcer:
 `tests/test_ledger_sequence.py::test_deleted_entry_is_detected`. First observed
 instance as a cluster; promote to a structured countermeasure on recurrence.
 
+## 2026-08-11 -- Grep absence read as an absent control
+
+**Phase**: 219 (GH #312)
+
+### Findings
+
+An investigator asks whether component A is integrated with component B, greps
+B's source for A's module name, finds nothing, and reports the integration
+missing. The grep is accurate. The inference is not: in a layered authority
+chain A reaches B through an intermediary by design, so the absent import is
+evidence of correct layering.
+
+The proposed remedy is then to add a direct call from B to A -- installing a
+second, independently drifting evaluation of a question the intermediary already
+answers. The design gets worse in the name of a fix.
+
+Concrete recurrence: `grep -rn "actor_registry" execution_*.py` returned
+nothing, and the conclusion drawn was that the registry was not integrated with
+the execution control plane and the recorded actor was never validated. Both
+false -- the refusal lives in the gate module, and the registry reaches that
+comparison through the claim ledger, which classifies the actor and stamps the
+classification onto every claim.
+
+Correcting it surfaced a second error inside the same investigation: the first
+correction over-stated the chain as "an untrusted actor cannot hold a claim",
+when the trust row sits inside an overlap condition and so escalates a
+*contested* claim rather than acting as a floor on claiming. The first
+correction was reasoned about rather than run.
+
+### Root Cause Analysis
+
+A lexical result accepted as a semantic one. This is the exact inverse of
+`SG-GrepShapedRunclaim-A`, which covers grep-shaped evidence producing a false
+*positive* -- "the surface is wired, I found the symbol". Having only the
+positive half on the record did not prevent the negative-half mistake, which is
+the argument for entering both.
+
+The second tell is specific and generalizes: the claim under test came from an
+ADR. ADRs are written in the vocabulary of authorities and consumption -- "the
+plane consumes the registry" -- not of imports. Testing such a claim by import
+graph is a category error from the first step, before any grep is run.
+
+### Pattern to Avoid
+
+Concluding that a control is absent because a symbol is absent from the place
+you expected it. Absence of a direct reference is equally consistent with
+correct layering, and the two are indistinguishable by grep.
+
+Do not answer an architectural question with a lexical tool. Trace the call path
+or run the behavior; if the claim is "B validates X", construct an invalid X and
+observe the refusal.
+
+### Pattern ID
+
+Grep-absence-as-integration-absence. Candidate SG family entry if it recurs:
+`SG-GrepAbsenceAsIntegrationAbsence-A` -- a module's absence from an importer's
+symbols read as an absent control, when the two connect through an intermediary
+by design; the proposed remedy then adds a redundant, independently drifting
+check. Paired with `SG-GrepShapedRunclaim-A`, which is the false-positive half;
+neither is reachable from the other without the cross-reference, and having only
+one on record demonstrably did not prevent the other. Remedy is to answer
+architectural claims by tracing or executing rather than by grep, and to treat
+ADR vocabulary as a signal that the import graph is the wrong instrument.
+Enforcer: `tests/test_boundary_untracked_coverage.py::test_untracked_violation_is_found`
+(same family -- a check reporting clean over a surface it cannot see).
+First observed instance; promote to a structured countermeasure on recurrence.
+
 ---
 
 *Shadow integrity: ACTIVE*
