@@ -26,3 +26,5 @@ Rows append as the surface grows; the seal-time `feature_index_verify.tally()` p
 | FX015 | `qor-logic release` | qor/cli_handlers/release.py:24 | qor/references/release-and-tag-timing.md | tests/test_release_backends.py | verified |
 | FX016 | `qor-logic reconcile` | qor/cli_handlers/reconcile.py | qor/references/doctrine-shadow-genome-countermeasures.md | tests/test_cli_reconcile.py | verified |
 | FX017 | `qor-logic scripts` / `reliability` module dispatch | qor/cli.py:251 | qor/references/doctrine-governance-enforcement.md | tests/test_cli_module_dispatch.py | verified |
+| FX018 | Continuity classification (`continuity_gate.classify`) | qor/scripts/continuity_gate.py:110 | qor/references/doctrine-execution-continuity.md | tests/test_continuity_gate.py | verified |
+| FX019 | Plan continuity declaration lint | qor/scripts/plan_continuity_lint.py:84 | qor/references/doctrine-execution-continuity.md | tests/test_continuity_declaration.py | verified |

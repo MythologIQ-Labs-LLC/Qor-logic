@@ -16240,6 +16240,130 @@ The hazard is directional and quiet. A target reachable only by moving essential
 **Next**: Phase B of GH #285 -- the continuity contract itself, atomic per its acceptance criteria.
 
 
+### Entry #537: RESEARCH BRIEF -- execution-continuity semantics (Phase B of GH #285)
+
+**Timestamp**: 2026-08-11T05:40:00Z
+**Phase**: RESEARCH (Phase 216)
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-11T0526-280ba7`
+
+**Content Hash**: `e3bea341954642038f16e599331e8712a195fc9208e536ccd5a3f4e0392742ca`
+**Previous Hash**: `b3cef6a8fcbe3c193afc44c1fc163c6428a3d034d9b66d273347f831137befd3`
+**Chain Hash (Merkle seal)**: `bbf2b4867b687a262510c7869ac83f2c94336a2a3eb101d045aaf47bdedc696b`
+
+**Decision**: Phase A cleared the constraint that blocked this work -- qor-audit and qor-substantiate now carry 1547 and 1120 bytes of slack against the 39936-byte lock, roughly 3x the 520/360 the issue needs. Three findings reshape what Phase B actually is.
+
+FIRST, intent_lock is the wrong seam, and wrong in the dangerous direction. It verifies by git ancestry, deliberately since Phase 43: `git merge-base --is-ancestor <captured> HEAD`, with an inline comment stating the tolerance exists so the implement commit may legitimately advance HEAD between capture and verify (intent_lock.py:152-167). GH #285 requires the inverse in three separate clauses -- exact revision under review, reject or mark stale any receipt whose revision differs from head, re-verify after revision movement. Extending intent_lock either strips the Phase 43 tolerance that normal implementation depends on, or lets receipt verification inherit ancestry, under which a receipt cut at commit A still verifies after head advances to B. That is exactly the stale-receipt acceptance the issue forbids. An earlier note recommended extending intent_lock rather than duplicating it; on inspection that recommendation is wrong. The two mechanisms answer different questions and belong beside each other, not inside each other.
+
+SECOND, `inconclusive` cannot reuse `skip`. Every outcome enum in qor/gates/schema is binary or binary-plus-skip: validate.status pass/fail/skip, qa.verdict PASS/FAIL, qa.status pass/fail/skip, substantiate.verdict PASS/FAIL. The token `inconclusive` appears nowhere in qor/, tests/, or docs/ outside one unrelated prose mention. But `skip` already carries a settled meaning here -- the Phase 75 disclosed-skip, where a prerequisite is absent and the gate deliberately does not run, which Phase 215 used twice five entries ago. `inconclusive` is the opposite epistemic position: the gate ran and the environment denied it a conclusion. Reusing skip is the cheapest implementation and silently defeats the requirement, because a disclosed-skip is already treated as acceptable-to-seal while inconclusive must route to evidence-environment repair.
+
+THIRD, the issue's own test bar forces Qor-logic to ship executable code. Its final required test rejects presence-only assertions where runtime behavior is claimed. Nine of the thirteen required tests -- resumability under exhaustion, fail-closed on missing or malformed checkpoint, live-writer rejection, revision mismatch, exact-revision acceptance, staleness after head movement, environment outage yielding inconclusive, self-report insufficiency, worker-authority containment -- are decisions over typed inputs with nothing to invoke if this repository ships only skill prose. The ownership boundary grants the upstream line the schemas and their validators while granting Qor-logic audit classifications and fail-closed checks; those are not the same artifact. A classifier consuming contract-shaped inputs it does not define, returning verified/rejected/inconclusive plus a routing directive, is what makes the thirteen tests meetable. Without it the phase degrades into thirteen prose assertions.
+
+Two further constraints. The upstream contract pin is assertable but not verifiable from this repository: .qorlogic/config.json via qorlogic_config.load_section is the right home per the external_reviewer precedent (external_reviewer.py:32-43), but Qor-logic cannot check that a received artifact conforms to the pinned version without the upstream schema, which the ownership boundary forbids duplicating. That must be stated rather than implied. And the no-named-provider test cannot be a grep: qor-audit carries 3 vendor-name occurrences and qor-remediate 2, all legitimate optional-integration references to the codex-plugin adversarial path that falls back to solo. The issue forbids named vendors in core semantics, not their mention; the test must assert that no gate outcome depends on a named provider.
+
+Stable ledger identity is available and must be used -- ledger_base_currency.py:104 derives it via entry_id.derive_entry_id(ts, phase, content_hash), and GH #51 is closed. This is not hypothetical: the ledger currently runs #531 -> #533 because #532 was allocated in an abandoned session and never committed, the chain is intact because #533 links to #531, and ledger_hash verify reports OK having no contiguity check (filed as GH #316). A checkpoint citing entry #532 would reference nothing and nothing would detect it.
+
+The failure mode to guard is declaration-without-enforcer, which this repository produced three times this week: #313, #314, #316. Recommend a SHADOW_GENOME entry for the pattern -- SG-HalfSealedClaim-A covers disclosed skips on absent prerequisites but not a declaration whose enforcer was never written. Brief: docs/research-brief-execution-continuity-2026-08-11.md. Next: /qor-plan.
+
+
+### Entry #538: GATE TRIBUNAL -- Phase 216 execution-continuity semantics (VETO then PASS)
+
+**Timestamp**: 2026-08-11T06:05:00Z
+**Phase**: GATE (Phase 216)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase216-execution-continuity-semantics.md
+**Session**: `2026-08-11T0526-280ba7`
+**Verdict**: PASS (iteration 2; iteration 1 VETOed)
+
+**Content Hash**: `c11027bf4e65c6526999f91ae4df06d92dc66a24de1c06085961ad803a9ce813`
+**Previous Hash**: `bbf2b4867b687a262510c7869ac83f2c94336a2a3eb101d045aaf47bdedc696b`
+**Chain Hash (Merkle seal)**: `5de9340e57fd4a79d0a47e2377821d69143f7025205929a5fe2521e9103c7c9d`
+
+**Decision**: PASS at L2 on the amended plan. One entry covers both iterations, and the reason is itself a finding: the iteration-1 VETO was written to .agent/staging/AUDIT_REPORT.md and reported, but the plan was amended before a ledger entry sealed it. A VETO entry binds the plan it vetoed by content hash, and those bytes are now unrecoverable -- the plan was never committed, so git holds no copy. The honest record is one entry binding the amended plan with the VETO narrated, rather than a second entry whose hash would bind text it did not judge. Process lesson: seal the verdict before amending, or the binding is gone.
+
+**Iteration 1 grounds, both plan-text, both cleared.**
+
+GROUND 1, specification-drift. LD-2 declared that the continuity outcome "occupies its own field, continuity_outcome", and no Affected Files entry in any of the five phases gave that field a home. GH #285 requires /qor-validate and /qor-remediate to route on the typed outcome, and routing requires persistence somewhere a downstream phase can read. As written the plan shipped a classifier returning an outcome into nowhere and two skills instructed to route on a field existing in no artifact. The failure was the one the plan itself was written to prevent: LD-5 warns against a declaration that reads like a guarantee and delivers an assertion, and LD-2 committed that error two decisions later. Remedy: validate.schema.json and remediate.schema.json now receive the optional field, with test_continuity_outcome_persists_in_routing_artifacts asserting all three values validate and a fourth is rejected.
+
+GROUND 2, feature-test-undeclared. GH #285 names thirteen required behavioral tests; the plan mapped twelve and silently dropped "extended-line schemas are referenced by compatibility version and are not duplicated in Qor-logic". That property carries LD-5's entire honesty argument. A plan enumerating twelve of thirteen cannot be distinguished at seal from one that tested all thirteen and passed. Remedy: test_no_upstream_field_duplication declared.
+
+**The remedy for Ground 2 initially reproduced the disease, and was caught before this verdict.** The first phrasing asserted that "no upstream field name appears in Qor-logic schema or skill prose" -- untestable here, because enumerating upstream field names to assert their absence requires holding the upstream schema, which is precisely what LD-5 says this repository does not have. It was reframed to a property Qor-logic can see: the declaration's key set is a subset of a closed Qor-owned allowlist, the declaration carries contract_version and no key holds a nested object, and continuity_outcome is a bare string enum of exactly three values. Not "we did not copy their fields" but "we carry only our own, and only scalars" -- duplication cannot hide inside a declaration admitting no nested structure. Three attempts were needed to state one requirement in a checkable form, which is worth recording about the shape of this phase.
+
+**Grounds considered and rejected.** That shipping a classifier duplicates the upstream validators: rejected -- upstream validators establish schema conformance, the Qor classifier makes a routing decision, and #285 grants Qor-logic audit classifications and fail-closed checks explicitly; classify() is further constrained to a pure function over already-parsed inputs, since parsing upstream artifacts would embed their shape and become duplication by another route. That LD-1 contradicts a shipped gate: rejected -- intent_lock is untouched and exact equality sits beside it, with D4 pinning the distinction via a test that must REJECT an ancestor-revision receipt, the single assertion proving no ancestry semantics were inherited. That inconclusive should reuse skip: rejected, and the plan is right to refuse -- skip means the Phase 75 disclosed-skip, acceptable-to-seal, while inconclusive must route to environment repair; Phase 215 used skip in its settled sense five entries ago. That change_class feature understates a breaking change: rejected -- plan.schema.json gains an optional property and required is unchanged.
+
+**Noted risk, not a ground.** classify() must express at least nine decision branches under a 40-line function cap and a 250-line file cap. The plan pre-commits to moving the reason-code table to continuity_contract.py rather than opening a second decision site. If implementation instead splits classify() into two decision functions, that is a Razor-driven change of design and returns to audit rather than proceeding.
+
+Seventeen test functions now cover the thirteen required behaviors. All pre-audit lints clean, canary scan clean, boundary lint 0 findings, sg_closure_lint 40 entries with 0 missing enforcers. Next: /qor-implement.
+
+
+### Entry #539: IMPLEMENTATION -- Phase 216 execution-continuity semantics (GH #285)
+
+**Timestamp**: 2026-08-11T07:10:00Z
+**Phase**: IMPLEMENT (Phase 216)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase216-execution-continuity-semantics.md
+**Session**: `2026-08-11T0526-280ba7`
+
+**Content Hash**: `c11027bf4e65c6526999f91ae4df06d92dc66a24de1c06085961ad803a9ce813`
+**Previous Hash**: `5de9340e57fd4a79d0a47e2377821d69143f7025205929a5fe2521e9103c7c9d`
+**Chain Hash (Merkle seal)**: `0ed0ca7afa036c846c11211e99a3ffc2c94a822a5b5b55bdb83c442e5e8ad5de`
+
+**Decision**: All five plan phases implemented, tests-first. 2818 passed / 6 skipped; the 34 new tests run twice for determinism; ruff clean; boundary lint 0 findings.
+
+NEW MODULES. continuity_contract.py (63 lines) holds the Qor-owned key set, the three-value outcome vocabulary, and the config-backed pin. continuity_gate.py (118) exposes classify(Evidence) -> Decision as a pure function with no I/O. plan_continuity_lint.py (116) follows the argv-only plan_*_lint shape with one finding code per defect class. Schema: execution_continuity added to plan.schema.json with additionalProperties false and required unchanged; continuity_outcome added to validate.schema.json and remediate.schema.json, both optional.
+
+THE AUDIT RISK RESOLVED WITHOUT A DESIGN CHANGE. The tribunal noted that classify() must express nine decision branches under a 40-line cap and recorded that splitting it into two decision functions would be a design change returning to audit. It was not needed: a module-level rules tuple evaluated in order left classify() at 11 lines, longest function 16 (main), max nesting 1, all three files far under 250. Rule order IS the specification -- fail-closed conditions precede acceptance, so a valid checkpoint can never outrank a live-writer conflict or an authority request.
+
+LD-1 IS PINNED BY A TEST THAT MUST REJECT. test_receipt_accepted_only_for_exact_revision asserts an exact-revision receipt verifies and an ancestor-revision receipt is REJECTED. intent_lock passes on an ancestor by design since Phase 43; a receipt inheriting that tolerance would accept precisely the stale evidence GH #285 forbids. That single assertion is the proof the two mechanisms stayed separate, and it fails loudly if anyone later "simplifies" the comparison.
+
+PHASE A WAS SIZED CORRECTLY, AND ONLY JUST. Wiring the seven lifecycle skills consumed 1084 bytes of qor-audit and 807 of qor-substantiate, landing them at 39473 and 39623 against the 39936 lock. Phase A's research estimated 520 and 360 needed. Recovering only that minimum would have breached the lock during this phase; LD-4's decision to target ~1.5 KB instead of the stated minimum is what made Phase B fit. The estimate was wrong by roughly 2x in the direction that would have hurt.
+
+TWO SELF-INFLICTED DEFECTS, BOTH CAUGHT BY THE SUITE. First: eight glossary definitions were written as single-quoted YAML scalars containing bare apostrophes, which is malformed YAML; six dogfood-coverage tests plus doc-integrity failed. Definitions were rewritten without apostrophes and an assertion now guards the constraint at authoring time. Second: Path.write_text translates newlines to CRLF on Windows, so every file edited through it acquired CRLF -- 65 files including the glossary, seven skills, the ledger, and the committed gate artifacts. The headroom test measures bytes on disk, so both governance skills read as over-lock despite being under it. Normalized to LF; ledger chain and gate provenance re-verified clean afterward, since both bind LF-normalized digests by construction. Sixteen failures, one root cause each, neither in shipped logic.
+
+THE THIRTEENTH BEHAVIOR IS TESTED AS AN INVERSE. Asserting no upstream field name appears here would require enumerating those names, which requires the schema this repository deliberately does not hold. test_no_upstream_field_duplication instead asserts the declaration carries only Qor-owned keys, only scalars or arrays of scalars, and references the contract by version. Duplication cannot hide inside a declaration that admits no nested structure.
+
+Docs: new doctrine-execution-continuity.md, README doctrine inventory, architecture/lifecycle/operations sections, 8 glossary terms, FEATURE_INDEX FX018 and FX019. Next: /qor-substantiate.
+
+
+### Entry #540: SESSION SEAL -- Phase 216 execution-continuity semantics (v0.139.0)
+
+**Timestamp**: 2026-08-11T07:45:00Z
+**Phase**: SUBSTANTIATE (Phase 216; feature)
+**Author**: Judge
+**Change class**: feature
+**Entry ID**: `db8fcdb22a71`
+**Plan**: docs/plan-qor-phase216-execution-continuity-semantics.md
+**Session**: `2026-08-11T0526-280ba7`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `c11027bf4e65c6526999f91ae4df06d92dc66a24de1c06085961ad803a9ce813`
+**Previous Hash**: `0ed0ca7afa036c846c11211e99a3ffc2c94a822a5b5b55bdb83c442e5e8ad5de`
+**Chain Hash (Merkle seal)**: `a84162b7e2a1497c66dad5f2c5b8f62637959b20737810310996024a01efd6cd`
+
+**Decision**: **Scope**: Phase 216 sealed as v0.139.0, closing GH #285. The lifecycle gates now carry provider-neutral execution-continuity semantics: a provider stopping for budget, context, capacity, credentials, or environment is resumable by an authorized successor when a valid checkpoint exists, rather than classified as product failure or escalated to a human by default.
+
+**Shipped**: continuity_gate.py (118 lines) classifying evidence into verified/rejected/inconclusive plus a routing directive; continuity_contract.py (63) holding the Qor-owned key set, outcome vocabulary, and config-backed pin; plan_continuity_lint.py (116) validating the declaration with one finding code per defect class. Schema: execution_continuity on plan.schema.json with additionalProperties false and required unchanged; continuity_outcome on validate.schema.json and remediate.schema.json, both optional. Seven lifecycle skills wired, new doctrine-execution-continuity.md, 8 glossary terms, FEATURE_INDEX FX018/FX019 (19/19 verified). 34 new tests, all invoking the unit under test.
+
+**The two distinctions that carry the design.** `inconclusive` is not `skip`: skip means a gate deliberately did not run and is acceptable to seal, while inconclusive means the gate ran and the evidence environment denied it a conclusion, routing to environment repair rather than product remediation. Reusing skip was the cheapest available implementation and would have silently destroyed the requirement, so the outcome occupies its own field and validate.status keeps pass/fail/skip -- pinned by a regression test that goes red if anyone widens the existing enum. And revision comparison is exact string equality, never git ancestry: intent_lock accepts an ancestor by design since Phase 43, and a receipt inheriting that tolerance would accept precisely the stale evidence #285 forbids. test_receipt_accepted_only_for_exact_revision asserts an ancestor-revision receipt is REJECTED, which is the single assertion proving the two mechanisms stayed separate.
+
+**The audit's noted risk did not materialize.** The tribunal recorded that classify() must express nine decision branches under a 40-line cap, and that splitting it into two decision functions would be a design change returning to audit. A module-level rules tuple evaluated in order left classify() at 11 lines; rule order IS the specification, with fail-closed conditions preceding acceptance so a valid checkpoint can never outrank a live-writer conflict or an authority request.
+
+**Phase A was sized correctly, and only just.** Wiring the seven skills consumed 1084 bytes of qor-audit and 807 of qor-substantiate, landing them at 39473 and 39623 against the 39936 lock. Phase A's research estimated 520 and 360 needed. Recovering only that minimum would have breached the lock during this phase; LD-4's decision to target ~1.5 KB is what made Phase B fit. The estimate was wrong by roughly 2x in the direction that would have hurt.
+
+**Three CRLF-class defects, one root cause, none in shipped logic.** Path.write_text translates newlines on Windows, so 65 files edited through it acquired CRLF -- glossary, seven skills, the ledger, and committed gate artifacts. The headroom test measures bytes on disk, so both governance skills read as over-lock while being under it. Normalizing to LF then made intent_lock ABORT with audit drift. Rather than re-capture on assertion, the claim was proven: re-CRLF-ing the current AUDIT_REPORT.md reproduces the stored audit_hash exactly, so the content is byte-identical modulo line endings. Re-captured and recorded as a severity-1 gate_override. The underlying defect is that intent_lock hashes raw bytes while ledger_hash.content_hash normalizes to LF (ledger_hash.py:37) -- the GAP-GOV-03 CRLF lesson reached one hasher and not the other. Separately, eight glossary definitions were written as single-quoted YAML containing bare apostrophes, which is malformed YAML; six dogfood tests plus doc-integrity caught it.
+
+**The thirteenth required behavior is tested as an inverse.** Asserting that no upstream field name appears here would require enumerating those names, which requires the schema this repository deliberately does not hold. test_no_upstream_field_duplication instead asserts the declaration carries only Qor-owned keys, only scalars or arrays of scalars, and references the contract by version. Duplication cannot hide inside a declaration that admits no nested structure. The pin is asserted and not verified, and that ceiling is stated in the doctrine, the module docstring, and here, rather than implied away.
+
+**Gates**: intent_lock VERIFIED after proven-equivalent re-capture (gate_override recorded); skill_admission ADMITTED; gate_skill_matrix 30 skills / 140 handoffs / 0 broken; secret_scanner exit 0; dod_check exit 0; merge_velocity healthy; skill_size_budget WARN-only at 38.5 and 38.7 KB with no EXCEEDED; data_api_acl disclosed-SKIP (no SQL migrations); instruction_hygiene_lint disclosed-SKIP (module absent from repo -- GH #314); doc_integrity strict PASS; governance_index enforce exit 0; feature_index 19/19 verified; publication_boundary 0 findings; ruff clean. Full suite 2818 passed / 6 skipped, new tests run twice for determinism.
+
+**Non-duplicative authorities preserved**: GH #39 (target compilation), #51 (ledger identity), #108 (evidence integrity), and #139 (Shadow Genome) were referenced and not re-decided. No worker gains merge, release, deployment, credential, or policy-mutation authority; the forbidden-authority set is enforced ahead of every acceptance path.
+
+**Next**: file the intent_lock LF-normalization defect; #313, #314, #316 remain open.
+
+
 ---
 
 *Chain integrity: VALID*

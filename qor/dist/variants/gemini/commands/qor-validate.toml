@@ -158,6 +158,21 @@ gate_chain.write_gate_artifact(
 
 Schema lives at `qor/gates/schema/validate.schema.json`; the helper validates before write. Per Phase 54: validate calls `ai_provenance.build_manifest` with the verdict mapped to `HumanOversight`; closes EU AI Act Art. 14 oversight-signal surface.
 
+### Step 5.5: Continuity outcome routing (Phase 216 wiring; GH #285)
+
+When a `continuity_outcome` is present, route on it and do not collapse it into
+`status`:
+
+- `verified` -- continue on the existing governed path.
+- `rejected` -- route to `/qor-remediate` against the defect the receipt names
+  (product, governance, security, claim, or authority).
+- `inconclusive` -- repair or change the evidence environment. Do NOT assert
+  product failure; the gate ran and the environment denied it a conclusion.
+
+Revision movement after verification invalidates the receipt: require
+re-verification rather than carrying the prior outcome forward. `inconclusive`
+is not `skip`; see `qor/references/doctrine-execution-continuity.md`.
+
 ## Delegation
 
 Per `qor/gates/delegation-table.md`:

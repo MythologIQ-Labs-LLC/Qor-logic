@@ -142,6 +142,18 @@ flipped, missing = rma.mark_addressed(
 
 See `qor/references/doctrine-governance-enforcement.md` §10.1 "Two-stage remediation flip."
 
+### Step 6.5: Continuity outcome routing (Phase 216 wiring; GH #285)
+
+A `rejected` continuity outcome names its defect class in the receipt; remediate
+that class, not the product by default.
+
+An `inconclusive` outcome is NOT a product defect. Repair the evidence
+environment and re-run verification. Opening product remediation against an
+`inconclusive` outcome is the specific error this routing exists to prevent.
+
+A valid provider-exhaustion checkpoint resumes with an authorized successor
+rather than defaulting to human escalation. Full contract: `qor/references/doctrine-execution-continuity.md`.
+
 ## Constraints
 
 - **NEVER** propose code changes — that is `/qor-debug`'s domain

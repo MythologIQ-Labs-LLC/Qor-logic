@@ -624,6 +624,27 @@ Schema at `qor/gates/schema/audit.schema.json` validates before write; a violati
 
 An unmappable finding raises `UnmappedCategoryError` before gate emission; there is no fallback category. Rationale: `references/phase37-subpasses.md` "Finding-category enum".
 
+#### Execution-Continuity Pass (Phase 216 wiring; GH #285)
+
+Applies when the plan declares `execution_continuity`. Verify:
+
+- [ ] Provider budget/context/capacity exhaustion is resumable when a valid
+      checkpoint exists -- not classified as product failure or auto-escalation
+- [ ] Absence, malformation, tampering, revision mismatch, live-writer conflict,
+      claim conflict, and actor-authority mismatch each fail closed
+- [ ] Environment unavailability yields `inconclusive`, never a fabricated pass
+      or a product rejection
+- [ ] Implementation self-report cannot satisfy independent verification
+- [ ] The verification target is the exact revision under review (equality, not
+      ancestry -- `intent_lock` semantics must not be inherited)
+- [ ] The plan consumes the upstream contract by compatibility version and
+      duplicates no field definition
+
+**Any violation -> VETO with `continuity-unsound` category.**
+
+**Required next action:** Governor: amend plan text, re-run `/qor-audit`. Rule
+order and rationale: `qor/references/doctrine-execution-continuity.md`.
+
 ## Constraints
 
 - **NEVER** approve with warnings (binary PASS/VETO only)

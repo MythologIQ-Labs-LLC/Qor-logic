@@ -1,0 +1,80 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-11T0526-280ba7",
+  "ts": "2026-08-11T05:34:12Z",
+  "plan_path": "docs/plan-qor-phase216-execution-continuity-semantics.md",
+  "change_class": "feature",
+  "doc_tier": "system",
+  "terms": [
+    {
+      "term": "execution continuity",
+      "home": "qor/references/doctrine-execution-continuity.md"
+    },
+    {
+      "term": "execution checkpoint",
+      "home": "qor/references/doctrine-execution-continuity.md"
+    },
+    {
+      "term": "verification receipt",
+      "home": "qor/references/doctrine-execution-continuity.md"
+    },
+    {
+      "term": "continuity outcome",
+      "home": "qor/references/doctrine-execution-continuity.md"
+    },
+    {
+      "term": "stale receipt",
+      "home": "qor/references/doctrine-execution-continuity.md"
+    },
+    {
+      "term": "live writer",
+      "home": "qor/references/doctrine-execution-continuity.md"
+    },
+    {
+      "term": "successor actor",
+      "home": "qor/references/doctrine-execution-continuity.md"
+    },
+    {
+      "term": "continuity contract version",
+      "home": "qor/references/doctrine-execution-continuity.md"
+    }
+  ],
+  "phases": [
+    "Declaration surface",
+    "The classifier",
+    "Lifecycle wiring",
+    "Glossary and documentation",
+    "Verification"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_continuity_gate.py tests/test_continuity_declaration.py -q",
+    "python -m pytest tests/ -q",
+    "python -m ruff check qor/ tests/",
+    "qor-logic scripts skill_size_budget_lint --skills-root qor/skills",
+    "qor-logic scripts dist_compile",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase216-execution-continuity-semantics.md"
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "continuity-classification",
+      "operation": "NEW",
+      "test_path": "tests/test_continuity_gate.py",
+      "test_descriptor": "test_valid_checkpoint_under_exhaustion_is_resumable asserts a resume directive is returned"
+    },
+    {
+      "entry_id": "plan-continuity-declaration",
+      "operation": "NEW",
+      "test_path": "tests/test_continuity_declaration.py",
+      "test_descriptor": "test_lint_rejects_malformed_declaration asserts a finding code per malformation"
+    }
+  ],
+  "open_questions": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-11T05:34:12Z"
+  }
+}

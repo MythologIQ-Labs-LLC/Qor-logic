@@ -696,6 +696,21 @@ new_sid = session.rotate()  # prior artifacts preserved at .qor/gates/<old-sid>/
 
 Template: `references/qor-substantiate-templates.md`.
 
+### Step 4.6.12: Execution-continuity receipt gate (Phase 216 wiring; GH #285)
+
+Applies when the plan declares `execution_continuity`. Require a verification
+receipt bound to the EXACT implementation revision; a receipt whose revision
+differs from current head is stale and ABORTs. Provider prose, status badges,
+and session-completion messages are not receipts.
+
+Preserve `verified`, `rejected`, and `inconclusive` as distinct outcomes;
+`inconclusive` is not `skip`. Reference checkpoint and receipt artifacts by path
+and digest -- never duplicate their bodies in ledger prose.
+
+Implementation verification is not merge, release, or deployment acceptance.
+Record the pinned contract version and that conformance is asserted, not
+verified. Full contract: `qor/references/doctrine-execution-continuity.md`.
+
 ## Constraints
 
 - **NEVER** seal a session with Reality != Promise

@@ -209,3 +209,24 @@ Full doctrine: [`../qor/references/doctrine-hook-contract.md`](../qor/references
 - [policies.md](policies.md)
 - [../qor/references/skill-recovery-pattern.md](../qor/references/skill-recovery-pattern.md)
 - [../CONTRIBUTING.md](../CONTRIBUTING.md)
+
+## Execution-continuity configuration (Phase 216; GH #285)
+
+Operators declare the upstream contract version they are compatible with:
+
+```json
+{ "execution_continuity": { "contract_version": "1.0" } }
+```
+
+in `.qorlogic/config.json`. Absence is a disclosed unpinned state, not an error.
+
+The pin is asserted, not verified. Qor-logic records the declared version but
+cannot check that a received artifact conforms to it, because conformance
+checking requires the upstream schema this repository deliberately does not
+hold. Treat the pin as a statement of intent, not a guarantee.
+
+Lint a declaration:
+
+```bash
+qor-logic scripts plan_continuity_lint --artifact .qor/gates/<session>/plan.json
+```

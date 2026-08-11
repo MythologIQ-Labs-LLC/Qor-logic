@@ -1,0 +1,77 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-11T0526-280ba7",
+  "ts": "2026-08-11T05:31:06Z",
+  "questions": [
+    "Is post-Phase-A headroom sufficient?",
+    "Is intent_lock the right seam for exact-revision receipts?",
+    "Is `inconclusive` new, and can it reuse `skip`?",
+    "What stable ledger identity exists for checkpoints?",
+    "Where does the upstream contract pin live, and is it verifiable?",
+    "Can the 13 required tests be behavioral without shipping executable code?",
+    "Is vendor-neutrality grep-testable?"
+  ],
+  "findings": [
+    {
+      "id": "headroom",
+      "status": "MATCH",
+      "detail": "Phase A left 1547/1120 bytes slack vs 520/360 needed",
+      "source": "qor/skills/governance/*/SKILL.md"
+    },
+    {
+      "id": "intent-lock-seam",
+      "status": "DRIFT",
+      "detail": "Verifies by git ancestry since Phase 43; #285 requires exact equality. Do not extend it -- receipt binding belongs beside it.",
+      "source": "qor/reliability/intent_lock.py:152-167"
+    },
+    {
+      "id": "inconclusive-vs-skip",
+      "status": "DRIFT",
+      "detail": "`skip` already means Phase 75 disclosed-skip; `inconclusive` means the gate ran and the environment denied a conclusion. Needs a third enum value.",
+      "source": "qor/gates/schema/validate.schema.json"
+    },
+    {
+      "id": "stable-ledger-identity",
+      "status": "MATCH",
+      "detail": "derive_entry_id(ts,phase,content_hash) exists; #51 closed. The live #531->#533 gap (GH #316) shows why entry numbers fail.",
+      "source": "qor/reliability/ledger_base_currency.py:104"
+    },
+    {
+      "id": "contract-pin-verifiability",
+      "status": "DRIFT",
+      "detail": "Pin is assertable but not verifiable without duplicating the upstream schema the ownership boundary forbids copying. Must be stated, not implied.",
+      "source": "qor/scripts/external_reviewer.py:32-43"
+    },
+    {
+      "id": "executable-classifier-required",
+      "status": "DRIFT",
+      "detail": "9 of 13 required tests are decisions over typed inputs with nothing to invoke unless Qor-logic ships a classifier returning verified/rejected/inconclusive.",
+      "source": "GH #285 required behavioral tests"
+    },
+    {
+      "id": "vendor-neutrality-testable",
+      "status": "DRIFT",
+      "detail": "5 legitimate optional-integration vendor references exist (codex-plugin). Test must assert no gate OUTCOME depends on a named provider, not name absence.",
+      "source": "qor/skills/governance/qor-audit/SKILL.md"
+    }
+  ],
+  "sources": [
+    "qor/reliability/intent_lock.py:113-116,152-167",
+    "qor/gates/schema/validate.schema.json",
+    "qor/gates/schema/qa.schema.json",
+    "qor/gates/schema/substantiate.schema.json",
+    "qor/reliability/ledger_base_currency.py:15,104",
+    "qor/scripts/external_reviewer.py:32-43",
+    "qor/scripts/qorlogic_config.py",
+    "docs/META_LEDGER.md"
+  ],
+  "brief_path": "docs/research-brief-execution-continuity-2026-08-11.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-11T05:31:06Z"
+  }
+}

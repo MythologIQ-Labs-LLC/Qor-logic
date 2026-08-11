@@ -131,3 +131,26 @@ Skills never invent handoffs. Every cross-skill directive names its target per [
 - [policies.md](policies.md) -- policy layer
 - [../qor/gates/chain.md](../qor/gates/chain.md) -- canonical phase definitions
 - [../qor/gates/delegation-table.md](../qor/gates/delegation-table.md) -- handoff matrix
+
+## Execution continuity (Phase 216; GH #285)
+
+Qor-logic classifies and routes execution-continuity evidence; it does not
+define the checkpoint, reconstruction, or receipt schemas, which belong to the
+upstream contract and are referenced by version.
+
+| Module | Responsibility |
+|---|---|
+| `qor/scripts/continuity_contract.py` | Qor-owned key set, outcome vocabulary, config-backed contract pin |
+| `qor/scripts/continuity_gate.py` | `classify(Evidence) -> Decision`; pure, no I/O, exact-revision comparison |
+| `qor/scripts/plan_continuity_lint.py` | Plan-declaration lint, one finding code per defect class |
+
+Data flow: a plan declares `execution_continuity` (validated by
+`plan_continuity_lint`); `/qor-audit` runs the Execution-Continuity Pass;
+`/qor-substantiate` requires an exact-revision receipt; `/qor-validate` and
+`/qor-remediate` route on `continuity_outcome`.
+
+Rule order is the specification and fail-closed conditions precede acceptance,
+so a valid checkpoint never outranks a live-writer conflict or an authority
+request. Revision comparison is string equality, never git ancestry --
+`intent_lock` keeps its Phase 43 ancestry tolerance and the two are not folded
+together. Contract: `qor/references/doctrine-execution-continuity.md`.

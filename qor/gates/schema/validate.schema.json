@@ -4,24 +4,69 @@
   "title": "Validate Gate Artifact",
   "type": "object",
   "additionalProperties": true,
-  "required": ["phase", "ts", "session_id", "overall", "criteria_results"],
+  "required": [
+    "phase",
+    "ts",
+    "session_id",
+    "overall",
+    "criteria_results"
+  ],
   "properties": {
-    "phase": { "const": "validate" },
-    "ts": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
-    "session_id": { "type": "string", "minLength": 3 },
-    "overall": { "type": "string", "enum": ["PASS", "FAIL"] },
+    "phase": {
+      "const": "validate"
+    },
+    "ts": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "overall": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
     "criteria_results": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["criterion", "status"],
+        "required": [
+          "criterion",
+          "status"
+        ],
         "properties": {
-          "criterion": { "type": "string" },
-          "status": { "type": "string", "enum": ["pass", "fail", "skip"] },
-          "notes": { "type": "string" }
+          "criterion": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "fail",
+              "skip"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
         }
       }
     },
-    "ai_provenance": { "$ref": "_provenance.schema.json" }
+    "ai_provenance": {
+      "$ref": "_provenance.schema.json"
+    },
+    "continuity_outcome": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "rejected",
+        "inconclusive"
+      ],
+      "description": "Execution-continuity outcome (Phase 216). Distinct from `status`: `skip` means a gate deliberately did not run; `inconclusive` means it ran and the environment denied a conclusion."
+    }
   }
 }

@@ -264,6 +264,23 @@ gate_chain.write_gate_artifact(
 _Research phase complete. Findings incorporated into project knowledge base._
 ```
 
+### Step 4e: Execution-continuity facts (Phase 216 wiring; GH #285)
+
+When the target uses execution continuity, separate these classes and label each
+finding with its class:
+
+- **Durable**: repository and governance facts that survive any provider.
+- **Volatile**: provider or session facts that do not. A provider session URL is
+  evidence metadata, never durable authority -- do not cite one as a source.
+- **Exact target revision**: the revision the work is bound to.
+- **Claim and writer state**: who currently holds the claim, when observable.
+- **Predecessor references**: checkpoint and verification-receipt identities,
+  cited via derived ledger identity rather than entry numbers.
+- **Environment limits**: conditions that can only support an `inconclusive`
+  conclusion, recorded as such rather than resolved by guess.
+
+Full contract: `qor/references/doctrine-execution-continuity.md`.
+
 ## Delegation
 
 Per `qor/gates/delegation-table.md`:
