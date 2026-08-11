@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-11T12:36:44Z",
+  "generated_ts": "2026-08-11T18:49:01Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -156,7 +156,7 @@
       "id": "command-qor-implement.md",
       "source_path": "workflows/command-qor-implement.md",
       "install_rel_path": "workflows/command-qor-implement.md",
-      "sha256": "45e0c074a74d8986039fc4489a713585865e7bace4e80e1da0472cda0b35eced"
+      "sha256": "f9d15b16449f368e86b729810b90996568dec4b53faa775242f7d5bebffa7b63"
     },
     {
       "id": "command-qor-meta-log-decision.md",

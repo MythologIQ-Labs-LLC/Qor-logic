@@ -202,6 +202,33 @@ class CommittedResult:
     sessions_checked: list[str] = field(default_factory=list)
 
 
+
+def verify_session_artifacts(session_dir: Path) -> list[str]:
+    """Verify every artifact in a session directory that has a sidecar.
+
+    GH #321: `_REQUIRED_PHASES` answers "which artifacts must exist for a phase
+    to be complete" and was reused as the verification scope, which is a
+    different question. Iteration artifacts (`<phase>-iterN.json`) are required
+    for nothing but are evidence -- they are what a reader consults to
+    reconstruct why a VETO was issued -- so they must verify.
+
+    A sidecar-less artifact is skipped, not failed: completeness stays
+    `_REQUIRED_PHASES`'s responsibility.
+    """
+    findings: list[str] = []
+    session_dir = Path(session_dir)
+    if not session_dir.is_dir():
+        return findings
+    for art in sorted(session_dir.glob("*.json")):
+        if not sidecar_path(art).is_file():
+            continue
+        res = verify_sidecar(art, require_key=False)
+        if not res.payload_ok:
+            why = res.errors[0] if res.errors else "payload mismatch"
+            findings.append(f"{art.name}: {why}")
+    return findings
+
+
 def verify_committed(repo_root: Path, *, phase_min: int = 158) -> CommittedResult:
     """Keyless merge-boundary gate: every sealed phase >= ``phase_min`` must have a
     provenance sidecar whose ``payload_sha256`` recomputes over the committed
@@ -233,6 +260,10 @@ def verify_committed(repo_root: Path, *, phase_min: int = 158) -> CommittedResul
             if not res.payload_ok:
                 why = res.errors[0] if res.errors else "payload mismatch"
                 mismatches.append((phase_num, f"{sid}/{ph}.json: {why}"))
+        # GH #321: iteration artifacts are evidence, not scratch. Verify every
+        # sidecar-bearing artifact in the session, not just the required set.
+        for extra in verify_session_artifacts(gates / sid):
+            mismatches.append((phase_num, f"{sid}/{extra}"))
     return CommittedResult(not mismatches, mismatches, list(by_phase.values()))
 
 

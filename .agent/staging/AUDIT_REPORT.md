@@ -1,123 +1,144 @@
-# AUDIT REPORT -- Phase 217 (GH #314, rescoped), iteration 2
+# AUDIT REPORT -- Phase 218 (GH #319 cluster), iteration 2
 
 **Verdict**: PASS
 **Risk Grade**: L2
-**Target**: docs/plan-qor-phase217-installed-skill-drift.md
-**Session**: 2026-08-11T0639-f954d2
-**Branch**: phase/217-installed-skill-drift
+**Target**: docs/plan-qor-phase218-unreconciled-record-cluster.md
+**Session**: 2026-08-11T1304-400282
+**Branch**: phase/218-unreconciled-record-cluster
 **Mode**: solo (audit_risk_score option_b_required=false)
-**Prior verdict**: VETO at ledger entry #542 (ground: `coverage-gap`); cleared below
+**Prior verdict**: VETO at ledger entry #547 (`infrastructure-mismatch`, `specification-drift`, `coverage-gap`); all three cleared below
+**Categories**: `infrastructure-mismatch`, `specification-drift`, `coverage-gap`
 
-## Prior-ground disposition -- `coverage-gap`: LD-4 defers enforcement to an unfiled V2
+## Prior-ground disposition
 
-**Category note.** The finding is a half-measure deferral, and `audit.schema.json`
-carries no such category. Its enum is deliberately closed with no `other` escape
-hatch, so an unmappable finding must either map honestly or force a schema
-amendment. Recorded as `coverage-gap`, which fits on the merits: the Definition
-of Done gives the deferred enforcement no empirical tier and no `D4.d` waiver.
-Whether "half-measure deferral" warrants its own category is worth a separate
-decision -- GH #147 catalogued eleven instances and GH #319 was filed today --
-but inventing one mid-audit is exactly the deliberate-amendment discipline the
-closed enum exists to enforce.
+### Ground 1 -- `infrastructure-mismatch`: the exceptions list is factually wrong
 
-LD-4 ships disclosure and states:
+LD-1 seeds `KNOWN_ENTRY_GAPS = frozenset({532})`. The ledger has **two** gaps:
 
-> Enforcement is a V2 decision informed by real drift counts, following the
-> WARN-then-enforce precedent (`merge_velocity_check` Phase 93 -> 129).
+```
+gaps in numbering: [510, 532]
+```
 
-The architectural reasoning is sound and the Judge accepts it: the skill running
-the check is part of the corpus under test, so a drifted `qor-substantiate`
-could carry a weakened or absent check, and CI cannot enforce because CI has no
-operator install. Disclosure genuinely is the honest V1.
+Entry #510 is absent between `#509: SESSION SEAL -- Phase 207` and
+`#511: IMPLEMENTATION -- Phase 208`, and its file-order link is intact
+(`#511.previous == #509.chain`). Neither the research brief (#546) nor GH #316
+mentions it; both name only 532.
 
-The defect is that the V2 exists only as a sentence. No issue is filed, no
-follow-on phase is named, and the `## Definition of Done` carries no `D4.d`
-waiver recording the deferral with its rationale and successor.
+An exceptions list that omits a real exception makes the contiguity WARN fire on
+the repository's own ledger from the first run -- reproducing, in the fix, the
+noise defect Phase 217 was sealed to remove.
 
-This is the exact pattern this repository has documented against itself. GH #147
-catalogued eleven closed issues that shipped advisory-only and deferred the
-enforcer to an unfiled V2. GH #319 was filed **today** about governance records
-asserting properties nothing checks. `dod_check` exists specifically to catch a
-deliverable that declares no empirical tier or waiver.
+The Judge notes how this surfaced: the ambiguity in Ground 2 was being tested
+empirically, and enumerating the gaps to test it exposed the second one. Reading
+the plan would not have found it.
 
-A plan that names the WARN-then-enforce precedent should also honor what made
-that precedent work: `merge_velocity_check` reached fail-closed at Phase 129
-because the follow-on was tracked, not because the V1 mentioned a V2.
-
-Left as written, the deferral is indistinguishable at seal from an enforcement
-that was considered and rejected.
-
-**Required next action:** Governor: file the V2 enforcement issue, cite it in
-LD-4 and in a `D4.d` waiver with rationale and named follow-up, then re-run
-`/qor-audit`. Per `qor/references/doctrine-audit-report-language.md` this is a
+**Required next action:** Governor: enumerate the gaps from the ledger rather
+than asserting them, seed the list with both, and state why each is exempt.
 **Plan-text** ground.
+
+### Ground 2 -- `specification-drift`: LD-1 admits two incompatible implementations
+
+LD-1 says the assertion is that "entry N's `previous_hash` equals entry N-1's
+`chain_hash`." That phrasing does not distinguish:
+
+- **file order** -- the entry physically preceding it, or
+- **number order** -- the entry numbered N-1.
+
+The two differ materially on this repository's own data:
+
+```
+file-order   (#533.prev == #531.chain): True
+number-order (#533.prev == #532.chain): #532 absent -> FAIL
+```
+
+Number-order fails the live ledger at both gaps. File-order passes. A plan whose
+central Locked Decision admits an implementation that red-lights the repository
+it ships in is underspecified, and DoD D3 would catch it only after the
+implementation was written.
+
+**Required next action:** Governor: state file order explicitly in LD-1, and say
+why -- deletion is detectable in file order precisely because numbering is not
+load-bearing. **Plan-text** ground.
+
+### Ground 3 -- `coverage-gap`: the new module has no wiring coupling
+
+Phase 3 ships `qor/scripts/verdict_reconcile.py` and adds a call to
+`/qor-implement` Step 2. Four tests cover the module. None asserts the skill text
+actually invokes it.
+
+Phase 217 shipped exactly this coupling for the same reason and recorded it in
+the seal: a producer that can be deleted while its consumer remains is a slot
+nothing fills. `test_seal_step_invokes_the_check` exists one phase back as the
+precedent. Its absence here repeats a defect this project fixed last phase.
+
+The gap is sharper than usual because `/qor-implement` Step 2 is prose: nothing
+mechanical fails if the call is dropped, and the module would sit in the tree
+looking like coverage.
+
+**Required next action:** Governor: declare a test asserting the skill text names
+`verdict_reconcile`, then re-run `/qor-audit`. **Plan-text** ground.
 
 ## Passes
 
 | Pass | Result |
 |---|---|
 | Prompt Injection | PASS (canary scan, exit 0) |
-| Security / OWASP | PASS -- digest over local files; no network, no subprocess on untrusted input |
-| Ghost UI / Live-Progress | N/A |
-| Test Functionality | PASS -- nine declared tests, each invoking the unit and asserting on returned findings or digest values |
+| Security / OWASP | PASS -- local file reads and digests; no network, no subprocess on untrusted input |
+| Test Functionality | PASS -- every declared test invokes the unit and asserts on returned findings or exit codes |
 | Filter-Stage | PASS |
-| Infrastructure Alignment | PASS -- three LD citations carry paired grep evidence, re-verified at the cited lines |
+| Infrastructure Alignment | Ground 1 (see above); the four LD grep citations themselves re-verified at the cited lines |
 | Feature Test Declaration | PASS -- both rows carry `test_path` and `test_descriptor` |
-| Razor / self-application | PASS -- `install_drift_check.py` is ~70 lines; additions stay far under 250 |
+| Razor / self-application | PASS -- additions are small; `ledger_hash.py` is the largest touched and has room |
 | Publication boundary | PASS -- 0 findings |
-| pre-audit lint ladder | all rc=0 |
-| sg_closure_lint | 40 entries, 0 without enforcer citation |
+| pre-audit lint ladder | all rc=0; `dod_check` rc=0 |
 
 ## Grounds considered and rejected
 
-**LD-1 rewrites a finding the research brief already sealed.** Rejected, and the
-correction is to the plan's credit. Entry #541 records that the brief's first
-draft called the repo-scope check a silent pass, and that running it returned 30
-findings at exit 1. LD-1 states the corrected fact and draws the right
-consequence: an absent scope is one fact, not thirty defects. A plan that
-inherited the uncorrected premise would have built the wrong remedy.
+**LD-5 over-constrains by demanding a failing test per fix.** Rejected, and it is
+the plan's strongest clause. All four checks currently PASS on the input they
+should reject, so a good-path test would pass at HEAD and prove nothing. Requiring
+a test that fails against HEAD is the only construction that demonstrates the
+defect existed.
 
-**LD-5 sequences a destructive operation last for convenience.** Rejected. The
-27 live mismatches are the only real fixture for the new check, and resyncing
-first would destroy the evidence the phase exists to act on. Sequencing is
-methodological, not convenient. Operator has explicitly authorized overwrite of
-installed skills as generated artifacts.
+**The cluster is too broad for one phase.** Rejected. Four corrections to four
+independent modules, no shared state, each with its own counterfactual. Splitting
+would multiply ceremony without reducing risk.
 
-**Phase 5 has no verifiable deliverable.** Rejected as a ground, noted as a
-limit. The resync mutates a directory outside the repository, so no test can
-assert its effect. The seal entry recording pre-resync drift count and
-post-resync digest is the available evidence, and the plan already requires it.
+**#316's fix cannot detect tail truncation, so it is incomplete.** Rejected as a
+ground; the plan states this limit explicitly in `## Boundaries` rather than
+implying coverage it lacks. Naming the ceiling is the correct handling.
 
-**`change_class: feature` is wrong.** Rejected. Two new user-invocable
-surfaces ship (`scope="auto"`, `skill_corpus.digest`); the schema field is
-optional and no existing artifact breaks.
-
-## Noted risk, not a ground
-
-`qor-substantiate` carries 313 bytes of slack against the 39,936-byte lock, and
-Phase 3 adds a step to it. The plan pre-commits to moving rationale into
-`references/seal-gate-ladder.md` if the step does not fit. Phase 216 consumed
-807 bytes of that file's slack against a 360-byte estimate, so the estimate
-class has already been wrong once in the direction that hurts. Measure before
-and after; if the inline step exceeds the remaining slack, the relocation is
-mandatory, not optional.
+**`change_class: feature` is wrong for bug fixes.** Rejected. Two new modules
+ship with new invocable surfaces; `feature` is the honest class.
 
 ## Verdict
 
-**PASS** at L2. The ground is cleared.
+**PASS** at L2. All three grounds are cleared, and two of the remedies are
+stronger than the VETO required.
 
-GH #320 is filed and carries substance rather than a placeholder: three named
-decisions V2 owes -- where enforcement can honestly live given the checker sits
-inside the corpus it validates, what threshold constitutes drift, and whether
-the ledger should distinguish clean-corpus from drifted-corpus seals at query
-time -- plus entry criteria requiring observed drift data before the enforcement
-point is chosen. LD-4 now cites it, and the Definition of Done carries a `D4.d`
-waiver with architectural rationale and a named follow-up. `dod_check` returns
-exit 0 against the amended plan.
+**Ground 1** -- `KNOWN_ENTRY_GAPS` is now `frozenset({510, 532})`, and both are
+verified absent from every commit rather than recalled (`git log --all -S "Entry
+#510"` returns nothing). The plan goes further than asked: a new test,
+`test_live_ledger_gap_set_matches_declared_exceptions`, enumerates gaps from the
+live ledger and asserts equality with the constant. That test goes red both when
+a new gap appears AND when someone widens the constant to silence one -- closing
+the exact mechanism by which 510 went unnoticed. An exception list that can drift
+from reality is the defect this cluster exists to fix; the plan now refuses to let
+its own remedy become an instance.
 
-The deferral is now distinguishable at seal from an enforcement considered and
-rejected, which is the whole of what the VETO asked for.
+**Ground 2** -- LD-1 states file order explicitly, shows the two candidate
+semantics against live data, and argues the merits: the chain is built by
+appending, so adjacency in the artifact is the real structure and entry numbers
+are labels. That reasoning also explains why deletion is the detectable case.
 
-Implementation may proceed. Binding: the noted risk above is not advisory --
-`qor-substantiate` has 313 bytes of slack and Phase 216 overran a same-class
-estimate by more than double. Measure before and after; relocate on overflow.
+**Ground 3** -- `test_implement_step_invokes_the_reconciler` is declared, citing
+the Phase 217 precedent and naming why the coupling matters more here: Step 2 is
+prose, so nothing mechanical fails if the call is dropped.
+
+The stale `frozenset({532})` left in Phase 1's Affected Files after the LD-1
+amendment was corrected before this verdict; the plan now states the constant
+identically at both sites.
+
+Implementation may proceed. LD-5 is binding: each of the four fixes ships a test
+that FAILS against `HEAD`. A fix whose test passes before the change has not
+demonstrated the defect and does not satisfy this plan.

@@ -10,6 +10,23 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.141.0] - 2026-08-11
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 218 (feature; unreconciled-record cluster)**: closes #313, #316, #318, #321 under umbrella #319. Four governance checks were returning **success on input they exist to catch**. A failing check is a working control; a passing check on bad input certifies the defect.
+
+  **#316** -- `ledger_hash verify` accepted a ledger with an entry *deleted*. Tampering was already caught (altering `previous_hash` breaks the recorded chain hash), but every survivor of a deletion stays internally consistent, so per-entry arithmetic saw nothing. Adds a cross-entry sequence assertion over **file order**: the chain is built by appending, so adjacency in the artifact is the real structure and entry numbers are labels. Numbering gaps are a WARN; `KNOWN_ENTRY_GAPS` declares the two real holes (510, 532) and a test derives the live gap set so widening the constant to silence a new one goes red.
+
+  **#318** -- `intent_lock` hashed raw bytes while `ledger_hash.content_hash` had normalized line endings since GAP-GOV-03. A CRLF conversion read as plan drift and aborted correct seals; the operator response to a false ABORT is to re-capture, which is also the action that masks a real drift.
+
+  **#313** -- `/qor-implement` Step 2 branched on a verdict string with no comparison to the audit gate artifact. Because `.agent/staging/` is not session-scoped, a stale report survives indefinitely; this happened three times in one session. New `verdict_reconcile` compares target *and* content digest, so a report bound to a since-amended plan is also rejected.
+
+  **#321** -- `gate_provenance verify-committed` reported success over a sidecar whose digest did not recompute, because `-iterN` artifacts were outside its walk. `_REQUIRED_PHASES` is a completeness list ("what must exist") that had been reused as a verification scope ("what do we check"). Those are different questions; iteration artifacts are the record a reader consults to reconstruct a VETO.
+
+  Each fix ships a **counterfactual test** confirmed failing before the change. All four checks previously passed on the input they should reject, so a good-path test would have proven nothing.
+
 ## [0.140.0] - 2026-08-11
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

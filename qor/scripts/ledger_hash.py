@@ -139,6 +139,15 @@ def _atomic_write_json(path: Path, data: dict) -> None:
 
 ENTRY_RE = re.compile(r"^### Entry #(\d+):", re.MULTILINE)
 
+#: Entry numbers allocated but never committed, verified absent from every
+#: commit (`git log --all -S "Entry #510"` returns nothing; #532 was allocated
+#: in an abandoned Phase 215 session). Neither can be closed by renumbering --
+#: that would invalidate every downstream chain hash. Contiguity is a WARN, so
+#: these are silenced rather than tolerated; tests/test_ledger_sequence.py
+#: derives the live gap set and asserts it equals this constant, so widening it
+#: to silence a NEW gap goes red.
+KNOWN_ENTRY_GAPS = frozenset({510, 532})
+
 # GH #282: the hash-markup dialect (inline-backtick, `= <hex>`, and fenced
 # bare-hex) and the historical compatibility boundary now live in the shared
 # `ledger_dialect` module, so ledger_hash, seal_entry_check, and
@@ -355,6 +364,85 @@ def _classify_entry(num: int, content_val: str, previous_val: str, recorded: str
             True, True, True)
 
 
+
+def _sequence_breaks(
+    entries: list[tuple[int, str]],
+    tolerated: frozenset[int] | set[int] = frozenset(),
+) -> list[str]:
+    """Entries whose previous_hash was not produced by the entry before them.
+
+    File order, not number order. The chain is built by appending, so adjacency
+    in the artifact is the real structure and entry numbers are labels; a
+    number-keyed check would fail at every KNOWN_ENTRY_GAPS position despite
+    intact links.
+
+    Per-entry arithmetic cannot see a deletion: every survivor stays internally
+    consistent. This is the assertion that can (GH #316).
+    """
+    breaks: list[str] = []
+    previous_chain: str | None = None
+    for num, body in entries:
+        resolved = _resolve_recorded(body)
+        if resolved is None:
+            previous_chain = None
+            continue
+        _content, previous_val, recorded = resolved
+        if num in tolerated:
+            # Disclosed-irregular links (SG-ConcurrentLedgerRace-A residuals,
+            # migration/reconciliation attestations). Their previous_hash is
+            # known not to follow the preceding entry, so a BREAK here would
+            # re-report a condition the chain already accounts for.
+            #
+            # Continuity is UNKNOWN across such an entry, not merely irregular:
+            # its recorded chain hash is not what the next entry followed. Reset
+            # rather than carry it forward, so the successor is not judged
+            # against a predecessor the chain has already disclaimed.
+            previous_chain = None
+            continue
+        if previous_chain is not None and previous_val != previous_chain:
+            breaks.append(
+                f"BREAK Entry #{num}: previous_hash {previous_val[:16]} was not "
+                f"produced by the preceding entry (chain {previous_chain[:16]}); "
+                "an entry may have been removed"
+            )
+        previous_chain = recorded
+    return breaks
+
+
+def _number_gaps(entries: list[tuple[int, str]]) -> list[int]:
+    """Undeclared holes in entry numbering. WARN-only; see KNOWN_ENTRY_GAPS."""
+    nums = [n for n, _ in entries]
+    if not nums:
+        return []
+    seen = set(nums)
+    return [n for n in range(min(nums), max(nums))
+            if n not in seen and n not in KNOWN_ENTRY_GAPS]
+
+
+
+def _report_sequence(
+    entries: list[tuple[int, str]],
+    tolerated: frozenset[int] | set[int] = frozenset(),
+) -> int:
+    """Emit sequence breaks and numbering warnings; return the error count.
+
+    Kept out of ``verify`` deliberately. ``verify`` is a pre-existing Section 4
+    violation at 97 lines; Phase 218 must not enlarge it, and this reporting is
+    separable on its own merits.
+    """
+    errors = 0
+    for message in _sequence_breaks(entries, tolerated):
+        print(message, file=sys.stderr)
+        errors += 1
+    gaps = _number_gaps(entries)
+    if gaps:
+        print(
+            f"WARN: undeclared entry-number gap(s): {gaps}. Links may still be "
+            "intact; add to KNOWN_ENTRY_GAPS only with a recorded reason."
+        )
+    return errors
+
+
 def verify(
     ledger_md: Path,
     *,
@@ -451,6 +539,10 @@ def verify(
             last_failed = num
     if skipped > 0:
         print(f"Skipped {skipped} entries with non-verifiable markup")
+
+    errors += _report_sequence(
+        entries, reconciled | grandfathered | _duplicate_previous_hash_members(entries)
+    )
     return 1 if errors else 0
 
 

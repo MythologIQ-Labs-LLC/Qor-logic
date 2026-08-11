@@ -1422,3 +1422,27 @@ referenced_by:
   - tests/test_install_scope_resolution.py
 introduced_in_plan: phase217-installed-skill-drift
 ```
+
+```yaml
+term: ledger sequence assertion
+definition: 'Cross-entry check that each META_LEDGER entry previous_hash equals the chain_hash of the entry physically preceding it in the file. Distinct from the per-entry arithmetic, which recomputes chain_hash from an entry own content_hash and previous_hash and therefore cannot see a deletion: every survivor of a removed entry stays internally consistent. File order rather than entry-number order, because the chain is built by appending and entry numbers are labels; KNOWN_ENTRY_GAPS declares the real holes. Phase 218 wiring (GH #316).'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/references/doctrine-governance-enforcement.md
+  - qor/scripts/ledger_hash.py
+  - tests/test_ledger_sequence.py
+  - docs/architecture.md
+  - docs/operations.md
+introduced_in_plan: phase218-unreconciled-record-cluster
+```
+
+```yaml
+term: verdict reconciliation
+definition: 'Comparison of an audit report against its gate artifact, asserting both name the same target and the same plan content hash before the report verdict is trusted. The staging directory is not session-scoped, so a report from an earlier phase survives indefinitely and its PASS reads as permission for later work; the digest comparison additionally rejects a report bound to a since-amended plan. Phase 218 wiring (GH #313).'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/references/doctrine-governance-enforcement.md
+  - qor/scripts/verdict_reconcile.py
+  - qor/skills/sdlc/qor-implement/SKILL.md
+introduced_in_plan: phase218-unreconciled-record-cluster
+```

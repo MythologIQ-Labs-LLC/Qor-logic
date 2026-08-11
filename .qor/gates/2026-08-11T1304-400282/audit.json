@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-11T1304-400282",
+  "ts": "2026-08-11T17:59:42Z",
+  "target": "docs\\plan-qor-phase218-unreconciled-record-cluster.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "target_content_hash": "85c3505ffc5fcd6ff8530a55b299f5ad7f0a2af19084232041b3df838a9e8c6c",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.140.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-08-11T17:59:42Z"
+  }
+}

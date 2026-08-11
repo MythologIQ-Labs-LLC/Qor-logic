@@ -134,6 +134,17 @@ Contract for `teams` mode (reserved for future harness wiring): `TeamCreate(<spe
 Read: .agent/staging/AUDIT_REPORT.md
 ```
 
+**Reconcile before trusting the verdict (Phase 218 wiring; GH #313).**
+`.agent/staging/` is not session-scoped, so a report from an earlier phase
+survives and its PASS reads as permission for this one:
+
+```bash
+qor-logic scripts verdict_reconcile --report .agent/staging/AUDIT_REPORT.md   --artifact ".qor/gates/$SESSION_ID/audit.json" || ABORT
+```
+
+Any finding ABORTs: `target-mismatch` means the report belongs to another phase,
+`digest-mismatch` means the plan changed after the verdict.
+
 **INTERDICTION**: If verdict is NOT "PASS":
 
 <!-- qor:fail-fast-only reason="audit verdict is /qor-audit's output, not scaffold; cannot auto-heal" -->

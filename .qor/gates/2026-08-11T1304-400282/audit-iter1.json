@@ -1,0 +1,23 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-11T1304-400282",
+  "ts": "2026-08-11T16:45:14Z",
+  "target": "docs/plan-qor-phase218-unreconciled-record-cluster.md",
+  "verdict": "VETO",
+  "findings_categories": [
+    "infrastructure-mismatch",
+    "specification-drift",
+    "coverage-gap"
+  ],
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "target_content_hash": "35f452075b471b613a48abfe86e7427bff6bacea88f985928ad1b53d7092ff43",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.140.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "veto",
+    "ts": "2026-08-11T16:45:14Z"
+  }
+}
