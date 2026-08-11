@@ -24,7 +24,7 @@ executing on a weaker model, these rules are binding
   <output>Updated META_LEDGER.md with final seal, SYSTEM_STATE.md snapshot</output>
 </skill>
 
-Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
+Negative constraints: `qor/references/doctrine-negative-constraints.md`.
 
 ## Governance Health Preflight
 
@@ -33,7 +33,7 @@ Run `qor-logic governance-health --profile skill-entry` before reading governanc
 
 ## Purpose
 
-The final phase of the S.H.I.E.L.D. lifecycle. Verify that implementation matches the encoded blueprint (Reality = Promise), then cryptographically seal the session.
+Verify that implementation matches the encoded blueprint (Reality = Promise), then cryptographically seal the session.
 
 ## Critical Invariants
 
@@ -316,6 +316,18 @@ Escapes: `-- qor:service-role-only` and `-- qor:definer-view-intended reason: ..
 Record `skill_corpus` (digest, scope, drift count) in the gate artifact and seal
 entry. Disclosure, not ABORT: `references/seal-gate-ladder.md`.
 
+### Step 4.6.14: Publication boundary, post-staging (Phase 219; GH #309)
+
+Run AFTER Step 9.5 staging so this phase's new files are visible; untracked
+files are scanned but the audit-time run predates them.
+
+`qor-logic scripts publication_boundary_lint --repo-root . || ABORT`
+
+Record `boundary_scope` (`structural` or `structural+identity`) in the gate
+artifact and seal entry: CI cannot load the identity overlay, so an unqualified
+zero means less there. Why post-staging and fail-closed:
+`references/seal-gate-ladder.md`.
+
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.doc_integrity` (SKIP path if absent per the Step Prerequisites table + `SG-HalfSealedClaim-A`).
@@ -392,15 +404,15 @@ Repos without `FEATURE_INDEX.md` record `**Feature Inventory**: not adopted` and
 
 #### Acceptance-criteria close guard (Phase 114; GH #158, WARN-first)
 
-Before composing the PR body (Step 9.6), run the close guard over the issues this seal will close:
+Before Step 9.6, run the close guard over the issues this seal closes:
 `qor-logic scripts ac_close_guard --pr-body-file <planned-pr-body> --qa-session <session-id>`
-What it inspects, and the V1 WARN-first posture: `references/seal-gate-ladder.md`.
+Contract: `references/seal-gate-ladder.md`.
 
 ### Step 6.5: Documentation Currency Check (Phase 31 wiring)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.doc_integrity_strict` (SKIP path if absent per the Step Prerequisites table + `SG-HalfSealedClaim-A`).
 
-Verify that doc-affecting phase changes also updated the system-tier docs (`docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md`). Heuristic: `references/seal-gate-ladder.md`.
+Verify that doc-affecting phase changes also updated the system-tier docs. Paths + heuristic: `references/seal-gate-ladder.md`.
 
 ```python
 from qor.scripts import gate_chain
@@ -662,7 +674,7 @@ tag = gh.create_seal_tag(
 
 ### Step 9.6: Push/Merge Options (Phase 13 — 4-option menu)
 
-Prompt user with four options (never offer continuation menus when work is sealable; the next decision is push/merge, not "what next phase"):
+Prompt user with four options (the next decision is push/merge, not what next phase):
 
 1. **Push only** — `git push origin <branch>`.
 2. **Push + open PR** — `gh pr create` (description must cite plan file, ledger entry `#<n>`, and Merkle seal hash per `doctrine-governance-enforcement.md` §6).
@@ -706,17 +718,13 @@ Template: `references/qor-substantiate-templates.md`.
 ### Step 4.6.12: Execution-continuity receipt gate (Phase 216 wiring; GH #285)
 
 Applies when the plan declares `execution_continuity`. Require a verification
-receipt bound to the EXACT implementation revision; a receipt whose revision
-differs from current head is stale and ABORTs. Provider prose, status badges,
-and session-completion messages are not receipts.
+receipt bound to the EXACT implementation revision; a stale-revision receipt
+ABORTs. Provider prose and status badges are not receipts.
 
 Preserve `verified`, `rejected`, and `inconclusive` as distinct outcomes;
-`inconclusive` is not `skip`. Reference checkpoint and receipt artifacts by path
-and digest -- never duplicate their bodies in ledger prose.
-
-Implementation verification is not merge, release, or deployment acceptance.
-Record the pinned contract version and that conformance is asserted, not
-verified. Full contract: `qor/references/doctrine-execution-continuity.md`.
+`inconclusive` is not `skip`. Reference artifacts by path and digest. Record the
+pinned contract version. Separation of acceptances and why conformance is
+asserted rather than verified: `references/seal-gate-ladder.md`.
 
 ## Constraints
 

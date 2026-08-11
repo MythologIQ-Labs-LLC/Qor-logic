@@ -268,3 +268,20 @@ constant to silence a new gap goes red.
 
 It cannot detect a ledger truncated at the tail: nothing downstream of the last
 entry exists to contradict it.
+## Boundary coverage and its scope (Phase 219; GH #309)
+
+`publication_boundary_lint` scans the index **and** untracked-not-ignored files.
+Staged files were always covered -- `git ls-files` lists the index -- but
+untracked ones were not, and untracked is the state every artifact is in when a
+phase produces it.
+
+Ignored files stay out: they are not published, and the operator's identity-terms
+overlay lives among them.
+
+The lint reports its detector scope, `structural` or `structural+identity`. CI
+runs structural-only because the overlay is gitignored by design -- a tracked
+denylist of private identifiers in a public repository publishes the strings it
+suppresses. An unqualified "0 findings" therefore means different things in CI
+and locally, and the seal records which one it got.
+
+`/qor-substantiate` Step 4.6.14 runs the lint fail-closed AFTER staging.

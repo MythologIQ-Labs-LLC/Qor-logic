@@ -1446,3 +1446,14 @@ referenced_by:
   - qor/skills/sdlc/qor-implement/SKILL.md
 introduced_in_plan: phase218-unreconciled-record-cluster
 ```
+
+```yaml
+term: detector scope disclosure
+definition: 'Which detector set a publication-boundary run used: structural for the four pattern detectors alone, or structural+identity when the operator-local terms overlay was loaded. CI cannot load the overlay because it is gitignored by design -- a tracked denylist of private identifiers in a public repository publishes the strings it suppresses -- so an unqualified zero-findings result means less in CI than locally. The scope is recorded in the substantiate gate artifact and seal entry so a green boundary line carries its own coverage. Phase 219 wiring (GH #309).'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/scripts/publication_boundary_lint.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/references/doctrine-governance-enforcement.md
+introduced_in_plan: phase219-unseen-surface-gates
+```

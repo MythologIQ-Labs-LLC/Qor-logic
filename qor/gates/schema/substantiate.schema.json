@@ -91,6 +91,14 @@
           "minimum": 0
         }
       }
+    },
+    "boundary_scope": {
+      "type": "string",
+      "enum": [
+        "structural",
+        "structural+identity"
+      ],
+      "description": "Which detector set the boundary lint ran with (Phase 219; GH #309). CI cannot load the gitignored identity overlay, so an unqualified zero-findings result means less there than locally."
     }
   }
 }

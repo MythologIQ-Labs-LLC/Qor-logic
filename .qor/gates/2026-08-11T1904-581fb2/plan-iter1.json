@@ -1,0 +1,54 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-11T1904-581fb2",
+  "ts": "2026-08-11T19:48:13Z",
+  "plan_path": "docs/plan-qor-phase219-unseen-surface-gates.md",
+  "change_class": "feature",
+  "doc_tier": "system",
+  "terms": [
+    {
+      "term": "detector scope disclosure",
+      "home": "qor/references/doctrine-governance-enforcement.md"
+    }
+  ],
+  "phases": [
+    "Untracked coverage",
+    "Detector-scope disclosure",
+    "Seal-ceremony disclosure pass and wiring",
+    "Marker seeding",
+    "Record the pattern",
+    "Verification"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_boundary_untracked_coverage.py tests/test_boundary_scope_disclosure.py tests/test_substantiate_boundary_wiring.py tests/test_seal_artifacts_marker_seeding.py -q",
+    "python -m pytest tests/ -q",
+    "python -m ruff check qor/ tests/",
+    "qor-logic scripts skill_size_budget_lint --skills-root qor/skills",
+    "qor-logic scripts dist_compile",
+    "qor-logic scripts sg_closure_lint",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase219-unseen-surface-gates.md"
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "untracked-boundary-coverage",
+      "operation": "NEW",
+      "test_path": "tests/test_boundary_untracked_coverage.py",
+      "test_descriptor": "test_untracked_violation_is_found asserts an untracked violating file yields a finding"
+    },
+    {
+      "entry_id": "detector-scope-disclosure",
+      "operation": "NEW",
+      "test_path": "tests/test_boundary_scope_disclosure.py",
+      "test_descriptor": "test_scope_reports_identity_when_overlay_present asserts the reported scope names identity coverage"
+    }
+  ],
+  "open_questions": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.141.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-11T19:48:13Z"
+  }
+}

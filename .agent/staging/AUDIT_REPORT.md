@@ -1,144 +1,78 @@
-# AUDIT REPORT -- Phase 218 (GH #319 cluster), iteration 2
+# AUDIT REPORT -- Phase 219 (GH #309, #311, #312), iteration 1
 
 **Verdict**: PASS
 **Risk Grade**: L2
-**Target**: docs/plan-qor-phase218-unreconciled-record-cluster.md
-**Session**: 2026-08-11T1304-400282
-**Branch**: phase/218-unreconciled-record-cluster
+**Target**: docs/plan-qor-phase219-unseen-surface-gates.md
+**Session**: 2026-08-11T1904-581fb2
+**Branch**: phase/219-unseen-surface-gates
 **Mode**: solo (audit_risk_score option_b_required=false)
-**Prior verdict**: VETO at ledger entry #547 (`infrastructure-mismatch`, `specification-drift`, `coverage-gap`); all three cleared below
-**Categories**: `infrastructure-mismatch`, `specification-drift`, `coverage-gap`
-
-## Prior-ground disposition
-
-### Ground 1 -- `infrastructure-mismatch`: the exceptions list is factually wrong
-
-LD-1 seeds `KNOWN_ENTRY_GAPS = frozenset({532})`. The ledger has **two** gaps:
-
-```
-gaps in numbering: [510, 532]
-```
-
-Entry #510 is absent between `#509: SESSION SEAL -- Phase 207` and
-`#511: IMPLEMENTATION -- Phase 208`, and its file-order link is intact
-(`#511.previous == #509.chain`). Neither the research brief (#546) nor GH #316
-mentions it; both name only 532.
-
-An exceptions list that omits a real exception makes the contiguity WARN fire on
-the repository's own ledger from the first run -- reproducing, in the fix, the
-noise defect Phase 217 was sealed to remove.
-
-The Judge notes how this surfaced: the ambiguity in Ground 2 was being tested
-empirically, and enumerating the gaps to test it exposed the second one. Reading
-the plan would not have found it.
-
-**Required next action:** Governor: enumerate the gaps from the ledger rather
-than asserting them, seed the list with both, and state why each is exempt.
-**Plan-text** ground.
-
-### Ground 2 -- `specification-drift`: LD-1 admits two incompatible implementations
-
-LD-1 says the assertion is that "entry N's `previous_hash` equals entry N-1's
-`chain_hash`." That phrasing does not distinguish:
-
-- **file order** -- the entry physically preceding it, or
-- **number order** -- the entry numbered N-1.
-
-The two differ materially on this repository's own data:
-
-```
-file-order   (#533.prev == #531.chain): True
-number-order (#533.prev == #532.chain): #532 absent -> FAIL
-```
-
-Number-order fails the live ledger at both gaps. File-order passes. A plan whose
-central Locked Decision admits an implementation that red-lights the repository
-it ships in is underspecified, and DoD D3 would catch it only after the
-implementation was written.
-
-**Required next action:** Governor: state file order explicitly in LD-1, and say
-why -- deletion is detectable in file order precisely because numbering is not
-load-bearing. **Plan-text** ground.
-
-### Ground 3 -- `coverage-gap`: the new module has no wiring coupling
-
-Phase 3 ships `qor/scripts/verdict_reconcile.py` and adds a call to
-`/qor-implement` Step 2. Four tests cover the module. None asserts the skill text
-actually invokes it.
-
-Phase 217 shipped exactly this coupling for the same reason and recorded it in
-the seal: a producer that can be deleted while its consumer remains is a slot
-nothing fills. `test_seal_step_invokes_the_check` exists one phase back as the
-precedent. Its absence here repeats a defect this project fixed last phase.
-
-The gap is sharper than usual because `/qor-implement` Step 2 is prose: nothing
-mechanical fails if the call is dropped, and the module would sit in the tree
-looking like coverage.
-
-**Required next action:** Governor: declare a test asserting the skill text names
-`verdict_reconcile`, then re-run `/qor-audit`. **Plan-text** ground.
+**Prior verdict**: none (first audit of this plan)
 
 ## Passes
 
 | Pass | Result |
 |---|---|
 | Prompt Injection | PASS (canary scan, exit 0) |
-| Security / OWASP | PASS -- local file reads and digests; no network, no subprocess on untrusted input |
-| Test Functionality | PASS -- every declared test invokes the unit and asserts on returned findings or exit codes |
-| Filter-Stage | PASS |
-| Infrastructure Alignment | Ground 1 (see above); the four LD grep citations themselves re-verified at the cited lines |
-| Feature Test Declaration | PASS -- both rows carry `test_path` and `test_descriptor` |
-| Razor / self-application | PASS -- additions are small; `ledger_hash.py` is the largest touched and has room |
+| Security / OWASP | PASS -- adds a scanning surface; A03 unaffected (argv-form git calls, no shell) |
+| Test Functionality | PASS -- fourteen declared tests, each invoking the unit and asserting on findings, position, or size |
+| Filter-Stage | PASS -- exclude-standard ordering is explicit: ignored files are filtered before scanning |
+| Infrastructure Alignment | PASS -- three LD grep citations re-verified at the cited lines |
+| Feature Test Declaration | PASS -- both rows carry test_path and test_descriptor |
+| Razor / self-application | PASS -- additions are small; the constrained file is handled by LD-3 |
 | Publication boundary | PASS -- 0 findings |
-| pre-audit lint ladder | all rc=0; `dod_check` rc=0 |
+| pre-audit lint ladder | all rc=0; dod_check rc=0 |
 
 ## Grounds considered and rejected
 
-**LD-5 over-constrains by demanding a failing test per fix.** Rejected, and it is
-the plan's strongest clause. All four checks currently PASS on the input they
-should reject, so a good-path test would pass at HEAD and prove nothing. Requiring
-a test that fails against HEAD is the only construction that demonstrates the
-defect existed.
+**LD-3 asserts a disclosure pass will free enough room without measuring it.**
+This was the ground the Judge expected to sustain. Phase 215 established that this
+exact file can run out of movable prose -- 1,219 bytes of explanatory text against
+a 1,176-byte requirement, a 43-byte margin, and that near-miss is why LD-5 of that
+plan exists.
 
-**The cluster is too broad for one phase.** Rejected. Four corrections to four
-independent modules, no shared state, each with its own counterfactual. Splitting
-would multiply ceremony without reducing risk.
+Measured rather than assumed:
 
-**#316's fix cannot detect tail truncation, so it is incomplete.** Rejected as a
-ground; the plan states this limit explicitly in `## Boundaries` rather than
-implying coverage it lacks. Naming the ceiling is the correct handling.
+```
+movable (explanatory, unpinned): 4015 B
+operative (LD-2 forbids moving):  2372 B
+new step + margin needs:          ~400-600 B
+```
 
-**`change_class: feature` is wrong for bug fixes.** Rejected. Two new modules
-ship with new invocable surfaces; `feature` is the honest class.
+Four kilobytes against a six-hundred-byte need. Phases 216 and 217 added
+explanatory prose alongside their operative steps, so the file has more slack now
+than when Phase 215 nearly exhausted it. The ground does not hold, and LD-3's
+sequencing -- pass first, step second, extend the pass if the step does not fit --
+is correct construction regardless.
+
+**The plan corrects its own source issue, which is scope creep.** Rejected. LD-1
+does not widen the work; it prevents building the wrong thing. The remedy GH #309
+proposes would narrow the scanned surface to a subset of what is already covered
+and would have caught none of the four documented misses. A plan implementing the
+issue as written would have shipped a no-op and closed the defect.
+
+**Disclosure instead of coverage for identity terms is a half-measure.** Rejected.
+The terms overlay is gitignored because a tracked denylist of private identifiers
+in a public repository publishes the strings it suppresses. That is a constraint
+to state, not a gap to close. LD-4 makes the asymmetry legible where evidence
+lands rather than leaving two different meanings of zero findings identical.
+
+**#311 and #312 are unrelated riders.** Rejected. All three are one shape: a gate
+clean over a surface it cannot see, a remediation loop that cannot reach its own
+precondition, and a lexical result read as semantic.
+
+## Noted risk, not a ground
+
+The new seal step's posture is stated in the Definition of Done as fail-closed,
+but Phase 3's Affected Files describes it only as a new step running the lint
+after staging. The two are consistent and the DoD binds, so this is not a defect
+-- but the implementer must wire it as an ABORT. A WARN-only step would reproduce
+the audit-time invocation this phase exists to supplement, passing D2 while
+failing D1.
 
 ## Verdict
 
-**PASS** at L2. All three grounds are cleared, and two of the remedies are
-stronger than the VETO required.
+**PASS** at L2.
 
-**Ground 1** -- `KNOWN_ENTRY_GAPS` is now `frozenset({510, 532})`, and both are
-verified absent from every commit rather than recalled (`git log --all -S "Entry
-#510"` returns nothing). The plan goes further than asked: a new test,
-`test_live_ledger_gap_set_matches_declared_exceptions`, enumerates gaps from the
-live ledger and asserts equality with the constant. That test goes red both when
-a new gap appears AND when someone widens the constant to silence one -- closing
-the exact mechanism by which 510 went unnoticed. An exception list that can drift
-from reality is the defect this cluster exists to fix; the plan now refuses to let
-its own remedy become an instance.
-
-**Ground 2** -- LD-1 states file order explicitly, shows the two candidate
-semantics against live data, and argues the merits: the chain is built by
-appending, so adjacency in the artifact is the real structure and entry numbers
-are labels. That reasoning also explains why deletion is the detectable case.
-
-**Ground 3** -- `test_implement_step_invokes_the_reconciler` is declared, citing
-the Phase 217 precedent and naming why the coupling matters more here: Step 2 is
-prose, so nothing mechanical fails if the call is dropped.
-
-The stale `frozenset({532})` left in Phase 1's Affected Files after the LD-1
-amendment was corrected before this verdict; the plan now states the constant
-identically at both sites.
-
-Implementation may proceed. LD-5 is binding: each of the four fixes ships a test
-that FAILS against `HEAD`. A fix whose test passes before the change has not
-demonstrated the defect and does not satisfy this plan.
+Binding: LD-6, each fix ships a test that FAILS against HEAD. LD-3's ordering is
+equally binding -- the disclosure pass runs first and is extended if insufficient;
+the step is never compressed below the point where it stops being executable.
