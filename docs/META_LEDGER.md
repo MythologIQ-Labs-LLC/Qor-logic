@@ -16125,6 +16125,30 @@ Full suite 2784 passed / 6 skipped, green twice; ruff clean; boundary lint 0 fin
 
 **Entry ID**: `e6715f0f51c9`
 
+### Entry #532: RESEARCH BRIEF -- execution-continuity lifecycle semantics (GH #285)
+
+**Timestamp**: 2026-08-11T03:23:12Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-10T2322-d14262`
+
+**Content Hash**: `09eca313d9a11d5bd6baf47c59908d90cbfeeb3ae3f18008ffea8c9d8c62c4e9`
+**Previous Hash**: `70c7e9e993224f6c95cdbaaa5e39598e45d98ff9c6d3ea5b6481f7c68654369b`
+**Chain Hash (Merkle seal)**: `a30c9851d347caad7f08a236e12373d5cd84c2b3262f75d3fe1849b86c887ad0`
+
+**Decision**: Investigated GH #285 (provider-neutral execution-continuity semantics) to establish what exists, what must not be duplicated, and whether it fits one governed phase.
+
+BUILDABLE NOW: the upstream dependency is closed and ADR-0015 declares contract version 1.0, with two schemas shipped. But the pin is assertable, not verifiable -- neither schema carries a version field and their $id has no version segment, so nothing in the artifact would contradict a stale pin. That satisfies the issue's requirement and simultaneously weakens it; raised upstream, not a blocker.
+
+MOST USEFUL FINDING: the hardest-sounding requirement is half-built. intent_lock already captures SHA-256 of plan + audit + git HEAD and re-verifies on drift, which IS exact-revision binding scoped to one session. Continuity is its cross-provider generalisation. Building a parallel checkpoint verifier would create two authorities disagreeing about what 'same revision' means -- the one-concept-two-authorities failure this project has catalogued repeatedly. Extend, do not duplicate.
+
+GENUINELY NEW: 'inconclusive' appears nowhere in scripts, reliability, or schemas. Every gate today is binary. A third outcome that is neither success nor product rejection touches verdict handling in audit, substantiate, validate, and remediate and cannot reuse an existing enum. This is the conceptually deepest part of the issue and reads smaller than it is.
+
+SPLIT IS FORCED, NOT CHOSEN: of the seven skills #285 modifies, qor-audit has 520 bytes of headroom and qor-substantiate has 360, against a test-enforced 39936-byte lock. #285 adds audit classifications, fail-closed checks, and substantiation evidence requirements to exactly those two files. Phase 207 needed two trims for a three-line edit to one of them. Recommendation: phase A does a progressive-disclosure pass into the references/ dirs both already have (6 and 3 files, so the pattern is precedented and mechanical); phase B ships the contract. B must be ATOMIC -- the issue's acceptance criteria require docs, glossary, schema/lint, and behavioural tests in one phase -- so B is large by the issue's design, not by drift.
+
+Also: plan.schema.json has no contract-pin property (nearest is spec_deltas); an additive property is required, with good precedent from required_gate_artifacts and spec_deltas. Checkpoint identity must reference entry_id per closed #51, not sequential entry numbers. All four cross-authorities (#39, #51, #108, #139) are closed and are boundaries, not scope. Brief: docs/research-brief-execution-continuity-2026-08-10.md. Next: /qor-plan for phase A.
+
 ---
 
 *Chain integrity: VALID*

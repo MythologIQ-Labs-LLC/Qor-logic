@@ -1,0 +1,66 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-10T2322-d14262",
+  "ts": "2026-08-11T03:23:13Z",
+  "questions": [
+    "Is the upstream contract pinnable as #285 requires?",
+    "What existing machinery must #285 extend rather than duplicate?",
+    "Does #285 fit one governed phase?"
+  ],
+  "findings": [
+    {
+      "item": "upstream pin",
+      "verdict": "available but not mechanically verifiable",
+      "evidence": "ADR-0015 declares 'Contract version: 1.0'; neither shipped schema carries a version field and $id has no version segment"
+    },
+    {
+      "item": "intent_lock is the seam",
+      "verdict": "extend, do not duplicate",
+      "evidence": "qor/reliability/intent_lock.py:34 _head_commit captures git HEAD; already binds plan+audit+revision and re-verifies on drift"
+    },
+    {
+      "item": "'inconclusive' is new",
+      "verdict": "no existing enum to reuse",
+      "evidence": "grep -rln inconclusive over qor/scripts, qor/reliability, qor/gates/schema returns nothing"
+    },
+    {
+      "item": "plan.schema.json contract pin",
+      "verdict": "additive property required",
+      "evidence": "21 properties; nearest analogue spec_deltas; precedent required_gate_artifacts (Phase 168), spec_deltas (Phase 192)"
+    },
+    {
+      "item": "one phase is impossible",
+      "verdict": "split forced by a measured lock",
+      "evidence": "qor-audit 39416B (+520 slack), qor-substantiate 39576B (+360) against the 39936 test-enforced lock; #285 edits both heavily"
+    },
+    {
+      "item": "phase B must be atomic",
+      "verdict": "issue-mandated",
+      "evidence": "acceptance criteria require docs, glossary, schema/lint, and behavioural tests to ship in the same governed phase"
+    },
+    {
+      "item": "cross-authorities",
+      "verdict": "boundaries, not scope",
+      "evidence": "#39, #51, #108, #139 all CLOSED; checkpoint identity must use entry_id per #51, not sequential entry numbers"
+    }
+  ],
+  "sources": [
+    "ADR-0015 (upstream)",
+    "upstream execution-continuity contract",
+    "qor/reliability/intent_lock.py:34",
+    "qor/gates/schema/plan.schema.json",
+    "qor/scripts/entry_id.py",
+    "GH #285",
+    "GH #266",
+    "GH #51"
+  ],
+  "brief_path": "docs/research-brief-execution-continuity-2026-08-10.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-11T03:23:13Z"
+  }
+}
