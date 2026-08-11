@@ -885,6 +885,7 @@ home: qor/references/doctrine-shadow-genome-countermeasures.md
 referenced_by:
   - qor/scripts/plan_iteration_status_lint.py
   - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/governance/qor-audit/references/pre-audit-lints.md
 introduced_in_plan: phase84-audit-readiness-guards
 ```
 

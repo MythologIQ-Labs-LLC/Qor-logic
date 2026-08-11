@@ -1,0 +1,55 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-11T0333-90738b",
+  "ts": "2026-08-11T03:35:54Z",
+  "questions": [
+    "Is there enough movable material to recover the needed headroom?",
+    "Which sections are safe to move versus operative?",
+    "What did the previous pass on these files learn?"
+  ],
+  "findings": [
+    {
+      "item": "movable surface",
+      "verdict": "ample; not the constraint",
+      "evidence": "qor-audit 10331B unpinned across 20/49 sections vs 520 needed; qor-substantiate 7757B across 19/54 vs 360 needed"
+    },
+    {
+      "item": "unpinned != safe",
+      "verdict": "largest unpinned sections are operative",
+      "evidence": "Test Functionality Audit 2370B, Security Audit 1192B, OWASP 935B, Ghost UI 886B are executed checklists, not rationale"
+    },
+    {
+      "item": "guardrail list is a lower bound",
+      "verdict": "Phase 178 found locks its plan missed",
+      "evidence": "ledger #432: 'discovered and honored MORE token locks than the plan enumerated' -- literal || true in Step 4.6.8, option_b_required, hash-integrity helper names"
+    },
+    {
+      "item": "technique",
+      "verdict": "append to already-cited references, do not create new ones",
+      "evidence": "doc_integrity referenced_by/orphan-concept surface: 119 entries, 104 naming skills or references; Phase 178 appended and touched no glossary"
+    },
+    {
+      "item": "target ~1.5KB per skill, not the minimum",
+      "verdict": "files regrew since the last pass",
+      "evidence": "Phase 178 landed 39355/39321; now 39416/39576 (+61/+255) with phases 213 and 214 adding inline prose"
+    }
+  ],
+  "sources": [
+    "ledger entry #432 (Phase 178)",
+    "qor/scripts/doc_integrity.py:109-114",
+    "qor/skills/governance/qor-audit/references/",
+    "qor/skills/governance/qor-substantiate/references/",
+    "49 guardrail test files under tests/",
+    "GH #285",
+    "GH #266"
+  ],
+  "brief_path": "docs/research-brief-governance-skill-headroom-2026-08-11.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.138.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-11T03:35:54Z"
+  }
+}

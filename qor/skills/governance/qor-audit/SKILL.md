@@ -98,7 +98,7 @@ Override is permitted (advisory gate) but logged as a severity-1 event in the Pr
 
 ### Step 0.3: Pre-audit readiness short-circuit (Phase 84 wiring; GH #81)
 
-Before the cycle-count and lint steps, detect whether the plan declares itself not yet ready for audit. Per `SG-PreAuditDraftSubmission-A`, a plan carrying a pre-audit self-declaration still triggers audit under the autonomous cycle and burns an audit-iteration slot on a structurally not-ready plan.
+Before the cycle-count and lint steps, detect whether the plan declares itself not yet ready for audit. Rationale: `references/pre-audit-lints.md` "Step 0.3 readiness short-circuit".
 
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
@@ -219,7 +219,7 @@ qor-logic scripts audit_risk_score --plan "$PLAN_PATH"
 
 `PLAN_PATH` is argv-only (SG-Phase47-A). When `audit_risk_score` reports `option_b_required: true`, **Option B independent review is mandatory** for this audit -- dispatch a fresh-context audit or an `architect-reviewer` subagent, NOT a solo audit; the operator may override only with written justification in the audit report.
 
-The external-reviewer bridge contract, the full Option A/Option B dispatch protocol (fresh-context / subagent / second-operator), and the SG-007 author-momentum rationale + empirical results live in `references/adversarial-mode.md` (progressive disclosure per GH #92). Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AuthorAuditMomentum-A.
+Bridge contract, Option A/Option B dispatch, and SG-007 rationale: `references/adversarial-mode.md`. Per `qor/references/doctrine-shadow-genome-countermeasures.md` SG-AuthorAuditMomentum-A.
 
 Your role is to find violations, not to help. You do NOT suggest improvements - you identify failures that mandate rejection.
 
@@ -254,7 +254,7 @@ qor-logic scripts prompt_injection_canaries \
   || ABORT
 ```
 
-The `${PLAN_PATH}` value is consumed only as an argv argument and validated by the shared resolver (`governance_paths.resolve_governance_plan_path`, GH #282), which rejects traversal, outside-root, unsupported-extension, and unregistered paths before read (SG-Phase47-A honored by construction).
+`${PLAN_PATH}` is argv-only and resolver-validated; SG-Phase47-A honored by construction. Detail: `references/pre-audit-lints.md` "`${PLAN_PATH}` argv safety".
 
 **Any canary hit -> VETO with `prompt-injection` category**.
 
@@ -388,7 +388,7 @@ For every unit test described in the plan, verify the description names the beha
 | [test name]      | [yes/no]      | [yes/no]           | [PASS/VETO] |
 ```
 
-A test is **presence-only** when its assertion is solely about artifact existence or textual presence (`assert path.exists()`, `assert <substring> in <file_text>`, `assert hasattr(...)`) and the unit under test is not invoked. Acceptance question for every described test: "If the unit's behavior were silently broken but the artifact still existed, would this test fail?" If no, the test is presence-only.
+A test is **presence-only** when its assertion is solely about artifact existence or textual presence (shapes: `references/phase37-subpasses.md`) and the unit under test is not invoked. Acceptance question for every described test: "If the unit's behavior were silently broken but the artifact still existed, would this test fail?" If no, the test is presence-only.
 
 **Any planned test that asserts only file existence, substring presence, or structural placement without invoking the unit and validating its output -> VETO with `test-failure` category.**
 
@@ -448,7 +448,7 @@ See `qor/references/doctrine-feature-tdd.md` for the three-gate contract (plan /
 
 #### Infrastructure Alignment Pass (Phase 37 wiring)
 
-Grep-verify every plan claim about filesystem behavior, gate artifact globbing, event types, and cross-module interfaces against current repository code BEFORE implementation. Catches the V10-class failure from Phase 36: plans that reference infrastructure the repo does not actually provide.
+Grep-verify every plan claim about filesystem behavior, gate artifact globbing, event types, and cross-module interfaces against current repository code BEFORE implementation. Failure class caught: `references/phase37-subpasses.md` "Infrastructure Alignment".
 
 ```markdown
 ### Infrastructure Alignment Audit
@@ -509,7 +509,7 @@ Verify all proposed files connect to build path:
 
 #### Documentation Drift (Phase 28 wiring)
 
-Non-VETO advisory. After orphan detection, render a `## Documentation Drift` section when the plan's declared `doc_tier` / `terms` / `boundaries` diverge from the repo glossary/topology. Per `qor/references/doctrine-documentation-integrity.md` these divergences hard-block at `/qor-substantiate`; the advisory lets the Governor fix drift before seal.
+Non-VETO advisory. After orphan detection, render a `## Documentation Drift` section when the plan's declared `doc_tier` / `terms` / `boundaries` diverge from the repo glossary/topology. Why advisory here and binding at seal: `references/phase37-subpasses.md`.
 
 ```python
 from qor.scripts import doc_integrity, gate_chain
@@ -550,7 +550,7 @@ if verdict == "PASS" and reviews_gate:
     )
 ```
 
-`mark_addressed` validates `closure_enforcer` first (four accepted forms per `/qor-remediate` Step 6; invalid raises `ClosureEnforcerError` without mutation), then re-verifies the audit artifact before flipping (mismatch raises `ReviewAttestationError`); PASS audits without the field never touch event state. See `qor/references/doctrine-governance-enforcement.md` §10.1 "Two-stage remediation flip."
+Validation order and error classes: `references/phase37-subpasses.md` "Two-stage remediation flip".
 
 ### Step 5: Update Ledger
 
@@ -625,7 +625,7 @@ Schema at `qor/gates/schema/audit.schema.json` validates before write; a violati
 | Infrastructure Alignment Pass (§Step 3) | `infrastructure-mismatch` |
 | Prompt Injection Pass (§Step 3) | `prompt-injection` |
 
-Any finding that cannot map to an enum value raises `UnmappedCategoryError` before gate artifact emission. No `other` or `uncategorized` fallback — drift must force a deliberate `audit.schema.json` amendment, not silent loss of stall signal. Implemented by `qor/scripts/findings_signature.py`'s validation path.
+An unmappable finding raises `UnmappedCategoryError` before gate emission; there is no fallback category. Rationale: `references/phase37-subpasses.md` "Finding-category enum".
 
 ## Constraints
 

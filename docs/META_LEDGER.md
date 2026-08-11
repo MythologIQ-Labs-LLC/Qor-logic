@@ -16125,6 +16125,121 @@ Full suite 2784 passed / 6 skipped, green twice; ruff clean; boundary lint 0 fin
 
 **Entry ID**: `e6715f0f51c9`
 
+### Entry #533: RESEARCH BRIEF -- governance-skill headroom recovery (Phase A of GH #285)
+
+**Timestamp**: 2026-08-11T03:35:53Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Session**: `2026-08-11T0333-90738b`
+
+**Content Hash**: `2c2c20135b987ae9bb938cd3b1aba5ab384ef2b22e2217a53fbba5b89e91577e`
+**Previous Hash**: `70c7e9e993224f6c95cdbaaa5e39598e45d98ff9c6d3ea5b6481f7c68654369b`
+**Chain Hash (Merkle seal)**: `eb5e93e3e0cf696bba9465fad8e2409be8be67617b9257bafa8f7e40fe0f6dcc`
+
+**Decision**: Investigated Phase A of GH #285 -- recovering headroom in qor-audit and qor-substantiate before the continuity work edits both heavily.
+
+MOVABLE SURFACE IS AMPLE, NOT THE CONSTRAINT: computed by locating every section containing no string asserted by any of the 49 guardrail test files -- qor-audit has 10331 bytes unpinned across 20 of 49 sections against 520 needed; qor-substantiate has 7757 across 19 of 54 against 360 needed. Roughly 20x the requirement in each file.
+
+BUT UNPINNED IS NOT SAFE-TO-MOVE: the largest unpinned sections are operative rather than explanatory -- Test Functionality Audit, Security Audit, OWASP Top 10, Ghost UI in the audit skill; Test Audit, Version Validation, Push/Merge Options in the seal skill. These are what the Judge and the ceremony execute. Relocating them trades a size problem for a usability one. Progressive disclosure moves rationale; the operative instruction and its ABORT/VETO semantics stay inline with a pointer.
+
+THE FINDING THAT MATTERS MOST: Phase 178 (ledger entry #432) ran this exact pass on these exact files, and its implementer 'discovered and honored MORE token locks than the plan enumerated' -- a literal || true required inside Step 4.6.8 prose, option_b_required/Option B tokens, hash-integrity helper names. The 49-string map computed here is therefore a LOWER BOUND, not an inventory. Any plan treating its own guardrail list as complete will be wrong the same way. The guardrail-is-specification rule must be a Locked Decision, with budget for discovery during implementation.
+
+TECHNIQUE: append titled subsections to ALREADY-CITED references and leave inline pointers, compressing rather than duplicating where prose already exists there. Creating new reference files would touch doc_integrity's referenced_by/orphan-concept surface (119 entries, 104 naming skills or references) and risk term-drift at seal; appending avoids the glossary entirely.
+
+TARGET: not the 520/360 minimum. Both files have regrown since Phase 178 landed them at 39355 and 39321 -- now 39416 and 39576, drift of +61 and +255, with phases 213 and 214 each adding inline prose. Phase 178's ~1.5 KB per skill bought roughly a year of edits and is the right target. Verify with the focused guardrail suite, a skill-referencing sweep, the full suite, and a dist recompile -- Phase 178's shape, which caught drift a focused suite alone would not. Brief: docs/research-brief-governance-skill-headroom-2026-08-11.md. Next: /qor-plan.
+
+### Entry #534: GATE TRIBUNAL -- Phase 215 governance-skill headroom (PASS)
+
+**Timestamp**: 2026-08-11T03:38:02Z
+**Phase**: GATE (Phase 215)
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase215-governance-skill-headroom.md
+**Session**: `2026-08-11T0333-90738b`
+**Verdict**: PASS
+
+**Content Hash**: `8a5978675194156914587b72c3a1f823cefd96d7c23e40eecf8d9ed830ff33f3`
+**Previous Hash**: `eb5e93e3e0cf696bba9465fad8e2409be8be67617b9257bafa8f7e40fe0f6dcc`
+**Chain Hash (Merkle seal)**: `e663130cae1330751b8caf1496089d42371c6275431652694fc01ac771b34c53`
+
+**Decision**: PASS at L1. A relocation plan that treats its own analysis as fallible, which is the only posture under which this pass is safe.
+
+LD-1 is the decision that earns the verdict. The plan enumerates 49 asserted strings per skill and then states plainly that the number is a LOWER BOUND, citing ledger entry #432 where the previous pass on these same two files 'discovered and honored MORE token locks than the plan enumerated' -- verified independently, that phrase appears in the ledger. A plan that had presented its guardrail map as an inventory would have been VETOed: the map is derived from string matching over test sources, which cannot see assertions built by concatenation, regex, or fixture indirection. Budgeting for discovery instead of asserting completeness is correct.
+
+LD-2 refuses the obvious optimisation. The largest unpinned sections are the ones a naive pass would move first, and they are executed checklists -- Test Functionality Audit, Security Audit, OWASP, Ghost UI. Moving them would satisfy every test and every size lint while making the Judge open a second file to learn what to check. The plan names this as trading a size problem for a usability one and declines. Nothing mechanical would have caught that.
+
+LD-3 avoids a hazard by construction rather than by care: appending to already-cited references keeps this phase entirely off doc_integrity's referenced_by/orphan-concept surface, so no glossary edit is needed and no term-drift abort is possible at seal. Grep-evidence paired after the pre-audit lint flagged its absence. LD-4 is justified by measured regrowth (+61/+255 since Phase 178) rather than by preference; recovering the bare minimum would return both files to the ceiling within a few phases.
+
+The Phase 1 red-first step is what separates this from a pass that asserts a bound already satisfied, and the headroom test was verified parametrized over both skills (test_substantiate_staging_gates.py:55). Phase 3's four verification widths reuse Phase 178's shape because a focused suite alone missed dist drift there.
+
+The strongest clause is D4 of the second deliverable: no test may be edited, weakened, or skipped as part of this pass, because the tests ARE the specification being preserved. A relocation pass that adjusts a failing guardrail has proven nothing. change_class governance is correct -- no code ships and no version applies. Next: /qor-implement.
+
+### Entry #535: GATE TRIBUNAL -- Phase 215 governance-skill headroom, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-11T04:20:00Z
+**Phase**: GATE (Phase 215)
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase215-governance-skill-headroom.md
+**Session**: `2026-08-11T0333-90738b`
+**Verdict**: PASS
+
+**Content Hash**: `ad5ed430cd13d5027c8091bce20f49a6a6f8c477427f0f9c5146b486aa3eb0a5`
+**Previous Hash**: `e663130cae1330751b8caf1496089d42371c6275431652694fc01ac771b34c53`
+**Chain Hash (Merkle seal)**: `b44a5b8fe826ed114e619ac83dca4fbf00e213bda6d6b884cbbb74562c02ed2d`
+
+**Decision**: PASS at L1 on an amended plan. Entry #534 PASSed this plan; implementation then measured a conflict between two of its own commitments and returned it here rather than building against a target the tribunal had endorsed but the file could not support.
+
+The conflict was arithmetic. D2 required qor-substantiate to reach roughly 38400 bytes, a 1176-byte recovery. LD-2 forbids relocating operative prose. Phase 1 measurement found 2786 bytes of unpinned prose in that file, of which roughly 1567 bytes carries ABORT clauses, escape idioms, or operator actions -- leaving roughly 1219 bytes genuinely explanatory. A 43-byte margin over a regex-based classification.
+
+What makes this worth a second iteration rather than a shrug: the failure mode is silent. A target reachable only by moving essentially every movable byte does not announce itself by going red. It fails by pressuring the implementer to reclassify one operative sentence as rationale, after which the skill measures under budget, every guardrail still passes, and the seal records success. The gate that was supposed to protect the skill's readability would have been the thing that degraded it.
+
+LD-5 records the measurement, names the direction of the hazard, and sets qor-substantiate to 38876 bytes with a 700-byte recovery -- still roughly twice what phase B requires. qor-audit carries 5512 bytes of unpinned prose against 1016 needed and is not constrained, so it keeps the LD-4 target. Two files, two targets, because the supply of movable prose differs; a uniform number here would have been symmetry for its own sake.
+
+Three grounds were considered and rejected. Lowering a target to obtain a verdict -- rejected, because the amendment resolves a conflict in favor of the safety constraint and the 39936-byte test-enforced lock is untouched; 38400 was only ever a plan-internal aspiration and no test is edited, relaxed, or skipped. Presenting a heuristic as fact -- rejected, because LD-5 states the classification is heuristic and reasons from that imprecision toward more margin rather than less. Hiding the debt -- rejected, because D3 makes recording the shortfall a seal obligation and names the remedy class a future pass needs.
+
+One limitation is sustained rather than dismissed: 700 bytes buys materially less runway than the ~1.5 KB LD-4 argued for, at the observed +255-per-pass drift. The plan says so. Forcing the larger number would have been worse.
+
+A separate defect was caught while writing this verdict. AUDIT_REPORT.md still carried the phase 206 report; iteration 1 wrote its gate artifact but never the human-readable report. /qor-implement Step 2 reads that file for a PASS verdict and would have found one -- for the wrong phase. Rewritten for phase 215 before implementation proceeds. The gate artifact and the report are two records of one verdict and nothing currently checks that they name the same target.
+
+Binding on implementation: LD-1, the enumerated guardrail list stands as a lower bound; LD-2, operative prose does not move regardless of how explanatory it reads. Falling short of even the reduced target under those constraints is to be recorded, not resolved by widening what counts as rationale. Next: /qor-implement.
+
+
+### Entry #536: SESSION SEAL -- Phase 215 governance-skill headroom (governance)
+
+**Timestamp**: 2026-08-11T04:40:00Z
+**Phase**: SUBSTANTIATE (Phase 215; governance)
+**Author**: Judge
+**Change class**: governance
+**Plan**: docs/plan-qor-phase215-governance-skill-headroom.md
+**Session**: `2026-08-11T0333-90738b`
+
+**Content Hash**: `ad5ed430cd13d5027c8091bce20f49a6a6f8c477427f0f9c5146b486aa3eb0a5`
+**Previous Hash**: `b44a5b8fe826ed114e619ac83dca4fbf00e213bda6d6b884cbbb74562c02ed2d`
+**Chain Hash (Merkle seal)**: `b3cef6a8fcbe3c193afc44c1fc163c6428a3d034d9b66d273347f831137befd3`
+
+**Decision**: **Scope**: Phase 215 sealed (governance; version not applicable -- no shipped code changed). Phase A of GH #285: recover headroom in the two largest governance skills so Phase B's execution-continuity semantics have somewhere to land.
+
+**Sizes**: qor-audit 39416 -> 38389 bytes (-1027), against a 38400 target. qor-substantiate 39576 -> 38816 (-760), against the 38876 target LD-5 set. Both remain under the 39936-byte test-enforced lock. Red measured first at a uniform 38400 for both files, per the plan's Phase 1, so the pass is evidenced as having moved something rather than asserting a bound already satisfied.
+
+**Blocks moved**. From qor-audit: two-stage remediation flip validation order, Documentation Drift advisory rationale, finding-category enum no-fallback rationale, Infrastructure Alignment failure class, and presence-only assertion shapes -> references/phase37-subpasses.md; Step 0.3 readiness rationale and PLAN_PATH argv safety -> references/pre-audit-lints.md; external-reviewer pointer compressed in place. From qor-substantiate: version-applicability rarity, SSDF tagger scope and grandfather boundary, gate-chain form and ordering, close-guard inspection detail, documentation-currency heuristic location -> references/seal-gate-ladder.md; tag-timing off-by-one and session-rotation ordering -> references/release-and-tag-timing.md. Each left a one-line inline pointer naming the destination subsection.
+
+**The finding that outlasts the byte count**. qor-substantiate cannot reach 38400 without moving operative prose. Of 2786 bytes of unpinned prose there, roughly 1567 carries ABORT clauses, escape idioms, or operator actions that LD-2 forbids moving, leaving roughly 1219 genuinely explanatory against the 1176 a 38400 target demands -- a 43-byte margin over a regex-based classification. The plan was amended mid-implementation and re-audited at entry #535 rather than built against a target the tribunal had endorsed but the file could not support.
+
+The hazard is directional and quiet. A target reachable only by moving essentially every movable byte does not fail by going red; it fails by pressuring the implementer to reclassify one operative sentence as rationale, after which the skill measures under budget, every guardrail passes, and this entry would have recorded success. A future pass on that file needs a structural remedy, not another relocation round. The remaining density there is Phase 178 succeeding, not this pass failing.
+
+**LD-3 refined by contact**. Appending to already-cited references was chosen to stay off doc_integrity's referenced_by surface entirely. It did not: moving prose carries glossary TERMS into files not listed for them, and the strict check ABORTed on SG-PreAuditDraftSubmission-A appearing in pre-audit-lints.md. One referenced_by registration fixed it. The lesson is narrower than LD-3 stated -- appending avoids creating orphan concepts, but it does not avoid referenced_by drift.
+
+**No test edited, weakened, or skipped.** Verified: `git diff --name-only tests/` empty. Full suite 2784 passed / 6 skipped. Focused guardrail suite (56 files, 307 tests) run twice for determinism. Skill-referencing sweep (148 files, 892 passed) initially failed 4 dist-variant sync tests because the variants embed skill bodies -- exactly the drift Phase 178 recorded a focused suite alone missing -- cleared by dist_compile; recompile idempotence confirmed with only generated_ts differing.
+
+**Two defects surfaced during the ceremony, neither caused by this phase.** First: `.agent/staging/AUDIT_REPORT.md` still carried the Phase 206 report while this session's gate artifact recorded PASS for Phase 215. /qor-implement Step 2 reads the report for its verdict and would have found a PASS naming the wrong phase. The gate artifact and the report are two records of one verdict and nothing cross-checks that they agree. Rewritten before implementation proceeded. Second: Step 4.6.11 of this skill mandates `|| ABORT` on `qor.scripts.instruction_hygiene_lint`, which is absent from this repository entirely -- no module, no tests, no git history -- despite the step declaring itself Phase 208 wiring with a Step Prerequisites row. Recorded as a disclosed SKIP per Phase 75 declarative tolerance, with a severity-1 gate_skipped_prerequisite_absent event. A fail-closed gate whose enforcer was never shipped is the inverse of this phase's own guardrail-is-specification rule and should be filed.
+
+**Gates**: intent_lock VERIFIED; skill_admission ADMITTED; gate_skill_matrix 30 skills / 140 handoffs / 0 broken; secret_scanner exit 0; data_api_acl_lint disclosed-SKIP (no SQL migrations); merge_velocity_check healthy; dod_check exit 0; governance_index enforce exit 0; doc_integrity strict PASS after one referenced_by registration; publication_boundary_lint 0 findings; skill_size_budget_lint WARN-only for both skills at 38.1 and 38.6 KB, no EXCEEDED. procedural_fidelity flagged doc-surface-uncovered before SYSTEM_STATE.md was authored.
+
+**Next**: Phase B of GH #285 -- the continuity contract itself, atomic per its acceptance criteria.
+
+
 ---
 
 *Chain integrity: VALID*

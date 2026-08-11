@@ -10,6 +10,11 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+### Changed
+- **Phase 215 (governance; Phase A of #285)**: recovered headroom in the two largest governance skills so Phase B's execution-continuity semantics have room to land. `qor-audit` 39,416 -> 38,389 bytes (-1,027); `qor-substantiate` 39,576 -> 38,816 (-760). Rationale moved into already-cited reference files as titled subsections, with one-line inline pointers left behind. No test was edited, weakened, or skipped: the guardrail suite is the specification being preserved.
+
+  The constraint discovered mid-implementation is the more useful output. `qor-substantiate` cannot reach the 38,400-byte working target without relocating operative prose -- of 2,786 bytes of unpinned prose, roughly 1,567 carries ABORT clauses, escape idioms, or operator actions, leaving ~1,219 genuinely explanatory against 1,176 needed. A 43-byte margin over a heuristic classification is not a margin, and a target reachable only by moving every movable byte pressures an implementer to reclassify a seal step as rationale. The plan was amended and re-audited (ledger #535) to give that file a 38,876-byte target instead. A future pass there needs a structural remedy, not another relocation round.
+
 ## [0.138.1] - 2026-08-10
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

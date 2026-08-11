@@ -69,3 +69,23 @@ mirrors `release.yml`'s own guard, so the tag push and the publish guard agree b
 construction. The four push/merge options are never replaced by a continuation
 menu — when work is sealable, the next decision is push/merge, not "what next
 phase".
+
+## Step 9.7 tag timing: the off-by-one this ordering closes
+
+Tagging happens after Step 9.5 has created the seal commit, so `git rev-parse
+HEAD` resolves to the seal commit itself.
+
+An earlier ordering tagged at Step 7.5, which targeted the pre-seal HEAD -- the
+tag then pointed one commit behind the seal it was supposed to mark, and a
+release built from that tag carried the previous phase's version state.
+
+## Step 9.8 session rotation: why it runs last
+
+Rotation is the final action of the seal, clearing the gate directory so the
+next `/qor-plan` starts clean.
+
+It must run after every Step 7.x through 9.7 command, because those resolve
+`SESSION_ID` from `.qor/session/current`. Rotating earlier would repoint that
+file mid-ceremony and the remaining steps would write into the next session's
+gate directory.
+

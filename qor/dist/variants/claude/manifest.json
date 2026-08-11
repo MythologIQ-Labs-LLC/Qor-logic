@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-10T23:09:04Z",
+  "generated_ts": "2026-08-11T04:05:26Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -108,13 +108,13 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/references/phase37-subpasses.md",
       "install_rel_path": "skills/qor-audit/references/phase37-subpasses.md",
-      "sha256": "72da1ef1971c39553d9490e9a482decfa74e1f42c8929085ae6613590da62c9b"
+      "sha256": "a138c8452191c1aea9267aa297fab752aeba23927747f02420f8ed6ace034c32"
     },
     {
       "id": "qor-audit",
       "source_path": "skills/qor-audit/references/pre-audit-lints.md",
       "install_rel_path": "skills/qor-audit/references/pre-audit-lints.md",
-      "sha256": "64ce0a08565b96cf4bafdcf40eacac96183a5be52a7f2c6e37e08bbc6ca286e3"
+      "sha256": "72315b6e90935033abffcbb4759ed0eb241556689bbb88173932ad6df9fa339d"
     },
     {
       "id": "qor-audit",
@@ -138,7 +138,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "9733c5d8e0b9c5efeaa9e37c900fb7b358920df0ce5c0900489ea710c61155c6"
+      "sha256": "346f9e12015240f204d86433bb3974eba1f357a60a8723258fac68e60b8a2b52"
     },
     {
       "id": "qor-bootstrap",
@@ -420,19 +420,19 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/references/release-and-tag-timing.md",
       "install_rel_path": "skills/qor-substantiate/references/release-and-tag-timing.md",
-      "sha256": "763efba292d81403ab353770423b0f50db77c951b5870a7d4c3928ba98a17925"
+      "sha256": "2a7fd9b4e82dc089316da7f2de4c28a3483c70725212f28e3c2bfe91d9c36e01"
     },
     {
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
       "install_rel_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
-      "sha256": "166b714959438908482eaffeae43cbf02fb0274c2b34e64bbbae2179515635f2"
+      "sha256": "066543667608acd5aa50f7230eea7b797ac5a59ed6ac632499812cbdfdf8b879"
     },
     {
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "6ba7d651da5d6c00bbf88aba7ef3e05f50b97e674bbc6fafe44b5b1a36993fc1"
+      "sha256": "046ae145b81d0942bd307c5494f2be6afef738906e05636ee3a5f05907fcf343"
     },
     {
       "id": "qor-tone",

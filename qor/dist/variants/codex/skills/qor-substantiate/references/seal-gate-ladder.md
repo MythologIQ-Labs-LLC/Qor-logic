@@ -215,3 +215,49 @@ hashes = fold_session_deltas(Path("."), SESSION_ID)  # {} when no deltas declare
 - The coverage pillar: `qor.scripts.spec_requirement_verify.verify_deltas`
   produces the qa_evidence coverage payload (structure + declared-surface
   existence; scenario semantics stay a Judge duty at audit).
+
+## Step 2.5 version-applicability: why it rarely fires here
+
+The check at seal is the SAME shared check the audit ran before issuing PASS
+(`version_applicability.validate`). A release-class plan whose target version
+could not exceed the current tag never reaches this step -- the audit would have
+stopped it. Its presence at seal covers the narrow window where the tag advanced
+between PASS and seal.
+
+## Step 7.4 SSDF tagger: scope and grandfather boundary
+
+Computes NIST SSDF practice tags for the SESSION SEAL entry body before Step 7
+computes `content_hash`, so the tags are inside the hashed content rather than
+appended after it.
+
+Emission is forward-only: phase 52 and later entries carry tags; phase 51 and
+earlier are grandfathered, because retrofitting tags into sealed entries would
+change their content hashes and break the chain. Closes G-1 from
+`docs/compliance-re-evaluation-2026-04-29.md`.
+
+## Step 7.8 gate-chain completeness: form and ordering
+
+Argv-form throughout, with no shell-variable interpolation (SG-Phase47-A).
+
+It runs after Step 7.7 has confirmed ledger integrity, so that the check for
+this phase's four gate artifacts happens against a ledger already known good --
+a missing artifact is then unambiguously a missing artifact, not a symptom of
+ledger corruption upstream.
+
+## Step 9.6 acceptance-criteria close guard: what it inspects
+
+The guard parses the AC checklist of each `Closes #N` target named in the
+planned PR body and WARNs when an unmet criterion has no linked follow-on, or
+when the `qa.json` verdict for the session is not PASS.
+
+V1 is WARN-first and exits 0; `--enforce` is reserved for V2. Contract and the
+QA evidence artifact:
+`qor/references/doctrine-verification-closure-integrity.md`.
+
+## Step 6.5 documentation currency: where the heuristic lives
+
+The system-tier currency check is implemented by
+`doc_integrity_strict.check_documentation_currency`, which returns a warning
+list rather than raising -- currency is advisory at this tier, unlike the
+badge-currency check in the same step, which ABORTs.
+
