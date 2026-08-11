@@ -1402,6 +1402,65 @@ per-item, and record in the seal which corpus executed the ceremony. Enforcer:
 First observed instance; promote to a structured countermeasure on second
 occurrence.
 
+## 2026-08-11 -- Checks that pass on input they should reject
+
+**Phase**: 218 (GH #319: #313, #316, #318, #321)
+
+### Findings
+
+Four controls were found returning success on input they exist to catch:
+
+- `ledger_hash verify` accepted a ledger with an entry **deleted**. Each
+  survivor stays internally consistent, so per-entry arithmetic sees nothing.
+  Tampering was already caught; removal was not.
+- `intent_lock._hash_file` hashed raw bytes, so a CRLF/LF conversion read as
+  plan drift. `ledger_hash.content_hash` had normalized since GAP-GOV-03; the
+  lesson reached one hasher and not the other.
+- `/qor-implement` Step 2 branched on a verdict string with no comparison to the
+  gate artifact. Because `.agent/staging/` is not session-scoped, a Phase 206
+  report survived into Phase 215, a Phase 215 report into Phase 216, and a stale
+  VETO into Phase 217 -- three times in one session.
+- `gate_provenance verify-committed` reported "OK: provenance verified for 49
+  sessions" over a sidecar whose digest did not recompute, because `-iterN`
+  artifacts were outside its walk.
+
+### Root Cause Analysis
+
+Each control was validated against inputs it was built to accept. None had a
+test constructing the input it should reject, so its silence meant "not asked"
+rather than "verified".
+
+Two of the four were a **scope** error rather than a logic error:
+`_REQUIRED_PHASES` is a completeness list ("what must exist") reused as a
+verification scope ("what do we check"), and `verify` asserts per-entry
+arithmetic where the meaningful claim is cross-entry. In both, the check is
+correct about the thing it examines and simply does not examine enough.
+
+A contributing cause is that the safe-direction failures were tolerated.
+`intent_lock`'s false ABORT was survivable, so it was worked around rather than
+fixed -- and the workaround, re-capturing the lock, is also the action that
+masks a real drift.
+
+### Pattern to Avoid
+
+Accepting a green check as evidence without ever having seen it go red for the
+right reason. A control's credibility comes from a demonstrated rejection, not
+from a passing run.
+
+Do not validate a fix with a good-path test. If the check currently passes on
+bad input, a good-path test passes before the change and proves nothing.
+
+### Pattern ID
+
+Unasked-check. Candidate SG family entry if it recurs: `SG-UnaskedCheck-A` --
+a control validated only against inputs it was built to accept, so a pass means
+"not asked" rather than "verified"; frequently a completeness list reused as a
+verification scope. Remedy is a counterfactual test per control: construct the
+input the check currently accepts and assert rejection, and require that test to
+fail against the pre-fix revision. Enforcer:
+`tests/test_ledger_sequence.py::test_deleted_entry_is_detected`. First observed
+instance as a cluster; promote to a structured countermeasure on recurrence.
+
 ---
 
 *Shadow integrity: ACTIVE*

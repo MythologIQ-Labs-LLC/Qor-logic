@@ -28,7 +28,17 @@ def _sha256_bytes(b: bytes) -> str:
 
 
 def _hash_file(path: Path) -> str:
-    return _sha256_bytes(path.read_bytes())
+    """SHA256 of the file's bytes with line endings normalized to LF.
+
+    GAP-GOV-03, applied here in Phase 218 (GH #318). `ledger_hash.content_hash`
+    has normalized since that lesson; this hasher did not, so git's autocrlf --
+    or an editor, or `Path.write_text` on Windows -- read as plan/audit drift
+    and ABORTed a correct seal.
+
+    Only line endings are normalized. Indentation and trailing whitespace still
+    change the digest, because those are edits.
+    """
+    return _sha256_bytes(path.read_bytes().replace(b"\r\n", b"\n"))
 
 
 def _head_commit(repo: Path) -> str:

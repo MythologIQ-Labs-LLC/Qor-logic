@@ -16519,6 +16519,165 @@ Next: /qor-substantiate.
 **Next**: #313, #316, #318 remain under umbrella #319; #320 tracks enforcement.
 
 
+### Entry #546: RESEARCH BRIEF -- unreconciled-record cluster (GH #319: #313/#316/#318/#321)
+
+**Timestamp**: 2026-08-11T13:15:00Z
+**Phase**: RESEARCH (Phase 218)
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-11T1304-400282`
+
+**Content Hash**: `1c83da66b3e6140f7023e5293c2dc64be0a1ab8ee4689e6178bfb8b1e87bf8c1`
+**Previous Hash**: `85f7b84fbd1b8d35f9fcc8d7c2bf9bada7426175dd94687b28b2a5cc0038aac6`
+**Chain Hash (Merkle seal)**: `4f36d4e7f93bc31fddc93ac6c7ed40cd036cbc21ee6356e5148f43a440783bc9`
+
+**Decision**: All four claims hold; two are more precise than filed. Every one was verified by feeding the check a deliberately broken input rather than by reading the code, because twice today an issue written from reading turned out wrong.
+
+THE UNIFYING PROPERTY IS NARROWER THAN THE UMBRELLA STATES. #319 frames these as claims nothing checks. In each case a check exists, runs, and PASSES on input it should reject. A failing check is a working control; a passing check on bad input is a control that certifies the defect.
+
+#316 SHARPENED. The filed issue said ledger_hash verify checks linkage but not entry-number contiguity. Linkage is in fact checked, indirectly and effectively: corrupting entry #545 previous_hash returns rc=1, because chain_hash is a function of content_hash and previous_hash, so altering the latter invalidates the recorded chain hash. Tampering is caught. DELETION IS NOT: excising Entry #544 entirely returns rc=0 with OK Entry #545 chain hash verified. Every surviving entry stays internally consistent, and nothing asserts that entry N previous_hash is the chain hash produced by entry N-1. The real defect is a missing cross-entry sequence assertion; entry-number contiguity is one symptom and the weaker one, since renumbering is visible while deletion is not. The #531 to #533 gap already in this ledger is the benign case of the same blindness.
+
+#318 CONFIRMED at intent_lock.py:31, which hashes path.read_bytes() while ledger_hash.content_hash normalizes CRLF to LF at ledger_hash.py:37 with a docstring naming GAP-GOV-03 as the reason. One hasher learned the lesson and the other did not. The failure mode is a false ABORT, the safe direction, but it fires on ordinary Windows events and the operator response to a false ABORT is to re-capture -- which is also the action that masks a real drift. This session hit it and had to prove the change was encoding-only before re-capturing.
+
+#313 CONFIRMED, and the report is a cross-session artifact rather than a session-scoped one. qor-implement/SKILL.md:134-139 branches on the verdict string alone with no comparison to the audit gate artifact target. This session hit the mismatch THREE times: a Phase 206 report survived into Phase 215, a Phase 215 report into Phase 216, and a stale VETO into Phase 217 implement. Each time the interdiction would have passed on a PASS belonging to another phase. Both records already exist and the gate artifact carries target and target_content_hash, so the comparison needs no new data.
+
+#321 CONFIRMED and the exclusion looks incidental rather than decided. gate_provenance.py:44 defines _REQUIRED_PHASES as plan/audit/implement/substantiate and :226 reuses it as the verification scope, so phase-iterN.json matches nothing and iteration artifacts sit outside Layer B entirely. Demonstrated accidentally during the Phase 217 seal, where a sidecar written with a wrong digest formula passed verify-committed with OK provenance verified for 49 sessions. A completeness list reused as a verification scope reads as reuse, not a decision.
+
+SCOPE FITS WITHOUT A DISCLOSURE PASS. Only #313 needs skill wiring and it targets qor-implement, which has 20087 bytes of slack. Nothing in this cluster touches qor-substantiate, which sits at 28 bytes after Phase 217 and cannot absorb a step without disclosure first.
+
+Recommendations: assert the sequence rather than the numbering, with contiguity as a WARN carrying a declared exceptions list seeded with 532, since closing that hole would require rewriting every downstream chain hash; apply the content_hash treatment in _hash_file and sweep for other hashers that missed GAP-GOV-03, this being the second found; compare target_content_hash rather than the path alone, which also catches a report written against a since-amended plan; separate the completeness list from the verification scope by walking every json with a sidecar. Every fix must ship a counterfactual test that feeds the check the input it currently accepts and asserts rejection -- a good-path test would pass today.
+
+Adjacent to but distinct from SG-InertControl-A recorded in Phase 217: those controls cannot fire, these fire and return success on input they should reject. Brief: docs/research-brief-unreconciled-records-2026-08-11.md. Next: /qor-plan.
+
+
+### Entry #547: GATE TRIBUNAL -- Phase 218 unreconciled-record cluster (VETO)
+
+**Timestamp**: 2026-08-11T13:30:00Z
+**Phase**: GATE (Phase 218)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase218-unreconciled-record-cluster.md
+**Session**: `2026-08-11T1304-400282`
+**Verdict**: VETO
+
+**Content Hash**: `35f452075b471b613a48abfe86e7427bff6bacea88f985928ad1b53d7092ff43`
+**Previous Hash**: `4f36d4e7f93bc31fddc93ac6c7ed40cd036cbc21ee6356e5148f43a440783bc9`
+**Chain Hash (Merkle seal)**: `f3d4eea29ab113562e25226aff32bfaef55b3f2846572b882d6236f8d6b0637f`
+
+**Decision**: VETO at L2 on three plan-text grounds, sealed before amendment so the hash above binds the vetoed text.
+
+GROUND 1, infrastructure-mismatch. LD-1 seeds KNOWN_ENTRY_GAPS with 532. The ledger has TWO gaps: 510 and 532. Entry #510 is absent between #509 SESSION SEAL Phase 207 and #511 IMPLEMENTATION Phase 208, with its file-order link intact. Neither the research brief at #546 nor GH #316 mentions it; both name only 532. An exceptions list omitting a real exception makes the new contiguity WARN fire on this repository own ledger from its first run -- reproducing, inside the fix, the noise defect Phase 217 was sealed to remove. How it surfaced matters: the Ground 2 ambiguity was being tested empirically, and enumerating gaps to run that test exposed the second one. Reading the plan would not have found it, and the plan asserted the gap set instead of measuring it.
+
+GROUND 2, specification-drift. LD-1 states the assertion as entry N previous_hash equals entry N-1 chain_hash without distinguishing file order from number order. The two differ materially on live data: file order gives #533.prev == #531.chain True, while number order looks for #532 and fails at both gaps. A plan whose central Locked Decision admits an implementation that red-lights the repository it ships in is underspecified. DoD D3 would have caught it, but only after the implementation was written and a cycle spent.
+
+GROUND 3, coverage-gap. Phase 3 ships verdict_reconcile.py and adds a call to /qor-implement Step 2, with four tests over the module and none asserting the skill text invokes it. Phase 217 shipped exactly this coupling one phase earlier and recorded why in its seal: a producer deletable while its consumer remains is a slot nothing fills. The gap is sharper here because Step 2 is prose -- nothing mechanical fails if the call is dropped, and the module would sit in the tree looking like coverage.
+
+Four grounds were considered and rejected. That LD-5 over-constrains by demanding a failing test per fix: rejected, and it is the plan strongest clause -- all four checks currently PASS on input they should reject, so a good-path test would pass at HEAD and prove nothing; requiring a test that fails against HEAD is the only construction demonstrating the defect existed. That the cluster is too broad for one phase: rejected -- four corrections to four independent modules with no shared state and separate counterfactuals; splitting multiplies ceremony without reducing risk. That the #316 fix is incomplete because it cannot detect tail truncation: rejected as a ground, since the plan states that limit in Boundaries rather than implying coverage it lacks. That change_class feature is wrong for bug fixes: rejected -- two new modules ship with new invocable surfaces.
+
+The design is sound and LD-5 is exemplary. Two grounds are underspecification; one is a factual claim about repository state the plan asserted rather than measured. Required next action: enumerate the gaps from the ledger and seed both with rationale, state file order explicitly in LD-1 with its reason, declare the wiring-coupling test, then re-run /qor-audit. Next: /qor-plan (amend).
+
+
+### Entry #548: GATE TRIBUNAL -- Phase 218 unreconciled-record cluster, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-11T13:45:00Z
+**Phase**: GATE (Phase 218)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase218-unreconciled-record-cluster.md
+**Session**: `2026-08-11T1304-400282`
+**Verdict**: PASS
+
+**Content Hash**: `85c3505ffc5fcd6ff8530a55b299f5ad7f0a2af19084232041b3df838a9e8c6c`
+**Previous Hash**: `f3d4eea29ab113562e25226aff32bfaef55b3f2846572b882d6236f8d6b0637f`
+**Chain Hash (Merkle seal)**: `db8baf0647d7a2d3ee633d2af0529f6ccd1bbf33c6ab7ef1209f042876dfeccb`
+
+**Decision**: PASS at L2 on the amended plan. Entry #547 binds the vetoed text by content hash; this entry binds the amendment.
+
+GROUND 1 CLEARED, AND OVER-CLEARED. KNOWN_ENTRY_GAPS is now frozenset({510, 532}), with both verified absent from every commit rather than recalled -- git log --all -S "Entry #510" returns nothing, and #532 was allocated in an abandoned Phase 215 session. The plan goes past what the VETO demanded: test_live_ledger_gap_set_matches_declared_exceptions enumerates gaps from the live ledger and asserts equality with the constant, so it goes red BOTH when a new gap appears and when someone widens the constant to silence one. That closes the exact mechanism by which 510 went unnoticed. An exception list free to drift from reality is the defect this cluster exists to fix; the plan now refuses to let its own remedy become an instance of it.
+
+GROUND 2 CLEARED. LD-1 states file order explicitly, shows both candidate semantics against live data, and argues the merits rather than asserting the choice: the chain is built by appending, so adjacency in the artifact is the real structure and entry numbers are labels. That same reasoning explains why deletion is the detectable case and renumbering the weaker one -- the specification now carries its own justification.
+
+GROUND 3 CLEARED. test_implement_step_invokes_the_reconciler is declared, citing the Phase 217 precedent and naming why coupling matters more here: /qor-implement Step 2 is prose, so nothing mechanical fails if the call is dropped and verdict_reconcile would sit in the tree looking like coverage.
+
+A stale frozenset({532}) left in Phase 1 Affected Files after the LD-1 amendment was corrected before this verdict; the constant now reads identically at both sites. Worth noting that plan_text_consistency_lint passed while that inconsistency stood -- it checks paths and commands, not literals, so an internal contradiction in a Locked Decision is not mechanically caught.
+
+Binding on implementation: LD-5. Each of the four fixes ships a test that FAILS against HEAD. All four checks currently PASS on the input they should reject, so a fix whose test passes before the change has demonstrated nothing and does not satisfy this plan. The regression tests are equally binding -- a sequence assertion that replaces rather than supplements the per-entry arithmetic would trade one blindness for another.
+
+Next: /qor-implement.
+
+
+### Entry #549: IMPLEMENTATION -- Phase 218 unreconciled-record cluster
+
+**Timestamp**: 2026-08-11T14:30:00Z
+**Phase**: IMPLEMENT (Phase 218)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase218-unreconciled-record-cluster.md
+**Session**: `2026-08-11T1304-400282`
+
+**Content Hash**: `85c3505ffc5fcd6ff8530a55b299f5ad7f0a2af19084232041b3df838a9e8c6c`
+**Previous Hash**: `db8baf0647d7a2d3ee633d2af0529f6ccd1bbf33c6ab7ef1209f042876dfeccb`
+**Chain Hash (Merkle seal)**: `9794e394e2462d3346716a1b1ea9c6aea9001d9a1f7d1ee3d1962d59230a9198`
+
+**Decision**: All six plan phases implemented tests-first. Full suite 2857 passed / 6 skipped; the four counterfactual modules run twice; ruff clean; dist zero-drift; live ledger and provenance both clean.
+
+FOUR COUNTERFACTUALS, EACH RED AT HEAD. Deleted ledger entry now detected (was rc=0 with OK Entry #545 chain hash verified). CRLF/LF conversion no longer reads as intent drift. A PASS report naming another phase is rejected. A corrupted -iterN sidecar is reported. Each of those four tests was confirmed failing against HEAD before the corresponding fix; LD-5 required it because all four checks PASSED on the input they should reject, so a good-path test would have proven nothing.
+
+THE SEQUENCE ASSERTION COLLIDED WITH GRANDFATHERING, AND THE SUITE CAUGHT IT. Ten tests failed on first full run, nine of them in test_ledger_hash_tolerate_grandfathered.py. Those fixtures build deliberately irregular chains that Phase 91 and Phase 119 tolerate BY DISCLOSURE -- SG-ConcurrentLedgerRace-A residuals and migration attestations -- and the new assertion fired on them unconditionally. Fixed by passing the tolerated set (reconciled union grandfathered union duplicate-previous_hash members) into the check. One failure survived that fix: the entry AFTER a tolerated one was still judged against a predecessor whose recorded chain is disclaimed. Continuity across a disclosed-irregular entry is UNKNOWN rather than merely irregular, so previous_chain resets to None and checking resumes at the next pair. Without the existing grandfathering suite this would have shipped as a fail-closed regression against the project own documented residuals.
+
+A RAZOR VIOLATION I WORSENED AND THEN DID NOT. ledger_hash.verify is a PRE-EXISTING Section 4 violation at 97 lines against the 40-line cap, in a 606-line file. My first wiring took it to 111. Measured against HEAD to attribute it rather than assuming, then extracted _report_sequence (18 lines) so verify sits at 99 -- plus two for the call site, not plus fourteen. The pre-existing violation is not this phase to fix; enlarging it would have been. intent_lock.verify at 44 lines was measured too and is untouched by this phase.
+
+FIXTURE DEFECTS, NOT IMPLEMENTATION DEFECTS, TWICE. The ledger fixture built hashes as f-string hex, which is_placeholder_pattern correctly rejects, so it failed for a reason unrelated to what it asserts; rebuilt on real sha256 digests. The provenance fixture hand-rolled a sidecar omitting session_id; rebuilt on gate_provenance.write_sidecar so the fixture cannot drift from the format the verifier expects. Both were caught because the failures did not match the claim under test.
+
+WIRING COUPLED TO ITS SURFACE. verdict_reconcile ships a main() and test_cli_is_invocable_with_the_wired_flags, because /qor-implement Step 2 invokes it as a CLI. Phase 217 shipped a seal step wired to --scope auto while argparse rejected that value, so the step exited 2 on every run; a module the skill cannot invoke is not wired however complete it looks. That precedent is cited in the test.
+
+Also corrected in passing: the prose-lint exemption marker must be a TRAILING comment on the assertion, not a preceding line -- the same slip made and fixed one phase earlier.
+
+Scope: qor-implement grew 19849 to 20341 bytes, slack 19595. qor-substantiate untouched, still at 28 bytes. SHADOW_GENOME records the unasked-check pattern with an enforcer citation; doctrine-provenance-binding.md records that iteration artifacts are in Layer B scope and why completeness and verification are different questions. Next: /qor-substantiate.
+
+
+### Entry #550: SESSION SEAL -- Phase 218 unreconciled-record cluster (v0.141.0)
+
+**Timestamp**: 2026-08-11T15:00:00Z
+**Phase**: SUBSTANTIATE (Phase 218; feature)
+**Author**: Judge
+**Change class**: feature
+**Entry ID**: `c92033791c0d`
+**Plan**: docs/plan-qor-phase218-unreconciled-record-cluster.md
+**Session**: `2026-08-11T1304-400282`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Feature Inventory**: Total: 21 / verified: 21 / unverified: 0 / n/a: 0
+**Skill Corpus**: digest `b8656107dcced368` scope `global` drift_count 0
+
+**Content Hash**: `85c3505ffc5fcd6ff8530a55b299f5ad7f0a2af19084232041b3df838a9e8c6c`
+**Previous Hash**: `9794e394e2462d3346716a1b1ea9c6aea9001d9a1f7d1ee3d1962d59230a9198`
+**Chain Hash (Merkle seal)**: `f02dd7547c676b1815451961c376e4405eeef19574d57e22479abf7d63cd48b9`
+
+**Decision**: **Scope**: Phase 218 sealed as v0.141.0, closing GH #313, #316, #318, #321 under umbrella #319. Four governance checks were returning SUCCESS on input they exist to catch. A failing check is a working control; a passing check on bad input certifies the defect.
+
+**#316 was sharpened before it was fixed.** The filed issue said verify checks linkage but not contiguity. Linkage is in fact checked -- corrupting previous_hash returns rc=1, because chain_hash is a function of it. DELETION is not: excising an entry returns rc=0 with OK on every survivor, since each stays internally consistent. The real defect was a missing cross-entry sequence assertion, and entry-number contiguity is the weaker symptom, renumbering being visible where deletion is not. The assertion is over FILE order: the chain is built by appending, so adjacency in the artifact is the structure and entry numbers are labels. Number order would fail this repository at both its real gaps.
+
+**A second ledger gap was found by enumerating instead of recalling.** The plan seeded KNOWN_ENTRY_GAPS with 532 alone, from memory. Testing the file-order question against live data surfaced 510, absent between #509 and #511 and verified absent from every commit. Audit entry #547 VETOed on that as infrastructure-mismatch. The remedy went further than the VETO demanded: test_live_ledger_gap_set_matches_declared_exceptions derives the gap set from the ledger and asserts equality with the constant, so it goes red both when a new gap appears and when someone widens the constant to silence one -- closing the mechanism by which 510 went unnoticed.
+
+**The sequence assertion collided with grandfathering.** Nine tests in test_ledger_hash_tolerate_grandfathered.py failed on first full run: those fixtures build deliberately irregular chains that Phases 91 and 119 tolerate BY DISCLOSURE, and the new check fired on them unconditionally. Fixed by passing the tolerated set through. One failure survived: the entry after a tolerated one was judged against a predecessor the ledger has already disclaimed. Continuity across a disclosed-irregular entry is UNKNOWN rather than merely irregular, so the check resets and resumes at the next pair. Without that pre-existing suite this would have shipped as a fail-closed regression against the project own documented residuals.
+
+**Dogfooding caught a false positive that would have blocked every implement on Windows.** Running the new verdict_reconcile against this phase own audit artifact reported target-mismatch on identical paths: the gate artifact records backslash separators, the report forward slashes. A fix for false negatives had introduced a false positive at the point of use. Normalized, with a regression test. It was found only because the module was run against real data rather than fixtures.
+
+**Two recording failures, both disclosed rather than papered over.** The intent lock was never captured -- SECOND consecutive occurrence, same cause: /qor-implement Step 5.5 skipped while driving the phase manually. Not back-dated; capturing after implementation proves nothing about the window it observes. The substantive claim was verified instead: the plan content hash equals the hash bound by audit #548, and the new reconciler agrees report and artifact name the same target. Separately, plan.json was never written during /qor-plan and was BACKFILLED at seal time to satisfy gate_chain_completeness. Its content is derivable from the plan file, which audits #547 and #548 bind by hash, so the recorded facts are true -- but the artifact did not exist when the audit consumed the plan. Both are severity-1 gate_override events. The second exposes a structural gap: gate_chain_completeness runs at seal, so a missing gate artifact is discovered exactly when writing it is indistinguishable from having written it on time.
+
+**Section 4**: ledger_hash.verify is a PRE-EXISTING violation at 97 lines against the 40-line cap. First wiring took it to 111; measured against HEAD to attribute rather than assume, then extracted _report_sequence so verify sits at 99 -- plus two for the call site, not plus fourteen. The pre-existing violation is not this phase to fix; enlarging it would have been.
+
+**Fixture defects, twice, caught because failures did not match the claim under test.** The ledger fixture used f-string hex that is_placeholder_pattern correctly rejects; rebuilt on real digests. The provenance fixture hand-rolled a sidecar omitting session_id; rebuilt on gate_provenance.write_sidecar so it cannot drift from the format the verifier expects.
+
+**Gates**: intent_lock NO LOCK (override recorded, equivalent verified); skill_admission ADMITTED; gate_skill_matrix 30/140/0; secret_scanner 0; dod_check 0; merge_velocity healthy; data_api_acl disclosed-SKIP; skill_size_budget 0 EXCEEDED; doc_integrity strict PASS after 2 glossary terms and 2 referenced_by registrations; governance_index 0; feature_index 21/21; sg_closure_lint 40/0; ruff clean; install drift 0 after dist_compile and reinstall. Full suite 2857 passed / 6 skipped, counterfactual modules run twice.
+
+Also noted: governance_helpers.bump_version left a stray pyproject.toml.tmp when os.replace hit a transient Windows lock, and that path is NOT gitignored -- it would have been committable. Removed; worth a guard.
+
+**SHADOW_GENOME**: candidate SG-UnaskedCheck-A -- a control validated only against inputs it was built to accept, so a pass means not-asked rather than verified; frequently a completeness list reused as a verification scope. Enforcer cited.
+
+**Next**: #309, #314, #320 remain open.
+
+
 ---
 
 *Chain integrity: VALID*

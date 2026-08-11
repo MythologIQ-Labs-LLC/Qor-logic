@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-11T12:36:44Z",
+  "generated_ts": "2026-08-11T18:49:01Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -228,7 +228,7 @@
       "id": "qor-implement",
       "source_path": "skills/qor-implement/SKILL.md",
       "install_rel_path": "skills/qor-implement/SKILL.md",
-      "sha256": "45e0c074a74d8986039fc4489a713585865e7bace4e80e1da0472cda0b35eced"
+      "sha256": "f9d15b16449f368e86b729810b90996568dec4b53faa775242f7d5bebffa7b63"
     },
     {
       "id": "qor-meta-log-decision",

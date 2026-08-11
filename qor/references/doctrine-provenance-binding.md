@@ -65,3 +65,20 @@ Binding the CI attestation into the ledger hash chain (so editing an artifact
 requires editing a hash-chained entry) is a substantiate-format change and is
 deferred. Consuming the attestation as a hard release-pipeline gate in a separate
 repository is likewise out of this repo's scope.
+
+## Iteration artifacts are in scope for Layer B (Phase 218; GH #321)
+
+`verify-committed` originally walked `_REQUIRED_PHASES`, a completeness list
+answering "which artifacts must exist for a phase to be complete". Reusing it as
+the verification scope answered a different question and left
+`<phase>-iterN.json` unverified.
+
+Iteration artifacts are evidence. A VETO entry binds the plan it judged and the
+amendment is bound separately; the `-iter` files are what a reader consults to
+reconstruct why. An unverified iteration artifact can be altered after commit
+with nothing detecting it.
+
+The scope is now every `*.json` in a session directory that carries a sidecar.
+An artifact without a sidecar is skipped rather than failed -- completeness
+remains `_REQUIRED_PHASES`'s responsibility, and the two questions stay separate.
+

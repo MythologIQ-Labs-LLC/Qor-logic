@@ -170,3 +170,22 @@ removes the catcher. Enforcement is tracked at GH #320.
 Note that `qor-logic install` ships from `qor/dist/variants/` while the drift
 check compares against `qor/skills/` source, so a stale `dist` makes the two
 disagree. Run `dist_compile` before `install`.
+
+## Unreconciled-record checks (Phase 218; GH #319)
+
+| Check | Now rejects |
+|---|---|
+| `ledger_hash verify` | a ledger with an entry deleted (cross-entry sequence assertion, file order) |
+| `intent_lock._hash_file` | nothing new -- it now *accepts* a line-ending-only change |
+| `verdict_reconcile` | an audit report naming a different phase, or bound to a since-amended plan |
+| `gate_provenance verify-committed` | a corrupted `-iterN` sidecar |
+
+The ledger sequence assertion is over **file order**, not entry numbers. The
+chain is built by appending, so adjacency in the artifact is the real structure;
+entry numbers are labels. `KNOWN_ENTRY_GAPS` declares the two real holes (510,
+532), both allocated in sessions whose entries were never committed, and a test
+derives the live gap set and asserts it equals that constant -- so widening the
+constant to silence a new gap goes red.
+
+It cannot detect a ledger truncated at the tail: nothing downstream of the last
+entry exists to contradict it.
