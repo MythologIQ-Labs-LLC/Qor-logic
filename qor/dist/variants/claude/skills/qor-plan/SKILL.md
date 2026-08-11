@@ -405,6 +405,27 @@ gate_chain.write_gate_artifact(
 
 Schema lives at `qor/gates/schema/plan.schema.json`; the helper validates before write. Plans declaring `doc_tier: legacy` without `doc_tier_rationale` fail schema validation (enforced by the `if-then` rule added in Phase 28); operator must either add rationale or raise the tier. Per Phase 54: every gate-writing skill calls `ai_provenance.build_manifest` and passes the result through `ai_provenance=manifest`; closes EU AI Act Art. 13/50 transparency surface.
 
+### Step 5.5: Execution-continuity declaration (Phase 216 wiring; GH #285)
+
+Work using execution continuity declares an `execution_continuity` block in the
+plan gate artifact. Required: `contract_version`. Permitted keys are exactly
+`continuity_contract.QOR_OWNED_KEYS` -- `base_revision`, `target_revision`,
+`successor_actor_classes`, `checkpoint_points`, `receipt_required` -- and values
+are scalars or arrays of scalars. `plan.schema.json` sets
+`additionalProperties: false`, so upstream vocabulary cannot leak in.
+
+```bash
+qor-logic scripts plan_continuity_lint --artifact .qor/gates/<session>/plan.json || true
+```
+
+The plan must NOT hardcode a named execution vendor into semantics, and must NOT
+restate upstream field definitions. Reference the contract by version.
+
+Also declare: stale-receipt behavior after revision movement, live-writer and
+claim-conflict handling, which interruption classes remain resumable, and the
+forbidden worker authority (merge, release, deployment, credential, policy
+mutation). Full contract: `qor/references/doctrine-execution-continuity.md`.
+
 ## Delegation
 
 Per `qor/gates/delegation-table.md`:

@@ -1300,3 +1300,92 @@ referenced_by:
   - qor/scripts/spec_requirement_verify.py
 introduced_in_plan: phase192-spec-corpus-phase-b
 ```
+
+```yaml
+term: execution continuity
+definition: 'Continuation of one governed claim across a change of execution provider. Providers perform work; Qor-logic owns the durable identity, claim, checkpoint, continuation, verification, and authority boundaries around it. Provider exhaustion (budget, context, capacity, credentials, environment) is resumable when a valid checkpoint exists, and is neither product failure nor automatic human escalation. Phase 216 wiring (GH #285).'
+home: qor/references/doctrine-execution-continuity.md
+referenced_by:
+  - qor/references/doctrine-execution-continuity.md
+  - qor/scripts/continuity_gate.py
+  - qor/skills/sdlc/qor-research/SKILL.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+introduced_in_plan: phase216-execution-continuity-semantics
+```
+
+```yaml
+term: execution checkpoint
+definition: 'Provider-neutral record produced before a voluntary handoff or anticipated exhaustion, from which an authorized successor reconstructs state before editing. Its schema is owned by the upstream execution-continuity contract and referenced by version, never restated in Qor-logic. Carries no secrets, credentials, hidden reasoning, or unrestricted private source bodies. Absent, malformed, or bound to another revision, it fails closed. Phase 216 wiring (GH #285).'
+home: qor/references/doctrine-execution-continuity.md
+referenced_by:
+  - qor/references/doctrine-execution-continuity.md
+  - qor/scripts/continuity_gate.py
+  - qor/skills/sdlc/qor-implement/SKILL.md
+introduced_in_plan: phase216-execution-continuity-semantics
+```
+
+```yaml
+term: verification receipt
+definition: 'Independent evidence that a specific revision was verified. Compared by exact string equality against the current revision, never by git ancestry: an ancestor-revision receipt is stale and is rejected, which is the case ancestry semantics would wrongly accept. Provider prose, status badges, and session-completion messages are self-report and are not receipts. Phase 216 wiring (GH #285).'
+home: qor/references/doctrine-execution-continuity.md
+referenced_by:
+  - qor/references/doctrine-execution-continuity.md
+  - qor/scripts/continuity_gate.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+introduced_in_plan: phase216-execution-continuity-semantics
+```
+
+```yaml
+term: continuity outcome
+definition: 'Typed result of classifying continuity evidence, with values verified, rejected, and inconclusive, carried in the continuity_outcome field of the validate and remediate gate artifacts. Distinct from the per-criterion status vocabulary: skip means a gate deliberately did not run and is acceptable to seal, while inconclusive means the gate ran and the evidence environment denied it a conclusion, routing to environment repair rather than to seal or product remediation. Phase 216 wiring (GH #285).'
+home: qor/references/doctrine-execution-continuity.md
+referenced_by:
+  - qor/references/doctrine-execution-continuity.md
+  - qor/scripts/continuity_gate.py
+  - qor/scripts/continuity_contract.py
+  - qor/skills/governance/qor-validate/SKILL.md
+  - qor/skills/sdlc/qor-remediate/SKILL.md
+introduced_in_plan: phase216-execution-continuity-semantics
+```
+
+```yaml
+term: stale receipt
+definition: 'A verification receipt whose bound revision no longer equals the current revision, because the target moved after verification. Rejected with reason receipt-stale and requiring re-verification rather than carrying the prior outcome forward. Phase 216 wiring (GH #285).'
+home: qor/references/doctrine-execution-continuity.md
+referenced_by:
+  - qor/references/doctrine-execution-continuity.md
+  - qor/scripts/continuity_gate.py
+introduced_in_plan: phase216-execution-continuity-semantics
+```
+
+```yaml
+term: live writer
+definition: 'An actor currently holding the claim on a governed unit of work. A successor may not edit while a live writer holds the claim; the conflict fails closed with reason live-writer-conflict, and no checkpoint validity outranks it. Phase 216 wiring (GH #285).'
+home: qor/references/doctrine-execution-continuity.md
+referenced_by:
+  - qor/references/doctrine-execution-continuity.md
+  - qor/scripts/continuity_gate.py
+introduced_in_plan: phase216-execution-continuity-semantics
+```
+
+```yaml
+term: successor actor
+definition: 'An actor class permitted by the declaration in a plan to continue a governed claim after a provider stops. A continuation carries the authority of the original worker and no more; requests for merge, release, deployment, credential, or policy-mutation authority are rejected with reason authority-expansion regardless of checkpoint validity. Phase 216 wiring (GH #285).'
+home: qor/references/doctrine-execution-continuity.md
+referenced_by:
+  - qor/references/doctrine-execution-continuity.md
+  - qor/scripts/continuity_gate.py
+  - qor/skills/sdlc/qor-plan/SKILL.md
+introduced_in_plan: phase216-execution-continuity-semantics
+```
+
+```yaml
+term: continuity contract version
+definition: 'The upstream execution-continuity contract version an operator declares compatibility with, read from .qorlogic/config.json via continuity_contract.load_pin. Absence is a disclosed unpinned state, not an error. The pin is asserted and not verified: checking conformance would require holding the upstream schema, which would create the second semantic authority the ownership boundary exists to prevent. Phase 216 wiring (GH #285).'
+home: qor/references/doctrine-execution-continuity.md
+referenced_by:
+  - qor/references/doctrine-execution-continuity.md
+  - qor/scripts/continuity_contract.py
+  - qor/skills/governance/qor-audit/SKILL.md
+introduced_in_plan: phase216-execution-continuity-semantics
+```

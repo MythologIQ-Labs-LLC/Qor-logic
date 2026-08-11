@@ -7,14 +7,14 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-2790%20passing-brightgreen" alt="Tests: 2790 passing">
+  <img src="https://img.shields.io/badge/Tests-2824%20passing-brightgreen" alt="Tests: 2824 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-38-blue" alt="Doctrines: 38">
-  <img src="https://img.shields.io/badge/Ledger-534%20entries%20sealed-green" alt="Ledger: 534 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-39-blue" alt="Doctrines: 39">
+  <img src="https://img.shields.io/badge/Ledger-538%20entries%20sealed-green" alt="Ledger: 538 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -408,6 +408,7 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 | [eu-ai-act](qor/references/doctrine-eu-ai-act.md) | EU AI Act Art. 9 / 13 / 14 / 50 risk-management + transparency mapping |
 | [feature-inventory](qor/references/doctrine-feature-inventory.md) | FEATURE_INDEX artifact format + seal-time verification |
 | [feature-tdd](qor/references/doctrine-feature-tdd.md) | Per-feature TDD-Light contract (plan / audit / implement) |
+| [execution-continuity](qor/references/doctrine-execution-continuity.md) | Provider-neutral continuation, exact-revision receipts, `inconclusive` routing |
 | [governance-enforcement](qor/references/doctrine-governance-enforcement.md) | Branch / version / tag / push / session-rotation / PR-citation protocol |
 | [governance-index](qor/references/doctrine-governance-index.md) | Hierarchical governance index + self-policing enforcement |
 | [hook-contract](qor/references/doctrine-hook-contract.md) | Non-authoritative `gate_written` observer-hook contract |

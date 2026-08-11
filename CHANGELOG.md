@@ -10,6 +10,19 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.139.0] - 2026-08-11
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 216 (feature; execution-continuity semantics)**: closes #285. The lifecycle gates can now plan, audit, implement, substantiate, validate, and remediate provider-neutral execution continuity. When a provider stops for budget, context, capacity, credentials, or environment and a valid checkpoint exists, the governed claim is resumable by an authorized successor rather than classified as product failure or escalated to a human by default.
+
+  New `qor/scripts/continuity_gate.py` classifies evidence into `verified | rejected | inconclusive` plus a routing directive; `continuity_contract.py` holds the Qor-owned key set and the config-backed contract pin; `plan_continuity_lint.py` validates a plan's declaration. Schema: `execution_continuity` on plans (`additionalProperties: false`), `continuity_outcome` on validate and remediate artifacts.
+
+  Two distinctions carry the design. **`inconclusive` is not `skip`** -- `skip` means a gate deliberately did not run and is acceptable to seal, while `inconclusive` means the gate ran and the evidence environment denied it a conclusion, routing to environment repair rather than product remediation. **Revision comparison is exact equality, never git ancestry** -- `intent_lock` accepts an ancestor commit by design since Phase 43, and a verification receipt inheriting that tolerance would accept precisely the stale evidence this closes. A test asserts an ancestor-revision receipt is rejected; it is the proof the two mechanisms stayed separate.
+
+  The upstream contract is referenced by version and never duplicated. The pin is **asserted, not verified**: checking conformance would require holding the upstream schema, which would create the second semantic authority the ownership boundary exists to prevent. That ceiling is stated wherever the pin appears rather than implied away.
+
 ### Changed
 - **Phase 215 (governance; Phase A of #285)**: recovered headroom in the two largest governance skills so Phase B's execution-continuity semantics have room to land. `qor-audit` 39,416 -> 38,389 bytes (-1,027); `qor-substantiate` 39,576 -> 38,816 (-760). Rationale moved into already-cited reference files as titled subsections, with one-line inline pointers left behind. No test was edited, weakened, or skipped: the guardrail suite is the specification being preserved.
 
