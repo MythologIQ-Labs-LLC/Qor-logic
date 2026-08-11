@@ -38,12 +38,16 @@ def _shadow_log_path() -> Path:
     return workdir.shadow_log()
 
 
-def _count_session_overrides(session_id: str, *, log_path: Path | None = None) -> int:
-    """Count gate_override events with the given session_id in the shadow log."""
+def _iter_override_events(*, log_path: Path | None = None):
+    """Yield every gate_override event in the shadow log.
+
+    Shared by both axes so the per-session and per-gate counts can never
+    disagree about what an override is -- two parsers would be the same
+    one-of-several-entry-points defect this module is being extended to fix.
+    """
     path = log_path or _shadow_log_path()
     if not path.exists():
-        return 0
-    count = 0
+        return
     for raw in path.read_text(encoding="utf-8").splitlines():
         line = raw.strip()
         if not line:
@@ -52,12 +56,60 @@ def _count_session_overrides(session_id: str, *, log_path: Path | None = None) -
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if event.get("event_type") != "gate_override":
-            continue
-        if event.get("session_id") != session_id:
-            continue
-        count += 1
+        if event.get("event_type") == "gate_override":
+            yield event
+
+
+def _count_session_overrides(session_id: str, *, log_path: Path | None = None) -> int:
+    """Count gate_override events with the given session_id in the shadow log."""
+    return sum(1 for e in _iter_override_events(log_path=log_path)
+               if e.get("session_id") == session_id)
+
+
+@dataclass(frozen=True)
+class GateRecurrenceResult:
+    """Cross-session count for one gate.
+
+    The per-session counter cannot see this axis: every phase rotates its
+    session, so a per-phase-recurring override resets it each time. Four
+    identical overrides was the observed shape (GH #324) and the one most worth
+    seeing -- one override is judgment, four is a routine.
+    """
+
+    gate: str
+    count: int
+    threshold: int
+    threshold_reached: bool
+
+
+def _count_gate_overrides(gate: str, *, log_path: Path | None = None) -> int:
+    """Count gate_override events naming this gate, across all sessions."""
+    count = 0
+    for event in _iter_override_events(log_path=log_path):
+        if (event.get("details") or {}).get("gate") == gate:
+            count += 1
     return count
+
+
+def gate_recurrence(
+    gate: str,
+    *,
+    threshold: int = DEFAULT_THRESHOLD,
+    log_path: Path | None = None,
+) -> GateRecurrenceResult:
+    """Return the cross-session recurrence state for one gate.
+
+    Threshold reuses DEFAULT_THRESHOLD: same number, different axis. Checked
+    against recorded history rather than chosen in the abstract -- at 3 this
+    fires one phase before a human noticed the pattern by reading the log; at 2
+    it fires on a second occurrence, which is common enough to be the alarm
+    fatigue Phase 217 was sealed to remove.
+    """
+    count = _count_gate_overrides(gate, log_path=log_path)
+    return GateRecurrenceResult(
+        gate=gate, count=count, threshold=threshold,
+        threshold_reached=count >= threshold,
+    )
 
 
 def check(

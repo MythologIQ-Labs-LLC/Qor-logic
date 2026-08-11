@@ -1528,6 +1528,70 @@ Enforcer: `tests/test_boundary_untracked_coverage.py::test_untracked_violation_i
 (same family -- a check reporting clean over a surface it cannot see).
 First observed instance; promote to a structured countermeasure on recurrence.
 
+## 2026-08-11 -- A control attached to one of several equivalent entry points
+
+**Phase**: 220 (GH #324)
+
+### Findings
+
+`override_friction` guarded `gate_chain.emit_gate_override` and not
+`shadow_process.append_event`. Both record a `gate_override`; only one consulted
+the friction check. Every observed override used the unguarded path -- four for
+`intent_lock` across four phases -- because `append_event` is what an operator
+reaches for when *disclosing* a gate they have already decided to pass.
+
+The sharpest evidence: one session reached three overrides and **would** have
+fired the existing threshold. It did not, because none of the three went through
+the checking path. The one case where the control should have engaged is the
+clearest demonstration that it could not.
+
+This is the second observation of the shape. `gate_provenance` walked
+`_REQUIRED_PHASES` -- four artifact names -- and not their `-iterN` siblings, so
+a corrupted iteration sidecar passed `verify-committed` with "OK: provenance
+verified for 49 sessions" (#321).
+
+### Root Cause Analysis
+
+In both cases a control was bound to a *name* rather than to a *property*.
+`emit_gate_override` is one way to record an override, not the definition of
+one; `_REQUIRED_PHASES` is one list of artifacts, not the set of things that
+must verify. Binding to the name leaves every other route to the same state
+unguarded.
+
+The failure is silent by construction. The guarded path keeps passing, so the
+control reports success at the same rate it always did, and its coverage
+shrinks only relative to a surface nobody re-measures. Neither instance was
+found by the control; both were found by exercising the unguarded path for an
+unrelated reason.
+
+A contributing factor in the override case: the unguarded path was the one the
+*honest* behaviour used. An operator concealing an override would not call
+`append_event` either -- they would call nothing. The control was positioned
+where only the diligent would trip it.
+
+### Pattern to Avoid
+
+Adding a check at the call site you happen to be editing, rather than at the
+point where the property becomes true. If two functions can produce the same
+state, a guard on one of them is a guard on neither.
+
+When adding a control, enumerate the paths to the state it protects and either
+guard all of them or move the guard closer to the state. Then exercise the path
+you did not modify -- that is where the answer is.
+
+### Pattern ID
+
+Single-entry-point guard. Candidate SG family entry if it recurs:
+`SG-SingleEntryPointGuard-A` -- a control bound to one of several equivalent
+entry points or to a name rather than a property, passing at its usual rate
+while its coverage silently excludes the routes nobody re-measured. Two
+observations: `override_friction` on `emit_gate_override` but not
+`append_event`; `gate_provenance` on `_REQUIRED_PHASES` but not `-iterN`
+artifacts. Remedy is to enumerate the paths to the guarded state, guard all or
+relocate the guard, and test the unmodified path explicitly. Enforcer:
+`tests/test_override_recording_paths.py::test_append_event_consults_friction`.
+Second observation; promote to a structured countermeasure on a third.
+
 ---
 
 *Shadow integrity: ACTIVE*

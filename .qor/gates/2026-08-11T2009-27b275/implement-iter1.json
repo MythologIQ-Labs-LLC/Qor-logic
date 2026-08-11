@@ -1,0 +1,29 @@
+{
+  "phase": "implement",
+  "session_id": "2026-08-11T2009-27b275",
+  "ts": "2026-08-11T20:37:49Z",
+  "files_touched": [
+    ".agent/staging/AUDIT_REPORT.md",
+    "docs/META_LEDGER.md",
+    "docs/SHADOW_GENOME.md",
+    "qor/gates/schema/substantiate.schema.json",
+    "qor/scripts/override_friction.py",
+    "qor/scripts/shadow_process.py",
+    "qor/skills/governance/qor-substantiate/SKILL.md"
+  ],
+  "tests_run": [
+    "tests/ -q: 2890 passed, 6 skipped",
+    "3 new modules run twice",
+    "ruff clean",
+    "dist zero-drift"
+  ],
+  "summary": "Per-gate override recurrence, append_event friction parity, intent_lock_state in the seal, SG-SingleEntryPointGuard-A.",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.142.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-11T20:37:49Z"
+  }
+}

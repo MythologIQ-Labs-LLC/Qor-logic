@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-11T2009-27b275",
+  "ts": "2026-08-11T20:19:48Z",
+  "target": "docs/plan-qor-phase220-override-escalation.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "target_content_hash": "04dd32f88d67b9659675652e1a1d06849ebde46c0de1e09386027bc13822a175",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.142.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-08-11T20:19:48Z"
+  }
+}

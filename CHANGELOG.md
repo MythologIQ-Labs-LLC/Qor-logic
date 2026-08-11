@@ -10,6 +10,21 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.143.0] - 2026-08-11
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 220 (feature; override escalation)**: closes #324. Four identical gate overrides across four phases produced no escalation. Not one defect but **three independent mechanisms**, each sufficient alone.
+
+  `override_friction` counted **per session**, and every phase rotates its session, so a per-phase-recurring override reset the counter each time. Against the live log: per-session 3/2/2 across three phases, while `intent_lock` stood at 4 across sessions. A per-gate cross-session count now ships, threshold 3 — chosen by replaying it against recorded history rather than in the abstract: at 3 it fires one phase before a human noticed the pattern by reading the log; at 2 it fires on a second occurrence, which is the alarm fatigue Phase 217 was sealed to remove.
+
+  The friction check lived only in `gate_chain.emit_gate_override`. Every observed override used `shadow_process.append_event` directly — that is what you reach for when *disclosing* a gate you have already decided to pass. One session reached three overrides and **would** have fired; it did not, because none went through the checking path. `append_event` now consults friction too, mirroring `emit_gate_override` exactly: raise, accept a written justification, record. **Friction is a cost, not a wall** — an override that cannot be *recorded* past the threshold would convert disclosed overrides into undisclosed ones.
+
+  `intent_lock` is deliberately **not** added to CI. CI has no session and no lock file, so the check is local by construction and a job there would assert a guarantee the environment cannot provide. Its state is recorded in the seal instead as a closed three-value enum, so a run of `absent` values is countable from the ledger.
+
+  `SG-SingleEntryPointGuard-A` recorded as the second observation of the shape: a control bound to a *name* rather than a *property*. `emit_gate_override` is one way to record an override, not the definition of one; `_REQUIRED_PHASES` was one list of artifacts, not the set that must verify (#321). Both passed at their usual rate while coverage shrank against a surface nobody re-measured.
+
 ## [0.142.0] - 2026-08-11
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
