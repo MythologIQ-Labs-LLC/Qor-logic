@@ -235,3 +235,58 @@ without consuming an audit cycle. The original six-lint ladder ran
 `ci_coverage_lint` (Phase 89) + `workspace_fragility_check` (Phase 94); later
 phases extended the same `|| true` WARN-only contract. The SKILL.md Step 0.6
 bash block is the authoritative current ladder.
+
+## Two-stage remediation flip: `mark_addressed` validation order
+
+`mark_addressed` validates `closure_enforcer` first -- four accepted forms per
+`/qor-remediate` Step 6; an invalid form raises `ClosureEnforcerError` without
+mutating anything. Only then does it re-verify the audit artifact before
+flipping, where a mismatch raises `ReviewAttestationError`. PASS audits that
+carry no `closure_enforcer` field never touch event state at all.
+
+The ordering matters: validating the enforcer before re-verifying the artifact
+means a malformed closure claim cannot reach the state-mutating path even
+transiently. Contract: `qor/references/doctrine-governance-enforcement.md`
+§10.1 "Two-stage remediation flip."
+
+## Documentation Drift advisory: advisory here, binding at seal
+
+Per `qor/references/doctrine-documentation-integrity.md`, a divergence between
+the plan's declared `doc_tier` / `terms` / `boundaries` and the repository's
+glossary and topology hard-blocks at `/qor-substantiate`.
+
+Surfacing it at audit as a non-VETO advisory gives the Governor a chance to fix
+the drift before the seal refuses it. Raising it to a VETO here would gain
+nothing -- the seal already blocks -- while costing an audit iteration for a
+condition the Governor can correct in place.
+
+## Finding-category enum: no fallback value
+
+Any finding that cannot map to an enum value raises `UnmappedCategoryError`
+before gate artifact emission. There is deliberately no `other` or
+`uncategorized` fallback: a new finding shape must force a considered amendment
+to `audit.schema.json` rather than draining silently into a catch-all, which
+would lose the stall signal the categories exist to carry. Implemented in the
+validation path of `qor/scripts/findings_signature.py`.
+
+## Infrastructure Alignment: the failure it catches
+
+The grep-verify requirement exists because of the V10-class failure from Phase
+36 -- plans that reference infrastructure the repository does not actually
+provide. The plan reads as coherent, every named module sounds plausible, and
+nothing surfaces until implementation reaches for a function that was never
+there. Verifying claims against current repository code before implementation is
+the only stage where that costs a grep instead of a phase.
+
+## Presence-only: the shapes it takes
+
+An assertion is solely about artifact existence or textual presence when it
+takes one of these forms and never invokes the unit:
+
+- `assert path.exists()`
+- `assert <substring> in <file_text>`
+- `assert hasattr(...)`
+
+Each passes as long as something exists with the right name, which is precisely
+the condition a silently broken unit still satisfies.
+

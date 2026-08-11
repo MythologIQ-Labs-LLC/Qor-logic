@@ -77,3 +77,27 @@ consumes a cycle. Companion to Phase 93's macro `merge_velocity_check` (Step
 on `high` so V2 can convert to a hard ABORT by removing the `|| true` wrap. Per
 `qor/references/doctrine-shadow-genome-countermeasures.md` SG-MergePaceThrottle-A
 inline-companion sub-paragraph.
+
+## Step 0.3 readiness short-circuit: what it protects
+
+Per `SG-PreAuditDraftSubmission-A`, a plan carrying a pre-audit self-declaration
+still triggers audit under the autonomous cycle. The cost is an audit-iteration
+slot spent on a plan that has already announced it is not ready for adversarial
+review -- and, because iteration count feeds the cycle-count escalator, a step
+toward an escalation the plan's own draft status caused.
+
+The short-circuit runs before the cycle-count and lint steps for that reason:
+the cheapest place to decline a not-ready plan is before anything has been
+spent on it.
+
+## `${PLAN_PATH}` argv safety
+
+The value is consumed only as an argv argument and validated by the shared
+resolver (`governance_paths.resolve_governance_plan_path`, GH #282), which
+rejects traversal, outside-root, unsupported-extension, and unregistered paths
+before any read.
+
+This is the SG-Phase47-A countermeasure honored by construction rather than by
+discipline: because the path never reaches a shell or a Python literal, there is
+no interpolation site to review.
+

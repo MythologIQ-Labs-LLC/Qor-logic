@@ -164,7 +164,7 @@ Read: Plan file (docs/Planning/plan-*.md or docs/ARCHITECTURE_PLAN.md)
 Extract: change_class from plan header
 ```
 
-Version-applicability is the SAME shared check the audit ran before PASS (`version_applicability.validate`); a release-class plan whose target could not exceed the current tag never reaches this step.
+Same shared check the audit ran before PASS (`version_applicability.validate`). Why it rarely fires here: `references/seal-gate-ladder.md`.
 
 <!-- qor:fail-fast-only reason="version-state checks are logic gates; require operator correction" -->
 **INTERDICTION**: release-class `not verdict.ok` (target ≤ Current Tag) → ABORT (version already shipped); governance files referencing a wrong version → PAUSE.
@@ -312,13 +312,13 @@ WARN-only per-skill size-budget lint over `qor/skills/**/SKILL.md` (WARN at 25 K
 qor-logic scripts skill_size_budget_lint --skills-root qor/skills || true
 ```
 
-Does not abort; CLI exits 1 on any EXCEEDED finding so V2 can convert to a hard ABORT by removing the `|| true`. Rationale + corpus-growth history: `references/seal-gate-ladder.md` (`SG-SkillCorpusGrowth-A`).
+Does not abort; CLI exits 1 on any EXCEEDED finding. Rationale + corpus-growth history: `references/seal-gate-ladder.md` (`SG-SkillCorpusGrowth-A`).
 
 ### Step 4.6.10: Data-API access-control lint (Phase 121 wiring; GH #177)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.data_api_acl_lint`; no-SQL-migration repos print `SKIP:` and exit 0 (disclosed-skip — record SKIP + emit `gate_skipped_prerequisite_absent`).
 
-Static scan over the target repo's SQL migrations. Fail-closed on blocking findings (`missing-grant`, `definer-view`); `security-definer-fn` is advisory. Finding definitions + the GH #177 recurrence: `references/seal-gate-ladder.md`.
+Fail-closed on blocking findings (`missing-grant`, `definer-view`); `security-definer-fn` is advisory. Finding definitions + the GH #177 recurrence: `references/seal-gate-ladder.md`.
 
 ```bash
 qor-logic scripts data_api_acl_lint --repo-root . || ABORT
@@ -404,13 +404,13 @@ Repos without `FEATURE_INDEX.md` record `**Feature Inventory**: not adopted` and
 
 Before composing the PR body (Step 9.6), run the close guard over the issues this seal will close:
 `qor-logic scripts ac_close_guard --pr-body-file <planned-pr-body> --qa-session <session-id>`
-It parses each `Closes #N` target's AC checklist and WARNs when an unmet criterion has no linked follow-on or the `qa.json` verdict is not PASS. V1 WARN-first (exit 0); `--enforce` reserved for V2. Contract + QA evidence artifact: `qor/references/doctrine-verification-closure-integrity.md`.
+What it inspects, and the V1 WARN-first posture: `references/seal-gate-ladder.md`.
 
 ### Step 6.5: Documentation Currency Check (Phase 31 wiring)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.doc_integrity_strict` (SKIP path if absent per the Step Prerequisites table + `SG-HalfSealedClaim-A`).
 
-Verify that doc-affecting phase changes also updated the system-tier docs (`docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md`). Heuristic lives in `doc_integrity_strict.check_documentation_currency` and returns a warning list.
+Verify that doc-affecting phase changes also updated the system-tier docs (`docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md`). Heuristic: `references/seal-gate-ladder.md`.
 
 ```python
 from qor.scripts import gate_chain
@@ -481,7 +481,7 @@ Template: `references/qor-substantiate-templates.md`.
 
 ### Step 7.4: SSDF tag emission (Phase 52 wiring)
 
-Computes NIST SSDF practice tags for the SESSION SEAL entry body BEFORE Step 7 computes content_hash. Forward-only: Phase 52+ entries get tags; Phase <= 51 grandfathered. Closes G-1 from `docs/compliance-re-evaluation-2026-04-29.md`.
+Computes NIST SSDF practice tags for the SESSION SEAL entry body BEFORE Step 7 computes content_hash. Scope + grandfather boundary: `references/seal-gate-ladder.md`.
 
 ```bash
 # Compute SSDF tag line via pure-Python module (no python -c shell-variable
@@ -584,7 +584,7 @@ QOR_SKILL_ACTIVE=substantiate qor-logic reliability gate_chain_completeness \
   || { echo "ABORT: gate-chain completeness violated; bypass would be invisible to ledger math"; exit 1; }
 ```
 
-Argv-form; no shell-variable interpolation (SG-Phase47-A). Runs after Step 7.7 confirms ledger integrity, ensuring this phase's session has all four gate artifacts before the seal commit lands.
+Argv-form; no shell-variable interpolation (SG-Phase47-A). Form + ordering: `references/seal-gate-ladder.md`.
 
 ### Step 7.9: Spec fold (Phase 192; GH #277)
 
@@ -651,7 +651,7 @@ On non-zero exit, ABORT before tagging: amend the seal commit to contain the ful
 
 ### Step 9.5.5: Annotated seal-tag creation (Phase 33 wiring)
 
-The seal commit now exists (created in Step 9.5). Capture its SHA via `git rev-parse HEAD` and tag it (this timing closes the off-by-one bug where tagging at Step 7.5 targeted the pre-seal HEAD).
+The seal commit now exists (created in Step 9.5). Capture its SHA via `git rev-parse HEAD` and tag it (off-by-one this closes: `references/release-and-tag-timing.md`).
 
 ```python
 import subprocess
@@ -700,7 +700,7 @@ Run after the merge (option 3: after `git push origin main`; option 2: after PR 
 
 ### Step 9.8: Session Rotation (Phase 30 wiring)
 
-The final action of the seal. Rotate the session so the next `/qor-plan` starts with a clean gate directory. Run LAST — after every Step 7.x-9.7 command that resolves `SESSION_ID` from `.qor/session/current`.
+Rotate the session so the next `/qor-plan` starts with a clean gate directory. Run LAST. Why last: `references/release-and-tag-timing.md`.
 
 ```python
 import session
@@ -746,4 +746,4 @@ Substantiation succeeds when:
 
 ## Integration with S.H.I.E.L.D.
 
-Session Seal: cryptographic proof that Reality matches Promise — a version gate, a file-by-file Reality Audit against the blueprint, and Merkle hash-chain finalization in META_LEDGER.
+Session Seal: cryptographic proof that Reality matches Promise, finalized as a Merkle hash chain in META_LEDGER.
