@@ -1457,3 +1457,14 @@ referenced_by:
   - qor/references/doctrine-governance-enforcement.md
 introduced_in_plan: phase219-unseen-surface-gates
 ```
+
+```yaml
+term: per-gate override recurrence
+definition: 'Count of gate_override events naming one gate across ALL sessions, distinct from the per-session override count. Every phase rotates its session, so a per-phase-recurring override resets the per-session counter each time and a habit forming across phases stays invisible on that axis. Threshold 3, shared with the per-session constant: one override is judgment, two is plausibly coincidence, three is a habit. The count includes the event being recorded, so the third occurrence is charged rather than the fourth. Phase 220 wiring (GH #324).'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/scripts/override_friction.py
+  - qor/scripts/shadow_process.py
+  - qor/references/doctrine-governance-enforcement.md
+introduced_in_plan: phase220-override-escalation
+```

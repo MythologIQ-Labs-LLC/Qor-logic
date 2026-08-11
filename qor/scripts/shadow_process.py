@@ -65,6 +65,49 @@ def log_path_for(attribution: Literal["UPSTREAM", "LOCAL"]) -> Path:
     raise ValueError(f"Invalid attribution: {attribution!r}")
 
 
+def _apply_override_friction(event: dict, log_path: Path) -> None:
+    """Charge friction for a repeated gate override (GH #324).
+
+    The friction check used to live only in ``gate_chain.emit_gate_override``.
+    Every observed override was recorded through ``append_event`` instead --
+    that is what an operator reaches for when disclosing a gate they have
+    already decided to pass -- so the control guarded one of two equivalent
+    entry points and never fired.
+
+    Friction is a COST, not a wall. An override that cannot be *recorded* past
+    the threshold leaves the operator choosing between undisclosed progress and
+    no progress, and the first is strictly worse than the defect being fixed. A
+    re-invocation carrying a written justification records normally, matching
+    ``emit_gate_override``.
+    """
+    if event.get("event_type") != "gate_override":
+        return
+    if event.get("justification"):
+        return
+    from qor.scripts import override_friction
+
+    session = override_friction.check(
+        event.get("session_id", ""), log_path=log_path)
+    gate = (event.get("details") or {}).get("gate")
+    recurrence = (override_friction.gate_recurrence(gate, log_path=log_path)
+                  if gate else None)
+    # Count the event being recorded, not just its predecessors. The threshold
+    # was chosen so the THIRD occurrence is charged (entry #556: "at 3 it fires
+    # one phase before a human noticed"); comparing prior-count alone would
+    # charge the fourth and deliver none of that reasoning.
+    session_hit = session.count + 1 >= session.threshold
+    gate_hit = recurrence is not None and recurrence.count + 1 >= recurrence.threshold
+    if not session_hit and not gate_hit:
+        return
+    detail = (f"gate {gate!r} overridden {recurrence.count + 1} times across sessions"
+              if gate_hit
+              else f"{session.count + 1} overrides this session")
+    raise override_friction.OverrideFrictionRequired(
+        f"override friction: {detail}. Re-record with justification=<text> "
+        "(>=50 chars) stating why this recurrence is acceptable."
+    )
+
+
 def append_event(
     event: dict,
     *,
@@ -77,6 +120,7 @@ def append_event(
             raise ValueError("append_event requires attribution=... or log_path=...")
         log_path = log_path_for(attribution)
     validate(event)
+    _apply_override_friction(event, log_path)
     event_id = compute_id(event)
     event_with_id = {"id": event_id, **event}
     line = json.dumps(event_with_id, separators=(",", ":")) + "\n"

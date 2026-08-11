@@ -30,3 +30,5 @@ Rows append as the surface grows; the seal-time `feature_index_verify.tally()` p
 | FX019 | Plan continuity declaration lint | qor/scripts/plan_continuity_lint.py:84 | qor/references/doctrine-execution-continuity.md | tests/test_continuity_declaration.py | verified |
 | FX020 | Install scope resolution (`install_drift_check --scope auto`) | qor/scripts/install_drift_check.py:75 | qor/references/doctrine-governance-enforcement.md | tests/test_install_scope_resolution.py | verified |
 | FX021 | Skill-corpus digest (`skill_corpus.digest`) | qor/scripts/skill_corpus.py:23 | qor/references/doctrine-governance-enforcement.md | tests/test_skill_corpus_digest.py | verified |
+| FX022 | Per-gate override recurrence | qor/scripts/override_friction.py:63 | qor/references/doctrine-governance-enforcement.md | tests/test_override_recurrence.py | verified |
+| FX023 | Override recording-path parity | qor/scripts/shadow_process.py:68 | qor/references/doctrine-governance-enforcement.md | tests/test_override_recording_paths.py | verified |

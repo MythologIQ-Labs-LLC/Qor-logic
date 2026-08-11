@@ -1,0 +1,53 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-11T2009-27b275",
+  "ts": "2026-08-11T20:40:02Z",
+  "plan_path": "docs/plan-qor-phase220-override-escalation.md",
+  "change_class": "feature",
+  "doc_tier": "system",
+  "terms": [
+    {
+      "term": "per-gate override recurrence",
+      "home": "qor/references/doctrine-governance-enforcement.md"
+    }
+  ],
+  "phases": [
+    "Per-gate recurrence",
+    "Close the recording bypass",
+    "Lock state in the seal record",
+    "Record the pattern",
+    "Verification"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_override_recurrence.py tests/test_override_recording_paths.py tests/test_seal_intent_lock_state.py -q",
+    "python -m pytest tests/ -q",
+    "python -m ruff check qor/ tests/",
+    "qor-logic scripts skill_size_budget_lint --skills-root qor/skills",
+    "qor-logic scripts dist_compile",
+    "qor-logic scripts sg_closure_lint",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase220-override-escalation.md"
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "per-gate-override-recurrence",
+      "operation": "NEW",
+      "test_path": "tests/test_override_recurrence.py",
+      "test_descriptor": "test_same_gate_across_sessions_escalates asserts three same-gate overrides across sessions report recurrence"
+    },
+    {
+      "entry_id": "override-recording-path-parity",
+      "operation": "NEW",
+      "test_path": "tests/test_override_recording_paths.py",
+      "test_descriptor": "test_append_event_consults_friction asserts the unguarded path now consults friction"
+    }
+  ],
+  "open_questions": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.142.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-11T20:40:02Z"
+  }
+}

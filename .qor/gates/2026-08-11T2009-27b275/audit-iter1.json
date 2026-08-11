@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-11T2009-27b275",
+  "ts": "2026-08-11T20:15:49Z",
+  "target": "docs/plan-qor-phase220-override-escalation.md",
+  "verdict": "VETO",
+  "findings_categories": [
+    "specification-drift"
+  ],
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "target_content_hash": "29d9635453a0f397f934897c66d453d8bc426e9d4a0b3007041e0577e255dac1",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.142.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "veto",
+    "ts": "2026-08-11T20:15:49Z"
+  }
+}

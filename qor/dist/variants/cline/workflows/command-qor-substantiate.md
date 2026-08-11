@@ -250,6 +250,7 @@ SESSION_ID=$(python -c "from qor.scripts.session import current; print(current()
 
 # Re-verify the intent lock from /qor-implement Step 5.5 (fails on plan/audit/HEAD drift).
 qor-logic reliability intent_lock verify --session "$SESSION_ID" || ABORT
+# Record intent_lock_state (verified|absent|overridden) in the gate artifact.
 # Current skill registered + frontmatter well-formed.
 qor-logic reliability skill_admission qor-substantiate || ABORT
 # All /qor-* handoff references resolve to real skills.
@@ -719,7 +720,7 @@ Run after the merge (option 3: after `git push origin main`; option 2: after PR 
 
 ### Step 9.8: Session Rotation (Phase 30 wiring)
 
-Rotate the session so the next `/qor-plan` starts with a clean gate directory. Run LAST. Why last: `references/release-and-tag-timing.md`.
+Rotate the session so the next `/qor-plan` starts clean. Run LAST. Why: `references/release-and-tag-timing.md`.
 
 ```python
 import session

@@ -99,6 +99,15 @@
         "structural+identity"
       ],
       "description": "Which detector set the boundary lint ran with (Phase 219; GH #309). CI cannot load the gitignored identity overlay, so an unqualified zero-findings result means less there than locally."
+    },
+    "intent_lock_state": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "absent",
+        "overridden"
+      ],
+      "description": "State of the /qor-implement Step 5.5 intent lock at seal (Phase 220; GH #324). Deliberately not a CI gate -- CI has no session and no lock, so the check is local by construction. Recorded here so a run of `absent` values is countable from the ledger without grepping shadow events."
     }
   }
 }
