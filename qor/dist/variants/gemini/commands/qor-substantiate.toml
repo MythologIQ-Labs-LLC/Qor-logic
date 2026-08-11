@@ -309,6 +309,13 @@ qor-logic scripts data_api_acl_lint --repo-root . || ABORT
 
 Escapes: `-- qor:service-role-only` and `-- qor:definer-view-intended reason: ...`. No-migration repos print `SKIP:` and exit 0 (disclosed-skip). Full contract: `qor/references/doctrine-runtime-principal-fidelity.md`; rationale in `references/seal-gate-ladder.md`.
 
+### Step 4.6.13: Skill-corpus disclosure (Phase 217; GH #314)
+
+`qor-logic scripts install_drift_check --host claude --scope auto || true`
+
+Record `skill_corpus` (digest, scope, drift count) in the gate artifact and seal
+entry. Disclosure, not ABORT: `references/seal-gate-ladder.md`.
+
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
 
 **Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.doc_integrity` (SKIP path if absent per the Step Prerequisites table + `SG-HalfSealedClaim-A`).

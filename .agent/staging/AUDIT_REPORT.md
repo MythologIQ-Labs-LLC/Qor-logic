@@ -1,134 +1,123 @@
-# AUDIT REPORT -- Phase 216 (Phase B of GH #285), iteration 2
+# AUDIT REPORT -- Phase 217 (GH #314, rescoped), iteration 2
 
 **Verdict**: PASS
 **Risk Grade**: L2
-**Target**: docs/plan-qor-phase216-execution-continuity-semantics.md
-**Session**: 2026-08-11T0526-280ba7
-**Branch**: phase/216-execution-continuity-semantics
-**Mode**: solo (audit_risk_score option_b_required=false; codex/external reviewer not configured)
-**Prior verdict**: VETO at iteration 1 (grounds: `specification-drift`, `feature-test-undeclared`); both cleared below
+**Target**: docs/plan-qor-phase217-installed-skill-drift.md
+**Session**: 2026-08-11T0639-f954d2
+**Branch**: phase/217-installed-skill-drift
+**Mode**: solo (audit_risk_score option_b_required=false)
+**Prior verdict**: VETO at ledger entry #542 (ground: `coverage-gap`); cleared below
 
-## Prior-ground disposition
+## Prior-ground disposition -- `coverage-gap`: LD-4 defers enforcement to an unfiled V2
 
-### Ground 1 -- `specification-drift`: LD-2 names an artifact the plan never creates
+**Category note.** The finding is a half-measure deferral, and `audit.schema.json`
+carries no such category. Its enum is deliberately closed with no `other` escape
+hatch, so an unmappable finding must either map honestly or force a schema
+amendment. Recorded as `coverage-gap`, which fits on the merits: the Definition
+of Done gives the deferred enforcement no empirical tier and no `D4.d` waiver.
+Whether "half-measure deferral" warrants its own category is worth a separate
+decision -- GH #147 catalogued eleven instances and GH #319 was filed today --
+but inventing one mid-audit is exactly the deliberate-amendment discipline the
+closed enum exists to enforce.
 
-LD-2 states that the continuity outcome "occupies its own field,
-`continuity_outcome`, with enum `verified | rejected | inconclusive`."
+LD-4 ships disclosure and states:
 
-No Affected Files entry in any phase adds `continuity_outcome` to any schema.
-Phase 1 adds only `execution_continuity` to `plan.schema.json`. Phase 3 edits
-skill prose. Phase 4 edits the glossary and docs.
+> Enforcement is a V2 decision informed by real drift counts, following the
+> WARN-then-enforce precedent (`merge_velocity_check` Phase 93 -> 129).
 
-This is not cosmetic. GH #285 requires `/qor-validate` and `/qor-remediate` to
-route on the typed outcome, and routing requires the outcome to be persisted
-where a downstream phase can read it -- which means `validate.schema.json`, and
-plausibly `remediate.schema.json`, must carry the field. As written, the plan
-ships a classifier returning an outcome into no declared home, and two skills
-instructed to route on a field that exists in no artifact.
+The architectural reasoning is sound and the Judge accepts it: the skill running
+the check is part of the corpus under test, so a drifted `qor-substantiate`
+could carry a weakened or absent check, and CI cannot enforce because CI has no
+operator install. Disclosure genuinely is the honest V1.
 
-The failure this produces is the one the plan itself is trying to prevent. LD-5
-warns against a declaration that reads like a guarantee and delivers an
-assertion. LD-2 currently is one.
+The defect is that the V2 exists only as a sentence. No issue is filed, no
+follow-on phase is named, and the `## Definition of Done` carries no `D4.d`
+waiver recording the deferral with its rationale and successor.
 
-**Required next action:** Governor: amend the plan to name the schema files that
-receive `continuity_outcome` and the tests that exercise it, then re-run
+This is the exact pattern this repository has documented against itself. GH #147
+catalogued eleven closed issues that shipped advisory-only and deferred the
+enforcer to an unfiled V2. GH #319 was filed **today** about governance records
+asserting properties nothing checks. `dod_check` exists specifically to catch a
+deliverable that declares no empirical tier or waiver.
+
+A plan that names the WARN-then-enforce precedent should also honor what made
+that precedent work: `merge_velocity_check` reached fail-closed at Phase 129
+because the follow-on was tracked, not because the V1 mentioned a V2.
+
+Left as written, the deferral is indistinguishable at seal from an enforcement
+that was considered and rejected.
+
+**Required next action:** Governor: file the V2 enforcement issue, cite it in
+LD-4 and in a `D4.d` waiver with rationale and named follow-up, then re-run
 `/qor-audit`. Per `qor/references/doctrine-audit-report-language.md` this is a
 **Plan-text** ground.
-
-### Ground 2 -- `feature-test-undeclared`: required behavior 12 has no test
-
-GH #285 lists thirteen required behavioral tests. Twelve map onto declared tests
-in Phases 1 and 2. This one does not:
-
-> extended-line schemas are referenced by compatibility version and are not
-> duplicated in Qor-logic
-
-Nothing in the plan asserts non-duplication. The property is load-bearing --
-LD-5's honesty argument rests entirely on Qor-logic not holding the upstream
-schema, and the ownership boundary is the issue's central organizing claim. It is
-also exactly the kind of property that erodes silently as later phases add
-convenience fields.
-
-It is testable as a corpus property, in the same family as the publication
-boundary lint: assert the `execution_continuity` declaration and
-`continuity_outcome` carry only Qor-owned keys, and that no upstream field name
-appears in Qor-logic schema or skill prose. A plan that enumerates twelve of
-thirteen required tests and silently drops the thirteenth cannot be
-distinguished, at seal, from one that tested it and passed.
-
-**Required next action:** Governor: declare the non-duplication test with its path
-and assertion, then re-run `/qor-audit`. **Plan-text** ground.
 
 ## Passes
 
 | Pass | Result |
 |---|---|
 | Prompt Injection | PASS (canary scan, exit 0) |
-| Security / OWASP | PASS -- pure function, no network, no subprocess, no untrusted deserialization |
-| Ghost UI / Live-Progress | N/A -- no UI surface |
-| Test Functionality | PASS on the fourteen declared tests; each invokes the unit and asserts on returned outcome or finding code. Ground 2 is a coverage gap, not a defect in what is declared |
+| Security / OWASP | PASS -- digest over local files; no network, no subprocess on untrusted input |
+| Ghost UI / Live-Progress | N/A |
+| Test Functionality | PASS -- nine declared tests, each invoking the unit and asserting on returned findings or digest values |
 | Filter-Stage | PASS |
-| Infrastructure Alignment | PASS -- five LD citations carry paired grep evidence, re-verified at the cited lines |
-| Feature Test Declaration | PASS -- both Feature Inventory rows carry `test_path` and `test_descriptor` |
-| Razor / self-application | PASS with a noted risk (below) |
+| Infrastructure Alignment | PASS -- three LD citations carry paired grep evidence, re-verified at the cited lines |
+| Feature Test Declaration | PASS -- both rows carry `test_path` and `test_descriptor` |
+| Razor / self-application | PASS -- `install_drift_check.py` is ~70 lines; additions stay far under 250 |
 | Publication boundary | PASS -- 0 findings |
-| plan_test_lint / grep / text_consistency / feature_tdd / signature_widening / data_round_trip | all rc=0 |
+| pre-audit lint ladder | all rc=0 |
 | sg_closure_lint | 40 entries, 0 without enforcer citation |
 
 ## Grounds considered and rejected
 
-**Shipping a classifier duplicates the upstream validators (LD-3).** Rejected.
-The upstream validators establish schema conformance; the Qor classifier makes a
-routing decision -- resume, reject, or repair the evidence environment. GH #285
-grants Qor-logic "audit classifications and fail-closed checks" explicitly. The
-plan further constrains `classify()` to a pure function over already-parsed
-inputs, which is the correct mitigation: parsing upstream artifacts would embed
-their shape and become duplication by another route. That constraint is stated,
-so it can be audited later.
+**LD-1 rewrites a finding the research brief already sealed.** Rejected, and the
+correction is to the plan's credit. Entry #541 records that the brief's first
+draft called the repo-scope check a silent pass, and that running it returned 30
+findings at exit 1. LD-1 states the corrected fact and draws the right
+consequence: an absent scope is one fact, not thirty defects. A plan that
+inherited the uncorrected premise would have built the wrong remedy.
 
-**LD-1 contradicts a shipped gate.** Rejected. LD-1 leaves `intent_lock`
-untouched and adds exact equality beside it. D4 of the second deliverable pins
-the distinction with a test that must REJECT an ancestor-revision receipt -- the
-one assertion proving the classifier did not inherit ancestry semantics. That is
-the strongest single test in the plan.
+**LD-5 sequences a destructive operation last for convenience.** Rejected. The
+27 live mismatches are the only real fixture for the new check, and resyncing
+first would destroy the evidence the phase exists to act on. Sequencing is
+methodological, not convenient. Operator has explicitly authorized overwrite of
+installed skills as generated artifacts.
 
-**`inconclusive` should reuse `skip`.** Rejected, and the plan is right to
-refuse. `skip` means the Phase 75 disclosed-skip, acceptable-to-seal;
-`inconclusive` must route to environment repair. Phase 215 used `skip` in its
-settled sense five entries ago, so the conflation would have gone live within one
-phase.
+**Phase 5 has no verifiable deliverable.** Rejected as a ground, noted as a
+limit. The resync mutates a directory outside the repository, so no test can
+assert its effect. The seal entry recording pre-resync drift count and
+post-resync digest is the available evidence, and the plan already requires it.
 
-**`change_class: feature` understates a breaking change.** Rejected.
-`plan.schema.json` gains an optional property and `required` is unchanged, so
-existing plans stay valid.
+**`change_class: feature` is wrong.** Rejected. Two new user-invocable
+surfaces ship (`scope="auto"`, `skill_corpus.digest`); the schema field is
+optional and no existing artifact breaks.
 
 ## Noted risk, not a ground
 
-`classify()` must express at least nine decision branches under a 40-line
-function cap and a 250-line file cap. The plan pre-commits a remedy -- move the
-reason-code table to `continuity_contract.py` rather than open a second decision
-site. The Judge records it here so that if implementation instead splits
-`classify()` into two decision functions, that is a Razor-driven change of design
-and returns to audit rather than proceeding.
+`qor-substantiate` carries 313 bytes of slack against the 39,936-byte lock, and
+Phase 3 adds a step to it. The plan pre-commits to moving rationale into
+`references/seal-gate-ladder.md` if the step does not fit. Phase 216 consumed
+807 bytes of that file's slack against a 360-byte estimate, so the estimate
+class has already been wrong once in the direction that hurts. Measure before
+and after; if the inline step exceeds the remaining slack, the relocation is
+mandatory, not optional.
 
 ## Verdict
 
-**PASS** at L2. Both iteration-1 grounds are cleared.
+**PASS** at L2. The ground is cleared.
 
-Ground 1: `validate.schema.json` and `remediate.schema.json` now receive the
-optional `continuity_outcome`, with `test_continuity_outcome_persists_in_routing_artifacts`
-asserting all three values validate and a fourth is rejected, and
-`test_status_and_outcome_vocabularies_stay_separate` pinning `validate.status`
-at `pass | fail | skip` so the cheap path of widening the existing enum goes red.
+GH #320 is filed and carries substance rather than a placeholder: three named
+decisions V2 owes -- where enforcement can honestly live given the checker sits
+inside the corpus it validates, what threshold constitutes drift, and whether
+the ledger should distinguish clean-corpus from drifted-corpus seals at query
+time -- plus entry criteria requiring observed drift data before the enforcement
+point is chosen. LD-4 now cites it, and the Definition of Done carries a `D4.d`
+waiver with architectural rationale and a named follow-up. `dod_check` returns
+exit 0 against the amended plan.
 
-Ground 2: `test_no_upstream_field_duplication` is declared. Its first phrasing
-reproduced the disease it was meant to cure -- asserting that no upstream field
-name appears in Qor-logic requires enumerating those names, which requires
-holding the upstream schema LD-5 says this repository does not have. Reframed to
-a property visible from inside: the declaration's keys are a subset of a closed
-Qor-owned allowlist, `contract_version` is present, no key holds a nested
-object, and `continuity_outcome` is a bare three-value string enum. Duplication
-cannot hide inside a declaration that admits no nested structure.
+The deferral is now distinguishable at seal from an enforcement considered and
+rejected, which is the whole of what the VETO asked for.
 
-Seventeen test functions now cover the thirteen required behaviors. Sealed at
-ledger entry #538. Implementation may proceed.
+Implementation may proceed. Binding: the noted risk above is not advisory --
+`qor-substantiate` has 313 bytes of slack and Phase 216 overran a same-class
+estimate by more than double. Measure before and after; relocate on overflow.

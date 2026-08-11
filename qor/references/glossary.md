@@ -1389,3 +1389,36 @@ referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
 introduced_in_plan: phase216-execution-continuity-semantics
 ```
+
+```yaml
+term: skill corpus digest
+definition: 'SHA256 over the sorted (skill name, file sha256) pairs of the installed SKILL.md set, recorded in the substantiate gate artifact and seal entry so every seal is attributable to the ceremony that produced it. Order-independent by construction rather than by accident of directory iteration. An absent install returns None rather than a digest, because a hash over an empty set is a real hash and would read as evidence of a ceremony that never ran. Phase 217 wiring (GH #314).'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/scripts/skill_corpus.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/references/doctrine-governance-enforcement.md
+introduced_in_plan: phase217-installed-skill-drift
+```
+
+```yaml
+term: install scope resolution
+definition: 'Discovery of which install scopes actually contain a skill corpus, so a drift check inspects the corpus the operator is really running instead of a hardcoded default. An absent scope reports once as not-installed rather than once per source skill; reporting per-skill produced 30 guaranteed-irrelevant findings per run and hid 27 real ones. Phase 217 wiring (GH #314).'
+home: qor/references/doctrine-governance-enforcement.md
+referenced_by:
+  - qor/scripts/install_drift_check.py
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/references/doctrine-governance-enforcement.md
+introduced_in_plan: phase217-installed-skill-drift
+```
+
+```yaml
+term: inert control
+definition: 'A control that exists, is correct, and is wired at a scope, posture, or phase where it cannot influence any decision. Distinct from an absent control and from a disclosed skip: the checker runs and is right, but its routine output is noise that trains the operator past it, so noise and silence fail identically. Candidate countermeasure SG-InertControl-A. Phase 217 (GH #314).'
+home: docs/SHADOW_GENOME.md
+referenced_by:
+  - docs/SHADOW_GENOME.md
+  - qor/scripts/install_drift_check.py
+  - tests/test_install_scope_resolution.py
+introduced_in_plan: phase217-installed-skill-drift
+```

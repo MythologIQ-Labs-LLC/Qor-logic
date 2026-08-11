@@ -16364,6 +16364,161 @@ Docs: new doctrine-execution-continuity.md, README doctrine inventory, architect
 **Next**: file the intent_lock LF-normalization defect; #313, #314, #316 remain open.
 
 
+### Entry #541: RESEARCH BRIEF -- installed skill corpus drift (GH #314, rescoped)
+
+**Timestamp**: 2026-08-11T07:05:00Z
+**Phase**: RESEARCH (Phase 217)
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-11T0639-f954d2`
+
+**Content Hash**: `8a8c9c10c6b473e356e58d79d9cb191fbba5202e93114048ac110515bb17afd3`
+**Previous Hash**: `a84162b7e2a1497c66dad5f2c5b8f62637959b20737810310996024a01efd6cd`
+**Chain Hash (Merkle seal)**: `b95f2bfe095096901ae50b6c6cad23862eb50c39133cd62099be90cfa8e79df4`
+
+**Decision**: 27 of 30 skills currently differ between this repository and the operator installed copies. The tool that detects exactly this has existed since Phase 32, works correctly, and did not fire.
+
+CORRECTION FIRST. This brief begins by retracting a governance finding. GH #314 was filed earlier today claiming that seal Step 4.6.11 mandates a fail-closed gate on qor.scripts.instruction_hygiene_lint, a module absent from this repository. The module is indeed absent. The repository skill never declared it: grep returns 0 in qor/skills/governance/qor-substantiate/SKILL.md and git log -S across all history returns no commit. The Step 4.6.11 text came from the operator installed copy at the claude skills directory -- the skill being executed -- and was attributed to the repo without checking. Sealed entries #536 and #540 repeat that framing, and Phase 215 SYSTEM_STATE narrative repeats it too. Those entries are chain-bound and are not amended; this entry is the correction of record.
+
+THE TOOL IS NOT THE PROBLEM. install_drift_check.py does byte-identical SHA256 comparison between qor/skills/**/SKILL.md and the installed counterpart. Run at the scope the operator actually uses it returns 27 findings against 30 source skills and exit 1. Three wiring defects, each sufficient alone, render it inert. WRONG SCOPE: the only invocation in the corpus, qor-plan/SKILL.md:125, passes --scope repo, meaning the repo-local .claude/skills directory, which does not exist here; the operator install is global. The check runs, finds nothing, and passes clean -- worse than no check, because it produces a reassuring signal. CANNOT BLOCK: the invocation is `|| echo WARNING`, so every finding becomes a message no artifact records. WRONG PHASE: it runs at /qor-plan only, so drift present or introduced later is never re-examined before the seal that depends on it.
+
+THE INSTALLED CORPUS VIOLATES THIS PROJECT OWN LIMITS. The installed qor-substantiate is 40512 bytes against the repo 39623 -- over the 40000-byte EXCEEDED ceiling and over the 39936-byte headroom lock that test_substantiate_staging_gates.py enforces on every CI run, with 204 differing lines. Phase 215 spent a full governed cycle recovering 1027 and 760 bytes to hold that lock. The skill actually running seals was over it throughout.
+
+LOCAL GATE EVIDENCE IS INVALIDATED. When a gate is observed locally the observation is about the installed skill, and nothing at the point of observation signals which source is in play. The #314 correction is the general case, not a one-off. This has precedent: Phase 209 defended a fix with twelve local passes from a host structurally incapable of exhibiting the bug, making the evidence not weak but absent. Same shape on a different axis -- there the host could not produce the signal, here the artifact under test is not the artifact under governance.
+
+A SEAL RECORDS NOTHING ABOUT THE SKILLS THAT PRODUCED IT. substantiate.schema.json and seal_artifacts.py contain no skill-corpus digest, hash, or version. Two seals with identical entries could come from materially different ceremonies and the ledger cannot distinguish them. Across 540 sealed entries nothing answers which skills ran this seal. That absence is what makes the wiring defects compounding rather than merely annoying: there is no forensic trail, so drift is invisible retroactively as well as prospectively.
+
+CORRECTION WITHIN THIS BRIEF: an earlier draft stated the repo-scope check finds nothing and passes clean. Verified by running it: repo scope returns 30 findings and exit 1, one missing-install per source skill, because .claude/skills does not exist. The defect is not silence but noise -- 30 guaranteed-irrelevant findings per invocation, collapsed by || echo into one ignorable warning, while the 27 real global-scope mismatches go unexamined. A control that cries wolf every run is trained around. Both corrections today came from running the thing rather than reading it. Recommendations: check the scope the operator actually uses rather than a hardcoded repo; move the check to the seal and require it be recorded whether or not it aborts; record a skill-corpus digest in the seal entry so every seal is attributable to its ceremony; do not fix by reinstalling and moving on, since that clears today drift and leaves the detection gap; evaluate any remedy against #314 -- would it have prevented a governance finding filed on installed-only text. SHADOW_GENOME entry recommended for a control that exists, is correct, and is wired so it cannot fire, distinct from SG-HalfSealedClaim-A and from the #319 family: suggested SG-InertControl-A. Brief: docs/research-brief-installed-skill-drift-2026-08-11.md. Next: /qor-plan.
+
+
+### Entry #542: GATE TRIBUNAL -- Phase 217 installed skill drift (VETO)
+
+**Timestamp**: 2026-08-11T07:30:00Z
+**Phase**: GATE (Phase 217)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase217-installed-skill-drift.md
+**Session**: `2026-08-11T0639-f954d2`
+**Verdict**: VETO
+
+**Content Hash**: `11e1ff9c60e777c53e3c43c56b1fa582ceaff0027db67a4bd3efcda277da6592`
+**Previous Hash**: `b95f2bfe095096901ae50b6c6cad23862eb50c39133cd62099be90cfa8e79df4`
+**Chain Hash (Merkle seal)**: `c9e4e3aa1c32b9ed8d39332e2be2ca0e844eba41186af02c10bb21d31572c460`
+
+**Decision**: VETO at L2 on one plan-text ground. This entry is sealed BEFORE the plan is amended, which is the procedural correction entry #538 called for: a VETO entry binds by content hash the plan it judged, and Phase 216 amended first, leaving those bytes unrecoverable and forcing one entry to cover two iterations. The hash above binds the vetoed text.
+
+GROUND, half-measure-deferral. LD-4 ships disclosure rather than enforcement and states that enforcement is a V2 decision following the WARN-then-enforce precedent of merge_velocity_check. The architectural reasoning is accepted: the skill running the check is part of the corpus under test, so a drifted qor-substantiate could carry a weakened or absent check, and CI cannot enforce because CI has no operator install. Disclosure genuinely is the honest V1.
+
+The defect is that the V2 exists only as a sentence. No issue is filed, no follow-on phase is named, and the Definition of Done carries no D4.d waiver recording the deferral with rationale and successor. This repository has documented this exact pattern against itself: GH #147 catalogued eleven closed issues that shipped advisory-only and deferred the enforcer to an unfiled V2, and GH #319 was filed today about governance records asserting properties nothing checks. dod_check exists specifically to catch a deliverable declaring no empirical tier or waiver. A plan invoking the merge_velocity precedent should honor what made it work: that gate reached fail-closed at Phase 129 because the follow-on was tracked, not because its V1 mentioned a V2. Left as written the deferral is indistinguishable at seal from an enforcement considered and rejected.
+
+Four grounds were considered and rejected. That LD-1 rewrites a finding the brief already sealed: rejected, and to the plan credit -- entry #541 records that the brief first draft called the repo-scope check a silent pass and that running it returned 30 findings at exit 1; LD-1 states the corrected fact and draws the right consequence, that an absent scope is one fact rather than thirty defects. A plan inheriting the uncorrected premise would have built the wrong remedy. That LD-5 sequences a destructive operation last for convenience: rejected -- the 27 live mismatches are the only real fixture for the new check and resyncing first would destroy the evidence; sequencing is methodological. That Phase 5 has no verifiable deliverable: rejected as a ground and noted as a limit, since the resync mutates a directory outside the repository and no test can assert its effect; the seal entry recording pre-resync drift count and post-resync digest is the available evidence and the plan already requires it. That change_class feature is wrong: rejected -- two new invocable surfaces ship and the schema field is optional.
+
+Noted risk carried forward: qor-substantiate has 313 bytes of slack against the 39936-byte lock and Phase 3 adds a step to it. The plan pre-commits to relocating rationale if the step does not fit. Phase 216 consumed 807 bytes of that file slack against a 360-byte estimate, so this estimate class has already been wrong once in the direction that hurts. Measure before and after; if the inline step exceeds remaining slack the relocation is mandatory.
+
+Required next action: Governor files the V2 enforcement issue, cites it in LD-4 and in a D4.d waiver with rationale and named follow-up, then re-runs /qor-audit. Next: /qor-plan (amend).
+
+
+### Entry #543: GATE TRIBUNAL -- Phase 217 installed skill drift, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-11T07:50:00Z
+**Phase**: GATE (Phase 217)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase217-installed-skill-drift.md
+**Session**: `2026-08-11T0639-f954d2`
+**Verdict**: PASS
+
+**Content Hash**: `2aec402dda0ead8b2d1b11c0c3e6f3d6fbd026c64a167fe5a22d9627aca01082`
+**Previous Hash**: `c9e4e3aa1c32b9ed8d39332e2be2ca0e844eba41186af02c10bb21d31572c460`
+**Chain Hash (Merkle seal)**: `de238e2bad6bc438107415152bd9baadc6162678eaf0e2041d927b69486fce98`
+
+**Decision**: PASS at L2 on the amended plan. Entry #542 vetoed the prior text on one coverage-gap ground and binds it by content hash; this entry binds the amendment. Two entries, two hashes, two texts -- the procedure entry #538 identified as missing when Phase 216 amended before sealing its VETO.
+
+The ground is cleared substantively rather than formally. GH #320 is filed and carries the three decisions V2 actually owes: where enforcement can honestly live given the checker sits inside the corpus it validates, what threshold constitutes drift, and whether the ledger should distinguish clean-corpus from drifted-corpus seals at query time. It also carries entry criteria requiring observed drift counts before the enforcement point is chosen, which is what separates a tracked deferral from a wish. LD-4 cites it and the Definition of Done carries a D4.d waiver with architectural rationale and named follow-up; dod_check returns exit 0.
+
+The waiver rationale is the part worth preserving. Enforcement is not deferred because it is hard but because V1 cannot honestly provide it: the skill running the check is part of the corpus under test, so the drift most worth catching is precisely the drift that removes the catcher, and CI has no operator install to compare against. A fail-closed gate on that architecture would assert a guarantee the architecture does not support -- the GH #314 shape, repeated one phase after it was diagnosed. Disclosure is not a half-measure here; it is the strongest claim the structure permits, and the plan says so.
+
+Binding on implementation, and not advisory. qor-substantiate carries 313 bytes of slack against the 39936-byte lock and Phase 3 adds a step to it. Phase 216 consumed 807 bytes of that same file against a 360-byte estimate -- the same estimate class, already wrong once by more than double, in the direction that breaches. Measure before and after; if the inline step exceeds remaining slack, relocation of rationale to references/seal-gate-ladder.md is mandatory rather than optional, and a Razor-driven redesign returns here.
+
+Also carried: LD-1 states a fact the research brief initially got backwards, and entry #541 records the correction. The repo-scope check does not pass silently; it emits 30 findings at exit 1, all of them expected and none meaningful, which is a noisier and more instructive defect than silence. A control whose default output is guaranteed-irrelevant is trained around, so noise and silence fail identically. Both corrections in this cycle came from running the thing rather than reading it.
+
+Next: /qor-implement.
+
+
+### Entry #544: IMPLEMENTATION -- Phase 217 installed skill drift (GH #314)
+
+**Timestamp**: 2026-08-11T08:15:00Z
+**Phase**: IMPLEMENT (Phase 217)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase217-installed-skill-drift.md
+**Session**: `2026-08-11T0639-f954d2`
+
+**Content Hash**: `2aec402dda0ead8b2d1b11c0c3e6f3d6fbd026c64a167fe5a22d9627aca01082`
+**Previous Hash**: `de238e2bad6bc438107415152bd9baadc6162678eaf0e2041d927b69486fce98`
+**Chain Hash (Merkle seal)**: `7424a4bfc33de555a56992598693a8a6fc49ccffcc2d7c85af913fdbc6f2d3bd`
+
+**Decision**: All six plan phases implemented tests-first. Full suite 2832 passed / 6 skipped; 14 new tests run twice for determinism; ruff clean; dist zero-drift.
+
+THE CORE FIX, MEASURED. Repo scope went from 30 findings to 1. install_drift_check gained installed_scopes() for discovery and scope="auto" to inspect the corpus actually in use. skill_corpus.digest() hashes the sorted (skill name, file sha256) pairs of the installed set, order-independent by construction rather than by accident of directory iteration, and returns None rather than a hash for an absent install -- a digest over an empty set is a real digest and would read as evidence of a ceremony that never ran.
+
+THE RESYNC, AND WHAT IT EXPOSED. Pre-resync drift was 27 with corpus digest 94818b39; post-resync 0 with digest 3d8a50aa. The first resync attempt left 1 mismatch, which is the finding worth keeping: qor-logic install ships from qor/dist/variants/ while install_drift_check compares against qor/skills/ source. With stale dist, install delivers one artifact and the check measures another, so a freshly installed corpus can still read as divergent -- or worse, a genuinely stale install can read as clean. dist_compile then install cleared it. Same family as the phase itself: two paths to one fact with no reconciliation.
+
+THE AUDIT BINDING CONSTRAINT FIRED, TWICE. Adding Step 4.6.13 pushed qor-substantiate to 40151 bytes, a breach of the 39936 lock. Relocating the rationale to references/seal-gate-ladder.md brought it to 39977 -- still 41 over -- and a second compaction of the inline step landed 39908, with 28 bytes of slack. Entry #543 made measurement binding rather than advisory on the strength of Phase 216 overrunning a same-class estimate by more than double; that judgment was correct and the relocation was not optional. That file is now at its practical ceiling: the next step added to it requires a disclosure pass, not a trim.
+
+A RAZOR VIOLATION SELF-CAUGHT. check() reached 41 lines against the 40 cap after the auto-scope branch was inlined. Extracted _check_auto(); check() is now 35, file 121 of 250.
+
+TWO REGRESSIONS I INTRODUCED AND THE SUITE CAUGHT. First, the absent-scope collapse initially keyed on the skills directory being empty, which broke the shipped contract pinned by test_install_drift_check.py::test_missing_install_file_flagged: an existing-but-empty skills dir is a PARTIAL install where naming each absent skill is the useful answer. Re-keyed on the directory not existing, which is the real condition here and preserves the existing test unweakened. Second, my own tests read the operator real home directory -- global scope resolves through Path.home(), so installed_scopes returned a live result inside a tmp fixture. An autouse fixture now pins home. A test whose outcome depends on whether the machine happens to have skills installed is the same dishonesty this phase exists to correct, and it nearly shipped inside the fix for it.
+
+PROSE-CONTRACT EXEMPTION, DISCLOSED. test_seal_step_invokes_the_check asserts token presence in skill text. The unit under test is a prompt with no runtime to invoke, and the failure guarded is deletion of the wiring while the schema field remains, so text presence IS the contract. Carries per-assertion `prose-lint: ok=wiring-contract` markers rather than a silent pass.
+
+SHADOW_GENOME entry added: a control that exists, is correct, and cannot fire. The diagnostic is that noise and silence fail identically -- a control whose default output is guaranteed-irrelevant trains the operator past it, and an ignored control is indistinguishable from an absent one except that it also produces a reassuring signal. Candidate SG-InertControl-A, first observed instance, enforcer cited.
+
+Next: /qor-substantiate.
+
+
+### Entry #545: SESSION SEAL -- Phase 217 installed skill-corpus drift (v0.140.0)
+
+**Timestamp**: 2026-08-11T08:40:00Z
+**Phase**: SUBSTANTIATE (Phase 217; feature)
+**Author**: Judge
+**Change class**: feature
+**Entry ID**: `42f3961e9e71`
+**Plan**: docs/plan-qor-phase217-installed-skill-drift.md
+**Session**: `2026-08-11T0639-f954d2`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Feature Inventory**: Total: 21 / verified: 21 / unverified: 0 / n/a: 0
+**Skill Corpus**: digest `3d8a50aa83de060d` scope `global` drift_count 0
+
+**Content Hash**: `2aec402dda0ead8b2d1b11c0c3e6f3d6fbd026c64a167fe5a22d9627aca01082`
+**Previous Hash**: `7424a4bfc33de555a56992598693a8a6fc49ccffcc2d7c85af913fdbc6f2d3bd`
+**Chain Hash (Merkle seal)**: `85f7b84fbd1b8d35f9fcc8d7c2bf9bada7426175dd94687b28b2a5cc0038aac6`
+
+**Decision**: **Scope**: Phase 217 sealed as v0.140.0, rescoping GH #314. 27 of 30 skills differed between this repository and the operator installed copies. The tool that detects exactly this has existed since Phase 32, works correctly, and did not fire.
+
+**The defect was noise, not silence.** install_drift_check was wired at --scope repo while the install was global, so it pointed at a directory that does not exist and returned 30 findings per run -- one missing-install per source skill, all expected, none meaningful -- collapsed by || echo into a single warning, hiding 27 real mismatches behind 30 false ones. It also ran only at plan time, never before a seal. Three defects, each sufficient alone. A control whose default output is guaranteed-irrelevant trains the operator past it, so noise and silence fail identically.
+
+**Shipped**: installed_scopes() discovery and scope="auto"; an absent scope now reports ONCE rather than 30 times. skill_corpus.digest() over the sorted (skill name, sha256) pairs of the installed set, order-independent by construction and returning None rather than a hash for an absent install, because a digest over an empty set is a real digest and would read as evidence of a ceremony that never ran. Step 4.6.13 records digest, scope, and drift count in the seal. Across 544 prior entries nothing answered which skills ran a seal; this entry is the first that does.
+
+**Disclosure, not enforcement, and the reason is structural.** The skill running the check is part of the corpus under test, so the drift most worth catching is the drift that removes the catcher, and CI has no operator install to compare against. A fail-closed gate on that architecture would assert a guarantee it does not support -- the GH #314 shape repeated. Enforcement is tracked at GH #320 with entry criteria requiring observed drift data, filed BEFORE re-audit rather than named as an intention. Entry #542 vetoed the prior plan text on exactly that ground and binds it by content hash; #543 binds the amendment. Two entries, two hashes, two texts -- the procedure #538 identified as missing.
+
+**Resync**: pre 27 drift / digest 94818b39; post 0 / digest 3d8a50aa. The first attempt left 1 mismatch, which is the finding worth keeping: qor-logic install ships from qor/dist/variants/ while install_drift_check compares against qor/skills/ source, so a stale dist makes install deliver one artifact while the check measures another. dist_compile then install cleared it. Documented in operations.md as a required ordering.
+
+**MY FIX WAS ITSELF AN INERT CONTROL, CAUGHT AT THIS SEAL.** Step 4.6.13 was wired at --scope auto, but auto was added to check() and never to the CLI argparse choices, so the step exited 2 on its first real execution -- a remedy for a control that could not fire, wired so it could not fire. Caught because this ceremony actually ran the step rather than assuming it. Fixed, and test_cli_accepts_auto_scope now couples the function contract to the surface exposing it.
+
+**Two further self-inflicted defects the suite caught.** The absent-scope collapse first keyed on the skills directory being empty, breaking the shipped contract pinned by test_missing_install_file_flagged: an existing-but-empty directory is a PARTIAL install where naming each absent skill is the useful answer. Re-keyed on non-existence, preserving that test unweakened. And my own tests read the operator real home, since global scope resolves through Path.home(); an autouse fixture now pins it. A test whose outcome depends on whether the machine happens to have skills installed is the same dishonesty this phase exists to correct, and it nearly shipped inside the fix for it.
+
+**INTENT LOCK NOT CAPTURED, RECORDED RATHER THAN BACK-DATED.** /qor-implement Step 5.5 was skipped while driving the phase manually, so Step 4.6 reported NO LOCK. The lock was NOT captured retroactively: capturing after implementation proves nothing about the window it exists to observe, and would fabricate evidence. The substantive claim was verified independently instead -- the plan content hash equals the hash bound by audit entry #543, so no plan drift occurred between PASS and seal. Recorded as a severity-1 gate_override.
+
+**Section 4**: check() reached 41 lines against the 40 cap after the auto branch was inlined; extracted _check_auto(), now 35, file 121/250. Adding Step 4.6.13 pushed qor-substantiate to 40151, breaching the 39936 lock; rationale relocated to references/seal-gate-ladder.md and the inline step compacted twice to land 39908 with 28 bytes of slack. That file is at its practical ceiling -- the next step added requires a disclosure pass, not a trim. Entry #543 made that measurement binding on the strength of Phase 216 overrunning a same-class estimate by more than double; the call was correct.
+
+**Gates**: intent_lock NO LOCK (override recorded, equivalent verified); skill_admission ADMITTED; gate_skill_matrix 30/140/0; secret_scanner 0; dod_check 0; merge_velocity healthy; skill_size_budget WARN-only 39.0 KB, no EXCEEDED; data_api_acl disclosed-SKIP; doc_integrity strict PASS after 3 glossary terms; governance_index 0; feature_index 21/21; sg_closure_lint 40/0; ruff clean; boundary 0. Full suite 2832 passed / 6 skipped, focused suite twice, dist zero-drift.
+
+**SHADOW_GENOME**: candidate SG-InertControl-A, first observed instance, enforcer cited.
+
+**Next**: #313, #316, #318 remain under umbrella #319; #320 tracks enforcement.
+
+
 ---
 
 *Chain integrity: VALID*

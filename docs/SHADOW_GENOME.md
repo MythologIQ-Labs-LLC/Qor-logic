@@ -1335,6 +1335,73 @@ Do not describe a remedy as having removed a mechanism unless the mechanism was 
 
 Unfalsified-remedy. Candidate SG family entry if it recurs: `SG-UnfalsifiedRemedy-A` -- a plausible fix for an unreproduced failure is sealed as the mechanism removed, and a null result from an environment structurally incapable of exhibiting the failure is cited in support. Remedy is to state the falsification condition and the observing environment's capability alongside any such fix. First observed instance; promote to a structured countermeasure on second occurrence.
 
+## 2026-08-11 -- A control that exists, is correct, and cannot fire
+
+**Phase**: 217 (GH #314)
+
+### Findings
+
+`install_drift_check` has detected divergence between repo skills and installed
+copies since Phase 32. Run at the scope the operator actually uses it returns 27
+findings against 30 source skills at exit 1. It is correct code.
+
+It had one invocation in the entire corpus (`qor-plan/SKILL.md:125`), and that
+invocation was defective three ways at once. It passed `--scope repo`, a
+directory that does not exist here, while the operator installs globally. It was
+wrapped in `|| echo`, collapsing every finding into one line. And it ran only at
+plan time, never before a seal.
+
+The scope defect did not produce silence. It produced **30 findings per run** --
+one `missing install` per source skill, all expected, none meaningful -- which
+`|| echo` reduced to a single warning. The 27 real mismatches were invisible
+behind 30 false ones.
+
+Consequence: the skills governing every seal in this session were 204 lines
+divergent from the repo, and the installed `qor-substantiate` was 40,512 bytes
+-- over both the 40,000 EXCEEDED ceiling and the 39,936 lock the repo's own CI
+enforces on every run. A governance finding (GH #314, first filing) was then
+raised against the repository on the strength of text that exists only in the
+installed copy.
+
+### Root Cause Analysis
+
+Three wiring defects compounded, and each alone was sufficient. Correcting the
+scope leaves a warning nobody reads; adding a seal-time call leaves it pointed
+at an unused directory; making it block leaves it blocking on 30 irrelevant
+findings.
+
+The deeper cause is that **noise and silence fail identically**. A control whose
+default output is guaranteed-irrelevant trains the operator to ignore it, and an
+ignored control is indistinguishable from an absent one -- except that it also
+produces a reassuring signal. The repository had a green-looking check reporting
+30 defects nobody could act on, for as long as the wiring stood.
+
+A contributing cause: no seal recorded which skill corpus produced it, so drift
+was invisible retroactively as well as prospectively. Across 543 entries nothing
+answered "which skills ran this seal?"
+
+### Pattern to Avoid
+
+Shipping a control without checking what it reports **in the environment it will
+actually run in**. Correctness of the check is not the same as correctness of
+the wiring, and a control's default output is part of its design: one whose
+routine output must be ignored has been designed to be ignored.
+
+Do not measure a control by whether it can detect the condition. Measure it by
+whether a finding it produces would reach someone who acts.
+
+### Pattern ID
+
+Inert-control. Candidate SG family entry if it recurs: `SG-InertControl-A` --
+a correct control is wired at a scope, posture, or phase where it cannot
+influence any decision, and its routine output is noise that trains the operator
+past it. Remedy is to run every new control in the operator's real environment
+before wiring it, assert that an inapplicable condition reports once rather than
+per-item, and record in the seal which corpus executed the ceremony. Enforcer:
+`tests/test_install_scope_resolution.py::test_absent_scope_reports_once_not_per_skill`.
+First observed instance; promote to a structured countermeasure on second
+occurrence.
+
 ---
 
 *Shadow integrity: ACTIVE*

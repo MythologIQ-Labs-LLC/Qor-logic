@@ -24,6 +24,45 @@ def _source_skills(repo_root: Path) -> list[Path]:
     return sorted((repo_root / "qor" / "skills").rglob("SKILL.md"))
 
 
+SCOPES = ("repo", "global")
+
+
+def _skills_dir(host: str, scope: str) -> Path | None:
+    """Resolve a host+scope to its skills directory, or None if unsupported."""
+    from qor import hosts
+
+    try:
+        return hosts.resolve(host, scope=scope).skills_dir
+    except (KeyError, ValueError):
+        return None
+
+
+def installed_scopes(host: str = "claude") -> list[str]:
+    """Return the scopes where an install actually exists.
+
+    Discovery, not enumeration: a scope where an install *could* live is not
+    reported. This is what lets `check(scope="auto")` inspect the corpus the
+    operator is really running instead of a hardcoded default.
+    """
+    found = []
+    for scope in SCOPES:
+        skills_dir = _skills_dir(host, scope)
+        if skills_dir is not None and any(skills_dir.glob("*/SKILL.md")):
+            found.append(scope)
+    return found
+
+
+def _check_auto(host: str) -> list[str]:
+    """Check every scope that actually has an install."""
+    scopes = installed_scopes(host)
+    if not scopes:
+        return [f"no install found for host {host!r} at any scope"]
+    findings: list[str] = []
+    for scope in scopes:
+        findings.extend(check(host=host, scope=scope))
+    return findings
+
+
 def check(host: str = "claude", scope: str = "repo") -> list[str]:
     """Compare installed SKILL.md files vs qor/skills/** source.
 
@@ -34,13 +73,24 @@ def check(host: str = "claude", scope: str = "repo") -> list[str]:
     <skills_dir>/<skill-dir-name>/SKILL.md (category flattened, matching
     dist_compile's output layout).
     """
-    from qor import hosts
-    try:
-        target = hosts.resolve(host, scope=scope)
-    except (KeyError, ValueError) as exc:
-        raise ValueError(f"host not supported: {host!r} ({exc})") from exc
+    if scope == "auto":
+        return _check_auto(host)
 
-    skills_dir = target.skills_dir
+    skills_dir = _skills_dir(host, scope)
+    if skills_dir is None:
+        raise ValueError(f"host not supported: {host!r}")
+
+    # An absent install is ONE fact, not one defect per source skill. Reporting
+    # it per-skill produced 30 guaranteed-irrelevant findings on every run,
+    # which is how a correct control gets trained around (GH #314).
+    #
+    # Keyed on the directory not existing, NOT on it being empty: an existing
+    # but empty skills dir is a partial install, where naming each absent skill
+    # is the useful answer and is the contract
+    # tests/test_install_drift_check.py::test_missing_install_file_flagged pins.
+    if not skills_dir.exists():
+        return [f"host {host!r} is not installed at scope {scope!r} ({skills_dir})"]
+
     repo = Path.cwd()
     drift: list[str] = []
     for source in _source_skills(repo):
@@ -55,11 +105,11 @@ def check(host: str = "claude", scope: str = "repo") -> list[str]:
     return drift
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--host", default="claude")
-    ap.add_argument("--scope", default="repo", choices=("repo", "global"))
-    args = ap.parse_args()
+    ap.add_argument("--scope", default="repo", choices=("repo", "global", "auto"))
+    args = ap.parse_args(argv)
     drift = check(host=args.host, scope=args.scope)
     if not drift:
         print(f"OK: local {args.host} install matches repo source.")

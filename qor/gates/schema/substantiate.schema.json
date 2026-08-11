@@ -73,6 +73,24 @@
         "type": "string",
         "pattern": "^[0-9a-f]{64}$"
       }
+    },
+    "skill_corpus": {
+      "type": "object",
+      "description": "Which installed skill corpus produced this seal (Phase 217; GH #314). Disclosure, not enforcement: V1 records drift, GH #320 decides whether it can be enforced.",
+      "additionalProperties": false,
+      "properties": {
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "drift_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
     }
   }
 }

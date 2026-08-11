@@ -261,3 +261,31 @@ The system-tier currency check is implemented by
 list rather than raising -- currency is advisory at this tier, unlike the
 badge-currency check in the same step, which ABORTs.
 
+## Step 4.6.13 skill-corpus disclosure: why it discloses rather than aborts
+
+A seal establishes what the plan promised and what the tests proved, but until
+Phase 217 it recorded nothing about which skill corpus executed the ceremony.
+Two seals with identical entries could come from materially different skills and
+the ledger could not distinguish them, so install drift was invisible
+retroactively as well as prospectively.
+
+The step records a digest over the installed `SKILL.md` set, the scope it was
+taken at, and the drift count against repo source.
+
+It does not ABORT, and the reason is architectural rather than cautious. The
+skill running the check is part of the corpus under test: a drifted
+`qor-substantiate` could carry a weakened or absent check, so the drift most
+worth catching is exactly the drift that removes the catcher. CI cannot cover
+the gap either, having no operator install to compare against. A fail-closed
+gate on that architecture would assert a guarantee the architecture does not
+support -- the GH #314 shape repeated one phase after it was diagnosed.
+
+Disclosure is therefore not a half-measure but the strongest honest claim the
+structure permits. Enforcement is tracked at GH #320, with entry criteria
+requiring observed drift counts from V1 first, following the
+`merge_velocity_check` WARN-then-enforce path (Phase 93 -> 129).
+
+Scope is `auto` rather than a fixed value because the original control was wired
+at `--scope repo` while the operator installed globally, producing 30
+guaranteed-irrelevant findings per run and hiding 27 real ones.
+

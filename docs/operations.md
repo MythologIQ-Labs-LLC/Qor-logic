@@ -230,3 +230,22 @@ Lint a declaration:
 ```bash
 qor-logic scripts plan_continuity_lint --artifact .qor/gates/<session>/plan.json
 ```
+
+## Checking installed skill drift (Phase 217; GH #314)
+
+```bash
+qor-logic scripts install_drift_check --host claude --scope auto
+```
+
+`auto` inspects every scope that actually has an install. Fix drift with:
+
+```bash
+qor-logic scripts dist_compile && qor-logic install --host claude --scope global
+```
+
+`dist_compile` first is not optional: `install` ships from `qor/dist/variants/`
+while the drift check compares against `qor/skills/` source, so installing from
+a stale `dist` leaves the check reporting drift immediately after a "successful"
+install -- or worse, reports clean on a genuinely stale corpus.
+
+Installed skills are generated artifacts and are overwritten by `install`.
