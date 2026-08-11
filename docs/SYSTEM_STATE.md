@@ -2,7 +2,14 @@
 
 **Snapshot**: 2026-08-11
 **Chain Status**: ACTIVE. Phase 168 (feature, v0.116.0) made gate depth scale with declared risk; Phase 169 (feature, v0.117.0) inverted the evidence posture (reconstruction over ceremony + schema freeze); Phase 170 (feature, v0.118.0) closed the perspective-reset umbrella (all six recommendations from research entry #378 shipped, Phases 164-170); this entry (Phase 172, feature, v0.119.0) establishes and retroactively enforces the publication boundary: no tracked or published surface identifies a repository outside Qor-logic. (PyPI is a continuous 0.109.0->0.118.1 line as of 2026-07-04.)
-**Phase**: Phase 220 (feature; override escalation; v0.143.0; closes GH #324). Four identical gate overrides across four phases produced no escalation -- three independent mechanisms, each sufficient alone. `override_friction` counted per session while every phase rotates its session; the friction check lived only in `emit_gate_override` while every observed override used `append_event`; and `intent_lock` has no CI enforcement, which is why a missing `implement.json` forced a backfill and a missing lock produced a paragraph.
+**Phase**: Phase 221 (feature; seal-ladder structure; v0.144.0; closes the GH #314 residual). Three structural defects in the seal gate ladder, two introduced in the preceding four phases while solving a different problem under size pressure.
+
+Step 4.6.12 -- a fail-closed execution-continuity receipt gate -- sat inside `## Failure Scenarios` at 92% of the file. An operator executing the ladder in order never reached it, and it had not fired only because no plan since Phase 216 declared `execution_continuity`. Relocated with byte size unchanged, which is the only mechanical evidence that a move was only a move.
+
+The `module:` prerequisite sweep is now standing. Phase 217 proposed it, measured it, used it to disprove #314's premise, and shipped no test; it is verified against the historical defect. And the headroom bound, which had one canonical definition and three hardcoded copies, now has one.
+
+The size pressure itself is deferred and tracked at #327 with three options and entry criteria that refuse to open it in response to a breach. Entry #559 records why the obvious remedy is unavailable: 36 of 54 asserted strings live inside the ladder, and there is no composition mechanism to extract it into.
+**Prior phase**: Phase 220 (feature; override escalation; v0.143.0; closes GH #324). Four identical gate overrides across four phases produced no escalation -- three independent mechanisms, each sufficient alone. `override_friction` counted per session while every phase rotates its session; the friction check lived only in `emit_gate_override` while every observed override used `append_event`; and `intent_lock` has no CI enforcement, which is why a missing `implement.json` forced a backfill and a missing lock produced a paragraph.
 
 The distinction is not prose-versus-code -- both are code. It is whether the check runs somewhere the operator is not the one deciding.
 

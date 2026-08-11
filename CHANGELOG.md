@@ -10,6 +10,23 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.144.0] - 2026-08-11
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 221 (feature; seal-ladder structure)**: closes the #314 residual. Three structural defects in the seal gate ladder, two of them introduced in the preceding four phases while solving a different problem under size pressure.
+
+  **Step 4.6.12 was stranded.** The execution-continuity receipt gate — fail-closed — sat inside `## Failure Scenarios` at 92% of the file, after the templates and before `## Constraints`. An operator executing the ladder in order reached 4.6.14, then 4.7, and never saw it. It had not fired only because no plan since Phase 216 declared `execution_continuity`, so the defect was latent rather than harmless: a declared gate providing no coverage, which is the shape #314 was filed about. Relocated between 4.6.10 and 4.6.13; **byte size unchanged**, which is the only mechanical evidence that a move was only a move.
+
+  **The `module:` prerequisite sweep is now standing.** Phase 217 proposed the check, measured 12 declarations resolving 12, used it to disprove #314's premise — and shipped no test. Verified it would have caught the original defect on sight.
+
+  **The headroom bound had one definition and three copies.** `HEADROOM_BYTES = 39 * 1024` is canonical; three test files hardcoded `39936`, all added while wiring steps under size pressure. Tuning the constant would have left three copies silently disagreeing.
+
+  4.6.11 stays absent by decision — the gap is the scar of #314, and closing it would erase the record.
+
+  The size pressure itself is **deferred and tracked at #327** with three options and entry criteria that refuse to open it in response to a breach.
+
 ## [0.143.0] - 2026-08-11
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

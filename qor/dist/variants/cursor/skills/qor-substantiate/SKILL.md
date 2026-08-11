@@ -327,6 +327,17 @@ qor-logic scripts data_api_acl_lint --repo-root . || ABORT
 
 Escapes: `-- qor:service-role-only` and `-- qor:definer-view-intended reason: ...`. No-migration repos print `SKIP:` and exit 0 (disclosed-skip). Full contract: `qor/references/doctrine-runtime-principal-fidelity.md`; rationale in `references/seal-gate-ladder.md`.
 
+### Step 4.6.12: Execution-continuity receipt gate (Phase 216 wiring; GH #285)
+
+Applies when the plan declares `execution_continuity`. Require a verification
+receipt bound to the EXACT implementation revision; a stale-revision receipt
+ABORTs. Provider prose and status badges are not receipts.
+
+Preserve `verified`, `rejected`, and `inconclusive` as distinct outcomes;
+`inconclusive` is not `skip`. Reference artifacts by path and digest. Record the
+pinned contract version. Separation of acceptances and why conformance is
+asserted rather than verified: `references/seal-gate-ladder.md`.
+
 ### Step 4.6.13: Skill-corpus disclosure (Phase 217; GH #314)
 
 `qor-logic scripts install_drift_check --host claude --scope auto || true`
@@ -732,17 +743,6 @@ new_sid = session.rotate()  # prior artifacts preserved at .qor/gates/<old-sid>/
 ### If Reality != Promise:
 
 Template: `references/qor-substantiate-templates.md`.
-
-### Step 4.6.12: Execution-continuity receipt gate (Phase 216 wiring; GH #285)
-
-Applies when the plan declares `execution_continuity`. Require a verification
-receipt bound to the EXACT implementation revision; a stale-revision receipt
-ABORTs. Provider prose and status badges are not receipts.
-
-Preserve `verified`, `rejected`, and `inconclusive` as distinct outcomes;
-`inconclusive` is not `skip`. Reference artifacts by path and digest. Record the
-pinned contract version. Separation of acceptances and why conformance is
-asserted rather than verified: `references/seal-gate-ladder.md`.
 
 ## Constraints
 
