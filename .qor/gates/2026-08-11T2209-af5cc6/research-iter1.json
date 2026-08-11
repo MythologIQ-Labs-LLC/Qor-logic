@@ -1,0 +1,51 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-11T2209-af5cc6",
+  "ts": "2026-08-11T22:25:50Z",
+  "questions": [
+    "Is the ladder extraction viable?",
+    "Is Step 4.6.12 correctly placed?",
+    "Does the prerequisite sweep exist?",
+    "Does the headroom bound have one definition?"
+  ],
+  "findings": [
+    {
+      "id": "extraction-blocked",
+      "status": "DRIFT",
+      "detail": "36 of 54 asserted strings inside the ladder; no include mechanism in dist_compile",
+      "source": "qor/skills/governance/qor-substantiate/SKILL.md"
+    },
+    {
+      "id": "4612-stranded",
+      "status": "DRIFT",
+      "detail": "fail-closed gate sits inside Failure Scenarios at 92% of file; unreachable in ladder order",
+      "source": "qor/skills/governance/qor-substantiate/SKILL.md"
+    },
+    {
+      "id": "sweep-never-shipped",
+      "status": "DRIFT",
+      "detail": "12 module: declarations, 12 resolve, no standing test",
+      "source": "tests/"
+    },
+    {
+      "id": "constant-triplicated",
+      "status": "DRIFT",
+      "detail": "HEADROOM_BYTES canonical; 3 files hardcode 39936",
+      "source": "tests/test_substantiate_staging_gates.py"
+    }
+  ],
+  "sources": [
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "tests/test_substantiate_staging_gates.py",
+    "qor/scripts/dist_compile.py"
+  ],
+  "brief_path": "docs/research-brief-seal-ladder-structure-2026-08-11.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.143.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-08-11T22:25:50Z"
+  }
+}

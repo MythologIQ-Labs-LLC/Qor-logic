@@ -32,3 +32,5 @@ Rows append as the surface grows; the seal-time `feature_index_verify.tally()` p
 | FX021 | Skill-corpus digest (`skill_corpus.digest`) | qor/scripts/skill_corpus.py:23 | qor/references/doctrine-governance-enforcement.md | tests/test_skill_corpus_digest.py | verified |
 | FX022 | Per-gate override recurrence | qor/scripts/override_friction.py:63 | qor/references/doctrine-governance-enforcement.md | tests/test_override_recurrence.py | verified |
 | FX023 | Override recording-path parity | qor/scripts/shadow_process.py:68 | qor/references/doctrine-governance-enforcement.md | tests/test_override_recording_paths.py | verified |
+| FX024 | Seal-ladder order invariant | tests/test_seal_ladder_order.py:44 | qor/references/doctrine-governance-enforcement.md | tests/test_seal_ladder_order.py | verified |
+| FX025 | Step-prerequisite resolvability | tests/test_step_prerequisites_resolve.py:39 | qor/references/doctrine-governance-enforcement.md | tests/test_step_prerequisites_resolve.py | verified |

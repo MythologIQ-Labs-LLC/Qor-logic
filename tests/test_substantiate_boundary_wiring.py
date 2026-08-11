@@ -12,6 +12,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from tests.test_substantiate_staging_gates import HEADROOM_BYTES
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SEAL_SKILL = REPO_ROOT / "qor" / "skills" / "governance" / "qor-substantiate" / "SKILL.md"
 LADDER = SEAL_SKILL.parent / "references" / "seal-gate-ladder.md"
@@ -55,7 +57,7 @@ def test_boundary_step_runs_after_staging():
 def test_seal_skill_stays_under_the_headroom_lock():
     """The disclosure pass ran first, per LD-3. Measured, not assumed."""
     size = len(SEAL_SKILL.read_bytes().decode("utf-8").replace("\r\n", "\n").encode())
-    assert size <= 39936, f"qor-substantiate at {size} B breaches the lock"
+    assert size <= HEADROOM_BYTES, f"qor-substantiate at {size} B breaches the lock"
 
 
 def test_relocated_prose_is_reachable():

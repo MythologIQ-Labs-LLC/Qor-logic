@@ -16926,6 +16926,159 @@ Next: /qor-substantiate.
 **Next**: #314, #320, #286 remain.
 
 
+### Entry #559: RESEARCH BRIEF -- seal-ladder structure (GH #314 residual)
+
+**Timestamp**: 2026-08-11T22:20:00Z
+**Phase**: RESEARCH (Phase 221)
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-11T2209-af5cc6`
+
+**Content Hash**: `271be257faa77a4f485c8ed151eed4a97d9a0a04a75f5cd7f80f852c425775a8`
+**Previous Hash**: `82f4a81e0de49ad72618f2cafe103f0c26e13d4de4114d2052e3002dc7018049`
+**Chain Hash (Merkle seal)**: `6e5993b76986b0e8f60b8ceb3a396d7b8095d61f1ff7deb465f0a53383837976`
+
+**Decision**: Entry #558 predicted the next phase touching qor-substantiate would need a structural remedy rather than another trim. Investigating produced a different answer than expected: the extraction is NOT viable as a wedge, and three smaller structural defects are.
+
+THE EXTRACTION IS BLOCKED BY TWO INDEPENDENT CONSTRAINTS. The Step 4.6.x ladder is 8508 bytes across 10 steps, 21 percent of the file and the obvious unit. But 36 of the 54 test-asserted strings live inside it, and Phase 215 LD-1 is explicit that the guardrail tests are the specification -- a relocation pass that edits a failing assertion has proven nothing. Separately, dist_compile has no include support, so extraction means building a composition mechanism first, which is a phase in its own right. I proposed the extraction as the wedge two messages before this brief; the evidence does not support it, and that is recorded here rather than quietly dropped.
+
+STEP 4.6.12 IS STRANDED OUTSIDE THE LADDER. Heading order runs 4.6 through 4.6.10, then 4.6.13, 4.6.14, then ## Failure Scenarios, then Step 4.6.12, then ## Constraints. It sits at 92 percent through the file. An operator executing the ladder in order goes 4.6.10 to 4.6.13 to 4.6.14 to 4.7 and never reaches it. It is a FAIL-CLOSED receipt gate, and it has not fired only because no plan since Phase 216 has declared execution_continuity -- so the defect is latent rather than harmless, the same shape as GH #314 itself: a declared gate providing no coverage. I introduced it in Phase 216. Placement is not test-pinned; the only assertion naming 4.6.12 checks that the reference file carries its relocated rationale, so the step moves without touching a test.
+
+THE PREREQUISITE SWEEP WAS PROPOSED AND NEVER SHIPPED. 12 module: declarations, 12 resolve, nothing enforces it. Phase 217 research proposed the check, measured it, USED it to disprove #314 premise, and shipped no test. The check that disproved the specific claim was never made standing.
+
+THE HEADROOM CONSTANT IS DEFINED ONCE AND COPIED THREE TIMES. HEADROOM_BYTES = 39 * 1024 is canonical, documented, and parametrized over both governance skills. Three test files hardcode the literal 39936 instead -- all three added by me in Phases 217, 219, and 220, each while wiring a step into the constrained file. Tuning the constant would leave three copies silently disagreeing. This is SG-SingleEntryPointGuard-A in its simplest form: a value bound to a name in one place and to a literal in three others.
+
+Recommendations: relocate 4.6.12 into ladder order, since placement is unpinned and the gate becomes reachable; ship the prerequisite sweep as a standing test, closing the #314 residual; replace the three literals with the canonical import; DEFER the size remedy with the finding recorded, because it needs its own research into whether the answer is a composition mechanism, a sub-skill split, or accepting that the seal ceremony is simply the largest skill and routing new gates elsewhere -- deciding that under time pressure is how the wrong one gets built; and do NOT renumber 4.6.11, whose gap is the scar of #314 and reads as history.
+
+Two of the four findings are defects I introduced in the last four phases -- the stranded step and the triplicated constant -- and both were introduced while solving a DIFFERENT problem under size pressure. Work done against a tight constraint tends to leave structural debt adjacent to the constraint. Brief: docs/research-brief-seal-ladder-structure-2026-08-11.md. Next: /qor-plan.
+
+
+### Entry #560: GATE TRIBUNAL -- Phase 221 seal-ladder structure (VETO)
+
+**Timestamp**: 2026-08-11T22:40:00Z
+**Phase**: GATE (Phase 221)
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase221-seal-ladder-structure.md
+**Session**: `2026-08-11T2209-af5cc6`
+**Verdict**: VETO
+
+**Content Hash**: `4caf9b4e2b634cfeaa8236f1c3457013f908ec2d7b1c56b27f5edf19fbde072c`
+**Previous Hash**: `6e5993b76986b0e8f60b8ceb3a396d7b8095d61f1ff7deb465f0a53383837976`
+**Chain Hash (Merkle seal)**: `a5467760aedd82e2fc1b5e6c7b8014e3f4585d273119f6c5cc0ed85334c2e3dc`
+
+**Decision**: VETO at L1 on one plan-text ground, sealed before amendment.
+
+GROUND, coverage-gap. LD-4 defers the qor-substantiate size remedy and points at entries #558 and #559 for the analysis. That analysis is genuinely good -- it names the two blocking constraints and the three options a future phase must choose between. But nothing TRACKS it. A ledger entry records what was decided; it is not a worklist, and nobody opens META_LEDGER to find out what is outstanding.
+
+This is the ground the Judge sustained against Phase 217 in the same words: enforcement exists only as a sentence, no issue is filed, no follow-on phase named. That VETO was cleared by filing GH #320 BEFORE re-audit -- and the plan now under review cites #320 own entry criteria as its reason to exclude it from scope. This repository has already demonstrated both that the standard applies and that meeting it works. Applying a weaker standard here because the deferral is well-argued would make the rule depend on how good the prose is, and GH #147 catalogued eleven closures that deferred an enforcer to an issue nobody filed, every one of which had a reason at the time.
+
+The deferral ITSELF is correct and the Judge endorses it. Shipping a partial extraction under time pressure would be worse than deferring. What is missing is one filed issue carrying the three options and the entry criteria that would make a future phase viable.
+
+Three grounds were considered and rejected. That the phase is too small: rejected -- three independent structural defects in one subsystem, two introduced by the author in the preceding four phases, one a latent fail-closed gate no reader reaches. That relocating 4.6.12 risks changing a gate: rejected -- placement is unpinned, and requiring byte size to be unchanged is the strongest available check that a move was only a move. That leaving 4.6.11 absent is an oddity: rejected, and the plan is right that the gap is the scar of GH #314.
+
+NOTED RISK, NOT A GROUND. test_no_hardcoded_headroom_literals greps the test tree for the literal and must not match itself; the plan does not say whether it excludes its own path or constructs the number instead of writing it. The second is better, since an exclusion list is one more thing to forget.
+
+Also recorded: the LD-2 grep citation was corrected before this verdict from 13 to 12 distinct declarations -- 21 LINES mention module: while 12 distinct modules are declared. plan_grep_lint passed on the wrong number because it verifies that a citation carries paired evidence, not that the evidence is correct. Third time this session a count in a plan has been wrong, and the second time a lint passed over it. Next: /qor-plan (amend).
+
+
+### Entry #561: GATE TRIBUNAL -- Phase 221 seal-ladder structure, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-11T22:55:00Z
+**Phase**: GATE (Phase 221)
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase221-seal-ladder-structure.md
+**Session**: `2026-08-11T2209-af5cc6`
+**Verdict**: PASS
+
+**Content Hash**: `65355428bc0f6e4fa2f312d6c50743cd18b58b3be53dc77b1b884f8f00748334`
+**Previous Hash**: `a5467760aedd82e2fc1b5e6c7b8014e3f4585d273119f6c5cc0ed85334c2e3dc`
+**Chain Hash (Merkle seal)**: `5b60095a0abdb7a9cd3538b6fc8cfa16c75c59cabef2c3d96b8ab67d8a41446d`
+
+**Decision**: PASS at L1. Entry #560 binds the vetoed text; this entry binds the amendment.
+
+GROUND CLEARED, AND OVER-CLEARED. GH #327 is filed and carries more than the VETO required. It names the three options with their tradeoffs -- build a composition mechanism, split into a sub-skill, or accept the ceiling and route new gates elsewhere -- and states the non-obvious risk in the first: retargeting 36 assertions looks indistinguishable from weakening them unless the argument is made carefully, so the tests must be shown to read the same tokens from a new canonical location rather than asserted to.
+
+Its entry criteria explicitly REFUSE to open the issue in response to a size breach, on the grounds that three phases have each resolved a breach under time pressure and each resolution made the next one harder. That is the correct reading of this repository own history, and it is what makes a deferral real rather than decorative -- a deferral with no entry condition is just a wish with an issue number.
+
+Binding on implementation: LD-5, each fix ships a test failing against HEAD. Binding also on Phase 1 D2 -- qor-substantiate byte size must be UNCHANGED. A pure move that changes size is not a pure move, and that equality is the only mechanical evidence that a relocation did not become a rewrite. The Judge notes this is the first phase in five to touch that file WITHOUT needing to free space, because a move is size-neutral by construction.
+
+Noted risk carried forward: test_no_hardcoded_headroom_literals must not match itself; construct the number rather than writing it. Next: /qor-implement.
+
+
+### Entry #562: IMPLEMENTATION -- Phase 221 seal-ladder structure
+
+**Timestamp**: 2026-08-11T23:15:00Z
+**Phase**: IMPLEMENT (Phase 221)
+**Author**: Specialist
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase221-seal-ladder-structure.md
+**Session**: `2026-08-11T2209-af5cc6`
+
+**Content Hash**: `65355428bc0f6e4fa2f312d6c50743cd18b58b3be53dc77b1b884f8f00748334`
+**Previous Hash**: `5b60095a0abdb7a9cd3538b6fc8cfa16c75c59cabef2c3d96b8ab67d8a41446d`
+**Chain Hash (Merkle seal)**: `2b1f58e0fd833a85f1c7340d366d776931e875833649f56091af41579252af49`
+
+**Decision**: Three structural defects fixed tests-first. Full suite 2901 passed / 6 skipped; the three new modules run twice; ruff clean; dist zero-drift.
+
+THE MOVE WAS SIZE-NEUTRAL, WHICH IS THE POINT. Step 4.6.12 relocated from inside ## Failure Scenarios to between 4.6.10 and 4.6.13. Byte size 39912 before and 39912 after -- delta 0. Entry #561 made that equality binding as the only mechanical evidence that a relocation did not become a rewrite, and test_relocation_preserved_the_step_body additionally pins that the fail-closed language and the three-outcome distinction survived. This is the first phase in five to touch this file without needing to free space, because a move costs nothing.
+
+Ladder order is now 4.6, 4.6.5 through 4.6.10, 4.6.12, 4.6.13, 4.6.14. An operator reading in sequence now reaches the execution-continuity receipt gate; before this phase they went 4.6.10 to 4.6.13 to 4.6.14 to 4.7 and never saw it. 4.6.11 stays absent by decision -- the gap is the scar of GH #314 and closing it would erase the record of a gate that was declared and never existed.
+
+THE PREREQUISITE SWEEP IS NOW STANDING. Phase 217 proposed this check, measured it, used it to disprove GH #314 premise, and shipped no test. Verified it would have caught the original defect: injecting the phantom instruction_hygiene_lint declaration reports it unresolvable on sight. The parse is derived from skill text at run time rather than a hardcoded list, and test_a_fabricated_declaration_is_caught proves the check can fail -- without it, a parser that never reports would satisfy the other assertions forever.
+
+ONE DEFINITION FOR ONE BOUND. Three test files hardcoded 39936; all three were added by me in Phases 217, 219, and 220, each while wiring a step into the constrained file under size pressure. They now import HEADROOM_BYTES. The sweep constructs the literal as 39 * 1024 rather than writing it, per entry #561 noted risk -- a test that greps for a literal must not be the reason the grep matches, and an exclusion list is one more thing to forget. test_canonical_definition_still_exists guards the degenerate fix where deleting the source makes the sweep pass.
+
+A TEST BUG CAUGHT BY THE IMPLEMENTATION IT WAS CHECKING. The first ladder-order key packed sub-steps into a decimal, making 4.6.9 encode as 4.69 and 4.6.10 as 4.61 -- so the test failed on the CORRECTLY ordered ladder. Rewritten to compare integer tuples, and verified against the pre-move sequence to confirm it still fails at HEAD as required. Two of this session fixture defects have now been ordering or encoding assumptions that pass on small inputs.
+
+THE SIZE REMEDY IS DEFERRED AND TRACKED at GH #327, filed before re-audit per the entry #560 VETO. It carries three options -- build a composition mechanism, split into a sub-skill, or accept the ceiling and route new gates elsewhere -- and entry criteria that explicitly refuse to open it in response to a size breach, because three phases have each resolved one under time pressure and each resolution made the next harder.
+
+Next: /qor-substantiate.
+
+
+### Entry #563: SESSION SEAL -- Phase 221 seal-ladder structure (v0.144.0)
+
+**Timestamp**: 2026-08-11T23:35:00Z
+**Phase**: SUBSTANTIATE (Phase 221; feature)
+**Author**: Judge
+**Change class**: feature
+**Entry ID**: `b44a62e71aec`
+**Plan**: docs/plan-qor-phase221-seal-ladder-structure.md
+**Session**: `2026-08-11T2209-af5cc6`
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+**Feature Inventory**: Total: 25 / verified: 25 / unverified: 0 / n/a: 0
+**Skill Corpus**: digest `901e90338ab8ee1d` scope `global` drift_count 0
+**Boundary Scope**: structural+identity (0 findings, post-staging)
+**Intent Lock State**: overridden (recurrence 6, charged)
+
+**Content Hash**: `65355428bc0f6e4fa2f312d6c50743cd18b58b3be53dc77b1b884f8f00748334`
+**Previous Hash**: `2b1f58e0fd833a85f1c7340d366d776931e875833649f56091af41579252af49`
+**Chain Hash (Merkle seal)**: `67fd28da0de3f1eb162336161aeb517ea4ee851d4efee5eb9229cf5f201acaf6`
+
+**Decision**: **Scope**: Phase 221 sealed as v0.144.0, closing the GH #314 residual. Three structural defects in the seal gate ladder, two introduced by me in the preceding four phases while solving a different problem under size pressure.
+
+**A FAIL-CLOSED GATE NO READER REACHED.** Step 4.6.12, the execution-continuity receipt gate, sat inside ## Failure Scenarios at 92 percent of the file, after the templates and before ## Constraints. An operator executing the ladder in order went 4.6.10, 4.6.13, 4.6.14, 4.7 and never saw it. It had not fired only because no plan since Phase 216 declared execution_continuity, so the defect was LATENT rather than harmless -- a declared gate providing no coverage, which is precisely what GH #314 was filed about. Relocated between 4.6.10 and 4.6.13 with byte size unchanged at 39912. Entry #561 made that equality binding as the only mechanical evidence a relocation did not become a rewrite. First phase in five to touch this file without needing to free space, because a move costs nothing.
+
+**THE CHECK THAT DISPROVED #314 WAS NEVER MADE STANDING.** Phase 217 research proposed the module: prerequisite sweep, measured 12 declarations resolving 12, used that measurement to disprove the issue premise, and shipped no test. Now standing, derived from skill text at run time rather than a hardcoded list, and verified against the historical defect: injecting the phantom instruction_hygiene_lint declaration reports it unresolvable on sight. test_a_fabricated_declaration_is_caught proves the check can fail, without which a parser that never reports would satisfy the other assertions forever.
+
+**ONE BOUND, THREE COPIES, ALL MINE.** HEADROOM_BYTES is canonical and documented; three test files hardcoded 39936, added in Phases 217, 219, and 220, each while wiring a step under size pressure. Tuning the constant would have left three copies silently disagreeing -- SG-SingleEntryPointGuard-A in its simplest form. The sweep constructs the literal as 39 * 1024 rather than writing it, per entry #561 noted risk: a test that greps for a literal must not be the reason the grep matches, and an exclusion list is one more thing to forget.
+
+**A TEST BUG CAUGHT BY THE IMPLEMENTATION IT CHECKED.** The first ladder-order key packed sub-steps into a decimal, encoding 4.6.9 as 4.69 and 4.6.10 as 4.61, so the test failed on the CORRECTLY ordered ladder. Rewritten to compare integer tuples and re-verified against the pre-move sequence to confirm it still fails at HEAD. Two fixture defects this session have now been ordering or encoding assumptions that hold on small inputs.
+
+**THE PROVENANCE GATE REFUSED ME.** Backfilling plan.json with QOR_SKILL_ACTIVE=substantiate raised a skill-phase mismatch. Phase 158 non-forgeable binding working exactly as designed -- it will not let a substantiate context author a plan artifact. Re-run under the correct phase.
+
+**RECURRENCE, NOW CHARGED AND COUNTED.** intent_lock overridden for the SIXTH consecutive phase and plan.json backfilled for the FOURTH. Both charged by the friction shipped in Phase 220 and recorded with written justifications. The lock cannot be back-dated because it observes a window rather than a state; plan.json can be, and is, with disclosure. Six occurrences of one and four of the other say the durable fix is that the recording step belongs inside the act it records -- not beside it, and not in a paragraph.
+
+**THE SIZE REMEDY IS DEFERRED AND TRACKED at GH #327**, filed before re-audit per the entry #560 VETO on exactly that ground. It carries three options -- build a composition mechanism, split into a sub-skill, or accept the ceiling and route new gates elsewhere -- and entry criteria that explicitly REFUSE to open it in response to a size breach, because three phases have each resolved one under time pressure and each resolution made the next harder. Entry #559 records why the obvious remedy is unavailable: 36 of 54 asserted strings live inside the ladder, and dist_compile has no composition mechanism to extract it into.
+
+4.6.11 stays absent by decision. The gap is the scar of GH #314 and closing it would erase the record of a gate that was declared and never existed.
+
+**Gates**: intent_lock overridden with justification (friction charged, recurrence 6); skill_admission ADMITTED; gate_skill_matrix 30/140/0; secret_scanner 0; dod_check 0; merge_velocity healthy; skill_size_budget 0 EXCEEDED; doc_integrity strict PASS; governance_index 0; feature_index 25/25; ruff clean; install drift 0; boundary 0 at structural+identity. Full suite 2901 passed / 6 skipped.
+
+**Next**: #327 (size remedy, gated), #320 (enforcement, gated), #286.
+
+
 ---
 
 *Chain integrity: VALID*

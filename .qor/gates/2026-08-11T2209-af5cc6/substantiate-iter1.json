@@ -1,0 +1,27 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-08-11T2209-af5cc6",
+  "ts": "2026-08-11T23:13:05Z",
+  "phase_number": 221,
+  "change_class": "feature",
+  "plan_path": "docs/plan-qor-phase221-seal-ladder-structure.md",
+  "ledger_entry": 563,
+  "version": "0.144.0",
+  "verdict": "PASS",
+  "merkle_seal": "67fd28da0de3f1eb162336161aeb517ea4ee851d4efee5eb9229cf5f201acaf6",
+  "skill_corpus": {
+    "digest": "901e90338ab8ee1df0fb67e18e98443e3421206688554e370fdbd00b7da355ea",
+    "scope": "global",
+    "drift_count": 0
+  },
+  "boundary_scope": "structural+identity",
+  "intent_lock_state": "overridden",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.144.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "pass",
+    "ts": "2026-08-11T23:13:15Z"
+  }
+}

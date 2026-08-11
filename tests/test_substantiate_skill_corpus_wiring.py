@@ -9,6 +9,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from tests.test_substantiate_staging_gates import HEADROOM_BYTES
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = REPO_ROOT / "qor" / "gates" / "schema" / "substantiate.schema.json"
 SEAL_SKILL = REPO_ROOT / "qor" / "skills" / "governance" / "qor-substantiate" / "SKILL.md"
@@ -78,4 +80,4 @@ def test_seal_skill_stays_under_the_headroom_lock():
     estimate. The audit made measurement binding rather than advisory.
     """
     size = len(SEAL_SKILL.read_bytes().decode("utf-8").replace("\r\n", "\n").encode())
-    assert size <= 39936, f"qor-substantiate at {size} B breaches the 39936 lock"
+    assert size <= HEADROOM_BYTES, f"qor-substantiate at {size} B breaches the lock"
