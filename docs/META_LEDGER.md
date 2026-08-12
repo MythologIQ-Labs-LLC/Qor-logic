@@ -17675,6 +17675,46 @@ Next: /qor-substantiate.
 **Next**: /qor-substantiate.
 
 
+### Entry #580: SESSION SEAL -- Phase 223 grep-evidence truth (v0.146.0)
+
+**Timestamp**: 2026-08-12T16:00:00Z
+**Phase**: SUBSTANTIATE (Phase 223)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `e3042ecb0ace`
+**Verdict**: PASS
+**Session**: `2026-08-12T0214-799d77`
+**Plan**: docs/plan-qor-phase223-grep-evidence-truth.md (iteration 5)
+**Change class**: feature (v0.145.0 -> v0.146.0)
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PW.1.1, PW.5.1, RV.1.1, RV.1.2
+
+**Content Hash**: `8f81a2a3c5118a706ef8afb1036ca99758c69e21068950a098eaa52271cdd32a`
+**Previous Hash**: `0a364b1686e21cbadd4352c9b13822c0bd9e988ac5fc091db57f25e60650c4af`
+**Chain Hash (Merkle seal)**: `30c01961aa94d664830542478c9f63f4d6ff2be5b6ce658517bf26672abc00ec`
+
+**Decision**: GH #330 closes. A `file:line` citation's evidence is now resolved against the revision the statement names and compared, per citation rather than per block. Reality = Promise.
+
+**THE ENFORCER NOW CHECKS WHAT IT WAS BUILT TO CHECK.** `plan_grep_lint` has verified since Phase 125 that a Locked Decision citing sealed infrastructure CARRIES a grep-evidence statement, never that the statement was true. Last phase a plan reached audit with `-> 39:` against an actual line 42 and this lint returned exit 0. On this phase's own plan it now reports `5 citation(s) truth-checked [file:line]`, zero findings -- where iteration 1 offered the same command as self-validation over an empty subject set.
+
+**PAIRING IS PER CITATION.** The prior rule satisfied an entire Locked-Decision region whenever any single statement appeared in it. `test_the_block_level_gap_is_closed` holds the counterfactual: one true statement plus citations at `:999`, `:12345` and `:4` gave zero findings and now gives three.
+
+**THE CEILING IS STATED WHERE THE LINT REPORTS.** Truth-checked: `file:line`. Presence-only: `migration filename`, `git show <ref>:<path>` -- neither carries a line to resolve, so both keep the block-level rule. `test_doctrine_citation_pairing.py` parses those two lists out of the amended doctrine, runs the CLI, and asserts agreement; drift in either direction goes red. The doctrine also records what it does NOT cover: artifacts with no Locked-Decision heading are outside the scanned region, a known gap rather than a satisfied contract.
+
+**THE INTENT LOCK FAILED AND WAS OVERRIDDEN, NOT PROVEN.** The iteration-5 PASS carried two corrections forward to implementation rather than fixing them at audit, to avoid binding its verdict to a document it had not audited. Applying them is what the verdict instructed and is also what broke the lock captured at implement entry. Unlike the Phase 218 CRLF case, equivalence CANNOT be demonstrated here: the audited bytes were never committed and the lock stores a hash, not the content, so its referent is unrecoverable. The override rests on testimony plus a verdict naming both items in advance. Ninth intent_lock-class override on record. **The audit's carry-forward disposition and the seal-time lock are in structural conflict** -- any plan whose verdict directs corrections into implementation will ABORT here -- and that conflict is a defect in the ladder, not in this phase.
+
+**THE PROCEDURAL-FIDELITY WARN WAS MY ARTIFACT, NOT THE WORK.** Step 4.6.6 reported the seal touching skill/script/doctrine surface with no system-tier doc update. The doc surfaces WERE updated in the same commit; the implement artifact's `files_touched` was written before the Step 8.5 sync and never revised. Corrected by re-emitting the artifact (`implement-iter2`) with the real 21-file set, after which the gate is clean. A gate reading a stale self-report cannot see the work.
+
+**THE FOUR REMEDIATION EVENTS ARE CLOSED, BUT THREE CITE THE WRONG ENFORCER.** All four flipped to `addressed` on the first call; a later re-run returned zeros because `_flip_event_fields` only mutates unflipped events, which reads as failure and is not. What IS defective: `mark_addressed` takes one `closure_enforcer` per batch, so all four closed citing `qor.scripts.cycle_count_escalator` while their proposals name different enforcers per finding. Uncorrectable through the sanctioned API, since the events will not re-flip. Recorded at #577 and again here.
+
+**THE BROKEN ARTIFACT IS QUARANTINED, NOT MERELY UNCOMMITTED.** `remediate-iter5.json` and its sidecar had their Phase 158 provenance binding broken by a hand edit that bypassed `write_gate_artifact`; re-emitted as iter6. Holding them out of the COMMIT was not enough: `gate_provenance.verify_committed` walks the on-disk `.qor/gates/` tree, so the post-seal suite went red on them locally while CI -- which never sees an uncommitted file -- would have been green. That asymmetry is the inverse of the usual CI-honesty problem and it caught a real broken binding. Moved to `.qor/quarantine/<session>/` with a README recording why. Deletion stays off the table because `audit-iter7.json`, which IS committed, carries `reviews_remediate_gate` pointing at the iter5 path; that review is superseded by iter8, which reviews iter6. Relocating out of the gate namespace states what is true: this is evidence, not a gate artifact.
+
+**Gates**: intent_lock OVERRIDDEN with justification (friction charged; equivalence not provable); skill_admission ADMITTED; gate_skill_matrix 30 skills / 140 handoffs / 0 broken; secret_scanner 0; procedural_fidelity 0 after artifact correction; dod_check 0; merge_velocity strained / narrow_scope (16 PRs in 7d, non-blocking); skill_size_budget 3 WARN / 0 EXCEEDED; data_api_acl disclosed-SKIP (no SQL migrations); instruction_hygiene_lint disclosed-SKIP (module absent from this repo; `gate_skipped_prerequisite_absent` emitted); doc_integrity strict PASS; governance_index enforce 0 after registering `docs/remediation-*.md` to Tier 5; feature_index 25/25; sg_closure_lint 40 / 0 uncited; seal_artifacts regenerated then current; ruff clean; prose_test_lint --enforce 0 (61 exempted); publication_boundary 0 at structural+identity; install drift 1 disclosed (`qor-research/SKILL.md`); dist recompiled.
+
+**Tests**: 2956 passed / 6 skipped / 4 deselected, green on two consecutive full runs. 25 new: 10 parse/resolve, 13 pairing, 2 doctrine-binding. All red before their implementation.
+
+**Next**: push, PR, merge, tag `v0.146.0` at the seal commit SHA.
+
+
 ---
 
 *Chain integrity: VALID*

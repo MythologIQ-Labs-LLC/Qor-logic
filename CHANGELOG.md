@@ -10,6 +10,8 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.146.0] - 2026-08-12
+
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
 ### Changed

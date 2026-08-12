@@ -1,0 +1,36 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-08-12T0214-799d77",
+  "ts": "2026-08-12T06:10:16Z",
+  "verdict": "PASS",
+  "version": "0.146.0",
+  "merkle_seal": "30c01961aa94d664830542478c9f63f4d6ff2be5b6ce658517bf26672abc00ec",
+  "ledger_entry": 580,
+  "gates_run": [
+    "intent_lock(OVERRIDE)",
+    "skill_admission",
+    "gate_skill_matrix",
+    "secret_scanner",
+    "procedural_fidelity",
+    "dod_check",
+    "merge_velocity_check",
+    "skill_size_budget_lint",
+    "data_api_acl_lint(SKIP)",
+    "instruction_hygiene_lint(SKIP)",
+    "doc_integrity",
+    "governance_index",
+    "seal_artifacts",
+    "feature_index_verify",
+    "sg_closure_lint",
+    "publication_boundary_lint",
+    "dist_compile"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.146.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-08-12T06:10:16Z"
+  }
+}
