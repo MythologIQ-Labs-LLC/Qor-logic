@@ -10,6 +10,19 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.146.1] - 2026-08-12
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 224 (hotfix; seal-artifact ordering)**: closes GH #334. `/qor-substantiate` regenerated the README badges at Step 6 and graded their currency at Step 6.5, both before Step 7 appended the SESSION SEAL entry that the ledger badge counts. The gate compared the artifact against the state that produced it, so it read current every time and the badge shipped exactly one behind on every seal. CI was the first observer, after the branch was already pushed and tagged.
+
+  **The pair moved to Step 7.7.5**, after Step 7.7 verifies the appended entry exists and before the Step 9.5 staging. Step numbering is not execution order in that region -- Steps 7.4 and 7.5 produce content the entry carries, so they run before the append despite their numbers -- and an earlier revision of this fix was rejected at audit for placing the corrected step at 7.2, inside the same pre-append window it existed to leave.
+
+  **The `latest <= got <= latest + 1` window in `_check_header` is retired.** It existed only to absorb Step 6 writing the header for the phase being sealed before its entry landed. Tightening it to equality revealed that the window had been concealing the same pre-append write on the header dimension, not merely tolerating it.
+
+  **The ordering is now pinned in both directions.** The superseded wiring test asserted the invocations sat in Steps 6 and 6.5 -- it pinned the defective order, which is why eight phases of green did not mean the sequence was right. The replacement asserts the write falls between Step 7.7 and the staging block, because a lower bound alone is satisfied by any placement after staging, where the regenerated README would miss the commit entirely.
+
 ## [0.146.0] - 2026-08-12
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

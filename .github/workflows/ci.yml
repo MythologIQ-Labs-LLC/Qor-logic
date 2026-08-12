@@ -99,7 +99,7 @@ jobs:
         # per-test live-equality assertions that broke on every seal.
         # --skip-tests: this job installs -e . without dev extras, so pytest
         # is unavailable for the Tests-badge collect; that badge is verified
-        # at seal time (substantiate Step 6.5) where the dev env exists.
+        # at seal time (substantiate Step 7.7.5) where the dev env exists.
         run: python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .
       - name: ruff
         # Phase 213 (GH #304): pyflakes only, adopted narrowly and landed at

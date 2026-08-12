@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-12T0628-bfed3e",
+  "ts": "2026-08-12T16:02:53Z",
+  "target": "docs/plan-qor-phase224-seal-artifact-ordering.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "specification-drift",
+    "test-failure"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.146.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "veto",
+    "ts": "2026-08-12T16:02:53Z"
+  }
+}

@@ -3,7 +3,7 @@
 The five live-equality tests (declared badge == current repo truth) were
 retired in Phase 164 (generate-not-assert, research entry #378 rec 2): that
 class broke on every seal. Currency is now enforced where repo state is
-stable -- substantiate Step 6.5 `seal_artifacts --check` (ABORT) and the CI
+stable -- substantiate Step 7.7.5 `seal_artifacts --check` (ABORT) and the CI
 `seal-artifacts currency` step. The remaining tests here exercise the helper
 functions against synthetic fixtures.
 """

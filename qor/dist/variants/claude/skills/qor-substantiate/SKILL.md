@@ -43,7 +43,7 @@ Verify that implementation matches the encoded blueprint (Reality = Promise), th
 The binding contracts /qor-substantiate cannot violate. ABORT halts the seal; the session does not seal until every invariant clears.
 
 1. Step 4.6 reliability gates -> non-zero exit aborts substantiate. The ladder (intent-lock, secret-scanner, procedural-fidelity, dod-check, merge-velocity, skill-corpus-size-budget, data-api-acl, governance-index) extends forward; existing gates are not reordered.
-2. Step 6.5 README badge currency check -> `|| ABORT` on drift.
+2. Step 7.7.5 README badge currency check -> `|| ABORT` on drift.
 3. Step 7.8 gate-chain completeness check -> `|| ABORT` on missing or mis-keyed gate artifacts.
 4. Constraints section at file foot -> binding post-batch-1 contract inventory (verification-step requirement, dist-variant prohibition, load-bearing-gate preservation per the Phase 75 prerequisite-absent SKIP path).
 
@@ -299,14 +299,6 @@ Glob: tests/**/*
 Glob: docs/**/*
 ```
 
-Regenerate the mechanical fields (Phase 164; see `references/seal-gate-ladder.md`):
-
-```bash
-qor-logic scripts seal_artifacts --write --phase <N> --snapshot <YYYY-MM-DD>
-```
-
-Rewrites Snapshot date, Phase number, README count badges; narrative stays authored.
-
 Create/Update `docs/SYSTEM_STATE.md`:
 
 Template: `references/qor-substantiate-templates.md`.
@@ -357,17 +349,6 @@ if warnings:
 ```
 
 Phase 33 addition: when `change_class` is `feature`/`breaking`, the check also requires README.md + CHANGELOG.md in `files_touched` (hotfix exempt). Operator-judgment guidance on warnings: `references/seal-gate-ladder.md`.
-
-**Phase 49/164: seal-artifact currency (release-class only, ABORT semantics)**. For `feature`/`breaking`, verify README badges + SYSTEM_STATE header against truth; ABORT on mismatch (hotfix exempt):
-
-```bash
-if [[ "${CHANGE_CLASS}" == "feature" || "${CHANGE_CLASS}" == "breaking" ]]; then
-  qor-logic scripts seal_artifacts --check --repo-root . \
-    || { echo "ABORT: seal-artifact currency mismatch — re-run Step 6 --write"; exit 1; }
-fi
-```
-
-Per `qor/references/doctrine-governance-enforcement.md` §"Badge currency".
 
 ### Step 6.8: Seal Hash Integrity Gate (Phase 64 wiring - GH #48)
 
@@ -475,6 +456,26 @@ qor-logic reliability seal_entry_check --ledger docs/META_LEDGER.md --plan "$PLA
 ```
 
 The `python -c` source is hardcoded (no shell-variable interpolation; OWASP A03 closed by construction); argv-form throughout. ABORT on non-zero exit leaves the session unsealed — amend the ledger (or re-run Step 7) and re-run.
+
+### Step 7.7.5: Seal artifacts (Phase 164; relocated Phase 224, GH #334)
+
+Runs after Step 7.7 verifies the appended entry exists, before Step 9.5 staging.
+Rationale + counted-input walk: `references/seal-gate-ladder.md`.
+
+```bash
+qor-logic scripts seal_artifacts --write --phase <N> --snapshot <YYYY-MM-DD>
+```
+
+**Phase 49/164: seal-artifact currency (release-class only, ABORT semantics)**. For `feature`/`breaking`, verify README badges + SYSTEM_STATE header against truth; ABORT on mismatch (hotfix exempt):
+
+```bash
+if [[ "${CHANGE_CLASS}" == "feature" || "${CHANGE_CLASS}" == "breaking" ]]; then
+  qor-logic scripts seal_artifacts --check --repo-root . \
+    || { echo "ABORT: seal-artifact currency mismatch — re-run the --write above"; exit 1; }
+fi
+```
+
+Per `qor/references/doctrine-governance-enforcement.md` §"Badge currency".
 
 ### Step Z: Write Gate Artifact (Phase 11D wiring)
 

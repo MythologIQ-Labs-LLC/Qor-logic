@@ -2,10 +2,13 @@
 
 Generate-not-assert (research entry #378, rec 2): the pytest suite tests the
 GENERATORS against synthetic fixtures; live repo-state currency is enforced by
-the substantiate Step 6.5 gate and the CI `seal-artifacts currency` step, where
+the substantiate Step 7.7.5 gate and the CI `seal-artifacts currency` step, where
 repo state is stable. No test here asserts on the real README/SYSTEM_STATE.
 """
 from __future__ import annotations
+
+import pathlib
+import re
 
 from pathlib import Path
 
@@ -47,7 +50,7 @@ x
 
 x
 
-### Entry #3: SESSION SEAL -- Phase 7 something (v0.1.0)
+### Entry #3: SESSION SEAL -- Phase 8 something (v0.1.0)
 
 x
 """
@@ -140,7 +143,7 @@ def test_check_files_reports_stale_badge_and_header(tmp_path):
     mismatches = check_files(root, skip_tests=True)
     joined = "\n".join(mismatches)
     assert "skills" in joined  # README declares 30, tmp-repo truth is 0
-    # Header drift: rewrite header far behind the latest sealed phase (7)
+    # Header drift: rewrite header far behind the latest sealed phase (8)
     ss = root / "docs" / "SYSTEM_STATE.md"
     ss.write_text(ss.read_text(encoding="utf-8").replace("Phase 7 (", "Phase 3 ("), encoding="utf-8")
     mismatches = check_files(root, skip_tests=True)
@@ -165,3 +168,54 @@ def test_main_write_then_check_exit_codes(tmp_path, capsys):
     assert rc == 1
     out = capsys.readouterr().out
     assert "ledger" in out
+
+
+def _state(root: pathlib.Path) -> pathlib.Path:
+    return root / "docs" / "SYSTEM_STATE.md"
+
+
+def _set_header_phase(root: pathlib.Path, phase: int) -> None:
+    path = _state(root)
+    path.write_text(
+        re.sub(r"^\*\*Phase\*\*: Phase \d+", f"**Phase**: Phase {phase}",
+               path.read_text(encoding="utf-8"), count=1, flags=re.MULTILINE),
+        encoding="utf-8",
+    )
+
+
+def _header_mismatches(root: pathlib.Path) -> list[str]:
+    return [m for m in check_files(root, skip_tests=True) if m.startswith("header:")]
+
+
+def test_header_one_phase_ahead_of_latest_seal_is_a_mismatch(tmp_path):
+    """Phase 224: the slack the pre-append write required is retired.
+
+    Before this phase `_check_header` accepted `latest <= got <= latest + 1`,
+    because Step 6 wrote the header for the phase being sealed before its entry
+    existed. With regeneration at Step 7.7.5 that state is unreachable, so a
+    header one ahead of the latest seal is drift and must be reported.
+    """
+    root = _make_repo(tmp_path)          # latest sealed phase is 8
+    _set_header_phase(root, 9)
+
+    assert _header_mismatches(root) == [
+        "header: SYSTEM_STATE records Phase 9, latest seal is Phase 8"
+    ]
+
+
+def test_header_equal_to_latest_seal_is_current(tmp_path):
+    """The tightening did not invert the comparison."""
+    root = _make_repo(tmp_path)
+    _set_header_phase(root, 8)
+
+    assert _header_mismatches(root) == []
+
+
+def test_header_behind_latest_seal_is_a_mismatch(tmp_path):
+    """The lower bound survived the edit; the previous form rejected this too."""
+    root = _make_repo(tmp_path)
+    _set_header_phase(root, 7)
+
+    assert _header_mismatches(root) == [
+        "header: SYSTEM_STATE records Phase 7, latest seal is Phase 8"
+    ]

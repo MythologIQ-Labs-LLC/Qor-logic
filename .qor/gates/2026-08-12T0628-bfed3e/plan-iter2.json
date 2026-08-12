@@ -1,0 +1,51 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-12T0628-bfed3e",
+  "ts": "2026-08-12T15:59:37Z",
+  "plan_path": "docs/plan-qor-phase224-seal-artifact-ordering.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "open_questions": [
+    "Q1 (non-blocking): why did most sealed phases since Phase 164 pass the CI seal-artifacts currency step, given both causes are structural?",
+    "Q2 (out of scope, file separately): plan_grep_lint does not truth-check the grep-evidence form /qor-plan Step 2 mandates (plan_grep_lint.py:109, :230). All twelve Locked Decisions were hand-verified with git show."
+  ],
+  "boundaries": {
+    "limitations": [
+      "Fixes one defect with two causes: a generate/check pair positioned before its input exists, and a staged set that omits the file the badge lives in."
+    ],
+    "non_goals": [
+      "No change to what a badge counts, to the tests badge tolerance, or to which change classes ABORT on stale artifacts."
+    ],
+    "exclusions": [
+      "GH #333",
+      "GH #332",
+      "GH #320",
+      "GH #286",
+      "the plan_grep_lint citation-form gap (Q2)"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "phases": [
+    "Phase 1: prove both causes from the mechanism -- tests/test_seal_artifacts_ordering.py (NEW); one test, test_check_before_append_passes_over_a_badge_that_is_about_to_be_stale, holding both the gate pass and the post-append mismatch. Reduced from three after the tribunal found two restated existing coverage.",
+    "Phase 2: move the pair after Step 7.7 and stage the file it writes -- tests/test_substantiate_seal_artifacts_wiring.py (rewritten), tests/test_skill_corpus_consolidation.py (SUBST_INVARIANTS token), qor/skills/governance/qor-substantiate/SKILL.md (Step 6/6.5 lose the invocations; new Step 7.7.5; spine invariant line 46; README.md added to the staged set at line 548); tests test_regeneration_follows_the_step_that_verifies_the_entry_exists, test_the_regenerated_readme_is_in_the_staged_set, test_step_7_7_5_retains_abort_and_the_hotfix_exemption, test_step_6_no_longer_regenerates_seal_artifacts",
+    "Phase 3: retire the tolerance the early write required -- tests/test_seal_artifacts.py (fixture ledger raised Phase 7 -> 8; new header tests), qor/scripts/seal_artifacts.py (_check_header equality; docstring); tests test_header_one_phase_ahead_of_latest_seal_is_a_mismatch, test_header_equal_to_latest_seal_is_current, test_header_behind_latest_seal_is_a_mismatch",
+    "Phase 4: correct the surfaces that state the old placement -- qor/references/doctrine-governance-enforcement.md:175,177; qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md:140,149,165-172; .github/workflows/ci.yml:100-102; qor/scripts/badge_currency.py docstring. Prose surfaces, no invokable unit; declared for Affected Files completeness per SG-AffectedFilesContract-A."
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_seal_artifacts_ordering.py tests/test_seal_artifacts.py tests/test_substantiate_seal_artifacts_wiring.py tests/test_skill_corpus_consolidation.py -q",
+    "python -m pytest -q",
+    "python -m ruff check qor tests",
+    "python -m qor.scripts.seal_artifacts --check --repo-root .",
+    "python -m qor.scripts.dist_compile",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase224-seal-artifact-ordering.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase224-seal-artifact-ordering.md"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.146.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-08-12T15:59:37Z"
+  }
+}

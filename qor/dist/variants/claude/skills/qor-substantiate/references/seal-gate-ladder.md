@@ -137,7 +137,29 @@ bytes actually hashed under either mode. `intent_lock._hash_file` is excluded:
 it captures and re-checks the plan/audit gate artifacts within one working copy
 (no git round-trip), so byte-exact comparison is correct there.
 
-## Step 6 seal-artifact generation (Phase 164 wiring; generate, don't assert)
+## Step 7.7.5 seal-artifact generation (Phase 164 wiring; relocated Phase 224)
+
+**Why the pair sits at 7.7.5 (Phase 224; GH #334).** The ledger badge counts
+ledger entries, so it can only be generated from truth once the entry this seal
+adds is in `docs/META_LEDGER.md`. The pre-Phase-224 order regenerated at Step 6
+and graded at Step 6.5, both before Step 7 appended that entry, so the gate
+compared the artifact against the state that produced it: it read current, and
+the badge shipped one behind on every seal. CI was the first observer, after the
+branch was already pushed.
+
+Step numbering is not execution order in this region. Steps 7.4 and 7.5 produce
+content the seal entry carries -- the SSDF practice tags and the version the
+entry title records -- so they run before the append despite their numbers. Step
+7.7 is the first step that asserts the appended entry exists, which makes it the
+earliest correct anchor.
+
+**Nothing between 7.7.5 and the Step 9.5 staging mutates a counted input.**
+Counted inputs are the `### Entry #` count, the skills / agents / doctrines
+roots, the pytest collect, and for the header the max sealed phase. Step Z writes
+a gate artifact; Step 7.8 reads; Step 7.9 writes under `qor/specs/` and amends
+the existing seal entry rather than adding one; Step 8.5 writes under `qor/dist`.
+None is a counted root.
+
 
 Research entry #378 rec 2: the pre-164 seal ceremony hand-edited README count
 badges and the SYSTEM_STATE header, and 13 always-on tests asserted that live
@@ -146,7 +168,7 @@ repo state matched truth -- a class that broke on nearly every seal (phases
 --write --phase <N> --snapshot <date>` deterministically regenerates the
 mechanical fields (Snapshot date, Phase number, the five README literal-count
 badges) from current truth via the `badge_currency` counters, with atomic
-tmp+os.replace writes. Step 6.5 `--check` (release classes; hotfix exempt) and
+tmp+os.replace writes. Step 7.7.5 `--check` (release classes; hotfix exempt) and
 the CI `seal-artifacts currency` step enforce currency where repo state is
 stable. The generators are behaviorally tested against synthetic fixtures in
 `tests/test_seal_artifacts.py`; the `**Phase**:` narrative and `**Chain
@@ -166,8 +188,7 @@ paste-able markdown table for the seal entry body.
 
 Phase 31 semantics are WARN + continue. Operator judgment: continue on
 spurious warnings; PAUSE + amend on legitimate ones (new doctrine without a
-lifecycle.md update, feature shipped without release-doc authoring). The Phase
-49/164 release-class badge check is locked by
+lifecycle.md update, feature shipped without release-doc authoring). The Phase 49/164 release-class badge check moved to Step 7.7.5 in Phase 224 and is locked by
 `tests/test_substantiate_seal_artifacts_wiring.py` per
 `qor/references/doctrine-governance-enforcement.md` "Badge currency".
 
