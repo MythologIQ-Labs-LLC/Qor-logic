@@ -1,0 +1,60 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-12T0214-799d77",
+  "ts": "2026-08-12T02:44:02Z",
+  "plan_path": "docs/plan-qor-phase223-grep-evidence-truth.md",
+  "change_class": "feature",
+  "doc_tier": "system",
+  "terms": [
+    {
+      "term": "evidence statement",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    },
+    {
+      "term": "unpaired citation",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "only the file:line citation kind is truth-checked; migration and bare git-show kinds keep block-level presence, with the ceiling printed at the point of use",
+      "the check verifies a cited line holds the quoted text, not that the text supports the claim drawn from it",
+      "working-tree evidence is checked at lint time, not as of authoring"
+    ],
+    "non_goals": [
+      "promoting the lint to a binding VETO; it stays WARN at Step 0.6",
+      "retroactive sweeps of sealed plans",
+      "changing check_plan's module-path and skill-path warnings"
+    ],
+    "exclusions": [
+      "qor-audit/SKILL.md is untouched; --repo-root is already passed"
+    ]
+  },
+  "open_questions": [
+    "Must a git-show citation inside an evidence statement demand its own evidence? No - infinite regress; span-based exclusion, verified by fixture in Phase 1.",
+    "What does an unresolvable path produce? Its own finding kind, on the same reasoning that keeps inconclusive separate from skip."
+  ],
+  "phases": [
+    "Phase 1: parse and resolve an evidence statement -- qor/scripts/plan_grep_lint.py (EvidenceStatement, parse_evidence_statements, resolve_line, reproduces), tests/test_plan_grep_evidence_parse.py, four tests/fixtures/evidence_*.md",
+    "Phase 2: pair each citation with its own evidence -- rewrite check_citation_evidence, LintWarning.kind, tests/test_plan_grep_citation_pairing.py, retarget tests/test_plan_grep_lint.py",
+    "Phase 3: doctrine and reporting -- qor/references/doctrine-shadow-genome-countermeasures.md P1 paragraph, qor/references/glossary.md, docs/GOVERNANCE_INDEX.md, tests/test_doctrine_citation_pairing.py"
+  ],
+  "feature_inventory_touches": [],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_grep_evidence_parse.py tests/test_plan_grep_citation_pairing.py tests/test_plan_grep_lint.py tests/test_doctrine_citation_pairing.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase223-grep-evidence-truth.md --repo-root .",
+    "python -m qor.scripts.prose_test_lint --tests-dir tests --enforce",
+    "python -m qor.scripts.doc_integrity --repo-root . --strict",
+    "python -m qor.scripts.publication_boundary_lint --repo-root .",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.145.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-08-12T02:44:02Z"
+  }
+}

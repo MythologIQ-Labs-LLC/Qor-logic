@@ -1,0 +1,40 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-08-12T0214-799d77",
+  "ts": "2026-08-12T03:42:16Z",
+  "events_addressed": [
+    "8f9c5c6e6043bfef58f322af26324a782a5f198f0d558cc00fe06ee458b3cb32",
+    "197cf9fa7fe77c7b671b2a929b43874ec7c152274927f8b145e68524fd3af51d",
+    "7b2ed33a7e71f7d9ddcfd1765f6775894493b63bccdaad802df934619d6dd7b0"
+  ],
+  "proposed_changes": [
+    {
+      "target": "qor.scripts.veto_pattern",
+      "change": "R1 (gate): add a signature-independent trigger -- N VETOs against one plan_path within one session, regardless of category overlap. Keep the existing signature-matched trigger. closure_enforcer: qor.scripts.veto_pattern",
+      "rationale": "Four VETOs carried four distinct findings signatures, so veto_pattern and cycle_count_escalator both stayed silent. A plan that fails differently each round is invisible to every detector keyed on sameness, and the silence was read as convergence in three consecutive audit reports."
+    },
+    {
+      "target": "qor/references/doctrine-shadow-genome-countermeasures.md",
+      "change": "R2 (doctrine): state that the P1 citation-evidence contract binds audit reports as well as plans, and widen the checking surface to --report. GH #330's scope should include the report surface. closure_enforcer: qor.scripts.plan_grep_lint",
+      "rationale": "The iteration-4 VETO turned on a false file:line citation authored in the iteration-2 audit report and inherited by plan iterations 3 and 4. It propagated through four artifacts without re-execution. plan_grep_lint checks plans only, so the artifact that adjudicates citation truth is the one artifact whose citations nothing checks."
+    },
+    {
+      "target": "qor-audit Step 1.a",
+      "change": "R3 (skill): require an Option B reviewer to declare its available toolset in its first response, and forbid the Judge from pinning a verification outside that set. closure_enforcer: /qor-audit Step 1.a",
+      "rationale": "The mandated reviewer had no shell across four iterations. Every mandating finding required Judge re-derivation, two rounds of ancestor-revision claims went unverified by the mandated party, and a freeze attestation was pinned as a content hash the reviewer could not compute. A mandated reviewer that cannot execute provides a weaker guarantee than the mandate implies."
+    },
+    {
+      "target": "qor.scripts.remediate_pattern_match",
+      "change": "R4 (gate): reconcile the classifier pattern set with the shadow_event schema enum -- add a pattern per event type or document why a type is deliberately non-actionable. Promote SG-TranscribedEvidence-A and SG-VacuousSelfValidation-A to structured countermeasures in the same pass. closure_enforcer: qor.scripts.remediate_pattern_match",
+      "rationale": "degradation, repeated_veto_pattern, gate_skipped_prerequisite_absent and governance-state-loss have no classifier pattern, so events of those types can be appended and never produce a proposal. repeated_veto_pattern is the type veto_pattern.check emits, so even a fired detector would reach a classifier with no pattern for it. Both SG candidates stand past the promotion thresholds their own entries set."
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.145.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "override",
+    "ts": "2026-08-12T03:42:16Z"
+  }
+}

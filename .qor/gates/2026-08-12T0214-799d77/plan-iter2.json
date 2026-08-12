@@ -1,0 +1,63 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-12T0214-799d77",
+  "ts": "2026-08-12T03:03:27Z",
+  "plan_path": "docs/plan-qor-phase223-grep-evidence-truth.md",
+  "change_class": "feature",
+  "doc_tier": "system",
+  "terms": [
+    {
+      "term": "evidence statement",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    },
+    {
+      "term": "unpaired citation",
+      "home": "qor/references/doctrine-shadow-genome-countermeasures.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "only the file:line kind is truth-checked; migration and bare git-show keep block-level presence, with the ceiling printed by the CLI",
+      "the check verifies a cited line holds the quoted text, not that the text supports the claim drawn from it (iter-1 LD-3 demonstrated the gap)",
+      "pairing is scoped to the whole Locked-Decisions region, not per-LD",
+      "working-tree evidence is checked at lint time, not as of authoring"
+    ],
+    "non_goals": [
+      "per-LD pairing granularity: LDs are bold spans not headings, so narrowing needs an authoring-convention change across every existing plan",
+      "promoting the lint to a binding VETO",
+      "retroactive sweeps of sealed plans",
+      "changing check_plan's module-path and skill-path warnings"
+    ],
+    "exclusions": [
+      "qor-audit/SKILL.md is untouched",
+      "main() keeps writing to sys.stderr; iter-1 wrongly said stdout"
+    ]
+  },
+  "open_questions": [
+    "Does the span-based exclusion mask a legitimate prose citation? Resolved by test_a_prose_citation_is_still_checked_when_the_same_path_appears_in_a_statement.",
+    "Does reason wording constrain the implementation? Yes - the existing suite asserts 'evidence' in reason.lower(); all three kinds must retain it."
+  ],
+  "phases": [
+    "Phase 1: parse and resolve an evidence statement -- qor/scripts/plan_grep_lint.py (EvidenceStatement, parse_evidence_statements, resolve_line, reproduces), tests/test_plan_grep_evidence_parse.py, five tests/fixtures/evidence_*.md including block_level_gap",
+    "Phase 2: pair each citation with its own evidence -- rewrite check_citation_evidence, LintWarning.kind, ceiling line to stderr, tests/test_plan_grep_citation_pairing.py, MODIFY tests/test_plan_grep_lint_citation_evidence.py (all seven assertions survive; one added)",
+    "Phase 3: doctrine and glossary -- doctrine-shadow-genome-countermeasures.md P1 paragraph, glossary.md, docs/GOVERNANCE_INDEX.md, tests/test_doctrine_citation_pairing.py"
+  ],
+  "feature_inventory_touches": [],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_grep_evidence_parse.py tests/test_plan_grep_citation_pairing.py tests/test_plan_grep_lint_citation_evidence.py tests/test_doctrine_citation_pairing.py -q",
+    "python -m pytest -q",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase223-grep-evidence-truth.md --repo-root .",
+    "python -m qor.scripts.prose_test_lint --tests-dir tests --enforce",
+    "python -m qor.scripts.doc_integrity --repo-root . --strict",
+    "python -m qor.scripts.publication_boundary_lint --repo-root .",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.145.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-08-12T03:03:27Z"
+  }
+}

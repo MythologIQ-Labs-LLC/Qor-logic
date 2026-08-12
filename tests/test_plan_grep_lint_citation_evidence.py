@@ -89,3 +89,23 @@ def test_main_warn_only_but_reports_citation(
     text = captured.out + captured.err
     assert rc == 0  # WARN-only contract preserved
     assert "20240101_init.sql" in text or "evidence" in text.lower()
+
+
+def test_legacy_block_satisfaction_no_longer_covers_a_file_line_citation() -> None:
+    """Phase 223 (GH #330): the behavior change, stated as its own assertion.
+
+    Before pairing, one evidence statement anywhere in a Locked-Decision region
+    satisfied every citation in it. A `file:line` citation with no statement of
+    its own now reports, even when a sibling statement is present -- which is
+    the defect the seven assertions above cannot distinguish, since each carries
+    only one citation kind.
+    """
+    text = (
+        "## Locked Decisions\n\n"
+        "- LD-1: migration `20240101_init.sql`.\n"
+        "  Evidence: `git show abc123:x/20240101_init.sql | grep -nE 'create' -> 1:create table items`\n\n"
+        "- LD-2: see `qor/scripts/foo.py:120`, with no statement of its own.\n"
+    )
+    findings = pgl.check_citation_evidence(text)
+    assert [f.citation for f in findings] == ["qor/scripts/foo.py:120"]
+    assert findings[0].kind == "unpaired-citation"

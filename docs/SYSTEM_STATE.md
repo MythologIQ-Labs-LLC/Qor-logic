@@ -2,7 +2,7 @@
 
 **Snapshot**: 2026-08-12
 **Chain Status**: ACTIVE. Phase 168 (feature, v0.116.0) made gate depth scale with declared risk; Phase 169 (feature, v0.117.0) inverted the evidence posture (reconstruction over ceremony + schema freeze); Phase 170 (feature, v0.118.0) closed the perspective-reset umbrella (all six recommendations from research entry #378 shipped, Phases 164-170); this entry (Phase 172, feature, v0.119.0) establishes and retroactively enforces the publication boundary: no tracked or published surface identifies a repository outside Qor-logic. (PyPI is a continuous 0.109.0->0.118.1 line as of 2026-07-04.)
-**Phase**: Phase 222 (feature; seal-ladder structure; v0.144.0; closes the GH #314 residual). Three structural defects in the seal gate ladder, two introduced in the preceding four phases while solving a different problem under size pressure.
+**Phase**: Phase 223 (feature; seal-ladder structure; v0.144.0; closes the GH #314 residual). Three structural defects in the seal gate ladder, two introduced in the preceding four phases while solving a different problem under size pressure.
 
 Step 4.6.12 -- a fail-closed execution-continuity receipt gate -- sat inside `## Failure Scenarios` at 92% of the file. An operator executing the ladder in order never reached it, and it had not fired only because no plan since Phase 216 declared `execution_continuity`. Relocated with byte size unchanged, which is the only mechanical evidence that a move was only a move.
 

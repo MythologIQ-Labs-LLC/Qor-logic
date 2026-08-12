@@ -1,0 +1,51 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-08-12T0214-799d77",
+  "ts": "2026-08-12T04:27:07Z",
+  "events_addressed": [
+    "8f9c5c6e6043bfef58f322af26324a782a5f198f0d558cc00fe06ee458b3cb32",
+    "197cf9fa7fe77c7b671b2a929b43874ec7c152274927f8b145e68524fd3af51d",
+    "7b2ed33a7e71f7d9ddcfd1765f6775894493b63bccdaad802df934619d6dd7b0",
+    "061d81569eee9bf4d8e462dc9ae96e6e744c8bb9aba9bec6d8fea1ca47c019e8"
+  ],
+  "proposed_changes": [
+    {
+      "target": "qor.scripts.veto_pattern",
+      "change": "F1 (gate, sequenced): (1) fix parse_phase_audit_counts to recognize the GATE TRIBUNAL entry type; (2) add an in-flight condition, since the sealed-phase window cannot supply a live VETO count; (3) add a test binding the detector to docs/META_LEDGER.md, asserting non-empty counts above phase 200. closure_enforcers: qor.scripts.veto_pattern AND tests/test_veto_pattern_detector.py -- step (3) is the anti-recurrence step and a module enforcer alone leaves it unguarded",
+      "rationale": "veto_pattern.py:50 matches entry_type == 'AUDIT' exactly. The convention changed to GATE TRIBUNAL at Entry #86: 184 of 194 audit entries are invisible and the parser's view stops at phase 27. Missed consumer, not unnoticed change -- seal_entry_check.py:38 and meta_ledger_walker.py:91 both know the current label. qor-audit/SKILL.md:557 instructs writing GATE TRIBUNAL while the same skill invokes the detector requiring AUDIT. All 11 tests are synthetic (grep -c META_LEDGER returns 0) and the test enumerating countable entry types omits the only type in use. test_parse_skips_unsealed_phase locks the sealed-only filter, so the parser fix alone would still have printed the constant throughout Phase 223."
+    },
+    {
+      "target": "qor.scripts.cycle_count_escalator",
+      "change": "F2 (gate): count per category alongside per signature-set in check_session_total. closure_enforcer: qor.scripts.cycle_count_escalator",
+      "rationale": "Counted over the four plan audits, ledger #570-#573, a closed set no future audit alters. Per category: specification-drift 3, test-failure 3, infrastructure-mismatch 2, against ESCALATION_THRESHOLD 3. Two categories hit threshold exactly; findings_signature.compute_record hashes the sorted set into one token, scattering three occurrences into three buckets. With veto_pattern inert this is the ONLY detector that was both live and at threshold during Phase 223, which raises it to top priority. The detector has since fired on its own: the iteration-3 remediation verdict took stall_walk to a streak of 3 on signature ebde687b6b884205, and both check() and check_session_total() now recommend /qor-remediate. cycle_count_escalator emits no event of its own, so the fire was recorded by hand."
+    },
+    {
+      "target": "qor/references/doctrine-shadow-genome-countermeasures.md",
+      "change": "F3 (doctrine + gate): the P1 citation contract binds audit reports AND remediation proposals as well as plans, and the remedy widens artifact surface AND citation form (two-line shell transcript, prose-separated path) AND extension set (.md). closure_enforcer: qor.scripts.plan_grep_lint",
+      "rationale": "The iteration-4 VETO turned on a false file:line citation authored in an audit report. Surface-widening alone is insufficient: the citation evades a --report check in all three of its forms, and report.md:170 returns False against _FILE_LINE_RE. Propagation corrected to three artifacts; iteration 1 of this proposal re-quoted the four-artifact count from ledger #573 without re-checking, inside the finding about re-quoting unverified claims -- fourth observation of SG-TranscribedEvidence-A. Artifact class is a third axis alongside form and extension set, self-caught in pre-verification: this proposal carries three matchable file:line citations with zero evidence statements. A second gap survives that fix -- _ld_blocks requires a Locked Decisions heading, which the remediation form does not have, so a widened surface still no-ops."
+    },
+    {
+      "target": "qor/references/doctrine-shadow-genome-countermeasures.md",
+      "change": "F4 (doctrine): state that an evidence statement asserts execution by the artifact carrying it, and that an inherited citation must be re-run or marked as inherited. closure_enforcer: qor.scripts.plan_grep_lint, shared with F3 as the same mechanism family",
+      "rationale": "Finding 3 names the propagation mechanism and iteration 1 attached no proposal to it. No control distinguishes a citation that was executed from one that was read. Live rather than theoretical: iteration 1 inherited an unverified count while describing that exact failure. Iteration 3 used cannot-automate here; ledger #575 V2 established that as a deferral -- the justification named two automatable mechanisms and its own closing clause admitted the decision was merely undecided."
+    },
+    {
+      "target": "qor.scripts.remediate_pattern_match",
+      "change": "F5 (gate + doctrine): reconcile the classifier pattern set with the schema enum -- a pattern per type or a documented reason a type is non-actionable. Promote THREE SG candidates: SG-TranscribedEvidence-A (4 obs), SG-VacuousSelfValidation-A (2), SG-InertControl-A (2). closure_enforcer: qor.scripts.remediate_pattern_match",
+      "rationale": "Five event types fall through classify: degradation, repeated_veto_pattern, gate_skipped_prerequisite_absent, governance-state-loss, and plan-replay (whose handler derives its own pattern with event_ids empty and never references the group). repeated_veto_pattern is the type veto_pattern emits, so even a repaired F1 detector reaches a classifier with no pattern for it. SG-InertControl-A at SHADOW_GENOME.md:1395 reads candidate-if-it-recurs, first observed Phase 217; Finding 1 is the recurrence. SG-VacuousSelfValidation-A stands at three, not two, this document's own artifact-class escape being the third. SG-TranscribedEvidence-A stays at four: the audit_history.jsonl figure was executed and true when run, and was invalidated by the review appending a record, which is a distinct time-of-check/time-of-use pattern."
+    },
+    {
+      "target": "qor-audit Step 1",
+      "change": "F6 (skill): a dispatched Option B reviewer declares its available toolset in its first response, and the Judge may not pin a verification outside that set. closure_enforcer: /qor-audit Step 1",
+      "rationale": "The mandated reviewer had no shell across four iterations; a freeze attestation was pinned as a content hash it could not compute. Corrected per review: most mandating findings needed no shell, and the phase's highest-severity finding -- the false line-170 citation -- was found without one. The dispatch error is real; its cost is smaller than iteration 1 claimed."
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.145.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "override",
+    "ts": "2026-08-12T04:27:07Z"
+  }
+}

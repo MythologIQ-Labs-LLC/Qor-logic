@@ -72,7 +72,7 @@ Informational, slow-drift. Drift signal: factual claims diverge from current cod
 | Research briefs | `docs/research-brief-*.md`, `docs/RESEARCH_BRIEF.md` |
 | Roadmaps | `docs/roadmap-*.md`, `docs/*-roadmap.md` |
 | Audits & compliance | `docs/*-audit-*.md`, `docs/security-audit-*.md`, `docs/compliance-*.md` |
-| Reconciliation & drift triage | `docs/reconciliation-*.md`, `docs/phase*.md` |
+| Reconciliation & drift triage | `docs/reconciliation-*.md`, `docs/phase*.md`, `docs/remediation-*.md` |
 | Cluster memos | `docs/cluster-*.md` |
 | Skill registry & audits | `docs/SKILL_*.md`, `docs/SHIELD_*.md` |
 | Guides | `docs/MERKLE_ITERATION_GUIDE.md`, `docs/hooks-install.md` |
