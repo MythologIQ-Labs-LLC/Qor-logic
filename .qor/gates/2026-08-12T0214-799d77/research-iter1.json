@@ -1,0 +1,52 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-12T0214-799d77",
+  "ts": "2026-08-12T02:37:19Z",
+  "questions": [
+    "Which open issue is the next phase after 222?",
+    "Does #320's first non-zero drift count satisfy its entry criteria?",
+    "Is #286 actually unblocked?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "issue": 320,
+      "verdict": "not-ripe-and-signal-invalid",
+      "detail": "drift_count 26 attributes 26/26 to another distribution's shipped copies, 0 genuinely edited; enforcement today would fail closed on a packaging condition"
+    },
+    {
+      "id": "F2",
+      "issue": 330,
+      "verdict": "ripe",
+      "detail": "_FILE_LINE_RE at plan_grep_lint.py:101 already extracts the checkable citation kind; _EVIDENCE_RE at :97 locates the statement; only the comparison is missing"
+    },
+    {
+      "id": "F3",
+      "issue": 286,
+      "verdict": "ripe-but-second",
+      "detail": "qor-substantiate freed to 2783 B, but qor-audit holds 463 B against ~2200 B needed; audit-side headroom is the remaining blocker"
+    },
+    {
+      "id": "F4",
+      "issue": null,
+      "verdict": "self-correction",
+      "detail": "draft brief cited qor-audit at 38722/1214; measured 39473/463; corrected before publication"
+    }
+  ],
+  "sources": [
+    "docs/META_LEDGER.md (six Skill Corpus lines, phases 217-222)",
+    "qor/scripts/plan_grep_lint.py:97",
+    "qor/scripts/plan_grep_lint.py:101",
+    "qor/skills/governance/qor-audit/SKILL.md",
+    "site-packages RECORD digests for both installed distributions"
+  ],
+  "brief_path": "docs/research-brief-post-222-issue-triage-2026-08-12.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.145.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-08-12T02:37:19Z"
+  }
+}

@@ -1683,4 +1683,96 @@ structured countermeasure on a second.
 
 ---
 
+## 2026-08-12 -- A check with nothing of its own to check
+
+**Phase**: 223 (GH #330), VETO
+
+### Findings
+
+The Phase 223 plan proposes extending `plan_grep_lint` so that `file:line`
+citations in Locked Decisions are verified for truth rather than presence. Its
+`## CI Commands` section lists:
+
+```
+python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase223-grep-evidence-truth.md --repo-root .
+```
+
+annotated **"this plan against its own new check."**
+
+The plan's Locked Decisions contain zero `file:line` citations:
+
+```
+$ awk '/^## Locked Decisions/{f=1} /^## Phase 1:/{f=0} f' <plan> \
+    | grep -oE "[A-Za-z0-9_./-]+\.(py|ts|tsx|sql|rs|go|js):[0-9]+" | sort -u
+(no output)
+```
+
+Every citation there is the `git show <ref>:<path>` kind, which the same plan
+exempts as presence-only because it carries no line number to verify. So the
+command offered as self-validation cannot fire the check it validates against,
+and -- because the proposed `reproduces()` runs only on statements that are
+lookup hits for a `file:line` citation -- none of the plan's six evidence
+statements is ever truth-checked by its own mechanism.
+
+That is not a curiosity. It is the mechanism by which the plan shipped to audit
+carrying a citation false by its own definition: LD-3 presents an 820-character
+doctrine line as exact observed output while quoting 481 characters of it, and
+the dropped remainder is the sentence that complicates the claim LD-3 draws.
+
+The independent reviewer was asked whether the plan **violates** the rule it
+proposes. It does not. It **escapes** it. The enumeration came back empty.
+
+### Root Cause Analysis
+
+A violated rule leaves a failing assertion. An escaped rule leaves nothing --
+no finding, no red test, no signal of any kind. The author sees a green
+self-validation command in the CI list and reads it as coverage.
+
+The escape was structural rather than chosen. `git show <ref>:<path>` is the
+citation form the doctrine recommends, so a diligent author following the
+doctrine produces exactly the citation kind the new check cannot verify. The
+better the plan's citation hygiene by the old standard, the more completely it
+sits outside the new one.
+
+This is adjacent to `SG-InertControl-A` but distinct. There, a control was wired
+so it could not fire at all. Here the control fires correctly and is simply never
+applicable to the document proposing it, so the authoring process receives no
+feedback while appearing to.
+
+Note also what did not catch it: every one of the twelve pre-audit lints passed,
+including `plan_grep_lint` itself. The lint had nothing to say because there was
+nothing in scope, and silence read as approval.
+
+### Pattern to Avoid
+
+Listing a check against your own artifact as validation without first confirming
+your artifact contains a subject the check can act on. A command that exits 0 on
+an empty subject set is indistinguishable from one that exits 0 on a verified
+one.
+
+When a phase introduces a check, enumerate what in the phase's own artifacts the
+check will actually examine, and state the count. If the count is zero, say so
+and drop the self-validation claim -- or add a subject deliberately. Do not let
+an empty scope be reported as a pass.
+
+More generally: self-application by the author cannot substitute for an
+independent pass, because the failure mode of self-application is not a wrong
+answer but an unasked question.
+
+### Pattern ID
+
+Vacuous self-validation. Candidate SG family entry if it recurs:
+`SG-VacuousSelfValidation-A` -- a newly introduced check listed as validating the
+artifact that proposes it, while that artifact contains no instance of the thing
+checked, so the command passes on an empty subject set and the absence of
+findings is read as coverage. Distinct from `SG-InertControl-A`, where the
+control cannot fire at all; here it fires correctly and is never applicable.
+Remedy is to state the in-scope subject count wherever a self-validation command
+is claimed, and to treat a zero count as a finding rather than a pass. Enforcer:
+none yet -- caught by the Option B independent reviewer mandated at
+`audit_risk_score` flag `high-citation-surface`, on that mandate's first firing.
+First observation; promote to a structured countermeasure on a second.
+
+---
+
 *Shadow integrity: ACTIVE*

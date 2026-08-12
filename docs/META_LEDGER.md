@@ -17266,6 +17266,278 @@ Next: /qor-substantiate.
 **Next**: #286 (now unblocked, ~1600 B of the 2783 B available), #320 (gated on drift data), and the operator's installed-corpus drift.
 
 
+### Entry #569: RESEARCH BRIEF -- post-222 issue triage (GH #330, #320, #286)
+
+**Timestamp**: 2026-08-12T05:00:00Z
+**Phase**: RESEARCH (Phase 223)
+**Author**: Analyst
+**Risk Grade**: L2
+**Entry ID**: `0d683ce4b375`
+**Session**: `2026-08-12T0214-799d77`
+
+**Content Hash**: `aebf5b35d60a71afa4cf2156d3fb1dd80ecc0941153190d7d37c85c2bdbd2bc8`
+**Previous Hash**: `4f2a46570c886cb0d3a0899771c2aaf49bc465fca92a2bfe37a48d436e913d1f`
+**Chain Hash (Merkle seal)**: `c6a19875cc0b5cbdc0ec6fb32817dfbd6f8f379b4049cdc82ed1b7afd78a6a75`
+
+**Decision**: #330 is the next phase. The larger finding is that #320's first non-zero drift count measures the wrong thing entirely.
+
+**THE SIGNAL #320 WAS WAITING FOR ARRIVED AND IS NOT THE SIGNAL.** Six seals now carry a Skill Corpus line: 0, 0, 0, 0, 0, then 26 at Phase 222. Read at face value that is the first observation its entry criteria ask for. Attribution says otherwise: comparing every installed SKILL.md against the RECORD digests of both distributions present in the environment returns 26 matching the other product's shipped copies, 0 matching this project's, and 0 genuinely edited. The installed corpus is not a drifted copy of these skills; it is a different product's corpus occupying the same install target. Fail-closed enforcement built on this integer would have blocked the Phase 222 seal on a machine where no skill had been edited at all.
+
+**THE PRIOR QUESTION IS UNANSWERED.** #320 asks what threshold means "drifted". The data says ask "drifted HOW" first. Corpus edited, corpus replaced by another distribution, and corpus absent are three conditions with three correct responses, and V1 collapses the first two into one number. The issue anticipated the adjacent risk -- that the drift most worth catching is the drift removing the catcher -- but the observed failure is its inverse: a count that fires when nothing governance-relevant happened. Both are reasons the V1-to-V2 step needs attribution rather than more samples. Amendment posted to the issue.
+
+**#330 IS RIPE AND HALF-BUILT ALREADY.** plan_grep_lint.py:101 `_FILE_LINE_RE` already extracts the `path.py:NN` citation kind whose truth is mechanically checkable, and `:97` `_EVIDENCE_RE` already locates the evidence statement. What is missing is the comparison between them. One module, one function, a fixture pair -- and the counterfactual is preserved in git history as the Phase 222 iter-1 plan text with its line 39 against an actual line 42.
+
+**#286 IS UNBLOCKED ON THE WRONG SIDE.** qor-substantiate went from 24 B to 2783 B of slack, which was the stated blocker. qor-audit sits at 39473 B with 463 B -- short of the ~2200 B two layers of audit prose need by a factor of five, and tighter than the seal skill ever was at the point it forced Phase 222. A phase for #286 must free audit-side headroom first, and the ladder-as-data pattern transfers directly: Step 0.6 is the same shape, a list of module invocations under a uniform `|| true` posture.
+
+**THE BRIEF CARRIED TWO UNVERIFIED CLAIMS, BOTH THE PATTERN IT ARGUES ABOUT.** First: qor-audit stated at 38722 B with 1214 B of slack, a half-remembered intermediate from Phase 222's compression pass rather than a reading; measured 39473 and 463, which strengthens the recommendation from short-by-a-third to short-by-a-factor-of-five. Second, and worse: the brief said the #330 counterfactual was preserved in git history as the Phase 222 iter-1 plan text carrying line 39. It is not. `git log --all` on that path returns only the seal commit and grepping it for the wrong line returns 0 -- iter-1 existed solely in the working tree between authoring and the audit that rejected it. The same false claim was published to GH #330 and is corrected there. It was written INTO the brief arguing for mechanical citation verification, one section away from a correction notice about the first error. Recalled facts read as observed facts from the inside, which is precisely why #330 cannot be satisfied by an author promising to be careful. Both caught by running the check; this entry's hashes recomputed over the corrected brief while it was still the chain tip and uncommitted.
+
+**No Shadow Genome entry proposed.** The #320 finding is not a failure that occurred; it is one that enforcement-on-schedule would have caused, caught by attributing a count before trusting it. Same judgment as the option-A defect at #564.
+
+**Brief**: docs/research-brief-post-222-issue-triage-2026-08-12.md. **Next**: /qor-plan for #330.
+
+
+### Entry #570: GATE TRIBUNAL -- Phase 223 grep-evidence truth (VETO)
+
+**Timestamp**: 2026-08-12T06:00:00Z
+**Phase**: GATE (Phase 223)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `46e5b8bd28ae`
+**Plan**: docs/plan-qor-phase223-grep-evidence-truth.md (iteration 1)
+**Session**: `2026-08-12T0214-799d77`
+**Mode**: adversarial -- Option B independent reviewer, mandated by audit_risk_score
+
+**Content Hash**: `b60522aad1160d4773fcf58fb7cfc7a7d3e13ca8e3fa40a9d3510c679acf5167`
+**Previous Hash**: `c6a19875cc0b5cbdc0ec6fb32817dfbd6f8f379b4049cdc82ed1b7afd78a6a75`
+**Chain Hash (Merkle seal)**: `8307aa9d7cb4076a91e38171d6d3a0a602a018febf80290989c84ae5ad9393c5`
+
+**Verdict**: **VETO** -- infrastructure-mismatch, specification-drift, test-failure.
+
+**THE MANDATE EARNED ITSELF ON ITS FIRST FIRING.** audit_risk_score returned option_b_required true on flag high-citation-surface and forbade a solo audit. No external reviewer is configured, so an independent reviewer with no authoring context was dispatched under operator approval. It returned fifteen findings; the three mandating ones were re-verified here by execution before adoption. A solo audit would not have found V3, because V3 is invisible from inside the authoring frame -- it is the absence of a thing the author believed was present.
+
+**THE REVIEWER DISCLOSED ITS OWN CEILING, WHICH IS WHY ITS REPORT IS USABLE.** It had no shell. Rather than imply it had run the cited commands, it established HEAD == 2d356ec from .git refs, reasoned that git show over unmodified paths is byte-identical to the working tree, said so explicitly, and flagged the one finding it could not verify without a shell rather than asserting it. That is the discipline this phase exists to mechanize, performed manually by the agent auditing the phase.
+
+**V1: THE PLAN CARRIES A CITATION THAT IS FALSE BY ITS OWN DEFINITION.** LD-3 presents doctrine line 285 as exact observed output and shows a partial quote with no ellipsis. Under the plan's own rule -- observed.strip() compared to the file line stripped, strict equality -- LD-3 is evidence-not-reproducible. What was cut is not filler: it is the sentence describing the shipped enforcement as block-scoped, the very text LD-3 paraphrases in prose instead of quoting. The truncation removed the evidence that complicates the claim built on it.
+
+**V2: THE AFFECTED FILES NAMES A FILE WITH NONE OF THE ASSERTIONS IT CLAIMS TO RETARGET.** grep for evidence assertions returns 0 in tests/test_plan_grep_lint.py, which the plan names, and 6 in tests/test_plan_grep_lint_citation_evidence.py, which the plan never mentions. The omitted file is the dedicated behavioral suite for the exact function Phase 2 rewrites, and it holds test_no_finding_when_evidence_present, which asserts the block-level satisfaction Phase 2 abolishes. SG-AffectedFilesContract-A, already catalogued here.
+
+**V3: THE CHECK IS INERT ON THE DOCUMENT PROPOSING IT, AND THAT INERTNESS WAS OFFERED AS VALIDATION.** Zero file:line citations exist in the entire Locked Decisions section; every citation there is the git-show kind the plan itself exempts as presence-only. So the CI command annotated "this plan against its own new check" cannot fire the new check; Deliverable-2's D1 is satisfied vacuously; and because reproduces() runs only on lookup hits for a file:line citation, none of the plan's six evidence statements is ever truth-checked by its own mechanism. That is the mechanism by which V1 survived authoring. The plan built a check, declared itself validated by it, and stood structurally outside its scope.
+
+**THE SHAPE WAS NOT THE ONE ANTICIPATED.** The reviewer was asked whether the plan violates the rule it proposes. It does not violate it -- it escapes it. An enumeration of citations to pair came back empty. Escaping a rule leaves no failing assertion to notice, which is why self-application by the author cannot substitute for an independent pass.
+
+**F4 COMPOUNDS V1 AND SURVIVES ITS FIX.** LD-3's title claims the doctrine already specifies per-citation pairing; the cited sentence says every LD must carry A paired statement -- per-LD, not per-citation. The claim is load-bearing, framing the phase as closing an implementation gap rather than tightening a contract, and Phase 3 amends the doctrine anyway. This is the plan's own declared limitation realised in the plan: a correctly-cited line used to argue something it does not show still passes. The truth check would not catch it even after V1 is repaired.
+
+**F8 AND F12 ARE V1 IN MINIATURE.** LD-2 cites a synthetic experiment with no fixture and nothing to re-run, enumerating three citations while claiming four extracted -- and LD-6, four decisions later, establishes that an unrecorded counterfactual must be authored as a fixture rather than cited. LD-5's 463 B headroom figure carries no paired evidence; measured independently at 39473 B, so it is true but unevidenced, which is precisely the class countermeasure P1 targets.
+
+**WHAT SURVIVES.** The core design was not challenged and Check 4 confirmed every claim about the existing module: line 140 does continue past the whole block, _FILE_LINE_RE does yield path and line, _GIT_SHOW_RE does not. LD-1, LD-2, LD-4, and LD-5 all reproduce exactly. Fourteen of the sixteen planned tests are behavioral, and two of them are exactly the anti-vacuity guards the plan needed and failed to apply to itself.
+
+**Gates**: plan_iteration_status_lint 0; prompt_injection_canaries 0; version_applicability PASS; plan_grep_lint 0; plan_text_consistency_lint 0; plan_test_lint 0; ci_coverage_lint 0; plan_feature_tdd_lint 0; delivery_branch_lint 0; runtime_contract_walk 0; sg_closure_lint 40/0; prose_test_lint --enforce 0 (61 exempted); publication_boundary_lint 0 at structural+identity; veto_pattern not detected; cycle_count_escalator both None. Every pre-audit lint passed on a plan carrying three binding defects, which is the argument for the Step 3 passes existing.
+
+**Shadow Genome**: new narrative entry -- a check inert on the artifact proposing it; candidate `SG-VacuousSelfValidation-A`, first observation, distinct from SG-InertControl-A in that the control can fire and is simply never applicable to its own proposal, so authoring receives no feedback.
+
+**AMENDED AT ITER-2 RE-AUDIT, PRE-COMMIT.** This entry said the doctrine line was 820 characters. 815 is the line; 819 is the line with grep's `285:` prefix; 820 is `wc -c` over that including the newline. A byte count of command output was written as a character count of a line -- an unpaired number, inside the entry recording a VETO for an unpaired number. Second observation of `SG-TranscribedEvidence-A`, whose own entry says promote to a structured countermeasure on a second. The V1 finding is unaffected: the quote is partial at any of the three figures. Report archived to .agent/staging/phase223-iter1-AUDIT_REPORT.md and corrected there; this entry's hashes recomputed over the archived copy while it was still the chain tip and uncommitted.
+
+**Report**: .agent/staging/phase223-iter1-AUDIT_REPORT.md. **Next**: /qor-plan (amend V1, V2, V3), then /qor-audit.
+
+
+### Entry #571: GATE TRIBUNAL -- Phase 223 grep-evidence truth, iter-2 (VETO)
+
+**Timestamp**: 2026-08-12T07:00:00Z
+**Phase**: GATE (Phase 223)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `4a3b3bb59f38`
+**Plan**: docs/plan-qor-phase223-grep-evidence-truth.md (iteration 2)
+**Session**: `2026-08-12T0214-799d77`
+**Mode**: adversarial -- Option B independent reviewer, mandated again on the same flag
+
+**Content Hash**: `5cfb4df1cea6933a862f20eca843a94c925b746ea9a07a5219762074b77e831f`
+**Previous Hash**: `8307aa9d7cb4076a91e38171d6d3a0a602a018febf80290989c84ae5ad9393c5`
+**Chain Hash (Merkle seal)**: `bff06b74d1c051989c7e13b89c59bc00b9968b33e14a56339cd3bd30161257a0`
+
+**Verdict**: **VETO** -- specification-drift, test-failure. Narrow, and on different grounds than iter-1.
+
+**FOURTEEN OF FIFTEEN FINDINGS CLOSED, AND ITER-2 CARRIES NO FALSE CITATION.** All six LD statements reproduce byte-exactly; every pattern was verified single-match before quoting. F4's framing was corrected rather than softened -- the plan now says plainly that it CHANGES the doctrine contract from per-LD to per-citation instead of claiming to close an implementation gap. F11's presence-only test was rebuilt to parse the doctrine, run the CLI, and assert the two agree. The Infrastructure Alignment pass, which iter-1 failed, returns zero findings.
+
+**V1: THE V3 REMEDY REPRODUCES THE V3 PATTERN.** LD-7's table exists to make an empty self-validation run distinguishable from a verified one, and states five in-scope citations. `_sealed_citations` uses finditer with no dedup, and LD-7's table restates all five inside the LD region outside any statement span, so extraction yields TEN for five distinct (path, line) pairs. Confirmed by prototyping the proposed check against the plan: 6 statements parsed, 10 citations, 5 after dedup, 0 findings. Findings stay zero, but D4 and the CI command are both stated in the COUNT -- "must report five, not zero" -- and the plan specifies dedup nowhere. As written D4 cannot be met, and the artifact built to operationalize the anti-vacuity guarantee is what breaks the number expressing it.
+
+**V2: A DECLARED NON-GOAL COLLIDES WITH A REQUIRED FIELD.** LintWarning is a frozen dataclass with four non-default fields, constructed at lines 70, 85, and 143. Phase 2 adds `kind`. Lines 70 and 85 are inside check_plan, whose module-path and skill-path warnings the plan declares an explicit non-goal. No default means both sites are edited and the non-goal falls; a default is a design decision the plan never states and silently makes kind optional on two of three producers. The plan specifies neither.
+
+**V3: THE PRESENCE PREDICATE IS UNSPECIFIED AND A CERTIFIED ROW DEPENDS ON IT.** Phase 2 says migration and git-show citations keep the block-level presence rule without saying which predicate satisfies it. _LD_WITH_EVIDENCE's statement carries no NN: observation, so by the plan's own Phase 1 test parse_evidence_statements returns empty for it. Legacy _EVIDENCE_RE retained and row 2 holds; new parser used and the assertion at line 48 fails. The survival table certifies the row "unchanged" without stating the assumption that makes it true.
+
+**THE REVIEWER FLAGGED WHAT IT COULD NOT READ, AND IT WAS RIGHT TO.** Lacking a shell it could not read the 6424413 ancestor and refused to assert F9's discriminator, asking for a shell measurement. Verified: SKILL.md:250 at 6424413 is `### Step 4.6.5: Secret-scanning gate (Phase 56 wiring)`, exactly as the plan states. F9 CLOSED.
+
+**AND IT CAUGHT THIS AUDIT'S OWN UNPAIRED NUMBER.** It flagged the plan's "816-character line" as unpaired and noted it conflicts with the 820 iter-1 reported. Both are wrong. Measured: the line is 815 characters; 819 is the line with grep's 285: prefix; 820 is wc -c over that including the newline. Iter-1's report and entry #570 described a byte count of command output as the character length of a line. SECOND OBSERVATION of SG-TranscribedEvidence-A, whose own entry says promote to a structured countermeasure on a second -- and it occurred inside the report that VETOed a plan for an unpaired numeric claim. Iter-1's report archived to .agent/staging/phase223-iter1-AUDIT_REPORT.md with the correction in place; #570 amended and rehashed while still the chain tip and uncommitted. The V1 truncation finding is unaffected: the quote is partial at any of the three figures.
+
+**A2 AND A4 RECREATE F12 AND F14 IN THE DOCUMENT THAT CLOSES THEM.** The 816/481 figures are unpaired in the very LD that exists to fix a quoting defect, and LD-5's `wc -c` statement sits under a "Grep-evidence" header while containing no grep token -- the mislabeling class F14 fixed for LD-6, left unfixed one decision earlier. Advisory, not mandating.
+
+**ESCALATOR CORRECTLY SILENT.** Two VETOs this phase at falling severity and differing signature: iter-1 was a false citation plus a check inert on its own subject; iter-2 is three undeclared implementation decisions. cycle_count_escalator returns None on both modes.
+
+**Gates**: plan_iteration_status_lint 0; prompt_injection_canaries 0; plan_grep_lint 0; plan_text_consistency_lint 0; plan_test_lint 0; ci_coverage_lint 0; plan_feature_tdd_lint 0; delivery_branch_lint 0; runtime_contract_walk 0; unchanged-plan short-circuit False; veto_pattern not detected. All eighteen planned test descriptions are behavioral; no presence-only test remains.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-plan (V1, V2, V3 -- all three are one-line declarations), then /qor-audit.
+
+**BINDING BROKEN, DISCLOSED AT ITER-3.** This entry's content hash `5cfb4df1...` was computed over `.agent/staging/AUDIT_REPORT.md` holding the iter-2 report. That path is a single mutable file, and writing the iter-3 report overwrote those bytes before they were archived. No file on disk now hashes to `5cfb4df1...` -- verified by sweeping `.agent/staging/*.md`. The entry's chain linkage is intact and unmodified; what is lost is the ability to re-derive its content hash from an artifact. Iter-1's report was archived in time (`phase223-iter1-AUDIT_REPORT.md`, and #570 rehashed against it); iter-2's was not. Recorded rather than papered over, and the structural cause is filed in #572.
+
+
+### Entry #572: GATE TRIBUNAL -- Phase 223 grep-evidence truth, iter-3 (VETO)
+
+**Timestamp**: 2026-08-12T08:00:00Z
+**Phase**: GATE (Phase 223)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `da905e359d45`
+**Plan**: docs/plan-qor-phase223-grep-evidence-truth.md (iteration 3)
+**Session**: `2026-08-12T0214-799d77`
+**Mode**: adversarial -- Option B independent reviewer, mandated again
+
+**Content Hash**: `4a12a5591a851bd975748cb3027ecaa85ed879025e2dd3a5914e7256fead2982`
+**Previous Hash**: `bff06b74d1c051989c7e13b89c59bc00b9968b33e14a56339cd3bd30161257a0`
+**Chain Hash (Merkle seal)**: `20ae6667a59debaa65e6131c591082b60cb145e7e52042ab4366003bdb9cbb82`
+
+**Verdict**: **VETO** -- test-failure. One finding. Everything else closed.
+
+**SEVERITY FELL 3 TO 3 TO 1 WHILE CLOSURES ACCUMULATED.** N4 and N5 closed cleanly with exact line ranges and a fixture analysis verified against source; A1 through A4 closed; no citation is false for the second consecutive iteration; the five-distinct/ten-raw claim verifies. The D3 rewrite categorizing each LD's evidence kind rather than counting them uniformly is better than anything in iterations 1 or 2.
+
+**V1: THE DEDUP RULE HAS NO TEST, AND IS MISSING FROM THE SECTION AN IMPLEMENTER READS.** Dedup was introduced to close iter-2's mandating count finding. It appears in LD-7, Phase 2 Affected Files, and two acceptance criteria -- and not in Phase 2 Changes, which describes the algorithm end to end as collect, drop span-overlapping, look up the remainder. Grepping the eleven-test Phase 2 list for dedup, duplicate, or repeated returns 0. An implementer working from Changes produces ten and passes every test. CLAUDE.md is dispositive: definition of done is green tests, and a feature with no tests is a draft. This is the vacuity pattern's THIRD occurrence -- it mandated the iter-1 VETO, recurred inside the iter-2 remedy, and now recurs inside the iter-3 remedy for that recurrence. A remedy whose correctness no assertion can falsify is the same shape as a check inert on its own subject.
+
+**M3 DOWNGRADED AFTER VERIFICATION, AND THE REVIEWER WAS RIGHT TO RAISE IT.** The plan said both halves of the revision discriminator "were verified by shell at the iteration-2 audit." The reviewer -- the independent half of that audit -- had explicitly disclaimed the 6424413 half and asked for a shell measurement. The fact holds: the Judge took the measurement during that audit and it re-runs unchanged. AMENDED AT ITER-4: this entry originally cited that record as line 170 of the archived iter-1 report. That citation is false -- the string does not appear in that file at all, and the line-170 output came from a different file in a compound invocation. The false grep line has been removed from the iter-3 report rather than repaired, leaving only the `git show` command that actually establishes the fact, and this entry's hashes are recomputed over the corrected report while it was still the chain tip and uncommitted. Founding-defect recurrence; full analysis in #573. So the claim is true and the ATTRIBUTION is wrong, crediting the reviewer for work it had declined to assert. Advisory, per the reviewer's own stated condition.
+
+**A PROCEDURAL FINDING AGAINST THIS AUDIT, ADOPTED.** The plan mutated during the independent pass: a leftover "three values" and an unpaired 815 figure were both fixed between the reviewer's first read and its verification greps. Both fixes were correct and self-caught by pre-verification, but an audit against a moving target cannot be reproduced. Iteration 4 freezes the file before dispatch. Pre-verifying before the independent pass is worth keeping; editing during it is not.
+
+**ONE ADVISORY CLOSED WITHOUT REOPENING ITSELF, THE FIRST IN THREE ROUNDS.** A2: no character-count figure survives anywhere in the plan, and the plan volunteers that its own first draft carried the defect rather than presenting a clean history. Every prior advisory closure had reproduced its own pattern somewhere in the same document.
+
+**THE ARCHIVAL DEFECT THIS ENTRY SITS ABOVE.** `.agent/staging/AUDIT_REPORT.md` is a single mutable path, and each iteration's tribunal entry content-hash-binds bytes the next iteration destroys. Entry #571 now binds a hash no file resolves to. Iter-1 was archived in time and #570 rehashed against it; iter-2 was not. The structural fix -- write the tribunal report to a per-iteration path from the start rather than archiving after the fact -- belongs to a phase, not to this entry, and is noted here so it is not rediscovered a fourth time.
+
+**PROMOTION THRESHOLDS REACHED.** SG-TranscribedEvidence-A and SG-VacuousSelfValidation-A each stand at a second observation, and each entry states promote to a structured countermeasure on a second. Recorded rather than performed inline.
+
+**ESCALATOR CORRECTLY SILENT.** Three VETOs on one plan, signatures differing each round and the mandating count falling 3, 3, 1 while closures accumulate. That is convergence, not a plan-audit loop; /qor-remediate is not the legal next action.
+
+**Gates**: plan_iteration_status_lint 0; prompt_injection_canaries 0; plan_grep_lint 0; plan_text_consistency_lint 0; plan_test_lint 0; ci_coverage_lint 0; plan_feature_tdd_lint 0; runtime_contract_walk 0; unchanged-plan short-circuit False; veto_pattern not detected. Self-application re-run: 10 raw, 5 distinct, 0 findings.
+
+**Report**: .agent/staging/phase223-iter3-AUDIT_REPORT.md. **Next**: /qor-plan (V1 -- one fixture, one assertion, one sentence in Changes), then /qor-audit.
+
+
+### Entry #573: GATE TRIBUNAL -- Phase 223 grep-evidence truth, iter-4 (VETO)
+
+**Timestamp**: 2026-08-12T09:00:00Z
+**Phase**: GATE (Phase 223)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `411310ced137`
+**Plan**: docs/plan-qor-phase223-grep-evidence-truth.md (iteration 4)
+**Session**: `2026-08-12T0214-799d77`
+**Mode**: adversarial -- Option B independent reviewer, mandated again
+
+**Content Hash**: `bfeca0e57b00b59bdda737f1b41ece5da93a31e9234590e0339618ac6538fadf`
+**Previous Hash**: `20ae6667a59debaa65e6131c591082b60cb145e7e52042ab4366003bdb9cbb82`
+**Chain Hash (Merkle seal)**: `23039278aca30a0e949855fa183edc6a6478579fc3184f14171d9f7973d6445e`
+
+**Verdict**: **VETO** -- infrastructure-mismatch, specification-drift.
+
+**THE FOUNDING DEFECT RECURRED, AND THIS AUDIT AUTHORED IT.** The plan cited "line 170 of .agent/staging/phase223-iter1-AUDIT_REPORT.md" as the record of the 6424413 measurement. Line 170 of that file is a Filter-Stage Ordering gate-table row, and the quoted string appears in the file zero times. The plan did not invent this. It copied it out of the iteration-2 audit report, which had written up a two-line grep-evidence block whose first line does not reproduce. The cause was a compound shell invocation: `grep 6424413 <iter1>` returned nothing, `grep "Secret-scanning gate" <AUDIT_REPORT.md>` returned `170:`, one line of output emerged from two commands, and it was attributed to the first command's file. A `file:line` citation whose cited line does not hold its quoted content is the exact defect this phase exists to mechanize against and the one that mandated the iteration-1 VETO.
+
+**IT PROPAGATED THROUGH FOUR ARTIFACTS WITHOUT RE-EXECUTION.** Audit report, ledger entry #572, plan iteration 3, plan iteration 4 -- re-quoted at each step, never re-run. SG-TranscribedEvidence-A operating ACROSS artifacts rather than within one, which is a mode its existing entry does not describe. Third observation.
+
+**THE SUBSTANTIVE CLAIM SURVIVES.** `git show 6424413:qor/skills/governance/qor-substantiate/SKILL.md | sed -n '250p'` returns `### Step 4.6.5: Secret-scanning gate (Phase 56 wiring)`, re-run and unchanged. Only the record was false. The reviewer could not run it and declined to assert it for the second round running, flagging it for a shell instead -- and was right both times.
+
+**CORRECTIONS APPLIED BEFORE THIS ENTRY.** The false grep line is REMOVED from the iter-3 report rather than repaired, leaving only the command that establishes the fact; #572 amended and rehashed over the corrected report while still the chain tip.
+
+**V2: ONE FIXTURE CANNOT YIELD BOTH COUNTS.** Phase 1 declares `duplicate_citation` as `foo.py:12` three times PLUS `foo.py:97` once, serving both new tests. Phase 2 test 2 asserts a post-dedup count of 1 against that same fixture. A fixture holding both pairs counts 2. The plan does not choose between splitting the fixture and correcting the expected value.
+
+**THE DEDUP REMEDY IS THE BEST WORK OF THE PHASE.** It is in the algorithm section, not only in Affected Files, and its second clause binds the reported count to the deduplicated set -- which is what D4 measures. Test 2 makes it falsifiable where iteration 3 had nothing that could fail; test 3 correctly guards the path-keyed inversion. FIRST REMEDY IN FOUR ROUNDS THAT DOES NOT REPRODUCE THE DEFECT IT CLOSES. The reviewer found two further ways to be wrong, neither mandating: dedup keyed on the raw matched string rather than the parsed pair (latent here, since this plan spells each citation identically), and span-exclusion/dedup ordering, where dedup-first could collapse a prose citation onto a statement-internal one at the same line and silently exempt it.
+
+**I PINNED A VERIFICATION THE REVIEWER CANNOT PERFORM.** The freeze was dispatched with a content hash to check; the reviewer has no shell. It substituted a structural check -- heading positions and every citation line number identical across a full read and three later greps -- and said plainly it could not attest to the hash. Verified here: 3d40a9da... unchanged. The freeze HELD. A freeze attestation has to be checkable by the party asked to check it.
+
+**THE MANDATING COUNT ROSE, 3 3 1 2, AND THE RISE IS EXPLAINED.** V1 is not new to iteration 4. It existed in the iteration-2 audit report and became detectable only once the attribution around it was corrected enough to expose the citation underneath. Finding it is progress. cycle_count_escalator returns None on both modes and /qor-remediate is not yet the legal next action -- but a fifth VETO without a falling count would change that.
+
+**Gates**: plan_iteration_status_lint 0; prompt_injection_canaries 0; plan_grep_lint 0; plan_text_consistency_lint 0; plan_test_lint 0; ci_coverage_lint 0; plan_feature_tdd_lint 0; veto_pattern not detected. All eight LD statements re-executed, all reproduce. Third consecutive round in which the load-bearing false claim sits in the blind spot the plan documents: a `.md` path outside `_FILE_LINE_RE`, outside the LD region.
+
+**Report**: .agent/staging/phase223-iter4-AUDIT_REPORT.md (written to a per-iteration path from the start, per #572). **Next**: /qor-plan (V1 -- cite the surviving record or inline the command; V2 -- split the fixture or fix the count), then /qor-audit.
+
+
+### Entry #574: GATE TRIBUNAL -- Phase 223 remediation review pass (VETO)
+
+**Timestamp**: 2026-08-12T10:00:00Z
+**Phase**: GATE (Phase 223, remediation)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `f4b46ee5b6e4`
+**Target**: docs/remediation-phase223-detector-blind-spots-2026-08-12.md -- VETO issued against iteration 1; this entry's content hash binds iteration 3, the state after the revision and the reviewer's F1 supplement were both applied in the same pass
+**Session**: `2026-08-12T0214-799d77`
+**Mode**: adversarial -- Option B independent reviewer
+
+**Content Hash**: `b1941ee1b729d6ca1194c5c2cb665c99c806654bf1256a67e62b943007f240ef`
+**Previous Hash**: `23039278aca30a0e949855fa183edc6a6478579fc3184f14171d9f7973d6445e`
+**Chain Hash (Merkle seal)**: `cd45062950f28a0fce6ccbc193ff753ac9c3192d04bf784ff77d4ad1e70a20cb`
+
+**Verdict**: **VETO**. Three shadow events stay `addressed_pending`; no flip to `addressed`.
+
+**THE OPERATOR HALTED PLAN ITERATION AND INVOKED REMEDIATION; THE REVIEWER THEN VETOED THE REMEDIATION.** Both interventions came from outside my own assessment and both were correct. The remediation I authored to explain four failed audits was itself wrong in two directions.
+
+**F1 WAS WRONG ABOUT THE DETECTOR AND UNDERSTATED THE DEFECT.** I claimed both detectors are keyed on sameness. True of cycle_count_escalator, which walks stall_walk and breaks its streak on a findings_signature change. FALSE of veto_pattern -- the word signature does not appear in that module. It counts AUDIT entries per phase, filters to phases carrying a SEAL, and fires on the last two SEALED phases each taking more than one pass. It matches entry type exactly "AUDIT"; the ledger convention changed to "GATE TRIBUNAL" at Entry #86, so 184 of 194 audit entries are invisible and its view stops at phase 27. Every "No repeated-VETO pattern detected" line -- three in this phase's reports, and every seal for ~196 phases -- came from a detector blind for 487 entries. The reviewer added a second gap I had not seen: even repaired, it is retrospective over sealed phases, so an in-flight phase is invisible until sealing, when escalation is moot.
+
+**THE RECURRENCE HAPPENED, AT THRESHOLD, TWICE.** Per category across the four VETOs: specification-drift 3, test-failure 3, infrastructure-mismatch 2, against ESCALATION_THRESHOLD 3. My "no two alike, so neither fired" was true of signature SETS and false as a diagnosis -- two thirds of the failure repeated and findings_signature.compute_record dissolved it by hashing the sorted set into one token. The cheap fix lives in cycle_count_escalator.check_session_total, already session-scoped and already holding the threshold; per-category counting would have fired at iteration 4.
+
+**THE REMEDY DID NOT REACH ITS OWN EXAMPLE.** R2 proposed widening plan_grep_lint's surface to --report. The citation that motivated the finding evades that in all three forms: a two-line shell transcript neither predicate parses; prose separating path from line so _FILE_LINE_RE cannot match; and a .md path, verified outside the extension set (`report.md:170` returns False). Surface-widening alone is insufficient -- form and extension must widen too.
+
+**AND ITERATION 1 REPRODUCED ITS OWN FINDING.** It stated the false citation propagated through four artifacts, re-quoting that count verbatim from ledger #573 without re-checking. Three is correct: audit report, #572, plan iteration 4. Plan iteration 3 carried a misattribution with no line number -- a different defect. So the proposal inherited an unverified claim INSIDE the finding about inheriting unverified claims. Fourth observation of SG-TranscribedEvidence-A; iteration 1 counted three.
+
+**THE REVIEWER CORRECTED MY OVER-OWNERSHIP, WHICH I HAD NOT EXPECTED.** F3 claimed every mandating finding required Judge re-verification. Most needed no shell -- two were single greps, one was reading a test list, one was internal to the document. And the omission mattered more: the phase's highest-severity finding, the false line-170 citation, was found WITHOUT a shell. Its verdict on iteration 1 overall: not self-serving, but 60 percent confession and 40 percent mechanism, with the mechanism the part that ships, so the failure mode sits in the same place either way.
+
+**VERIFIED WITH A SHELL, AS THE REVIEWER ASKED FOR THE THIRD TIME.** `git show 6424413:qor/skills/governance/qor-substantiate/SKILL.md | sed -n '250p'` returns the Phase 56 secret-scanning heading, unchanged. #572's stated content hash recomputes exactly over the amended report -- that amendment was correct.
+
+**ITERATION 2 OF THE PROPOSAL** rewrites F1, adds the threshold finding, adds the executed-versus-transcribed gap that had no proposal attached, corrects the propagation count and the over-ownership, and takes the classifier undercount from four event types to five (plan-replay also falls through classify). Six findings, six closure enforcers, all validating.
+
+**SUPPLEMENT ADOPTED, ITERATION 3.** The reviewer returned three sub-findings on the corrected F1, all verified here. This is a MISSED CONSUMER, not an unnoticed convention change: seal_entry_check.py:38 and meta_ledger_walker.py:91 both know GATE TRIBUNAL, and veto_pattern.py:50 alone uses exact equality against the retired label. The write side and read side are the same skill -- qor-audit/SKILL.md:557 instructs writing GATE TRIBUNAL and the same skill invokes a detector requiring AUDIT, so /qor-audit has been writing entries in a format its own advisory cannot read. And the suite could not have caught it: all 11 tests are synthetic, grep -c META_LEDGER returns 0, and the test whose stated job is to enumerate which entry types count omits the only type in use.
+
+**A SECOND GAP SURVIVES THE PARSER FIX.** test_parse_skips_unsealed_phase locks the sealed-only filter deliberately, so a corrected parser would still have read phases 221 and 222 and still printed the constant throughout Phase 223. The remedy is sequenced: parser, then in-flight condition, then a test binding the detector to the real ledger. The reviewer also revised its own prior report here, having named the sealed-only filter as the primary cause before the inertness was established.
+
+**THREE SG CANDIDATES NOW PAST THRESHOLD, NOT TWO.** SG-InertControl-A at SHADOW_GENOME.md:1395 reads "candidate if it recurs," first observed Phase 217. Finding 1 is the recurrence, and cleaner than the original: the remediation that exists because a control could not fire was produced by a session in which the control that should have caught it could not fire.
+
+**FINDING 2 RISES IN PRIORITY.** With veto_pattern inert, cycle_count_escalator.check_session_total is the ONLY detector that was both live and at threshold during this phase -- reading real session data with two categories sitting exactly on 3, dissolved only by set-hashing.
+
+**Next**: review pass on iteration 3. Events remain pending until a PASS.
+
+
+### Entry #575: GATE TRIBUNAL -- Phase 223 remediation iter-3 (VETO); escalator fires
+
+**Timestamp**: 2026-08-12T11:00:00Z
+**Phase**: GATE (Phase 223, remediation)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `8f5408e7bc94`
+**Target**: docs/remediation-phase223-detector-blind-spots-2026-08-12.md (iteration 3)
+**Session**: `2026-08-12T0214-799d77`
+**Mode**: adversarial -- Option B independent reviewer
+
+**Content Hash**: `e3678c866e59f393ef2b389c6282a622728fdaaae4cc900f035ab9fff3762464`
+**Previous Hash**: `cd45062950f28a0fce6ccbc193ff753ac9c3192d04bf784ff77d4ad1e70a20cb`
+**Chain Hash (Merkle seal)**: `72c55aee49bb9c537ee70287861c43edd2d78e68176772b761d01cc543c16573`
+
+**Verdict**: **VETO** -- infrastructure-mismatch, specification-drift. Events stay pending.
+
+**THE ESCALATOR FIRED, IN BOTH MODES.** stall_walk streak 3, signature ebde687b6b884205, against ESCALATION_THRESHOLD 3. cycle_count_escalator.check returns cycle-count and check_session_total returns session-total, both recommending /qor-remediate. This is the FIRST signal any detector in this layer has produced during the entire phase, and it confirms the proposal's Finding 2 empirically rather than by argument.
+
+**THE CATEGORIES WERE NOT CHOSEN TO AVOID IT.** I knew before emitting that {infrastructure-mismatch, specification-drift} matched records 4 and 5 and would take the streak to 3. Selecting a different set to stay under threshold would have been gaming a detector inside the remediation about detectors that do not fire. Recorded as classified.
+
+**THE FIRE LEAVES NO TRACE OF ITS OWN.** cycle_count_escalator references neither shadow_process nor append_event -- it returns a recommendation and emits nothing. So the only detector fire of the entire phase would have been a return value discarded at the end of the call. Event appended by hand so it is durable. That absence belongs in the proposal as a further instance of Finding 5's family.
+
+**AND IT RECOMMENDS A SKILL ALREADY IN PROGRESS.** /qor-remediate is the escalator's suggested_skill while remediation is the current phase. The escalator has no representation for that state.
+
+**V1: F2'S EVIDENCE NO LONGER REPRODUCES, BUT NOT BY TRANSCRIPTION.** The proposal prints spec-drift 3, test-failure 3, infra-mismatch 2; the Counter now returns 4/3/3. The review classified this as a fifth SG-TranscribedEvidence-A observation, a figure given an unverified attribution. It was not. Verified decisively: the Counter over the four records extant at execution time returns exactly {infrastructure-mismatch 2, specification-drift 3, test-failure 3}, identical to what was printed. The command was run and was true. What invalidated it is record 5 -- audit-iter5.json, the review pass's own VETO. audit_history.jsonl is append-only and /qor-audit appends to it, so AUDITING THE DOCUMENT CHANGED THE EVIDENCE THE DOCUMENT CITES. That is a time-of-check/time-of-use gap on a source the checking process mutates, and no re-execution discipline prevents it, because the evidence was re-executed and was true. Distinct pattern; SG-TranscribedEvidence-A stays at four. The substance strengthens: spec-drift 4 and infra-mismatch 3 means two categories at or past threshold rather than sitting on it.
+
+**V2: F4'S cannot-automate WAS A DEFERRAL AND THE REVIEW WAS RIGHT.** Its justification names two mechanisms, both automatable -- re-run at authoring time, which is what Phase 223's reproduces() does, and an inherited-from marker, a presence lint. The tell was inside my own sentence: "which of those to build is the implementing phase's decision" is not-yet-decided, not cannot-automate. An event closed under that form flips to addressed with no executable guard, which is SG-InertControl-A one layer up, inside the proposal that promotes SG-InertControl-A. Enforcer moves to qor.scripts.plan_grep_lint, shared with F3.
+
+**A FOURTH CITATION FORM, FROM MY OWN ROOT-CAUSE ANALYSIS.** A compound invocation whose output is attributed to the wrong member: well-formed statement, real line number, real quoted text, false file. No widening of surface, form, or extension set catches it because nothing is malformed. Only re-execution does -- which is exactly why F4's mechanism is automatable and V2 stands.
+
+**THE SELF-CAUGHT ARTIFACT-CLASS FINDING: AMEND, NOT SUPERSEDE.** The remediation proposal carries three matchable file:line citations with zero evidence statements and zero LD regions, and F3's widening covers plans and audit reports only. The review confirmed all three counts and judged it non-blocking: nothing in it is false, it is a scope omission rather than a false claim, and superseding would discard F1's sequencing, F3's propagation correction, F5's five types, and F6's correction over a gap caught in pre-verification. It folds into F3 as the artifact-class axis. The review added what I had missed: REASON 2 SURVIVES THE FIX FOR REASON 1 -- _ld_blocks scans for a Locked Decisions heading, remediation proposals have none by form, so a widened surface still no-ops. Same structure F1 already carries.
+
+**Gates**: prompt_injection_canaries 0; publication_boundary_lint 0 at structural+identity; ledger chain verified through #575; three shadow events remain addressed_pending; a fourth appended for the escalator fire.
+
+**Next**: OPERATOR DECISION. The escalator recommends /qor-remediate while remediation is in progress. Continuing to iteration 4 is two small fixes plus the amendments above; the alternative is treating the fire as a hard stop and widening scope. I recommend the former and am not acting on that recommendation, per the same self-assessment the operator correctly overrode at the fourth plan VETO.
+
+
 ---
 
 *Chain integrity: VALID*

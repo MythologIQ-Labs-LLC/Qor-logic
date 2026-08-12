@@ -1,0 +1,22 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-12T0214-799d77",
+  "ts": "2026-08-12T03:35:06Z",
+  "target": "docs/plan-qor-phase223-grep-evidence-truth.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/phase223-iter4-AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "infrastructure-mismatch",
+    "specification-drift"
+  ],
+  "reviews_remediate_gate": null,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.145.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "veto",
+    "ts": "2026-08-12T03:35:06Z"
+  }
+}
