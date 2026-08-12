@@ -1,8 +1,10 @@
 """Seal-artifact generators: README badges + SYSTEM_STATE header (Phase 164).
 
-Generate-not-assert (research entry #378, rec 2): substantiate Step 6 runs
-`--write` to regenerate the presentation artifacts deterministically; Step 6.5
-and CI run `--check` to gate on currency. Pure renderers; atomic writes
+Generate-not-assert (research entry #378, rec 2): substantiate Step 7.7.5 runs
+`--write` to regenerate the presentation artifacts deterministically and then
+`--check` to gate on currency; CI re-runs `--check` on sealed state. The pair
+was relocated out of Steps 6/6.5 in Phase 224 (GH #334) so it follows the
+SESSION SEAL entry the ledger badge counts. Pure renderers; atomic writes
 (tmp + os.replace, same discipline as changelog_stamp.apply_stamp). Counting
 and badge parsing are reused from badge_currency so check and write consume the
 same declared repository layout.
@@ -172,7 +174,12 @@ def _check_header(repo_root: Path) -> list[str]:
     if sealed:
         latest = max(sealed)
         got = int(header.group(2))
-        if not latest <= got <= latest + 1:
+        # Phase 224 (GH #334): equality, not `latest <= got <= latest + 1`. The
+        # one-step window existed only to absorb Step 6 writing the header for
+        # the phase being sealed before its entry landed. Regeneration now runs
+        # at Step 7.7.5, after the append, so a header ahead of the latest seal
+        # is drift rather than an early snapshot.
+        if got != latest:
             out.append(
                 f"header: SYSTEM_STATE records Phase {got}, latest seal is Phase {latest}"
             )

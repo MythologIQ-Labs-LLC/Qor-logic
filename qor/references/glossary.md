@@ -656,6 +656,7 @@ referenced_by:
   - qor/skills/governance/qor-audit/SKILL.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
   - qor/skills/governance/qor-audit/references/phase37-subpasses.md
+  - docs/architecture.md
 introduced_in_plan: phase72-sg-citation-drift-countermeasure
 ```
 
@@ -1332,6 +1333,7 @@ referenced_by:
   - qor/references/doctrine-execution-continuity.md
   - qor/scripts/continuity_gate.py
   - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
 introduced_in_plan: phase216-execution-continuity-semantics
 ```
 
@@ -1489,6 +1491,8 @@ referenced_by:
   - qor/scripts/substantiate_gates.py
   - qor/skills/governance/qor-substantiate/SKILL.md
   - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
+  - docs/architecture.md
+  - docs/operations.md
 introduced_in_plan: phase222-seal-ladder-as-data
 ```
 
@@ -1499,6 +1503,10 @@ home: qor/references/doctrine-shadow-genome-countermeasures.md
 referenced_by:
   - qor/scripts/plan_grep_lint.py
   - qor/references/doctrine-shadow-genome-countermeasures.md
+  - qor/skills/sdlc/qor-plan/SKILL.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
+  - docs/architecture.md
+  - docs/operations.md
 introduced_in_plan: phase223-grep-evidence-truth
 ```
 

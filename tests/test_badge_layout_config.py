@@ -203,7 +203,7 @@ def test_both_entry_points_resolve_identical_layouts(tmp_path: Path):
 def test_governed_check_invocation_honors_config(tmp_path: Path):
     """GH #299 acceptance criterion 1, executed.
 
-    This is the exact argv `/qor-substantiate` Step 6.5 and the CI step use.
+    This is the exact argv `/qor-substantiate` Step 7.7.5 and the CI step use.
     """
     root = _non_qor_repo(tmp_path)
     governed = ["--check", "--repo-root", str(root), "--skip-tests"]

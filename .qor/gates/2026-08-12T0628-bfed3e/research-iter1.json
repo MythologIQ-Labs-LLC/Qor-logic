@@ -1,0 +1,128 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-12T0628-bfed3e",
+  "ts": "2026-08-12T15:25:13Z",
+  "questions": [
+    "Is the seal_artifacts badge-vs-ledger ordering defect (GH #334) real, and is it intermittent as filed?",
+    "Does mark_addressed apply one closure_enforcer per batch, and is the flip irreversible (GH #333)?",
+    "Does intent_lock store enough to prove equivalence when the audited plan bytes were never committed (GH #332)?",
+    "Have GH #320 or GH #286 crossed their entry conditions since the 2026-08-11/12 triages?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "issue": 334,
+      "verdict": "CONFIRMED-STRONGER",
+      "claim": "The badge-vs-ledger ordering defect is structural on every seal, not intermittent.",
+      "evidence": [
+        "qor/skills/governance/qor-substantiate/SKILL.md:365",
+        "qor/skills/governance/qor-substantiate/SKILL.md:399",
+        "qor/skills/governance/qor-substantiate/SKILL.md:411-524",
+        "qor/scripts/seal_artifacts.py:117",
+        "qor/scripts/seal_artifacts.py:195-197"
+      ]
+    },
+    {
+      "id": "F2",
+      "issue": 334,
+      "verdict": "CORRECTION",
+      "claim": "The issue's premise that the ordering varies between phases is contradicted by the code; the open question inverts to why most CI runs went green.",
+      "evidence": [
+        "qor/scripts/seal_artifacts.py:117",
+        "qor/scripts/seal_artifacts.py:195-197",
+        ".github/workflows/ci.yml:96"
+      ]
+    },
+    {
+      "id": "F3",
+      "issue": 334,
+      "verdict": "PRECEDENT",
+      "claim": "The manual badge-refresh workaround is a recurrence, not a first: applied identically after Phase 215 and again after Phase 223.",
+      "evidence": [
+        "git commit 851c9f4",
+        "git commit 08f594a",
+        "git commit b10b247"
+      ]
+    },
+    {
+      "id": "F4",
+      "issue": 333,
+      "verdict": "CONFIRMED",
+      "claim": "One closure_enforcer is written to every event in a batch, and the flip is irreversible through the API, so a wrong citation is permanent.",
+      "evidence": [
+        "qor/scripts/remediate_mark_addressed.py:157-163",
+        "qor/scripts/remediate_mark_addressed.py:184",
+        "qor/scripts/remediate_mark_addressed.py:97",
+        "qor/scripts/remediate_mark_addressed.py:106"
+      ]
+    },
+    {
+      "id": "F5",
+      "issue": 332,
+      "verdict": "CONFIRMED",
+      "claim": "intent_lock stores a digest only and demands byte-identity; the in-module precedent for relaxing a dimension to a provable relation is the HEAD ancestry check.",
+      "evidence": [
+        "qor/reliability/intent_lock.py:123",
+        "qor/reliability/intent_lock.py:153",
+        "qor/reliability/intent_lock.py:167-171",
+        "docs/META_LEDGER.md entry #580"
+      ]
+    },
+    {
+      "id": "F6",
+      "issue": 320,
+      "verdict": "UNCHANGED",
+      "claim": "Entry condition not met: no non-zero drift count in the edited class.",
+      "evidence": [
+        "docs/research-brief-post-222-issue-triage-2026-08-12.md"
+      ]
+    },
+    {
+      "id": "F7",
+      "issue": 286,
+      "verdict": "UNCHANGED",
+      "claim": "Unblocked but not next: the extended-line contracts it consumes shipped without closing, with named behaviours still untested.",
+      "evidence": [
+        "docs/research-brief-post-222-issue-triage-2026-08-12.md"
+      ]
+    },
+    {
+      "id": "F8",
+      "issue": null,
+      "verdict": "DRIFT-PATTERN",
+      "claim": "Five blueprint drifts share one shape: badge currency, release-class enforcement, enforcer citation, intent lock, and closure lint each verify presence or digest rather than truth.",
+      "evidence": [
+        "docs/research-brief-post-223-issue-triage-2026-08-12.md"
+      ]
+    }
+  ],
+  "sources": [
+    "qor/skills/governance/qor-substantiate/SKILL.md:365",
+    "qor/skills/governance/qor-substantiate/SKILL.md:399",
+    "qor/skills/governance/qor-substantiate/SKILL.md:411-524",
+    "qor/scripts/seal_artifacts.py:117",
+    "qor/scripts/seal_artifacts.py:195-197",
+    ".github/workflows/ci.yml:96",
+    "qor/scripts/remediate_mark_addressed.py:157-163",
+    "qor/scripts/remediate_mark_addressed.py:184",
+    "qor/scripts/remediate_mark_addressed.py:97",
+    "qor/scripts/remediate_mark_addressed.py:106",
+    "qor/reliability/intent_lock.py:123",
+    "qor/reliability/intent_lock.py:153",
+    "qor/reliability/intent_lock.py:167-171",
+    "docs/META_LEDGER.md entry #580",
+    "docs/research-brief-post-222-issue-triage-2026-08-12.md",
+    "git commit 851c9f4",
+    "git commit 08f594a",
+    "git commit b10b247"
+  ],
+  "brief_path": "docs/research-brief-post-223-issue-triage-2026-08-12.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.15.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-08-12T15:25:13Z"
+  }
+}

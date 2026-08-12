@@ -2,7 +2,7 @@
 
 Pure functions for counting current-truth values (tests, ledger entries,
 skills, agents, doctrines) and parsing the declared values in README badges.
-Used by tests and by `/qor-substantiate` Step 6.5 to ABORT seal on mismatch
+Used by tests and by `/qor-substantiate` Step 7.7.5 to ABORT seal on mismatch
 for feature/breaking phases.
 
 Skill, agent, and doctrine layouts are declarable. Missing configured roots

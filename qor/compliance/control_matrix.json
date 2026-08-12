@@ -136,7 +136,7 @@
       "detection": "skill-marker",
       "wired_into": {
         "skill": "qor/skills/governance/qor-substantiate/SKILL.md",
-        "step": "6.5"
+        "step": "7.7.5"
       },
       "variants": [
         "claude",

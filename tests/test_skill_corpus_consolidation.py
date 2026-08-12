@@ -92,7 +92,7 @@ def test_audit_spine_preserved(token: str) -> None:
 
 SUBST_INVARIANTS = [
     "Step 4.6 reliability gates -> non-zero exit aborts substantiate",
-    "Step 6.5 README badge currency check -> `|| ABORT`",
+    "Step 7.7.5 README badge currency check -> `|| ABORT`",
     "Step 7.8 gate-chain completeness check -> `|| ABORT`",
     "Constraints section at file foot",
 ]

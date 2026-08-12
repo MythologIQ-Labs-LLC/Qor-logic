@@ -1775,4 +1775,143 @@ First observation; promote to a structured countermeasure on a second.
 
 ---
 
+## 2026-08-12 -- A gate that runs before the state it grades
+
+### Findings
+
+`/qor-substantiate` regenerates the README badges at Step 6 and verifies their
+currency at Step 6.5, then appends the SESSION SEAL entry at Step 7. One of those
+badges counts ledger entries. It is written and checked before the entry the seal
+itself adds, so Step 6.5 reads consistent every time and the badge ships exactly
+one behind on every seal that appends an entry, which is every seal.
+
+Verified: `qor/skills/governance/qor-substantiate/SKILL.md:365` (check) precedes
+`:399` (append), and no step in `:411-524` regenerates the artifact between the
+append and the seal commit. Both the write and the check route through a single
+counter (`qor/scripts/seal_artifacts.py:117`, `:195-197`), so the two sides cannot
+disagree about what an entry is. The drift is structural, not intermittent.
+
+Two occurrences on record, eight phases apart, each closed by the same manual
+follow-up commit rather than by a fix: `851c9f4` after Phase 215, `08f594a` after
+Phase 223. The CI step that caught both (`.github/workflows/ci.yml:96`) has been
+live since Phase 164.
+
+### Root Cause Analysis
+
+The Phase 164 doctrine is generate-not-assert: build the artifact from truth
+rather than assert equality against it in a test. That is right, and it was
+applied at the wrong point in the sequence. Generation was placed where the other
+document-currency work lives, not where its inputs finish arriving. The check was
+then placed immediately after generation, which is the natural reading of "verify
+what you just wrote" and is exactly what makes the gate blind: it compares an
+artifact against the state that produced it, and both are stale together.
+
+CI sees the branch tip, after the entry lands, so the first observer of the drift
+is the pipeline rather than the gate built to catch it. A gate reading pre-seal
+state cannot fail on a post-seal fact.
+
+The recurrence is the part worth keeping. Both times, the drift was resolved by a
+commit that regenerated the badge, which restores truth and leaves the ordering
+untouched, so the next seal reproduces it. A workaround that fully repairs the
+symptom removes the pressure that would have produced the fix.
+
+### Pattern to Avoid
+
+Do not verify a generated artifact at the point of generation when inputs to it
+are still arriving later in the same procedure. Place the generate/verify pair
+after the last input exists, and pin the relative position with a test -- nothing
+tested the ordering of Steps 6, 6.5, and 7, so eight phases of green did not mean
+the sequence was right.
+
+When a gate fails and a follow-up commit makes the symptom go away, record whether
+the ordering or the logic changed. If neither did, the finding is still open.
+
+### Pattern ID
+
+Artifact generated before its inputs. Candidate SG family entry on a third
+occurrence: `SG-PrematureArtifact-A` -- a currency gate positioned so that it reads
+the same pre-change state as the artifact it grades, making the comparison
+tautological and deferring first detection to a downstream observer. Distinct from
+`SG-VacuousSelfValidation-A`, where the check fires correctly over an empty subject
+set; here the subject set is non-empty and the snapshot is early. Remedy is
+positional: generate and check after the final input, and test the step ordering
+rather than the step's output. Enforcer: none yet. Second observation; a structured
+countermeasure is due.
+
+---
+
+## 2026-08-12 -- The observation was checked and the inference was not
+
+### Findings
+
+Phase 224's tribunal issued six mandating findings. Five held. The sixth was
+refuted within the same tribunal, but only after the plan had been rewritten
+around it.
+
+The independent reviewer found that `qor/skills/governance/qor-substantiate/SKILL.md:548-549`
+is the skill's only `git add` block and does not list `README.md`, which is the
+file the ledger badge lives in. From that it concluded README never reaches the
+seal commit, and therefore that reordering the generator could not fix the drift
+at all -- a second root cause, more fundamental than the one the phase was scoped
+to. It was a striking result and it was wrong.
+
+`git show --stat` lists `README.md` in all seven recent seal commits (`a55f1fc`,
+`85a9077`, `03fb43a`, `7146315`, `bb25ccf`, `ddb63dc`, `90b6c9e`). `git show
+a55f1fc:README.md` carries `Ledger-577%20entries` against a post-append truth of
+578. README reaches the commit, carrying the value written before the append.
+Operators stage more than the documented block, so the block understates practice.
+That is a documentation gap and not a cause.
+
+The verification asymmetry is the finding. The reviewer's OBSERVATION was checked
+against the file and confirmed. Its INFERENCE was not checked against the commits,
+and one `git show --stat` refutes it. The observation and the inference were
+accepted as one unit because the observation was verified.
+
+### Root Cause Analysis
+
+The reviewer had no shell. It reasoned from file contents, correctly, and could
+not close the loop by looking at what the procedure had actually produced. The
+orchestrator had a shell and did not run it, because the finding arrived with a
+verified citation attached and the citation was the part that got checked.
+
+A finding that overturns a phase's premise is exactly the finding to distrust
+most, and the strength of the supporting citation is what suppressed the distrust:
+the block really does omit README, so the conclusion inherited the block's
+credibility. Confirming the premise of an inference is not confirming the
+inference.
+
+The failure has the same shape as the defect Phase 224 exists to fix. The badge
+gate reads the procedure's inputs rather than its output and passes on a value it
+has not compared against what shipped. Here the review read the procedure -- the
+documented staged set -- and drew a conclusion about the artifact, without reading
+the artifact. The commits were available the whole time.
+
+### Pattern to Avoid
+
+When a reviewer's finding claims a mechanism rather than a fact, verify the
+mechanism separately from the fact it rests on. Ask what artifact the mechanism
+would have produced, then go read that artifact. Here: "README is not staged"
+predicts "seal commits do not contain README", and the seal commits are on disk.
+
+Weight this most heavily when the finding is the impressive one. A result that
+reframes the whole phase earns more checking than a routine one, not less.
+
+Delegated review that cannot execute is bounded to claims about text. Treat its
+inferences about runtime or history as hypotheses addressed to whoever holds the
+shell.
+
+### Pattern ID
+
+Unverified inference from a verified observation. Candidate SG family entry on a
+second occurrence: `SG-VerifiedPremiseUncheckedConclusion-A` -- a finding pairs a
+citation-backed observation with a causal conclusion, the observation is verified,
+and the conclusion is accepted on the observation's credibility without being
+tested against the artifact it predicts. Distinct from `SG-CitationDrift-A`, where
+the citation itself is wrong; here the citation is exact and the reasoning built
+on it is not. Remedy: state what the conclusion predicts should be observable, and
+observe it, before acting on the conclusion. Enforcer: none. First observation;
+refuted before the plan reached audit, at a cost of one plan revision.
+
+---
+
 *Shadow integrity: ACTIVE*
