@@ -29,10 +29,32 @@ def _heading_matches(line: str, step: str) -> bool:
     return step in line
 
 
+def _ladder_row_section(text: str, step: str) -> str:
+    """Render a gate ladder row as a step section (Phase 222; GH #327).
+
+    The Step 4.6.x prose blocks became rows of one table, so a control wired
+    into `4.6.5` no longer has a heading to anchor on. The row carries the same
+    facts, and its commands are returned unescaped -- a markdown cell writes
+    `||` as `\\|\\|`, which the posture markers below would otherwise miss.
+    """
+    from qor.scripts import substantiate_gates
+
+    try:
+        rows = substantiate_gates.parse_ladder_text(text)
+    except substantiate_gates.LadderError:
+        return ""
+    row = next((r for r in rows if r.step == step), None)
+    if row is None:
+        return ""
+    return "\n".join([f"Step {row.step}: {row.gate}", *row.commands, row.records, row.notes])
+
+
 def _step_section(text: str, step: str) -> str:
     """Return the body of the heading whose line anchors ``step``, up to the
     next real heading. Headings inside ``` code fences (example markdown in the
-    skill) are ignored so the section is not cut short. Empty when not found."""
+    skill) are ignored so the section is not cut short. Falls back to the gate
+    ladder row for steps that live in the table rather than under a heading.
+    Empty when not found."""
     lines = text.splitlines(keepends=True)
     start = None
     in_fence = False
@@ -43,7 +65,7 @@ def _step_section(text: str, step: str) -> str:
             start = i
             break
     if start is None:
-        return ""
+        return _ladder_row_section(text, step)
     out = [lines[start]]
     in_fence = False
     for line in lines[start + 1:]:

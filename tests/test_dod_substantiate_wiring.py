@@ -6,7 +6,6 @@ the Phase 84 / Phase 87 / Phase 89 wiring-test convention.
 """
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -14,63 +13,32 @@ SUBSTANTIATE_SKILL = (
     REPO_ROOT / "qor" / "skills" / "governance" / "qor-substantiate" / "SKILL.md"
 )
 
+from tests import ladder_helpers as lh
 
-def _section(text: str, header_pattern: str) -> str:
-    """Body of the first '### ' section whose header matches header_pattern,
-    up to the next '### ' header."""
-    lines = text.splitlines()
-    start = None
-    for i, line in enumerate(lines):
-        if line.startswith("### ") and re.search(header_pattern, line):
-            start = i
-            break
-    if start is None:
-        return ""
-    body: list[str] = []
-    for line in lines[start + 1:]:
-        if line.startswith("### "):
-            break
-        body.append(line)
-    return "\n".join(body)
 
+# --- Phase 222 (GH #327): retargeted from `### Step 4.6.7` heading to the
+# --- gate ladder row. Same literals, new canonical location.
 
 def test_step_4_6_7_invokes_dod_check():
-    text = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
-    section = _section(text, r"Step 4\.6\.7")
-    assert section, "qor-substantiate SKILL.md has no '### Step 4.6.7' section"
-    assert ("qor.scripts.dod_check" in section or "qor-logic scripts dod_check" in section), (
-        "Step 4.6.7 missing the qor.scripts.dod_check invocation"
+    sec = lh.section("4.6.7")
+    assert sec, "no gate ladder row for Step 4.6.7"
+    assert ("qor.scripts.dod_check" in sec or "qor-logic scripts dod_check" in sec), (
+        "Step 4.6.7 missing the dod_check invocation"
     )
-    # WARN-only contract: same `|| true` guard convention as Step 0.6 lints.
-    assert "|| true" in section, (
-        "Step 4.6.7 missing the '|| true' WARN-only guard convention"
-    )
+    assert "|| true" in sec, "Step 4.6.7 missing the '|| true' posture guard"
 
 
-def test_step_4_6_7_section_removed_breaks_assertion():
-    text = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
-    section = _section(text, r"Step 4\.6\.7")
-    assert section, "precondition: Step 4.6.7 section must exist"
-    stripped = text.replace(section, "")
-    section_after = _section(stripped, r"Step 4\.6\.7")
-    assert ("qor.scripts.dod_check" not in section_after and "qor-logic scripts dod_check" not in section_after)
+def test_step_4_6_7_row_removed_breaks_assertion():
+    """THE COUNTERFACTUAL: delete the row and the invocation must vanish."""
+    stripped = lh.without_row("4.6.7")
+    assert "dod_check" not in lh.section("4.6.7", stripped)
 
 
 def test_step_4_6_7_positioned_between_4_6_6_and_4_7():
-    """Step 4.6.7 must appear AFTER Step 4.6.6 (procedural-fidelity) and
-    BEFORE Step 4.7 (documentation integrity) in document order. Guards
-    against future renumbering that breaks the substantiate sequence."""
-    text = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
-
-    def _heading_pos(pattern: str) -> int:
-        m = re.search(pattern, text, re.MULTILINE)
-        assert m, f"heading not found: {pattern}"
-        return m.start()
-
-    pos_4_6_6 = _heading_pos(r"^### Step 4\.6\.6\b")
-    pos_4_6_7 = _heading_pos(r"^### Step 4\.6\.7\b")
-    pos_4_7 = _heading_pos(r"^### Step 4\.7\b")
-    assert pos_4_6_6 < pos_4_6_7 < pos_4_7, (
-        f"Step 4.6.7 must be ordered between 4.6.6 and 4.7; "
-        f"positions: 4.6.6={pos_4_6_6}, 4.6.7={pos_4_6_7}, 4.7={pos_4_7}"
-    )
+    """Row order is document order, so an index comparison replaces the old
+    character-offset heading search. The 4.7 half of the old assertion is now
+    structural: every ladder row precedes Step 4.7 by construction, and
+    `test_seal_ladder_order` holds the table ahead of the file's tail."""
+    assert lh.order_index("4.6.6") >= 0, "Step 4.6.6 row is missing"
+    assert lh.order_index("4.6.7") >= 0, "Step 4.6.7 row is missing"
+    assert lh.order_index("4.6.6") < lh.order_index("4.6.7")

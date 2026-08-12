@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-11T23:13:46Z",
+  "generated_ts": "2026-08-12T02:02:52Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -252,7 +252,7 @@
       "id": "command-qor-substantiate.md",
       "source_path": "workflows/command-qor-substantiate.md",
       "install_rel_path": "workflows/command-qor-substantiate.md",
-      "sha256": "3302a056ba039b01d6a94ef4239b8f51dcace0dfc14710eb592d8baa6ef87430"
+      "sha256": "8303394e8f3acb232cc171cd4d3e955487a2e37b61d2867c444f05a68f7e46b7"
     },
     {
       "id": "command-qor-tone.md",

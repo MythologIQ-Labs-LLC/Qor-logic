@@ -224,124 +224,36 @@ PAUSE
 Report: "Skill [name] missing required section: [section]. Fix before sealing."
 ```
 
-### Step 4.6: Reliability Sweep (Phase 17 wiring)
+### Step 4.6: Gate ladder (Phase 17; table Phase 222, GH #327)
 
-**Prerequisite (Phase 75; GH #38)**: requires `module:qor.reliability.intent_lock` (SKIP path if absent per the Step Prerequisites table + `SG-HalfSealedClaim-A`).
+**Prerequisite (Phase 75; GH #38)**: per-row `module:` cells; absent ones SKIP.
 
-Three reliability enforcement gates run sequentially. Each is an interdiction: non-zero exit aborts substantiation.
+Derive the shared values once, then validate the ladder: a malformed table ABORTs here rather than half-executing below.
 
 ```bash
-# session_id via canonical helper (reads .qor/session/current; validates SESSION_ID_PATTERN, Phase 23/50)
 SESSION_ID=$(python -c "from qor.scripts.session import current; print(current() or 'default')")
-
-# Re-verify the intent lock from /qor-implement Step 5.5 (fails on plan/audit/HEAD drift).
-qor-logic reliability intent_lock verify --session "$SESSION_ID" || ABORT
-# Record intent_lock_state (verified|absent|overridden) in the gate artifact.
-# Current skill registered + frontmatter well-formed.
-qor-logic reliability skill_admission qor-substantiate || ABORT
-# All /qor-* handoff references resolve to real skills.
-qor-logic reliability gate_skill_matrix || ABORT
-# Phase 106: WARN-only session-ID convention lint (catches fall-through-to-'default').
-qor-logic scripts session_id_lint || true
-```
-
-Any ABORT leaves the session unsealed. Operator must resolve the drift (re-audit, re-admit, or fix broken handoff) and re-run substantiation.
-
-### Step 4.6.5: Secret-scanning gate (Phase 56 wiring)
-
-**Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.secret_scanner` (SKIP path if absent per the Step Prerequisites table + `SG-HalfSealedClaim-A`).
-
-Pre-seal scan over staged content. ABORTs on any detected secret. Closes OWASP LLM06 + NIST AI 600-1 §2.10.
-
-```bash
-qor-logic scripts secret_scanner --staged --out dist/secrets.findings.json || ABORT
-```
-
-Rationale (Cedar `has_hardcoded_secrets` attribute, gitleaks-v8 findings schema): `references/seal-gate-ladder.md`.
-
-### Step 4.6.6: Procedural-fidelity check (Phase 58 wiring)
-
-Static-analysis pass over the implement-gate `files_touched` set. WARN-only: deviations append severity-2 events but do NOT abort. Catches the doc-surface coverage gap.
-
-```bash
-qor-logic scripts procedural_fidelity --session "$SESSION_ID" \
-  --out dist/procedural-fidelity.findings.json
-```
-
-Four-class deviation catalog + remediation: `qor/references/doctrine-procedural-fidelity.md` (rationale in `references/seal-gate-ladder.md`).
-
-### Step 4.6.7: Definition of Done check (Phase 92 wiring; GH #86)
-
-WARN-only structural check that the plan's `## Definition of Done` section is well-formed. V1 enforces presence only.
-
-```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
-qor-logic scripts dod_check --plan "$PLAN_PATH" || true
+qor-logic scripts substantiate_gates || ABORT
 ```
 
-`PLAN_PATH` is argv-only (SG-Phase47-A). Findings do NOT abort. Tier contract + finding classes: `references/seal-gate-ladder.md` (`SG-DoDImplicit-A`).
+| Step | Gate | Command | Policy | Records | Notes |
+|---|---|---|---|---|---|
+| 4.6 | reliability sweep | `qor-logic reliability intent_lock verify --session "$SESSION_ID" \|\| ABORT`<br>`qor-logic reliability skill_admission qor-substantiate \|\| ABORT`<br>`qor-logic reliability gate_skill_matrix \|\| ABORT`<br>`qor-logic scripts session_id_lint \|\| true` | ABORT | intent_lock_state | requires `module:qor.reliability.intent_lock`; last command WARN-only |
+| 4.6.5 | secret_scanner | `qor-logic scripts secret_scanner --staged --out dist/secrets.findings.json \|\| ABORT` | ABORT | secret_scanner | requires `module:qor.scripts.secret_scanner` |
+| 4.6.6 | procedural_fidelity | `qor-logic scripts procedural_fidelity --session "$SESSION_ID" --out dist/procedural-fidelity.findings.json` | WARN | procedural_fidelity | requires `module:qor.scripts.procedural_fidelity` |
+| 4.6.7 | dod_check | `qor-logic scripts dod_check --plan "$PLAN_PATH" \|\| true` | WARN | dod_check | `PLAN_PATH` argv-only (SG-Phase47-A); V1 presence only |
+| 4.6.8 | merge_velocity_check | `qor-logic scripts merge_velocity_check --repo-root . --window-days 7 \|\| ABORT` | ABORT | merge_velocity | 0 on `healthy`/`strained`, 1 on `exceeded`; `--override` logs `gate_override` |
+| 4.6.9 | skill_size_budget_lint | `qor-logic scripts skill_size_budget_lint --skills-root qor/skills \|\| true` | WARN | skill_size_budget | WARN at 25 KB, EXCEEDED at 40 KB; CLI exits 1 on EXCEEDED |
+| 4.6.10 | data_api_acl_lint | `qor-logic scripts data_api_acl_lint --repo-root . \|\| ABORT` | ABORT | data_api_acl | requires `module:qor.scripts.data_api_acl_lint`; blocks on `missing-grant`, `definer-view`; no migrations prints `SKIP:` |
+| 4.6.12 | continuity receipt | `qor-logic scripts continuity_gate --session "$SESSION_ID" \|\| ABORT` | ABORT | continuity_outcome | only when the plan declares `execution_continuity`; receipt binds the EXACT revision; `verified`/`rejected`/`inconclusive` stay distinct |
+| 4.6.13 | install_drift_check | `qor-logic scripts install_drift_check --host claude --scope auto \|\| true` | disclose | skill_corpus | record digest, scope, drift count; disclosure, not ABORT |
+| 4.6.14 | publication_boundary_lint | `qor-logic scripts publication_boundary_lint --repo-root . \|\| ABORT` | ABORT | boundary_scope | run AFTER Step 9.5; record `structural` or `structural+identity` |
 
-### Step 4.6.8: Merge-velocity throttle check (Phase 93 wiring; GH #89; fail-closed since Phase 129, GH #153)
+Run the rows in order. `ABORT` halts the seal, leaving the session unsealed. `WARN` records findings and proceeds. `disclose` records a value and never blocks. An absent prerequisite records SKIP + `gate_skipped_prerequisite_absent` (`SG-HalfSealedClaim-A`).
 
-Fail-closed throttle on stabilization-capacity strain from `origin/main`'s recent merge history.
+Step 4.6.11 is deliberately absent: the gap is the scar of GH #314 (Phase 221). Closing it erases the record of a gate declared and never built. Do not renumber.
 
-```bash
-qor-logic scripts merge_velocity_check --repo-root . --window-days 7 || ABORT
-```
-
-Exits 0 on `healthy`/`strained`, 1 on `exceeded` (ABORTs; Phase 129 removed the `|| true`). To seal during a deliberate high-velocity window, re-run with `--override` (logged `gate_override` shadow event, `details.gate = merge_velocity_check`). `--shared-core-path` patterns add shared-surface signals. sibling-workspace originating recurrence + `SG-MergePaceThrottle-A`: `references/seal-gate-ladder.md`.
-
-### Step 4.6.9: Skill-corpus size-budget lint (Phase 95 wiring; GH #92)
-
-WARN-only per-skill size-budget lint over `qor/skills/**/SKILL.md` (WARN at 25 KB, EXCEEDED at 40 KB).
-
-```bash
-qor-logic scripts skill_size_budget_lint --skills-root qor/skills || true
-```
-
-Does not abort; CLI exits 1 on any EXCEEDED finding. Rationale + corpus-growth history: `references/seal-gate-ladder.md` (`SG-SkillCorpusGrowth-A`).
-
-### Step 4.6.10: Data-API access-control lint (Phase 121 wiring; GH #177)
-
-**Prerequisite (Phase 75; GH #38)**: requires `module:qor.scripts.data_api_acl_lint`; no-SQL-migration repos print `SKIP:` and exit 0 (disclosed-skip — record SKIP + emit `gate_skipped_prerequisite_absent`).
-
-Fail-closed on blocking findings (`missing-grant`, `definer-view`); `security-definer-fn` is advisory. Finding definitions + the GH #177 recurrence: `references/seal-gate-ladder.md`.
-
-```bash
-qor-logic scripts data_api_acl_lint --repo-root . || ABORT
-```
-
-Escapes: `-- qor:service-role-only` and `-- qor:definer-view-intended reason: ...`. No-migration repos print `SKIP:` and exit 0 (disclosed-skip). Full contract: `qor/references/doctrine-runtime-principal-fidelity.md`; rationale in `references/seal-gate-ladder.md`.
-
-### Step 4.6.12: Execution-continuity receipt gate (Phase 216 wiring; GH #285)
-
-Applies when the plan declares `execution_continuity`. Require a verification
-receipt bound to the EXACT implementation revision; a stale-revision receipt
-ABORTs. Provider prose and status badges are not receipts.
-
-Preserve `verified`, `rejected`, and `inconclusive` as distinct outcomes;
-`inconclusive` is not `skip`. Reference artifacts by path and digest. Record the
-pinned contract version. Separation of acceptances and why conformance is
-asserted rather than verified: `references/seal-gate-ladder.md`.
-
-### Step 4.6.13: Skill-corpus disclosure (Phase 217; GH #314)
-
-`qor-logic scripts install_drift_check --host claude --scope auto || true`
-
-Record `skill_corpus` (digest, scope, drift count) in the gate artifact and seal
-entry. Disclosure, not ABORT: `references/seal-gate-ladder.md`.
-
-### Step 4.6.14: Publication boundary, post-staging (Phase 219; GH #309)
-
-Run AFTER Step 9.5 staging so this phase's new files are visible; untracked
-files are scanned but the audit-time run predates them.
-
-`qor-logic scripts publication_boundary_lint --repo-root . || ABORT`
-
-Record `boundary_scope` (`structural` or `structural+identity`) in the gate
-artifact and seal entry: CI cannot load the identity overlay, so an unqualified
-zero means less there. Why post-staging and fail-closed:
-`references/seal-gate-ladder.md`.
+Escapes, per-row rationale, recurrences, findings: `references/seal-gate-ladder.md`.
 
 ### Step 4.7: Documentation Integrity Check (Phase 28 wiring)
 

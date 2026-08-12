@@ -73,7 +73,10 @@ def test_substantiate_step_4_6_5_uses_abort_semantics():
         body = skill.read_text(encoding="utf-8")
         # Find the invocation and assert "|| ABORT" appears within the next 80 chars
         idx = _ss_index(body)
-        window = body[idx:idx + 200]
+        # Phase 222 (GH #327): the invocation moved into a markdown table
+        # cell, which escapes `|` as `\|`. Unescape so this asserts on the
+        # shell operator the ceremony runs, not on the table syntax.
+        window = body[idx:idx + 200].replace(r"\|", "|")
         assert "|| ABORT" in window, (
             f"{skill}: secret_scanner invocation must be followed by '|| ABORT' "
             f"(matches reliability-sweep idiom). Got window: {window!r}"

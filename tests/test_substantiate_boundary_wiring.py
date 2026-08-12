@@ -9,8 +9,9 @@ deleted, and its absence looks exactly like its presence to every other gate.
 """
 from __future__ import annotations
 
-import re
 from pathlib import Path
+
+from tests import ladder_helpers as lh
 
 from tests.test_substantiate_staging_gates import HEADROOM_BYTES
 
@@ -31,26 +32,24 @@ def test_seal_step_runs_the_boundary_lint():
 
 
 def test_boundary_step_is_fail_closed():
-    """A WARN here would reproduce the audit-time run it exists to supplement.
+    r"""Phase 222: read from the 4.6.14 ladder row.
 
-    The audit's noted risk: the plan states fail-closed in the Definition of Done
-    but describes the step only as 'running the lint after staging'. Wired as
-    `|| true` it would pass D2 while failing D1.
+    `row.commands` unescapes the table's `\|\|`, so this asserts on the shell
+    operator the ceremony runs, not on the markdown escape.
     """
-    body = _body()
-    step = body[body.index("Step 4.6.14"):]
-    invocation = next(
-        ln for ln in step.splitlines() if "publication_boundary_lint" in ln)
-
-    assert "ABORT" in invocation, invocation
+    row = lh.row("4.6.14")
+    assert row is not None, "no gate ladder row for Step 4.6.14"
+    invocation = "\n".join(row.commands)
+    assert "|| ABORT" in invocation, invocation
     assert "|| true" not in invocation, invocation
+    assert row.policy == "ABORT"
 
 
 def test_boundary_step_runs_after_staging():
-    """Ordering is the whole point: untracked artifacts must already exist."""
-    step = _body()
-    assert re.search(r"Step 4\.6\.14.*?AFTER Step 9\.5", step, re.S), (
-        "the step must state that it runs after staging"
+    row = lh.row("4.6.14")
+    assert row is not None
+    assert "AFTER Step 9.5" in row.notes, (
+        "the 4.6.14 row must state that it runs after staging"
     )
 
 

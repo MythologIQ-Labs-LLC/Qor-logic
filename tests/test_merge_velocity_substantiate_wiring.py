@@ -5,7 +5,6 @@ wiring-test convention.
 """
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -13,57 +12,38 @@ SUBSTANTIATE_SKILL = (
     REPO_ROOT / "qor" / "skills" / "governance" / "qor-substantiate" / "SKILL.md"
 )
 
+from tests import ladder_helpers as lh
 
-def _section(text: str, header_pattern: str) -> str:
-    lines = text.splitlines()
-    start = None
-    for i, line in enumerate(lines):
-        if line.startswith("### ") and re.search(header_pattern, line):
-            start = i
-            break
-    if start is None:
-        return ""
-    body: list[str] = []
-    for line in lines[start + 1:]:
-        if line.startswith("### "):
-            break
-        body.append(line)
-    return "\n".join(body)
 
+# --- Phase 222 (GH #327): retargeted from `### Step 4.6.8` heading to the
+# --- gate ladder row. Same literals, new canonical location.
 
 def test_step_4_6_8_invokes_merge_velocity_check():
-    text = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
-    section = _section(text, r"Step 4\.6\.8")
-    assert section, "qor-substantiate SKILL.md has no '### Step 4.6.8' section"
-    assert ("qor.scripts.merge_velocity_check" in section or "qor-logic scripts merge_velocity_check" in section), (
+    sec = lh.section("4.6.8")
+    assert sec, "no gate ladder row for Step 4.6.8"
+    assert ("qor.scripts.merge_velocity_check" in sec or "qor-logic scripts merge_velocity_check" in sec), (
         "Step 4.6.8 missing the merge_velocity_check invocation"
     )
-    assert "|| true" in section, (
-        "Step 4.6.8 missing '|| true' WARN-only contract"
-    )
+    # Phase 129 (GH #153) made this gate fail-closed. Until Phase 222 this test
+    # asserted `"|| true" in section` under the message "WARN-only contract",
+    # and passed -- because the sentence documenting the REMOVAL of `|| true`
+    # contained the literal being searched for. The token matched while the
+    # property was false. Assert the shipped posture instead.
+    assert "|| ABORT" in sec, "Step 4.6.8 must be fail-closed (Phase 129)"
+    assert lh.row("4.6.8").policy == "ABORT"
 
 
-def test_step_4_6_8_section_removed_breaks_assertion():
-    text = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
-    section = _section(text, r"Step 4\.6\.8")
-    assert section
-    stripped = text.replace(section, "")
-    section_after = _section(stripped, r"Step 4\.6\.8")
-    assert ("qor.scripts.merge_velocity_check" not in section_after and "qor-logic scripts merge_velocity_check" not in section_after)
+def test_step_4_6_8_row_removed_breaks_assertion():
+    """THE COUNTERFACTUAL: delete the row and the invocation must vanish."""
+    stripped = lh.without_row("4.6.8")
+    assert "merge_velocity_check" not in lh.section("4.6.8", stripped)
 
 
 def test_step_4_6_8_positioned_between_4_6_7_and_4_7():
-    text = SUBSTANTIATE_SKILL.read_text(encoding="utf-8")
-
-    def _pos(pat: str) -> int:
-        m = re.search(pat, text, re.MULTILINE)
-        assert m, f"heading not found: {pat}"
-        return m.start()
-
-    pos_467 = _pos(r"^### Step 4\.6\.7\b")
-    pos_468 = _pos(r"^### Step 4\.6\.8\b")
-    pos_47 = _pos(r"^### Step 4\.7\b")
-    assert pos_467 < pos_468 < pos_47, (
-        f"Step 4.6.8 must be between 4.6.7 and 4.7; positions: "
-        f"4.6.7={pos_467} 4.6.8={pos_468} 4.7={pos_47}"
-    )
+    """Row order is document order, so an index comparison replaces the old
+    character-offset heading search. The 4.7 half of the old assertion is now
+    structural: every ladder row precedes Step 4.7 by construction, and
+    `test_seal_ladder_order` holds the table ahead of the file's tail."""
+    assert lh.order_index("4.6.7") >= 0, "Step 4.6.7 row is missing"
+    assert lh.order_index("4.6.8") >= 0, "Step 4.6.8 row is missing"
+    assert lh.order_index("4.6.7") < lh.order_index("4.6.8")

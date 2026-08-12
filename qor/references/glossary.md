@@ -1468,3 +1468,26 @@ referenced_by:
   - qor/references/doctrine-governance-enforcement.md
 introduced_in_plan: phase220-override-escalation
 ```
+
+```yaml
+term: gate ladder row
+definition: 'One row of the Step 4.6 gate ladder table in qor-substantiate/SKILL.md, carrying a step id, gate name, command or commands, halt policy, the field it records in the seal entry, and notes. Phase 222 (GH #327) replaced ten prose step blocks with ten rows so the ladder ordering, completeness, and halt vocabulary became machine-checkable. Parsed by qor.scripts.substantiate_gates.parse_ladder; the policy vocabulary is closed to ABORT, WARN, and disclose, because an open vocabulary lets a fail-closed gate become advisory by typo.'
+home: qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
+referenced_by:
+  - qor/scripts/substantiate_gates.py
+  - qor/scripts/compliance_conformance.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
+introduced_in_plan: phase222-seal-ladder-as-data
+```
+
+```yaml
+term: ladder preamble
+definition: 'The fenced block above the Step 4.6 gate ladder table that derives SESSION_ID and PLAN_PATH once for every row and validates the table before any row runs. Phase 222 (GH #327) introduced it so the shared derivations have one home rather than one per step, and so a malformed ladder ABORTs before half-executing. The validation must precede the table it checks; a validation running downstream of its subject cannot halt anything.'
+home: qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
+referenced_by:
+  - qor/scripts/substantiate_gates.py
+  - qor/skills/governance/qor-substantiate/SKILL.md
+  - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
+introduced_in_plan: phase222-seal-ladder-as-data
+```
