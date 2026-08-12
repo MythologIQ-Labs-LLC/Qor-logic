@@ -10,6 +10,19 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 223 (feature; citation evidence as truth)**: closes GH #330. `plan_grep_lint` has checked since Phase 125 that a Locked Decision citing sealed infrastructure *carries* a grep-evidence statement. It never checked that the statement was true. A plan reached audit last phase citing `-> 39:` against an actual line 42, and this lint — the enforcer of exactly that discipline — returned exit 0. The countermeasure was satisfied in form by the artifact that violated it in substance.
+
+  **A `file:line` citation's evidence is now resolved and compared.** `parse_evidence_statements` turns the prose into `EvidenceStatement(ref, path, line, observed)`; `resolve_line` reads `git show <ref>:<path>` at the revision the statement names — not HEAD — or the working tree when no ref is given; `reproduces` compares stripped text. Three findings, because three different things go wrong: `unpaired-citation`, `evidence-unresolvable` (an environment that cannot answer is not an answer that is wrong), `evidence-not-reproducible`.
+
+  **Pairing is per citation, not per block.** The prior rule satisfied an entire Locked-Decision region whenever any single statement appeared in it, so one true statement covered every citation beside it. A region with one true statement and three citations at `:999`, `:12345` and `:4` produced zero findings; it now produces three.
+
+  **The lint states its own ceiling where it reports.** `plan-grep-lint: N citation(s) truth-checked [file:line]; presence-only kinds not verified [migration filename, git show <ref>:<path>]`. Neither presence-only kind carries a line to resolve, so both keep the block-level rule. A test parses those two lists out of the doctrine and runs the CLI, asserting they agree — a doctrine that drifts from the shipped classification fails, and so does a reclassification that skips the doctrine.
+
+  **On this phase's own plan: five distinct citations truth-checked, zero findings.** Iteration 1 offered that same command as self-validation over an empty subject set.
+
 ## [0.145.0] - 2026-08-12
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

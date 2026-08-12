@@ -1,6 +1,6 @@
 # Plan: Grep-evidence truth check (GH #330)
 
-**iteration**: 4 (amends iter-3 per ledger #572 VETO)
+**iteration**: 5 (amends iter-4 per ledger #573 VETO)
 
 **change_class**: feature
 
@@ -254,11 +254,16 @@ own content, which is why Open Question 1's fixture is the sole coverage for it.
     `qor/skills/governance/qor-substantiate/SKILL.md` line 250 returns
     `### Step 4.6.5: Secret-scanning gate (Phase 56 wiring)` at `6424413` and a
     ladder table row at `2d356ec`. The `2d356ec` half was verified by the independent
-    reviewer; the `6424413` half by the Judge's own shell run during the
-    iteration-2 audit, recorded at line 170 of
-    `.agent/staging/phase223-iter1-AUDIT_REPORT.md`. The reviewer explicitly
-    declined to assert the ancestor half, and iteration 3 credited it anyway
-    (#572 A1). Note the structural gap this sits in (#571 A5): it is a
+    reviewer, which explicitly declined to assert the ancestor half. The
+    `6424413` half rests on one command, stated inline rather than by citation:
+    `git show 6424413:qor/skills/governance/qor-substantiate/SKILL.md | sed -n '250p'`
+    returns `### Step 4.6.5: Secret-scanning gate (Phase 56 wiring)`. Iteration 4 cited "line 170 of
+    `.agent/staging/phase223-iter1-AUDIT_REPORT.md`" as the record; that line is
+    a gate-table row and the quoted string appears in that file zero times
+    (#573 V1). The false citation was inherited from the iteration-2 audit
+    report, which had attributed the output of one command in a compound
+    invocation to the other command's file. Inlining the command removes the
+    dependency on any record surviving. Note the structural gap this sits in (#571 A5): it is a
     `path:line:revision -> exact text` claim on a `.md` path, which is outside
     `_FILE_LINE_RE`'s extension set, so this plan's own machinery will never
     check it. The test is its only guard. Two revisions, one path, one line, materially
@@ -270,14 +275,19 @@ own content, which is why Open Question 1's fixture is the sole coverage for it.
   - `test_reproduces_compares_stripped_text`: indentation differences between the
     quoted observation and the file line pass; a changed token fails.
 
-- `tests/fixtures/evidence_*.md` — NEW. Five Locked-Decision regions: `true`
+- `tests/fixtures/evidence_*.md` — NEW. Seven Locked-Decision regions: `true`
   (statement reproduces), `false_line` (right path, wrong line), `unresolvable`
   (path absent at ref), `unpaired` (citation with no statement of its own beside
   a sibling that has one), `block_level_gap` (LD-2's experiment: one true
   statement plus three citations at `:999`, `:12345`, and `:4`), and
-  `duplicate_citation` (`foo.py:12` three times against one statement, plus
-  `foo.py:97` once, so both the dedup and the do-not-over-merge assertions have a
-  subject).
+  `duplicate_citation` (`foo.py:12` three times against one paired statement --
+  post-dedup count **1**), and `distinct_lines_same_file` (`foo.py:12` and
+  `foo.py:97`, each paired -- post-dedup count **2**).
+
+  Two fixtures, not one. Iteration 4 declared a single `duplicate_citation`
+  carrying both `foo.py:12` and `foo.py:97` while its test asserted a count of 1
+  over it; a fixture holding both pairs counts 2, so the two assertions could not
+  both hold (#573 V2).
 
 ### Affected Files
 
@@ -339,8 +349,9 @@ compares `observed.strip()` against that line stripped.
     not 3, and findings are zero. Fails if dedup is absent, which is the only
     assertion in the suite that can distinguish a correct implementation from one
     reporting the raw occurrence count (#572 V1).
-  - `test_dedup_does_not_merge_distinct_lines_in_one_file`: a fixture citing
-    `foo.py:12` and `foo.py:97`, each paired, reports **2**. Guards the inverse --
+  - `test_dedup_does_not_merge_distinct_lines_in_one_file`: the
+    `distinct_lines_same_file` fixture, citing `foo.py:12` and `foo.py:97` each
+    paired, reports **2**. Guards the inverse --
     a dedup keyed on path alone would collapse them and pass the test above.
   - `test_the_ceiling_names_both_truth_checked_and_presence_only_kinds`: running
     the CLI over the `false_line` fixture writes both classifications to

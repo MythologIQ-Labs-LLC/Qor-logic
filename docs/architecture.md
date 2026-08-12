@@ -148,6 +148,41 @@ request. Revision comparison is string equality, never git ancestry --
 `intent_lock` keeps its Phase 43 ancestry tolerance and the two are not folded
 together. Contract: `qor/references/doctrine-execution-continuity.md`.
 
+## Citation evidence as truth (Phase 223; GH #330)
+
+`plan_grep_lint` has checked since Phase 125 that a Locked Decision citing sealed
+infrastructure *carries* a grep-evidence statement. It never checked that the
+statement was true, and a plan reached audit with `-> 39:` against an actual line
+42 and passed the lint that exists to prevent exactly that (ledger #565).
+
+| Unit | Responsibility |
+|---|---|
+| `parse_evidence_statements(block)` | grep-evidence prose to `EvidenceStatement(ref, path, line, observed)`; a statement carrying no `<line>:<text>` observation does not parse |
+| `resolve_line(stmt, repo_root)` | reads the named revision via `git show <ref>:<path>`, or the working tree when `ref` is absent; `None` when unresolvable |
+| `reproduces(stmt, repo_root)` | stripped comparison of the observed text against the resolved line |
+| `check_citation_evidence(text, ...)` | per-citation pairing; `unpaired-citation`, `evidence-unresolvable`, `evidence-not-reproducible` |
+| `count_truth_checked(text, ...)` | distinct `(path, line)` pairs actually verified |
+
+Pairing is per citation, not per block. The prior rule satisfied a whole
+Locked-Decision region whenever any single statement appeared in it, so one true
+statement covered every citation beside it.
+
+Two reductions, kept separate: citations lying inside a parsed statement are
+excluded by span (otherwise every statement would demand a statement), and the
+survivors are deduplicated by `(path, line)` so a restating table does not
+inflate the count. Span exclusion is span-based rather than path-based, so a
+prose citation to `foo.py:12` is still checked when a statement covers
+`foo.py:97`.
+
+Truth-checked kinds: `file:line`. Presence-only kinds: `migration filename`,
+`git show <ref>:<path>` -- neither carries a line to resolve, so both keep the
+legacy block-level presence rule. The lint states that ceiling on stderr where it
+reports, and `tests/test_doctrine_citation_pairing.py` binds the doctrine's
+stated classification to the shipped one by parsing one and executing the other.
+
+WARN-only, as `plan_grep_lint` has been since Phase 55; the binding VETO remains
+the `/qor-audit` Step 3 Infrastructure Alignment re-walk.
+
 ## Seal gate ladder as data (Phase 222; GH #327)
 
 Ten gate steps lived in `qor-substantiate/SKILL.md` as ten prose blocks, 6,194 B

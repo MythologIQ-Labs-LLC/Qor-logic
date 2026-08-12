@@ -17608,6 +17608,73 @@ Next: /qor-substantiate.
 **Next**: Phase 223's plan still carries its own two findings from ledger #573.
 
 
+### Entry #578: GATE TRIBUNAL -- Phase 223 plan iter-5 (PASS)
+
+**Timestamp**: 2026-08-12T14:00:00Z
+**Phase**: GATE (Phase 223)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `c489e32c95a2`
+**Plan**: docs/plan-qor-phase223-grep-evidence-truth.md (iteration 5)
+**Session**: `2026-08-12T0214-799d77`
+**Mode**: adversarial -- Option B independent reviewer
+
+**Content Hash**: `8dd51ccc18f2e2c2985c78a431c1491925de2800f914453e679e855fd471b6b6`
+**Previous Hash**: `18fd440aa7b86eb00ac0d8a2505e34923c82567c272a7951dd741c3442220c6e`
+**Chain Hash (Merkle seal)**: `c8bd9f37454030ab46584164f67b07e33e477763aad8741465b1b0a9e7da583a`
+
+**Verdict**: **PASS** at iteration 5, after four plan VETOs. /qor-implement unblocked.
+
+**V1 CLOSED, AND MY WORRY ABOUT THE FIX WAS BACKWARDS.** The false citation to "line 170 of the iter-1 audit report" is replaced by the command stated inline. I asked whether that evaded F4's provenance contract, since the claim now carries no pointer to where it was verified. The reviewer inverted it correctly: a pointer to another artifact's record IS the inherited form F4 says must be re-run or marked, and an inline command asserted by this artifact is the executed form F4 wants. Treating a pointer as provenance is exactly the assumption that failed twice on this one claim -- iteration 3 attributed it to "the iteration-2 audit," iteration 4 pointed at line 170, both pointers, both wrong, the underlying fact true throughout. Every record it pointed at has since been rewritten. The string "line 170" survives only inside the sentence reporting the defect, which is the right disposition: deleting it would erase the record rather than the error.
+
+**V2 CLOSED WITH NO KNOCK-ON.** Split into duplicate_citation (foo.py:12 x3, one distinct pair, count 1) and distinct_lines_same_file (foo.py:12 + foo.py:97, count 2). The reviewer walked the fixture-to-test mapping across all thirteen Phase 2 tests: the split removed foo.py:97 from duplicate_citation and no test other than the one that moved depended on it.
+
+**ONE FINDING CARRIED FORWARD RATHER THAN FIXED.** The fixture block declares "Six" and enumerates seven; plan-iter6.json carries the same six, so both surfaces agree with each other and disagree with the list. It originated in iteration 4 -- which said Five and listed six -- and iteration 5 applied a plus-one to a base already off by one. Carried rather than fixed because editing after the verdict would bind this PASS to a document it did not audit, the verdict_reconcile digest problem this phase already hit once. Also carried: the clause "re-run unchanged at every audit since," a pointer-free historical claim with nothing checkable behind it.
+
+**THE REVIEWER CALLED THE STOPPING POINT, WITH A CRITERION RATHER THAN A MOOD.** Asked to say plainly if another round stopped earning its cost, it said yes. Its record: no count has mandated in eleven rounds. What has mandated -- false citations, figures that do not reproduce, undeclared surface, a rule with no test, a fixture contradiction, an event closing on absent coverage, a coverage assertion contradicting its own repudiation. And a cost argument that is not sentiment: iteration 4 introduced a false citation WHILE fixing a misattribution, and iteration 5's count error came from iteration 4's edit, so each editing pass has carried a non-trivial chance of introducing a new defect. Its own assessment is that the calculus flipped around iteration 4 and it should have said so then. Restart criterion, checkable: a citation that does not reproduce, a DoD criterion that cannot be met as written, a declared surface omitting a file the change touches, or a new behavioral rule with no test.
+
+**Gates**: lint ladder 6/6 clean at zero warnings; verdict_reconcile 0 findings; five-distinct/ten-raw re-verified; D2, D4 and the CI command agree; all LD statements re-executed; eighteen behavioral test descriptions with no presence-only remaining.
+
+**Next**: /qor-implement against iteration 5, carrying the fixture count and the unverifiable clause into the pass that builds the fixtures.
+
+
+### Entry #579: IMPLEMENTATION -- Phase 223 grep-evidence truth
+
+**Timestamp**: 2026-08-12T15:00:00Z
+**Phase**: IMPLEMENT (Phase 223)
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `b8c8ad72511e`
+**Plan**: docs/plan-qor-phase223-grep-evidence-truth.md (iteration 5)
+**Session**: `2026-08-12T0214-799d77`
+
+**Content Hash**: `6f1585209262c7aa7d3352457143dac5ac9b5429ba796db24f3b016821423d65`
+**Previous Hash**: `c8bd9f37454030ab46584164f67b07e33e477763aad8741465b1b0a9e7da583a`
+**Chain Hash (Merkle seal)**: `0a364b1686e21cbadd4352c9b13822c0bd9e988ac5fc091db57f25e60650c4af`
+
+**Decision**: The citation check reads truth, not shape. Full suite 2956 passed / 6 skipped, twice; up 26 from the 2930 baseline.
+
+**THE PLAN NOW PASSES ITS OWN CHECK WITH A REAL NUMBER.** `plan-grep-lint: 5 citation(s) truth-checked [file:line]; presence-only kinds not verified [migration filename, git show <ref>:<path>]`, zero findings. Iteration 1 of this plan offered that same command as self-validation over an empty subject set (ledger #565 V3, candidate SG-VacuousSelfValidation-A). It now reports five distinct locations and states its own ceiling in the same line.
+
+**TDD HELD THROUGHOUT.** Ten Phase 1 tests red, then green. Thirteen Phase 2 tests red, then green. Two Phase 3 tests red, then green. No implementation preceded its test.
+
+**THE FIXTURES CAUGHT AN ESCAPING LAYER I HAD NOT COUNTED.** Written through a heredoc, `\b` in the quoted source line became a literal backspace (0x08), so the observed text differed from the file by an invisible character and two tests failed on content that looked identical. Repaired by re-deriving each fixture's observed text FROM the source line at the pinned revision rather than by retyping it -- the same generate-not-assert discipline the plan applies to its own token set.
+
+**ALL SEVEN DECLARED ASSERTIONS SURVIVED, EXACTLY AS THE PLAN'S TABLE PREDICTED.** tests/test_plan_grep_lint_citation_evidence.py -- the suite iteration 1 omitted and #571 V2 made it declare -- passes unchanged, including test_no_finding_when_evidence_present, whose survival depends on the block-level presence rule continuing to use the legacy `_EVIDENCE_RE` rather than the new parser. That dependency was declared at #572 V3 and is now load-bearing in code.
+
+**THE TWO CARRIED ITEMS ARE CLOSED.** The fixture block said Six and enumerated seven; corrected to Seven. The clause "re-run unchanged at every audit since" -- a pointer-free historical claim with nothing checkable behind it -- is dropped.
+
+**DEDUP AND SPAN EXCLUSION ARE SEPARATE REDUCTIONS AND THE CODE SAYS SO.** `_demand_set` drops citations lying inside a parsed statement, without which every statement would demand a statement, and then deduplicates by (path, line) so a restating table does not inflate the count. On this plan the second does the work: ten raw occurrences reduce to five distinct locations, and the span rule is exercised only by the fixtures.
+
+**THE DOCTRINE AND THE SHIPPED CLASSIFICATION ARE BOUND TO EACH OTHER.** test_the_lint_ceiling_matches_the_doctrine_kinds parses the truth-checked and presence-only kind lists out of the amended P1 paragraph, runs the CLI, and asserts agreement. A doctrine edit that drifts from the code fails it; so does a code change that reclassifies without amending the doctrine. Iteration 3 of the plan proposed asserting the paragraph merely contained certain wording, which #571 F11 established could not fail on a behavior break.
+
+**THE AMENDED DOCTRINE STATES THE GAP IT DOES NOT CLOSE.** Artifacts with no Locked-Decision heading -- audit reports, remediation proposals -- are outside the scanned region entirely, recorded as a known gap rather than a satisfied contract.
+
+**Gates**: full suite 2956/6 twice; ruff clean; doc_integrity strict 0; prose_test_lint --enforce 0 (61 exempted); publication_boundary_lint 0 at structural+identity; self-validation 5 truth-checked / 0 findings; intent_lock captured clean at implement entry.
+
+**Next**: /qor-substantiate.
+
+
 ---
 
 *Chain integrity: VALID*

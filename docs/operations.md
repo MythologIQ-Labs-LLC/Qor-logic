@@ -232,6 +232,35 @@ Lint a declaration:
 qor-logic scripts plan_continuity_lint --artifact .qor/gates/<session>/plan.json
 ```
 
+## Verifying plan citations (Phase 223; GH #330)
+
+```bash
+qor-logic scripts plan_grep_lint --plan docs/plan-<name>.md --repo-root .
+```
+
+Runs at `/qor-audit` Step 0.6, WARN-only. Since Phase 223 it resolves each
+`file:line` citation's evidence statement against the revision the statement
+names and reports when the observed text does not reproduce.
+
+The last stderr line states what was actually verified:
+
+```
+plan-grep-lint: 5 citation(s) truth-checked [file:line]; presence-only kinds not verified [migration filename, git show <ref>:<path>]
+```
+
+Read the count. Zero truth-checked on a plan full of citations means the
+statements did not parse, not that they were verified -- a statement must carry
+its observation in `-> <line>:<text>` form to be resolvable at all.
+
+Three findings distinguish three different failures. `unpaired-citation`: the
+citation has no evidence statement of its own. `evidence-unresolvable`: the path
+or line could not be read at the named revision -- an environment that cannot
+answer, not an answer that is wrong; a shallow clone produces these.
+`evidence-not-reproducible`: the line was read and its text differs from what the
+plan claims.
+
+`--repo-root` must point at a clone containing the revisions the plan pins.
+
 ## Checking installed skill drift (Phase 217; GH #314)
 
 ```bash

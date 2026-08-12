@@ -1491,3 +1491,23 @@ referenced_by:
   - qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md
 introduced_in_plan: phase222-seal-ladder-as-data
 ```
+
+```yaml
+term: evidence statement
+definition: 'A grep-evidence line parsed into a resolvable value: an optional revision, a path, a line number, and the observed text right of the NN: prefix. Phase 223 (GH #330) introduced it so a citation can be checked for truth rather than only for presence. A statement carrying no NN: observation satisfies the legacy shape predicate and is deliberately not parsed, because it carries nothing a truth check can resolve. Comparison strips both sides, so indentation does not fail a true citation. Parsed by qor.scripts.plan_grep_lint.parse_evidence_statements; resolved by resolve_line against the revision it names rather than against HEAD.'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/scripts/plan_grep_lint.py
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase223-grep-evidence-truth
+```
+
+```yaml
+term: unpaired citation
+definition: 'A file:line citation inside a Locked-Decision region with no evidence statement naming the same path and line. Before Phase 223 (GH #330) one statement anywhere in the region satisfied every citation in it, so a plan could carry citations backed by nothing beside one that was backed. The demand set excludes citations lying inside a parsed statement, since otherwise every statement would demand a statement, and is deduplicated by (path, line) so a restating table does not inflate the reported count.'
+home: qor/references/doctrine-shadow-genome-countermeasures.md
+referenced_by:
+  - qor/scripts/plan_grep_lint.py
+  - qor/references/doctrine-shadow-genome-countermeasures.md
+introduced_in_plan: phase223-grep-evidence-truth
+```
