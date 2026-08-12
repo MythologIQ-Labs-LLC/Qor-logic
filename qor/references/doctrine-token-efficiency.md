@@ -50,6 +50,29 @@ The full doctrine lives here. `CLAUDE.md` references this doc and lists only the
 | Subagent for trivial work | subagent overhead > value | Subagent only for >5 file reads or >2 distinct queries |
 | Verbose checkpoint summaries | undoes the whole checkpoint pattern | <100 words always |
 
+## What progressive disclosure cannot buy (Phase 222 research; GH #327)
+
+Relocating prose out of a `SKILL.md` reduces the measured artifact only when the
+destination remains a file the harness loads at execution time. Two controls walk
+`qor/skills/**/SKILL.md` directly and bound every remedy:
+
+- `qor/scripts/skill_size_budget_lint.py` measures `st_size` on each `SKILL.md` found
+  by `rglob`, against `WARN_BYTES = 25 * 1024` and `EXCEEDED_BYTES = 40 * 1024`.
+- `qor/scripts/install_drift_check.py` compares each `SKILL.md` byte-for-byte against
+  the operator's installed counterpart.
+
+Together these close a loop on any composition scheme. Whatever a build step emits must
+land as a single `SKILL.md` under `qor/skills/`, because that is the file the operator
+installs and the file the drift check compares -- so the size lint measures the composed
+output and the size is unchanged. Keep the fragment outside that file instead, and the
+harness never loads it.
+
+A gate relocated somewhere no reader reaches has traded coverage for bytes. Phase 221
+observed this in the live corpus: an execution-continuity gate sat at 92 percent of the
+seal skill, after the templates, and an operator running the ladder in order stepped
+past it every time. Treat reachability, not byte count, as the acceptance test for a
+disclosure pass.
+
 ## Verification
 
 - `wc -l CLAUDE.md` should return <60.

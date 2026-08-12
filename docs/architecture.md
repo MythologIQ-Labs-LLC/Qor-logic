@@ -148,6 +148,33 @@ request. Revision comparison is string equality, never git ancestry --
 `intent_lock` keeps its Phase 43 ancestry tolerance and the two are not folded
 together. Contract: `qor/references/doctrine-execution-continuity.md`.
 
+## Seal gate ladder as data (Phase 222; GH #327)
+
+Ten gate steps lived in `qor-substantiate/SKILL.md` as ten prose blocks, 6,194 B
+of a file holding 24 B under its test-enforced headroom bound. Three consecutive
+phases each paid a relocation round to fit one new step, and Phase 221 found that
+one of those relocations had left a fail-closed gate at a position no reader
+reached.
+
+| Module | Responsibility |
+|---|---|
+| `qor/scripts/substantiate_gates.py` | `parse_ladder()` over the Step 4.6 table; `required_gates()`; `check_prereq_consistency()` against the Step Prerequisites table; `extract_ladder_tokens()` for relocation fidelity |
+
+The blocks were already regular -- heading, prerequisite, a sentence, a fenced
+command, a rationale pointer -- so the table was the shape they already had. Row
+order is document order, the halt policy is a closed vocabulary
+(`ABORT | WARN | disclose`), and a malformed row raises rather than being
+skipped, because a parser that drops rows quietly is a control that cannot fire.
+
+The ladder preamble validates the table before executing any row, so
+`substantiate_gates` has a ceremony consumer and not only a CI one.
+
+**Composition was considered and rejected.** `skill_size_budget_lint` and
+`install_drift_check` both walk `qor/skills/**/SKILL.md`, so a composed output
+would be the governed and measured file, and a fragment kept outside it would
+never be loaded by the harness. Ledger #564 records the analysis; GH #327 carries
+it.
+
 ## Installed skill-corpus drift (Phase 217; GH #314)
 
 `qor-logic install` writes a copy of each `SKILL.md` into the host's skills

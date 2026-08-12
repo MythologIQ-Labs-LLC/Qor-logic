@@ -96,9 +96,12 @@ SUBST_INVARIANTS = [
     "Step 7.8 gate-chain completeness check -> `|| ABORT`",
     "Constraints section at file foot",
 ]
+# Phase 222 (GH #327): the 4.6.x sub-steps became rows of one table, so their
+# spine token is the row prefix rather than a heading. Same steps, same order,
+# asserted from the location the ceremony now reads.
 SUBST_STEPS = [
-    "### Step 4.6:", "### Step 4.6.5:", "### Step 4.6.8:", "### Step 4.6.9:",
-    "### Step 4.6.10:", "### Step 4.7:", "### Step 4.7.5:", "### Step 7.5:",
+    "### Step 4.6:", "| 4.6.5 |", "| 4.6.8 |", "| 4.6.9 |",
+    "| 4.6.10 |", "### Step 4.7:", "### Step 4.7.5:", "### Step 7.5:",
     "### Step 7.6:", "### Step 7.8:", "### Step 9.5.5:", "### Step 9.7:",
 ]
 SUBST_COMMANDS = [

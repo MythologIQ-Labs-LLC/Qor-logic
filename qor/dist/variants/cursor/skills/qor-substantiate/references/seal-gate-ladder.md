@@ -328,3 +328,89 @@ The recorded `boundary_scope` distinguishes `structural` from
 mean different things; a seal that does not say which one it got is not evidence
 about identity terms.
 
+
+---
+
+## Per-step detail displaced by the Phase 222 table migration (GH #327)
+
+Phase 222 collapsed the ten Step 4.6.x prose blocks into one machine-readable
+table. The Notes column carries only what changes execution; everything the
+prose blocks explained lives here. Nothing was deleted, only relocated -- a
+property `tests/test_seal_ladder_tokens_survived.py` proves against the pinned
+pre-rewrite revision rather than against a hand-written list.
+
+**4.6 reliability sweep.** Three interdictions run sequentially; non-zero exit
+aborts substantiation. `qor-logic reliability intent_lock verify` re-verifies the
+lock captured at `/qor-implement` Step 5.5 and fails on plan, audit, or HEAD
+drift. `qor-logic reliability skill_admission qor-substantiate` confirms the
+current skill is registered with well-formed frontmatter.
+`qor-logic reliability gate_skill_matrix` confirms every `/qor-*` handoff
+reference resolves to a real skill. `qor-logic scripts session_id_lint || true`
+is the Phase 106 WARN-only convention lint that catches fall-through to
+`default`. Any ABORT leaves the session unsealed; the operator resolves the
+drift -- re-audit, re-admit, or fix the broken handoff -- and re-runs.
+
+**4.6.5 secret_scanner.** Pre-seal scan over staged content, ABORTing on any
+detected secret. Closes OWASP LLM06 and NIST AI 600-1 section 2.10. The Cedar
+`has_hardcoded_secrets` attribute and the gitleaks-v8 findings schema are
+described above in this file.
+
+**4.6.6 procedural_fidelity.** Static-analysis pass over the implement-gate
+`files_touched` set. WARN-only: deviations append severity-2 events and do not
+abort. Catches the doc-surface coverage gap. Four-class deviation catalog and
+remediation: `qor/references/doctrine-procedural-fidelity.md`.
+
+**4.6.7 dod_check.** WARN-only structural check that the plan's
+`## Definition of Done` section is well-formed. V1 enforces presence only.
+`PLAN_PATH` is argv-only per SG-Phase47-A. Tier contract and finding classes are
+described above (`SG-DoDImplicit-A`).
+
+**4.6.8 merge_velocity_check.** Fail-closed throttle on stabilization-capacity
+strain from `origin/main`'s recent merge history. Exits 0 on `healthy` and
+`strained`, 1 on `exceeded`; Phase 129 removed the `|| true`. To seal during a
+deliberate high-velocity window, re-run with `--override`, which logs a
+`gate_override` shadow event carrying
+`details.gate = merge_velocity_check`. `--shared-core-path` patterns add
+shared-surface signals. Originating recurrence and `SG-MergePaceThrottle-A` are
+described above.
+
+**4.6.9 skill_size_budget_lint.** WARN-only per-skill size-budget lint over
+`qor/skills/**/SKILL.md`, WARN at 25 KB and EXCEEDED at 40 KB. Does not abort;
+the CLI exits 1 on any EXCEEDED finding. Corpus-growth history and
+`SG-SkillCorpusGrowth-A` are described above. This is one of the two controls
+that made composition unworkable as a size remedy: it measures the file that
+ships, so a composed artifact would measure the same.
+
+**4.6.10 data_api_acl_lint.** Fail-closed on blocking findings `missing-grant`
+and `definer-view`; `security-definer-fn` is advisory. Escapes are
+`-- qor:service-role-only` and `-- qor:definer-view-intended reason: ...`.
+No-SQL-migration repos print `SKIP:` and exit 0, a disclosed-skip that records
+SKIP and emits `gate_skipped_prerequisite_absent`. Full contract:
+`qor/references/doctrine-runtime-principal-fidelity.md`.
+
+**4.6.12 execution-continuity receipt gate.** Applies when the plan declares
+`execution_continuity`. Requires a verification receipt bound to the EXACT
+implementation revision; a stale-revision receipt ABORTs. Provider prose and
+status badges are not receipts. `verified`, `rejected`, and `inconclusive` stay
+distinct outcomes, and `inconclusive` is not `skip`. Reference artifacts by path
+and digest, and record the pinned contract version. Separation of acceptances,
+and why conformance is asserted rather than verified, are described above.
+
+**4.6.13 install_drift_check.** Records `skill_corpus` -- digest, scope, drift
+count -- in the gate artifact and the seal entry. Disclosure, not ABORT: the
+skill running the check is part of the corpus under test, so an ABORT wired
+inside it would be unreliable by construction. Enforcement is tracked at GH #320.
+This is the second control that made composition unworkable: it compares
+`qor/skills/**/SKILL.md` byte-for-byte against the operator's installed copy, so
+whatever a build step emits must land there as a single file.
+
+**4.6.14 publication_boundary_lint.** Runs AFTER Step 9.5 staging so this phase's
+new files are visible; the audit-time run predates them. Untracked files are
+scanned. Records `boundary_scope` as `structural` or `structural+identity`,
+because CI cannot load the identity overlay and an unqualified zero means less
+there.
+
+**4.6.11 is absent by decision.** Phase 221 (ledger #563) found that GH #314 had
+been filed against text that existed only in an operator's installed copy. The
+gap in the numbering is the record of that, and closing it would erase the
+evidence that a gate was once declared and never existed.

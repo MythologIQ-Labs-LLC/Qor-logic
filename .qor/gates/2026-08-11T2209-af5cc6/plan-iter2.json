@@ -1,7 +1,7 @@
 {
   "phase": "plan",
   "session_id": "2026-08-11T2209-af5cc6",
-  "ts": "2026-08-12T00:05:44Z",
+  "ts": "2026-08-11T23:53:19Z",
   "plan_path": "docs/plan-qor-phase222-seal-ladder-as-data.md",
   "change_class": "feature",
   "doc_tier": "system",
@@ -34,15 +34,14 @@
     "Does doc_integrity term-drift fire on the Policy column vocabulary? Verify before audit, not at seal."
   ],
   "phases": [
-    "Phase 1: the parser and its contract -- qor/scripts/substantiate_gates.py (parse_ladder, required_gates, extract_ladder_tokens, __main__ entry point), tests/test_substantiate_gates_parser.py, tests/test_substantiate_gates_prereq_consistency.py, four tests/fixtures/seal_ladder_*.md",
-    "Phase 2: rewrite the ladder as the table -- qor/skills/governance/qor-substantiate/SKILL.md (preamble parses before executing), its references/seal-gate-ladder.md, tests/test_substantiate_gates_ceremony_wiring.py, tests/test_seal_ladder_order.py, tests/test_seal_ladder_tokens_survived.py, and the retargeted guardrail test files",
+    "Phase 1: the parser and its contract -- qor/scripts/substantiate_gates.py, tests/test_substantiate_gates_parser.py, tests/test_substantiate_gates_prereq_consistency.py, tests/fixtures/seal_ladder_{complete,row_removed,malformed}.md",
+    "Phase 2: rewrite the ladder as the table -- qor/skills/governance/qor-substantiate/SKILL.md, its references/seal-gate-ladder.md, tests/test_seal_ladder_order.py, tests/test_seal_ladder_tokens_survived.py, and the 10 retargeted guardrail test files",
     "Phase 3: headroom acceptance and doc surfaces -- tests/test_substantiate_staging_gates.py, qor/references/glossary.md, docs/GOVERNANCE_INDEX.md"
   ],
   "feature_inventory_touches": [],
   "ci_commands": [
-    "python -m pytest tests/test_substantiate_gates_parser.py tests/test_substantiate_gates_prereq_consistency.py tests/test_substantiate_gates_ceremony_wiring.py tests/test_seal_ladder_order.py tests/test_seal_ladder_tokens_survived.py -q",
+    "python -m pytest tests/test_substantiate_gates_parser.py tests/test_substantiate_gates_prereq_consistency.py tests/test_seal_ladder_order.py tests/test_seal_ladder_tokens_survived.py -q",
     "python -m pytest -q",
-    "python -m qor.scripts.prose_test_lint --tests-dir tests --enforce",
     "python -m qor.scripts.doc_integrity --repo-root . --strict",
     "python -m qor.scripts.skill_size_budget_lint --skills-root qor/skills",
     "python -m qor.scripts.install_drift_check --host claude --scope auto",
@@ -55,6 +54,6 @@
     "host": "claude-code",
     "model_family": "claude",
     "human_oversight": "absent",
-    "ts": "2026-08-12T00:05:44Z"
+    "ts": "2026-08-11T23:53:19Z"
   }
 }

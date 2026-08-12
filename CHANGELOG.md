@@ -10,6 +10,22 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.145.0] - 2026-08-12
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 222 (feature; seal gate ladder as data)**: closes GH #327. The ten Step 4.6.x gate steps in `qor-substantiate/SKILL.md` were ten hand-written prose blocks — 6,194 B of a file holding **24 B** under its test-enforced headroom bound. Three consecutive phases each paid a relocation round to fit a single new step, and each resolution made the next one harder.
+
+  **The ladder is now one table.** Step id, gate, command, halt policy, recorded field, notes. Row order is document order; the halt vocabulary is closed to `ABORT | WARN | disclose`, because an open vocabulary lets a fail-closed gate go advisory by typo; a malformed row raises rather than being skipped, because a parser that drops rows quietly is a control that cannot fire. `qor/scripts/substantiate_gates.py` parses it, and the ladder preamble validates the table **before** running any row.
+
+  **Composition — the obvious remedy — does not work, and the issue said it did.** `skill_size_budget_lint` and `install_drift_check` both walk `qor/skills/**/SKILL.md`. Whatever a build step emits must land there as a single file, because that is what the operator installs and what the drift check compares — so the size lint measures the composed output and the size is unchanged. Keep the fragment outside that file instead and the harness never loads it, which is the Phase 221 defect made structural. Recorded at ledger #564 and on GH #327.
+
+  **39,912 B → 37,153 B; 24 B of slack → 2,783 B.** The plan declared a 3,000 B floor and the rewrite reached 2,783; the shortfall is disclosed in `test_ladder_rewrite_left_usable_slack` and the seal entry rather than closed by trimming content four guardrail tests read. The floor exists to unblock GH #286, which the plan sized at ~1,600 B for this file.
+
+### Fixed
+- **A wiring test asserted the opposite of the shipped posture for 93 phases.** `test_step_4_6_8_invokes_merge_velocity_check` required `"|| true" in section` under the message "missing '|| true' WARN-only contract". Phase 129 (GH #153) made that gate fail-closed and removed the `|| true`. The test kept passing because the sentence *documenting the removal* contains the literal `|| true`. The token matched while the property was false. Now asserts `|| ABORT` and the row's `ABORT` policy.
+
 ## [0.144.0] - 2026-08-11
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

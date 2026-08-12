@@ -1594,4 +1594,93 @@ Second observation; promote to a structured countermeasure on a third.
 
 ---
 
+## 2026-08-11 -- Evidence in the shape of a run that was never run
+
+**Phase**: 222 (GH #327), VETO
+
+### Findings
+
+The Phase 222 plan's LD-2 -- the decision that retires option A of GH #327, and
+the load-bearing claim of the whole phase -- presented this:
+
+```
+grep -n 'rglob("SKILL.md")' qor/scripts/skill_size_budget_lint.py
+-> 39:    for skill in sorted(skills_root.rglob("SKILL.md")):
+```
+
+The construct is at line 42. Line 39 holds `if not skills_root.is_dir():`. The
+number was read off an unnumbered `sed -n '25,50p'` window earlier in the
+session, miscounted, and then written out in `grep -n` form -- a format that
+asserts the command was executed.
+
+Two of the three citations in the same evidence set DO reproduce
+(`install_drift_check.py:24`, `substantiate_capability.py:45`). That is what made
+the block persuasive to its own author on re-reading: it is mostly true.
+
+`plan_grep_lint` -- the Phase 125 enforcer of exactly this discipline -- returned
+exit 0 on the plan. It checks that a Locked Decision citing sealed infrastructure
+**carries** a grep-evidence statement. It does not re-execute the grep. The
+countermeasure was satisfied in form by the artifact that violated it in
+substance.
+
+The wrong line number had already propagated to two published artifacts before
+the audit caught it: the research brief that ledger #564 is content-hash-bound
+to, and a comment posted to GH #327.
+
+### Root Cause Analysis
+
+`SG-CitationDrift-A` (Phase 72) catalogues the *absent* citation: an LD that
+cites sealed infrastructure with no grep-evidence at all. Its countermeasure P1
+requires the evidence statement, and P2 makes a missing one a VETO. Both are
+presence checks.
+
+An absent citation announces itself. A transcribed one does not -- it reads
+exactly like an executed one, because the format is the only signal and the
+format is what gets typed. The discipline that was supposed to ground a claim in
+observation became a template to fill in from memory.
+
+This is the same shape the repository has been finding all week in its own
+controls, turned on its evidence practice: `SG-InertControl-A` (a control wired
+so it cannot fire), the #319 family (records asserting properties nothing
+checks), `SG-GrepAbsenceAsIntegrationAbsence-A` (grep absence read as an absent
+control). Here the record asserts a property -- "this grep was run" -- that
+nothing checks.
+
+Aggravating factor: the author had, in the same session, written a research
+brief whose central recommendation was to re-verify entry #559's unmeasured
+36-of-54 count precisely because it had been carried three phases without
+re-measurement. The lesson was stated and then not applied to the artifact
+stating it.
+
+### Pattern to Avoid
+
+Writing evidence in the format of a command's output without running the command
+in that form. If a line number appears in a citation, it must come from a run
+that printed that line number -- `grep -n`, not a window plus arithmetic.
+
+Do not treat a satisfied presence-lint as verification. `plan_grep_lint` exit 0
+means an evidence block exists; it means nothing about whether the block is
+true. A lint that checks for the ritual cannot check the observation the ritual
+stands for.
+
+When a phase's argument rests on one citation, re-execute that citation last,
+immediately before submission, and paste the output rather than typing it.
+
+### Pattern ID
+
+Transcribed evidence. Candidate SG family entry if it recurs:
+`SG-TranscribedEvidence-A` -- a grep-evidence statement authored in the format of
+executed output without being executed in that form, satisfying the
+presence-checking citation lint (`plan_grep_lint`) while being false, and
+propagating into downstream artifacts before any consumer re-executes it.
+Distinct from `SG-CitationDrift-A`, which is the *absent* citation and which this
+plan formally complied with. Remedy candidate for a future phase: extend
+`plan_grep_lint` from "an evidence block is present" to "the cited `file:line`
+carries the quoted text", which is mechanically checkable for the `file:line`
+citation kind. Enforcer: none yet -- caught by manual re-execution at
+`/qor-audit` Step 3 Infrastructure Alignment. First observation; promote to a
+structured countermeasure on a second.
+
+---
+
 *Shadow integrity: ACTIVE*

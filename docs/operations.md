@@ -23,6 +23,7 @@ The `qor-logic` CLI is the primary install/operation surface. Subcommands:
 | Command | Purpose |
 |---|---|
 | `python -m qor.scripts.doc_integrity_drift_report` | Phase 31 wiring. Runs Check Surface D + E in lenient mode against the live repo; writes a Markdown drift report to stdout grouped by term. Operator triage tool; not wired into the seal flow. |
+| `python -m qor.scripts.substantiate_gates` | Phase 222 wiring (GH #327). Parses the Step 4.6 gate ladder table in `qor-substantiate/SKILL.md` and validates row order, command presence, and the closed halt-policy vocabulary. Exit 0 = ladder well-formed; exit 1 = a row is unusable (stderr names the step). Invoked by the ladder preamble at seal time, ahead of the rows it checks. `--skill` defaults to the canonical seal-skill path. |
 | `python -m qor.scripts.install_drift_check --host claude --scope repo` | Phase 32 wiring. SHA256-compares source `qor/skills/**/SKILL.md` against the installed copies at `.claude/skills/**/SKILL.md`. Exit 0 = clean; exit 1 = drift detected (stdout names mismatches + `qor-logic install` hint). Invoked by `/qor-plan` Step 0.2 as a pre-phase nudge. |
 
 All subcommands accept `--scope {repo,global}` (default `repo`); this determines whether the install/uninstall/init writes to the project directory or to the user's home directory.

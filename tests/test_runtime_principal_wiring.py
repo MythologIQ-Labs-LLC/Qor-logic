@@ -27,7 +27,9 @@ def test_substantiate_has_runtime_principal_gate() -> None:
 
 def test_substantiate_invokes_data_api_acl_lint() -> None:
     text = SUBSTANTIATE.read_text(encoding="utf-8")
-    m = re.search(r"data_api_acl_lint.{0,200}\|\|\s*ABORT", text, re.DOTALL)
+    # Phase 222: unescape the table cell before matching the shell operator.
+    m = re.search(r"data_api_acl_lint.{0,200}\|\|\s*ABORT",
+                  text.replace(r"\|", "|"), re.DOTALL)
     assert m, "data_api_acl_lint invocation must be followed by || ABORT (fail-closed)"
 
 
