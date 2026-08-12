@@ -17538,6 +17538,76 @@ Next: /qor-substantiate.
 **Next**: OPERATOR DECISION. The escalator recommends /qor-remediate while remediation is in progress. Continuing to iteration 4 is two small fixes plus the amendments above; the alternative is treating the fire as a hard stop and widening scope. I recommend the former and am not acting on that recommendation, per the same self-assessment the operator correctly overrode at the fourth plan VETO.
 
 
+### Entry #576: GATE TRIBUNAL -- Phase 223 remediation iter-4 (VETO)
+
+**Timestamp**: 2026-08-12T12:00:00Z
+**Phase**: GATE (Phase 223, remediation)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `72891de413bd`
+**Target**: docs/remediation-phase223-detector-blind-spots-2026-08-12.md (iteration 4)
+**Session**: `2026-08-12T0214-799d77`
+**Mode**: adversarial -- Option B independent reviewer
+
+**Content Hash**: `655ce16e99458026911225e47bd613f2609b3257a6ff4510172d9a93385b8fd1`
+**Previous Hash**: `72c55aee49bb9c537ee70287861c43edd2d78e68176772b761d01cc543c16573`
+**Chain Hash (Merkle seal)**: `75125bcc5a0ecea44d57cfffc53081b2f0f92a06ba2f4246eabd204915a5a59b`
+
+**Verdict**: **VETO** -- specification-drift. One finding. Four events stay pending.
+
+**FIRST ITERATION WITH NO FALSE CLAIM ABOUT THE CODEBASE.** No unreproducible figure, no misattributed citation. The blocker is one sentence asserting coverage the proposal set does not have.
+
+**V1: AN EVENT WOULD HAVE CLOSED ON A FIX NO PROPOSAL CONTAINS.** The document said the silent-fire absence "belongs to Finding 5's family and is proposed with it." Read across all six proposed_changes: none adds event emission to cycle_count_escalator. F5 reconciles a classifier that reads events which exist; it does nothing about a detector that never writes one. Event 061d81569eee sits in events_addressed, so a PASS would have flipped it to addressed asserting the silent-fire gap remediated. It is not. Exactly the shape correctly diagnosed for F4's cannot-automate one iteration earlier, landing this time in the Process Shadow Genome itself.
+
+**MY OWN FIRST CHECK WAS WRONG AND THE REVIEWER WAS RIGHT.** A grep appeared to find an emission clause; it had matched the word "emit" inside a RATIONALE describing the absence, not a change field proposing a fix. Re-reading the two change fields confirmed the finding. A crude grep produced a false negative on a finding about a false assertion of coverage.
+
+**THE TRANSCRIPTION DISAGREEMENT RESOLVES AGAINST ME, IN PART, AND THE REVIEWER SUPPLIED THE FALSIFIER.** I held SG-TranscribedEvidence-A at four, arguing the Counter was executed and true. Record 5 carries ts 03:56:15Z; proposal iteration 2 was authored before it, so its 3/3/2 was true when written -- TOCTOU, as I argued. But iteration 3 carried the figure forward without re-running, by which time five records existed. That is transcription. Both, sequentially: honest origin, dishonest propagation. Conceded at FIVE, with the distinction recorded rather than flattened.
+
+**R1'S STABILITY CLAIM WAS TOO STRONG.** Iteration 4 said the four plan audits are "a closed set that no future audit alters." Entry #572 was amended during this phase, by this process. The amendment touched narrative prose and not the Verdict line the count reads, so the fix survives -- but the true claim is detectability, not immunity. Narrowed.
+
+**THREE RECURRENCES, ALL COUNT RESTATEMENTS.** Sixth consecutive round of a count corrected at one site and not its restatements: the gate artifact's F5 change field said (2) while its own rationale said three -- and the payload is the machine-readable field that drives the flip; "Two consequences" followed by three items; "Three events were appended" while events_addressed carries four. The reviewer's observation is worth keeping: these are now all count restatements rather than false claims about the world, which is a real narrowing from rounds one through four.
+
+**ITERATION 5 RESOLVES V1** by the better of the two offered routes -- an emission clause in F2's proposal, in both document and change field, serving three findings at once: durable fire for this detector, the same guarantee for F1's repaired one, and the event type F5's classifier has no pattern for.
+
+**Report**: .agent/staging/phase223-remediation-iter4-AUDIT_REPORT.md. **Next**: review pass on iteration 5.
+
+
+### Entry #577: GATE TRIBUNAL -- Phase 223 remediation iter-6 (PASS); two-stage flip completed
+
+**Timestamp**: 2026-08-12T13:00:00Z
+**Phase**: GATE (Phase 223, remediation)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `bea17795a6c8`
+**Target**: docs/remediation-phase223-detector-blind-spots-2026-08-12.md (iteration 6)
+**Session**: `2026-08-12T0214-799d77`
+**Mode**: adversarial -- Option B independent reviewer
+
+**Content Hash**: `b62e6656bc5b2afeb96c7e6f2494cb098be03b731658f9ffe4a23a0afa491111`
+**Previous Hash**: `75125bcc5a0ecea44d57cfffc53081b2f0f92a06ba2f4246eabd204915a5a59b`
+**Chain Hash (Merkle seal)**: `18fd440aa7b86eb00ac0d8a2505e34923c82567c272a7951dd741c3442220c6e`
+
+**Verdict**: **PASS** after seven rounds. Four shadow events flipped to addressed.
+
+**THE REVIEWER STATED THE RESULT POSITIVELY.** It checked the four defect classes this phase produced -- false claims about the codebase, figures that do not reproduce, events closing on absent coverage, and corrections left stale at a restatement -- and found none. That is a verification, not a failure to find something. V1-bis closed: grep for the repudiated sentence returns 0, replaced with a true attribution rather than deleted, because the sentence made a claim about where the fix lives and that question now has an answer.
+
+**AND THE FLIP ITSELF PRODUCED A NEW DEFECT OF THE SAME FAMILY.** mark_addressed takes ONE closure_enforcer per call. I passed qor.scripts.cycle_count_escalator for all four events, but they map to different findings: detector silence to F1, the false citation to F3/F4, the reviewer toolset to F6, the silent escalator fire to F2 clause (2). Three of four now carry an enforcer that is not theirs.
+
+**AND IT CANNOT BE CORRECTED THROUGH THE SANCTIONED API.** _flip_event_fields applies its overlay only `if event["id"] in target and not event["addressed"]`, so a re-flip with the right enforcer returns 0 flipped for every one. The field is frozen at first write. Verified by attempting all four corrections and observing 0, 0, 0, 0. The only remaining paths are a hand-edit of the shadow log -- which is precisely the move that broke remediate-iter5's provenance an hour earlier and which I am not repeating -- or a forward-only correcting event. Left as-is and recorded.
+
+**SO THE TWO-STAGE FLIP HAS NO CORRECTION PATH**, and a batch closing several findings at once gets a uniformly wrong enforcer attribution with no remedy. That is a seventh finding for this proposal's own subject matter, discovered by executing it. It belongs to Finding 5's family -- a governance record asserting a property nothing checks -- and is filed rather than folded in, since the proposal has passed and amending a passed artifact to add a finding it did not carry would be its own defect.
+
+**THE ITER5 PROVENANCE BREAK IS CONDITIONAL, NOT CLOSED.** remediate-iter5.json was hand-edited on disk, bypassing write_gate_artifact and therefore schema validation and the Phase 158 binding: sidecar payload_sha256 3e476db8 against actual 4dd31fad. I then cited gate_provenance verify-committed returning OK for 54 sessions as reassurance -- true and non-responsive, since that command walks COMMITTED artifacts and iter5 is untracked. The reviewer named it the same shape as everything else this phase produced: a verification cited as reassurance whose scope excludes its subject. Sixth instance, first on a claim about my own error rather than the code. Deadline is the next commit, not the flip. The singleton remediate.json binding is intact and mirrors iter6, so removing the iter5 pair would not disturb it. Deletion is destructive and deferred to the operator.
+
+**ON F6, FOR THE RECORD.** Across seven rounds the reviewer found this phase's highest-severity findings with Read and Grep and no execution. Asked what it actually needed it named one primitive -- revision-scoped file reads -- and declined a general shell and the ability to run tests, on the grounds that a green suite is exactly the kind of thing it would be tempted to accept in place of reading. Its own assessment: that capability would have changed three checks and none of the verdicts. F6's remedy should name the primitive and record why the rest would make the instrument worse.
+
+**Gates**: audit-iter8.json PASS with reviews_remediate_gate set to remediate-iter6.json; mark_addressed validated the enforcer and the review-pass artifact before mutating; 4 flipped, 0 missing; ledger chain verified through #577.
+
+**DISPOSITION OF THE ITER5 PAIR: HELD OUT OF THE COMMIT, NOT DELETED.** Three options were put to the operator and the third was chosen. Deleting the pair was verified safe on the two dependencies the reviewer checked -- _max_iteration is a pure max over a glob, so with iter5 absent latest still resolves iter6 and the next emission is iter7; and gate_chain_completeness keys on the unversioned singleton, its only 'iter' occurrence being the regex method finditer. But a third dependency neither of us had checked makes deletion a trade rather than a fix: audit-iter7.json, the iteration-4 VETO, carries reviews_remediate_gate pointing at remediate-iter5.json. Deleting the pair leaves that field dangling -- the same defect the reviewer named when it required the sidecar and payload be removed together, one level up. Consequence for the flip is nil, since _verify_review_pass_artifact reads only the artifact passed to it and the completed flip used audit-iter8 against remediate-iter6. So the pair stays on disk and out of the commit: no governance artifact is destroyed, no reference is dangled, and verify-committed keeps a true clean result because its domain genuinely excludes the file. The evidence survives here regardless of the artifact -- sidecar 3e476db8 against actual 4dd31fad, cause and correction both recorded above.
+
+**Next**: Phase 223's plan still carries its own two findings from ledger #573.
+
+
 ---
 
 *Chain integrity: VALID*

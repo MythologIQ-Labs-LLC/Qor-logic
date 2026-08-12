@@ -1,6 +1,6 @@
 # Remediation Proposal — Phase 223 detector blind spots
 
-**iteration**: 3 (amends iter-2 per the reviewer's F1 supplement; VETO stands at ledger #574)
+**iteration**: 5 (amends iter-4 per ledger #576 VETO)
 
 **Date**: 2026-08-12
 **Governor**: The Qor-logic Governor
@@ -51,19 +51,29 @@ $ python -c "...parse_phase_audit_counts(ledger)"
 ```
 
 Every `No repeated-VETO pattern detected in the last 2 sealed phases` line — the
-three I wrote in this phase's audit reports, and every seal for roughly 196
-phases — was produced by a detector that has not seen an audit entry in 487
-ledger entries. `SG-InertControl-A`, inside the control whose job was to catch
+three I wrote in this phase's audit reports, and every **audit report** for
+roughly 196 phases (`render_advisory_text` fills the audit-time Process Pattern
+Advisory slot, not a seal-time one) — was produced by a detector that has not seen an audit entry since #86. `SG-InertControl-A`, inside the control whose job was to catch
 what produced this remediation.
 
 **This is a missed consumer, not an unnoticed convention change.** Two sibling
 ledger parsers know the current label; one does not:
 
+Grep-evidence, executed 2026-08-12 at `2d356ec`. Paired on Finding 4's grounds --
+an evidence statement asserts execution by the artifact carrying it, and these
+three were unmarked through iteration 4:
+
 ```
-qor/reliability/seal_entry_check.py:38   r"(GATE TRIBUNAL|IMPLEMENTATION|SESSION SEAL)"
-qor/scripts/meta_ledger_walker.py:91     if "AUDIT" in label or "GATE TRIBUNAL" in label or ...
-qor/scripts/veto_pattern.py:50           elif entry_type == "AUDIT":
+git show 2d356ec:qor/reliability/seal_entry_check.py | grep -nE 'GATE TRIBUNAL' -> 38:    r"(GATE TRIBUNAL|IMPLEMENTATION|SESSION SEAL)"
+git show 2d356ec:qor/scripts/meta_ledger_walker.py | grep -nE 'GATE TRIBUNAL' -> 91:    if "AUDIT" in label or "GATE TRIBUNAL" in label or "SESSION SEAL" in label or "SEAL" in label:
+git show 2d356ec:qor/scripts/veto_pattern.py | grep -nE 'entry_type == .AUDIT.' -> 50:        elif entry_type == "AUDIT":
 ```
+
+The pairing satisfies the contract Finding 3 proposes and remains **unenforced**
+by it: `_ld_blocks` requires a Locked Decisions or Citation Inventory heading,
+this document has neither, and no remediation proposal will. So this block is a
+worked example of the design fork rather than an instance of the gap -- the
+obligation is met for a reader while the enforcement question stays open.
 
 **And the write side and read side are the same skill.**
 `qor/skills/governance/qor-audit/SKILL.md:557` instructs: "add GATE TRIBUNAL entry
@@ -94,22 +104,58 @@ synthetic-fixture suite cannot catch a format divergence by construction, which 
 the whole lesson. The parser fix alone restores accurate reporting on history that
 no longer needs escalating.
 
-**Closure enforcer**: `qor.scripts.veto_pattern`
+**Closure enforcers**: `qor.scripts.veto_pattern` and
+`tests/test_veto_pattern_detector.py`
+
+Two, because step (3) — the test binding the detector to the real ledger — is the
+part of this remedy that prevents recurrence, and the entire mechanism of the
+failure was a synthetic suite passing green over a dead parser for 196 phases. A
+single module enforcer would leave the anti-recurrence step unguarded.
 
 ## Finding 2 — the recurrence was there, at threshold, twice
 
 Iteration 1 said "no two alike, so neither detector fired." That is true of
 signature *sets* and false as a diagnosis. Per category:
 
+Counted over **the four plan audits, ledger #570 through #573** — a fixed set of
+named entries, not a live file:
+
 ```
-$ python -c "...Counter over audit_history.jsonl findings_categories"
+#570  infrastructure-mismatch, specification-drift, test-failure
+#571  specification-drift, test-failure
+#572  test-failure
+#573  infrastructure-mismatch, specification-drift
+
+specification-drift 3   test-failure 3   infrastructure-mismatch 2
 ESCALATION_THRESHOLD = 3
-  specification-drift: 3   <-- AT THRESHOLD
-  test-failure: 3          <-- AT THRESHOLD
-  infrastructure-mismatch: 2
 ```
 
-Two categories reached the escalation threshold exactly. The failure did not
+Two categories reached the threshold exactly.
+
+**Why the source is named this way.** Iterations 2 and 3 cited a `Counter` over
+`.qor/gates/<sid>/audit_history.jsonl`. That file is append-only and `/qor-audit`
+writes to it, so each review of this document invalidated the figure the document
+carried: iteration 2 printed 3/3/2 over 4 records (correct when executed, ledger
+#575 V1), the review pass appended a fifth and made it 4/3/3, and drafting this
+correction to say 4/3/3 was itself invalidated by the iteration-3 verdict
+appending a sixth, which reads 5/3/4.
+
+Three successive figures, each true when run, each falsified by the act of
+reviewing the document asserting it. Re-execution discipline does not fix this;
+the source does. **The verdict-category lines of these four named entries are stable, and the
+range is written explicitly so any drift is detectable by re-reading them.** The
+stronger claim iteration 4 made — that no future audit alters them — is false by
+this phase's own conduct: entry #572 was amended mid-phase (META_LEDGER.md:17404).
+That amendment touched narrative prose, not the `**Verdict**:` line the count
+reads, so the fix survives; but the accurate statement is detectability, not
+immunity. This moves the evidence from a source the *checking* process mutates to
+one the *authoring* process can amend, which is a large improvement and not a
+wash.
+
+That is the concrete form of Finding 4's obligation, and the clearest instance
+this phase produced of evidence over a source the checking process mutates.
+
+On the categories themselves: the failure did not
 mutate — two thirds of it repeated. What dissolved the repetition is
 `findings_signature.compute_record`, which hashes the sorted category *set* into
 one opaque token, so three occurrences of `specification-drift` land in three
@@ -125,9 +171,54 @@ detector layer that was both live and at threshold during Phase 223.
 exactly on `ESCALATION_THRESHOLD = 3`, dissolved only by set-hashing. It is the
 single place a working escalation could have come from.
 
-**Proposal (gate).** Count per category alongside per signature-set in
-`cycle_count_escalator.check_session_total`. That would have fired at iteration 4
-on `specification-drift` reaching 3, using existing plumbing and no new module.
+**Proposal (gate), two clauses.** (1) Count per category alongside per
+signature-set in `check_session_total` — that would have fired at iteration 4 on
+`specification-drift` reaching 3, using existing plumbing and no new module.
+(2) **Emit a `repeated_veto_pattern` event on fire.** `cycle_count_escalator`
+references neither `shadow_process` nor `append_event`, so a fire is a return
+value and nothing more. Clause (2) serves three findings at once: it makes this
+detector's fire durable, it gives Finding 1's repaired detector the same
+guarantee, and it supplies Finding 5's classifier the event type it has no
+pattern for.
+
+Iteration 4 asserted this absence "belongs to Finding 5's family and is proposed
+with it." **It was not.** F5's proposal reconciles a classifier pattern set — it
+reads events that exist and does nothing about a detector that never writes one.
+A sentence asserted coverage the proposal set did not contain, and the event
+recording the fire would have closed on it (#576 V1). That is the shape correctly
+diagnosed for F4's `cannot-automate` one iteration earlier, landing this time in
+the Process Shadow Genome itself.
+
+**Current state, and the detector has since fired on its own.**
+`findings_signature.compute_record` sorts the category set, so the iteration-4
+plan verdict and the iteration-1 remediation verdict — `{infrastructure-mismatch,
+specification-drift}` in either order — hash identically to `ebde687b6b884205`.
+The iteration-3 remediation verdict carried the same pair, taking
+`stall_walk.run` to a streak of **3** against `ESCALATION_THRESHOLD = 3`:
+
+```
+$ python -c "...stall_walk.run(sid); cce.check(sid); cce.check_session_total(sid)"
+streak: (3, 'ebde687b6b884205', ...)
+check():               EscalationRecommendation(suggested_skill='/qor-remediate', escalation_reason='cycle-count', cycle_count=3)
+check_session_total(): EscalationRecommendation(suggested_skill='/qor-remediate', escalation_reason='session-total', cycle_count=3)
+```
+
+So the premise "no two alike" holds for the four plan audits and is false across
+the session as it now stands. Three consequences worth recording:
+
+1. **This is the only signal any detector in this layer produced during the whole
+   phase**, and it confirms this finding empirically rather than by argument. The
+   categories were not selected to produce it — choosing a different set to stay
+   under threshold would have been gaming a detector inside a remediation about
+   detectors that do not fire.
+2. **The fire leaves no trace of its own.** `cycle_count_escalator` references
+   neither `shadow_process` nor `append_event`; it returns a recommendation and
+   emits nothing. The one detector fire of the phase would have been a return
+   value discarded at end of call. The event was appended by hand. That absence
+   is closed by this finding's own clause (2), not by Finding 5.
+3. **It recommends a skill already in progress.** `suggested_skill` is
+   `/qor-remediate` while remediation is the current phase. The escalator has no
+   representation for that state.
 
 **Closure enforcer**: `qor.scripts.cycle_count_escalator`
 
@@ -171,9 +262,34 @@ check in all three of its forms:
 | either artifact, `.md` path | `_FILE_LINE_RE` is `\b[\w./-]+\.(?:py\|ts\|tsx\|sql\|rs\|go\|js):\d+\b` — `.md` is not in the set |
 
 Verified: `report.md:170` and `.agent/staging/...AUDIT_REPORT.md:170` both return
-`False` against that pattern. So the remedy must extend the **artifact surface**,
-the **citation form** (two-line transcript, prose-separated path), and the
-**extension set** — not the surface alone.
+`False` against that pattern. So the remedy must extend three axes, not one:
+
+| axis | what it must cover |
+|---|---|
+| artifact class | plans, audit reports, **and remediation proposals** |
+| citation form | two-line shell transcript, prose-separated path |
+| extension set | `.md` alongside the code extensions |
+
+The artifact-class axis was self-caught during pre-verification of iteration 3:
+this document carries three matchable `file:line` citations with zero evidence
+statements, and F3 as then drafted widened to plans and audit reports only. The
+document arguing that audit reports escape the contract escaped it itself, one
+class over.
+
+**A second gap survives the artifact-class fix.** `_ld_blocks` scans for
+`^#+\s.*(locked decision|citation inventory)`; this document has no such heading
+and no future remediation proposal will, because the form has no Locked
+Decisions. So `check_citation_evidence` would no-op on a widened surface exactly
+as it does now. Either the region-scoping assumption changes for artifact classes
+with no LD convention, or remediation proposals gain a Citation Inventory
+section. That is a design fork and it belongs here rather than in the implementing
+phase's lap.
+
+**And one form no static widening reaches.** A compound invocation whose output is
+attributed to the wrong member — real command, real line number, real quoted
+text, false file — is well-formed by every check above. Only re-execution catches
+it, which is why F4's mechanism is automatable and why F3 and F4 share an
+enforcer.
 
 **Closure enforcer**: `qor.scripts.plan_grep_lint`
 
@@ -193,11 +309,22 @@ execution by the artifact carrying it, and an inherited citation must be re-run 
 marked as inherited. The mechanism is a design question for the implementing
 phase; naming the obligation is this proposal's job.
 
-**Closure enforcer**: `cannot-automate: the distinction between an executed and a transcribed citation is not recoverable from artifact text alone; it requires either a re-run at authoring time or an explicit inherited-from marker, and which of those to build is the implementing phase's decision rather than this proposal's`
+**Closure enforcer**: `qor.scripts.plan_grep_lint`
+
+Iteration 3 used `cannot-automate` here. That was a deferral wearing an
+impossibility's clothes (#575 V2): the justification named two mechanisms, both
+automatable — a re-run at authoring time, which is exactly what Phase 223's
+`reproduces()` does, and an inherited-from marker, which is a presence lint. The
+tell was the clause "which of those to build is the implementing phase's
+decision," which is *not-yet-decided*, not cannot-automate. An event closed under
+that form flips to `addressed` with no executable guard, which is
+`SG-InertControl-A` one layer up, inside the proposal that promotes
+`SG-InertControl-A`. F3 and F4 are the same mechanism family and share an
+enforcer.
 
 ## Finding 5 — the remediation classifier cannot see five of its own event types
 
-Three events were appended for this session; one classified.
+Four events were appended for this session; one classified.
 
 Schema enum has 11 types. `remediate_pattern_match.PATTERN_RULES` references six.
 Without a classifier pattern: **degradation, repeated_veto_pattern,
@@ -210,8 +337,14 @@ references the group's events. Five, not four.
 Finding-1 detector would reach a classifier with no pattern for it.
 
 **Three** Shadow Genome candidates stand past the thresholds their own entries
-set: `SG-TranscribedEvidence-A` at four observations,
-`SG-VacuousSelfValidation-A` at two, and `SG-InertControl-A` --
+set: `SG-TranscribedEvidence-A` at **five** observations — the
+`audit_history.jsonl` figure resolves as both, sequentially: iteration 2 of this
+proposal executed the Counter over the four records then extant and printed a
+true `3/3/2` (record 5 carries `ts 03:56:15Z`, later than that authoring), which
+is time-of-check/time-of-use; iteration 3 then carried the figure forward without
+re-running it, by which time five records existed, and that is transcription. The
+origin was honest and the propagation was not, so it counts —
+`SG-VacuousSelfValidation-A` at **three**, this document's own artifact-class escape being the third, and `SG-InertControl-A` --
 `docs/SHADOW_GENOME.md:1395` reads "Candidate SG family entry if it recurs,"
 first observed at Phase 217. Finding 1 is that recurrence, and a cleaner instance
 than the original: the remediation that exists because a control could not fire
@@ -220,7 +353,7 @@ not fire.
 
 **Proposal (doctrine + gate).** Reconcile the classifier pattern set with the
 schema enum — a pattern per type, or a documented reason a type is deliberately
-non-actionable. Promote both SG candidates in the same pass.
+non-actionable. Promote all three SG candidates in the same pass.
 
 **Closure enforcer**: `qor.scripts.remediate_pattern_match`
 

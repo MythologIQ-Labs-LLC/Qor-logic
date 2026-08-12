@@ -1,7 +1,7 @@
 {
   "phase": "remediate",
   "session_id": "2026-08-12T0214-799d77",
-  "ts": "2026-08-12T05:06:24Z",
+  "ts": "2026-08-12T04:27:07Z",
   "events_addressed": [
     "8f9c5c6e6043bfef58f322af26324a782a5f198f0d558cc00fe06ee458b3cb32",
     "197cf9fa7fe77c7b671b2a929b43874ec7c152274927f8b145e68524fd3af51d",
@@ -16,8 +16,8 @@
     },
     {
       "target": "qor.scripts.cycle_count_escalator",
-      "change": "F2 (gate), two clauses: (1) count per category alongside per signature-set in check_session_total; (2) EMIT a repeated_veto_pattern event on fire -- cycle_count_escalator references neither shadow_process nor append_event, so a fire is a return value and nothing more. Clause (2) makes this detector's fire durable, gives F1's repaired detector the same guarantee, and supplies F5's classifier the event type it has no pattern for. closure_enforcer: qor.scripts.cycle_count_escalator",
-      "rationale": "Counted over the four plan audits, ledger #570-#573, a closed set no future audit alters. Per category: specification-drift 3, test-failure 3, infrastructure-mismatch 2, against ESCALATION_THRESHOLD 3. Two categories hit threshold exactly; findings_signature.compute_record hashes the sorted set into one token, scattering three occurrences into three buckets. With veto_pattern inert this is the ONLY detector that was both live and at threshold during Phase 223, which raises it to top priority. The detector has since fired on its own: the iteration-3 remediation verdict took stall_walk to a streak of 3 on signature ebde687b6b884205, and both check() and check_session_total() now recommend /qor-remediate. cycle_count_escalator emits no event of its own, so the fire was recorded by hand. Iteration 4 asserted the silent-fire absence 'belongs to Finding 5's family and is proposed with it'; it was not -- F5 reconciles a classifier that reads events that exist and does nothing about a detector that never writes one (#576 V1). The event recording the fire would have closed on coverage the proposal set did not contain."
+      "change": "F2 (gate): count per category alongside per signature-set in check_session_total. closure_enforcer: qor.scripts.cycle_count_escalator",
+      "rationale": "Counted over the four plan audits, ledger #570-#573, a closed set no future audit alters. Per category: specification-drift 3, test-failure 3, infrastructure-mismatch 2, against ESCALATION_THRESHOLD 3. Two categories hit threshold exactly; findings_signature.compute_record hashes the sorted set into one token, scattering three occurrences into three buckets. With veto_pattern inert this is the ONLY detector that was both live and at threshold during Phase 223, which raises it to top priority. The detector has since fired on its own: the iteration-3 remediation verdict took stall_walk to a streak of 3 on signature ebde687b6b884205, and both check() and check_session_total() now recommend /qor-remediate. cycle_count_escalator emits no event of its own, so the fire was recorded by hand."
     },
     {
       "target": "qor/references/doctrine-shadow-genome-countermeasures.md",
@@ -31,8 +31,8 @@
     },
     {
       "target": "qor.scripts.remediate_pattern_match",
-      "change": "F5 (gate + doctrine): reconcile the classifier pattern set with the schema enum -- a pattern per type or a documented reason a type is non-actionable. Promote THREE SG candidates: SG-TranscribedEvidence-A (5 obs), SG-VacuousSelfValidation-A (3), SG-InertControl-A (2). closure_enforcer: qor.scripts.remediate_pattern_match",
-      "rationale": "Five event types fall through classify: degradation, repeated_veto_pattern, gate_skipped_prerequisite_absent, governance-state-loss, and plan-replay (whose handler derives its own pattern with event_ids empty and never references the group). repeated_veto_pattern is the type veto_pattern emits, so even a repaired F1 detector reaches a classifier with no pattern for it. SG-InertControl-A at SHADOW_GENOME.md:1395 reads candidate-if-it-recurs, first observed Phase 217; Finding 1 is the recurrence. SG-VacuousSelfValidation-A stands at three, not two, this document's own artifact-class escape being the third. SG-TranscribedEvidence-A stands at five: the audit_history.jsonl figure resolves as both, sequentially -- proposal iteration 2 executed the Counter over the four records then extant and printed a true 3/3/2 (record 5 carries ts 03:56:15Z, later than that authoring), which is time-of-check/time-of-use; iteration 3 then carried it forward without re-running, by which time five records existed, and that is transcription."
+      "change": "F5 (gate + doctrine): reconcile the classifier pattern set with the schema enum -- a pattern per type or a documented reason a type is non-actionable. Promote THREE SG candidates: SG-TranscribedEvidence-A (4 obs), SG-VacuousSelfValidation-A (2), SG-InertControl-A (2). closure_enforcer: qor.scripts.remediate_pattern_match",
+      "rationale": "Five event types fall through classify: degradation, repeated_veto_pattern, gate_skipped_prerequisite_absent, governance-state-loss, and plan-replay (whose handler derives its own pattern with event_ids empty and never references the group). repeated_veto_pattern is the type veto_pattern emits, so even a repaired F1 detector reaches a classifier with no pattern for it. SG-InertControl-A at SHADOW_GENOME.md:1395 reads candidate-if-it-recurs, first observed Phase 217; Finding 1 is the recurrence. SG-VacuousSelfValidation-A stands at three, not two, this document's own artifact-class escape being the third. SG-TranscribedEvidence-A stays at four: the audit_history.jsonl figure was executed and true when run, and was invalidated by the review appending a record, which is a distinct time-of-check/time-of-use pattern."
     },
     {
       "target": "qor-audit Step 1",
@@ -46,6 +46,6 @@
     "host": "claude-code",
     "model_family": "claude",
     "human_oversight": "override",
-    "ts": "2026-08-12T05:06:24Z"
+    "ts": "2026-08-12T04:27:07Z"
   }
 }
