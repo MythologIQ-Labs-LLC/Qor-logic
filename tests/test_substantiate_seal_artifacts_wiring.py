@@ -29,7 +29,9 @@ def test_seal_artifact_regeneration_follows_the_step_that_verifies_the_entry_exi
     text = _read()
     write = re.search(r"seal_artifacts --write --phase", text)
     step_7_7 = re.search(r"^### Step 7\.7:", text, re.MULTILINE)
-    staging = re.search(r"^  git add CHANGELOG\.md", text, re.MULTILINE)
+    # Phase 229 (GH #337): the staging block's locator is the executable
+    # ceremony invocation, not the retired git-add enumeration.
+    staging = re.search(r"^  python -m qor\.scripts\.seal_stage", text, re.MULTILINE)
 
     assert write, "Step 7.7.5 must regenerate via 'seal_artifacts --write --phase ...'"
     assert step_7_7 and staging, "Step 7.7 and the staging block must both be present"

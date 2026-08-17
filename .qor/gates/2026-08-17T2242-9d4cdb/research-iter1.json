@@ -1,0 +1,51 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-17T2242-9d4cdb",
+  "ts": "2026-08-17T22:44:32Z",
+  "questions": [
+    "What does a seal commit actually contain?",
+    "Why is the enumerated fix infeasible?",
+    "What closes the rot class?"
+  ],
+  "findings": [
+    {
+      "id": "S1",
+      "claim": "Union of last six seal commits: 13 ceremony families; the documented block names 8; nine omissions measured (five from #337 plus README badge, pyproject bump, GOVERNANCE_INDEX advance, qor/dist recompile).",
+      "evidence": [
+        "git show --name-only over seal: commits",
+        "qor/skills/governance/qor-substantiate/SKILL.md:549-550"
+      ]
+    },
+    {
+      "id": "S2",
+      "claim": "Enumerated fix infeasible: slack-floor test requires >=2700 B under 39936; file at 37209 leaves 27 B.",
+      "evidence": [
+        "tests/test_substantiate_staging_gates.py::test_ladder_rewrite_left_usable_slack",
+        "os.path.getsize"
+      ]
+    },
+    {
+      "id": "S3",
+      "claim": "Structural fix: qor.scripts.seal_stage stages the ceremony set programmatically; Step 9.5 becomes one line (net-negative bytes); Phase 176 gate-dir prose test migrates to invocation binding + behavioral gate-dir coverage.",
+      "evidence": [
+        "docs/research-brief-seal-stage-2026-08-17.md",
+        "tests/test_substantiate_staging_gates.py:37-45"
+      ]
+    }
+  ],
+  "sources": [
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "tests/test_substantiate_staging_gates.py",
+    "git history (last six seal commits)",
+    "GH #337"
+  ],
+  "brief_path": "docs/research-brief-seal-stage-2026-08-17.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.149.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T22:44:32Z"
+  }
+}
