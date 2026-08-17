@@ -207,7 +207,7 @@ def test_mark_addressed_pending_flips_pending_only(tmp_path):
     upstream.write_text("", encoding="utf-8")
     with mock.patch.object(shadow_process, "LOCAL_LOG_PATH", local), \
          mock.patch.object(shadow_process, "UPSTREAM_LOG_PATH", upstream):
-        flipped, missing = rma.mark_addressed_pending(
+        flipped, missing, _skipped = rma.mark_addressed_pending(
             [e1["id"]], session_id="remediate-session-1"
         )
     assert flipped == 1
@@ -234,7 +234,7 @@ def test_mark_addressed_pending_routes_to_origin_file(tmp_path):
     _seed(upstream, [e_upstream])
     with mock.patch.object(shadow_process, "LOCAL_LOG_PATH", local), \
          mock.patch.object(shadow_process, "UPSTREAM_LOG_PATH", upstream):
-        flipped, missing = rma.mark_addressed_pending(
+        flipped, missing, _skipped = rma.mark_addressed_pending(
             [e_local["id"], e_upstream["id"]], session_id="route-session"
         )
     assert flipped == 2
@@ -259,7 +259,7 @@ def test_mark_addressed_pending_surfaces_missing_ids(tmp_path):
     fake_id = "d" * 64
     with mock.patch.object(shadow_process, "LOCAL_LOG_PATH", local), \
          mock.patch.object(shadow_process, "UPSTREAM_LOG_PATH", upstream):
-        flipped, missing = rma.mark_addressed_pending(
+        flipped, missing, _skipped = rma.mark_addressed_pending(
             [e_real["id"], fake_id], session_id="miss-session"
         )
     assert flipped == 1
@@ -443,7 +443,7 @@ def test_mark_addressed_success_path_sets_addressed_ts(tmp_path):
         _write_remediate_gate(remediate_gate, [e["id"]])
         audit_path = tmp_path / "audit.json"
         _write_audit_artifact(audit_path, verdict="PASS", reviews_gate=str(remediate_gate))
-        flipped, missing = rma.mark_addressed(
+        flipped, missing, _skipped = rma.mark_addressed(
             [e["id"]],
             session_id="s-success",
             review_pass_artifact_path=str(audit_path),

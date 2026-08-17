@@ -100,7 +100,7 @@ Invoke `qor/scripts/remediate_mark_addressed.py` with the **pending-stage** API:
 
 ```python
 from qor.scripts import remediate_mark_addressed as rma
-flipped, missing = rma.mark_addressed_pending(
+result = rma.mark_addressed_pending(  # MarkResult(changed, missing, skipped); Phase 230 (GH #341)
     proposal["addressed_event_ids"], session_id=sid
 )
 ```
@@ -127,7 +127,7 @@ This step is NOT called by `/qor-remediate`. It is executed by `/qor-audit` when
 
 ```python
 from qor.scripts import remediate_mark_addressed as rma
-flipped, missing = rma.mark_addressed(
+result = rma.mark_addressed(  # MarkResult(changed, missing, skipped); Phase 230 (GH #341)
     proposal["addressed_event_ids"],
     session_id=sid,
     review_pass_artifact_path=".qor/gates/<sid>/audit.json",

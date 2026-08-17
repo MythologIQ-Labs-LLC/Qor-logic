@@ -89,7 +89,7 @@ def test_unknown_mapping_ids_surface_in_missing(tmp_path, monkeypatch):
     writes = _shadow(monkeypatch, events)
     audit, gate = _attestation(tmp_path)
 
-    changed, missing = subject.mark_addressed(
+    changed, missing, _skipped = subject.mark_addressed(
         {
             "SG-A": "/qor-audit Step 4",
             "SG-GHOST": "/qor-audit Step 4",
@@ -107,6 +107,75 @@ def test_unknown_mapping_ids_surface_in_missing(tmp_path, monkeypatch):
     assert written["SG-A"]["closure_enforcer"] == "/qor-audit Step 4"
 
 
+# --- Phase 230 (GH #341): nothing-to-do stops reading as nothing-matched ----
+
+
+def test_already_addressed_batch_surfaces_in_skipped(tmp_path, monkeypatch):
+    """The #341 outcome, distinguishable at last: an all-already-addressed batch
+    is 'nothing to do', not 'nothing matched'."""
+    events = [{"id": "SG-A", "addressed": True}, {"id": "SG-B", "addressed": True}]
+    _shadow(monkeypatch, events)
+    audit, gate = _attestation(tmp_path)
+
+    result = subject.mark_addressed(
+        {"SG-A": "/qor-audit Step 4", "SG-B": "/qor-audit Step 4"},
+        session_id="phase230", review_pass_artifact_path=audit,
+        remediate_gate_path=gate, repo_root=tmp_path,
+    )
+
+    assert result.changed == 0
+    assert result.missing == []
+    assert result.skipped == ["SG-A", "SG-B"]
+
+
+def test_mixed_batch_partitions_changed_missing_skipped(tmp_path, monkeypatch):
+    events = [{"id": "SG-A", "addressed": False}, {"id": "SG-B", "addressed": True}]
+    _shadow(monkeypatch, events)
+    audit, gate = _attestation(tmp_path)
+
+    result = subject.mark_addressed(
+        {"SG-A": "/qor-audit Step 4", "SG-B": "/qor-audit Step 4",
+         "SG-GHOST": "/qor-audit Step 4"},
+        session_id="phase230", review_pass_artifact_path=audit,
+        remediate_gate_path=gate, repo_root=tmp_path,
+    )
+
+    assert result.changed == 1
+    assert result.missing == ["SG-GHOST"]
+    assert result.skipped == ["SG-B"]
+
+
+def test_corrective_noop_and_ineligible_surface_in_skipped(tmp_path, monkeypatch):
+    events = [
+        {"id": "SG-EQ", "addressed": True, "addressed_reason": "remediated",
+         "addressed_ts": "2026-01-01T00:00:00Z", "closure_enforcer": "/qor-audit Step 4"},
+        {"id": "SG-PEND", "addressed": False},
+    ]
+    _shadow(monkeypatch, events)
+    audit, gate = _attestation(tmp_path)
+
+    result = subject.correct_closure_enforcers(
+        {"SG-EQ": "/qor-audit Step 4", "SG-PEND": "/qor-audit Step 4"},
+        session_id="phase230", review_pass_artifact_path=audit,
+        remediate_gate_path=gate, repo_root=tmp_path,
+    )
+
+    assert result.changed == 0
+    assert sorted(result.skipped) == ["SG-EQ", "SG-PEND"]
+
+
+def test_pending_flip_surfaces_already_addressed_in_skipped(monkeypatch):
+    """LD-5: the pending path's guard is the legacy helper's own eligibility
+    test -- already-addressed events populate skipped."""
+    events = [{"id": "SG-A", "addressed": False}, {"id": "SG-B", "addressed": True}]
+    _shadow(monkeypatch, events)
+
+    result = subject.mark_addressed_pending(["SG-A", "SG-B"], session_id="phase230")
+
+    assert result.changed == 1
+    assert result.skipped == ["SG-B"]
+
+
 def test_corrective_repair_leaves_addressed_true(tmp_path, monkeypatch):
     """The repair changes the citation and nothing else: addressed stays true,
     the timestamp is untouched."""
@@ -120,7 +189,7 @@ def test_corrective_repair_leaves_addressed_true(tmp_path, monkeypatch):
     writes = _shadow(monkeypatch, events)
     audit, gate = _attestation(tmp_path)
 
-    changed, missing = subject.correct_closure_enforcers(
+    changed, missing, _skipped = subject.correct_closure_enforcers(
         {"SG-A": "/qor-audit Step 4"},
         session_id="phase226",
         review_pass_artifact_path=audit,

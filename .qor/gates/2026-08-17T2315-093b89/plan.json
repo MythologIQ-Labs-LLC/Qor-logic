@@ -1,0 +1,41 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-17T2315-093b89",
+  "ts": "2026-08-17T23:23:21Z",
+  "plan_path": "docs/plan-qor-phase230-mark-result-skipped-signal.md",
+  "phases": [
+    "Phase 1: Bind the distinguishable outcomes (tests first)",
+    "Phase 2: The result type and the deliberate caller updates"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q",
+    "qor-logic-plus scripts plan_text_consistency_lint --check docs/plan-qor-phase230-mark-result-skipped-signal.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase230-mark-result-skipped-signal.md --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "feature",
+  "boundaries": {
+    "limitations": [
+      "skipped does not sub-classify the guard reason"
+    ],
+    "non_goals": [
+      "no ordering/SG-032/flow changes",
+      "no compatibility shim"
+    ],
+    "exclusions": [
+      "GH #332",
+      "GH #320",
+      "GH #286"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.150.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T23:23:21Z"
+  }
+}

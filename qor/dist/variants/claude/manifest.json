@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-17T23:09:31Z",
+  "generated_ts": "2026-08-17T23:34:38Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -342,7 +342,7 @@
       "id": "qor-remediate",
       "source_path": "skills/qor-remediate/SKILL.md",
       "install_rel_path": "skills/qor-remediate/SKILL.md",
-      "sha256": "bb07b86918fefd0e53d6f30ab98cb0aaeefb9dd1d5caff2b01af7bb56e474649"
+      "sha256": "97c47f6fd3d59a5fc8e8676add4f5c251694235204a2a759d83f494ee8cd771f"
     },
     {
       "id": "qor-repo-audit",

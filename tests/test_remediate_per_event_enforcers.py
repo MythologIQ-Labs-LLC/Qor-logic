@@ -49,7 +49,7 @@ def test_mark_addressed_preserves_per_event_enforcers(tmp_path, monkeypatch):
     writes = _shadow(monkeypatch, events)
     audit, gate = _attestation(tmp_path)
 
-    changed, missing = subject.mark_addressed(
+    changed, missing, _skipped = subject.mark_addressed(
         {
             "SG-A": "/qor-substantiate Step 4.6",
             "SG-B": "/qor-audit Step 4",
@@ -109,7 +109,7 @@ def test_correct_closure_enforcers_repairs_only_citation(tmp_path, monkeypatch):
     writes = _shadow(monkeypatch, events)
     audit, gate = _attestation(tmp_path)
 
-    changed, missing = subject.correct_closure_enforcers(
+    changed, missing, _skipped = subject.correct_closure_enforcers(
         {"SG-A": "/qor-audit Step 4", "SG-B": "/qor-plan Step 2"},
         session_id="phase226",
         review_pass_artifact_path=audit,
@@ -130,7 +130,7 @@ def test_list_signature_remains_supported(tmp_path, monkeypatch):
     _shadow(monkeypatch, events)
     audit, gate = _attestation(tmp_path)
 
-    changed, missing = subject.mark_addressed(
+    changed, missing, _skipped = subject.mark_addressed(
         ["SG-A"],
         session_id="phase226",
         review_pass_artifact_path=audit,
