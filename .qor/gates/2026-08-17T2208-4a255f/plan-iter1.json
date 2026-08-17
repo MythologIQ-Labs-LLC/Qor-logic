@@ -1,0 +1,45 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-17T2208-4a255f",
+  "ts": "2026-08-17T22:11:11Z",
+  "plan_path": "docs/plan-qor-phase228-reviewer-toolset-declaration.md",
+  "phases": [
+    "Phase 1: Bind the contract's tokens (tests first)",
+    "Phase 2: Author the contract",
+    "Phase 3: Repoint the held closure citation"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q",
+    "qor-logic-plus scripts plan_text_consistency_lint --check docs/plan-qor-phase228-reviewer-toolset-declaration.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase228-reviewer-toolset-declaration.md --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "feature",
+  "boundaries": {
+    "limitations": [
+      "prose-enforced at dispatch; V1 disclosure posture"
+    ],
+    "non_goals": [
+      "no bridge/selection-rule changes",
+      "no escalator enhancements",
+      "no reopening of Phase 223 closures"
+    ],
+    "exclusions": [
+      "GH #332",
+      "GH #337",
+      "GH #320",
+      "GH #286",
+      "GH #341"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.148.1",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T22:11:11Z"
+  }
+}

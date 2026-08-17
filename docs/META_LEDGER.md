@@ -18321,5 +18321,100 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #602: RESEARCH BRIEF -- reviewer-toolset declaration
+
+**Timestamp**: 2026-08-17T22:09:58Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-17T2208-4a255f`
+
+**Content Hash**: `9ba92adb648cdc2e1250295392fdcfb597353d09134ee5085b600f7f962d9ed6`
+**Previous Hash**: `92b935f585845607e22ba558aea4f76eb1983558e427e2b7f6bb260062e15aee`
+**Chain Hash (Merkle seal)**: `83767ce20e88ad58a0da5c0d887e1694d96adc5f26ba379a3686c88e43f8bb3c`
+
+**Decision**: GH #342 held item two. The toolset-declaration contract (reviewer declares its toolset in its first response; the Judge may not pin a verification outside that set; the Mode line records the declaration) lands in references/adversarial-mode.md with a one-line anchor in SKILL.md Step 1 -- the skill file is at 38.5 KB against the 25 KB WARN band, so prose goes to the reference. Two wiring tests bind the tokens; the 7b2ed33a repointment to "/qor-audit Step 1" executes after green, same pattern as Phase 227, with repo-relative artifact paths per the #344 publication-boundary lesson. Side discovery recorded: statements cannot quote observed lines containing backticks post-normalization -- fold-in for the next plan_grep_lint phase.
+
+**Brief**: docs/research-brief-reviewer-toolset-declaration-2026-08-17.md. **Next**: /qor-plan (Phase 228).
+
+
+---
+
+### Entry #603: GATE TRIBUNAL -- Phase 228 reviewer-toolset declaration, iteration 1 (PASS)
+
+**Timestamp**: 2026-08-17T22:13:44Z
+**Phase**: GATE (Phase 228)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase228-reviewer-toolset-declaration.md (iteration 1)
+**Session**: `2026-08-17T2208-4a255f`
+**Mode**: adversarial -- independent reviewer with shell, git, and full repository file access (the declaration the contract under review mandates, made in this audit voluntarily)
+
+**Content Hash**: `211f1636f965530787237dd40b434b358a355d617cc02e2e07ab2a034b44e98d`
+**Previous Hash**: `83767ce20e88ad58a0da5c0d887e1694d96adc5f26ba379a3686c88e43f8bb3c`
+**Chain Hash (Merkle seal)**: `1bcbf36594cc3d2ee9e326104318dddc625ca2a4eed7d21407ba907b5cf197ad`
+
+**Verdict**: **PASS** -- first iteration, no mandating findings.
+
+**THE CONTRACT THAT GOVERNS THE REVIEWER WAS AUDITED BY THE REVIEWER.** Both LD anchors reproduce at v0.148.1 (chosen backtick-free per the normalization constraint the research surfaced); both wiring tests verified genuinely red by absence greps; the Step 1 region parse checked against the actual structure; the one-sentence SKILL.md discipline is structurally enforced -- 39,473 bytes against a 40,960 EXCEEDED bound whose dogfooding anchor test flips red on crossing. The three rules map one-to-one onto the Phase 223 recurrence: declaration at dispatch instead of iteration 4, no pinning outside the declared set with orchestrator re-execution as remedy, auditable Mode line.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-implement.
+
+
+---
+
+### Entry #604: IMPLEMENTATION -- Phase 228 reviewer-toolset declaration
+
+**Timestamp**: 2026-08-17T22:16:55Z
+**Phase**: IMPLEMENT (Phase 228)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase228-reviewer-toolset-declaration.md (iteration 1, PASS at entry #603)
+**Session**: `2026-08-17T2208-4a255f`
+
+**Content Hash** (5 files, concatenated): `258fe755540f272e91e3abdd9edba833443e40a7d2063dea5c806a5a89871bf5`
+**Previous Hash**: `1bcbf36594cc3d2ee9e326104318dddc625ca2a4eed7d21407ba907b5cf197ad`
+**Chain Hash (Merkle seal)**: `231ea1093513b3115a96cefaf08daf617708588f4be433d2649d1b1a8ad4ad1b`
+
+**Files**: qor-audit references/adversarial-mode.md (NEW Reviewer toolset declaration section, three rules), qor-audit SKILL.md (one anchor sentence, 39,687 bytes -- WARN band held, 1,273 under EXCEEDED), tests/test_reviewer_toolset_wiring.py (NEW, 2 wiring tests), CHANGELOG.md, docs/PROCESS_SHADOW_GENOME.md (repointment).
+
+**RED THEN GREEN**: 2 failed at v0.148.1, then 31/31 across the new tests, all five existing qor-audit wiring suites, and the size lint. Determinism 2/2 twice. **REPOINTMENT LANDED TRUE**: 7b2ed33a -> /qor-audit Step 1 under PASS attestation with repo-relative artifact paths (boundary lint 0 findings pre-commit -- the #344 lesson applied); post-flip verified addressed true, ts unchanged. changed=1, missing=[].
+
+**GH #342 HELD ITEMS: BOTH DONE.** Remaining in #342: escalator per-category enhancements (enhancement, not debt) and the reopening-vs-acceptance decision, which the shipped state resolves toward documented acceptance at cycle end.
+
+**Next**: /qor-substantiate (v0.149.0).
+
+
+---
+
+### Entry #605: SESSION SEAL -- Phase 228 reviewer-toolset declaration (v0.149.0)
+
+**Timestamp**: 2026-08-17T22:28:48Z
+**Phase**: SEAL (Phase 228)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `08d52833c9df`
+**Plan**: docs/plan-qor-phase228-reviewer-toolset-declaration.md (iteration 1; PASS at entry #603)
+**Session**: `2026-08-17T2208-4a255f`
+**Change Class**: feature (v0.148.1 -> v0.149.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `211f1636f965530787237dd40b434b358a355d617cc02e2e07ab2a034b44e98d`
+**Previous Hash**: `231ea1093513b3115a96cefaf08daf617708588f4be433d2649d1b1a8ad4ad1b`
+**Chain Hash (Merkle seal)**: `8e76d2990be2800567d8828658874e2cc266ff2711585696d59f7b3a8f7e3f1c`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**EVERY DISPATCHED REVIEWER NOW DECLARES WHAT IT CAN VERIFY.** The three-rule contract (toolset declaration in the first response; no pinning outside the declared set, with orchestrator re-execution or PLAUSIBLE status as remedy; auditable Mode line) lives in the adversarial-mode reference with a one-line Step 1 anchor -- SKILL.md held in the WARN band at 39,687 bytes, 1,273 under the EXCEEDED bound whose dogfooding test enforces the discipline. Red-then-green observed (2 wiring tests); 31/31 across all qor-audit wiring suites; determinism 2/2 twice. GH #342 held item two landed: event 7b2ed33a repointed to /qor-audit Step 1 under PASS attestation with repo-relative artifact paths, boundary lint clean pre-commit.
+
+**THE MID-CYCLE INCIDENT IS ON THE RECORD.** Between this phase's audit and seal, main went red: the Phase 227 boundary path fix had edited two sealed artifacts without re-signing their provenance sidecars, and PR #344 was admin-merged while checks were pending. Both governance layers held (provenance test caught the tampering; release_ci_gate refused v0.148.1). Remediated via PR #345 (sidecars re-signed through gate_provenance.write_sidecar, merged on 14/14 green -- no pending); v0.148.1 retagged at the green commit. Severity-3 events `38bdb6041e72` (merge-on-pending) and `1b8268c523fc` (edit-without-resign) ride with this seal; the standing rule is restated: admin merge is for ruleset-blocked GREEN runs only, and sealed artifacts are never edited outside the signer.
+
+**GATE LADDER**: intent-lock VERIFIED; matrix 30/140/0; secret-scan clean; merge-velocity strained/narrow_scope (exit 0); data-api-acl disclosed-SKIP; instruction-hygiene disclosed-SKIP (event `47e9f2cc0dc8`); publication boundary 0 findings; doc-integrity strict OK; governance-index advanced + enforced OK; feature inventory 25/25, no regressions vs `2026-08-17T2146-7136d4`.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on FULL green, then GH #342 closes with its acceptance note.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)
