@@ -18201,5 +18201,28 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #597: REMEDIATION CORRECTION -- Phase 223 closure citation repaired (GH #333 follow-on)
+
+**Timestamp**: 2026-08-17T21:36:37Z
+**Phase**: REMEDIATE (Phase 226 follow-on)
+**Author**: Judge
+**Risk Grade**: L2
+**Session**: `2026-08-17T2123-97b29d`
+
+**Content Hash** (remediate-iter2.json): `898cf2c2863d7c309b594a20c4047f60724688672dca92d5c75d435e2b88c763`
+**Previous Hash**: `ff26ff6961bb7d5b42b17a5d14b0790e0fef3f86b0734afa85acbca7e0e4383d`
+**Chain Hash (Merkle seal)**: `7723efadf59eb3954f8576c6c9a314f01d1ef515e660b001336a3825d0cc4762`
+
+**ONE CITATION REPAIRED, TWO DELIBERATELY HELD.** The reviews-remediate audit VETOed the three-event batch: two proposed repointments would have replaced known-wrong citations with plausible-but-false ones -- tests/test_veto_pattern_detector.py contains no ledger-binding test (entirely synthetic, unchanged since Phase 26, and veto_pattern.py:50 still matches AUDIT exactly), and no toolset-declaration requirement exists anywhere in the qor-audit skill. Executing those would have re-committed the exact GH #333 defect inside the repair itself. The split iteration passed: event 197cf9fa (hallucination, fabricated grep citation) now cites qor.scripts.plan_grep_lint -- the mechanism that shipped in Phases 223/225 and demonstrably guards that pattern -- via correct_closure_enforcers under PASS attestation (changed=1; addressed and addressed_ts untouched, verified post-flip). Event 061d8156 keeps its correct citation.
+
+**THE VERIFICATION EXPOSED A DEEPER PATTERN.** Three Phase 223 closures cite or await mechanisms that never shipped -- remediated-in-name closures over unlanded fixes, the half-measure-closure family inside the Shadow Genome's own provenance. Filed as GH #342 with the two held repointments as checkboxes bound to the phases that ship their mechanisms.
+
+**FIRST LIVE USE OF THE PHASE 226 CORRECTIVE PATH**, one governed cycle after it sealed.
+
+**Artifacts**: .qor/gates/2026-08-17T2123-97b29d/{remediate-iter1,remediate-iter2,audit-iter1}.json. **Next**: commit the corrected shadow log; held repointments ride with GH #342's phases.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)
