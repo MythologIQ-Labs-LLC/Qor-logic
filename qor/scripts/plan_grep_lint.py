@@ -27,8 +27,7 @@ class LintWarning:
     reason: str
     #: Phase 223 (GH #330). Required, no default: a required field with honest
     #: values beats an optional one with a meaningless default, so all three
-    #: producers name their kind. Five values -- the two `check_plan` path
-    #: warnings plus the three citation-evidence kinds.
+    #: producers name their kind.
     kind: str
 
 
@@ -61,7 +60,6 @@ def check_plan(plan_path: Path, repo_root: Path) -> list[LintWarning]:
     for line_no, line in enumerate(text.splitlines(), start=1):
         for match in re.finditer(r"\bqor\.(scripts|policy|reliability|cli_handlers)\.([\w_]+)\b", line):
             module_name = match.group(2)
-            # Skip placeholder-style citations and explicit test-fixture names.
             if len(module_name) <= 1 or (module_name.isupper() and len(module_name) <= 3):
                 continue
             if any(token in module_name.lower() for token in ("fake", "nonexistent", "synthetic", "fixture", "new_helper", "new_module")):
@@ -84,7 +82,6 @@ def check_plan(plan_path: Path, repo_root: Path) -> list[LintWarning]:
             skill_path = match.group(0)
             if skill_path in new_paths:
                 continue
-            # Skip placeholder/test-fixture skill paths.
             if any(token in skill_path.lower() for token in ("fake-", "synthetic-", "nonexistent-")):
                 continue
             full_path = repo_root / skill_path
@@ -96,49 +93,32 @@ def check_plan(plan_path: Path, repo_root: Path) -> list[LintWarning]:
                     kind="skill-path-missing",
                 ))
 
-    warnings.extend(check_citation_evidence(text, plan=str(plan_path)))
+    warnings.extend(check_citation_evidence(text, plan=str(plan_path), repo_root=repo_root))
     return warnings
 
 
 # --- Citation-drift enforcement (Phase 125; GH #152 / SG-CitationDrift-A P1) ---
-# A grep-evidence statement: a `grep` invocation completed with `-> <observed text>`.
 _EVIDENCE_RE = re.compile(r"grep\b.*->")
-# Sealed-infrastructure citation kinds (high-confidence, low false-positive).
 _GIT_SHOW_RE = re.compile(r"git show\s+\S+:\S+")
 _MIGRATION_RE = re.compile(r"\b\d{8,}[_-][\w-]+\.sql\b")
 _FILE_LINE_RE = re.compile(r"\b[\w./-]+\.(?:py|ts|tsx|sql|rs|go|js):\d+\b")
-# The check runs ONLY inside these regions so plans that don't use the
-# Locked-Decision discipline produce zero findings (no over-flag).
 _LD_HEADING_RE = re.compile(r"^#+\s.*(locked decision|citation inventory)", re.IGNORECASE)
 _ANY_HEADING_RE = re.compile(r"^#+\s")
 
 
 # --- Evidence-statement parsing and resolution (Phase 223; GH #330) ---
-# The predicate above checks that a statement EXISTS. It reads neither the path,
-# the line, nor the observed text, so a citation whose line does not hold its
-# quoted content passes (ledger #565). These parse a statement into a value that
-# can be resolved against the revision it names.
-
 #: `[git show <ref>:]<path> | grep ... -> <NN>:<observed>`. The `NN:` observation
-#: is required: a statement without one satisfies `_EVIDENCE_RE` and carries
-#: nothing a truth check can resolve, so it is deliberately not parsed.
+#: is required: a statement without one carries nothing a truth check can resolve.
 _EVIDENCE_STMT_RE = re.compile(
     r"(?:git\s+show\s+(?P<ref>\S+):(?P<gitpath>\S+)\s*\|\s*)?"
     r"grep\b[^\n]*?->\s*(?P<line>\d+):(?P<observed>[^\n]*)"
 )
-#: Fallback path capture for the working-tree form, which names its file inside
-#: the grep invocation rather than before a pipe.
 _WT_PATH_RE = re.compile(r"([\w./-]+\.(?:py|ts|tsx|sql|rs|go|js|md|json|toml))")
 
 
 @dataclass(frozen=True)
 class EvidenceStatement:
-    """One grep-evidence statement, parsed into something resolvable.
-
-    ``ref`` is None for the working-tree form. ``observed`` is the text right of
-    the ``NN:`` prefix, unstripped -- comparison strips both sides so indentation
-    does not fail a true citation.
-    """
+    """One grep-evidence statement parsed into a mechanically resolvable value."""
 
     ref: str | None
     path: str
@@ -164,12 +144,7 @@ def parse_evidence_statements(block: str) -> list[EvidenceStatement]:
 
 
 def resolve_line(stmt: EvidenceStatement, repo_root: Path | None = None) -> str | None:
-    """Return the cited line's text, or None when it cannot be resolved.
-
-    None is a distinct outcome from a mismatch: an environment that cannot answer
-    is not an answer that is wrong, which is why the caller gives it its own
-    finding kind.
-    """
+    """Return the cited line's text, or None when it cannot be resolved."""
     root = repo_root or Path.cwd()
     if stmt.ref:
         completed = subprocess.run(
@@ -198,8 +173,7 @@ def reproduces(stmt: EvidenceStatement, repo_root: Path | None = None) -> bool:
 
 
 def _ld_blocks(text: str) -> list[tuple[int, str]]:
-    """Return (start_line, block_text) for each Locked-Decision / Citation-Inventory
-    region: from its heading up to (not including) the next heading."""
+    """Return Locked-Decision / Citation-Inventory regions."""
     lines = text.splitlines()
     blocks: list[tuple[int, str]] = []
     i = 0
@@ -223,11 +197,11 @@ def _sealed_citations(block: str) -> list[str]:
     return found
 
 
-#: Citation kinds whose truth is mechanically checkable. `.md` is absent from
-#: `_FILE_LINE_RE`'s extension set, and a migration filename or a bare
-#: `git show <ref>:<path>` carries no line, so those stay presence-only.
-TRUTH_CHECKED_KINDS = ("file:line",)
-PRESENCE_ONLY_KINDS = ("migration filename", "git show <ref>:<path>")
+#: Phase 226 (GH #336): the canonical `/qor-plan` grep-n statement is itself a
+#: truth-checked citation kind. A bare `git show <ref>:<path>` remains
+#: presence-only because it still carries no line or expected text.
+TRUTH_CHECKED_KINDS = ("file:line", "grep-n evidence")
+PRESENCE_ONLY_KINDS = ("migration filename", "bare git show <ref>:<path>")
 
 
 def _file_line_citations(block: str) -> list[tuple[str, int, int]]:
@@ -236,14 +210,7 @@ def _file_line_citations(block: str) -> list[tuple[str, int, int]]:
 
 
 def _demand_set(block: str) -> list[str]:
-    """Distinct `file:line` citations owing evidence, in first-seen order.
-
-    Two reductions, and they are not the same one. Span exclusion drops a
-    citation lying inside a parsed statement, without which every statement
-    would demand a statement. Deduplication by `(path, line)` then collapses
-    restatements -- a table repeating a citation multiplies one location into
-    several, and the reported count is of distinct locations.
-    """
+    """Distinct bare `file:line` citations owing paired evidence."""
     spans = [(m.start(), m.end()) for m in _EVIDENCE_STMT_RE.finditer(block)]
     seen: dict[str, None] = {}
     for citation, start, _end in _file_line_citations(block):
@@ -257,55 +224,71 @@ def _statement_index(block: str) -> dict[tuple[str, int], EvidenceStatement]:
     return {(s.path, s.line): s for s in parse_evidence_statements(block)}
 
 
+def _statement_citation(stmt: EvidenceStatement) -> str:
+    prefix = f"{stmt.ref}:" if stmt.ref else ""
+    return f"{prefix}{stmt.path}:{stmt.line}"
+
+
+def _truth_target_keys(block: str) -> set[tuple[str, int]]:
+    keys = {(s.path, s.line) for s in parse_evidence_statements(block)}
+    for citation in _demand_set(block):
+        path, _, raw_line = citation.rpartition(":")
+        keys.add((path, int(raw_line)))
+    return keys
+
+
 def check_citation_evidence(
     text: str, plan: str = "<plan>", repo_root: Path | None = None,
 ) -> list[LintWarning]:
-    """Pair each `file:line` citation with its own reproducible evidence.
+    """Truth-check canonical grep-n evidence and pair bare file:line citations.
 
-    Phase 125 satisfied a whole region whenever any statement appeared in it, so
-    one true statement covered every citation beside it. The doctrine has said
-    "paired" since Phase 72; this makes the implementation agree.
-
-    Other citation kinds keep the legacy block-level presence rule, satisfied by
-    ``_EVIDENCE_RE`` rather than by ``parse_evidence_statements`` -- a statement
-    with no ``NN:`` observation still counts as presence, which is what keeps the
-    Phase 125 suite's expectations true.
+    Canonical ``git show <ref>:<path> | grep -nE ... -> NN:text`` statements are
+    adjudicated directly. They no longer need an additional bare ``file:line``
+    token elsewhere in the block to enter the truth-check set.
     """
     warnings: list[LintWarning] = []
     for start_line, block in _ld_blocks(text):
         statements = _statement_index(block)
 
+        # First-class check for every canonical grep-n statement. This closes
+        # GH #336: /qor-plan's mandated evidence form cannot pass merely because
+        # the string contains `grep ... ->`.
+        for stmt in statements.values():
+            citation = _statement_citation(stmt)
+            if resolve_line(stmt, repo_root) is None:
+                warnings.append(LintWarning(
+                    plan=plan, line=start_line, citation=citation,
+                    reason="grep-n evidence names a path or line that will not resolve at the cited revision",
+                    kind="evidence-unresolvable",
+                ))
+            elif not reproduces(stmt, repo_root):
+                warnings.append(LintWarning(
+                    plan=plan, line=start_line, citation=citation,
+                    reason="grep-n evidence does not reproduce: the cited line does not hold the quoted text",
+                    kind="evidence-not-reproducible",
+                ))
+
+        # Bare file:line citations still owe a statement naming the same path and
+        # line. A present statement was already adjudicated above, so do not emit
+        # a duplicate mismatch warning here.
         for citation in _demand_set(block):
             path, _, raw_line = citation.rpartition(":")
-            stmt = statements.get((path, int(raw_line)))
-            if stmt is None:
-                kind, reason = ("unpaired-citation",
-                                "file:line citation carries no grep-evidence statement "
-                                "naming the same path and line")
-            elif resolve_line(stmt, repo_root) is None:
-                kind, reason = ("evidence-unresolvable",
-                                "grep-evidence names a path that will not resolve at the "
-                                "cited revision")
-            elif not reproduces(stmt, repo_root):
-                kind, reason = ("evidence-not-reproducible",
-                                "grep-evidence does not reproduce: the cited line does not "
-                                "hold the quoted text")
-            else:
+            if (path, int(raw_line)) in statements:
                 continue
             warnings.append(LintWarning(
                 plan=plan, line=start_line, citation=citation,
-                reason=reason, kind=kind,
+                reason="file:line citation carries no grep-evidence statement naming the same path and line",
+                kind="unpaired-citation",
             ))
 
         if _EVIDENCE_RE.search(block):
             continue
         for citation in _sealed_citations(block):
             if _FILE_LINE_RE.fullmatch(citation):
-                continue  # already adjudicated above
+                continue
             warnings.append(LintWarning(
                 plan=plan, line=start_line, citation=citation,
-                reason="sealed-infrastructure citation in a Locked-Decision block "
-                       "lacks paired grep-evidence (git show ... | grep ... -> observed)",
+                reason="sealed-infrastructure citation in a Locked-Decision block lacks paired grep-evidence (git show ... | grep ... -> observed)",
                 kind="unpaired-citation",
             ))
     return warnings
@@ -314,13 +297,8 @@ def check_citation_evidence(
 def count_truth_checked(
     text: str, repo_root: Path | None = None,
 ) -> tuple[int, list[LintWarning]]:
-    """Distinct `(path, line)` citations examined, and the findings against them.
-
-    The count is of the deduplicated demand set. A run reporting zero
-    truth-checked citations is not the same as a clean one, and stating the count
-    is what keeps those distinguishable.
-    """
-    total = sum(len(_demand_set(block)) for _, block in _ld_blocks(text))
+    """Return distinct mechanically examined path/line targets and findings."""
+    total = sum(len(_truth_target_keys(block)) for _, block in _ld_blocks(text))
     return total, check_citation_evidence(text, repo_root=repo_root)
 
 
@@ -333,8 +311,6 @@ def main(argv: list[str] | None = None) -> int:
     repo_root = args.repo_root or Path.cwd()
     warnings = check_plan(args.plan, repo_root)
 
-    # State the ceiling where the lint reports. A ceiling stated only in a
-    # doctrine nobody reads at the moment of use is not stated (Phase 223).
     if args.plan.exists():
         checked, _ = count_truth_checked(
             args.plan.read_text(encoding="utf-8", errors="replace"), repo_root,
@@ -359,7 +335,7 @@ def main(argv: list[str] | None = None) -> int:
         f"the citation to match an existing repo path.",
         file=sys.stderr,
     )
-    return 0  # WARN-only
+    return 0  # WARN-only by existing contract
 
 
 if __name__ == "__main__":
