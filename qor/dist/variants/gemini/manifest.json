@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-17T23:09:31Z",
+  "generated_ts": "2026-08-17T23:34:38Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -210,7 +210,7 @@
       "id": "qor-remediate.toml",
       "source_path": "commands/qor-remediate.toml",
       "install_rel_path": "commands/qor-remediate.toml",
-      "sha256": "4dde8d263edfc2890e79838331a23cd7e9a27435feedd06385cce5c3f74b6d4d"
+      "sha256": "e2aa41300bb63b23b8e87752d2a9d8ab59be6de6433d58e8d6e0b8c061e2fb7f"
     },
     {
       "id": "qor-repo-audit.toml",

@@ -1,0 +1,47 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-17T2315-093b89",
+  "ts": "2026-08-17T23:16:25Z",
+  "questions": [
+    "Where do ineligible ids vanish?",
+    "What result shape distinguishes the three outcomes without braid?"
+  ],
+  "findings": [
+    {
+      "id": "M1",
+      "claim": "Both flip helpers drop ineligible ids from all outputs (lines 50/73/101 at v0.150.0); three return sites affected (119/150/169).",
+      "evidence": [
+        "qor/scripts/remediate_mark_addressed.py at v0.150.0"
+      ]
+    },
+    {
+      "id": "M2",
+      "claim": "Eight unpack sites: seven tests + qor-remediate SKILL.md:130; qor-audit snippet does not unpack; no production importer unpacks.",
+      "evidence": [
+        "grep across tests/ and qor/skills/"
+      ]
+    },
+    {
+      "id": "M3",
+      "claim": "MarkResult(changed, missing, skipped): skipped = known-but-ineligible per the operation's guard; deliberate 2-unpack break; eight sites updated declared.",
+      "evidence": [
+        "docs/research-brief-mark-result-signal-2026-08-17.md"
+      ]
+    }
+  ],
+  "sources": [
+    "qor/scripts/remediate_mark_addressed.py",
+    "tests/",
+    "qor/skills/sdlc/qor-remediate/SKILL.md",
+    "GH #341"
+  ],
+  "brief_path": "docs/research-brief-mark-result-signal-2026-08-17.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.150.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T23:16:25Z"
+  }
+}

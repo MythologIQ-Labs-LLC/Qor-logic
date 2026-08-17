@@ -60,7 +60,7 @@ def _happy_path(tmp_path, enforcer):
         _write_remediate_gate(gate, [e["id"]])
         audit = tmp_path / "audit.json"
         _write_audit_artifact(audit, verdict="PASS", reviews_gate=str(gate))
-        flipped, missing = rma.mark_addressed(
+        flipped, missing, _skipped = rma.mark_addressed(
             [e["id"]],
             session_id="s-enf",
             review_pass_artifact_path=str(audit),

@@ -18509,5 +18509,123 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #610: RESEARCH BRIEF -- MarkResult skipped-signal
+
+**Timestamp**: 2026-08-17T23:16:02Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-17T2315-093b89`
+
+**Content Hash**: `c4bc75d38e97c70c1e7611671ce2bcce570a8e7d601d64855d26a376913d7602`
+**Previous Hash**: `5b45dc396e924b8164446c76221bed9b42f60e15e8c8893b6e31bcfd3072ad31`
+**Chain Hash (Merkle seal)**: `5055d2ec1c33678c32ecd7684bf874a31a76ca332cedbb33d405374da784e546`
+
+**Decision**: GH #341. Both flip helpers silently drop ids whose addressed-state makes them ineligible, so "nothing matched" and "nothing to do" both read (0, []). Design: MarkResult(changed, missing, skipped) across mark_addressed, mark_addressed_pending, and correct_closure_enforcers -- skipped carries known-but-ineligible ids (already-addressed for the mark path; not-remediated or citation-already-equal for the corrective path). The three-field tuple deliberately breaks two-element unpacking: the alternative would preserve the ignorability the issue exists to remove. Eight unpack sites enumerated (seven tests, one qor-remediate prose snippet at 8.1 KB, no size-band risk); all update deliberately.
+
+**Brief**: docs/research-brief-mark-result-signal-2026-08-17.md. **Next**: /qor-plan (Phase 230).
+
+
+---
+
+### Entry #611: GATE TRIBUNAL -- Phase 230 MarkResult skipped-signal, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-17T23:20:39Z
+**Phase**: GATE (Phase 230)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase230-mark-result-skipped-signal.md (iteration 1)
+**Session**: `2026-08-17T2315-093b89`
+**Mode**: adversarial -- independent reviewer with declared toolset (shell, git, Python, file access; no network)
+
+**Content Hash**: `b3b28e06306577e6771bab5397f0c8809ac5465daa4c974c757196228258b75f`
+**Previous Hash**: `5055d2ec1c33678c32ecd7684bf874a31a76ca332cedbb33d405374da784e546`
+**Chain Hash (Merkle seal)**: `88118a1496dab8fbf4863e26ecde660a6b76ceced9eb780b0c8a0830e5d92bde`
+
+**Verdict**: **VETO** -- specification-drift, coverage-gap.
+
+**THE BREAK LIST MISSED THE THIRD FUNCTION'S CALLERS.** The plan locks a deliberate unpack-breaking result type behind "all eight call sites"; the reviewer's exhaustive re-grep found twelve -- the four missed are every consumer of mark_addressed_pending, whose shape the same Locked Decision changes. Three tests would have raised ValueError at runtime. Every LD citation was simultaneously TRUE: a completeness failure, not a citation failure -- the second asserted-completeness event today, now recorded as the SG-AssertedCompleteness-A family with a pre-audit enumeration-lint countermeasure candidate (issue at cycle end).
+
+**THE POST-FIX DETECTOR SPOKE FOR THE FIRST TIME WITH REAL DATA**: no repeated-VETO pattern over the true window [228, 229], both single-pass -- an advisory that means something again.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-plan iteration 2 (attempt 1 of 5 consumed).
+
+
+---
+
+### Entry #612: GATE TRIBUNAL -- Phase 230 MarkResult skipped-signal, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-17T23:25:28Z
+**Phase**: GATE (Phase 230)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase230-mark-result-skipped-signal.md (iteration 2)
+**Session**: `2026-08-17T2315-093b89`
+**Mode**: adversarial -- independent reviewer, declared toolset, P2 full re-walk (nine statements)
+
+**Content Hash**: `c1a639347ac3a053a17a685067cd7d69f76ac9858fbbb29b45c7b4f284309f64`
+**Previous Hash**: `88118a1496dab8fbf4863e26ecde660a6b76ceced9eb780b0c8a0830e5d92bde`
+**Chain Hash (Merkle seal)**: `0cec66217da2f8e8d54b90ac1e9516b2f37806f227ede6ce2a61e639553483e1`
+
+**Verdict**: **PASS** -- attempt 2 of 5; no mandating findings.
+
+**TWELVE SITES, INDEPENDENTLY RE-SWEPT, NO THIRTEENTH.** The reviewer widened the sweep beyond assignment forms to indexing and iteration patterns and confirmed the LD-3 surface exactly. LD-5's pending-guard claim verified at the code (route through the LD-1 guard at line 61; already-pending re-flip idempotent, counted in changed). All nine evidence statements reproduce; the enforcer that failed the iteration-1 enumeration now certifies the corrected one at 9 truth-checked / 0 findings. Substantiate obligation recorded per O2: read both prose snippet conversions -- the ten test sites are suite-forced, the two snippets are not.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-implement.
+
+
+---
+
+### Entry #613: IMPLEMENTATION -- Phase 230 MarkResult skipped-signal
+
+**Timestamp**: 2026-08-17T23:32:41Z
+**Phase**: IMPLEMENT (Phase 230)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase230-mark-result-skipped-signal.md (iteration 2, PASS at entry #612)
+**Session**: `2026-08-17T2315-093b89`
+
+**Content Hash** (7 files, concatenated): `5d789bb9b0460c9f29c87c8614c8ae97230388e1a26e8fc9e30cd7516b3ee648`
+**Previous Hash**: `0cec66217da2f8e8d54b90ac1e9516b2f37806f227ede6ce2a61e639553483e1`
+**Chain Hash (Merkle seal)**: `6edb2da76c75624250d8271f85d4412095cd2210ba9f8c89762741c414b6f4d2`
+
+**Files**: qor/scripts/remediate_mark_addressed.py (MarkResult NamedTuple; both flip helpers collect skipped; three public functions return MarkResult), tests/test_remediate_enforcer_edges.py (four new behavioral tests + two site conversions), tests/test_remediate.py / test_remediate_per_event_enforcers.py / test_sg_closure_enforcement.py (eight site conversions), qor/skills/sdlc/qor-remediate/SKILL.md (both prose snippets at :103 and :130 converted to the result form), CHANGELOG.md.
+
+**RED THEN GREEN, TWELVE OF TWELVE**: four new tests red at v0.150.0 (AttributeError), then green; the deliberate break surfaced at exactly the two not-yet-converted sites mid-phase and nowhere else -- the enumeration held. Full suite 2999 passed / 0 failed; determinism 8/8 twice. Per audit O2, both prose snippet conversions verified by reading, not only by suite.
+
+**Next**: /qor-substantiate (v0.151.0).
+
+
+---
+
+### Entry #614: SESSION SEAL -- Phase 230 MarkResult skipped-signal (v0.151.0)
+
+**Timestamp**: 2026-08-17T23:33:51Z
+**Phase**: SEAL (Phase 230)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `3e8720d4cad4`
+**Plan**: docs/plan-qor-phase230-mark-result-skipped-signal.md (iteration 2; PASS at entry #612)
+**Session**: `2026-08-17T2315-093b89`
+**Change Class**: feature (v0.150.0 -> v0.151.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `c1a639347ac3a053a17a685067cd7d69f76ac9858fbbb29b45c7b4f284309f64`
+**Previous Hash**: `6edb2da76c75624250d8271f85d4412095cd2210ba9f8c89762741c414b6f4d2`
+**Chain Hash (Merkle seal)**: `f6810553390552e3b878ca5867965208b378f986d4d6a7c0a4c847a82356aa68`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**NOTHING-TO-DO NO LONGER READS AS NOTHING-MATCHED.** GH #341 closed: MarkResult(changed, missing, skipped) across all three flip functions; skipped carries known-but-ineligible ids per the operation's own guard; two-element unpacking breaks by design and all twelve consumption sites converted in the same change -- the deliberate break surfaced mid-phase at exactly the two not-yet-converted sites and nowhere else, confirming the audited enumeration. Both prose snippet conversions verified by reading per audit O2. Red-then-green (4 tests, AttributeError mechanism); full suite 2999 passed / 0 failed; determinism 8/8 twice.
+
+**THE CYCLE'S OWN LESSON RODE ALONG**: iteration 1 VETOed on an incomplete caller enumeration (SG-AssertedCompleteness-A, second occurrence today, entry #611); iteration 2's twelve-site surface was locked with per-site evidence the Phase 225 enforcer itself demanded and certified at 9 truth-checked / 0 findings.
+
+**GATE LADDER**: intent-lock VERIFIED; matrix 30/140/0; secret-scan clean; merge-velocity strained/narrow_scope (exit 0); data-api-acl disclosed-SKIP; instruction-hygiene disclosed-SKIP (event `694086974e5d`); publication boundary 0 findings; doc-integrity strict OK; governance-index advanced + enforced OK; feature inventory 25/25, no regressions vs `2026-08-17T2242-9d4cdb`.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on FULL green, then GH #341 close.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

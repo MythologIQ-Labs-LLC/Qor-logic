@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-17T2315-093b89",
+  "ts": "2026-08-17T23:21:36Z",
+  "target": "docs/plan-qor-phase230-mark-result-skipped-signal.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "specification-drift",
+    "coverage-gap"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.150.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "veto",
+    "ts": "2026-08-17T23:21:36Z"
+  }
+}

@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.151.0] - 2026-08-17
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 230 (feature; nothing-to-do stops reading as nothing-matched)**: closes GH #341. `mark_addressed`, `mark_addressed_pending`, and `correct_closure_enforcers` now return `MarkResult(changed, missing, skipped)`: `skipped` names ids known to the shadow log but excluded by the operation's eligibility guard (already-addressed for the mark paths; not-remediated or citation-already-equal for the corrective path), so an all-already-done batch is distinguishable from a miss. Three fields by design -- two-element unpacking breaks deliberately, and all twelve consumption sites (ten test unpacks, two skill prose snippets) were converted in the same change; `missing` (the SG-032 surface) and `changed` semantics are untouched.
+
 ## [0.150.0] - 2026-08-17
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

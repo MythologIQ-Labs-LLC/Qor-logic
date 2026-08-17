@@ -1,0 +1,28 @@
+{
+  "phase": "implement",
+  "session_id": "2026-08-17T2315-093b89",
+  "ts": "2026-08-17T23:33:04Z",
+  "files_touched": [
+    "qor/scripts/remediate_mark_addressed.py",
+    "tests/test_remediate_enforcer_edges.py",
+    "tests/test_remediate.py",
+    "tests/test_remediate_per_event_enforcers.py",
+    "tests/test_sg_closure_enforcement.py",
+    "qor/skills/sdlc/qor-remediate/SKILL.md",
+    "CHANGELOG.md",
+    "docs/META_LEDGER.md"
+  ],
+  "test_summary": {
+    "passed": 2999,
+    "skipped": 6,
+    "failed": 0
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.150.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T23:33:04Z"
+  }
+}

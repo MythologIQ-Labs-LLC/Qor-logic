@@ -1954,4 +1954,24 @@ Kin to SG-CitationDrift-A but on artifact contents rather than line citations: t
 
 ---
 
+## Entry: Phase 230 iteration 1 -- caller enumeration asserted complete after sweeping two of three functions
+
+**Date**: 2026-08-17
+**Category**: HALLUCINATION
+**Verdict source**: GATE TRIBUNAL entry #611 (VETO, specification-drift + coverage-gap)
+
+### What Happened
+
+A plan introducing a deliberate unpack-breaking result type locked "all eight call sites" as its safety argument. Twelve existed. The research grep swept consumers of two of the three functions whose shape the same Locked Decision changed and never swept the third's -- so the four missed sites were precisely the ones a reader of LD-3 would assume were covered. Implemented as declared, three tests would have raised ValueError at runtime.
+
+### Pattern to Avoid
+
+An enumeration that gates a breaking change must be derived from the same list the change itself declares: for every function whose surface changes, sweep that function's name -- mechanically, one grep per name, before writing "all N sites". Asserted completeness is a claim about an artifact surface and gets the same treatment as a citation: verified by execution at authoring time, and stated with the command that produced it.
+
+### Pattern ID
+
+Second occurrence of the asserted-completeness family in one day (first: Phase 226 iteration 1, entry #593 -- test inventory asserted from prose). Family: SG-AssertedCompleteness-A -- a plan states an exhaustive inventory (tests, call sites, files) that the artifact surface contradicts; the audit's independent re-derivation catches it. Countermeasure candidate now warranted per #593's own note: extend the pre-audit lint family with an enumeration-verification pass (the plan names the functions whose shape changes; the lint greps each name and compares the hit count against the plan's declared site count). Enforcer: none yet; issue filed at cycle end.
+
+---
+
 *Shadow integrity: ACTIVE*

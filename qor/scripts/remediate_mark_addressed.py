@@ -35,7 +35,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Mapping
+from typing import Mapping, NamedTuple
 
 from qor.scripts import shadow_process
 from qor.scripts.remediate_attestation import (  # noqa: F401 -- exceptions re-exported
@@ -47,27 +47,48 @@ from qor.scripts.remediate_attestation import (  # noqa: F401 -- exceptions re-e
 )
 
 
+class MarkResult(NamedTuple):
+    """Result of a flip operation (Phase 230; GH #341).
+
+    ``skipped`` carries ids known to the shadow log but excluded by the
+    invoked operation's eligibility guard -- already-addressed for the mark
+    paths, not-remediated or citation-already-equal for the corrective path --
+    so "nothing to do" is distinguishable from "nothing matched" (``missing``,
+    the SG-032 surface, unchanged). Three fields by design: a result that can
+    be two-unpacked back into ignorability would preserve the defect.
+    """
+
+    changed: int
+    missing: list[str]
+    skipped: list[str]
+
+
 def _flip_event_fields(
     event_ids: list[str],
     fields: dict,
-) -> tuple[int, list[str]]:
+) -> MarkResult:
     """Apply ``fields`` overlay to each matching unaddressed event; route write per source."""
     events = shadow_process.read_all_events()
     src_map = shadow_process.id_source_map()
     target = set(event_ids)
 
     flipped = 0
+    skipped: list[str] = []
     for event in events:
-        if event["id"] in target and not event["addressed"]:
-            event.update(fields)
-            flipped += 1
+        if event["id"] not in target:
+            continue
+        if event["addressed"]:
+            skipped.append(event["id"])
+            continue
+        event.update(fields)
+        flipped += 1
 
     known_ids = set(src_map.keys())
     missing_ids = [eid for eid in event_ids if eid not in known_ids]
 
     if flipped:
         shadow_process.write_events_per_source(events, src_map)
-    return flipped, missing_ids
+    return MarkResult(flipped, missing_ids, skipped)
 
 
 def _flip_event_fields_per_event(
@@ -75,7 +96,7 @@ def _flip_event_fields_per_event(
     fields: dict,
     *,
     addressed_only: bool = False,
-) -> tuple[int, list[str]]:
+) -> MarkResult:
     """Apply common fields plus each event's own closure enforcer.
 
     ``addressed_only`` is used only by the corrective path. It permits changing
@@ -85,6 +106,7 @@ def _flip_event_fields_per_event(
     events = shadow_process.read_all_events()
     src_map = shadow_process.id_source_map()
     changed = 0
+    skipped: list[str] = []
 
     for event in events:
         event_id = event["id"]
@@ -92,13 +114,16 @@ def _flip_event_fields_per_event(
             continue
         if addressed_only:
             if not event.get("addressed") or event.get("addressed_reason") != "remediated":
+                skipped.append(event_id)
                 continue
             if event.get("closure_enforcer") == enforcers[event_id]:
+                skipped.append(event_id)
                 continue
             event["closure_enforcer"] = enforcers[event_id]
             changed += 1
             continue
         if event.get("addressed"):
+            skipped.append(event_id)
             continue
         event.update(fields)
         event["closure_enforcer"] = enforcers[event_id]
@@ -108,14 +133,18 @@ def _flip_event_fields_per_event(
     missing_ids = [event_id for event_id in enforcers if event_id not in known_ids]
     if changed:
         shadow_process.write_events_per_source(events, src_map)
-    return changed, missing_ids
+    return MarkResult(changed, missing_ids, skipped)
 
 
 def mark_addressed_pending(
     event_ids: list[str],
     session_id: str,  # noqa: ARG001 -- reserved for future audit trail wiring
-) -> tuple[int, list[str]]:
-    """Stage 1: flip addressed_pending=true only. addressed stays false."""
+) -> MarkResult:
+    """Stage 1: flip addressed_pending=true only. addressed stays false.
+
+    ``skipped`` names already-addressed events; an already-pending, not-yet-
+    addressed event re-flips idempotently and counts in ``changed``.
+    """
     return _flip_event_fields(event_ids, {"addressed_pending": True})
 
 
@@ -126,7 +155,7 @@ def mark_addressed(
     remediate_gate_path: str,
     closure_enforcer: str | None = None,
     repo_root: Path | None = None,
-) -> tuple[int, list[str]]:
+) -> MarkResult:
     """Stage 2: after enforcer + review-pass verification, flip addressed=true.
 
     ``event_ids`` may be a list when every event shares ``closure_enforcer``, or
@@ -156,7 +185,7 @@ def correct_closure_enforcers(
     review_pass_artifact_path: str,
     remediate_gate_path: str,
     repo_root: Path | None = None,
-) -> tuple[int, list[str]]:
+) -> MarkResult:
     """Correct closure citations on already-remediated events under PASS attestation.
 
     This is deliberately narrow: it cannot reopen events, change timestamps, or
