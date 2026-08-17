@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.152.0] - 2026-08-17
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 231 (feature; the intent lock keeps the evidence it will be asked about)**: closes GH #332 via its own preferred Direction 3. `intent_lock capture` now snapshots the LF-normalized audited plan and audit bytes beside the record (self-consistent with the stored hashes by construction), and `verify` appends a bounded unified diff on DRIFT -- an override becomes a decidable question answered by evidence instead of testimony, which is exactly what the Phase 223 carry-forward incident lacked. The sealed session's lock family (record plus snapshots) joins the executable staging ceremony via a deliberate, exact force-add past the directory's gitignore, making the referent recoverable forever and a CI-side verify job possible: before this, only 7 of 134 lock records were visible to CI at all. Legacy records without snapshots verify byte-for-byte as before. `verify()` extracted its ancestry check and landed at 31 lines, clearing a pre-existing razor overage.
+
 ## [0.151.0] - 2026-08-17
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

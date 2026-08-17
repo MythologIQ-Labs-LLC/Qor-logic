@@ -18627,5 +18627,100 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #615: RESEARCH BRIEF -- intent-lock evidence (GH #332 Direction 3)
+
+**Timestamp**: 2026-08-17T23:41:09Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-17T2339-3385b4`
+
+**Content Hash**: `335da87b09dce31b27576372458d2ac571869eeeb2b828dbb854cca30a052cb6`
+**Previous Hash**: `f6810553390552e3b878ca5867965208b378f986d4d6a7c0a4c847a82356aa68`
+**Chain Hash (Merkle seal)**: `56dfa3bcb65201acc838003cef71bb4551f690f50ba0943e6373c268cde682ef`
+
+**Decision**: GH #332. The lock stores hashes only, so a carry-forward drift's referent is unrecoverable and every override rests on testimony; the CI-visibility asymmetry (#16798) is now measured -- 7 of 134 lock records tracked, the directory gitignored since phase 59's era. Phase 231 implements the issue's own preferred Direction 3: capture snapshots the LF-normalized audited bytes beside the record, verify emits a bounded unified diff on DRIFT (testimony becomes evidence), and the sealed session's lock family joins the executable staging ceremony via deliberate force-add (legacy operator-local records stay local; pre-172 absolute-path records never committed, keeping the publication boundary clean). Direction 1 (verdict-authorized deltas) and the CI verify job are declared follow-ons.
+
+**Brief**: docs/research-brief-intent-lock-evidence-2026-08-17.md. **Next**: /qor-plan (Phase 231).
+
+
+---
+
+### Entry #616: GATE TRIBUNAL -- Phase 231 intent-lock evidence, iteration 1 (PASS)
+
+**Timestamp**: 2026-08-17T23:46:10Z
+**Phase**: GATE (Phase 231)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase231-intent-lock-evidence.md (iteration 1)
+**Session**: `2026-08-17T2339-3385b4`
+**Mode**: adversarial -- independent reviewer with declared toolset
+
+**Content Hash**: `da90ecd5ccc316e1e80d9d8424f79e2b8a984f5049f5cb1cd2487bba19d4d564`
+**Previous Hash**: `56dfa3bcb65201acc838003cef71bb4551f690f50ba0943e6373c268cde682ef`
+**Chain Hash (Merkle seal)**: `0570bb515115317b89644f41feb44d9e8c36ae1a37899b970f83eefbd8d01e79`
+
+**Verdict**: **PASS** -- first iteration, no mandating findings.
+
+**THE MECHANISM CLAIMS WERE PROVEN IN A THROWAWAY REPO.** Plain git add refuses ignored paths (the design's necessity), -f stages them, an absent path under -f is rc 128 (the when-present guard is load-bearing) -- the reviewer executed all three before agreeing the ceremony change is sound. The snapshot self-consistency holds by construction against the actual hasher; the asymmetry reproduces exactly (134 local, 7 tracked); the Phase 223 timeline walked closed for every future sealed session. Implementation bound to O1 (extract the ancestry block; verify() at or under 40) and O2 (normalize both sides of the diff).
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-implement.
+
+
+---
+
+### Entry #617: IMPLEMENTATION -- Phase 231 intent-lock evidence
+
+**Timestamp**: 2026-08-17T23:53:04Z
+**Phase**: IMPLEMENT (Phase 231)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase231-intent-lock-evidence.md (iteration 1, PASS at entry #616)
+**Session**: `2026-08-17T2339-3385b4`
+
+**Content Hash** (5 files, concatenated): `4ff4d78eb3cab42ddba7039d956faafc4b60e899cdbd728779f6fdbd13b04764`
+**Previous Hash**: `0570bb515115317b89644f41feb44d9e8c36ae1a37899b970f83eefbd8d01e79`
+**Chain Hash (Merkle seal)**: `b9e218a1040454bafb2d464fd33eccabe61fc5aa466774c8fe743d3f9c83f6dd`
+
+**Files**: qor/reliability/intent_lock.py (248 lines: snapshots at capture, _drift_report with bounded normalized diff per audit O2, _head_is_ancestor extraction landing verify() at 31 lines per audit O1 -- a pre-existing razor overage cleared), qor/scripts/seal_stage.py (exact force-add of the session lock family), tests/test_intent_lock_evidence.py (NEW, 5 behavioral tests), tests/test_seal_stage.py (+1), CHANGELOG.md.
+
+**RED THEN GREEN**: 5 failed at v0.151.0 for the declared reasons, then 32/32 across the new suite and all four legacy intent-lock suites unmodified. Full suite 3005 passed / 0 failed; determinism 10/10 twice.
+
+**Next**: /qor-substantiate (v0.152.0) -- whose own seal commits the first lock record with evidence since the asymmetry began.
+
+
+---
+
+### Entry #618: SESSION SEAL -- Phase 231 intent-lock evidence (v0.152.0)
+
+**Timestamp**: 2026-08-17T23:54:12Z
+**Phase**: SEAL (Phase 231)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `26e0f63f5b21`
+**Plan**: docs/plan-qor-phase231-intent-lock-evidence.md (iteration 1; PASS at entry #616)
+**Session**: `2026-08-17T2339-3385b4`
+**Change Class**: feature (v0.151.0 -> v0.152.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `da90ecd5ccc316e1e80d9d8424f79e2b8a984f5049f5cb1cd2487bba19d4d564`
+**Previous Hash**: `b9e218a1040454bafb2d464fd33eccabe61fc5aa466774c8fe743d3f9c83f6dd`
+**Chain Hash (Merkle seal)**: `fe98e09f6d5b6c8f3c89b873cba3fd053e752fd186fafcae974ae17973a80644`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**THE LOCK KEEPS THE EVIDENCE IT WILL BE ASKED ABOUT.** GH #332 closed via its own Direction 3: capture snapshots the LF-normalized audited bytes (self-consistent with the stored hashes by construction), verify emits a bounded normalized diff on DRIFT -- the recurring override is now decided by evidence at the moment it is needed, closing the Phase 223 unrecoverable-referent scenario for every future sealed session. The sealed session's lock family joins the executable ceremony by exact force-add; before this seal, 7 of 134 lock records were visible to CI. verify() extracted its ancestry check and landed at 31 lines, clearing a pre-existing razor overage flagged by the audit. Red-then-green (5 tests); 32/32 with all four legacy lock suites unmodified; full suite 3005 passed / 0 failed; determinism 10/10 twice.
+
+**THIS SEAL COMMITS THE FIRST LOCK RECORD WITH EVIDENCE SINCE THE ASYMMETRY BEGAN** -- staged by seal_stage, which learned to carry it in the same phase.
+
+**GATE LADDER**: intent-lock VERIFIED; matrix 30/140/0; secret-scan clean; merge-velocity strained/narrow_scope (exit 0); data-api-acl disclosed-SKIP; instruction-hygiene disclosed-SKIP (event `d0e0be51a463`); publication boundary 0 findings; doc-integrity strict OK; governance-index advanced + enforced OK; feature inventory 25/25, no regressions vs `2026-08-17T2315-093b89`.
+
+**FOLLOW-ONS FILED AT CYCLE END**: GH #332 Direction 1 (verdict-authorized deltas) and the CI-side lock-verify job.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on FULL green, then GH #332 close.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

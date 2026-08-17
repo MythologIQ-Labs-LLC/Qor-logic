@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-17T2339-3385b4",
+  "plan_path": "docs/plan-qor-phase231-intent-lock-evidence.md",
+  "plan_hash": "da90ecd5ccc316e1e80d9d8424f79e2b8a984f5049f5cb1cd2487bba19d4d564",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "b7a8c5e58ec087804dc821119b2abe27b9982c82851e908fb88ee20143f8e9aa",
+  "head_commit": "b89d5c05d178bfab2c336d5c83d87b1e0b98aa25",
+  "captured_ts": "2026-08-17T23:46:48.282589Z"
+}

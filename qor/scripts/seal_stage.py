@@ -71,6 +71,19 @@ def stage(session_id: str, repo_root: Path | None = None) -> list[str]:
     targets = _targets(session_id, root)
     if targets:
         subprocess.run(["git", "add", "--"] + targets, cwd=root, check=True)
+    # Phase 231 (GH #332): the sealed session's intent-lock record and
+    # snapshots are committed evidence. The directory is gitignored (127
+    # legacy operator-local records stay local), so plain `git add` refuses
+    # these paths; the force-add is deliberate and exact -- never a glob.
+    lock_family = [
+        f".qor/intent-lock/{session_id}.json",
+        f".qor/intent-lock/{session_id}.plan.snapshot",
+        f".qor/intent-lock/{session_id}.audit.snapshot",
+    ]
+    present = [rel for rel in lock_family if (root / rel).is_file()]
+    if present:
+        subprocess.run(["git", "add", "-f", "--"] + present, cwd=root, check=True)
+        targets.extend(present)
     return targets
 
 

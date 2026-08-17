@@ -1,0 +1,50 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-17T2339-3385b4",
+  "ts": "2026-08-17T23:41:33Z",
+  "questions": [
+    "Why are intent-lock overrides undecidable?",
+    "What is the smallest decidability fix?",
+    "Why does CI not enforce the lock?"
+  ],
+  "findings": [
+    {
+      "id": "I1",
+      "claim": "Lock stores hashes only; DRIFT prints two words; the audited bytes are unrecoverable when carry-forward edits land before commit.",
+      "evidence": [
+        "qor/reliability/intent_lock.py:120-160 at v0.151.0"
+      ]
+    },
+    {
+      "id": "I2",
+      "claim": "CI asymmetry measured: 7 of 134 lock records tracked; .gitignore:18 covers the directory; legacy records carry pre-172 absolute paths (boundary hazard on bulk un-ignore).",
+      "evidence": [
+        "git ls-files .qor/intent-lock/",
+        ".gitignore:18"
+      ]
+    },
+    {
+      "id": "I3",
+      "claim": "Direction 3 design: snapshots at capture, bounded diff on DRIFT, per-session force-add into the seal ceremony; legacy tolerance; Direction 1 and CI job as follow-ons.",
+      "evidence": [
+        "docs/research-brief-intent-lock-evidence-2026-08-17.md",
+        "GH #332 candidate directions"
+      ]
+    }
+  ],
+  "sources": [
+    "qor/reliability/intent_lock.py",
+    ".gitignore",
+    "GH #332",
+    "META_LEDGER entry #580"
+  ],
+  "brief_path": "docs/research-brief-intent-lock-evidence-2026-08-17.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.151.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T23:41:33Z"
+  }
+}
