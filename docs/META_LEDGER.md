@@ -18224,5 +18224,102 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #598: RESEARCH BRIEF -- veto_pattern GATE TRIBUNAL blindness
+
+**Timestamp**: 2026-08-17T21:48:17Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-17T2146-7136d4`
+
+**Content Hash**: `f0302187297a978a6f336bafcb831e95fb81e560fac71295a44e920b4eb08fd8`
+**Previous Hash**: `7723efadf59eb3954f8576c6c9a314f01d1ef515e660b001336a3825d0cc4762`
+**Chain Hash (Merkle seal)**: `c8849fb779d8e71872d08e7859eeef9e4cd395723badc9efdbd0040e3bd2c474`
+
+**Decision**: Confirmed by execution: veto_pattern.py:50 matches entry_type "AUDIT" while the ledger has written GATE TRIBUNAL since Entry #86 -- the live parse returns 5 counted phases with a maximum of 27 and zero above 200, so the Step 7 advisory pasted into every audit report for ~200 entries has been vacuously "no pattern". The concealing suite is entirely synthetic (zero META_LEDGER/GATE TRIBUNAL references). Phase 227 ships the original three-step specification (recognize GATE TRIBUNAL, in-flight condition so the live cycle's own multi-VETO run is visible before its seal, ledger-binding anti-recurrence test asserting non-empty counts above phase 200) plus the held GH #333 repointment of event 8f9c5c6e to the test file -- recorded in the same change that makes the citation true.
+
+**Brief**: docs/research-brief-veto-pattern-blindness-2026-08-17.md. **Next**: /qor-plan (Phase 227).
+
+
+---
+
+### Entry #599: GATE TRIBUNAL -- Phase 227 veto-pattern GATE TRIBUNAL recognition, iteration 1 (PASS)
+
+**Timestamp**: 2026-08-17T21:52:55Z
+**Phase**: GATE (Phase 227)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase227-veto-pattern-gate-tribunal.md (iteration 1)
+**Session**: `2026-08-17T2146-7136d4`
+**Mode**: adversarial -- independent reviewer by quality preference
+
+**Content Hash**: `158e5c3342435aca1998364d6f62573d543485ae71a17c783a96952193d5efb1`
+**Previous Hash**: `c8849fb779d8e71872d08e7859eeef9e4cd395723badc9efdbd0040e3bd2c474`
+**Chain Hash (Merkle seal)**: `bbf203ee3d3b76c528e0c26b677e0a5c32811fac3c57830b502dfbe30fa2e7b1`
+
+**Verdict**: **PASS** -- first iteration, no mandating findings.
+
+**THE PREDICTION WAS SIMULATED, NOT TRUSTED.** The reviewer ran the widened recognition over the live ledger: 81 sealed phases (against 5 visible today), window [225, 226] at counts {3, 2}, detector fires at max_pass_count 3 -- confirming in advance the plan's declared consequence that the first post-fix Step 7 run truthfully emits a severity-3 repeated_veto_pattern event over the current window. All three red mechanisms verified by execution; the ledger-binding test's assertion is monotone (append-only ledger, sealed phases cannot unseal) and can never rot.
+
+**TWO OBSERVATIONS, NEITHER GATING**: an editorial four-vs-five count at plan line 46 (binding enumeration precise), and a hypothetical in-flight ordering edge with no exhibiting artifact -- implementer guard requested: join only when the in-flight phase exceeds the newest sealed phase.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-implement.
+
+
+---
+
+### Entry #600: IMPLEMENTATION -- Phase 227 veto-pattern GATE TRIBUNAL recognition
+
+**Timestamp**: 2026-08-17T21:55:27Z
+**Phase**: IMPLEMENT (Phase 227)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase227-veto-pattern-gate-tribunal.md (iteration 1, PASS at entry #599)
+**Session**: `2026-08-17T2146-7136d4`
+
+**Content Hash** (4 files, concatenated): `0ae08e4081581b65207ab1454749fa8ddf113d12172b024fdb43e871a7b15b40`
+**Previous Hash**: `bbf203ee3d3b76c528e0c26b677e0a5c32811fac3c57830b502dfbe30fa2e7b1`
+**Chain Hash (Merkle seal)**: `0982a7fe2afafebf2d6155252b96cceac8055d4d824a4094bd4bb29cc1996d7c`
+
+**Files**: qor/scripts/veto_pattern.py (173 lines: recognition widened to AUDIT + GATE TRIBUNAL, NEW parse_in_flight_audit_count, detect gains optional in_flight with the O2 ordering guard, check wires it -- signature unchanged), tests/test_veto_pattern_detector.py (six new tests including the ordering-guard inverse and the ledger-binding anti-recurrence test), CHANGELOG.md, docs/PROCESS_SHADOW_GENOME.md (repointment).
+
+**RED THEN GREEN**: 5 failed / 13 passed at v0.148.0 (the four declared reds plus the O2 guard test; grandfathered-convention test green-by-design), then 31/31 across the detector and every consumer suite. Determinism 18/18 twice.
+
+**THE HELD CITATION LANDED TRUE.** Event 8f9c5c6e repointed to tests/test_veto_pattern_detector.py via correct_closure_enforcers under PASS attestation (.qor/gates/2026-08-17T2146-7136d4/{remediate-iter1,audit-iter2}.json) -- in the same change that put the ledger-binding test into that file. Post-flip verified: addressed true, addressed_ts unchanged, enforcer repointed. changed=1, missing=[].
+
+**Next**: /qor-substantiate (v0.148.1).
+
+
+---
+
+### Entry #601: SESSION SEAL -- Phase 227 veto-pattern GATE TRIBUNAL recognition (v0.148.1)
+
+**Timestamp**: 2026-08-17T22:01:42Z
+**Phase**: SEAL (Phase 227)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `7fd70e77159d`
+**Plan**: docs/plan-qor-phase227-veto-pattern-gate-tribunal.md (iteration 1; PASS at entry #599)
+**Session**: `2026-08-17T2146-7136d4`
+**Change Class**: hotfix (v0.148.0 -> v0.148.1)
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash**: `158e5c3342435aca1998364d6f62573d543485ae71a17c783a96952193d5efb1`
+**Previous Hash**: `0982a7fe2afafebf2d6155252b96cceac8055d4d824a4094bd4bb29cc1996d7c`
+**Chain Hash (Merkle seal)**: `92b935f585845607e22ba558aea4f76eb1983558e427e2b7f6bb260062e15aee`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**THE DETECTOR READS THE LEDGER THAT EXISTS.** Recognition widened to the GATE TRIBUNAL convention the ledger has written since Entry #86 (grandfathered AUDIT kept); the in-flight condition makes the live cycle's multi-pass run visible before its seal, with the ordering guard from audit O2; the ledger-binding anti-recurrence test asserts sealed phases above 200 parse -- a monotone property that cannot rot. Red 5 / green-by-design 1 at v0.148.0, then 31/31; full suite 2989 passed / 0 failed; determinism 18/18 twice. GH #342 held item one landed: event 8f9c5c6e repointed to the test file under PASS attestation in the same change that made the citation true.
+
+**DECLARED CONSEQUENCE STANDS**: the first post-fix /qor-audit Step 7 run truthfully fires over phases 225-226 (simulated at audit: counts {3, 2}, max_pass_count 3) and emits a severity-3 repeated_veto_pattern event. That emission is the detector working.
+
+**GATE LADDER**: intent-lock VERIFIED; matrix 30/140/0; secret-scan clean; merge-velocity strained/narrow_scope (exit 0); data-api-acl disclosed-SKIP; instruction-hygiene disclosed-SKIP (event `d1e44d64a82c`); doc-integrity strict OK; governance-index advanced + enforced OK; feature inventory 25/25 verified, no regressions vs `2026-08-17T2042-9bd98d`.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on green CI.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

@@ -47,26 +47,68 @@ def parse_phase_audit_counts(ledger_text: str) -> dict[int, int]:
         phase_num = int(phase_match.group(1))
         if "SEAL" in entry_type:
             sealed.add(phase_num)
-        elif entry_type == "AUDIT":
+        elif entry_type in ("AUDIT", "GATE TRIBUNAL"):
+            # AUDIT is the grandfathered convention (entries 1-85); the ledger
+            # has written GATE TRIBUNAL since Entry #86 (Phase 227; GH #342).
             audits[phase_num] = audits.get(phase_num, 0) + 1
     return {p: c for p, c in audits.items() if p in sealed}
 
 
+def parse_in_flight_audit_count(ledger_text: str) -> tuple[int, int] | None:
+    """(phase, audit_count) for the newest UNSEALED phase carrying audit entries.
+
+    The sealed-only window is structurally one phase late: the live cycle's own
+    multi-VETO run is invisible until after its seal. None when every audited
+    phase is sealed.
+    """
+    sealed: set[int] = set()
+    audits: dict[int, int] = {}
+    for match in _ENTRY_HEADER.finditer(ledger_text):
+        _, entry_type_raw, desc = match.groups()
+        entry_type = entry_type_raw.strip()
+        phase_match = _PHASE_REF.search(desc)
+        if phase_match is None:
+            continue
+        phase_num = int(phase_match.group(1))
+        if "SEAL" in entry_type:
+            sealed.add(phase_num)
+        elif entry_type in ("AUDIT", "GATE TRIBUNAL"):
+            audits[phase_num] = audits.get(phase_num, 0) + 1
+    unsealed = [p for p in audits if p not in sealed]
+    if not unsealed:
+        return None
+    newest = max(unsealed)
+    return newest, audits[newest]
+
+
 def detect_repeated_veto_pattern(
-    counts: dict[int, int], window: int = _PATTERN_WINDOW,
+    counts: dict[int, int],
+    window: int = _PATTERN_WINDOW,
+    in_flight: tuple[int, int] | None = None,
 ) -> PatternResult:
-    """Pattern fires when the last ``window`` sealed phases each had >1 audit."""
-    sorted_phases = sorted(counts.keys())
+    """Pattern fires when the last ``window`` phases each had >1 audit.
+
+    ``in_flight`` joins the live phase as the newest window member only when
+    its count exceeds 1 AND it is newer than every sealed phase -- a stale
+    abandoned unsealed phase must not compose the window out of temporal order.
+    """
+    effective = dict(counts)
+    if in_flight is not None:
+        phase, count = in_flight
+        newest_sealed = max(counts) if counts else 0
+        if count > 1 and phase > newest_sealed:
+            effective[phase] = count
+    sorted_phases = sorted(effective.keys())
     if len(sorted_phases) < window:
         return PatternResult(False, [], 0)
     recent = sorted_phases[-window:]
-    all_multi_pass = all(counts[p] > 1 for p in recent)
+    all_multi_pass = all(effective[p] > 1 for p in recent)
     if not all_multi_pass:
         return PatternResult(False, [], 0)
     return PatternResult(
         detected=True,
         recent_phases=recent,
-        max_pass_count=max(counts[p] for p in recent),
+        max_pass_count=max(effective[p] for p in recent),
     )
 
 
@@ -123,7 +165,9 @@ def check(
         ledger_path = workdir.meta_ledger()
     text = Path(ledger_path).read_text(encoding="utf-8")
     counts = parse_phase_audit_counts(text)
-    result = detect_repeated_veto_pattern(counts)
+    result = detect_repeated_veto_pattern(
+        counts, in_flight=parse_in_flight_audit_count(text),
+    )
     if session_id is not None:
         maybe_emit_pattern_event(result, session_id)
     return result
