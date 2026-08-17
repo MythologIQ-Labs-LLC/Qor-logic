@@ -215,13 +215,15 @@ A duplicate-`previous_hash` residual (the SG-ConcurrentLedgerRace-A pattern: two
 
 **Stage 1 — pending.** `/qor-remediate` Step 4 calls `remediate_mark_addressed.mark_addressed_pending(ids, session_id)`. This flips `addressed_pending: true` on each matched event. `addressed` stays `false`; `addressed_ts` stays `null`; `addressed_reason` stays `null`. The event log now records "remediation proposed; awaiting review."
 
-**Stage 2 — addressed.** When the operator reviews the remediation, they invoke `/qor-audit` with the skill arg `reviews-remediate:<path-to-remediate.json>`. `/qor-audit` Step 4.1 captures this path and writes `reviews_remediate_gate: "<path>"` into the audit gate artifact. If the audit reaches a PASS verdict, Step 4.2 invokes `remediate_mark_addressed.mark_addressed(ids, session_id, review_pass_artifact_path, remediate_gate_path, closure_enforcer)`, which:
+**Stage 2 — addressed.** When the operator reviews the remediation, they invoke `/qor-audit` with the skill arg `reviews-remediate:<path-to-remediate.json>`. `/qor-audit` Step 4.1 captures this path and writes `reviews_remediate_gate: "<path>"` into the audit gate artifact. If the audit reaches a PASS verdict, Step 4.2 invokes `remediate_mark_addressed.mark_addressed(ids, session_id, review_pass_artifact_path, remediate_gate_path, closure_enforcer)` -- where `ids` may instead be an `{event_id: closure_enforcer}` mapping with `closure_enforcer` omitted, so a multi-finding remediation closes each event citing the mechanism that guards that event's pattern (Phase 226; GH #333); every mapped enforcer validates before attestation and before any durable mutation -- which:
 
 1. Validates `closure_enforcer` (Phase 166; GH #249) against exactly four forms: an existing `tests/test_*.py` path, an importable `qor.scripts.*`/`qor.reliability.*` module, a `/qor-<skill> Step N` gate reference, or `cannot-automate: <justification >= 50 chars>`. Invalid or missing: raises `ClosureEnforcerError`; no event mutation. A pattern cannot close on prose alone.
 2. Verifies the audit artifact exists, has `phase == "audit"`, `verdict == "PASS"`.
 3. Verifies the artifact's `reviews_remediate_gate` field equals `remediate_gate_path`.
 4. On any verification failure: raises `ReviewAttestationError`; no event mutation.
 5. On success: flips `addressed: true`, stamps `addressed_ts`, writes `addressed_reason: "remediated"`, records `closure_enforcer`, preserves `addressed_pending: true`.
+
+An already-remediated event closed under a wrong citation has one sanctioned repair: `remediate_mark_addressed.correct_closure_enforcers(event_enforcers, session_id, review_pass_artifact_path, remediate_gate_path)` (Phase 226; GH #333), which runs under the same PASS attestation, replaces only the `closure_enforcer` field on events already carrying `addressed: true` with `addressed_reason: "remediated"`, and cannot reopen an event, change its timestamp, or alter its reason. The attestation and enforcer-validation checks live in `qor.scripts.remediate_attestation`; `remediate_mark_addressed` re-exports both exception classes.
 
 The `sg_closure_lint` companion (WARN-only, `/qor-audit` Step 0.6 ladder) walks the countermeasure doctrine's `## SG-` entries and flags any entry citing no executable enforcer -- the standing backfill worklist for the same rule at corpus level.
 

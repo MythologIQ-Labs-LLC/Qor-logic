@@ -18071,5 +18071,135 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #592: RESEARCH BRIEF -- GH #333 salvage assessment
+
+**Timestamp**: 2026-08-17T20:58:54Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-17T2042-9bd98d`
+
+**Content Hash**: `ddd65caf9c1c6e353a1f8099130bcd0bcaccb1dd0db9d3c6f836334efa697e53`
+**Previous Hash**: `49f4b0605129d806df0f6965cfa63bd31df1fe0cf50df10e78f02f50e494055a`
+**Chain Hash (Merkle seal)**: `c95c980167ebe1061d350dd50d995463d043d545a72e267da4923baadacf2bf4`
+
+**Decision**: The GH #333 pair from the stabilization branch (`57eb632`, `bd63317`) is salvageable through a governed Phase 226: it applies cleanly on post-225 main (neither file touched by Phase 225), its tests passed in PR #338's CI on an identical base, and the implementation matches the issue's candidate fix (mapping form with all-or-nothing per-enforcer validation before attestation before mutation; legacy shared-enforcer signature intact; narrow PASS-attested corrective path that cannot reopen or retimestamp). Two scope decisions surfaced: the `(0, [])` already-done ambiguity stays out (own small issue), and the actual repair of the three mis-cited Phase 223 events is a follow-on /qor-remediate pass using the new API -- shipping the capability without the repair would repeat the half-measure-closure pattern.
+
+**Brief**: docs/research-brief-gh333-salvage-2026-08-17.md. **Next**: /qor-plan (Phase 226).
+
+
+---
+
+### Entry #593: GATE TRIBUNAL -- Phase 226 per-event closure enforcers, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-17T21:07:33Z
+**Phase**: GATE (Phase 226)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase226-per-event-closure-enforcers.md (iteration 1)
+**Session**: `2026-08-17T2042-9bd98d`
+**Mode**: adversarial -- independent reviewer by quality preference (audit_risk_score: option_b_required false)
+
+**Content Hash**: `dd2da6b74c52c549bc6ee01d449a446e47b2f85263fe35453f2c67560720cc4e`
+**Previous Hash**: `c95c980167ebe1061d350dd50d995463d043d545a72e267da4923baadacf2bf4`
+**Chain Hash (Merkle seal)**: `3c92887d3b73383f372fa087635631ad0c7b234dfb0be20619e3a1565b07482f`
+
+**Verdict**: **VETO** -- specification-drift, coverage-gap, infrastructure-mismatch.
+
+**THE PLAN INVENTED SIX TESTS.** It declared ten behavioral tests in the adopted bd63317; the artifact holds four. Three implemented behaviors -- empty-mapping rejection, mapping-plus-shared-enforcer rejection, unknown-id surfacing -- ship untested under the plan as written, and the acceptance "ten tests observed red-then-green" cannot be observed. The count originated in plan authoring, not in the research brief. HALLUCINATION recorded: asserted contents of a pinned artifact the artifact does not contain.
+
+**THE ENUMERATED MOVE FAILS AT IMPORT.** The Phase 3 receives list omits _MODULE_RE, _GATE_STEP_RE, and _CANNOT_AUTOMATE_PREFIX, which _validate_closure_enforcer lexically requires; a literal implementation raises NameError. The Phase 225 convention -- receives lists enumerate even private constants -- was established two entries ago and not applied.
+
+**EVERYTHING ELSE MEASURED CLEAN.** All four LD citations reproduce at v0.147.0; the razor arithmetic is exact (module 276, moved defs 96 lines, longest function 39, landing ~173/~119); the red claim is real; the adopted diff contains nothing undeclared; the corrective path cannot reopen, retimestamp, or touch non-remediated events; the caller sweep and skill-snippet exemption are sound; self-application independently confirmed 4 truth-checked / 0 findings via a temporary worktree.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-plan iteration 2 (attempt 1 of 5 consumed).
+
+
+---
+
+### Entry #594: GATE TRIBUNAL -- Phase 226 per-event closure enforcers, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-17T21:12:58Z
+**Phase**: GATE (Phase 226)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase226-per-event-closure-enforcers.md (iteration 2)
+**Session**: `2026-08-17T2042-9bd98d`
+**Mode**: adversarial -- independent reviewer, P2 full LD re-walk
+
+**Content Hash**: `596c5014d8eff11ee8e885b74053194cdc2a1330c943b51dc63a31307f22724d`
+**Previous Hash**: `3c92887d3b73383f372fa087635631ad0c7b234dfb0be20619e3a1565b07482f`
+**Chain Hash (Merkle seal)**: `6e495357e55a4fb3efe5a546156249f39f47f04966ef93bf43e0a9140fc1eae4`
+
+**Verdict**: **PASS** -- attempt 2 of 5; no mandating findings.
+
+**THE ADOPTION IS NOW DESCRIBED FROM THE ARTIFACTS.** The four bd63317 tests are named verbatim and match the commit exactly; the three implemented-but-untested behaviors plus the corrective-sharpness assertion land in a NEW companion file whose per-test red mechanisms the reviewer verified against the v0.147.0 signature -- including the deliberately-valid-shared-enforcer design that makes the mixed-form red "no error raised" instead of a wrong-reason exception. The razor arithmetic with the three constants added matches independent measurement: 99 lines out, landing near 173 and 119.
+
+**THREE OBSERVATIONS RIDE ALONG, NONE GATING**: two stale "ten" strings in non-binding prose (text binds as read), the omit-not-None red-mechanism constraint for companion authoring, and the definition-pattern caution for the doctrine amendment.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-implement.
+
+
+---
+
+### Entry #595: IMPLEMENTATION -- Phase 226 per-event closure enforcers
+
+**Timestamp**: 2026-08-17T21:20:41Z
+**Phase**: IMPLEMENT (Phase 226)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase226-per-event-closure-enforcers.md (iteration 2, PASS at entry #594)
+**Session**: `2026-08-17T2042-9bd98d`
+
+**Content Hash** (6 files, concatenated): `83babc5e65198342c96548eac17d9e50e0999cf4463b0dacebde00de1e4a2f48`
+**Previous Hash**: `6e495357e55a4fb3efe5a546156249f39f47f04966ef93bf43e0a9140fc1eae4`
+**Chain Hash (Merkle seal)**: `2b12964fe795a890734dc3bb1163aa14b192974eee1e7c8539619379b493b9cd`
+
+**Files**: qor/scripts/remediate_mark_addressed.py (169 lines, mutation-only), qor/scripts/remediate_attestation.py (NEW, 126 lines), tests/test_remediate_per_event_enforcers.py (adopted via cherry-pick of bd63317, authorship preserved), tests/test_remediate_enforcer_edges.py (NEW, 4 companion tests), qor/references/doctrine-governance-enforcement.md (section 10.1 amendment), CHANGELOG.md ([Unreleased]).
+
+**RED THEN GREEN, EXACTLY AS AUDITED.** The adopted tests plus the four companion tests observed 7 failed / 1 passed against v0.147.0 (the legacy-signature test green-by-design), then 14/14 green after cherry-picking 57eb632 (authorship preserved: Kevin Knapp <krknapp@gmail.com>). The companion reds used the omission mechanism the audit bound (O2): no explicit None, no wrong-reason exceptions. Determinism: 8/8 twice.
+
+**EXTRACTION LANDED UNDER THE ARITHMETIC.** remediate_attestation.py receives the two exception classes, three constants, and three contract-check functions verbatim; remediate_mark_addressed.py re-exports the exceptions and keeps only durable mutation. 169 and 126 lines against estimates of 173 and 119; no function over 40. Doctrine 10.1 now documents the mapping form and the corrective path without definition-pattern phrasing (O3 honored).
+
+**FULL SUITE: 2983 passed, 6 skipped, 0 failed (242s).**
+
+**Next**: /qor-substantiate.
+
+
+---
+
+### Entry #596: SESSION SEAL -- Phase 226 per-event closure enforcers (v0.148.0)
+
+**Timestamp**: 2026-08-17T21:22:01Z
+**Phase**: SEAL (Phase 226)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `f0e125bef212`
+**Plan**: docs/plan-qor-phase226-per-event-closure-enforcers.md (iteration 2; PASS at entry #594)
+**Session**: `2026-08-17T2042-9bd98d`
+**Change Class**: feature (v0.147.0 -> v0.148.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1, PW.5.1, RV.2.1
+
+**Content Hash**: `596c5014d8eff11ee8e885b74053194cdc2a1330c943b51dc63a31307f22724d`
+**Previous Hash**: `2b12964fe795a890734dc3bb1163aa14b192974eee1e7c8539619379b493b9cd`
+**Chain Hash (Merkle seal)**: `ff26ff6961bb7d5b42b17a5d14b0790e0fef3f86b0734afa85acbca7e0e4383d`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**CLOSURE PROVENANCE NOW NAMES THE ENFORCER THAT GUARDS EACH FINDING.** GH #333 closed by governed adoption of the stabilization-branch pair (authorship preserved via cherry-pick) plus four companion edge tests: `mark_addressed` accepts an event-to-enforcer mapping with all-or-nothing validation before attestation before mutation, the legacy shared-enforcer form stays valid, and `correct_closure_enforcers` repairs a wrong historical citation under PASS attestation without reopening, retimestamping, or reclassifying. The attestation concern extracted to `qor.scripts.remediate_attestation` (126 lines); the mutation module lands at 169.
+
+**REALITY AUDIT**: all declared files exist; no unplanned files (README/SYSTEM_STATE regeneration is ceremony-owned). Red observed exactly as audited: 7 failed / 1 passed at v0.147.0, then 14/14; determinism 8/8 twice; full suite 2983 passed / 0 failed. Feature Inventory: Total: 25 / verified: 25 / unverified: 0 / n/a: 0; no regressions against snapshot `2026-08-17T1951-986e79`.
+
+**GATE LADDER**: intent-lock VERIFIED; matrix 30/140/0; secret-scan clean; procedural-fidelity 1 WARN (doc-surface, resolved by this seal's SYSTEM_STATE regeneration); merge-velocity within threshold; data-api-acl disclosed-SKIP; instruction-hygiene disclosed-SKIP (event `a4093a8becb8`); doc-integrity strict OK; governance-index advanced + enforced OK.
+
+**AUDIT TRAIL**: VETO (iter 1: invented test inventory + missing constants, entry #593, HALLUCINATION recorded) -> PASS (iter 2, entry #594), independent reviewer both iterations with P2 full LD re-walks; all four LD statements re-executed twice.
+
+**FOLLOW-ONS**: (1) /qor-remediate pass to repair the three mis-cited Phase 223 events via `correct_closure_enforcers` -- the capability shipped here exists for exactly that; (2) file the `(0, [])` already-done-signal issue.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on green CI, then GH #333 close.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

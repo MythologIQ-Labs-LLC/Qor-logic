@@ -1934,4 +1934,24 @@ Sibling of iteration-1 F4 within an unsatisfiable-acceptance family: there the a
 
 ---
 
+## Entry: Phase 226 iteration 1 -- test inventory asserted from memory, not from the artifact
+
+**Date**: 2026-08-17
+**Category**: HALLUCINATION
+**Verdict source**: GATE TRIBUNAL entry #593 (VETO, specification-drift + coverage-gap + infrastructure-mismatch)
+
+### What Happened
+
+A plan adopting a pinned test commit declared it contained ten behavioral tests covering eight named behaviors. The commit contains four tests. The inflated inventory was authored from the PR description's prose ("behavioral coverage includes...") rather than from reading the pinned artifact, and three implemented behaviors would have shipped untested under the plan's own acceptance, which as written could never be observed.
+
+### Pattern to Avoid
+
+When a plan adopts a pinned artifact, every claim about that artifact's contents must be read out of the artifact at its pinned revision, not paraphrased from surrounding prose. A test count is a grep away; a behavior list is a read away. The same pass that verifies LD citations by execution must extend to adoption inventories: if the plan says N tests, `git show <ref>:<path>` must show N.
+
+### Pattern ID
+
+Kin to SG-CitationDrift-A but on artifact contents rather than line citations: the reference resolves, the description of what it holds does not. Remedy: adoption claims carry their own grep-evidence (a count or a function-name list verified at the pinned revision). Enforcer: none yet; a second occurrence warrants extending plan_grep_lint's demand model to adoption-inventory claims.
+
+---
+
 *Shadow integrity: ACTIVE*

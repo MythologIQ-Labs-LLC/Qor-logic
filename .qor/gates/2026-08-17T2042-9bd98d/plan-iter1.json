@@ -1,0 +1,46 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-17T2042-9bd98d",
+  "ts": "2026-08-17T21:01:46Z",
+  "plan_path": "docs/plan-qor-phase226-per-event-closure-enforcers.md",
+  "phases": [
+    "Phase 1: Adopt the behavioral contract (tests first)",
+    "Phase 2: Adopt the implementation",
+    "Phase 3: Razor extraction and doctrine parity"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q",
+    "qor-logic-plus scripts plan_text_consistency_lint --check docs/plan-qor-phase226-per-event-closure-enforcers.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase226-per-event-closure-enforcers.md --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "feature",
+  "boundaries": {
+    "limitations": [
+      "corrective path repairs citation field only on remediated events",
+      "(0,[]) already-done ambiguity remains"
+    ],
+    "non_goals": [
+      "no distinguishable already-done signal (own issue)",
+      "no skill-text changes (legacy form remains valid)",
+      "no execution of historical repair (follow-on /qor-remediate pass)"
+    ],
+    "exclusions": [
+      "GH #332",
+      "GH #337",
+      "GH #320",
+      "GH #286",
+      "PR #338 disposition (operator)"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.147.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T21:01:46Z"
+  }
+}
