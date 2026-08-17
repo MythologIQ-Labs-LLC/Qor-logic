@@ -10,6 +10,15 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.148.0] - 2026-08-17
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 226 (feature; per-event closure enforcers)**: closes GH #333. `remediate_mark_addressed.mark_addressed` accepts an `{event_id: closure_enforcer}` mapping alongside the legacy list-plus-shared-enforcer form, so a multi-finding remediation closes each Shadow Genome event citing the mechanism that actually guards that event's pattern. Every mapped enforcer validates against the four accepted forms before attestation and before any durable mutation (all-or-nothing). A new, deliberately narrow `correct_closure_enforcers` repairs already-remediated events whose historical citation was wrong -- under the same PASS attestation, citation field only; it cannot reopen an event, change its timestamp, or alter its reason. Implementation adopts the verified pair from the stabilization branch (authorship preserved) with companion edge coverage.
+- **Attestation checks extracted to `qor.scripts.remediate_attestation`**: enforcer validation and review-pass verification now live apart from the durable event mutation they gate; `remediate_mark_addressed` re-exports both exception classes. Both modules sit under the 250-line razor ceiling.
+- **Doctrine parity**: `doctrine-governance-enforcement.md` section 10.1 Stage 2 documents the mapping form and the corrective path.
+
 ## [0.147.0] - 2026-08-17
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

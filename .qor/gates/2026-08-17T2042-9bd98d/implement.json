@@ -1,0 +1,29 @@
+{
+  "phase": "implement",
+  "session_id": "2026-08-17T2042-9bd98d",
+  "ts": "2026-08-17T21:21:08Z",
+  "files_touched": [
+    "qor/scripts/remediate_mark_addressed.py",
+    "qor/scripts/remediate_attestation.py",
+    "tests/test_remediate_per_event_enforcers.py",
+    "tests/test_remediate_enforcer_edges.py",
+    "qor/references/doctrine-governance-enforcement.md",
+    "CHANGELOG.md",
+    "docs/META_LEDGER.md"
+  ],
+  "test_summary": {
+    "passed": 2983,
+    "skipped": 6,
+    "failed": 0,
+    "determinism_rerun": "8/8 twice",
+    "red_observed": "7 failed / 1 passed at v0.147.0"
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.147.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T21:21:08Z"
+  }
+}
