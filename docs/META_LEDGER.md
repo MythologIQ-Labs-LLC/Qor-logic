@@ -18416,5 +18416,98 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #606: RESEARCH BRIEF -- seal staging as executable ceremony
+
+**Timestamp**: 2026-08-17T22:44:05Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-17T2242-9d4cdb`
+
+**Content Hash**: `22b6d1792cfa60e7f14f513de0ef07849fa31846921204a2f39f8e041dc75cb2`
+**Previous Hash**: `8e76d2990be2800567d8828658874e2cc266ff2711585696d59f7b3a8f7e3f1c`
+**Chain Hash (Merkle seal)**: `aa8c4c4b25a181bf93aa38637e38d7046dafe94bd8e4f88c6af9de022157a607`
+
+**Decision**: GH #337. Measured over the last six seal commits: the Step 9.5 block omits nine ceremony families, not five (README, pyproject, GOVERNANCE_INDEX, SHADOW_GENOME, PROCESS_SHADOW_GENOME pair, plan, research briefs, AUDIT_REPORT, qor/dist). The enumerated fix is arithmetically impossible -- the slack-floor test leaves a 27-byte addition budget against a ~300-byte enumeration -- and #337 itself warns partial enumeration is worse than visible staleness. Phase 229 therefore replaces the enumeration with a NEW qor.scripts.seal_stage executable (behaviorally tested, one invocation line in Step 9.5, net-negative bytes), the same executable-over-prose remedy Phases 225 and 227 applied to the doctrine ceiling and detector conventions. One deliberate legacy-test update declared: the Phase 176 gate-dir prose-shape test migrates to binding the invocation line, with the gate-dir guarantee moving to the behavioral suite.
+
+**Brief**: docs/research-brief-seal-stage-2026-08-17.md. **Next**: /qor-plan (Phase 229).
+
+
+---
+
+### Entry #607: GATE TRIBUNAL -- Phase 229 seal-stage executable, iteration 1 (PASS)
+
+**Timestamp**: 2026-08-17T22:48:38Z
+**Phase**: GATE (Phase 229)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase229-seal-stage-executable.md (iteration 1)
+**Session**: `2026-08-17T2242-9d4cdb`
+**Mode**: adversarial -- independent reviewer; toolset declared per the Phase 228 contract in its first live use (shell, git with history, Python, full file access; no network)
+
+**Content Hash**: `b1742515c329b4948812db454a1e4a2777c8899f833830b7ad315698792c7809`
+**Previous Hash**: `aa8c4c4b25a181bf93aa38637e38d7046dafe94bd8e4f88c6af9de022157a607`
+**Chain Hash (Merkle seal)**: `5c61e5256efba26a27aadcfed83923c6cc430ba4e03ef125518a4dcbcdb74eb4`
+
+**Verdict**: **PASS** -- first iteration, no mandating findings.
+
+**THE DOCUMENTED CEREMONY IS NOT MERELY INCOMPLETE; IT IS UNEXECUTABLE.** The reviewer found the current block stages src/, a directory this repository does not have -- following the written procedure verbatim errors out. The size arithmetic was measured to the byte (27-byte addition budget; 163 bytes removed against a 59-byte invocation); the ceremony constant was checked against an independently re-derived six-seal union with merge commits excluded; the Phase 176 contract migration composes end to end. GH #337's partial-completion hazard is closed by construction: the list becomes the mechanism.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-implement.
+
+
+---
+
+### Entry #608: IMPLEMENTATION -- Phase 229 seal-stage executable
+
+**Timestamp**: 2026-08-17T23:07:21Z
+**Phase**: IMPLEMENT (Phase 229)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase229-seal-stage-executable.md (iteration 1, PASS at entry #607)
+**Session**: `2026-08-17T2242-9d4cdb`
+
+**Content Hash** (6 files, concatenated): `bcaa001c183eca52ebab391d5a7a1bafdeea642685c08960f67197a215498774`
+**Previous Hash**: `5c61e5256efba26a27aadcfed83923c6cc430ba4e03ef125518a4dcbcdb74eb4`
+**Chain Hash (Merkle seal)**: `d4d433171094f4cd54e9d9ce2b9291f7e1c95c59f3badbec207ba6046ace79c2`
+
+**Files**: qor/scripts/seal_stage.py (NEW, 93 lines: CEREMONY_FILES/GLOBS/TREES constants, stage(), list-form git add, absent paths and empty gate dirs skipped), tests/test_seal_stage.py (NEW, 4 behavioral tests in tmp repos), tests/test_substantiate_staging_gates.py (Phase 176 test migrated to invocation binding per LD-3), tests/test_substantiate_seal_artifacts_wiring.py (Phase 224 ordering test's staging locator migrated -- a caller the plan's sweep missed, contract preserved, declared here), qor/skills/governance/qor-substantiate/SKILL.md (Step 9.5 one-line invocation, byte-NEUTRAL at 37,209 -- slack floor held exactly), CHANGELOG.md.
+
+**RED THEN GREEN**: collection ImportError plus block-token absence at v0.149.0, then 14/14 targeted and 2995 passed / 0 failed clean full suite. Determinism 11/11 twice. One overshoot caught by the slack-floor test mid-implementation (rationale sentence trimmed 38 bytes) -- the Phase 222 guard doing its job.
+
+**Next**: /qor-substantiate (v0.150.0) -- the first live exercise of the executable ceremony.
+
+
+---
+
+### Entry #609: SESSION SEAL -- Phase 229 seal-stage executable (v0.150.0)
+
+**Timestamp**: 2026-08-17T23:08:44Z
+**Phase**: SEAL (Phase 229)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `433ffcb67f51`
+**Plan**: docs/plan-qor-phase229-seal-stage-executable.md (iteration 1; PASS at entry #607)
+**Session**: `2026-08-17T2242-9d4cdb`
+**Change Class**: feature (v0.149.0 -> v0.150.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `b1742515c329b4948812db454a1e4a2777c8899f833830b7ad315698792c7809`
+**Previous Hash**: `d4d433171094f4cd54e9d9ce2b9291f7e1c95c59f3badbec207ba6046ace79c2`
+**Chain Hash (Merkle seal)**: `5b45dc396e924b8164446c76221bed9b42f60e15e8c8893b6e31bcfd3072ad31`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**THE STAGING CEREMONY IS NOW THE MECHANISM.** GH #337 closed: the Step 9.5 enumeration that omitted nine ceremony families -- and staged a src/ tree this repository does not have -- is replaced by qor.scripts.seal_stage, whose ceremony constants are exercised behaviorally (staged-set membership, noise exclusion, absent-family tolerance, cross-session gate-dir isolation) and invoked as one byte-neutral line. Two wiring locators migrated deliberately with contracts preserved (Phase 176 gate-dir, Phase 224 ordering anchor). Red-then-green observed; clean full suite 2995 passed / 0 failed; determinism 11/11 twice; the slack-floor guard caught a 38-byte overshoot mid-implementation and was obeyed, not overridden.
+
+**THIS SEAL IS THE FIRST LIVE EXERCISE**: Step 9.5 below runs seal_stage itself -- the deliverable staging its own delivery.
+
+**GATE LADDER**: intent-lock VERIFIED; matrix 30/140/0; secret-scan clean; merge-velocity strained/narrow_scope (exit 0); data-api-acl disclosed-SKIP; instruction-hygiene disclosed-SKIP (event `7b50461e5b5c`); publication boundary 0 findings; doc-integrity strict OK; governance-index advanced + enforced OK; feature inventory 25/25, no regressions vs `2026-08-17T2208-4a255f`.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on FULL green, then GH #337 close.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

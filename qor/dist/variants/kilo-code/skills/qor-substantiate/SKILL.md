@@ -558,10 +558,10 @@ Template: `references/qor-substantiate-templates.md`.
 
 ### Step 9.5: Stage Artifacts (for user commit)
 
-  **Stage All Artifacts** (uses `$SESSION_ID` from Step 4.6):
+  **Stage All Artifacts** (uses `$SESSION_ID` from Step 4.6). The ceremony
+  set IS `qor.scripts.seal_stage` (Phase 229; GH #337) -- tested, not prose:
   ```bash
-  git add CHANGELOG.md docs/CONCEPT.md docs/ARCHITECTURE_PLAN.md docs/META_LEDGER.md
-  git add docs/SYSTEM_STATE.md docs/BACKLOG.md src/ ".qor/gates/$SESSION_ID/"
+  python -m qor.scripts.seal_stage --session "$SESSION_ID" --repo-root .
   ```
 
   **Next Steps**: Review the staged files and then commit and push when ready.

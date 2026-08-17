@@ -192,7 +192,7 @@ else:
     mode = "solo"
 ```
 
-Adversarial mode contract (input/output schemas) lives in `qor/skills/governance/qor-audit/references/adversarial-mode.md`.
+Adversarial mode contract (input/output schemas) lives in `qor/skills/governance/qor-audit/references/adversarial-mode.md`. Every dispatched reviewer is bound by the Reviewer toolset declaration contract there (Phase 228; GH #342): it declares its toolset in its first response, and the Judge may not pin a verification outside that set.
 
 **External-reviewer subprocess bridge (Phase 123 wiring; GH #160).** When an external reviewer is configured (`.qorlogic/config.json` -> `external_reviewer.command`), dispatch the reviewer-input contract to it via the bridge and ingest its verdict:
 

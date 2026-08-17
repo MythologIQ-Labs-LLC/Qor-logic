@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-17T22:02:29Z",
+  "generated_ts": "2026-08-17T23:09:31Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -102,7 +102,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/references/adversarial-mode.md",
       "install_rel_path": "skills/qor-audit/references/adversarial-mode.md",
-      "sha256": "246c15b485ddc782ddbd7e34ed07ce385a5cad8977139afb7e809708ce38ac00"
+      "sha256": "d902cc34e73a823795eae841aed0e70828645a37fb054ab469abead3f6d279e1"
     },
     {
       "id": "qor-audit",
@@ -138,7 +138,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/SKILL.md",
       "install_rel_path": "skills/qor-audit/SKILL.md",
-      "sha256": "056eb0c57e9fd476ad3ffd205f996738dbe61a27a9c8364b5d2adda77c00ffaa"
+      "sha256": "2b62a425978b0bf458fb6a7d4a630ed4059752d0a3850c6a7f1ffc55dadf945b"
     },
     {
       "id": "qor-bootstrap",
@@ -432,7 +432,7 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "5caf3e43369d3143d0b7f085606121f59e2f9b9de1187fb30918aff6e95b3e5b"
+      "sha256": "8f9e2278ec6fe1f04daf275b6f06ee0f0738c084b73918458d3c210f08b8721c"
     },
     {
       "id": "qor-tone",

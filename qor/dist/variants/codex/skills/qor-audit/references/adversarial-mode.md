@@ -122,6 +122,25 @@ chain found 4 self-audit defects + 3 additional independent-reviewer defects;
 sub-plan 02a found 10/9/12 with independent review from iter 1 including critical
 `pg_notify` durability hallucination).
 
+## Reviewer toolset declaration (Phase 228; GH #342)
+
+Three binding rules for every Option B dispatch, closing the Phase 223
+recurrence (a mandated reviewer had no shell across four iterations while a
+content-hash freeze attestation was pinned as reviewer-verified; shadow event
+`7b2ed33a...`):
+
+1. The dispatch prompt MUST instruct the reviewer to open its report by
+   stating what it declares its available toolset to be: shell, git,
+   repository file access, network -- whichever it actually holds.
+2. The Judge maps every mandating finding's verification method to the
+   declared set and may not pin as reviewer-verified a verification the
+   reviewer could not have executed. The remedy is the documented tooling-caveat
+   practice: the orchestrating agent re-executes the verification, or the
+   finding carries PLAUSIBLE (not CONFIRMED) evidentiary status until
+   re-executed. This grades the finding's evidence, never the binary verdict.
+3. The audit report's `**Mode**:` line records the declared toolset, making
+   each dispatch's verification authority auditable per report.
+
 ## Author-momentum risk auto-dispatch (Phase 87 wiring; GH #82)
 
 Before the adversarial passes, `/qor-audit` Step 1 scores the plan under audit

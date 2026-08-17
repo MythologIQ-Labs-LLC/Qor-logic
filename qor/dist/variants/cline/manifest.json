@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-17T22:02:29Z",
+  "generated_ts": "2026-08-17T23:09:31Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -96,7 +96,7 @@
       "id": "command-qor-audit.md",
       "source_path": "workflows/command-qor-audit.md",
       "install_rel_path": "workflows/command-qor-audit.md",
-      "sha256": "c285ddaed624e2566cc872cb06249608fd6c2f73674efde3128bce367cf5d886"
+      "sha256": "1b02fee166c87868d4179cd088cd66a571caceb9fa2a116fca95cf4b1546cf2d"
     },
     {
       "id": "command-qor-bootstrap.md",
@@ -252,7 +252,7 @@
       "id": "command-qor-substantiate.md",
       "source_path": "workflows/command-qor-substantiate.md",
       "install_rel_path": "workflows/command-qor-substantiate.md",
-      "sha256": "20e7c4e1c476047e5db5cdb55febcafcfb4824f29eb38dfce5f627830fde39c8"
+      "sha256": "0552958ce91bfcf34b89d74a4bd5b4abf713542ec92c2817fcee1d56f882adc0"
     },
     {
       "id": "command-qor-tone.md",

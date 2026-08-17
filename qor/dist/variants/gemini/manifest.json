@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-17T22:02:29Z",
+  "generated_ts": "2026-08-17T23:09:31Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -96,7 +96,7 @@
       "id": "qor-audit.toml",
       "source_path": "commands/qor-audit.toml",
       "install_rel_path": "commands/qor-audit.toml",
-      "sha256": "7dd068098e6ac83045aa4f3922144d0e393c624223b16bc6acd39c09b9a3a12e"
+      "sha256": "cff13de0d6fe4f9dba82511a547bd1c38a68d720039b8b0420f85883755c43d3"
     },
     {
       "id": "qor-bootstrap.toml",
@@ -252,7 +252,7 @@
       "id": "qor-substantiate.toml",
       "source_path": "commands/qor-substantiate.toml",
       "install_rel_path": "commands/qor-substantiate.toml",
-      "sha256": "7c1bfefbd809198d5f4cc3b291edf216a9af62a8f81f32c74caee9aa3833ee17"
+      "sha256": "02dc741e4aa8c5c74f4595e4f24e07726f9da97172934a6a5e23d645b2fbbf7d"
     },
     {
       "id": "qor-tone.toml",

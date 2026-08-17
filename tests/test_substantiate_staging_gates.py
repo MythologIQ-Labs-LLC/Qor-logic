@@ -34,14 +34,16 @@ def _step_9_5_bash(text: str) -> str:
     return block.group(1)
 
 
-def test_step_9_5_stages_the_sealed_gate_dir():
-    # prose-lint: ok=Step 9.5's git-add block IS the operator procedure under
-    # test; GH #262 is exactly this block omitting the load-bearing gate dir.
+def test_step_9_5_invokes_seal_stage():
+    # prose-lint: ok=Step 9.5's block IS the operator procedure under test.
+    # Phase 229 (GH #337): the enumeration is replaced by the executable
+    # ceremony; the gate-dir guarantee this test carried since Phase 176
+    # (GH #262) now lives behaviorally in tests/test_seal_stage.py
+    # (test_gate_directory_is_staged_for_the_session).
     bash = _step_9_5_bash(CANONICAL.read_text(encoding="utf-8"))
-    add_lines = [ln for ln in bash.splitlines() if "git add" in ln]
-    assert any(".qor/gates/" in ln and "$SESSION_ID" in ln for ln in add_lines), (
-        "Step 9.5 must stage the sealed session's gate artifacts "
-        f"(.qor/gates/$SESSION_ID/); got: {add_lines}"
+    assert "qor.scripts.seal_stage" in bash and "$SESSION_ID" in bash, (
+        "Step 9.5 must invoke the executable staging ceremony with the "
+        f"sealed session id; got: {bash!r}"
     )
 
 

@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.150.0] - 2026-08-17
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 229 (feature; the seal stages what a seal commits, by executable)**: closes GH #337. The documented Step 9.5 staging enumeration omitted nine ceremony families that every recent seal actually commits (README badge, pyproject bump, GOVERNANCE_INDEX advance, shadow-genome logs, the plan and research briefs, the audit report, qor/dist) -- and could not even run verbatim, staging a `src/` tree this repository does not have. The ceremony set now lives in `qor.scripts.seal_stage` (constants exercised by behavioral tests in a tmp repo: staged-set membership, noise exclusion, absent-family tolerance, cross-session gate-dir isolation) and Step 9.5 invokes it as one line, byte-neutral against the seal skill's slack-floor bound. Two wiring locators migrated deliberately (the Phase 176 gate-dir prose-shape test and the Phase 224 ordering test's staging anchor); their contracts are preserved and strengthened.
+
 ## [0.149.0] - 2026-08-17
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
