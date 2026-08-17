@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.148.1] - 2026-08-17
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 227 (hotfix; repeated-VETO detector reads the ledger that exists)**: first held GH #342 item. `veto_pattern.parse_phase_audit_counts` recognized only the `AUDIT` entry type retired at phase 27, while the ledger has written `GATE TRIBUNAL` since Entry #86 -- the Step 7 advisory pasted into every audit report for ~200 entries was vacuously "no pattern" over an empty window. Recognition now accepts both conventions; a new in-flight condition makes the live cycle's own multi-pass run visible before its seal (with an ordering guard so a stale abandoned unsealed phase can never join the window); and the suite gains a ledger-binding anti-recurrence test asserting the parser sees sealed phases above 200 -- a monotone structural property that can never rot, and the deliberate opposite of the synthetic-only coverage that concealed the blindness. Expected consequence, declared in the plan and confirmed by audit simulation: the first post-fix Step 7 run truthfully fires over phases 225-226 and emits a severity-3 `repeated_veto_pattern` event -- the detector working, not a defect. The held shadow-event citation `8f9c5c6e...` repointed to the test file in the same change that made it true, via `correct_closure_enforcers` under PASS attestation.
+
 ## [0.148.0] - 2026-08-17
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -1,0 +1,46 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-17T2146-7136d4",
+  "ts": "2026-08-17T21:50:00Z",
+  "plan_path": "docs/plan-qor-phase227-veto-pattern-gate-tribunal.md",
+  "phases": [
+    "Phase 1: Bind the tests to the ledger that exists",
+    "Phase 2: Recognize the convention and see the live cycle",
+    "Phase 3: Repoint the held closure citation"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q",
+    "qor-logic-plus scripts plan_text_consistency_lint --check docs/plan-qor-phase227-veto-pattern-gate-tribunal.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase227-veto-pattern-gate-tribunal.md --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "hotfix",
+  "boundaries": {
+    "limitations": [
+      "in-flight condition sees only written ledger entries",
+      "session-scoped escalation stays with cycle_count_escalator"
+    ],
+    "non_goals": [
+      "no advisory-wording or payload change",
+      "no escalator per-category counting",
+      "no 7b2ed33a repointment"
+    ],
+    "exclusions": [
+      "GH #332",
+      "GH #337",
+      "GH #320",
+      "GH #286",
+      "GH #341"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.148.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T21:50:00Z"
+  }
+}

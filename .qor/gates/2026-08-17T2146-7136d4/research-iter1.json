@@ -1,0 +1,50 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-17T2146-7136d4",
+  "ts": "2026-08-17T21:48:40Z",
+  "questions": [
+    "Is the veto_pattern GATE TRIBUNAL blindness real and what is its blast radius?",
+    "What fix shape does the original remediation specification mandate?",
+    "How does the held GH #333 repointment land truthfully?"
+  ],
+  "findings": [
+    {
+      "id": "V1",
+      "claim": "veto_pattern.py:50 matches only AUDIT; live parse: 5 phases, max 27, zero above 200; Step 7 advisory vacuous since Entry #86.",
+      "evidence": [
+        "qor/scripts/veto_pattern.py:50",
+        "live parse at main 8040205"
+      ]
+    },
+    {
+      "id": "V2",
+      "claim": "Fix = recognize GATE TRIBUNAL (keep AUDIT), in-flight condition for the live phase, ledger-binding test asserting non-empty counts above phase 200 (red today).",
+      "evidence": [
+        ".qor/gates/2026-08-12T0214-799d77/remediate-iter6.json proposal [0]"
+      ]
+    },
+    {
+      "id": "V3",
+      "claim": "Repoint 8f9c5c6e -> tests/test_veto_pattern_detector.py via correct_closure_enforcers in the same phase, per ledger #597 Required Next Action.",
+      "evidence": [
+        "docs/META_LEDGER.md entry #597",
+        "GH #342"
+      ]
+    }
+  ],
+  "sources": [
+    "qor/scripts/veto_pattern.py",
+    "tests/test_veto_pattern_detector.py",
+    ".qor/gates/2026-08-12T0214-799d77/remediate-iter6.json",
+    "GH #342"
+  ],
+  "brief_path": "docs/research-brief-veto-pattern-blindness-2026-08-17.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.148.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T21:48:40Z"
+  }
+}

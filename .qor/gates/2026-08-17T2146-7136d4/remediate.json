@@ -1,0 +1,23 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-08-17T2146-7136d4",
+  "ts": "2026-08-17T21:55:00Z",
+  "events_addressed": [
+    "8f9c5c6e6043bfef58f322af26324a782a5f198f0d558cc00fe06ee458b3cb32"
+  ],
+  "proposed_changes": [
+    {
+      "target": "docs/PROCESS_SHADOW_GENOME closure citation (single event)",
+      "change": "CORRECTION (Phase 227; GH #342 held item one): repoint 8f9c5c6e... (repeated_veto_pattern, GATE TRIBUNAL parser blindness) -> tests/test_veto_pattern_detector.py via correct_closure_enforcers. The citation becomes true in this same phase: the file now holds test_the_real_ledger_parses_to_nonempty_counts_above_phase_200, the ledger-binding anti-recurrence test the original proposal specified, red against v0.148.0 by the defect itself and green after the Phase 227 fix (recognition widened to GATE TRIBUNAL; in-flight condition added with ordering guard).",
+      "rationale": "Ledger #597's Required Next Action held this repointment until the guard mechanism exists. Phase 227 audit PASS (entry #599) verified the red mechanisms and the monotone structural property of the binding test; the fix is green (31/31 across the detector and consumer suites) before this flip executes."
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.148.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T21:55:00Z"
+  }
+}
