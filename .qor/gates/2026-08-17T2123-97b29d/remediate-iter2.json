@@ -1,0 +1,23 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-08-17T2123-97b29d",
+  "ts": "2026-08-17T21:36:01Z",
+  "events_addressed": [
+    "197cf9fa7fe77c7b671b2a929b43874ec7c152274927f8b145e68524fd3af51d"
+  ],
+  "proposed_changes": [
+    {
+      "target": "docs/PROCESS_SHADOW_GENOME closure citation (single event)",
+      "change": "CORRECTION iteration 2, split per reviews-remediate VETO: repair ONE closure citation via remediate_mark_addressed.correct_closure_enforcers -- 197cf9fa... (hallucination, fabricated grep citation) -> qor.scripts.plan_grep_lint, the mechanism that shipped (Phase 223 truth-check + Phase 225 canonical-statement adjudication, live at v0.148.0) and guards exactly this pattern. The two held corrections (8f9c5c6e -> veto_pattern anti-recurrence test; 7b2ed33a -> /qor-audit Step 1 toolset declaration) are NOT executed: their guard mechanisms do not exist yet; each repointment lands in the phase that ships its mechanism, where it becomes true in the same commit it is recorded. 061d8156 keeps its correct citation.",
+      "rationale": "Reviews-remediate audit iteration 1 VETOed the three-event batch: two repointments would have replaced known-wrong citations with plausible-but-false ones (tests/test_veto_pattern_detector.py contains no ledger-binding test; the qor-audit skill contains no toolset-declaration requirement). Only the plan_grep_lint repointment is truthful today and was explicitly passed for standalone execution."
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.148.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T21:36:01Z"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-08-17T2123-97b29d",
+  "ts": "2026-08-17T21:31:37Z",
+  "events_addressed": [
+    "8f9c5c6e6043bfef58f322af26324a782a5f198f0d558cc00fe06ee458b3cb32",
+    "197cf9fa7fe77c7b671b2a929b43874ec7c152274927f8b145e68524fd3af51d",
+    "7b2ed33a7e71f7d9ddcfd1765f6775894493b63bccdaad802df934619d6dd7b0"
+  ],
+  "proposed_changes": [
+    {
+      "target": "docs/PROCESS_SHADOW_GENOME closure citations",
+      "change": "CORRECTION (Phase 226 follow-on; GH #333): repair three closure_enforcer citations recorded under the uniform qor.scripts.cycle_count_escalator by the Phase 223 batch flip. Per-event corrections via remediate_mark_addressed.correct_closure_enforcers: 8f9c5c6e... (repeated_veto_pattern, GATE TRIBUNAL parser blindness) -> tests/test_veto_pattern_detector.py (the anti-recurrence binding its own proposal named as the load-bearing enforcer; file exists); 197cf9fa... (hallucination, fabricated grep citation) -> qor.scripts.plan_grep_lint (the truth-check that now adjudicates canonical statements); 7b2ed33a... (capability_shortfall, reviewer-shell) -> /qor-audit Step 1 (the dispatch step whose toolset-declaration remedy its proposal named). The fourth batch event 061d8156... already cites its correct enforcer (qor.scripts.cycle_count_escalator) and is untouched.",
+      "rationale": "GH #333 observed that three of the four Phase 223 closures cite a mechanism that does not guard them; the proposals at .qor/gates/2026-08-12T0214-799d77/remediate-iter6.json name the right ones. Mappings verified from proposal content, not inferred: [0] veto_pattern change text names tests/test_veto_pattern_detector.py as the anti-recurrence step; [2]/[3] name qor.scripts.plan_grep_lint for the citation-truth family; [5] names /qor-audit Step 1 for the reviewer-toolset remedy. Corrective path is addressed-only, citation-field-only, PASS-attested (shipped v0.148.0)."
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.148.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T21:31:37Z"
+  }
+}
