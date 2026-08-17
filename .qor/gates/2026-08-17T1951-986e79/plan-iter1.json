@@ -1,0 +1,48 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-17T1951-986e79",
+  "ts": "2026-08-17T19:59:52Z",
+  "plan_path": "docs/plan-qor-phase225-citation-truth-driver.md",
+  "phases": [
+    "Phase 1: Normalize the markdown span stylings out of the grammar",
+    "Phase 2: Adjudicate every statement and count what was examined",
+    "Phase 3: The doctrine and the ceiling agree"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q",
+    "qor-logic-plus scripts plan_text_consistency_lint --check docs/plan-qor-phase225-citation-truth-driver.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase225-citation-truth-driver.md --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "feature",
+  "boundaries": {
+    "limitations": [
+      "reproduces compares full stripped-line equality; long lines cannot be cited in the mandated form",
+      "backticks are stripped before statement parsing; a grep pattern containing a literal backtick cannot appear in a parseable statement"
+    ],
+    "non_goals": [
+      "no /qor-audit P2 change",
+      "no PR Citation Lint workflow change",
+      "no check_plan module/skill-path change",
+      "pre-amendment no-NN statements stay presence-only"
+    ],
+    "exclusions": [
+      "GH #333",
+      "GH #332",
+      "GH #337",
+      "GH #320",
+      "GH #286",
+      "PR #338 disposition (operator decision at Review Boundary)"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.146.1",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T19:59:52Z"
+  }
+}

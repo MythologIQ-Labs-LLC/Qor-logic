@@ -1498,9 +1498,10 @@ introduced_in_plan: phase222-seal-ladder-as-data
 
 ```yaml
 term: evidence statement
-definition: 'A grep-evidence line parsed into a resolvable value: an optional revision, a path, a line number, and the observed text right of the NN: prefix. Phase 223 (GH #330) introduced it so a citation can be checked for truth rather than only for presence. A statement carrying no NN: observation satisfies the legacy shape predicate and is deliberately not parsed, because it carries nothing a truth check can resolve. Comparison strips both sides, so indentation does not fail a true citation. Parsed by qor.scripts.plan_grep_lint.parse_evidence_statements; resolved by resolve_line against the revision it names rather than against HEAD.'
+definition: 'A grep-evidence line parsed into a resolvable value: an optional revision, a path, a line number, and the observed text right of the NN: prefix. Phase 223 (GH #330) introduced it so a citation can be checked for truth rather than only for presence. A statement carrying no NN: observation satisfies the legacy shape predicate and is deliberately not parsed, because it carries nothing a truth check can resolve. Comparison strips both sides, so indentation does not fail a true citation. Parsed by qor.scripts.plan_evidence.parse_evidence_statements (Phase 225 moved the grammar out of plan_grep_lint, which re-imports it); resolved by resolve_line against the revision it names rather than against HEAD.'
 home: qor/references/doctrine-shadow-genome-countermeasures.md
 referenced_by:
+  - qor/scripts/plan_evidence.py
   - qor/scripts/plan_grep_lint.py
   - qor/references/doctrine-shadow-genome-countermeasures.md
   - qor/skills/sdlc/qor-plan/SKILL.md

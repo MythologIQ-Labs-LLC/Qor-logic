@@ -107,5 +107,11 @@ def test_legacy_block_satisfaction_no_longer_covers_a_file_line_citation() -> No
         "- LD-2: see `qor/scripts/foo.py:120`, with no statement of its own.\n"
     )
     findings = pgl.check_citation_evidence(text)
-    assert [f.citation for f in findings] == ["qor/scripts/foo.py:120"]
-    assert findings[0].kind == "unpaired-citation"
+    # Phase 225: the statement itself is adjudicated first-class, and its
+    # illustrative ref `abc123` resolves to nothing -- its own finding now
+    # precedes the unpaired citation instead of the statement passing silently.
+    assert [f.citation for f in findings] == [
+        "x/20240101_init.sql:1",
+        "qor/scripts/foo.py:120",
+    ]
+    assert [f.kind for f in findings] == ["evidence-unresolvable", "unpaired-citation"]

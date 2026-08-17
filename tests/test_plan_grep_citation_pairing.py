@@ -78,22 +78,33 @@ def test_a_citation_inside_an_evidence_statement_does_not_demand_its_own():
     assert pgl.check_citation_evidence(_fx("true"), repo_root=REPO_ROOT) == []
 
 
-def test_a_prose_citation_is_still_checked_when_the_same_path_appears_in_a_statement():
+def test_a_prose_citation_is_still_checked_when_the_same_path_appears_in_a_statement(tmp_path):
     """The exclusion is span-based, not path-based.
 
-    A block citing `foo.py:12` in prose while a statement covers `foo.py:97` must
-    still report the prose citation. A path-based exclusion would silently exempt
-    it, which is exactly what Open Question 1 exists to prevent.
+    A block citing `sample.py:1` in prose while a statement covers `sample.py:2`
+    must still report the prose citation. A path-based exclusion would silently
+    exempt it, which is exactly what Open Question 1 exists to prevent.
+
+    Phase 225: rebuilt on a tmp-repo fixture. The prior form read the live
+    module's line 97 against a pinned ref, so it broke whenever the module's
+    lines moved -- a live-state coupling, not a contract.
     """
+    import subprocess
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.email", "t@example.invalid"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "config", "user.name", "Qor Test"], cwd=tmp_path, check=True)
+    (tmp_path / "sample.py").write_text("alpha\nbeta\n", encoding="utf-8")
+    subprocess.run(["git", "add", "sample.py"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "commit", "-m", "f"], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(["git", "tag", "v1.0.0"], cwd=tmp_path, check=True)
+
     text = (
         "## Locked Decisions\n\n"
-        "**LD-1**: prose cites `qor/scripts/plan_grep_lint.py:12` with no statement.\n\n"
-        "git show 2d356ec:qor/scripts/plan_grep_lint.py | grep -nE 'x' -> 97:"
-        + (REPO_ROOT / "qor/scripts/plan_grep_lint.py").read_text(encoding="utf-8").splitlines()[96]
-        + "\n"
+        "**LD-1**: prose cites `sample.py:1` with no statement.\n\n"
+        "git show v1.0.0:sample.py | grep -nE 'beta' -> 2:beta\n"
     )
-    findings = pgl.check_citation_evidence(text, repo_root=REPO_ROOT)
-    assert [f.citation for f in findings] == ["qor/scripts/plan_grep_lint.py:12"]
+    findings = pgl.check_citation_evidence(text, repo_root=tmp_path)
+    assert [f.citation for f in findings] == ["sample.py:1"]
     assert _kinds(findings) == ["unpaired-citation"]
 
 

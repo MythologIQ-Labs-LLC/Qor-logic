@@ -1,6 +1,6 @@
 # Governance Index
 
-**Last Reviewed**: 2026-08-12
+**Last Reviewed**: 2026-08-17
 
 A single authoritative map of every governance artifact in Qor-logic, organized
 into six freshness tiers with explicit drift contracts. A stale entry here is

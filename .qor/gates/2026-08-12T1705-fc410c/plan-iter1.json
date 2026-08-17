@@ -1,0 +1,48 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-12T1705-fc410c",
+  "ts": "2026-08-12T18:07:30Z",
+  "plan_path": "docs/plan-qor-phase225-citation-truth-driver.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "open_questions": [
+    "Q1 (declared): every Locked Decision is written in the form this phase makes checkable, so the shipped lint cannot verify them. Hand-verified against v0.146.1 by the orchestrating agent; D4 of deliverable 1 requires the post-phase lint to report non-zero over this same plan."
+  ],
+  "boundaries": {
+    "limitations": [
+      "Makes the existing resolver run over statements nothing demands, and admits documentation extensions to the demand regex."
+    ],
+    "non_goals": [
+      "No new parser -- parse_evidence_statements, resolve_line and reproduces already handle the mandated form and are not touched."
+    ],
+    "exclusions": [
+      "GH #333",
+      "GH #332",
+      "GH #337",
+      "GH #320",
+      "GH #286"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "phases": [
+    "Phase 1: resolve every statement, not only demanded ones -- tests/test_plan_grep_lint_statement_truth.py (NEW), qor/scripts/plan_grep_lint.py (check_citation_evidence adjudicates statement-only citations; count_truth_checked counts what was examined); tests test_a_statement_nothing_demands_is_still_resolved, test_a_true_statement_nothing_demands_reports_no_finding, test_truth_checked_counts_statement_only_citations, test_an_unresolvable_ref_is_not_reported_as_a_mismatch",
+    "Phase 2: admit documentation extensions -- qor/scripts/plan_grep_lint.py (_FILE_LINE_RE gains md, toml, json, yml, yaml); tests test_a_markdown_citation_demands_evidence, test_a_markdown_citation_paired_with_true_evidence_is_clean, test_the_two_path_regexes_agree_on_extensions",
+    "Phase 3: narrow the reported ceiling -- qor/references/doctrine-citation-pairing.md, qor/scripts/plan_grep_lint.py (PRESENCE_ONLY_KINDS), tests/test_doctrine_citation_pairing.py; tests test_doctrine_and_shipped_classification_agree (retargeted), test_the_reported_ceiling_names_grep_evidence_as_checked"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_grep_lint_statement_truth.py tests/test_plan_grep_lint.py tests/test_doctrine_citation_pairing.py -q",
+    "python -m pytest -q",
+    "python -m ruff check qor tests",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase225-citation-truth-driver.md",
+    "python -m qor.scripts.plan_text_consistency_lint --check docs/plan-qor-phase225-citation-truth-driver.md",
+    "python -m qor.scripts.dist_compile"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.146.1",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-08-12T18:07:30Z"
+  }
+}
