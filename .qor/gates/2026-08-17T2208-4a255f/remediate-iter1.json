@@ -1,0 +1,23 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-08-17T2208-4a255f",
+  "ts": "2026-08-17T22:16:25Z",
+  "events_addressed": [
+    "7b2ed33a7e71f7d9ddcfd1765f6775894493b63bccdaad802df934619d6dd7b0"
+  ],
+  "proposed_changes": [
+    {
+      "target": "docs/PROCESS_SHADOW_GENOME closure citation (single event)",
+      "change": "CORRECTION (Phase 228; GH #342 held item two): repoint 7b2ed33a... (capability_shortfall, reviewer-shell) -> /qor-audit Step 1 via correct_closure_enforcers. The citation becomes true in this phase: Step 1 now anchors the Reviewer toolset declaration contract (references/adversarial-mode.md), whose rules close the recurrence -- declaration at dispatch, no pinning outside the declared set, auditable Mode line.",
+      "rationale": "Ledger #597 held this repointment until the mechanism exists. Phase 228 audit PASS (entry #603) verified red wiring tests and contract soundness; the amendment is green (31/31 across the wiring suites) before this flip."
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.148.1",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T22:16:25Z"
+  }
+}

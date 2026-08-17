@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.149.0] - 2026-08-17
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 228 (feature; reviewer toolset declaration)**: second held GH #342 item. Every dispatched Option B reviewer now opens its report by declaring its available toolset (shell, git, repository file access, network), the Judge may not pin as reviewer-verified a verification the reviewer could not have executed (orchestrator re-execution or PLAUSIBLE evidentiary status until re-executed), and the audit report's Mode line records the declaration. Contract body in `qor-audit/references/adversarial-mode.md` with a one-line Step 1 anchor (progressive-disclosure discipline; the skill file sits in the size-lint WARN band). Closes the Phase 223 recurrence where a shell-less reviewer had a content-hash freeze attestation pinned across four iterations. The held shadow-event citation `7b2ed33a...` repointed to `/qor-audit Step 1` in the same change that made the citation true.
+
 ## [0.148.1] - 2026-08-17
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
