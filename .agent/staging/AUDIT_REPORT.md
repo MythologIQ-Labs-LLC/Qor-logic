@@ -1,87 +1,66 @@
 # AUDIT REPORT
 
 **Verdict**: PASS
-**Target**: docs/plan-qor-phase224-seal-artifact-ordering.md
+**Target**: docs/plan-qor-phase225-citation-truth-driver.md
 
-**Iteration**: 4
-**Date**: 2026-08-12
+**Iteration**: 3
+**Date**: 2026-08-17
 **Judge**: The Qor-logic Judge
-**Mode**: adversarial -- Option B independent reviewer (mandated by `audit_risk_score` flag `high-citation-surface`; operator authorized the subagent dispatch)
-**Phase**: 224 (GH #334)
+**Mode**: adversarial -- Option B independent reviewer (mandated by `audit_risk_score` flag `high-citation-surface`); same shell-capable reviewer as iteration 2, re-walking the full LD set per P2
+**Phase**: 225 (GH #336)
 **Risk Grade**: L2
+**Session**: 2026-08-17T1951-986e79
 
 ---
 
 ## Verdict Summary
 
-Four adversarial passes. Every finding raised across them is closed. The citation set walked clean three consecutive times at 18 of 18 with pattern-uniqueness re-checked, and the design survived hostile checking of its one load-bearing assumption: that Step 7.7.5 sits after every input to the artifacts it regenerates.
+The single iteration-2 mandating finding (razor arithmetic) is remediated with shown work the reviewer re-measured independently: moves total 144 lines (citation regex block 9, grammar region 82, machinery 53), landing `plan_grep_lint.py` at ~226 and `plan_evidence.py` at ~156, both under the 250 ceiling with headroom after Phase 2's declared net. The P2 full re-walk reproduces all seven Locked-Decision statements exactly against v0.146.1. Import direction is acyclic; no external code imports the moved private names; phase boundaries stay green; self-application over the amended text is genuine (7 statements, 0 phantom demands, union count 7). No mandating findings.
 
-The plan is approved for implementation.
+## Findings
 
-## Finding history
+None mandating.
 
-| ID | Iteration raised | Category | Disposition |
+### Observations (non-mandating)
+
+- **O1 twin-estimate drift**: the disposition says "lands near 230 and 155"; Deliverable 6 D1's parenthetical says "218 and 170" while attributing the numbers to the disposition. Both pairs satisfy the identical binding ceilings (250/250/40); consistency lint exits 0; D4's acceptance is observed counts at substantiate. Not reconciled post-PASS: the verdict binds the text as read, and the substantiate sweep observes reality.
+- **O2 conservative undercount**: disposition claims 141 moved lines; measurement gives 144 (machinery 53, not 50). Direction favors the flagged module.
+- **O3**: iteration-2's span-source asymmetry is now a declared boundary limitation with confinement retained -- correct disposition for a hypothetical no artifact exhibits.
+
+## Citation Verification Table
+
+P2 full re-walk, all commands re-executed this iteration; `git diff v0.146.1 --stat` empty for cited files.
+
+| LD | claimed | actual | verdict |
 |---|---|---|---|
-| F1 | 1 | specification-drift | ADDRESSED at iter 2 -- anchor moved from Step 7.2 to Step 7.7.5 |
-| F2 | 1 | test-failure | ADDRESSED at iter 2 -- fixture ledger raised Phase 7 -> 8; all four affected tests walked |
-| F3 | 1 | specification-drift | ADDRESSED at iter 2 -- spine invariant and its pinning test listed; six dist copies confirmed covered by `dist_compile` |
-| F4 | 1 | specification-drift | ADDRESSED at iter 2 -- doctrine and ladder surfaces listed |
-| F5 | 1 | specification-drift | ADDRESSED at iter 2 -- `plan_grep_lint` ceiling stated honestly in three places |
-| F6 | 1 | coverage-gap | **WITHDRAWN at iter 2** -- refuted by `git show --stat`; survives as O14, a documentation gap |
-| 1 (iter 2) | 2 | specification-drift | ADDRESSED at iter 3 -- F6 causal framing removed |
-| 2 (iter 2) | 2 | specification-drift | ADDRESSED at iter 4 -- sufficiency test restored; phantom test reference deleted |
-| 1 (iter 4) | 4 | specification-drift | ADDRESSED -- three residue sites struck |
+| LD-1 `^_EVIDENCE_STMT_RE = ` | 125 | identical | PASS |
+| LD-2 `^_FILE_LINE_RE = ` | 109 | identical | PASS |
+| LD-3 `^_WT_PATH_RE = ` | 131 | identical | PASS |
+| LD-4 `total = sum\(len\(_demand_set` | 323 | identical | PASS |
+| LD-5 `^TRUTH_CHECKED_KINDS` | 229 | identical | PASS |
+| LD-6 `^_TRUTH_RE = ` (ceiling-test parser) | 23 | identical | PASS |
+| LD-7 `^def reproduces` | 194 | identical | PASS |
 
-## The finding that mattered
+LD-8/LD-9: citation-free contract decisions; nothing to verify.
 
-**F1.** The plan's first form placed the corrected step between Step 7 and Step 7.4, reading step numbers as execution order. `SKILL.md:413` and `:423` put the SSDF paste before Step 7 computes `content_hash`, and `:469` has Step 7.7 running after the append. The corrected step would have executed in the same pre-append window as the original. Without this finding the phase would have shipped a fix that did not fix the defect, and the badge would have kept drifting with a test asserting the new placement was correct.
+## Clean passes (verified by execution)
 
-## The finding that was withdrawn
-
-**F6** claimed a second root cause: that README.md never reaches the seal commit, which would have made the ordering fix inert. The observation was exact (`SKILL.md:548-549` omits README.md); the inference was false. `git show --stat` lists README.md in all seven recent seal commits, and `git show a55f1fc:README.md` carries `Ledger-577%20entries` against a post-append truth of 578. The reviewer corroborated the numeric half independently from the working tree and could not test the `--stat` half, having no shell.
-
-One plan revision was written around the withdrawn finding before it was refuted. Recorded in `docs/SHADOW_GENOME.md` as `SG-VerifiedPremiseUncheckedConclusion-A`.
-
-## Design verification
-
-The anchor's correctness was checked against the mechanism rather than the plan's assertion. Counted inputs are the `### Entry #` count (`badge_currency.py:130-133`, which counts all entry headers and not only SESSION SEAL ones), the skills / agents / doctrines roots (`badge_layout.py:30-35`), the pytest collect count, and for the header the max SESSION SEAL phase plus the SYSTEM_STATE markers. Between Step 7.7 and Step 9.5: Step Z writes only a gate artifact, Step 7.8 is read-only, Step 7.9 writes `qor/specs/<capability>/spec.md` and adds a `**Spec Corpus Hash**` line to the existing entry rather than a new one (and is a no-op here -- the session gate directory declares no `spec_deltas`), and Step 8.5 writes under `qor/dist`. None is a counted root. Step 7.7.5 is late enough to follow every input and early enough to precede staging.
-
-## Pass Results
-
-| Pass | Result |
-|---|---|
-| Prompt Injection | PASS |
-| Security L3 | PASS |
-| OWASP Top 10 | PASS |
-| Ghost UI / Live-Progress | n/a (no UI surface) |
-| Section 4 Razor | PASS -- `seal_artifacts.py` 275 lines against a 250 cap is pre-existing and the edit is line-neutral; `_check_header` 23 lines, depth 3, no ternaries; declared in the plan |
-| Self-Application | PASS -- the plan states its own lint's ceiling rather than claiming verification it does not get |
-| Test Functionality | PASS -- the two Phase 1 tests are behavioral and distinct; inverting the fix fails test 2 while test 1 still passes |
-| Dependency Audit | PASS (none introduced) |
-| Macro-Level Architecture | PASS |
-| Feature Test Coverage | n/a (`feature_inventory_touches` empty; no `src/` tree) |
-| Infrastructure Alignment | PASS -- 18/18 citations, third consecutive clean walk |
-| Filter-Stage Ordering | n/a |
-| Orphan Detection | PASS |
-
-## Standing observations carried to implementation
-
-- **O14** -- `SKILL.md:548-549` omits README.md, `docs/SHADOW_GENOME.md`, the plan file, `.agent/staging/AUDIT_REPORT.md`, and the `qor/specs` paths Step 7.9 writes. Deliberately not touched by this phase; filed separately.
-- **Q2** -- `plan_grep_lint` does not truth-check the grep-evidence form `/qor-plan` Step 2 mandates (`plan_grep_lint.py:109`, `:230`). The twelve Locked Decisions were hand-verified. Filed separately.
-- **Implementation note** -- `update_files` requires `counts` and never re-derives them (`seal_artifacts.py:132-143`), so the sufficiency test must call `collect_counts` after the append. A stale counts dict makes `check_files` non-empty, so the test cannot be written vacuously.
-- **Current state** -- the working tree is 2 behind (580 entries against a declared 578) because entries #581 and #582 landed this cycle. This phase's own seal is the first live exercise of the new anchor.
-
-## Process Pattern Advisory
-
-<!-- qor:veto-pattern-advisory -->
-Two VETOs preceded this PASS, with different signatures and shrinking finding counts (5, then 2, then 1). No repeated-VETO pattern. Six plan/audit attempts against a five-attempt cap, granted by explicit operator override recorded at `508a12ed`. Two of the six were consumed by the orchestrator amending the plan mid-audit, logged as a severity-4 degradation at `665f3ca5` with the remedy: freeze the plan for the duration of a pass.
+- **Razor**: measured spans close the arithmetic; `check_citation_evidence` <= 40 achievable via the declared `_adjudicate` restructure.
+- **Scope contract**: the Phase 1 receives list enumerates every moved name; no undeclared move needed; repo-wide grep shows no external importer of moved private names (only a docstring prose mention and an unrelated same-named regex in `plan_feature_tdd_lint.py:23`).
+- **Phase-boundary greenness**: moved definitions depend only on moved names (acyclic, plan_grep_lint -> plan_evidence); kind constants stay until Phase 3 where doctrine and constants move in one commit; the live-line-97 fixture is untouched until its declared Phase 2 rewrite.
+- **Self-application**: current lint over the plan exits 0 with zero findings; exactly one LD region; post-change simulation yields 7 reproducing statements, zero widened-regex demands, union count 7; the whole-plan widened-regex sweep finds hits only outside the LD region.
+- **Security/OWASP**: list-form argv, no shell=True, no new dependencies, no new subprocess surface.
+- **Test Functionality**: every described test invokes the unit and asserts on output.
 
 ## Findings Categories
 
 None (PASS).
 
----
+## Process Pattern Advisory
+
+<!-- qor:veto-pattern-advisory -->
+No repeated-VETO pattern detected in the last 2 sealed phases. Phase 225 consumed attempts 1 (VETO, four categories), 2 (VETO, razor-overage), 3 (PASS); signatures differed between the two VETOs, no escalation threshold met.
 
 ## Required Next Action
 
-`/qor-implement`. Per `qor/gates/chain.md`.
+`/qor-implement` per `qor/gates/delegation-table.md` (PASS verdict row). Substantiate must observe actual line counts for Deliverable 6 D4 and re-run the full suite after the seal.

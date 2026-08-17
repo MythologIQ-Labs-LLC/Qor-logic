@@ -1914,4 +1914,24 @@ refuted before the plan reached audit, at a cost of one plan revision.
 
 ---
 
+## Entry: Phase 225 iteration 2 -- razor ceiling declared without closing arithmetic
+
+**Date**: 2026-08-17
+**Category**: COMPLEXITY_VIOLATION
+**Verdict source**: GATE TRIBUNAL entry #588 (VETO, razor-overage)
+
+### What Happened
+
+The iteration-2 plan committed a module to a 250-line ceiling (Deliverable 6 D2) while its declared extraction moved only 82 lines out of 366 and its declared restructure netted roughly -5. Landing point ~280. The plan simultaneously forbade comment-stripping as a reduction mechanism and closed its Affected-Files list, so the ~55-line move that would have sufficed was undeclared scope. The acceptance criterion was not fake-satisfiable (iteration 1's failure mode); it was unsatisfiable.
+
+### Pattern to Avoid
+
+A razor remediation that names a numeric ceiling must show its arithmetic: lines moved out, lines added back, landing count. If the declared moves do not close the gap, the ceiling is a wish, not a deliverable. When a Definition of Done constrains the mechanism (no comment-stripping) AND the scope (exhaustive receives list), those two constraints plus the number must be checked against each other before submission -- any two can be satisfiable while the three together are not.
+
+### Pattern ID
+
+Sibling of iteration-1 F4 within an unsatisfiable-acceptance family: there the acceptance could be met by a placeholder; here it could not be met at all. Both were caught by asking what the acceptance criterion would measure post-implementation and computing the answer in advance. Remedy: simulate every numeric Definition of Done against the declared scope at plan time. Enforcer: none yet; second occurrence in this family warrants a plan-time arithmetic lint.
+
+---
+
 *Shadow integrity: ACTIVE*

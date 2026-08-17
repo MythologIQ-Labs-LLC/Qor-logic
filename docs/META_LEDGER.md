@@ -17863,5 +17863,213 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #585: RESEARCH BRIEF -- post-224 priority ranking (GH #336, #333, #332, #337, #320, #286)
+
+**Timestamp**: 2026-08-12T18:03:27Z
+**Phase**: RESEARCH (Phase 225)
+**Author**: Analyst
+**Risk Grade**: L2
+**Entry ID**: `87dc76f7a900`
+**Session**: `2026-08-12T1705-fc410c`
+
+**Content Hash**: `979332287590721e7c4acd48e1e8647cbf9c4950b62f87fc58ab8979f8b680cf`
+**Previous Hash**: `8edda0cb64c470a7f2f2db099ae2b27554d151370592ce804534e18bf38b1337`
+**Chain Hash (Merkle seal)**: `f664018b8658755b9b3b4ce4bad73377b2e27e2e7f57178cb9cdf2d3cf3b10cf`
+
+**Decision**: Phase 225 is GH #336. Two candidates are the same defect class one module apart; #336 wins on compounding leverage rather than on severity.
+
+**THE CITATION ENFORCER DOES NOT CHECK THE FORM THE PROCESS MANDATES.** `plan_grep_lint.py:109` resolves only bare `path.ext:NN` spans, and `:230` enumerates the `git show <ref>:<path>` form -- the one `/qor-plan` Step 2 requires -- as presence-only. Phase 224's plan cited entirely in that form and the lint reported `0 citation(s) truth-checked` over twelve Locked Decisions. It was demonstrated live: LD-6 claimed line 407 against a true 405, the lint exited 0, and a hand re-grep caught it. Probed both ways -- a bare `seal_artifacts.py:99999` is detected; the same wrong number inside a grep-evidence statement is not. Every future plan authors in the unchecked form, which is why this ranks above the larger truth deficit below.
+
+**THREE OF THE FOUR ENFORCER CITATIONS ON RECORD ARE WRONG.** Measured rather than estimated: exactly four events in the Process Shadow Genome carry a `closure_enforcer`, and all four cite `qor.scripts.cycle_count_escalator`; three are Phase 223 findings that mechanism does not guard. `sg_closure_lint` reports 40 entries / 0 uncited. Seventy-five percent of the corpus is false and the control reads clean. It ranks second only because the corpus is four events and grows slowly, so the repair cost is not escalating, and because its design decision -- correcting a closed event by appending a superseding record rather than mutating an append-only log -- deserves its own deliberate pass.
+
+**PHASE 224 GAVE #332 A SECOND FAILURE MODE.** Thirty-four gate_override events are on record and ten are intent_lock-class. Last phase added a different condition: the gate never ran. The orchestrator implemented directly rather than through `/qor-implement`, Step 5.5 never captured a fingerprint, and `verify` returned NO LOCK with exit 0. The issue frames the problem as a lock that cannot prove equivalence; this is a lock that returns success by having no subject. Same root -- no CI enforcement, so the gate stays resolvable by the party it constrains. `intent_lock.py:167-171` remains the in-module precedent for relaxing a dimension to a provable relation.
+
+**TWO ISSUES WERE FILED FROM THE PHASE 224 CYCLE.** #336 (the lint gap) and #337 (the documented staged set omits five files every seal commits). #337 is documentation-only and folds into the next phase touching that skill rather than earning one; its cost on record is that an agent reasoning from the document alone drew a false causal conclusion mid-cycle.
+
+**#320 AND #286 UNCHANGED.** Neither entry condition met; no new evidence since the post-222 triage.
+
+**Brief**: docs/research-brief-post-224-priority-ranking-2026-08-12.md. **Next**: /qor-plan for #336.
+
+
+---
+
+### Entry #586: GATE TRIBUNAL -- Phase 225 citation truth driver (VETO)
+
+**Timestamp**: 2026-08-12T18:16:46Z
+**Phase**: GATE (Phase 225)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `029ee0daaa7c`
+**Plan**: docs/plan-qor-phase225-citation-truth-driver.md (iteration 1)
+**Session**: `2026-08-12T1705-fc410c`
+**Mode**: adversarial -- Option B independent reviewer, fresh context with no history on this work
+
+**Content Hash**: `40fbe56955588c2228599b34dc4f235e45f86813bc25e0d4c0de5fae009ea20f`
+**Previous Hash**: `f664018b8658755b9b3b4ce4bad73377b2e27e2e7f57178cb9cdf2d3cf3b10cf`
+**Chain Hash (Merkle seal)**: `42a712056cd61978726746e88daeb6eefcdfd415c59669aeec12e6e66b926584`
+
+**Verdict**: **VETO** -- infrastructure-mismatch, specification-drift, test-failure, razor-overage.
+
+**THE ENFORCER HAS NEVER CHECKED A REAL PLAN.** `_EVIDENCE_STMT_RE` requires `-> <digits>:`, and every plan in the corpus writes the observation in its own code span, so after the arrow the regex meets a backtick and the match fails outright. Measured: the two-span style parses to 0 statements, the one-span style to 1, the bare fenced style to 1. This plan parses to 0. Phase 224's plan parses to 0. Phase 223 shipped the truth-check and it has been exercising its own fixtures and its own plan, which happened to use the bare style. The doctrine compounds it -- `doctrine-shadow-genome-countermeasures.md:285` mandates `-> <exact observed text>` with no line prefix at all, so a plan conforming exactly to the written contract is unparseable by construction.
+
+**MY DIAGNOSIS WAS RIGHT AND ONE MECHANISM SHORT.** The plan correctly refutes GH #336's stated cause -- the parser exists, `resolve_line` and `reproduces` work, and the driver simply never calls them on a statement's own account. It named two suppressors and missed the dominant one. The probe I ran to establish LD-5 "confirmed" the mechanism only because I wrote the exemplar in the one-span style; I proved a property of a form nobody writes. A probe that constructs its own subject can agree with the author instead of with the corpus.
+
+**THREE NAMED TARGETS DO NOT EXIST AS NAMED.** Phase 3 cited `qor/references/doctrine-citation-pairing.md`, which does not exist -- the classification lives at `doctrine-shadow-genome-countermeasures.md:285`, the path `tests/test_doctrine_citation_pairing.py:20` binds. Phase 3 named `test_doctrine_and_shipped_classification_agree` as existing; the real test is `test_the_lint_ceiling_matches_the_doctrine_kinds` at `:54`. The invented doctrine path was also stated to the operator as fact in the preceding turn. It escaped the very lint under repair because `plan_grep_lint.py:37` defines `_REFERENCE_PATH_RE` and never uses it, so `qor/references/*.md` citations are resolved by nothing.
+
+**THE ACCEPTANCE CRITERION WOULD HAVE BEEN SATISFIED BY A FAKE.** D4 claimed a non-zero truth-checked count over the plan's six Locked Decisions. Those contribute zero. The only contributor is the illustrative `SKILL.md:99999` inside LD-5, which sits in the scanned region and becomes a demand once Phase 2 admits `md` -- so the plan would have flagged itself, and the deliverable would have been proven by a placeholder line number.
+
+**TWO SMALLER DEFECTS, BOTH REAL.** `test_the_two_path_regexes_agree_on_extensions` fails on delivery: Phase 2 adds `yml, yaml` to `_FILE_LINE_RE` only, while `_WT_PATH_RE:131` carries `md, json, toml` and neither of the new pair. And the module is 366 lines against a 250 ceiling with `check_citation_evidence` at 54 against 40, unmentioned by a plan that adds to that same function three times.
+
+**THE FRESH REVIEWER WAS WORTH IT.** The prior reviewer had converged with a plan it helped shape across four iterations. A cold read found six mandating defects on iteration 1, including the one that made the whole approach insufficient. The plan was frozen for the duration of the pass per the remedy at `665f3ca5`, so this verdict lands on the text that was read -- the first pass this session where that held.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-plan iteration 2 (attempt 1 of 5 consumed).
+
+
+---
+
+### Entry #587: RESEARCH BRIEF -- PR #338 vs Phase 225 comparative analysis
+
+**Timestamp**: 2026-08-17T19:51:47Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-17T1951-986e79`
+
+**Content Hash**: `51a75e855941d40ef38d688b1e9550ecea8ae86fcb00e83087220e527dae3554`
+**Previous Hash**: `42a712056cd61978726746e88daeb6eefcdfd415c59669aeec12e6e66b926584`
+**Chain Hash (Merkle seal)**: `c98276ac42a515a8d0f6a6093a02efa900cdd70ac6d9f0770a76165f44fc642b`
+
+**Decision**: Comparative research on PR #338 (out-of-cycle stabilization branch, red CI) against the VETOed Phase 225 plan.
+
+**BOTH VEHICLES MISS THE DOMINANT DEFECT.** PR #338 implements the same first-class statement adjudication Phase 225 planned, and leaves `_EVIDENCE_STMT_RE` untouched. Verified by execution: the two-span style every recent real plan writes parses to no match, and the one-span style captures the closing backtick into `observed`, so true statements are flagged `evidence-not-reproducible`. That backtick capture is the root cause of two of #338's five CI failures -- its own new tests. One more failure is the doctrine ceiling test firing exactly as VETO F1 predicted (`TRUTH_CHECKED_KINDS` changed, `doctrine-shadow-genome-countermeasures.md:285` unamended). The last two are legacy fixtures newly adjudicated under an unstated ref-prefixed citation-key contract, one of them a live-state-coupled fixture that reads the current module's line 97 against a pinned ref.
+
+**THE PR CITATION LINT FAILURE IS ENFORCEMENT, NOT DEFECT.** #338 carries no plan path, ledger reference, or Merkle seal because it was authored outside the governed cycle; the lint caught the bypass structurally. The only remediation producing those citations is the cycle itself.
+
+**VEHICLE DECISION RECOMMENDED.** The governed Phase 225 cycle carries GH #336 as plan iteration 2, amended per VETO F1-F6 with the statement grammar (span styles, backtick delimiters, doctrine's mandated no-NN form) promoted to primary deliverable. PR #338's disjoint GH #333 pair (`57eb632`, `bd63317`) is green and salvageable into a governed phase; its #336 pair should be superseded. PR disposition is an operator decision.
+
+**Brief**: docs/research-brief-pr338-vs-phase225-2026-08-17.md. **Next**: /qor-plan iteration 2 (governed remediation cycle).
+
+
+---
+
+### Entry #588: GATE TRIBUNAL -- Phase 225 citation truth driver, iteration 2 (VETO)
+
+**Timestamp**: 2026-08-17T20:14:32Z
+**Phase**: GATE (Phase 225)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase225-citation-truth-driver.md (iteration 2)
+**Session**: `2026-08-17T1951-986e79`
+**Mode**: adversarial -- Option B independent reviewer, fresh context with shell access (closing the iteration-1 no-shell caveat)
+
+**Content Hash**: `eef305f46259627c190e4ff9269eb084026546a88d849a0dce273e64e930fd65`
+**Previous Hash**: `c98276ac42a515a8d0f6a6093a02efa900cdd70ac6d9f0770a76165f44fc642b`
+**Chain Hash (Merkle seal)**: `2c5c94572d9f5e436c8f6c3776e3eb13e428907124d5a51268c23a5380cf3313`
+
+**Verdict**: **VETO** -- razor-overage, single mandating finding.
+
+**FIVE OF SIX REMEDIATIONS ARE REAL.** The reviewer re-executed all seven Locked-Decision citations under the P2 full re-walk (all reproduce exactly; tree equals v0.146.1 for every audited file), verified the backtick-normalization mechanism by running the actual regex over all three corpus stylings, simulated the post-change lint over the plan's own LD block (7 reproducing statements, 0 phantom demands, union count 7 -- the F4 remedy holds genuinely), parsed the proposed doctrine amendment through the ceiling test's own regexes (identical, disjoint, non-empty sets), and reconfirmed the doc-extension regression sweep independently.
+
+**THE PLAN FAILS ON ITS OWN ARITHMETIC.** Deliverable 6 commits `plan_grep_lint.py` to 250 lines, but the declared Phase 1 move is the 82-line grammar region and the declared Phase 2 restructure nets roughly -5: landing point ~280. The plan forbids comment-stripping (D1) and its exhaustive "receives" list makes the ~55-line move that would suffice undeclared scope under SG-AffectedFilesContract-A -- so implementation as written must either violate declared scope or fail its own Definition of Done at substantiate. The unsatisfiable-acceptance family of iteration-1's F4, inverted: last time the acceptance could be satisfied by a fake, this time it cannot be satisfied at all.
+
+**SIGNATURES DIFFER; NO STREAK.** Iteration 1 vetoed on four categories, iteration 2 on razor-overage alone. Attempt 2 of 5 consumed. No repeated-VETO pattern in the last 2 sealed phases.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-plan iteration 3 -- declare the demand/adjudication machinery joining the grammar module (both land under 250) and re-audit with full LD re-walk.
+
+
+---
+
+### Entry #589: GATE TRIBUNAL -- Phase 225 citation truth driver, iteration 3 (PASS)
+
+**Timestamp**: 2026-08-17T20:21:21Z
+**Phase**: GATE (Phase 225)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase225-citation-truth-driver.md (iteration 3)
+**Session**: `2026-08-17T1951-986e79`
+**Mode**: adversarial -- Option B independent reviewer with shell, P2 full LD re-walk
+
+**Content Hash**: `792608f85ec7c5930169eae401b61d260fbc5fa1738e739794e0d7b66ad61018`
+**Previous Hash**: `2c5c94572d9f5e436c8f6c3776e3eb13e428907124d5a51268c23a5380cf3313`
+**Chain Hash (Merkle seal)**: `269852ec2c61e28a28b6b1a66c3bf0745f51276b4ba10a7ec2d60a58b280c150`
+
+**Verdict**: **PASS** -- attempt 3 of 5; no mandating findings.
+
+**THE ARITHMETIC WAS RE-MEASURED, NOT TRUSTED.** The reviewer measured the move spans against the module itself: citation regex block 105-113 (9 lines), grammar region 116-197 (82), machinery 200-258 minus the staying kind constants (53) -- 144 lines out, landing plan_grep_lint.py at ~226 and plan_evidence.py at ~156, both under the 250 ceiling with headroom after Phase 2's declared net. The iteration-2 unsatisfiability is gone and the scope contract closes honestly: every moved name is enumerated in the receives list, the import direction is acyclic, and no external code imports the moved private names.
+
+**ALL SEVEN LOCKED DECISIONS REPRODUCE, AGAIN.** Third consecutive full re-execution against v0.146.1; tree equals tag for every cited file. Self-application over the amended text is genuine by simulation: one LD region, seven reproducing statements, zero phantom demands under the widened extension regex, union count 7.
+
+**TWO OBSERVATIONS RIDE ALONG, NEITHER GATING.** A twin-estimate drift between the disposition's landing numbers and a stale parenthetical in Deliverable 6 D1 (both pairs inside the identical binding ceilings; substantiate observes actual counts), and a favorable 3-line undercount in the disposition's move total. Left as-read: the verdict binds the audited text.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-implement.
+
+
+---
+
+### Entry #590: IMPLEMENTATION -- Phase 225 citation truth driver
+
+**Timestamp**: 2026-08-17T20:37:22Z
+**Phase**: IMPLEMENT (Phase 225)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase225-citation-truth-driver.md (iteration 3, PASS at entry #589)
+**Session**: `2026-08-17T1951-986e79`
+
+**Content Hash** (9 files, concatenated): `47596b18bebb05e80464d8341423f2290ab8d7f88f658b83812d9bc10d1b500c`
+**Previous Hash**: `269852ec2c61e28a28b6b1a66c3bf0745f51276b4ba10a7ec2d60a58b280c150`
+**Chain Hash (Merkle seal)**: `4a11ab2c21d6236a7b3685d885a8147bafbee4676fdd9586be9f3e390baaf091`
+
+**Files**: qor/scripts/plan_evidence.py (NEW, 180 lines), qor/scripts/plan_grep_lint.py (246 lines, policy-only), tests/test_plan_evidence_grammar.py (NEW), tests/test_plan_grep_canonical_truth.py (NEW), tests/test_plan_grep_citation_pairing.py (fixture rewrite + declared update), tests/test_plan_grep_lint_citation_evidence.py (declared update), qor/references/doctrine-shadow-genome-countermeasures.md (P1 amendment), qor/references/glossary.md (parser home re-point), CHANGELOG.md ([Unreleased]).
+
+**ALL THREE PHASES LANDED RED-THEN-GREEN.** Phase 1: grammar + citation machinery extracted to plan_evidence with backtick normalization confined to parse_evidence_statements; 5 new grammar tests written failing (ImportError), then green with every legacy consumer untouched (45/45). Phase 2: first-class statement adjudication behind a single _adjudicate helper (check_citation_evidence lands at exactly 40 lines), union counting via _truth_targets, extension parity from one shared alternation; 5 new tests written failing, then green with the two declared legacy updates (51/51). Phase 3: doctrine mandated form gains the NN: prefix and the kind ceilings read (file:line, grep-n evidence) / (migration filename, bare git show ref-path), constants and doctrine in one step; ceiling test green on both sides.
+
+**THE BEHAVIORAL PARITY TEST CAUGHT A LATENT BUG.** The working-tree fallback's alternation matched ts before tsx and js before json, so f.tsx captured as f.ts -- present since Phase 223, invisible to every regex-source assertion, exposed the moment the test exercised compiled behavior per the F5 remedy. Fixed by longest-prefix-first ordering of the shared constant.
+
+**SELF-VERIFICATION: 0 -> 7.** The shipped lint over this plan reported 0 truth-checked citations; the implemented lint reports 7 with zero findings, all seven statements reproducing against v0.146.1. Deliverable 5's acceptance is met by the plan's own Locked Decisions, not by an illustrative fake.
+
+**FULL SUITE: 2975 passed, 6 skipped, 0 failed (472s). New tests re-run for determinism: 32/32 twice.**
+
+**Next**: /qor-substantiate.
+
+
+---
+
+### Entry #591: SESSION SEAL -- Phase 225 citation truth driver (v0.147.0)
+
+**Timestamp**: 2026-08-17T20:40:50Z
+**Phase**: SEAL (Phase 225)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `4da33702d25d`
+**Plan**: docs/plan-qor-phase225-citation-truth-driver.md (iteration 3; PASS at entry #589)
+**Session**: `2026-08-17T1951-986e79`
+**Change Class**: feature (v0.146.1 -> v0.147.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `792608f85ec7c5930169eae401b61d260fbc5fa1738e739794e0d7b66ad61018`
+**Previous Hash**: `4a11ab2c21d6236a7b3685d885a8147bafbee4676fdd9586be9f3e390baaf091`
+**Chain Hash (Merkle seal)**: `49f4b0605129d806df0f6965cfa63bd31df1fe0cf50df10e78f02f50e494055a`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**THE ENFORCER NOW CHECKS THE FORM PLANS ACTUALLY WRITE.** GH #336 closed on its third framing: not the missing parser the issue alleged (it existed), not only the two suppressors iteration 1 named (real but secondary), but the grammar itself -- the two-span markdown styling parsed to zero statements and the one-span styling captured its closing backtick into the observed text. Backticks are now normalized out before parsing; every parsed statement is adjudicated on its own account; the count is the per-block union of statements and demands; documentation extensions are demandable; doctrine and ceiling agree.
+
+**REALITY AUDIT**: all 9 declared files exist, no unplanned files (the seal-artifact regeneration of README.md and docs/SYSTEM_STATE.md is ceremony-owned). Razor: plan_grep_lint.py 246/250, plan_evidence.py 180/250, check_citation_evidence 40/40 -- Deliverable 6 D4 observed. check_plan at 47 lines is pre-existing and untouched. Self-verification (Deliverable 5 D4): the implemented lint over this phase's own plan reports 7 truth-checked citations, zero findings; the shipped lint reported 0 over the same text.
+
+**TESTS**: full suite 2975 passed / 6 skipped / 0 failed (472s); new tests re-run twice for determinism (32/32). The behavioral extension-parity test surfaced and fixed a latent working-tree capture bug (alternation matched ts before tsx, js before json -- present since Phase 223).
+
+**Feature Inventory**: Total: 25 / verified: 25 / unverified: 0 / n/a: 0. No regressions against snapshot `2026-08-12T0628-bfed3e`.
+
+**GATE LADDER**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix 30 skills / 140 handoffs / 0 broken; secret-scan clean; procedural-fidelity 1 WARN (doc-surface, resolved by this seal's SYSTEM_STATE regeneration); merge-velocity strained/narrow_scope (in-scope, exit 0); data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent in installed toolkit; event `c917839b85f9`); feature-index surface-lint disclosed-SKIP (no Surface column); doc-integrity strict OK; governance-index advanced + enforced OK; doc-currency WARNs assessed spurious for tier (standard, not system; README regenerated by ceremony).
+
+**AUDIT TRAIL**: VETO (iter 1, four categories, entry #586) -> VETO (iter 2, razor-overage, entry #588) -> PASS (iter 3, entry #589), all three under Option B independent review with P2 full LD re-walks; five LD statements re-executed three times, seven twice.
+
+**PR #338 DISPOSITION (operator decision pending)**: its GH #333 pair (57eb632, bd63317) is green and salvageable into a governed phase; its GH #336 pair is superseded by this seal. Recommendation on record in docs/research-brief-pr338-vs-phase225-2026-08-17.md.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on green CI, then GH #336 close.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

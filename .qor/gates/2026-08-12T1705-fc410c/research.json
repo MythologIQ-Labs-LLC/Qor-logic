@@ -1,0 +1,83 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-12T1705-fc410c",
+  "ts": "2026-08-12T18:04:02Z",
+  "questions": [
+    "Which of the six open candidates should Phase 225 take, and on what basis?"
+  ],
+  "findings": [
+    {
+      "id": "R1",
+      "issue": 336,
+      "verdict": "RANK-1",
+      "claim": "plan_grep_lint does not truth-check the grep-evidence form /qor-plan Step 2 mandates; demonstrated live on a real 407-vs-405 error that exited 0.",
+      "evidence": [
+        "qor/scripts/plan_grep_lint.py:109",
+        "qor/scripts/plan_grep_lint.py:230",
+        "docs/META_LEDGER.md entry #583"
+      ]
+    },
+    {
+      "id": "R2",
+      "issue": 333,
+      "verdict": "RANK-2",
+      "claim": "Exactly four events carry a closure_enforcer and all four cite cycle_count_escalator; three are not guarded by it, while sg_closure_lint reports 40/0 clean.",
+      "evidence": [
+        "qor/scripts/remediate_mark_addressed.py:157-163",
+        "qor/scripts/remediate_mark_addressed.py:97"
+      ]
+    },
+    {
+      "id": "R3",
+      "issue": 332,
+      "verdict": "RANK-3",
+      "claim": "Ten intent_lock-class overrides of 34 total; Phase 224 added a second failure mode where the gate never ran and returned exit 0.",
+      "evidence": [
+        "qor/reliability/intent_lock.py:167-171",
+        "docs/META_LEDGER.md entry #584"
+      ]
+    },
+    {
+      "id": "R4",
+      "issue": 337,
+      "verdict": "FOLD",
+      "claim": "Documentation-only; fold into the next phase touching qor-substantiate/SKILL.md.",
+      "evidence": [
+        "qor/skills/governance/qor-substantiate/SKILL.md Step 9.5"
+      ]
+    },
+    {
+      "id": "R5",
+      "issue": 320,
+      "verdict": "UNCHANGED",
+      "claim": "Entry condition (non-zero drift in the edited class) still unmet.",
+      "evidence": [
+        "docs/research-brief-post-222-issue-triage-2026-08-12.md"
+      ]
+    },
+    {
+      "id": "R6",
+      "issue": 286,
+      "verdict": "UNCHANGED",
+      "claim": "Upstream contracts shipped without closing; roughly twenty behaviours untested.",
+      "evidence": [
+        "docs/research-brief-post-222-issue-triage-2026-08-12.md"
+      ]
+    }
+  ],
+  "sources": [
+    "qor/scripts/plan_grep_lint.py",
+    "qor/scripts/remediate_mark_addressed.py",
+    "qor/reliability/intent_lock.py",
+    "docs/META_LEDGER.md entries #583-#584"
+  ],
+  "brief_path": "docs/research-brief-post-224-priority-ranking-2026-08-12.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.146.1",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-08-12T18:04:02Z"
+  }
+}

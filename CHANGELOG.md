@@ -10,6 +10,16 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.147.0] - 2026-08-17
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 225 (feature; citation evidence checked on its own account)**: closes GH #336. The canonical `/qor-plan` grep-evidence statement is now a first-class truth-checked citation: every parsed statement is adjudicated (`evidence-unresolvable` / `evidence-not-reproducible`) without needing a bare `file:line` citation to demand it, and the reported count is the per-block union of parsed statements and demanded citations. Before this, the enforcer had never checked a real plan -- the two-span markdown styling every recent plan uses parsed to zero statements, and the one-span styling captured its closing backtick into the observed text, so even true statements failed comparison. Backticks are now normalized out before parsing (they are markdown formatting, not statement content).
+- **Statement grammar extracted to `qor.scripts.plan_evidence`**: the grammar (what a statement is, how it resolves) now lives apart from the lint policy (what a plan owes); `plan_grep_lint` imports from it. Both modules sit under the 250-line razor ceiling.
+- **Documentation surfaces are demandable**: the citation demand regex admits `md`, `json`, `toml`, `yml`, `yaml` alongside the code extensions, so markdown infrastructure -- skills, doctrines, references -- can carry truth-checked citations. The extension alternation is a single shared constant, ordered longest-prefix-first, which also fixes a latent working-tree capture bug (`f.tsx` previously captured as `f.ts`, `f.json` as `f.js`).
+- **Doctrine parity**: `SG-CitationDrift-A` P1's mandated form is now `-> NN:<exact observed text>` (the `grep -n` output line), and the kind ceilings read `file:line`, `grep-n evidence` (truth-checked) / `migration filename`, `bare git show ref-path` (presence-only), in agreement with the shipped classification.
+
 ## [0.146.1] - 2026-08-12
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
