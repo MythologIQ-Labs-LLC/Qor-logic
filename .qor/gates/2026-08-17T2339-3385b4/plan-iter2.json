@@ -1,0 +1,43 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-17T2339-3385b4",
+  "ts": "2026-08-17T23:42:50Z",
+  "plan_path": "docs/plan-qor-phase231-intent-lock-evidence.md",
+  "phases": [
+    "Phase 1: Bind the evidence contract (tests first)",
+    "Phase 2: Capture keeps, verify shows, ceremony carries"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q",
+    "qor-logic-plus scripts plan_text_consistency_lint --check docs/plan-qor-phase231-intent-lock-evidence.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase231-intent-lock-evidence.md --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "feature",
+  "boundaries": {
+    "limitations": [
+      "diff decides, never authorizes; DRIFT still ABORTs",
+      "legacy drifts remain testimony-resolved"
+    ],
+    "non_goals": [
+      "no Direction 1 contract",
+      "no CI verify job yet",
+      "no bulk un-ignore of legacy records"
+    ],
+    "exclusions": [
+      "GH #320",
+      "GH #286",
+      "GH #349"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.151.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-17T23:42:50Z"
+  }
+}

@@ -76,6 +76,27 @@ def test_missing_families_are_harmless(tmp_path):
     assert staged_paths == ["CHANGELOG.md"]
 
 
+def test_intent_lock_family_is_force_added_for_the_session(tmp_path):
+    """Phase 231 (GH #332): the sealed session's lock record and snapshots are
+    committed evidence, force-added past the directory's gitignore; another
+    session's stay local."""
+    repo = _repo(tmp_path)
+    (repo / ".gitignore").write_text(".qor/intent-lock/\n", encoding="utf-8")
+    lock_dir = repo / ".qor" / "intent-lock"
+    lock_dir.mkdir(parents=True)
+    for name in ("sess-a.json", "sess-a.plan.snapshot", "sess-a.audit.snapshot",
+                 "sess-b.json"):
+        (lock_dir / name).write_text("x", encoding="utf-8")
+
+    seal_stage.stage("sess-a", repo)
+
+    staged = _staged(repo)
+    assert ".qor/intent-lock/sess-a.json" in staged
+    assert ".qor/intent-lock/sess-a.plan.snapshot" in staged
+    assert ".qor/intent-lock/sess-a.audit.snapshot" in staged
+    assert ".qor/intent-lock/sess-b.json" not in staged
+
+
 def test_gate_directory_is_staged_for_the_session(tmp_path):
     """The Phase 176 guarantee, now behavioral: the named session's gate dir is
     staged; another session's is untouched."""

@@ -94,6 +94,52 @@ def _fingerprint_path(repo: Path, session: str) -> Path:
     return repo / ".qor" / "intent-lock" / f"{session}.json"
 
 
+def _snapshot_path(repo: Path, session: str, kind: str) -> Path:
+    return repo / ".qor" / "intent-lock" / f"{session}.{kind}.snapshot"
+
+
+def _normalized(path: Path) -> bytes:
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
+_DIFF_LINE_BOUND = 40
+
+
+def _drift_report(kind: str, repo: Path, session: str, live: Path) -> None:
+    """Print the drift line, plus the decidable delta when the snapshot exists.
+
+    Phase 231 (GH #332 Direction 3): the referent used to be unrecoverable --
+    the lock held a hash of bytes that may never have been committed, so every
+    override rested on testimony. With the capture-time snapshot the reviewer
+    sees exactly what changed. Both sides diff over the same LF normalization
+    (audit O2); legacy records without snapshots keep the bare report.
+    """
+    import difflib
+
+    print(f"DRIFT: {kind}", file=sys.stderr)
+    snapshot = _snapshot_path(repo, session, kind)
+    if not snapshot.is_file():
+        return
+    captured = _normalized(snapshot).decode("utf-8", errors="replace").splitlines()
+    current = _normalized(live).decode("utf-8", errors="replace").splitlines() if live.is_file() else []
+    diff = list(difflib.unified_diff(captured, current, "captured", "current", lineterm=""))
+    for line in diff[:_DIFF_LINE_BOUND]:
+        print(line, file=sys.stderr)
+    if len(diff) > _DIFF_LINE_BOUND:
+        print(f"... diff truncated ({len(diff) - _DIFF_LINE_BOUND} more lines)", file=sys.stderr)
+
+
+def _head_is_ancestor(repo: Path, captured_head: str) -> bool:
+    """Phase 43 ancestry check, extracted (audit O1): the captured HEAD must
+    remain reachable from current HEAD -- forward progress passes, rewrites,
+    hard resets, and divergent branch switches fail."""
+    result = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", captured_head, "HEAD"],
+        cwd=str(repo), capture_output=True, text=True, check=False,
+    )
+    return result.returncode == 0
+
+
 def capture(args: argparse.Namespace) -> int:
     repo = Path(args.repo).resolve()
     plan = Path(args.plan).resolve()
@@ -130,6 +176,12 @@ def capture(args: argparse.Namespace) -> int:
     out = _fingerprint_path(repo, args.session)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(fingerprint, indent=2) + "\n", encoding="utf-8")
+    # Phase 231 (GH #332): keep the audited bytes the hashes were computed
+    # over, so a later drift is decidable instead of testimonial. Snapshots
+    # are the hasher's own normalization -- sha256(snapshot) equals the
+    # recorded hash by construction.
+    _snapshot_path(repo, args.session, "plan").write_bytes(_normalized(plan))
+    _snapshot_path(repo, args.session, "audit").write_bytes(_normalized(audit))
     print(f"LOCKED: {args.session}")
     return 0
 
@@ -151,28 +203,15 @@ def verify(args: argparse.Namespace) -> int:
 
     plan = _resolve(data["plan_path"])
     if not plan.is_file() or _hash_file(plan) != data["plan_hash"]:
-        print("DRIFT: plan", file=sys.stderr)
+        _drift_report("plan", repo, args.session, plan)
         return 1
 
     audit = _resolve(data["audit_path"])
     if not audit.is_file() or _hash_file(audit) != data["audit_hash"]:
-        print("DRIFT: audit", file=sys.stderr)
+        _drift_report("audit", repo, args.session, audit)
         return 1
 
-    # Phase 43: ancestry check instead of strict equality.
-    # Allows legitimate forward progress (the implement commit advancing HEAD
-    # between Step 5.5 capture and substantiate Step 4.6 verify) while still
-    # catching history rewrites, hard resets, and branch switches to divergent
-    # histories. The captured HEAD must remain reachable from current HEAD.
-    captured_head = data["head_commit"]
-    result = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", captured_head, "HEAD"],
-        cwd=str(repo),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if result.returncode != 0:
+    if not _head_is_ancestor(repo, data["head_commit"]):
         print("DRIFT: head", file=sys.stderr)
         return 1
 
