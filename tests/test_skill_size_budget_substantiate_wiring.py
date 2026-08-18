@@ -20,7 +20,19 @@ def test_step_4_6_9_invokes_skill_size_budget_lint():
     assert ("qor.scripts.skill_size_budget_lint" in sec or "qor-logic scripts skill_size_budget_lint" in sec), (
         "Step 4.6.9 missing the skill_size_budget_lint invocation"
     )
-    assert "|| true" in sec, "Step 4.6.9 missing the '|| true' posture guard"
+    assert "|| ABORT" in sec, "Step 4.6.9 missing the '|| ABORT' posture guard"
+
+
+def test_step_4_6_9_policy_is_abort():
+    """Phase 234 (GH #320): V2 posture bound through the parser, not string
+    matching. The size-budget gate is a wall: parsed policy ABORT, and the
+    command carries no true-suffix escape."""
+    r = lh.row("4.6.9")
+    assert r is not None, "no gate ladder row for Step 4.6.9"
+    assert r.policy == "ABORT", f"Step 4.6.9 policy is {r.policy!r}, not ABORT"
+    assert not any(c.endswith("|| true") for c in r.commands), (
+        "Step 4.6.9 command still carries the '|| true' suffix"
+    )
 
 
 def test_step_4_6_9_row_removed_breaks_assertion():
