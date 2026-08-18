@@ -1,0 +1,39 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-18T0349-da60bb",
+  "ts": "2026-08-18T04:00:57Z",
+  "plan_path": "docs/plan-qor-phase234-size-budget-v2.md",
+  "phases": [
+    "Phase 1: Bind the posture (test first)",
+    "Phase 2: The one-row flip"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q",
+    "qor-logic-plus scripts plan_text_consistency_lint --check docs/plan-qor-phase234-size-budget-v2.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase234-size-budget-v2.md --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "feature",
+  "boundaries": {
+    "limitations": [
+      "WARN stays advisory; only EXCEEDED aborts; no override path"
+    ],
+    "non_goals": [
+      "no threshold changes",
+      "no lint behavior changes"
+    ],
+    "exclusions": [
+      "GH #351",
+      "GH #286"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.154.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-18T04:00:57Z"
+  }
+}

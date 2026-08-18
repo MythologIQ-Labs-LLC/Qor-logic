@@ -18927,5 +18927,121 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #628: RESEARCH BRIEF -- size-budget V2 flip
+
+**Timestamp**: 2026-08-18T03:50:43Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-18T0349-da60bb`
+
+**Content Hash**: `84093007abd9a444d92ee14772cf9e2e6e596276e8e57f0cec8b3a6801e0aa92`
+**Previous Hash**: `11d56b57afaf89c7b77f48910d308664d5d1b568febe77291502f0e614d34eaa`
+**Chain Hash (Merkle seal)**: `77607e1220c96bd71495958ded401bbf1d801c2ec73831b623432061242c8527`
+
+**Decision**: GH #320's entry condition is met on both halves: V1 disclosure produced the drift data (three governance skills in the WARN band; qor-audit headroom 1,273 -> 1,191 across phases 228/232, both budgeting text against the bound; two hard-constraint incidents at 222/229), and the flip is free today (zero EXCEEDED findings, exit 0). The surface is one ladder-table row -- Step 4.6.9's command drops the true-suffix, Policy reads ABORT, Notes state the V2 posture (WARN stays advisory; only EXCEEDED aborts, already the CLI's sole exit-1 condition). Parser accepts ABORT; no test pins the WARN; one red-first wiring test binds the new posture.
+
+**Brief**: docs/research-brief-size-budget-v2-2026-08-18.md. **Next**: /qor-plan (Phase 234).
+
+
+---
+
+### Entry #629: GATE TRIBUNAL -- Phase 234 size-budget V2 flip, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-18T03:55:26Z
+**Phase**: GATE (Phase 234)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase234-size-budget-v2.md (iteration 1)
+**Session**: `2026-08-18T0349-da60bb`
+**Mode**: adversarial -- independent reviewer with declared toolset (shell, git, Python incl. pytest execution, file access; no network)
+
+**Content Hash**: `a2d9bb74d926e6401bc7bc798df0bba35e074f5dea535a1e2ec309da24c36680`
+**Previous Hash**: `77607e1220c96bd71495958ded401bbf1d801c2ec73831b623432061242c8527`
+**Chain Hash (Merkle seal)**: `2f248812e90b70d29f04cbe3f4c55e5b79d5ea7500f5343bea3ccdf188555db2`
+
+**Verdict**: **VETO** -- affected-files-contract (one mandating finding).
+
+**ONE POSTURE PIN SURVIVED THE SWEEP.** The invocation wiring test asserts the exact `|| true` literal the flip removes (`test_skill_size_budget_substantiate_wiring.py:23`); the reviewer proved it by executing the file, and the plan both left the modification undeclared and claimed the test stays green. Third SG-AssertedCompleteness-A event -- and the first the Phase 232 enumeration lint structurally cannot see (a test-assertion pin, not a prose enumeration): the research brief's "no test pins the WARN policy" (entry #628) was an asserted-absence the reviewer's execution falsified. Both LDs reproduced verbatim at v0.154.0; entry condition independently re-derived (3 WARN / 0 EXCEEDED); byte arithmetic verified at exactly +27 of 27 (O1: zero margin, bank a word); the LD-1 backtick-free anchor substitution accepted as a reusable evidence pattern (O2); the no-override ABORT posture upheld from both sides (O3).
+
+**Amendment path**: declare the invocation test's posture assertion flipped to the `|| ABORT` literal in the same phase as the row edit; correct the stay-green claim to the remaining two wiring tests; trim the Notes text for byte margin. Iteration 2 receives the full P2 Locked-Decision re-walk. Attempt 1 of 5 consumed.
+
+**Next**: /qor-plan (amend iteration 2), then /qor-audit.
+
+
+---
+
+### Entry #630: GATE TRIBUNAL -- Phase 234 size-budget V2 flip, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-18T04:02:47Z
+**Phase**: GATE (Phase 234)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase234-size-budget-v2.md (iteration 2)
+**Session**: `2026-08-18T0349-da60bb`
+**Mode**: adversarial -- independent reviewer with declared toolset (shell, git, Python incl. pytest execution, file access; no network)
+
+**Content Hash**: `5c79c0e2dd710d239828d7e0ca51d83453dab65941e7c9c7699aa9ea39f32a9a`
+**Previous Hash**: `2f248812e90b70d29f04cbe3f4c55e5b79d5ea7500f5343bea3ccdf188555db2`
+**Chain Hash (Merkle seal)**: `73574de6037bb5f3f6de2e2a684ed07cd5b4e560665285493138be8d63883786`
+
+**Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5.
+
+**THE ENUMERATION IS NOW EXHAUSTIVE BY EXECUTION.** The F1 remediation declares the line-23 assertion flip with the entry-#629 finding named, and the reviewer's repo-wide re-sweep (twelve posture-pin sites enumerated by grep plus execution) confirms it is 4.6.9's only consumer -- the remediation shape matches the Phase 129 merge-velocity precedent exactly (flip the literal, keep the guardrail, parsed test as behavioral anchor, per the ladder helper's documented intent). P2 full re-walk reproduced both LDs at v0.154.0; the banked O1 arithmetic verified to the byte (+18 net, slack 2,709 -- nine bytes of real margin where iteration 1 had zero); entry condition re-confirmed (3 WARN / 0 EXCEEDED / exit 0).
+
+**Next**: /qor-implement (red parsed-policy test, then the one-row flip + paired assertion flip), then /qor-substantiate (v0.155.0). This phase's own seal is the flipped gate's first live run.
+
+
+---
+
+### Entry #631: IMPLEMENTATION -- Phase 234 size-budget V2 flip
+
+**Timestamp**: 2026-08-18T04:10:56Z
+**Phase**: IMPLEMENT (Phase 234)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase234-size-budget-v2.md (iteration 2, PASS at entry #630)
+**Session**: `2026-08-18T0349-da60bb`
+
+**Content Hash** (3 files, concatenated): `808ff61cc38ab22d2140f01d76a1706735de084e45d96c26ab844f4d468338cb`
+**Previous Hash**: `73574de6037bb5f3f6de2e2a684ed07cd5b4e560665285493138be8d63883786`
+**Chain Hash (Merkle seal)**: `ab246d8cffb53b4e4f54b9d4c016c258482b596dff35a20ba21693a9dc7a6a8e`
+
+**Files**: qor/skills/governance/qor-substantiate/SKILL.md (the LD-1 one-row flip: true-suffix to `\|\| ABORT`, Policy ABORT, Notes at the declared 73-char V2 text; +18 net bytes, slack 2,709 vs the 2,700 floor), tests/test_skill_size_budget_substantiate_wiring.py (NEW `test_step_4_6_9_policy_is_abort` via the substantiate_gates parser; line-23 posture literal flipped to `\|\| ABORT` per audit F1 / Phase 129 precedent), qor/skills/governance/qor-substantiate/references/seal-gate-ladder.md (V2 history note quoting the superseded V1 command verbatim + currency fix of the "does not abort" summary), plus dist variant recompiles.
+
+**RED THEN GREEN**: `test_step_4_6_9_policy_is_abort` red at v0.154.0 (parsed policy WARN), green after the paired flip; wiring file 4/4 twice; live lint exit 0 with three WARN findings (the flip aborts nothing today, by measurement). One mid-phase catch: `test_seal_ladder_tokens_survived` flagged the deliberately-removed V1 token -- its token set is EXTRACTED from a pinned pre-rewrite git baseline, structurally invisible to the grep sweeps both the plan and the reviewer's O2 ran (fourth asserted-completeness data point; the reviewer had declared that file silent). Absorbed via the test's own sanctioned relocation mechanism: the superseded V1 command relocated verbatim into the seal-gate-ladder reference as V2 history, exactly the destination the test's docstring names. Full suite 3021 passed / 0 failed; determinism twice.
+
+**Next**: /qor-substantiate (v0.155.0) -- this seal is the flipped gate's first live run.
+
+
+---
+
+### Entry #632: SESSION SEAL -- Phase 234 size-budget V2 flip (v0.155.0)
+
+**Timestamp**: 2026-08-18T04:13:31Z
+**Phase**: SEAL (Phase 234)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `a93896d6c026`
+**Plan**: docs/plan-qor-phase234-size-budget-v2.md (iteration 2; PASS at entry #630)
+**Session**: `2026-08-18T0349-da60bb`
+**Change Class**: feature (v0.154.0 -> v0.155.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `48508d5a4a0f9d30d69db29a068a1b9917f8f1d6fe8169d58c000b3ac79b3cb9`
+**Previous Hash**: `ab246d8cffb53b4e4f54b9d4c016c258482b596dff35a20ba21693a9dc7a6a8e`
+**Chain Hash (Merkle seal)**: `a147149a2bfe0e206d09a2c01c31d0b68a8d9e86bc782ee8507aa98e78b88e04`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**THE CORPUS CEILING IS NOW A WALL.** GH #320 closed: the Step 4.6.9 size-budget gate's ladder row dropped its true-suffix escape and reads policy ABORT -- a governance skill crossing 40 KB can no longer seal, closing at the source the drift class that consumed hard-constraint incidents at Phases 222 and 229. WARN stays advisory; no override path (self-inflicted, double-signaled, mechanically resolvable per the Phase 95 progressive-disclosure recommendation, upheld both-sides at audit O3). Posture bound through the substantiate_gates parser red-then-green; the exact-literal guardrail flipped with the row per the Phase 129 precedent; the superseded V1 command relocated verbatim into the seal-gate-ladder reference as V2 history when the token-survival baseline caught the deliberate removal mid-phase (the fourth asserted-completeness data point -- a token set extracted from a pinned git baseline is invisible to grep sweeps). Byte discipline held: +18 net of the 27-byte budget, slack 2,709.
+
+**GATE LADDER (the flipped gate's first live run)**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; merge-velocity strained/narrow_scope (exit 0); **skill-size-budget 3 WARN / 0 EXCEEDED, exit 0 under ABORT policy**; data-api-acl disclosed-SKIP; instruction-hygiene disclosed-SKIP (event `5dfc04446faa`); procedural-fidelity WARN doc-surface (resolved in this commit: SYSTEM_STATE + CHANGELOG + ladder reference); publication boundary 0 findings; doc-integrity strict OK; governance-index advanced + enforced OK. Full suite 3021 passed / 0 failed; determinism twice.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on FULL green, tag v0.155.0 at the merged seal SHA, then GH #320 close. The executable debt list closes with this seal; the tracker holds only the evidence-gated #351 and #286.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

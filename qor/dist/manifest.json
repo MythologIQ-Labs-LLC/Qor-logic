@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-18T03:44:10Z",
+  "generated_ts": "2026-08-18T04:17:12Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -426,13 +426,13 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
       "install_rel_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
-      "sha256": "d83b2dd6116e766157b139d1783513ac7ab48781ab9ab5daa6021ab44e04f9d8"
+      "sha256": "934732776b2167e393b3ba92aa16d5b845a833da3b7340ee3b88b2029af89d8a"
     },
     {
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "8f9e2278ec6fe1f04daf275b6f06ee0f0738c084b73918458d3c210f08b8721c"
+      "sha256": "4cef560d061c8055b062d60aff78c4ea863e8592aee2e9e465a3547750d8a21e"
     },
     {
       "id": "qor-tone",

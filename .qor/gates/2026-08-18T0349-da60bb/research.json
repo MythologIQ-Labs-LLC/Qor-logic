@@ -1,0 +1,43 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-18T0349-da60bb",
+  "ts": "2026-08-18T03:51:07Z",
+  "questions": [
+    "Is #320's entry condition met?",
+    "What is the flip surface?"
+  ],
+  "findings": [
+    {
+      "id": "S1",
+      "claim": "Condition met: 3 WARN-band skills, qor-audit headroom 1273->1191 across phases 228/232, two hard-constraint incidents (222/229); zero EXCEEDED so the flip is free.",
+      "evidence": [
+        "skill_size_budget_lint output",
+        "wc -c across phases"
+      ]
+    },
+    {
+      "id": "S2",
+      "claim": "One ladder row (SKILL.md:246): true->ABORT, Policy WARN->ABORT, Notes amended; parser POLICY_VALUES accepts ABORT (substantiate_gates.py:33); no test pins the WARN.",
+      "evidence": [
+        "qor/skills/governance/qor-substantiate/SKILL.md:246",
+        "qor/scripts/substantiate_gates.py:33",
+        "tests/test_skill_size_budget_substantiate_wiring.py"
+      ]
+    }
+  ],
+  "sources": [
+    "qor/skills/governance/qor-substantiate/SKILL.md",
+    "qor/scripts/substantiate_gates.py",
+    "tests/test_skill_size_budget_substantiate_wiring.py",
+    "GH #320"
+  ],
+  "brief_path": "docs/research-brief-size-budget-v2-2026-08-18.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.154.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-18T03:51:07Z"
+  }
+}

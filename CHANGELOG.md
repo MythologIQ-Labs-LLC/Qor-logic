@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.155.0] - 2026-08-18
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 234 (feature; the corpus ceiling becomes a wall)**: closes GH #320. The `/qor-substantiate` Step 4.6.9 skill-corpus size-budget gate converts from WARN to hard ABORT: the ladder row drops its `|| true` escape and a governance skill crossing the 40 KB EXCEEDED threshold can no longer seal -- the drift class that consumed hard-constraint incidents at Phases 222 and 229 is structurally closed at the source. WARN-band findings (25 KB) remain advisory, and no override path is added: a size breach is self-inflicted, double-signaled ahead of the wall, and resolves mechanically via the progressive-disclosure refactor recommended since Phase 95. Entry condition measured before the flip: three WARN / zero EXCEEDED, so the wall costs nothing today. The new posture is bound through the `substantiate_gates` parser (red-then-green), the exact-literal guardrail flipped with the row per the Phase 129 merge-velocity precedent, and the superseded V1 command is preserved verbatim in the seal-gate-ladder reference as V2 history. This release's own seal is the flipped gate's first live run.
+
 ## [0.154.0] - 2026-08-18
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

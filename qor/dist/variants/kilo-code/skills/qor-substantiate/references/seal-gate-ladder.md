@@ -70,8 +70,16 @@ surfaces a finding for each SKILL.md exceeding the size thresholds (WARN at 25
 KB, EXCEEDED at 40 KB). Per `SG-SkillCorpusGrowth-A`, the canonical SKILL.md
 corpus grew from 91 KB / 3024 lines (Phase 0) to 282 KB / 6766 lines (Phase 81)
 in 6 weeks — monotonic, never contracted, with no consolidation counterweight.
-CLI exits 1 when any EXCEEDED finding (>= 40 KB) is present so V2 can convert to a
-hard ABORT by removing the `|| true` wrap. Operator-actionable: skills exceeding
+CLI exits 1 when any EXCEEDED finding (>= 40 KB) is present, which is what let
+V2 convert the gate to a hard ABORT. **V2 (Phase 234; GH #320)**: the ladder row
+dropped the true-wrap -- the superseded V1 command was
+`qor-logic scripts skill_size_budget_lint --skills-root qor/skills || true` --
+and the row's policy reads ABORT. WARN-band findings remain advisory; only an
+EXCEEDED finding (the CLI's sole exit-1 condition) now aborts the seal. No
+override path: a size breach is self-inflicted by the sealing phase's own edits,
+is preceded by two earlier signals (the 25 KB WARN and the headroom tests), and
+resolves mechanically via the progressive-disclosure refactor recommended since
+Phase 95. Operator-actionable: skills exceeding
 the WARN threshold are candidates for progressive-disclosure refactor (move
 sub-pass / step prose to `references/` files); skills exceeding EXCEEDED are
 overdue. (Phase 135 brought `qor-audit` + `qor-substantiate` back under EXCEEDED
@@ -395,9 +403,10 @@ deliberate high-velocity window, re-run with `--override`, which logs a
 shared-surface signals. Originating recurrence and `SG-MergePaceThrottle-A` are
 described above.
 
-**4.6.9 skill_size_budget_lint.** WARN-only per-skill size-budget lint over
-`qor/skills/**/SKILL.md`, WARN at 25 KB and EXCEEDED at 40 KB. Does not abort;
-the CLI exits 1 on any EXCEEDED finding. Corpus-growth history and
+**4.6.9 skill_size_budget_lint.** Per-skill size-budget lint over
+`qor/skills/**/SKILL.md`, WARN at 25 KB and EXCEEDED at 40 KB. Since V2 (Phase
+234; GH #320) an EXCEEDED finding -- the CLI's sole exit-1 condition -- aborts
+the seal; WARN-band findings remain advisory. Corpus-growth history and
 `SG-SkillCorpusGrowth-A` are described above. This is one of the two controls
 that made composition unworkable as a size remedy: it measures the file that
 ships, so a composed artifact would measure the same.
