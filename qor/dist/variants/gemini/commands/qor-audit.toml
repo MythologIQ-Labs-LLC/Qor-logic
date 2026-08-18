@@ -152,6 +152,7 @@ Run the pre-audit lint ladder against the plan being audited; surface presence-o
 ```bash
 PLAN_PATH=$(python -c "from qor.scripts.governance_helpers import current_phase_plan_path; print(current_phase_plan_path())")
 qor-logic scripts plan_test_lint --plan "$PLAN_PATH" || true
+qor-logic scripts plan_enumeration_lint --plan "$PLAN_PATH" --repo-root . || true
 qor-logic scripts plan_grep_lint --plan "$PLAN_PATH" --repo-root . || true
 qor-logic scripts plan_text_consistency_lint --check "$PLAN_PATH" || true
 qor-logic scripts delivery_branch_lint --plan "$PLAN_PATH" --repo-root . || true

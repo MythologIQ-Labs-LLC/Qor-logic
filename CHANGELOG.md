@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.153.0] - 2026-08-18
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 232 (feature; a claimed count is a citation and gets checked like one)**: closes GH #349, the SG-AssertedCompleteness-A countermeasure. New WARN-only pre-audit lint `plan_enumeration_lint` in the `/qor-audit` Step 0.6 ladder: Form A re-derives a claimed test count against `def test_` at a bare commit-ish token via `git show`; Form B, scoped to Locked-Decision regions via the shipped `_ld_blocks`, compares a claimed site count against the paragraph's full `file:line` citations plus comma-separated shorthand continuations (`:237`, `:262`). Both fixtures are verbatim transcriptions of the two historical failure texts (ledger #593, #611) -- fittingly, this plan's own first iteration was VETOed for invented fixtures and a grammar the reviewer's prototype proved false-fired on the sealed corpus; the shipped grammar runs clean over the last four sealed plans including its own.
+
 ## [0.152.0] - 2026-08-17
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

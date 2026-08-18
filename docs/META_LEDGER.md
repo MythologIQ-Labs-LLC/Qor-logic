@@ -18722,5 +18722,119 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #619: RESEARCH BRIEF -- asserted-completeness enumeration lint
+
+**Timestamp**: 2026-08-18T02:49:52Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-18T0249-c4b1be`
+
+**Content Hash**: `cd9b0214371e1c9ac1723a6965a9abcd78abdafee77db9d87a8fd6fbf9d2eb1b`
+**Previous Hash**: `fe98e09f6d5b6c8f3c89b873cba3fd053e752fd186fafcae974ae17973a80644`
+**Chain Hash (Merkle seal)**: `90bcf2a6d968bcdf09d7df39ac0a3bc19476c779b69a2fe588a4bb6063ef2dc7`
+
+**Decision**: GH #349. Both SG-AssertedCompleteness-A failures (entries #593, #611) are mechanically re-derivable, so the class is lintable: Form A counts def test_ at a pinned ref against a claimed test count; Form B compares a claimed site count against the distinct file:line citations enumerated in the same paragraph. Digit and number-word counts (one through twenty, fixed table); inventory-noun anchoring excludes non-inventory numerics (diff bounds, razor ceilings) by construction. WARN-only in the Step 0.6 ladder per the SG-PreAuditLintGap-A posture; one ladder line fits qor-audit's 1,273-byte headroom, which matters because #320's V2 flip will harden that bound.
+
+**Brief**: docs/research-brief-enumeration-lint-2026-08-18.md. **Next**: /qor-plan (Phase 232).
+
+
+---
+
+### Entry #620: GATE TRIBUNAL -- Phase 232 enumeration lint, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-18T02:55:03Z
+**Phase**: GATE (Phase 232)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase232-enumeration-lint.md (iteration 1)
+**Session**: `2026-08-18T0249-c4b1be`
+**Mode**: adversarial -- independent reviewer with declared toolset; the proposed grammar PROTOTYPED and executed over the sealed corpus before verdict
+
+**Content Hash**: `d70578b72697f7a11765dc811e79157e6305b31eebf93de76af48fe24b19212c`
+**Previous Hash**: `90bcf2a6d968bcdf09d7df39ac0a3bc19476c779b69a2fe588a4bb6063ef2dc7`
+**Chain Hash (Merkle seal)**: `a14fbc0b4c7132b41497c628ca09753bb49b5d6ac6d5a096eaa729993939a0e0`
+
+**Verdict**: **VETO** -- test-failure, specification-drift.
+
+**THE ENUMERATION LINT WAS SPECIFIED WITH INVENTED ENUMERATIONS.** The reviewer built the declared grammar and ran it: Form B false-fires twice on the sealed Phase 230 plan because the repo's shorthand citation continuations are invisible to the locked regex (claimed twelve, derived six -- on a TRUE enumeration), making the plan's own sweep-clean acceptance unsatisfiable; Form A's git-show trigger never fires on the recoverable Phase 226 text, which carries a bare commit token. The fixtures deviated from the historical texts at exactly the decisive tokens -- the failure class the lint targets, reproduced inside its specification. Both findings are one defect from two sides.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-plan iteration 2 (attempt 1 of 5 consumed).
+
+
+---
+
+### Entry #621: GATE TRIBUNAL -- Phase 232 enumeration lint, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-18T03:01:42Z
+**Phase**: GATE (Phase 232)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase232-enumeration-lint.md (iteration 2)
+**Session**: `2026-08-18T0249-c4b1be`
+**Mode**: adversarial -- independent reviewer; prototypes re-executed over the entire sealed corpus; P2 re-walk
+
+**Content Hash**: `a3d8d21373d670d3350e60beaa76efa18b1c94793f01338132e690d11d8aa297`
+**Previous Hash**: `a14fbc0b4c7132b41497c628ca09753bb49b5d6ac6d5a096eaa729993939a0e0`
+**Chain Hash (Merkle seal)**: `d455cac6b9be765cc9137d4843ed9ac3f999d06d557f9eebf34c53e219bfbe6f`
+
+**Verdict**: **PASS** -- attempt 2 of 5; no mandating findings.
+
+**THE GRAMMAR NOW MATCHES THE CORPUS IT POLICES.** LD-region scoping via the shipped _ld_blocks plus comma-separated continuation counting makes the sealed Phase 230 LD-3 derive exactly its claimed twelve while the partial-enumeration disposition drops out of scope; both historical failure shapes fire (bare-commit Form A resolved by prototype against bd63317; the modifier-intact Form B LD derives 1 against 8). Three implementation-binding observations recorded: plural-noun skip fixture, comma-only continuations stated in code, and the true-count-beyond-paragraph limitation named.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-implement.
+
+
+---
+
+### Entry #622: IMPLEMENTATION -- Phase 232 enumeration lint
+
+**Timestamp**: 2026-08-18T03:11:40Z
+**Phase**: IMPLEMENT (Phase 232)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase232-enumeration-lint.md (iteration 2, PASS at entry #621)
+**Session**: `2026-08-18T0249-c4b1be`
+
+**Content Hash** (4 files, concatenated): `5a5752008e388b03aa6516206682ece42afe90a79032f36cc1dbbd526882cdeb`
+**Previous Hash**: `d455cac6b9be765cc9137d4843ed9ac3f999d06d557f9eebf34c53e219bfbe6f`
+**Chain Hash (Merkle seal)**: `87e7d1029c113942467d59ae1f95293068772429eabb238bba5fa10b62442ba3`
+
+**Files**: qor/scripts/plan_enumeration_lint.py (NEW, 137 lines: Form A commit-ish resolver, Form B LD-scoped with comma-only continuations per audit O2, O3 limitation named in the module docstring), tests/test_plan_enumeration_lint.py (NEW, 9 tests incl. audit O1's singular-skip fixture), qor-audit SKILL.md (one ladder line, 39,769 bytes -- 1,191 under EXCEEDED), CHANGELOG.md.
+
+**RED THEN GREEN**: collection ImportError at v0.152.0, then 9/9 first run; determinism 9/9 twice; wiring sweep 32/32; full suite 3014 passed / 0 failed. **THE SWEEP ACCEPTANCE HELD**: the lint runs clean over the last four sealed plans including this phase's own -- and this session's intent-lock capture was the first organic use of the Phase 231 snapshot evidence.
+
+**Next**: /qor-substantiate (v0.153.0).
+
+
+---
+
+### Entry #623: SESSION SEAL -- Phase 232 enumeration lint (v0.153.0)
+
+**Timestamp**: 2026-08-18T03:12:52Z
+**Phase**: SEAL (Phase 232)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `39203574857b`
+**Plan**: docs/plan-qor-phase232-enumeration-lint.md (iteration 2; PASS at entry #621)
+**Session**: `2026-08-18T0249-c4b1be`
+**Change Class**: feature (v0.152.0 -> v0.153.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `f1c718d4562bd9773e0dec21d4f1523c004243b36d37b817684962be1e02c863`
+**Previous Hash**: `87e7d1029c113942467d59ae1f95293068772429eabb238bba5fa10b62442ba3`
+**Chain Hash (Merkle seal)**: `bf550013244aaf877d7ef23b4374da5770cec25a06f252076fe5a65281ef5922`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**A CLAIMED COUNT IS NOW A CITATION.** GH #349 closed: plan_enumeration_lint joins the Step 0.6 ladder, re-deriving test counts against pinned artifacts (bare commit-ish trigger, git show resolver) and site counts against LD-region enumerations with comma-separated shorthand continuations. Both fixtures are verbatim transcriptions of the historical failure texts -- after iteration 1 was VETOed for invented fixtures and a grammar the reviewer's full-corpus prototype disproved, the irony fully absorbed. The shipped lint runs clean over the last four sealed plans including its own. Red-then-green; 3014 passed / 0 failed; determinism 9/9 twice; audit O1/O2/O3 all honored (singular-skip fixture, comma-only continuations in code, the true-count-beyond-paragraph limitation named).
+
+**GATE LADDER**: intent-lock VERIFIED (first organic Phase 231 snapshot capture); matrix 30/140/0; secret-scan clean; merge-velocity strained/narrow_scope (exit 0); data-api-acl disclosed-SKIP; instruction-hygiene disclosed-SKIP (event `6541d2dc030b`); publication boundary 0 findings; doc-integrity strict OK; governance-index advanced + enforced OK; feature inventory 25/25, no regressions vs `2026-08-17T2339-3385b4`.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on FULL green, then GH #349 close.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

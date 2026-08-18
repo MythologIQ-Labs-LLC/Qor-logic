@@ -1,0 +1,42 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-18T0249-c4b1be",
+  "ts": "2026-08-18T02:57:23Z",
+  "plan_path": "docs/plan-qor-phase232-enumeration-lint.md",
+  "phases": [
+    "Phase 1: Bind both historical failures (tests first)",
+    "Phase 2: The lint and the ladder line"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q",
+    "qor-logic-plus scripts plan_text_consistency_lint --check docs/plan-qor-phase232-enumeration-lint.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase232-enumeration-lint.md --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "feature",
+  "boundaries": {
+    "limitations": [
+      "two observed forms; matching-wrong-list passes; words beyond twenty out"
+    ],
+    "non_goals": [
+      "no hard VETO",
+      "no NLP"
+    ],
+    "exclusions": [
+      "GH #351",
+      "GH #352",
+      "GH #320",
+      "GH #286"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.152.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-18T02:57:23Z"
+  }
+}
