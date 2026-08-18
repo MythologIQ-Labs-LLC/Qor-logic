@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-17T23:54:58Z",
+  "generated_ts": "2026-08-18T03:13:48Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -96,7 +96,7 @@
       "id": "command-qor-audit.md",
       "source_path": "workflows/command-qor-audit.md",
       "install_rel_path": "workflows/command-qor-audit.md",
-      "sha256": "1b02fee166c87868d4179cd088cd66a571caceb9fa2a116fca95cf4b1546cf2d"
+      "sha256": "3203fa05a8d75d14e255d1b16f1293ab47b30250f067b98e9c766b926487f2ac"
     },
     {
       "id": "command-qor-bootstrap.md",

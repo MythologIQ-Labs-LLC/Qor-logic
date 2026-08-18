@@ -1,8 +1,8 @@
 # Qor-logic System State
 
-**Snapshot**: 2026-08-17
+**Snapshot**: 2026-08-18
 **Chain Status**: ACTIVE. Phase 168 (feature, v0.116.0) made gate depth scale with declared risk; Phase 169 (feature, v0.117.0) inverted the evidence posture (reconstruction over ceremony + schema freeze); Phase 170 (feature, v0.118.0) closed the perspective-reset umbrella (all six recommendations from research entry #378 shipped, Phases 164-170); this entry (Phase 172, feature, v0.119.0) establishes and retroactively enforces the publication boundary: no tracked or published surface identifies a repository outside Qor-logic. (PyPI is a continuous 0.109.0->0.118.1 line as of 2026-07-04.)
-**Phase**: Phase 231 (hotfix; seal-artifact ordering; v0.146.1; closes GH #334). The seal regenerated its README badges and graded their currency at Steps 6 and 6.5, both before Step 7 appended the SESSION SEAL entry the ledger badge counts. The comparison was tautological, so it passed on every seal while the badge shipped one behind, and CI was the first observer.
+**Phase**: Phase 232 (hotfix; seal-artifact ordering; v0.146.1; closes GH #334). The seal regenerated its README badges and graded their currency at Steps 6 and 6.5, both before Step 7 appended the SESSION SEAL entry the ledger badge counts. The comparison was tautological, so it passed on every seal while the badge shipped one behind, and CI was the first observer.
 
 The pair now runs at Step 7.7.5, after Step 7.7 verifies the appended entry exists and before Step 9.5 stages it. Step numbering is not execution order in that region -- Steps 7.4 and 7.5 produce content the entry carries -- and an earlier form of this fix was rejected at audit for anchoring at 7.2, inside the window it existed to leave.
 

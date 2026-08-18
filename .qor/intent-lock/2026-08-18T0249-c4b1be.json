@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-18T0249-c4b1be",
+  "plan_path": "docs/plan-qor-phase232-enumeration-lint.md",
+  "plan_hash": "f1c718d4562bd9773e0dec21d4f1523c004243b36d37b817684962be1e02c863",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "160eb664e8dbc0ccdecc0a45d7fce87cf05d3f303629666c79e6ad5fa3355a53",
+  "head_commit": "f06154ddb5512b9368833812af42f2bb838a2657",
+  "captured_ts": "2026-08-18T03:02:22.481629Z"
+}
