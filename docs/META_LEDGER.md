@@ -18836,5 +18836,96 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #624: RESEARCH BRIEF -- CI-side intent-lock verification
+
+**Timestamp**: 2026-08-18T03:19:44Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Session**: `2026-08-18T0319-c7813e`
+
+**Content Hash**: `9e821fedd26524f5d4a7a1192cb792d767836bff72a1bb87619c59f3e51f915b`
+**Previous Hash**: `bf550013244aaf877d7ef23b4374da5770cec25a06f252076fe5a65281ef5922`
+**Chain Hash (Merkle seal)**: `01ffabe26756834e7f9b67cbc0262c13829258f418b18884257a127a263953d7`
+
+**Decision**: GH #352. The prerequisite is real (both post-231 sealed sessions' lock evidence tracked); the walker and hashers are shipped and reused, not reimplemented. Check semantics per artifact class: presence, snapshot self-consistency (the exact binding the #344 incident broke, now CI-checked), and plan referent match -- the audit report's path is reused each phase so its snapshot IS the preserved referent, stated rather than silently skipped. One step in the existing gate-chain-completeness CI job; phase-231 grandfather boundary mirrors the sibling gate's phase-52 pattern; a live-repo clean test is the anti-recurrence binding.
+
+**Brief**: docs/research-brief-ci-lock-verify-2026-08-18.md. **Next**: /qor-plan (Phase 233).
+
+
+---
+
+### Entry #625: GATE TRIBUNAL -- Phase 233 CI lock verification, iteration 1 (PASS)
+
+**Timestamp**: 2026-08-18T03:23:01Z
+**Phase**: GATE (Phase 233)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase233-ci-lock-verify.md (iteration 1)
+**Session**: `2026-08-18T0319-c7813e`
+**Mode**: adversarial -- independent reviewer with declared toolset; LD-3 hand-executed over the live tree
+
+**Content Hash**: `0e3348546c74122e9a71cb5c92d9bb1466f988226343df8a18cca62308b41609`
+**Previous Hash**: `01ffabe26756834e7f9b67cbc0262c13829258f418b18884257a127a263953d7`
+**Chain Hash (Merkle seal)**: `004aad76135653e1534f23bc03cbc3c7583f667e4a748273710a3bd4cbb48add`
+
+**Verdict**: **PASS** -- first iteration, no mandating findings.
+
+**THE LIVE FIXTURE WAS VERIFIED BEFORE THE CODE EXISTS.** The reviewer executed the walker over the real ledger (exactly the two post-231 sessions, no spurious parses), hand-checked all six evidence files' tracking, snapshot self-consistency, and plan-referent matches, proved the extractor's regex against the modern SEAL convention rather than assuming it (the GATE TRIBUNAL lesson applied to the sibling), and evidence-backed the audit-referent skip with the report path's 173-overwrite history.
+
+**Report**: .agent/staging/AUDIT_REPORT.md. **Next**: /qor-implement.
+
+
+---
+
+### Entry #626: IMPLEMENTATION -- Phase 233 CI lock verification
+
+**Timestamp**: 2026-08-18T03:42:14Z
+**Phase**: IMPLEMENT (Phase 233)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase233-ci-lock-verify.md (iteration 1, PASS at entry #625)
+**Session**: `2026-08-18T0319-c7813e`
+
+**Content Hash** (5 files, concatenated): `583d07fdb3c1500c2338fdeba9d58013eeb012512c3a01c545adc4493c80db84`
+**Previous Hash**: `004aad76135653e1534f23bc03cbc3c7583f667e4a748273710a3bd4cbb48add`
+**Chain Hash (Merkle seal)**: `8c3d4880091d8c75614d32c467b929de2e37944a62647e90f81890ffa98a58f2`
+
+**Files**: qor/reliability/intent_lock_committed.py (NEW, 104 lines: walker reuse, three named failure kinds, phase-231 boundary constant), tests/test_intent_lock_committed.py (NEW, 6 behavioral tests incl. the live-ledger clean binding), .github/workflows/ci.yml (one step, audit O2's stale comment untouched as declared out of scope), docs/plan-qor-phase89-ci-commands-reconciliation.md (forward-maintenance CI-command entry per the Phase 105/106/158 convention -- audit O1's ripple, absorbed by the sanctioned mechanism when the self-application fixture caught it), CHANGELOG.md.
+
+**RED THEN GREEN**: collection ImportError at v0.153.0, then 6/6 and the live invocation exit 0 (`OK: intent-lock evidence verified for sealed phases >= 231`). One mid-phase catch: the Phase 89 self-application fixture flagged the new CI command exactly as audit O1 predicted; absorbed with the forward-maintenance entry. Full suite 3020 passed / 0 failed; determinism 6/6 twice.
+
+**Next**: /qor-substantiate (v0.154.0).
+
+
+---
+
+### Entry #627: SESSION SEAL -- Phase 233 CI lock verification (v0.154.0)
+
+**Timestamp**: 2026-08-18T03:43:21Z
+**Phase**: SEAL (Phase 233)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `a49f311ad047`
+**Plan**: docs/plan-qor-phase233-ci-lock-verify.md (iteration 1; PASS at entry #625)
+**Session**: `2026-08-18T0319-c7813e`
+**Change Class**: feature (v0.153.0 -> v0.154.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `0e3348546c74122e9a71cb5c92d9bb1466f988226343df8a18cca62308b41609`
+**Previous Hash**: `8c3d4880091d8c75614d32c467b929de2e37944a62647e90f81890ffa98a58f2`
+**Chain Hash (Merkle seal)**: `11d56b57afaf89c7b77f48910d308664d5d1b568febe77291502f0e614d34eaa`
+
+**Verdict**: **PASS** -- Reality matches Promise.
+
+**THE INTENT-LOCK CHAIN IS SELF-ENFORCING END TO END.** GH #352 closed, the last executable item of the stabilization sweep: capture keeps the evidence (Phase 231), the ceremony commits it (231), and CI now refuses the merge that loses or tampers with it (233) -- the #16798 asymmetry closed for every future session. Three named failure kinds; phase-231 grandfather mirroring the sibling gate; the audit snapshot its own preserved referent by evidence (173 overwrites of the report path). The live-ledger clean test is the anti-recurrence binding, and this phase's own PR is the first to run the gate against two live sessions' evidence. Audit O1's coverage-lint ripple landed exactly as predicted and was absorbed by the Phase 105/106/158 forward-maintenance convention when the Phase 89 self-application fixture caught it mid-phase.
+
+**GATE LADDER**: intent-lock VERIFIED; matrix 30/140/0; secret-scan clean; merge-velocity strained/narrow_scope (exit 0); data-api-acl disclosed-SKIP; instruction-hygiene disclosed-SKIP (event `e8f452cc8749`); publication boundary 0 findings; doc-integrity strict OK; governance-index advanced + enforced OK; feature inventory 25/25, no regressions vs `2026-08-18T0249-c4b1be`. Full suite 3020 passed / 0 failed; determinism 6/6 twice.
+
+**Next**: operator review at the Review Boundary -- push, PR, merge on FULL green, then GH #352 close.
+
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

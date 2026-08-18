@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.154.0] - 2026-08-18
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 233 (feature; the lock's guarantee stops depending on the person it constrains)**: closes GH #352, the last executable item of the 2026-08-17 stabilization sweep. New CI gate `qor.reliability.intent_lock_committed` in the `gate-chain-completeness` job: for every sealed session at or above the phase-231 boundary, the committed lock record and both snapshots must exist, each snapshot's LF-normalized sha256 must equal its recorded hash (the binding the #344 incident broke, now merge-blocking), and the recorded plan hash must match the committed plan file. The audit report's snapshot is its own preserved referent (the report path is overwritten every phase -- 173 commits). Reuses the SEAL-entry walker and the lock's own hashers; the intent-lock chain is now self-enforcing end to end: capture keeps the evidence (231), the ceremony commits it (231), CI refuses the merge that loses or tampers with it (233). The Phase 89 CI-commands registry gained its forward-maintenance entry per the Phase 105/106/158 convention.
+
 ## [0.153.0] - 2026-08-18
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

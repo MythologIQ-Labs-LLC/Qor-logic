@@ -1,0 +1,41 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-18T0319-c7813e",
+  "ts": "2026-08-18T03:20:53Z",
+  "plan_path": "docs/plan-qor-phase233-ci-lock-verify.md",
+  "phases": [
+    "Phase 1: Bind the verification contract (tests first)",
+    "Phase 2: The checker and the CI step"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q",
+    "qor-logic-plus scripts plan_text_consistency_lint --check docs/plan-qor-phase233-ci-lock-verify.md",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase233-ci-lock-verify.md --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "feature",
+  "boundaries": {
+    "limitations": [
+      "phase-231 grandfather; audit referent unmatched by design (snapshot is the referent)"
+    ],
+    "non_goals": [
+      "no capture/verify/seal_stage changes",
+      "no Direction 1"
+    ],
+    "exclusions": [
+      "GH #351",
+      "GH #320",
+      "GH #286"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.153.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-18T03:20:53Z"
+  }
+}
