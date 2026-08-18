@@ -93,6 +93,11 @@ jobs:
       - run: pip install -e ".[dev]"
       - name: Verify gate-chain completeness for sealed phases >= 52
         run: python -m qor.reliability.gate_chain_completeness --phase-min 52
+      - name: Verify committed intent-lock evidence for sealed phases >= 231
+        # Phase 233 (GH #352): the lock was the one ladder gate with no CI
+        # enforcement (#16798). Sealed sessions commit their record and
+        # snapshots since Phase 231; a merge that loses or tampers them fails.
+        run: python -m qor.reliability.intent_lock_committed --phase-min 231
       - name: seal-artifacts currency
         # Phase 164 (generate-not-assert): README badges + SYSTEM_STATE header
         # currency, enforced here on sealed state instead of the retired

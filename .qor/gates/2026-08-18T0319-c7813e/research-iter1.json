@@ -1,0 +1,42 @@
+{
+  "phase": "research",
+  "session_id": "2026-08-18T0319-c7813e",
+  "ts": "2026-08-18T03:20:09Z",
+  "questions": [
+    "What is CI-verifiable about the lock now?",
+    "What is reused vs new?"
+  ],
+  "findings": [
+    {
+      "id": "C1",
+      "claim": "Both post-231 sessions' lock evidence tracked; presence + snapshot self-consistency + plan referent match are checkable; audit snapshot is its own preserved referent.",
+      "evidence": [
+        "git ls-files .qor/intent-lock/",
+        "qor/reliability/intent_lock.py"
+      ]
+    },
+    {
+      "id": "C2",
+      "claim": "Reuse: gate_chain_completeness._extract_seal_sessions (line 33), intent_lock hashers, the gate-chain-completeness CI job (ci.yml:76). New: one reliability module + one CI step.",
+      "evidence": [
+        "qor/reliability/gate_chain_completeness.py:33",
+        ".github/workflows/ci.yml:76-101"
+      ]
+    }
+  ],
+  "sources": [
+    "qor/reliability/gate_chain_completeness.py",
+    "qor/reliability/intent_lock.py",
+    ".github/workflows/ci.yml",
+    "GH #352"
+  ],
+  "brief_path": "docs/research-brief-ci-lock-verify-2026-08-18.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.153.0",
+    "host": "claude-code",
+    "model_family": "fable",
+    "human_oversight": "absent",
+    "ts": "2026-08-18T03:20:09Z"
+  }
+}

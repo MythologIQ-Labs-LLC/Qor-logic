@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-18T0319-c7813e",
+  "plan_path": "docs/plan-qor-phase233-ci-lock-verify.md",
+  "plan_hash": "0e3348546c74122e9a71cb5c92d9bb1466f988226343df8a18cca62308b41609",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "551afafb73ff90717da3d74d1a7df7ad35d27921f28d0689970352c7fbf6f5e7",
+  "head_commit": "e4553236c1865619a33dfb91a263bab7a248f940",
+  "captured_ts": "2026-08-18T03:23:46.283882Z"
+}
