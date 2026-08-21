@@ -1,0 +1,28 @@
+{
+  "phase": "implement",
+  "session_id": "2026-08-21T1829-780836",
+  "ts": "2026-08-21T18:29:19Z",
+  "files_touched": [
+    "tests/test_consumer_contract_fixtures.py",
+    "qor/fixtures/consumer-contract/MANIFEST.json",
+    "qor/fixtures/consumer-contract/meta_ledger/supported.md",
+    "qor/fixtures/consumer-contract/meta_ledger/stale.md",
+    "qor/fixtures/consumer-contract/meta_ledger/malformed.md",
+    "qor/fixtures/consumer-contract/meta_ledger/unsupported-version.md",
+    "qor/fixtures/consumer-contract/meta_ledger/partial-migration.md",
+    "qor/fixtures/consumer-contract/feature_index/supported.md",
+    "qor/fixtures/consumer-contract/feature_index/malformed.md",
+    "qor/fixtures/consumer-contract/feature_index/partial-migration.md",
+    "qor/fixtures/consumer-contract/gate_artifact/supported.json",
+    "qor/fixtures/consumer-contract/gate_artifact/malformed.json",
+    "qor/fixtures/consumer-contract/gate_artifact/stale.json",
+    "qor/fixtures/consumer-contract/gate_artifact/partial-migration/legacy-pre-phase67.json",
+    "qor/fixtures/consumer-contract/gate_artifact/partial-migration/current-post-phase67.json",
+    "docs/plan-qor-phase235-consumer-contract-fixtures.md"
+  ],
+  "test_summary": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0
+  }
+}
