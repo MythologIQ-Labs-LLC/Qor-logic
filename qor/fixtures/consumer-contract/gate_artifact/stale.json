@@ -1,0 +1,8 @@
+{
+  "phase": "audit",
+  "ts": "2026-01-10T09:00:00Z",
+  "session_id": "fixture-consumer-contract-003",
+  "target": "docs/plan-old-feature.md",
+  "verdict": "PASS",
+  "risk_grade": "L1"
+}

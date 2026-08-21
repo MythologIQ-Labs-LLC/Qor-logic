@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "purpose": "Canonical fixtures proving the six consumer-contract states (supported, missing-optional, stale, malformed, unsupported-version, partial-migration) for every Qor-logic-owned artifact type an external read-only consumer adapter might classify.",
+  "boundary": "Qor-logic owns governance semantics and is the fixture producer; a downstream consumer owns presentation/enforcement and pins its adapter against these instead of hand-rolled local fixtures.",
+  "artifact_types": {
+    "meta-ledger": {
+      "produced_by": "docs/META_LEDGER.md; qor/scripts/meta_ledger_walker.py (read), qor/scripts/ledger_upgrade.py (schema-version marker)",
+      "states": {
+        "supported": {"path": "meta_ledger/supported.md", "note": "current schema marker (qor:meta-ledger-schema=1), well-formed AUDIT/SEAL entries."},
+        "missing-optional": {"represented_by": "absence", "note": "docs/META_LEDGER.md does not exist. No physical fixture file: the state IS the absent file. A consumer must classify this as unavailable, not malformed."},
+        "stale": {"path": "meta_ledger/stale.md", "as_of": "2026-08-21T00:00:00Z", "note": "well-formed, current schema marker, but latest entry timestamp predates as_of by over a year."},
+        "malformed": {"path": "meta_ledger/malformed.md", "note": "real AUDIT/SEAL content whose entry headings are corrupted, so the real parser silently returns zero records. Proves the false-negative a consumer must guard against."},
+        "unsupported-version": {"path": "meta_ledger/unsupported-version.md", "note": "schema marker declares qor:meta-ledger-schema=2, one version ahead of this repository's current ledger_upgrade.SCHEMA_VERSION=1."},
+        "partial-migration": {"path": "meta_ledger/partial-migration.md", "note": "no schema-version marker at all (schema_version()==0, legacy pre-Phase-179 form) while still containing genuinely parseable prior entries."}
+      }
+    },
+    "feature-index": {
+      "produced_by": "docs/FEATURE_INDEX.md; qor/gates/schema/feature_index.schema.json (row shape); qor/scripts/feature_index_verify.py (read)",
+      "states": {
+        "supported": {"path": "feature_index/supported.md", "note": "every row schema-valid; verified/unverified/n-with-rationale rows all present."},
+        "missing-optional": {"represented_by": "absence", "note": "docs/FEATURE_INDEX.md does not exist. feature_index_verify.tally()/surface_lint() both already define this exact missing_index=True path; no physical fixture needed."},
+        "stale": {"gap": true, "note": "FEATURE_INDEX carries no timestamp field anywhere in its schema or its markdown convention today. This repository defines no mechanism a consumer could pin a staleness fixture against without Qor-logic first adding one. Not fabricated."},
+        "malformed": {"path": "feature_index/malformed.md", "note": "one row with status n/a; the row-shape schema requires n_a_rationale when status is n/a, so building the schema-shaped envelope from this row fails validation."},
+        "unsupported-version": {"gap": true, "note": "FEATURE_INDEX has no version marker analogous to meta-ledger's HTML-comment schema marker. This repository defines no such mechanism today. Not fabricated."},
+        "partial-migration": {"path": "feature_index/partial-migration.md", "note": "header declares the Surface column (Phase 138 / GH #196) but some rows carry a populated Surface cell (migrated) and others carry an empty one (legacy, pre-Phase-138 authoring) -- exactly what surface_lint()'s untagged-row detection already checks for."}
+      }
+    },
+    "gate-artifact": {
+      "produced_by": "qor/gates/schema/audit.schema.json; qor/scripts/validate_gate_artifact.py (read/validate); materialized under .qor/gates/<session_id>/audit.json",
+      "states": {
+        "supported": {"path": "gate_artifact/supported.json", "note": "PASS verdict, all required fields, includes the Phase-67 optional target_content_hash."},
+        "missing-optional": {"represented_by": "absence", "note": "no .qor/gates/<session_id>/audit.json for the session. validate_gate_artifact.validate_all_current_session() already defines the 'No gate artifacts for session' path; no physical fixture needed."},
+        "stale": {"path": "gate_artifact/stale.json", "as_of": "2026-08-21T00:00:00Z", "note": "schema-valid PASS artifact whose required ts field predates as_of by roughly seven months."},
+        "malformed": {"path": "gate_artifact/malformed.json", "note": "verdict VETO without findings_categories -- the schema's own allOf/if/then rule (Phase 37 / B20b) requires findings_categories whenever verdict is VETO."},
+        "unsupported-version": {"gap": true, "note": "audit.schema.json carries no schema_version or comparable version field at all (confirmed by reading the schema before authoring this manifest). This repository defines no per-gate-artifact version marker today. Not fabricated."},
+        "partial-migration": {"path_pair": ["gate_artifact/partial-migration/legacy-pre-phase67.json", "gate_artifact/partial-migration/current-post-phase67.json"], "note": "two individually schema-valid artifacts: one omits the optional target_content_hash (pre-Phase-67 shape), one includes it (current shape) -- the exact phased rollout the schema's own field description documents. Two files, not one array, because a real .qor/gates/<sid>/ directory holds one JSON object per phase, never an array."}
+      }
+    },
+    "tracker-manifest": {
+      "out_of_scope": true,
+      "reason": "The originating ask (issue text) names 'tracker manifest / programs.yaml' as a fourth Qor-logic artifact type, mirroring a downstream consumer's own readTrackerManifestArtifact() entry point. A repository-wide search of qor/, docs/, and gates/schema/ before authoring this manifest found no Qor-logic schema, parser, template, or producer for any 'tracker manifest' or 'programs.yaml' format. That format is defined and owned entirely by the consuming repository's own local roadmap/tracker tooling, not by Qor-logic. Publishing a 'canonical' Qor-logic fixture for a format Qor-logic does not define would fabricate authority this repository does not hold. Flagged on the originating issue for correction (drop this artifact type from the Qor-logic fixture-contract ask, or redirect it to whichever repository actually owns the format) rather than silently invented here."
+    }
+  }
+}
