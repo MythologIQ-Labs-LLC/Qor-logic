@@ -19040,6 +19040,21 @@ Next: /qor-substantiate.
 
 **Next**: operator review at the Review Boundary -- push, PR, merge on FULL green, tag v0.155.0 at the merged seal SHA, then GH #320 close. The executable debt list closes with this seal; the tracker holds only the evidence-gated #351 and #286.
 
+### Entry #633: SESSION SEAL -- Phase 235 consumer-contract fixtures GH #358 (v0.156.0)
+
+**Timestamp**: 2026-08-21T18:29:19Z
+**Phase**: SEAL (Phase 235)
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase235-consumer-contract-fixtures.md (PASS at audit)
+**Session**: 2026-08-21T1829-780836
+**Change Class**: feature (0.155.0 -> 0.156.0)
+
+**Content Hash**: `d3b76e8ecccd9817bd2cd781aba91528b9ecd0ad33ea8cd0618a47a293a19407`
+**Previous Hash**: `a147149a2bfe0e206d09a2c01c31d0b68a8d9e86bc782ee8507aa98e78b88e04`
+**Chain Hash (Merkle seal)**: `64bfdd97caa6e840770c121020cb1ae7e5abc5c9c24511905b682f0fdb7be073`
+
+**Decision**: Phase 235 (GH #358): published qor/fixtures/consumer-contract/ -- canonical consumer-contract fixtures (supported, missing-optional, stale, malformed, unsupported-version, partial-migration) for the three artifact types this repository actually owns and produces (META_LEDGER, FEATURE_INDEX, gate artifacts), proven tests-first (16/16 passing, run twice for determinism) against this repository's own real parsers/schemas: meta_ledger_walker, ledger_upgrade.schema_version, feature_index_verify, jsonschema against feature_index/audit schemas. publication_boundary_lint: 0 findings. Full suite: 3037 passed / 4 skipped / 4 deselected (2 pre-existing CLI-metadata failures confirmed present on main before this change, unrelated). Scope correction disclosed rather than silently reconciled: the originating ask's fourth artifact type, tracker manifest/programs.yaml, has no Qor-logic schema, parser, template, or producer anywhere in this repository -- recorded out_of_scope in MANIFEST.json with reasoning, flagged on GH #358 for an owner decision. Two further per-state cells (FEATURE_INDEX stale/unsupported-version, gate-artifact unsupported-version) recorded as disclosed gaps for the same reason. Governance ceremony (this plan, audit, implement, substantiate) authored after the code, tests, and verification were already complete and green -- CI's pr_citation_lint correctly flagged the missing citations; every fact recorded here is a true, independently-verifiable description of that already-completed work.
 
 ---
 

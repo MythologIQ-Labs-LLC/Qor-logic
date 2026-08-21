@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.156.0] - 2026-08-21
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 235 (feature; canonical consumer-contract fixtures, GH #358)**: publishes `qor/fixtures/consumer-contract/` -- canonical fixtures proving the six external-consumer states (supported, missing-optional, stale, malformed, unsupported-version, partial-migration) for the artifact types this repository actually owns and produces (META_LEDGER, FEATURE_INDEX, gate artifacts), each proven tests-first against this repository's own real parsers/schemas rather than narrated. Two scope corrections were disclosed rather than silently reconciled: the originating ask's fourth artifact type, "tracker manifest / programs.yaml," has no Qor-logic schema, parser, template, or producer anywhere in this repository and is recorded `out_of_scope`; two further per-state cells (FEATURE_INDEX stale/unsupported-version, gate-artifact unsupported-version) are recorded as disclosed gaps for the same reason.
+
 ## [0.155.0] - 2026-08-18
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -1,0 +1,9 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-08-21T1829-780836",
+  "ts": "2026-08-21T18:29:19Z",
+  "verdict": "PASS",
+  "merkle_seal": "64bfdd97caa6e840770c121020cb1ae7e5abc5c9c24511905b682f0fdb7be073",
+  "content_hash": "d3b76e8ecccd9817bd2cd781aba91528b9ecd0ad33ea8cd0618a47a293a19407",
+  "ledger_entry": 633
+}
