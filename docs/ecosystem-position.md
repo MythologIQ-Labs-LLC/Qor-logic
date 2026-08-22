@@ -2,9 +2,9 @@
 
 ## Role
 
-Qor-logic is the public, portable semantic authority for repository-local governance and the governed software-development lifecycle.
+Qor-logic is the public, portable semantic authority for repository-local governance and governed software-development lifecycle semantics.
 
-It defines lifecycle doctrine and evidence meaning. It does not own a complete customer application, hosted tenant state, organization-wide authority, compliance conclusions, or operator presentation.
+It defines lifecycle doctrine and evidence meaning. It does not own the Qortara SDLC product taxonomy, a complete customer application, hosted tenant state, organization-wide authority, compliance conclusions, or operator presentation.
 
 ## Position
 
@@ -12,19 +12,19 @@ It defines lifecycle doctrine and evidence meaning. It does not own a complete c
 flowchart LR
     Repo[Repository Context]
     Logic[Qor-logic]
-    Product[Adjacent Governance Product]
-    Extended[Extended Governance Line]
-    Vertical[Delivery Vertical]
+    Plus[Qor-logic-plus]
+    SDLC[Qortara SDLC]
     Runtime[Supported Runtime Profiles]
 
     Repo --> Logic
-    Logic --> Product
-    Logic --> Extended
+    Logic --> Plus
     Logic --> SDLC
     Logic --> Runtime
 ```
 
-The arrows represent consumption of versioned lifecycle, gate, policy, skill, and evidence contracts. They do not transfer semantic authority away from Qor-logic.
+The arrows represent consumption of versioned lifecycle, gate, policy, skill, and evidence contracts. They do not transfer semantic authority away from Qor-logic, and they do not make Qor-logic a Qortara SDLC module.
+
+Qortara SDLC owns its customer-facing product shape. Its canonical seven modules are **Development, Governance, Evidence, Compliance, Oversight, Operations, and Administration**. `Now` is an attention/orientation surface, not an eighth module. The canonical taxonomy is maintained by the owning `qortara-sdlc` repository in `PRODUCT_MODULES.md` and `registry/qortara-sdlc.modules.json`.
 
 ## Owns
 
@@ -57,16 +57,19 @@ The arrows represent consumption of versioned lifecycle, gate, policy, skill, an
 
 ## Does not own
 
-- organization actors, delegated authority, work claims, conflicts, admission, resources, or release sequencing owned by the extended governance line;
+- the Qortara SDLC product taxonomy or module labels;
+- organization actors, delegated authority, work claims, conflicts, admission, resources, or release sequencing owned by Qor-logic-plus;
 - a complete editor, web, desktop, or hosted product;
 - tenant identity, billing, subscriptions, or fleet operations;
-- operator read models owned by Qor Oversight;
-- compliance packages or control conclusions owned by Qor Compliance;
+- operator read models supplied by the Qor Oversight repository for the SDLC **Oversight** module;
+- compliance evidence operations supplied by the Qor Compliance repository for the SDLC **Compliance** module;
 - runtime action-governance functionality already supplied by external foundations unless explicitly adopted into a Qor-logic contract.
+
+Repository/component names do not redefine SDLC module names. In particular, **Qor Compliance** and **Qor Oversight** are backing repository/component names, while the customer-facing SDLC modules are **Compliance** and **Oversight**.
 
 ## Consumer rule
 
-Consumers may implement Qor-logic contracts, but they must not silently redefine lifecycle phases, verdict meaning, evidence sufficiency, or completion semantics.
+Consumers may implement Qor-logic contracts, but they must not silently redefine lifecycle phases, verdict meaning, evidence sufficiency, completion semantics, or another product's taxonomy.
 
 A compatibility adapter must declare:
 
@@ -83,8 +86,8 @@ A compatibility adapter must declare:
 2. Publish conformance fixtures for each supported host and consumer.
 3. Define compatibility floors and explicit deprecation policy.
 4. Separate portable semantics from host-specific presentation and orchestration.
-5. Complete the contracts required by the first delivery-vertical slice.
-6. Add documentation checks that prevent consumers from claiming Qor authority they do not own.
+5. Complete the contracts required by the first delivery slice.
+6. Keep documentation checks that prevent consumers from claiming Qor authority or SDLC product-shape authority they do not own.
 
 ## Public disclosure boundary
 
