@@ -50,7 +50,10 @@ def parse_index_rows(text: str) -> list[dict[str, str]]:
     """Parse a FEATURE_INDEX markdown table into row dicts.
 
     Expects column order: ID | Name | Source-of-truth | Doc citation | Test path | Verification status
-    Tolerates extra columns at the end; trims whitespace.
+    Tolerates extra columns at the end; trims whitespace. A header cell named
+    plainly ``Status`` is accepted as an alias for ``Verification status``
+    (GH #365) so a consumer's own column naming does not silently parse to
+    zero rows.
     """
     rows: list[dict[str, str]] = []
     in_table = False
@@ -72,7 +75,10 @@ def parse_index_rows(text: str) -> list[dict[str, str]]:
         if len(cells) < len(header):
             continue
         row = dict(zip(header, cells[: len(header)]))
-        status = _normalize_status(row.get("verification status", ""))
+        raw_status = row.get("verification status")
+        if raw_status is None:
+            raw_status = row.get("status", "")
+        status = _normalize_status(raw_status)
         if status is None:
             continue
         row["status"] = status
