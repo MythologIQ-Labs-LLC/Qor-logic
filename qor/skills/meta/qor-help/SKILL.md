@@ -90,6 +90,7 @@ Bundles: /qor-deep-audit, /qor-onboard-codebase, /qor-process-review-cycle
 | `/qor-organize` | Project-level structure (directory topology). | When audit flags Orphan/Macro; reorganization needed. |
 | `/qor-bootstrap` | Initialize Qor-logic DNA for a **new workspace**. | First-time setup. NOT for new features. |
 | `/qor-help` | This command. | When uncertain. |
+| `/qor-roadmap` | Preserve long-horizon prerequisite topology until a named scope is genuinely ready for `/qor-plan`. | Multi-context objectives with unresolved facts, authority decisions, or cross-context dependencies. |
 | `/qor-repo-audit` | Repo-level audit (separate from per-feature audits). | Before release; audit rotation. |
 | `/qor-repo-release` | Release ceremony + tagging. | After validate PASS; when shipping. |
 | `/qor-repo-scaffold` | Create new repo from template. | First-time repo creation. |

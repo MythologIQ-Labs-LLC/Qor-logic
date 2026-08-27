@@ -1,6 +1,6 @@
 # Qor-logic Skill Registry
 
-**Snapshot**: 2026-05-23
+**Snapshot**: 2026-08-27
 **Authoritative location**: `qor/skills/<category>/<skill>/`
 
 Skills organized by functional category. Path-shown relative to repo root.
@@ -45,15 +45,16 @@ State tracking, documentation, decision logs, session tier selection.
 | track-shadow-genome | `qor/skills/memory/track-shadow-genome.md` | Active (migrated) |
 | qor-docs-technical-writing | `qor/skills/memory/qor-docs-technical-writing/` | Active (migrated) |
 
-## meta/ (13)
+## meta/ (14)
 
-Bootstrapping, help, repo management, meta-tracking, workflow bundles, A/B measurement.
+Bootstrapping, help, repo management, meta-tracking, workflow bundles, A/B measurement, and long-horizon decision topology.
 
 | Skill | Path | Status |
 |---|---|---|
 | qor-ab-run | `qor/skills/meta/qor-ab-run/` | Active (A/B detection-rate measurement; Phase 39 evidence harness; added Phase 97 reconciliation) |
 | qor-bootstrap | `qor/skills/meta/qor-bootstrap/` | Active |
 | qor-help | `qor/skills/meta/qor-help/` | Active |
+| qor-roadmap | `qor/skills/meta/qor-roadmap/` | Experimental P1 (operator-invoked decision topology; Phase 238) |
 | qor-repo-audit | `qor/skills/meta/qor-repo-audit/` | Active |
 | qor-repo-release | `qor/skills/meta/qor-repo-release/` | Active |
 | qor-repo-scaffold | `qor/skills/meta/qor-repo-scaffold/` | Active |

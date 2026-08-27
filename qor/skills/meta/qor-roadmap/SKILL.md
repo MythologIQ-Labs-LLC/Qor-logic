@@ -20,7 +20,6 @@ permitted_tools: [Read, Grep, Glob, Bash]
 <skill>
   <trigger>/qor-roadmap</trigger>
   <phase>meta</phase>
-  <persona>Governor</persona>
   <output>durable Roadmap state + actionable frontier + legal resolver/handoff guidance</output>
 </skill>
 
@@ -33,9 +32,17 @@ Run `qor-logic governance-health --profile skill-entry` before reading governanc
 
 Preserve the prerequisite topology of genuinely long-horizon work across agent contexts without turning uncertainty into fictional implementation tasks.
 
-Runtime contract: `qor/references/doctrine-roadmap.md`.
-
 Roadmap owns topology and routing. Existing Qor skills own the work that resolves topology nodes.
+
+## Environment (Phase 90 wiring; GH #79)
+
+Before invoking the Roadmap runtime, verify that the active Python environment can import Qor's reliability package:
+
+```bash
+python -c "import qor.reliability"
+```
+
+If that check fails, activate the environment where `pip show qor-logic` resolves, or use `pipx install qor-logic` for a global install. On hosts where Python or `qor-logic` is unavailable, the Phase 75 declarative-tolerance contract applies: prerequisite-dependent gates record SKIP and emit `gate_skipped_prerequisite_absent` rather than pretending the check ran.
 
 ## Admission Guard
 

@@ -34,4 +34,4 @@ Rows append as the surface grows; the seal-time `feature_index_verify.tally()` p
 | FX023 | Override recording-path parity | qor/scripts/shadow_process.py:68 | qor/references/doctrine-governance-enforcement.md | tests/test_override_recording_paths.py | verified |
 | FX024 | Seal-ladder order invariant | tests/test_seal_ladder_order.py:44 | qor/references/doctrine-governance-enforcement.md | tests/test_seal_ladder_order.py | verified |
 | FX025 | Step-prerequisite resolvability | tests/test_step_prerequisites_resolve.py:39 | qor/references/doctrine-governance-enforcement.md | tests/test_step_prerequisites_resolve.py | verified |
-| FX026 | `qor-logic scripts roadmap_cli` experimental Roadmap pilot | qor/scripts/roadmap_cli.py | qor/references/doctrine-roadmap.md | tests/test_roadmap_cli.py::test_vertical_pilot_across_fresh_loads | verified |
+| FX026 | `qor-logic scripts roadmap_cli` experimental Roadmap pilot | qor/scripts/roadmap_cli.py | qor/skills/meta/qor-roadmap/SKILL.md | tests/test_roadmap_cli.py::test_vertical_pilot_across_fresh_loads | verified |

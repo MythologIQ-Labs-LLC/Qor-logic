@@ -3,13 +3,10 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable
 
 from qor.scripts.roadmap_model import (
-    CONTRACT_VERSION,
     InvalidHistoryError,
     NodeState,
-    RoadmapError,
     RoadmapState,
     ScopeState,
-    UnsupportedVersionError,
     UnresolvedSpaceState,
     validate_event,
 )
