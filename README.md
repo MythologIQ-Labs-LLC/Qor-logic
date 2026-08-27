@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
-  <img src="https://img.shields.io/badge/Skills-30-blue" alt="Skills: 30">
+  <img src="https://img.shields.io/badge/Skills-31-blue" alt="Skills: 31">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
   <img src="https://img.shields.io/badge/Doctrines-39-blue" alt="Doctrines: 39">
   <img src="https://img.shields.io/badge/Ledger-630%20entries%20sealed-green" alt="Ledger: 630 entries sealed">
@@ -225,7 +225,7 @@ Skills live under `qor/skills/<category>/` (the full count is on the Skills badg
 | Skill | Purpose |
 |---|---|
 | `/qor-status` | Diagnose lifecycle state and the next legal action |
-| `/qor-tone` | Set session communication tier (technical / standard / plain) |
+| `/qor-tone` | Set session communication tier for the session (technical / standard / plain) |
 | `/qor-document` | Author and maintain governance documentation |
 | `/qor-docs-technical-writing` | Narrative technical writing for product-facing docs |
 | `/qor-organize` | Project-level structure reorganization |
