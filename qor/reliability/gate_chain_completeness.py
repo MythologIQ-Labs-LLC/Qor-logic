@@ -28,6 +28,10 @@ class CompletenessResult:
     ok: bool
     missing: list[tuple[int, str]] = field(default_factory=list)
     sessions_checked: list[str] = field(default_factory=list)
+    # GH #366: distinguishes "inspected N>0 sessions, all complete" from
+    # "inspected zero sessions" -- the latter is not evidence of completeness,
+    # only evidence that nothing at/above phase_min was found to inspect.
+    zero_population: bool = False
 
 
 def _extract_seal_sessions(text: str, phase_min: int) -> dict[int, str]:
@@ -90,6 +94,7 @@ def check(
         ok=not missing,
         missing=missing,
         sessions_checked=list(by_phase.values()),
+        zero_population=not by_phase,
     )
 
 
@@ -100,10 +105,21 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     result = check(args.repo_root, phase_min=args.phase_min)
     if result.ok:
-        print(
-            f"OK: gate-chain complete for {len(result.sessions_checked)} "
-            f"sessions (phase >= {args.phase_min})"
-        )
+        if result.zero_population:
+            # GH #366: a completeness gate that inspected nothing cannot claim
+            # completeness -- name the empty selection explicitly rather than
+            # printing the same "OK ... complete" text as a real pass.
+            print(
+                f"WARN: gate-chain completeness inspected 0 sessions "
+                f"(phase >= {args.phase_min}); no SESSION SEAL entry at or "
+                f"above this phase was found, so completeness is unverified, "
+                f"not confirmed"
+            )
+        else:
+            print(
+                f"OK: gate-chain complete for {len(result.sessions_checked)} "
+                f"sessions (phase >= {args.phase_min})"
+            )
         return 0
     print(f"FAIL: gate-chain incomplete; {len(result.missing)} missing artifacts:")
     for phase_num, what in result.missing:

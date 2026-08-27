@@ -420,6 +420,47 @@ def test_main_nonconforming_plan_name_still_fails_broken_entry(tmp_path):
     assert rc == 1
 
 
+def _phaseless_entry(content_hash: str, prev_hash: str) -> str:
+    """A SESSION SEAL entry that names no numeric phase anywhere -- neither in
+    the header (`Phase <N>`) nor a `**Phase**:` line -- matching GH #366's
+    reported consumer shape (`**Phase**: SUBSTANTIATE`)."""
+    chain = chain_hash(content_hash, prev_hash)
+    return (
+        "### Entry #601: SESSION SEAL -- feature substantiated\n\n"
+        "**Phase**: SUBSTANTIATE\n\n"
+        f"**Content Hash**: `{content_hash}`\n"
+        f"**Previous Hash**: `{prev_hash}`\n"
+        f"**Chain Hash**: `{chain}`\n"
+    )
+
+
+def test_check_latest_fails_closed_on_a_ledger_with_no_numeric_phase(tmp_path):
+    """GH #366 invariant 1, regression coverage backfill: already correct on
+    main (verified before this change), locked in here rather than reproduced
+    as a live bug. A ledger whose only entry names no numeric phase anywhere
+    must fail closed via check_latest() -- not fabricate a phase and pass."""
+    entry = _phaseless_entry(_zhash(1), _zhash(0))
+    ledger = _write_ledger(tmp_path, [entry])
+
+    result = seal_entry_check.check_latest(ledger)
+    assert result.ok is False
+    assert any("no parseable latest entry" in e for e in result.errors)
+
+
+def test_cli_never_exits_zero_when_it_prints_fail_on_a_phaseless_ledger(tmp_path):
+    """GH #366 invariant 1, regression coverage backfill (see above): the
+    printed verdict and the exit code must agree. Exercises the exact
+    reported path -- a non-conforming plan filename falling back to
+    check_latest() against a phase-less latest entry."""
+    entry = _phaseless_entry(_zhash(1), _zhash(0))
+    ledger = _write_ledger(tmp_path, [entry])
+
+    rc = seal_entry_check._main(
+        ["--ledger", str(ledger), "--plan", "plan-not-phase-tagged.md"]
+    )
+    assert rc == 1
+
+
 def test_main_conforming_plan_name_uses_filename_phase(tmp_path):
     """A conforming plan name still derives the phase from the FILENAME: a
     filename phase (158) that disagrees with the latest entry's phase (47)
