@@ -1,7 +1,7 @@
 {
   "phase": "plan",
   "session_id": "2026-08-27T2317-239a1c",
-  "ts": "2026-08-27T23:18:00Z",
+  "ts": "2026-08-27T23:23:00Z",
   "plan_path": "docs/plan-qor-phase239-roadmap-promotion.md",
   "phases": [
     "Phase 1: Pin the prototype contract before import",
@@ -19,6 +19,11 @@
   "open_questions": [],
   "doc_tier": "standard",
   "change_class": "feature",
+  "iteration": 2,
+  "target_content_hash": "9ee11960bbf4d6c1cf639492a2813f97352f419b25dc38415ec7e31212f06cc8",
+  "amendments": [
+    "Audit Iteration 1 F1: README promotion is badge-only; unrelated /qor-tone wording and EOF drift are excluded"
+  ],
   "boundaries": {
     "limitations": [
       "operator-invoked and single-writer P1",
@@ -35,7 +40,8 @@
     ],
     "exclusions": [
       "production implementation from roadmap",
-      "Phase 238 substantiation or seal backfill"
+      "Phase 238 substantiation or seal backfill",
+      "prototype README /qor-tone wording drift"
     ]
   },
   "ai_provenance": {
@@ -44,6 +50,6 @@
     "host": "chatgpt-github",
     "model_family": "gpt-5.6-sol",
     "human_oversight": "absent",
-    "ts": "2026-08-27T23:18:00Z"
+    "ts": "2026-08-27T23:23:00Z"
   }
 }
