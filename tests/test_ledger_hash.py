@@ -256,10 +256,21 @@ def test_verify_handles_non_monotonic_entry_numbers(tmp_path, capsys):
 
     Phase 41: uses bold-anchored `**Chain Hash**:` form with capsys assertion to
     guard against vacuous-green regression.
+
+    GH #361: the second entry chains off the first's recorded hash (a single
+    honest chain with out-of-order labels), not off the shared genesis
+    previous_hash the two entries used before this test was updated -- two
+    entries independently anchored to the same previous_hash is now
+    correctly treated as an unattested ledger fork (see
+    test_ledger_hash_duplicate_entry.py) and would legitimately FAIL here,
+    which would defeat this test's actual purpose of exercising non-monotonic
+    numbering, not fork detection.
     """
     content_a = _digest(b"a")
     prev_a = "0" * 64
     chain_a = lh.chain_hash(content_a, prev_a)
+    content_b = _digest(b"b")
+    chain_b = lh.chain_hash(content_b, chain_a)
 
     fake_ledger = tmp_path / "ledger.md"
     fake_ledger.write_text(f"""### Entry #5: OUT OF ORDER
@@ -270,9 +281,9 @@ def test_verify_handles_non_monotonic_entry_numbers(tmp_path, capsys):
 
 ### Entry #2: EARLIER NUMBER LATER
 
-**Content Hash**: `{content_a}`
-**Previous Hash**: `{prev_a}`
-**Chain Hash**: `{chain_a}`
+**Content Hash**: `{content_b}`
+**Previous Hash**: `{chain_a}`
+**Chain Hash**: `{chain_b}`
 """, encoding="utf-8")
     # Should not crash on out-of-order numbers
     rc = lh.verify(fake_ledger)

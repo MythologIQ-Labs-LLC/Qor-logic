@@ -419,6 +419,23 @@ def _number_gaps(entries: list[tuple[int, str]]) -> list[int]:
             if n not in seen and n not in KNOWN_ENTRY_GAPS]
 
 
+def _duplicate_entry_numbers(entries: list[tuple[int, str]]) -> list[int]:
+    """Entry numbers appearing more than once (a ledger fork: two branches
+    independently allocated the same #N). Mirror image of ``_number_gaps``,
+    and a hard FAIL rather than a WARN -- unlike a gap, a duplicate number
+    cannot be closed by renumbering (that would invalidate every downstream
+    chain hash) and is not detectable from per-entry chain math alone: two
+    honestly-chained branches forking from the same predecessor each verify
+    individually (GH #361)."""
+    seen: set[int] = set()
+    dupes: list[int] = []
+    for num, _ in entries:
+        if num in seen and num not in dupes:
+            dupes.append(num)
+        seen.add(num)
+    return dupes
+
+
 
 def _report_sequence(
     entries: list[tuple[int, str]],
@@ -431,6 +448,16 @@ def _report_sequence(
     separable on its own merits.
     """
     errors = 0
+    dupes = _duplicate_entry_numbers(entries)
+    if dupes:
+        print(
+            f"FAIL: duplicate entry number(s) {dupes}: two entries share the "
+            "same #N (a ledger fork). Renumbering is forbidden (it would "
+            "invalidate downstream chain hashes); reconcile the branches "
+            "before this can verify.",
+            file=sys.stderr,
+        )
+        errors += len(dupes)
     for message in _sequence_breaks(entries, tolerated):
         print(message, file=sys.stderr)
         errors += 1
@@ -540,9 +567,14 @@ def verify(
     if skipped > 0:
         print(f"Skipped {skipped} entries with non-verifiable markup")
 
-    errors += _report_sequence(
-        entries, reconciled | grandfathered | _duplicate_previous_hash_members(entries)
-    )
+    # GH #361: the sequence-break tolerance must be gated the same way the
+    # chain-math path already is (attestation, or a <=cutoff grandfathered
+    # residual) -- NOT by bare duplicate-previous_hash membership. Tolerating
+    # every duplicate-previous_hash member unconditionally disarms the one
+    # check that could otherwise catch a ledger fork: two branches that each
+    # honestly chain off the same predecessor are individually valid by
+    # per-entry chain math, so sequence continuity is the only signal left.
+    errors += _report_sequence(entries, reconciled | grandfathered)
     return 1 if errors else 0
 
 
@@ -630,6 +662,25 @@ def verify_post_anchor(
                 file=sys.stderr,
             )
             errors += 1
+
+    # GH #361: a ledger fork (two entries independently allocated the same
+    # #N, each individually valid by per-entry chain math) is invisible to
+    # the classification loop above -- both occurrences can classify "ok".
+    # This is the release-gate surface the issue's own repro targets, so the
+    # duplicate must be checked here explicitly, not only in verify().
+    for n in _duplicate_entry_numbers(entries):
+        if n >= boundary_entry:
+            print(
+                f"FAIL Entry #{n}: duplicate entry number (ledger fork) "
+                "at or after the post-anchor boundary",
+                file=sys.stderr,
+            )
+            errors += 1
+        else:
+            print(
+                f"DISCLOSED_PRE_ANCHOR Entry #{n}: duplicate entry number "
+                "tolerated (pre-boundary residual)"
+            )
 
     if errors == 0:
         print(f"post-anchor clean (boundary=#{boundary_entry})")
