@@ -208,6 +208,49 @@ Qor should apply this carefully within authority limits:
 - the checkpoint should expose the decision, evidence, recommendation, and consequences;
 - no amount of checkpoint efficiency grants authority the agent does not have.
 
+## 13. Prototypes should answer questions, not become accidental products
+
+The prototype skill treats throwaway code as an experiment whose shape is determined by one design question. It deliberately avoids production hardening, surfaces state so the operator can inspect behavior, and preserves the prototype as a primary source away from mainline while promoting only the validated decision.
+
+This is a strong fit for Qor's evidence model:
+
+- every prototype should state the question it exists to answer;
+- prototype code should be visibly disposable from creation;
+- production abstractions should not be invented inside the prototype unless the experiment specifically tests them;
+- the experiment result should become durable evidence for the later plan or ADR;
+- mainline should inherit the validated decision, not a pile of exploratory code merely because it already runs.
+
+A Qor prototype discipline could therefore improve architecture exploration without weakening auditability.
+
+## 14. Context transitions belong at phase boundaries
+
+The phase-boundary guidance treats context management as an explicit decision made between coherent chunks of work rather than in the middle of reasoning. It orders transition choices from least lossy to most lossy: continue with the primary context when it still matters, clear when the old context is irrelevant, create a portable handoff only when work must travel, use a subagent for independently scoped work, and compact only when relevant context must be compressed.
+
+The deeper lesson is that session context is evidence with information-loss characteristics.
+
+Qor implications:
+
+- preserve primary reasoning when the next phase needs the exact why, not merely the conclusion;
+- compact or summarize only at intentional boundaries;
+- make the purpose of a handoff explicit: portability, delegation, or context recovery;
+- let Roadmap store durable decisions and topology so a session transition does not require copying the whole conversation;
+- evaluate resume fidelity as a measurable quality property.
+
+This may eventually justify a Qor-native context-transition decision tree, but it should first be tested against the existing session and handoff behavior rather than added as another ceremonial gate.
+
+## 15. Authority controls should move out of prose when the host can enforce them
+
+The git-guardrails skill installs a pre-tool hook that blocks destructive commands before execution instead of merely reminding the model not to run them.
+
+Qor already strongly favors deterministic governance, but this provides a useful placement test for future controls:
+
+1. if a dangerous action can be prevented mechanically at the tool boundary, prefer that enforcement;
+2. use skill prose to explain legal behavior and remediation, not as the only barrier;
+3. keep the canonical policy host-neutral, then compile or install host-specific hooks where the host exposes a reliable enforcement surface;
+4. test the hook with an actual blocked invocation rather than assuming configuration syntax means enforcement works.
+
+This pattern is especially relevant to repository mutation, release actions, destructive filesystem operations, credential handling, and other authority-sensitive tools.
+
 ## Adoption matrix
 
 | Pattern | Qor disposition | Likely home |
@@ -228,6 +271,9 @@ Qor should apply this carefully within authority limits:
 | Handoff by pointers, not duplication | Strengthen | handoff/resumption |
 | Environment-focused retrospective | Adapt into Process Shadow Genome review | process review |
 | Push-right checkpoints | Adapt within Qor authority limits | roadmap/automation |
+| Question-driven throwaway prototypes | Adapt | architecture/design exploration |
+| Phase-boundary context decision tree | Evaluate and adapt | session/handoff mechanics |
+| Pre-tool mechanical authority enforcement | Strengthen existing deterministic governance | host adapters / policy enforcement |
 | Assignee-only claim ownership | Reject unchanged | use lease-like Qor claim model |
 | One mutable tracker body as canonical state | Reject | use reconstructible state + projections |
 | Creation-order frontier selection | Reject | use leverage-ranked frontier |
