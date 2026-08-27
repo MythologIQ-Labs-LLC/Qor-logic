@@ -97,7 +97,6 @@ def test_unknown_mapping_ids_surface_in_missing(tmp_path, monkeypatch):
         session_id="phase226",
         review_pass_artifact_path=audit,
         remediate_gate_path=gate,
-        repo_root=tmp_path,
     )
 
     assert changed == 1
@@ -120,7 +119,7 @@ def test_already_addressed_batch_surfaces_in_skipped(tmp_path, monkeypatch):
     result = subject.mark_addressed(
         {"SG-A": "/qor-audit Step 4", "SG-B": "/qor-audit Step 4"},
         session_id="phase230", review_pass_artifact_path=audit,
-        remediate_gate_path=gate, repo_root=tmp_path,
+        remediate_gate_path=gate
     )
 
     assert result.changed == 0
@@ -137,7 +136,7 @@ def test_mixed_batch_partitions_changed_missing_skipped(tmp_path, monkeypatch):
         {"SG-A": "/qor-audit Step 4", "SG-B": "/qor-audit Step 4",
          "SG-GHOST": "/qor-audit Step 4"},
         session_id="phase230", review_pass_artifact_path=audit,
-        remediate_gate_path=gate, repo_root=tmp_path,
+        remediate_gate_path=gate
     )
 
     assert result.changed == 1
@@ -157,7 +156,7 @@ def test_corrective_noop_and_ineligible_surface_in_skipped(tmp_path, monkeypatch
     result = subject.correct_closure_enforcers(
         {"SG-EQ": "/qor-audit Step 4", "SG-PEND": "/qor-audit Step 4"},
         session_id="phase230", review_pass_artifact_path=audit,
-        remediate_gate_path=gate, repo_root=tmp_path,
+        remediate_gate_path=gate
     )
 
     assert result.changed == 0
@@ -194,7 +193,6 @@ def test_corrective_repair_leaves_addressed_true(tmp_path, monkeypatch):
         session_id="phase226",
         review_pass_artifact_path=audit,
         remediate_gate_path=gate,
-        repo_root=tmp_path,
     )
 
     assert (changed, missing) == (1, [])

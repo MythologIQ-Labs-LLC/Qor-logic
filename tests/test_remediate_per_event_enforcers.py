@@ -57,7 +57,6 @@ def test_mark_addressed_preserves_per_event_enforcers(tmp_path, monkeypatch):
         session_id="phase226",
         review_pass_artifact_path=audit,
         remediate_gate_path=gate,
-        repo_root=tmp_path,
     )
 
     assert changed == 2
@@ -114,7 +113,6 @@ def test_correct_closure_enforcers_repairs_only_citation(tmp_path, monkeypatch):
         session_id="phase226",
         review_pass_artifact_path=audit,
         remediate_gate_path=gate,
-        repo_root=tmp_path,
     )
 
     assert changed == 1
@@ -136,7 +134,6 @@ def test_list_signature_remains_supported(tmp_path, monkeypatch):
         review_pass_artifact_path=audit,
         remediate_gate_path=gate,
         closure_enforcer="/qor-audit Step 4",
-        repo_root=tmp_path,
     )
 
     assert (changed, missing) == (1, [])
