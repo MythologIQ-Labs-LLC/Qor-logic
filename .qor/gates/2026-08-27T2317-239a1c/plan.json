@@ -1,7 +1,7 @@
 {
   "phase": "plan",
   "session_id": "2026-08-27T2317-239a1c",
-  "ts": "2026-08-27T23:23:00Z",
+  "ts": "2026-08-27T23:26:00Z",
   "plan_path": "docs/plan-qor-phase239-roadmap-promotion.md",
   "phases": [
     "Phase 1: Pin the prototype contract before import",
@@ -20,9 +20,10 @@
   "doc_tier": "standard",
   "change_class": "feature",
   "iteration": 2,
-  "target_content_hash": "9ee11960bbf4d6c1cf639492a2813f97352f419b25dc38415ec7e31212f06cc8",
+  "target_content_hash": "d45e721b16b29514bdf0f011b2dcf310ff498b229ea67178a8dde70197bccc2d",
   "amendments": [
-    "Audit Iteration 1 F1: README promotion is badge-only; unrelated /qor-tone wording and EOF drift are excluded"
+    "Adversarial Preflight Iteration 1 F1: README promotion is badge-only; unrelated /qor-tone wording and EOF drift are excluded",
+    "Preflight is explicitly non-binding because canonical qor-audit currently requires claude-opus-4-7 / Opus-class execution"
   ],
   "boundaries": {
     "limitations": [
@@ -50,6 +51,6 @@
     "host": "chatgpt-github",
     "model_family": "gpt-5.6-sol",
     "human_oversight": "absent",
-    "ts": "2026-08-27T23:23:00Z"
+    "ts": "2026-08-27T23:26:00Z"
   }
 }
