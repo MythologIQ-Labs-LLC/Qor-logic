@@ -48,20 +48,15 @@ def _roadmap_arg(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--roadmap", required=True)
 
 
-def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="qor-logic scripts roadmap_cli",
-        description="Experimental Qor Roadmap decision-topology pilot.",
-    )
-    parser.add_argument("--repo-root", default=".")
-    sub = parser.add_subparsers(dest="command", required=True)
-
+def _register_init(sub) -> None:
     cmd = sub.add_parser("init")
     _roadmap_arg(cmd)
     cmd.add_argument("--objective", required=True)
     cmd.add_argument("--success", action="append", default=[])
     cmd.add_argument("--exclude", action="append", default=[])
 
+
+def _register_nodes(sub) -> None:
     cmd = sub.add_parser("add-node")
     _roadmap_arg(cmd)
     cmd.add_argument("--id", required=True)
@@ -82,6 +77,8 @@ def _build_parser() -> argparse.ArgumentParser:
     cmd.add_argument("--rationale", default="")
     cmd.add_argument("--authority")
 
+
+def _register_lifecycle(sub) -> None:
     cmd = sub.add_parser("supersede-decision")
     _roadmap_arg(cmd)
     cmd.add_argument("--decision", required=True)
@@ -98,6 +95,8 @@ def _build_parser() -> argparse.ArgumentParser:
     cmd.add_argument("--id", required=True)
     cmd.add_argument("--reason", required=True)
 
+
+def _register_scope_and_reads(sub) -> None:
     cmd = sub.add_parser("add-scope")
     _roadmap_arg(cmd)
     cmd.add_argument("--id", required=True)
@@ -116,6 +115,19 @@ def _build_parser() -> argparse.ArgumentParser:
     cmd.add_argument("--scope", required=True)
     cmd.add_argument("--predecessor-phase", choices=["ideation", "research"], required=True)
     cmd.add_argument("--predecessor-artifact", required=True)
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="qor-logic scripts roadmap_cli",
+        description="Experimental Qor Roadmap decision-topology pilot.",
+    )
+    parser.add_argument("--repo-root", default=".")
+    sub = parser.add_subparsers(dest="command", required=True)
+    _register_init(sub)
+    _register_nodes(sub)
+    _register_lifecycle(sub)
+    _register_scope_and_reads(sub)
     return parser
 
 
@@ -127,50 +139,74 @@ def _append(args: argparse.Namespace, event_type: str, payload: dict) -> int:
     return 0
 
 
-def _handle_write(args: argparse.Namespace) -> int | None:
-    if args.command == "init":
-        event = roadmap_store.create_roadmap(
-            args.repo_root,
-            args.roadmap,
-            title=args.objective,
-            success_conditions=args.success,
-            exclusions=args.exclude,
-        )
-        _print(event)
-        return 0
-    if args.command == "add-node":
-        return _append(args, "node_added", {"node": {
-            "id": args.id, "kind": args.kind, "title": args.title,
-            "resolver": args.resolver, "authority_required": args.authority_required,
-        }})
-    if args.command == "add-dependency":
-        return _append(args, "dependency_added", {
-            "predecessor_id": args.predecessor, "dependent_id": args.dependent,
-        })
-    if args.command == "resolve":
-        return _append(args, "node_resolved", {
-            "node_id": args.node, "evidence_pointers": args.evidence,
-            "rationale": args.rationale, "authority": args.authority,
-        })
-    if args.command == "supersede-decision":
-        return _append(args, "decision_superseded", {
-            "decision_id": args.decision, "replacement_id": args.replacement,
-            "reason": args.reason,
-        })
-    if args.command == "add-space":
-        return _append(args, "unresolved_space_added", {
-            "space": {"id": args.id, "title": args.title}
-        })
-    if args.command == "retire-space":
-        return _append(args, "unresolved_space_retired", {
-            "space_id": args.id, "reason": args.reason,
-        })
-    if args.command == "add-scope":
-        return _append(args, "planning_scope_added", {"scope": {
-            "id": args.id, "title": args.title, "node_ids": args.node,
-            "unresolved_space_ids": args.space,
-        }})
-    return None
+def _write_init(args: argparse.Namespace) -> int:
+    event = roadmap_store.create_roadmap(
+        args.repo_root,
+        args.roadmap,
+        title=args.objective,
+        success_conditions=args.success,
+        exclusions=args.exclude,
+    )
+    _print(event)
+    return 0
+
+
+def _write_node(args: argparse.Namespace) -> int:
+    return _append(args, "node_added", {"node": {
+        "id": args.id, "kind": args.kind, "title": args.title,
+        "resolver": args.resolver, "authority_required": args.authority_required,
+    }})
+
+
+def _write_dependency(args: argparse.Namespace) -> int:
+    return _append(args, "dependency_added", {
+        "predecessor_id": args.predecessor, "dependent_id": args.dependent,
+    })
+
+
+def _write_resolution(args: argparse.Namespace) -> int:
+    return _append(args, "node_resolved", {
+        "node_id": args.node, "evidence_pointers": args.evidence,
+        "rationale": args.rationale, "authority": args.authority,
+    })
+
+
+def _write_supersession(args: argparse.Namespace) -> int:
+    return _append(args, "decision_superseded", {
+        "decision_id": args.decision, "replacement_id": args.replacement,
+        "reason": args.reason,
+    })
+
+
+def _write_space(args: argparse.Namespace) -> int:
+    return _append(args, "unresolved_space_added", {
+        "space": {"id": args.id, "title": args.title}
+    })
+
+
+def _write_retirement(args: argparse.Namespace) -> int:
+    return _append(args, "unresolved_space_retired", {
+        "space_id": args.id, "reason": args.reason,
+    })
+
+
+def _write_scope(args: argparse.Namespace) -> int:
+    return _append(args, "planning_scope_added", {"scope": {
+        "id": args.id, "title": args.title, "node_ids": args.node,
+        "unresolved_space_ids": args.space,
+    }})
+
+
+_WRITE_DISPATCH = {
+    "init": _write_init,
+    "add-node": _write_node,
+    "add-dependency": _write_dependency,
+    "resolve": _write_resolution,
+    "supersede-decision": _write_supersession,
+    "add-space": _write_space,
+    "retire-space": _write_retirement,
+    "add-scope": _write_scope,
+}
 
 
 def _handle_read(args: argparse.Namespace) -> int:
@@ -198,8 +234,8 @@ def _handle_read(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     try:
-        result = _handle_write(args)
-        return result if result is not None else _handle_read(args)
+        handler = _WRITE_DISPATCH.get(args.command)
+        return handler(args) if handler else _handle_read(args)
     except roadmap_state.RoadmapError as exc:
         print(f"roadmap error: {exc}")
         return 2
