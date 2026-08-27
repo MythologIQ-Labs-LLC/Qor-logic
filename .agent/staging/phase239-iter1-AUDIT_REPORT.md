@@ -1,17 +1,19 @@
-# AUDIT REPORT — Phase 239 Iteration 1
+# ADVERSARIAL PREFLIGHT — Phase 239 Iteration 1
 
 **Target**: `docs/plan-qor-phase239-roadmap-promotion.md`
 **Session**: `2026-08-27T2317-239a1c`
-**Mode**: solo adversarial audit with repository/prototype evidence
+**Mode**: non-binding red-team review with repository/prototype evidence
 **Date**: 2026-08-27
-**Risk grade**: L2
+**Risk grade assessed**: L2
 **Target SHA-256**: `3a69a8b58311a1702d51ae8e15585eaad06a2eecabaaa374f315225d53693e3e`
 
-## Verdict: VETO
+## Preflight disposition: VETO RECOMMENDATION
 
-The promotion strategy is sound, but the current plan admits one undeclared change by requiring the Phase 238 prototype content to be imported exactly.
+This is **not** a binding `/qor-audit` artifact. The canonical Judge skill currently declares `model_compatibility: [claude-opus-4-7]` and `min_model_capability: opus`; this review was performed from ChatGPT/GitHub and therefore may identify defects but may not open the Qor audit gate.
 
-## Mandating Finding
+The promotion strategy is sound, but the reviewed plan admitted one undeclared change by requiring the Phase 238 prototype content to be imported exactly.
+
+## Mandating preflight finding
 
 ### F1 — `specification-drift`: README prototype contains unrelated `/qor-tone` wording
 
@@ -25,20 +27,20 @@ to:
 
 `Set session communication tier for the session (technical / standard / plain)`
 
-That wording is unrelated to `/qor-roadmap`, is not justified by GH #373, and is not declared as an intentional Phase 239 behavior/documentation change. Importing the prototype README blob exactly would therefore violate the plan's own fail-closed promotion rule.
+That wording is unrelated to `/qor-roadmap`, is not justified by GH #373, and is not declared as an intentional Phase 239 behavior/documentation change.
 
 **Required correction**:
 
 - amend Phase 239 so `README.md` promotion is base-content plus the Roadmap skill-count change only;
 - preserve the existing `/qor-tone` wording and ordinary EOF formatting from the Phase 239 base;
-- retain exact prototype promotion for the admitted Roadmap-specific surfaces;
-- verify the final Phase 239 diff contains no other Phase 238 governance artifact or unrelated README change.
+- retain prototype promotion for the admitted Roadmap-specific surfaces;
+- verify the final Phase 239 diff contains no Phase 238 governance artifact or unrelated README change.
 
-## Passes that otherwise survive
+## Passes that otherwise survive preflight
 
 - **Scope architecture**: PASS. P1 excludes supersession, leases, cache, ranking, tracker projection, auto-routing, enterprise integration, and production implementation.
 - **Delegation/infrastructure alignment**: PASS. Roadmap remains a meta capability and routes framing/research/planning to existing owners.
-- **Security/OWASP posture**: PASS at L2. Canonical state is repository-local, path-confined, no network dependency is introduced, and production implementation is outside the Roadmap procedure.
+- **Security/OWASP posture**: PASS at assessed L2. Canonical state is repository-local, path-confined, no network dependency is introduced, and production implementation is outside the Roadmap procedure.
 - **Test functionality declaration**: PASS. The plan names behavioral state/store/CLI/skill tests plus full repository and cross-platform CI.
 - **Feature-test declaration**: PASS. FX026 is explicitly tied to the vertical-pilot behavioral test.
 - **Prototype evidence**: PASS. Candidate `3124390` completed gate-chain, install-smoke, provenance, and all Ubuntu/Windows Python 3.11/3.12/3.13 matrix lanes successfully.
@@ -46,4 +48,4 @@ That wording is unrelated to `/qor-roadmap`, is not justified by GH #373, and is
 
 ## Disposition
 
-GATE CLOSED. Amend the plan for README badge-only promotion, then re-run `/qor-audit`. No Phase 239 runtime implementation may be imported from the prototype until the amended plan receives PASS.
+The plan should be amended for README badge-only promotion before the compatible `/qor-audit` Judge runs. This preflight does not create `audit.json`, does not open the implementation gate, and does not authorize Phase 239 runtime import.
