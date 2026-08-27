@@ -67,49 +67,59 @@ class RoadmapState:
     last_seq: int = 0
 
     def to_dict(self) -> dict:
-        nodes = {}
-        for node_id, node in sorted(self.nodes.items()):
-            nodes[node_id] = {
-                "id": node.id,
-                "kind": node.kind,
-                "title": node.title,
-                "resolver": node.resolver,
-                "authority_required": node.authority_required,
-                "status": node.status,
-                "evidence_pointers": list(node.evidence_pointers),
-                "rationale": node.rationale,
-                "authority": node.authority,
-                "superseded_by": node.superseded_by,
-                "review_reason": node.review_reason,
-                "predecessors": sorted(self.predecessors.get(node_id, set())),
-                "dependents": sorted(self.dependents.get(node_id, set())),
-            }
-        spaces = {
-            space_id: {
-                "id": space.id,
-                "title": space.title,
-                "status": space.status,
-                "retired_reason": space.retired_reason,
-            }
-            for space_id, space in sorted(self.unresolved_spaces.items())
-        }
-        scopes = {
-            scope_id: {
-                "id": scope.id,
-                "title": scope.title,
-                "node_ids": list(scope.node_ids),
-                "unresolved_space_ids": list(scope.unresolved_space_ids),
-            }
-            for scope_id, scope in sorted(self.scopes.items())
-        }
         return {
             "roadmap_id": self.roadmap_id,
             "objective": self.objective,
-            "nodes": nodes,
-            "unresolved_spaces": spaces,
-            "scopes": scopes,
+            "nodes": _nodes_dict(self),
+            "unresolved_spaces": _spaces_dict(self),
+            "scopes": _scopes_dict(self),
             "last_seq": self.last_seq,
         }
+
+
+def _nodes_dict(state: RoadmapState) -> dict[str, dict]:
+    rows = {}
+    for node_id, node in sorted(state.nodes.items()):
+        rows[node_id] = {
+            "id": node.id,
+            "kind": node.kind,
+            "title": node.title,
+            "resolver": node.resolver,
+            "authority_required": node.authority_required,
+            "status": node.status,
+            "evidence_pointers": list(node.evidence_pointers),
+            "rationale": node.rationale,
+            "authority": node.authority,
+            "superseded_by": node.superseded_by,
+            "review_reason": node.review_reason,
+            "predecessors": sorted(state.predecessors.get(node_id, set())),
+            "dependents": sorted(state.dependents.get(node_id, set())),
+        }
+    return rows
+
+
+def _spaces_dict(state: RoadmapState) -> dict[str, dict]:
+    return {
+        space_id: {
+            "id": space.id,
+            "title": space.title,
+            "status": space.status,
+            "retired_reason": space.retired_reason,
+        }
+        for space_id, space in sorted(state.unresolved_spaces.items())
+    }
+
+
+def _scopes_dict(state: RoadmapState) -> dict[str, dict]:
+    return {
+        scope_id: {
+            "id": scope.id,
+            "title": scope.title,
+            "node_ids": list(scope.node_ids),
+            "unresolved_space_ids": list(scope.unresolved_space_ids),
+        }
+        for scope_id, scope in sorted(state.scopes.items())
+    }
 
 
 _SCHEMA_CACHE: dict | None = None
