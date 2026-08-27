@@ -1,363 +1,381 @@
 # Build Roadmap: Qor Roadmap
 
 **Date:** 2026-08-27
-**Status:** Design topology resolved enough for adversarial audit
+**Status:** Amended after pre-implementation adversarial review; formal `/qor-audit` required before implementation
 **Architecture decision:** `docs/ADR_QOR_ROADMAP.md`
+**Adversarial review:** `docs/adversarial-review-qor-roadmap-2026-08-27.md`
 **Research provenance:** `docs/Lessons-Learned/2026-08-27-matt-pocock-skills-design-patterns.md`
 
-This document intentionally uses the proposed Roadmap model to plan Roadmap itself. The purpose is to prove that the abstraction produces a clearer implementation strategy before we encode it as a skill.
+## Why this roadmap changed
+
+The original build topology proposed schema, reducer, frontier, lease/resume behavior, skill wiring, and delegation as sequential prerequisites. The adversarial pass rejected that structure because it front-loaded a platform before proving one useful Roadmap journey.
+
+This amended roadmap treats the first release as one vertical experimental pilot. Internal code may still have a schema, reducer, store, and skill surface, but those are implementation details of one governed delivery, not separate releases or independent roadmap milestones.
 
 ## Objective
 
-Deliver a Qor-native `/qor-roadmap` capability that can take a large, ambiguous, dependency-rich, or multi-session objective and make it implementation-ready without pretending unresolved decisions are implementation tasks and without bypassing S.H.I.E.L.D.
+Prove that a narrow, Qor-native `/qor-roadmap` meta capability can preserve decision topology across agent contexts and produce a cleaner legal `/qor-plan` handoff than the current flow for genuinely long-horizon work.
 
-### Success conditions
+The pilot must prove value without becoming a second ideation, research, planning, implementation, tracker, or execution-continuity system.
 
-1. A fresh session can reconstruct the objective, resolved decisions, unresolved nodes, dependencies, leases, and current actionable frontier from repository-local state.
-2. Facts are researched by agents where lawful access exists; authority-scoped decisions are surfaced to the correct actor.
-3. Independent frontier work can continue while unrelated nodes are blocked.
-4. Historical decisions are not silently rewritten; supersession is explicit and downstream effects are recomputed.
-5. Interrupted claims cannot permanently hide work from the frontier.
-6. External trackers are optional projections rather than canonical state.
-7. Production implementation is never performed by Roadmap; ready implementation work hands to `/qor-plan` and the existing lifecycle.
-8. The base capability is host-neutral and can later be consumed by enterprise orchestration without a second state model.
-9. Prompt and tool cost are measurable enough to compare Roadmap-assisted work against the current flow.
+## v1 constraints locked by adversarial review
 
-## Explicit exclusions
+1. `/qor-roadmap` is a meta capability, not an SDLC phase.
+2. v1 is operator-invoked only.
+3. Roadmap owns topology, durable state, frontier derivation, pointers, and routing only.
+4. Resolution work delegates to existing Qor skills or the correct authority actor.
+5. v1 is single-writer.
+6. Canonical state is one versioned append-only event history.
+7. No materialized `state.json` cache ships in v1.
+8. No Roadmap-specific leases, expiry, heartbeat, or assignment semantics ship in v1.
+9. The frontier is a set with graph-derived annotations, not an automatically selected priority order.
+10. Supersession propagates deterministic invalidation, not automatic semantic re-decision.
+11. Roadmap has no implementation-task node type.
+12. A Plan Handoff is an output boundary containing pointers to settled context, not an implementation plan.
+13. Roadmap never manufactures a routine gate override to reach `/qor-plan`.
+14. External tracker projection, enterprise consumption, broad prompt mechanics, and multi-writer claims are outside #373.
+15. Automatic routing is not considered until evaluation proves benefit.
 
-- Roadmap is not a replacement for GitHub Projects, Linear, or another project-management product.
-- Roadmap is not a new mandatory S.H.I.E.L.D. phase.
-- Roadmap does not manage deployment or release execution.
-- Roadmap does not implement application code.
-- The first release does not require network access or an external issue tracker.
-- The first release does not attempt an ML-based priority score.
-- The first release does not refactor the entire Qor prompt corpus in the same change.
-
-## Resolved decisions
+## Resolved design decisions
 
 | ID | Decision | Resolution |
 |---|---|---|
-| D1 | Capability identity | Name it `/qor-roadmap`; do not reuse an external skill identity. |
-| D2 | Lifecycle placement | Situational pre-S.H.I.E.L.D. on-ramp; not a mandatory phase. |
-| D3 | Planning boundary | Roadmap resolves what must be known/decided; `/qor-plan` defines how resolved work will be implemented. |
-| D4 | Canonical state | Repository-local append-only event history under `.qor/roadmaps/<id>/events.jsonl`. |
-| D5 | Derived state | `state.json` is deterministic and rebuildable; it is not a second mutable authority. |
-| D6 | Tracker boundary | External trackers and human-readable map views are projections only. |
-| D7 | Decision history | Append-only with explicit `superseded_by` semantics. |
-| D8 | Claim model | Session-aware work lease, not permanent assignee ownership. |
-| D9 | Frontier order | Deterministic leverage-first lexicographic ranking; creation order only breaks final ties. |
-| D10 | Research routing | Deduplicated, capability- and cost-aware fanout. |
-| D11 | Production code | Never modified by Roadmap itself; implementation nodes hand to `/qor-plan`. |
-| D12 | Enterprise boundary | Base Qor owns the contract; enterprise layers consume it after stabilization. |
-| D13 | Delivery shape | Tracer-bullet waves with independently verifiable end-to-end behavior. |
+| D1 | Capability identity | `/qor-roadmap` |
+| D2 | Classification | program-level meta capability |
+| D3 | Invocation v1 | explicit operator invocation only |
+| D4 | Core ownership | topology/state/frontier/routing only |
+| D5 | Canonical state | `.qor/roadmaps/<id>/events.jsonl` |
+| D6 | Writer model | single canonical writer in v1 |
+| D7 | Derived state | in-memory reduction on load |
+| D8 | Node kinds | `fact`, `decision`, `prerequisite` |
+| D9 | Unknown future shape | lightweight unresolved-space metadata |
+| D10 | Frontier | all legally actionable nodes, graph-derived explanation |
+| D11 | Correction | append-only supersession + descendant `needs_review` invalidation |
+| D12 | Planning transition | Plan Handoff output to `/qor-plan`; no implementation decomposition |
+| D13 | Gate continuity | Roadmap preserves existing ideation/research predecessor requirements |
+| D14 | Delivery | one vertical experimental pilot before hardening |
 
-## Unresolved space
+## Deferred questions that do not block the pilot
 
-These items are intentionally not blocking the first implementation slice because their correct shape depends on evidence from the core state engine.
+These are explicitly not v1 schema obligations.
 
-### U1: External tracker projection protocol
+### F1: Automatic routing
 
-Need evidence from the stable base schema before choosing the minimum projection contract for issue trackers. Avoid designing adapters around fields that may change during the first slice.
+Does Roadmap produce enough benefit, with a low enough false-positive rate, to be auto-selected for some requests?
 
-### U2: Cross-repository roadmap federation
+Decision waits for evaluation.
 
-Potentially valuable for enterprise programs, but base Roadmap should first prove one repository-local authority. Federation before stable identity and event semantics would multiply failure modes.
+### F2: Frontier prioritization
 
-### U3: Long-term lease expiry policy
+Does graph-derived leverage ranking outperform presenting the frontier set to the operator/caller?
 
-The data model must carry explicit timestamps and release state immediately. The default expiry duration, automatic reaping policy, and remote actor heartbeats can be chosen after real interruption tests.
+Decision waits for evaluation.
 
-### U4: General decision-supercession service
+### F3: Multi-writer concurrency
 
-Roadmap should implement explicit supersession locally first. Generalizing it into a Qor-wide decision primitive is a later architectural decision once at least two real consumers exist.
+Do real Roadmaps need multiple canonical writers rather than one orchestrator collecting subagent results?
 
-### U5: Generalized experiment harness
+If yes, evaluate existing execution-continuity claim semantics before designing a Roadmap-specific claim model.
 
-The existing A/B skill is specialized. Roadmap evaluation needs a broader experiment surface, but the exact reusable abstraction should be designed from the first concrete Roadmap benchmarks rather than guessed up front.
+### F4: Materialized projection cache
 
-## Dependency topology
+Does event reduction become expensive enough to justify a persisted `state.json` or other projection?
+
+Decision requires measured reconstruction cost.
+
+### F5: External tracker projection
+
+Which subset of stable Roadmap state is useful to project into GitHub, Linear, or another tracker?
+
+Decision waits for a stable base contract.
+
+### F6: Enterprise consumption
+
+Which base signals are actually needed by higher-tier orchestration?
+
+Decision waits until the base pilot is stable and evaluated.
+
+### F7: Partial plan handoffs
+
+Does one active Roadmap need to emit several independent Plan Handoffs while the larger objective remains unresolved?
+
+The architecture permits later named handoff scopes, but the first pilot proves one objective-to-one-handoff journey only.
+
+## Corrected dependency topology
 
 ```text
-R1 Contract + schema
- |\
- | \-> R2 Event reducer + deterministic state
- |          |\
- |          | \-> R3 Frontier engine
- |          |          |
- |          |          v
- |          |      R5 Canonical skill journey
- |          |          |
- |          v          v
- |      R4 Resume + lease semantics
- |          |          |
- |          +----------+
- |                     |
- +----> R6 Delegation + /qor-plan handoff
-                       |
-                       v
-                 R7 First-slice evaluation
-                       |
-          +------------+-------------+
-          |                          |
-          v                          v
-     R8 Hardening                R9 Prompt mechanics
-          |                          |
-          v                          v
-   R10 Tracker projection       R11 Planning/ideation integration
-          \                          /
-           \                        /
-            +----> R12 Enterprise consumption
+A0 Amended design package
+        |
+        v
+A1 Formal /qor-audit
+        |
+      PASS
+        |
+        v
+P1 Vertical Roadmap pilot
+        |
+        v
+E1 Baseline evaluation
+        |
+   +----+-------------------+
+   |                        |
+ material benefit       no material benefit
+   |                        |
+   v                        v
+H1 correction hardening   simplify / stop
+   |
+   +------------------------------+
+                                  |
+                      evidence-admitted follow-ups only
 ```
 
-## Roadmap nodes
+There is deliberately no R1-R12 platform chain. Tracker, enterprise, prompt mechanics, ranking, concurrency, and cache work do not block or extend #373.
 
-### R1: Contract and schema
+## Current actionable frontier
 
-**Kind:** prerequisite
-**Blocked by:** none
-**Status:** actionable
+The current actionable item is **A1: formal `/qor-audit` of the amended design package**.
 
-Define versioned schemas and pure domain types for:
+No production implementation node is actionable until that gate passes.
 
-- roadmap identity and objective;
-- node identity, kind, status, authority requirement, and evidence pointers;
-- dependency edges;
-- unresolved-space entries;
-- decision records and supersession;
-- lease events;
-- roadmap readiness.
+The pre-implementation red-team document is not a formal audit artifact and must not be used as one.
 
-**Completion evidence:** schema fixtures validate; invalid cycles, unknown node references, invalid state transitions, and malformed event payloads fail visibly.
+## P1: Minimum viable Roadmap journey
 
-### R2: Append-only reducer and derived state
+**Kind:** governed implementation plan after A1 PASS
+**Goal:** prove one complete useful journey in one releaseable change
 
-**Kind:** implementation handoff
-**Blocked by:** R1
-**Status:** blocked
+The implementing `/qor-plan` should use the next available phase number at execution time and structure its internal phases around tests-first delivery. It should not create separate governed releases for schema, reducer, store, and skill prose.
 
-Build a pure reducer that consumes `events.jsonl` and produces deterministic Roadmap state. File I/O is kept behind a small adapter so tests exercise the same reducer used by the skill.
+### User-visible behavior
 
-**Completion evidence:** identical event history always yields byte-stable canonical state; rebuilding `state.json` from events produces no semantic drift.
+An operator can explicitly invoke Roadmap for one long-horizon objective, preserve a small prerequisite graph across a fresh agent context, resolve one fact or decision through the correct Qor path, inspect what is actionable, and receive a legal `/qor-plan` handoff when all blockers for the pilot scope are resolved.
 
-### R3: Actionable frontier engine
+### Required end-to-end journey
 
-**Kind:** implementation handoff
-**Blocked by:** R2
-**Status:** blocked
+1. **Initialize**
+   - Create stable Roadmap identity.
+   - Record objective, success conditions, exclusions, contract version.
 
-Compute open, unblocked, legally actionable nodes and order them by the ADR's inspectable ranking contract.
+2. **Map a minimal topology**
+   - Add several `fact`, `decision`, and `prerequisite` nodes.
+   - Add directed dependency edges.
+   - Reject unknown references and cycles visibly.
+   - Record one unresolved-space entry if the fixture needs it.
 
-The engine must expose why each node is or is not on the frontier.
+3. **Reconstruct**
+   - Load events from disk.
+   - Deterministically rebuild current state in memory.
+   - Do not rely on a mutable cache.
 
-**Completion evidence:** table-driven dependency graphs prove blocking, independent parallel readiness, tie-breaking, unknown ranking inputs, and reordering after a node resolves.
+4. **Derive frontier**
+   - Return every unresolved node with all blockers resolved.
+   - Explain blockers for nodes outside the frontier.
+   - Surface graph-derived dependent counts as information only.
+   - Do not auto-select a node.
 
-### R4: Resume and work-lease semantics
+5. **Resolve legally**
+   - A factual node references a `/qor-research` result or other lawful evidence.
+   - An authority decision records actor, decision, rationale, and evidence pointers.
+   - A prerequisite records observable completion evidence.
+   - The Roadmap writes only the resulting state event/pointer.
 
-**Kind:** implementation handoff
-**Blocked by:** R2
-**Status:** blocked
+6. **Resume**
+   - Start a fresh simulated agent context against the same repository state.
+   - Load the same Roadmap without conversation history.
+   - Recover objective, node status, dependencies, unresolved space, and frontier.
+   - Do not re-ask a settled decision.
 
-Implement stable resumption and lease acquisition/release without making external assignment canonical.
+7. **Prepare Plan Handoff**
+   - Determine that the pilot planning scope has no unresolved blockers.
+   - Verify a legal ideation/research predecessor accepted by `/qor-plan` exists for the current Qor session.
+   - If not, stop and route to the missing predecessor.
+   - If yes, emit a compact handoff record with pointers to settled facts, decisions, constraints, evidence, and exclusions.
 
-**Completion evidence:** a simulated interrupted session leaves enough data for a fresh session to either resume or recover the lease according to explicit policy; no node disappears silently.
+8. **Stop**
+   - Name `/qor-plan` as the legal next action.
+   - Do not modify production code.
+   - Do not create implementation tasks inside Roadmap.
 
-### R5: Canonical `/qor-roadmap` skill journey
+## P1 minimum persistence contract
 
-**Kind:** implementation handoff
-**Blocked by:** R3, R4
-**Status:** blocked
+```text
+.qor/roadmaps/<roadmap-id>/events.jsonl
+```
 
-Implement the smallest user-visible end-to-end journey:
+Required properties:
 
-1. initialize objective;
-2. identify initial facts, decisions, prerequisites, unresolved space, and dependencies;
-3. compute frontier;
-4. resolve one ready node through the legal delegated skill or authority path;
-5. persist the event;
-6. reload compact state;
-7. recompute frontier;
-8. stop at implementation handoff.
+- append-only through the canonical Roadmap writer;
+- first event declares contract version;
+- unsupported future versions fail visibly;
+- malformed events fail visibly;
+- partial trailing/corrupt writes have explicit handling;
+- writes use an atomic/locked pattern suitable for supported platforms;
+- stable Roadmap and node ids do not depend on tracker ids;
+- a replay over identical event history yields equivalent current state.
 
-The skill body orchestrates and delegates. It does not duplicate research, planning, audit, implementation, or persistence logic inline.
+The implementation plan must inspect existing Qor atomic JSONL behavior before designing a second persistence primitive. Reuse or extraction is preferred only when it does not inflate the pilot's blast radius disproportionately.
 
-**Completion evidence:** an integration fixture can start a roadmap, resolve nodes across two simulated sessions, and finish with a `/qor-plan` handoff while proving no production implementation path exists.
+## P1 expected implementation surfaces
 
-### R6: Delegation table and planning boundary
+These are hypotheses, not locked paths until `/qor-plan` verifies the live tree:
 
-**Kind:** prerequisite
-**Blocked by:** R1, R5
-**Status:** blocked
+- `qor/skills/meta/qor-roadmap/SKILL.md` or the nearest valid meta location;
+- a small pure Roadmap domain/reducer module;
+- a narrowly scoped Roadmap store/CLI surface;
+- one versioned Roadmap event schema or equivalent executable validator;
+- `qor/gates/delegation-table.md` updates before routing is wired;
+- `qor/references/glossary.md` entries only for terms with live consumers;
+- help/catalog/compiler surfaces required by existing Qor checks;
+- focused unit and integration tests.
 
-Update the delegation table before wiring cross-skill handoffs. Define when Roadmap may call research/ideation and when it must hand to `/qor-plan`.
+The plan should not add a new Roadmap gate phase or require network/tracker access.
 
-Add canonical glossary entries in the same implementation phase as their first executable consumers.
+## P1 red-test inventory required before code
 
-**Completion evidence:** delegation lints and skill consistency tests prove Roadmap names legal successors instead of reinventing them.
+At minimum, the plan must bind these observable failures before implementation:
 
-### R7: First-slice evaluation
+### Contract and storage
 
-**Kind:** fact
-**Blocked by:** R5, R6
-**Status:** blocked
+- malformed event rejected;
+- unsupported future contract version rejected visibly;
+- unknown node reference rejected;
+- cycle-forming dependency rejected;
+- atomic append preserves a valid prior history under simulated interrupted write behavior.
 
-Run controlled scenarios comparing current Qor flow against Roadmap-assisted flow.
+### Reduction and frontier
 
-Initial scenarios:
+- identical event history produces equivalent state;
+- unresolved blocker removes dependent from frontier;
+- independent ready nodes remain simultaneously actionable;
+- resolved node leaves the frontier;
+- outside-frontier explanation names the actual unresolved blocker;
+- no model-estimated field is required to compute frontier membership.
 
-1. large greenfield architecture decision with several independent research branches;
-2. interrupted and resumed multi-session feature;
-3. mixed factual uncertainty and human authority decisions.
+### Delegation and authority
+
+- fact resolution records evidence pointer and does not substitute an operator answer when lawful research is required;
+- authority decision cannot be recorded without required authority metadata;
+- Roadmap routing names existing skills through the delegation table rather than reproducing their processes.
+
+### Resume
+
+- fresh simulated context reconstructs the same objective/topology/frontier from repository state;
+- settled decisions are not re-requested;
+- no conversation transcript is required for correctness.
+
+### Plan handoff
+
+- handoff fails closed when blocking nodes remain;
+- handoff stops and routes to ideation/research if `/qor-plan`'s legal predecessor is absent;
+- valid handoff contains pointers to settled context rather than a duplicated implementation plan;
+- Roadmap helper/state writer cannot target a path outside its declared Roadmap state root;
+- canonical Roadmap procedure terminates at `/qor-plan` and contains no production implementation step.
+
+### Host/compiler compatibility
+
+- canonical skill compiles/installs under supported hosts at the declared capability level;
+- any host that cannot mechanically enforce a production-write restriction reports the weaker structural guarantee rather than claiming a hard boundary.
+
+## P1 definition of done
+
+The pilot is complete only when all are true:
+
+- **D1:** one long-horizon objective can be resumed in a fresh agent context without reconstructing settled decisions from conversation history;
+- **D2:** frontier membership is computed from explicit dependency state and is explainable;
+- **D3:** resolution work delegates to existing Qor skills/authority rather than becoming inline Roadmap process;
+- **D4:** a legal Plan Handoff reaches `/qor-plan` without a routine gate override and without production mutation;
+- **D5:** the base suite requires no external tracker, external repository, or enterprise extension;
+- **D6:** no work leases, materialized state cache, automatic ranking, automatic invocation, or implementation-task nodes have leaked into v1.
+
+## E1: Baseline evaluation
+
+P1 is experimental until compared against the current Qor path.
+
+### Baseline
+
+Use the existing Qor sequence appropriate to the fixture, normally:
+
+```text
+/qor-ideate -> /qor-research -> /qor-plan
+```
+
+Do not weaken the baseline by omitting capabilities Qor already has.
+
+### Fixed scenarios
+
+Use at least:
+
+1. a large architecture objective with multiple independent factual branches;
+2. a deliberately interrupted and resumed objective;
+3. a mixed factual/authority objective in which one decision is blocked while another branch can proceed.
+
+### Metrics
 
 Collect:
 
 - operator questions asked;
-- facts needlessly delegated to the operator;
-- unresolved assumptions at `/qor-plan` handoff;
-- duplicate research;
-- frontier correctness;
-- resume fidelity;
-- abandoned/stale claims;
-- contradicted decisions without supersession;
-- context/token use;
-- time to implementation-ready state;
-- any S.H.I.E.L.D. bypass attempt.
+- questions whose answers were discoverable facts;
+- unresolved assumptions at plan entry;
+- duplicate evidence gathering;
+- fresh-context resume fidelity;
+- incorrectly included/excluded frontier nodes;
+- gate overrides caused by the flow;
+- context/token/tool cost;
+- elapsed interaction steps to audit-ready plan;
+- production-write attempts or illegal handoffs.
 
-**Completion evidence:** a reproducible evidence bundle shows where Roadmap improves or regresses the baseline.
+### Decision after E1
 
-### R8: State hardening
+Classify each proposed follow-up independently:
 
-**Kind:** implementation handoff
-**Blocked by:** R7
-**Status:** blocked
+- **SURVIVES:** evidence shows a meaningful Roadmap advantage;
+- **REVISE:** benefit exists but implementation shape is wrong;
+- **EXPERIMENT FIRST:** evidence insufficient;
+- **REJECT:** cost/complexity exceeds demonstrated value.
 
-Use first-slice evidence to harden:
+E1 does not automatically admit all deferred features.
 
-- supersession propagation;
-- stale-lease recovery;
-- cycle handling;
-- unresolved-space graduation;
-- version migration;
-- corrupt or partially written event handling;
-- deterministic reconstruction checks.
+## H1: Correction hardening
 
-**Completion evidence:** adversarial state-machine tests cover interrupted writes, stale projections, superseded prerequisites, and malformed histories.
+Only if P1/E1 justify continued investment, add explicit decision supersession and deterministic descendant invalidation.
 
-### R9: Prompt-mechanics program
-
-**Kind:** implementation handoff
-**Blocked by:** R7
-**Status:** blocked
-
-Apply the broader design-corpus findings without tying them unnecessarily to Roadmap code.
-
-Candidate work:
-
-- context-pointer and progressive-disclosure audit;
-- always-loaded description budget;
-- observable completion criteria;
-- verify-before-question sequencing;
-- active-versus-passive domain-model discipline;
-- design-divergence option for consequential architecture;
-- deletion-test review for shallow wrapper skills;
-- environment-focused process retrospective;
-- fact/decision ownership rule.
-
-This should be its own governed change stream rather than a side effect of Roadmap implementation.
-
-### R10: External tracker projection
-
-**Kind:** implementation handoff
-**Blocked by:** R8, U1 resolution
-**Status:** blocked
-
-Add an adapter that can mirror selected state into a configured tracker while preserving Qor identity and reconstructibility.
-
-A tracker outage, body limit, child-item limit, label drift, or assignment change must not corrupt canonical Roadmap state.
-
-### R11: `/qor-plan` and `/qor-ideate` integration
-
-**Kind:** implementation handoff
-**Blocked by:** R7, R9
-**Status:** blocked
-
-Consume resolved Roadmap decisions without re-interviewing the operator. Where beneficial, adopt breadth-first questioning of independent ready decisions and design-divergence for consequential choices.
-
-Do not turn `/qor-plan` into a second Roadmap state engine.
-
-### R12: Enterprise consumption
-
-**Kind:** implementation handoff
-**Blocked by:** R8 and stable base contract
-**Status:** blocked
-
-In the enterprise extension repository, teach orchestration to consume Roadmap frontier, authority, lease, and readiness signals through the base contract.
-
-No forked Roadmap implementation is permitted.
-
-## Current actionable frontier
-
-Only **R1: Contract and schema** is intentionally actionable for implementation.
-
-That is the preferred first move because every later behavior depends on stable identities and legal state transitions. Starting with the skill prose, issue-tracker adapter, or enterprise integration would create interfaces before the state authority exists.
-
-R1 should be executed through the normal Qor flow after this design package passes audit:
+Required semantic:
 
 ```text
-/qor-plan
-  -> /qor-audit
-  -> /qor-implement
-  -> /qor-substantiate
+old decision remains historical
+        |
+        v
+replacement relation appended
+        |
+        v
+graph descendants identified
+        |
+        v
+needs_review applied
+        |
+        v
+lawful resolver re-evaluates
 ```
 
-The implementing `/qor-plan` should use the next available phase number at execution time rather than reserving a chain of future phase numbers now.
+The graph determines impact. It does not claim to re-decide semantic validity.
 
-## First tracer-bullet delivery wave
+## Follow-up admission policy
 
-Although R1 is the first actionable node, the first **releaseable capability** should combine R1 through R6 as a narrow vertical slice after each prerequisite lands green.
+Automatic routing, ranking, multi-writer claims, projection cache, tracker projection, partial handoffs, and enterprise consumption each require a separate follow-up issue with:
 
-### User-visible behavior
+1. evidence from P1/E1;
+2. named current limitation;
+3. smallest proposed intervention;
+4. overlap check against existing Qor mechanisms;
+5. measurable acceptance criteria;
+6. adversarial review.
 
-An operator can start a Roadmap for an objective, record a small dependency graph, resolve ready fact/decision nodes across sessions, inspect the current frontier, and receive a governed `/qor-plan` handoff when implementation becomes ready.
+The broader design-lessons program remains GH #374 and is not in this build's blocking topology.
 
-### Minimal implementation surfaces
+## Formal next action
 
-Expected surfaces, subject to `/qor-plan` verification against the live tree:
+The amended ADR and this roadmap should now enter formal `/qor-audit`.
 
-- `qor/skills/sdlc/qor-roadmap/SKILL.md`
-- `qor/scripts/roadmap_state.py` or equivalent pure state module
-- `qor/scripts/roadmap_store.py` or equivalent I/O adapter
-- schema under `qor/gates/schema/` or another existing canonical schema location selected by the implementation plan
-- `qor/gates/delegation-table.md`
-- `qor/references/glossary.md`
-- skill catalog / feature inventory surfaces required by existing repository checks
-- tests for schema, reducer, frontier, resumption, delegation, compilation/install parity, and implementation-boundary enforcement
+A PASS admits a single `/qor-plan` for P1.
 
-Specific paths are hypotheses until `/qor-plan` verifies the current architecture. The plan should prefer existing seams over creating new ones.
-
-## Build-wave policy
-
-Each implementation wave must:
-
-1. fit in a fresh context window where practical;
-2. leave the repository green on its own;
-3. have a concrete external behavior or deterministic contract that can be verified;
-4. declare blocking relationships explicitly;
-5. use expand-contract rather than forced vertical slicing for any wide compatibility migration;
-6. update the delegation table before new cross-skill routing;
-7. add glossary terms only with real consumers;
-8. produce evidence sufficient to resume from a fresh session;
-9. stop rather than silently implementing the next blocked node.
-
-## Definition of Roadmap-ready for `/qor-plan`
-
-This design program is ready to enter implementation planning when:
-
-- the ADR is audited and not vetoed;
-- R1 has no unresolved authority decision;
-- no open question changes the identity or canonical-state model;
-- the first red tests can be named before implementation begins;
-- external tracker integration remains outside the first slice;
-- the no-production-implementation boundary is testable;
-- the lessons-learned research remains provenance, not runtime coupling.
-
-At the time of this document, those conditions are satisfied except the required `/qor-audit` verdict.
+A VETO returns the design package for amendment. No implementation should begin from this document alone.
