@@ -62,7 +62,9 @@ The audit target is this plan, not the Phase 238 implementation branch. The audi
 
 ### Affected Files
 
-Promote the Phase 238 P1 content for exactly these repository surfaces:
+Promote the Phase 238 P1 content for exactly these repository surfaces.
+
+`README.md` is the single content exception discovered by Audit Iteration 1: preserve the Phase 239 base file and change only the Skills badge/count from 30 to 31. Do not import the prototype's unrelated `/qor-tone` wording or EOF-format drift.
 
 - `README.md`
 - `docs/FEATURE_INDEX.md`
@@ -86,7 +88,7 @@ Do not import `docs/plan-qor-phase238-roadmap-pilot.md` or any Phase 238 governa
 
 ### Changes
 
-Import the P1 implementation represented by prototype commit `31243902b02b778f6421c2d8e06f458a97526e27`, preserving the post-trim contract:
+Import the P1 implementation represented by prototype commit `31243902b02b778f6421c2d8e06f458a97526e27`, except for the explicit README badge-only correction above, preserving the post-trim contract:
 
 - event kinds exclude decision supersession;
 - node kinds are only `fact`, `decision`, and `prerequisite`;
@@ -147,7 +149,7 @@ If repository-native signing material or a required provenance capability is una
 
 - **D1**: Phase 239 has a formal pre-implementation audit PASS on this promotion plan.
 - **D2**: Only the admitted P1 runtime/integration surfaces are imported.
-- **D3**: The imported P1 contract is behaviorally identical to the green Phase 238 prototype candidate, except for Phase 239 governance artifacts.
+- **D3**: The imported P1 contract is behaviorally identical to the green Phase 238 prototype candidate, except for Phase 239 governance artifacts and the deliberate removal of unrelated README `/qor-tone`/EOF drift identified by Audit Iteration 1.
 - **D4**: Full repository CI passes on the Phase 239 branch.
 - **D5**: No Phase 238 seal or audit is backfilled.
 - **D6**: Phase 239 substantiation is created only from real repository-native evidence.
