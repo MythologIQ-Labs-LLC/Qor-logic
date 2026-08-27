@@ -611,6 +611,14 @@ def verify_post_anchor(
 
     Exits 0 if every post-boundary entry verifies; non-zero if any
     post-boundary entry fails.
+
+    GH #363: an entry that names a Content/Previous/Chain Hash field but
+    whose value matches none of the recognized hash forms (e.g. a
+    hash-length value that is not hex) is classified ``fail`` rather than
+    silently omitted from the post-anchor surface -- so a fabricated
+    non-hex value at a post-boundary entry number is a hard error, not an
+    invisible skip. An entry that names none of the three fields at all
+    remains a tolerated pre-convention skip.
     """
     text = ledger_md.read_text(encoding="utf-8")
     entries = []
@@ -629,6 +637,14 @@ def verify_post_anchor(
         if not (ch and ph and xh):
             seal_only = SESSION_SEAL_RE.search(body) if not xh else None
             if not (ch and ph and seal_only):
+                if _dialect.any_hash_label_present(body):
+                    # GH #363: a hash field is named but its value matches
+                    # none of the recognized forms -- e.g. a 64-character
+                    # non-hex fabrication the extraction regex cannot
+                    # capture. Fail rather than silently drop the entry from
+                    # the post-anchor surface; a fully unmarked (no label at
+                    # all) entry still falls through to the tolerated skip.
+                    classifications.append((num, "fail"))
                 continue  # unparseable: omitted from post-anchor surface
             recorded = seal_only.group(1)
         else:
