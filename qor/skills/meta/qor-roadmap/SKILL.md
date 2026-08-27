@@ -130,7 +130,7 @@ qor-logic scripts roadmap_cli --repo-root . resolve \
   --authority <declared-authority> --rationale "<decision rationale>"
 ```
 
-When a prior decision becomes invalid, add and resolve the replacement decision, then use `supersede-decision`. Roadmap marks already-resolved descendants `needs_review`; it never re-decides them automatically.
+Decision supersession and downstream invalidation are deliberately deferred until post-P1 evaluation. P1 records resolved decisions but exposes no supersession API.
 
 ## Planning Scope and Handoff
 
@@ -172,6 +172,5 @@ A successful handoff ends Roadmap work. Invoke `/qor-plan`. The handoff delibera
 - [ ] Objective and prerequisite topology survive a fresh context without conversation history.
 - [ ] Frontier shows all legally ready nodes and real blockers.
 - [ ] Facts carry evidence pointers; decisions carry authority.
-- [ ] Supersession preserves history and marks affected resolved descendants for review.
 - [ ] Planning handoff fails closed until the named scope is genuinely ready.
 - [ ] Legal next action from a ready scope is `/qor-plan`, never production implementation.

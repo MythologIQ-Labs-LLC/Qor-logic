@@ -79,12 +79,6 @@ def _register_nodes(sub) -> None:
 
 
 def _register_lifecycle(sub) -> None:
-    cmd = sub.add_parser("supersede-decision")
-    _roadmap_arg(cmd)
-    cmd.add_argument("--decision", required=True)
-    cmd.add_argument("--replacement", required=True)
-    cmd.add_argument("--reason", required=True)
-
     cmd = sub.add_parser("add-space")
     _roadmap_arg(cmd)
     cmd.add_argument("--id", required=True)
@@ -171,13 +165,6 @@ def _write_resolution(args: argparse.Namespace) -> int:
     })
 
 
-def _write_supersession(args: argparse.Namespace) -> int:
-    return _append(args, "decision_superseded", {
-        "decision_id": args.decision, "replacement_id": args.replacement,
-        "reason": args.reason,
-    })
-
-
 def _write_space(args: argparse.Namespace) -> int:
     return _append(args, "unresolved_space_added", {
         "space": {"id": args.id, "title": args.title}
@@ -202,7 +189,6 @@ _WRITE_DISPATCH = {
     "add-node": _write_node,
     "add-dependency": _write_dependency,
     "resolve": _write_resolution,
-    "supersede-decision": _write_supersession,
     "add-space": _write_space,
     "retire-space": _write_retirement,
     "add-scope": _write_scope,

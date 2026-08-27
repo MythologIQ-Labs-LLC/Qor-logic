@@ -11,7 +11,9 @@
 - `docs/adversarial-review-qor-roadmap-2026-08-27.md`
 - `docs/roadmap-qor-roadmap-build-2026-08-27.md`
 
-**governance_note**: The pre-implementation adversarial pass materially amended the design. This execution environment cannot run the repository's executable `/qor-audit` lint ladder because it has no network path to obtain a local checkout. The operator explicitly authorized the implementation pass. This plan therefore stages implementation on a dedicated branch and requires CI evidence before merge; it does not fabricate a formal audit PASS.
+**governance_note**: The pre-implementation adversarial pass materially amended the design. This execution environment could not run the repository's executable `/qor-audit` lint ladder before implementation because it had no network path to obtain a local checkout. The operator explicitly authorized an experimental implementation pass. This branch therefore requires repository CI evidence and remains a prototype/pilot until a legal audited promotion path is satisfied; it does not fabricate a formal audit PASS.
+
+**post-implementation correction**: Integration review caught one P2 capability, decision supersession, that had leaked into the P1 implementation despite the adversarial review explicitly deferring it until after pilot evaluation. The P1 contract was trimmed before closeout so the schema, reducer, CLI, skill, and tests expose no supersession behavior.
 
 **boundaries**:
 - limitations:
@@ -23,37 +25,39 @@
   - no persisted `state.json` cache.
   - no tracker projection, automatic routing, enterprise integration, or model-tier routing.
   - no implementation-task nodes and no production implementation from Roadmap.
+  - no decision supersession or descendant invalidation in P1.
 - exclusions:
   - no new top-level CLI family; use existing `qor-logic scripts <module>` dispatch.
   - no canonical glossary promotion for experimental Roadmap vocabulary until the pilot evaluation earns it.
 
 ## Open Questions
 
-None block the P1 pilot. Automatic invocation, multi-writer operation, tracker projection, and enterprise consumption remain evidence-gated follow-ups.
+None block the P1 pilot. Supersession, automatic invocation, multi-writer operation, tracker projection, and enterprise consumption remain evidence-gated follow-ups.
 
 ## Phase 1: Contract, state engine, and safe persistence
 
 ### Affected Files
 
-- `qor/gates/schema/roadmap_event.schema.json` — versioned event contract.
-- `qor/scripts/roadmap_state.py` — pure reducer, cycle rejection, frontier derivation, supersession invalidation, and plan-handoff readiness.
+- `qor/gates/schema/roadmap_event.schema.json` — versioned P1 event contract.
+- `qor/scripts/roadmap_model.py` — P1 domain state and schema validation.
+- `qor/scripts/roadmap_state.py` — pure reducer and dependency-cycle rejection.
 - `qor/scripts/roadmap_store.py` — canonical `.qor/roadmaps/<id>/events.jsonl` storage with path confinement and atomic replacement.
+- `qor/scripts/roadmap_view.py` — frontier derivation and plan-handoff readiness.
 - `qor/scripts/roadmap_cli.py` — experimental operator surface through existing module dispatch.
-- `qor/references/doctrine-roadmap.md` — compact packaged runtime contract.
 
 ### Changes
 
-Implement one append-only Roadmap history with event kinds for Roadmap creation, nodes, dependencies, resolution, decision supersession, unresolved-space state, and planning scopes.
+Implement one append-only Roadmap history with event kinds for Roadmap creation, nodes, dependencies, node resolution, unresolved-space state, and planning scopes.
 
-The reducer MUST fail visibly on unsupported contract versions, malformed events, unknown references, duplicate identifiers, sequence gaps, dependency cycles, illegal authority use, and invalid supersession.
-
-Decision supersession marks already-resolved descendants `needs_review`; it does not pretend to semantically re-decide them.
+The reducer MUST fail visibly on unsupported contract versions, malformed events, unknown references, duplicate identifiers, sequence gaps, dependency cycles, and illegal authority use.
 
 The frontier returns the complete actionable set plus blockers, authority requirements, resolver metadata, and graph-derived dependent counts. It does not auto-select a winner.
 
+Decision supersession is not part of P1. If evaluation earns it, it belongs to a later governed slice with its own contract and tests.
+
 ### Unit Tests
 
-- `tests/test_roadmap_state.py` — event validation, cycle rejection, authority, frontier, supersession, scope readiness.
+- `tests/test_roadmap_state.py` — event validation, cycle rejection, authority, frontier, and scope readiness.
 - `tests/test_roadmap_store.py` — path confinement, malformed JSONL, reconstruction, interrupted atomic write.
 
 ## Phase 2: Delegation-first skill integration
@@ -62,6 +66,8 @@ The frontier returns the complete actionable set plus blockers, authority requir
 
 - `qor/gates/delegation-table.md` — declare Roadmap routing before skill wiring.
 - `qor/skills/meta/qor-roadmap/SKILL.md` — thin meta skill that records topology and delegates resolution.
+- `qor/skills/meta/qor-help/SKILL.md` — catalog entry.
+- `docs/SKILL_REGISTRY.md` — registry entry.
 - `tests/test_roadmap_skill_contract.py` — structural contract tying skill routing to the delegation table.
 
 ### Changes
@@ -86,7 +92,8 @@ The skill invokes `qor-logic scripts roadmap_cli` for state operations. It does 
 ### Affected Files
 
 - `tests/test_roadmap_cli.py` — two-context behavioral journey.
-- `docs/FEATURE_INDEX.md` — add the experimental Roadmap CLI/module surface as a verified feature only after behavioral test coverage exists.
+- `docs/FEATURE_INDEX.md` — experimental Roadmap surface, verified only after behavioral coverage exists.
+- `qor/gates/SCHEMA_REGISTRY.json` — event schema registration.
 
 ### Changes
 
@@ -123,14 +130,16 @@ Prove one vertical journey:
 - **D2**: Versioned JSONL contract, pure reducer, safe store, module-dispatch CLI, and meta skill exist behind current Qor seams.
 - **D3**: Delegation remains authoritative; Roadmap cannot become a second research/planning/implementation owner.
 - **D4**: Behavioral tests prove cycle rejection, authority gating, fresh-load reconstruction, frontier correctness, and legal plan handoff.
+- **D5**: P2 supersession remains absent until evaluation evidence admits it.
 
 ## CI Commands
 
 - `python -m pytest tests/test_roadmap_state.py tests/test_roadmap_store.py tests/test_roadmap_cli.py tests/test_roadmap_skill_contract.py -q` — Roadmap pilot behavior.
 - `python -m pytest -q` — repository regression suite.
 - `python -m ruff check qor tests` — Pyflakes gate.
-- `python -m qor.scripts.dist_compile --dry-run` — canonical skill compile compatibility.
+- `python qor/scripts/check_variant_drift.py` — canonical/compiled host parity.
+- `python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md` — ledger integrity.
 
 ## Implementation stop condition
 
-Phase 238 stops after the vertical pilot is green in CI. It does not proceed into ranking, caching, leases, trackers, automatic routing, or enterprise consumption. Those require evaluation evidence under GH #374/#373 admission rules.
+Phase 238 stops after the narrow vertical pilot is green in CI. It does not proceed into supersession, ranking, caching, leases, trackers, automatic routing, or enterprise consumption. Those require evaluation evidence and separate admission.

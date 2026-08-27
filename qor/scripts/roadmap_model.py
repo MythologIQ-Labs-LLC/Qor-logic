@@ -35,8 +35,6 @@ class NodeState:
     evidence_pointers: tuple[str, ...] = ()
     rationale: str = ""
     authority: str | None = None
-    superseded_by: str | None = None
-    review_reason: str | None = None
 
 
 @dataclass
@@ -90,8 +88,6 @@ def _nodes_dict(state: RoadmapState) -> dict[str, dict]:
             "evidence_pointers": list(node.evidence_pointers),
             "rationale": node.rationale,
             "authority": node.authority,
-            "superseded_by": node.superseded_by,
-            "review_reason": node.review_reason,
             "predecessors": sorted(state.predecessors.get(node_id, set())),
             "dependents": sorted(state.dependents.get(node_id, set())),
         }

@@ -114,34 +114,6 @@ def test_fact_requires_evidence_and_decision_requires_declared_authority() -> No
         roadmap_state.reduce_events(decision_events)
 
 
-def test_supersession_marks_resolved_descendants_for_review() -> None:
-    events = [
-        _created(),
-        _node(2, "old", "decision", authority="operator"),
-        _node(3, "dependent", "prerequisite"),
-        _node(4, "replacement", "decision", authority="operator"),
-        _event(5, "dependency_added", {
-            "predecessor_id": "old", "dependent_id": "dependent",
-        }),
-        _event(6, "node_resolved", {
-            "node_id": "old", "evidence_pointers": [], "rationale": "old", "authority": "operator",
-        }),
-        _event(7, "node_resolved", {
-            "node_id": "dependent", "evidence_pointers": [], "rationale": "done", "authority": None,
-        }),
-        _event(8, "node_resolved", {
-            "node_id": "replacement", "evidence_pointers": [], "rationale": "new", "authority": "operator",
-        }),
-        _event(9, "decision_superseded", {
-            "decision_id": "old", "replacement_id": "replacement", "reason": "new evidence",
-        }),
-    ]
-    state = roadmap_state.reduce_events(events)
-    assert state.nodes["old"].status == "superseded"
-    assert state.nodes["dependent"].status == "needs_review"
-    assert "superseded by replacement" in state.nodes["dependent"].review_reason
-
-
 def test_plan_handoff_fails_closed_until_scope_is_ready() -> None:
     events = [
         _created(),

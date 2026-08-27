@@ -88,8 +88,6 @@ def _dependency_added(state: RoadmapState, payload: dict, _event: dict) -> None:
 
 def _node_resolved(state: RoadmapState, payload: dict, _event: dict) -> None:
     node = _require_node(state, payload["node_id"])
-    if node.status == "superseded":
-        raise InvalidHistoryError(f"superseded node cannot be resolved: {node.id}")
     if node.kind == "fact" and not payload["evidence_pointers"]:
         raise InvalidHistoryError(f"fact node {node.id} requires at least one evidence pointer")
     authority = payload.get("authority")
@@ -105,27 +103,6 @@ def _node_resolved(state: RoadmapState, payload: dict, _event: dict) -> None:
     node.evidence_pointers = tuple(payload["evidence_pointers"])
     node.rationale = payload["rationale"]
     node.authority = authority
-    node.review_reason = None
-
-
-def _decision_superseded(state: RoadmapState, payload: dict, _event: dict) -> None:
-    old = _require_node(state, payload["decision_id"])
-    replacement = _require_node(state, payload["replacement_id"])
-    if old.kind != "decision" or replacement.kind != "decision":
-        raise InvalidHistoryError("decision_superseded requires two decision nodes")
-    if old.status != "resolved" or replacement.status != "resolved":
-        raise InvalidHistoryError(
-            "both original and replacement decisions must be resolved before supersession"
-        )
-    old.status = "superseded"
-    old.superseded_by = replacement.id
-    for descendant_id in _descendants(state, old.id):
-        descendant = state.nodes[descendant_id]
-        if descendant.status == "resolved":
-            descendant.status = "needs_review"
-            descendant.review_reason = (
-                f"upstream decision {old.id} superseded by {replacement.id}"
-            )
 
 
 def _space_added(state: RoadmapState, payload: dict, _event: dict) -> None:
@@ -166,7 +143,6 @@ _HANDLERS: dict[str, Callable[[RoadmapState, dict, dict], None]] = {
     "node_added": _node_added,
     "dependency_added": _dependency_added,
     "node_resolved": _node_resolved,
-    "decision_superseded": _decision_superseded,
     "unresolved_space_added": _space_added,
     "unresolved_space_retired": _space_retired,
     "planning_scope_added": _scope_added,

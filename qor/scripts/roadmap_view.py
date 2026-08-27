@@ -50,11 +50,7 @@ def frontier_report(
             and node.authority_required is not None
             and node.authority_required not in authorities
         )
-        actionable = (
-            node.status in {"open", "needs_review"}
-            and not blockers
-            and not authority_missing
-        )
+        actionable = node.status == "open" and not blockers and not authority_missing
         if actionable:
             frontier.append(node_id)
         rows.append(_frontier_row(state, node, blockers, authority_missing, actionable))
