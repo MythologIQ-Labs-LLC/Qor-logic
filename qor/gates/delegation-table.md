@@ -21,6 +21,9 @@ This table is the single source of truth for cross-skill handoffs. Every `/qor-*
 | `qor-ideate` | Readiness `planning_advisory_only` | `/qor-plan` (with advisory flag) | high-impact unvalidated assumptions; allow prototype planning |
 | `qor-research` | Research complete | `/qor-plan` | next phase in chain |
 | `qor-research` | Project-structure questions surface | `/qor-organize` | restructuring is organize's domain, not plan's |
+| `qor-roadmap` | Problem framing is missing or materially ambiguous | `/qor-ideate` | ideate owns problem frame, assumptions, options, and scope; Roadmap only records the resulting pointer |
+| `qor-roadmap` | A fact node requires investigation | `/qor-research` | research owns factual investigation; Roadmap stores evidence pointers instead of reproducing research inline |
+| `qor-roadmap` | Named planning scope has all declared Roadmap blockers resolved and a legal predecessor artifact exists | `/qor-plan` | Roadmap ends at planning readiness; implementation decomposition belongs to plan |
 | `qor-plan` | Plan complete | `/qor-audit` | next phase in chain |
 | `qor-plan` | Architectural restructuring needed | `/qor-organize` | organize owns directory topology |
 | `qor-implement` | Implementation complete | `/qor-substantiate` | next phase in chain |
@@ -52,6 +55,7 @@ These skills are invokable from any phase. They have no chain prior, no chain su
 | `/qor-organize` | Any time (also as destination from `qor-audit` Orphan/Macro VETO) | Project-level structure |
 | `/qor-debug` | After any phase that emits regression / hallucination / degradation | Cross-cutting diagnosis |
 | `/qor-help` | Any time | Command catalog (display-only) |
+| `/qor-roadmap` | Long-horizon objective cannot responsibly become one implementation plan yet | Experimental P1 meta capability; operator-invoked, single-writer, topology + routing only |
 | `/qor-shadow-process` | Auto-invoked by override paths and capability-shortfall handlers | Append-only shadow event recorder |
 | `/qor-ab-run` | Operator wants A/B measurement evidence for persona-vs-stance Identity Activation on stance-critical skills (Phase 39b) | Parallel Task-tool subagent dispatch; produces `docs/phase39-ab-results.md` |
 | `/qor-docs-technical-writing` | Documentation needs structured authoring | Migrated qore-* skill |
