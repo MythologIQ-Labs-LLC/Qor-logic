@@ -47,6 +47,34 @@ CONTENT_HASH_RE = _field_re("Content Hash")
 PREV_HASH_RE = _field_re("Previous Hash")
 CHAIN_HASH_RE = _field_re("Chain Hash")
 
+
+def _label_re(name: str) -> re.Pattern:
+    return re.compile(rf"\*\*{name}{_FIELD_SUFFIX}\*\*")
+
+
+CONTENT_HASH_LABEL_RE = _label_re("Content Hash")
+PREV_HASH_LABEL_RE = _label_re("Previous Hash")
+CHAIN_HASH_LABEL_RE = _label_re("Chain Hash")
+
+
+def any_hash_label_present(body: str) -> bool:
+    """True if the entry names at least one hash field, independent of whether
+    its value parses as a recognized hash form (GH #363).
+
+    ``CONTENT_HASH_RE`` et al. match label *and* a validly-shaped value
+    together, so a labeled field whose value is fabricated garbage of the
+    right length but the wrong alphabet (e.g. 64 non-hex characters) fails
+    the combined match and is indistinguishable, by that regex alone, from an
+    entry that never named the field at all. This label-only check lets a
+    caller tell "unmarked historical entry" apart from "marked but
+    unparseable" so the latter can be reported rather than silently dropped.
+    """
+    return bool(
+        CONTENT_HASH_LABEL_RE.search(body)
+        or PREV_HASH_LABEL_RE.search(body)
+        or CHAIN_HASH_LABEL_RE.search(body)
+    )
+
 # Historical Session-Seal markup: ``**Session Seal**: ... = `<hex>```.
 SESSION_SEAL_RE = re.compile(rf"\*\*Session Seal\*\*{_HASH_SPAN}=\s*`({_HEX})`")
 

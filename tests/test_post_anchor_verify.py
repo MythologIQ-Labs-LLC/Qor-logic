@@ -179,3 +179,55 @@ def test_post_boundary_failure_reported_with_entry_number(tmp_path, capsys):
     err = capsys.readouterr().err
     assert rc != 0
     assert "FAIL Entry #2" in err
+
+
+def test_post_boundary_non_hex_previous_hash_is_a_hard_fail(tmp_path, capsys):
+    """GH #363: a labeled Previous Hash whose value is 64 non-hex characters
+    fails the extraction regex entirely. Post-boundary, that must surface as
+    FAIL, not vanish from the post-anchor report."""
+    c1, p1, ch1 = _chain_genesis(b"e1")
+    non_hex_prev = "g" * 64  # right length, wrong alphabet -- unparseable
+    c2 = _digest(b"e2")
+    body = (
+        _entry(1, c1, p1, ch1)
+        + f"### Entry #2: TEST\n\n"
+        f"**Content Hash**: `{c2}`\n\n"
+        f"**Previous Hash**: `{non_hex_prev}`\n\n"
+        f"**Chain Hash**: `{_digest(b'irrelevant')}`\n\n"
+    )
+    p = _write(tmp_path, body)
+    rc = lh.verify_post_anchor(p, boundary_entry=1)
+    err = capsys.readouterr().err
+    assert rc != 0
+    assert "FAIL Entry #2" in err
+
+
+def test_pre_boundary_non_hex_previous_hash_is_disclosed_not_fatal(tmp_path, capsys):
+    """The same unparseable-but-labeled entry, when pre-boundary, is
+    tolerated (disclosed) rather than blocking the release gate."""
+    c1, p1, ch1 = _chain_genesis(b"e1")
+    non_hex_prev = "g" * 64
+    c2 = _digest(b"e2")
+    body = (
+        _entry(1, c1, p1, ch1)
+        + f"### Entry #2: TEST\n\n"
+        f"**Content Hash**: `{c2}`\n\n"
+        f"**Previous Hash**: `{non_hex_prev}`\n\n"
+        f"**Chain Hash**: `{_digest(b'irrelevant')}`\n\n"
+    )
+    p = _write(tmp_path, body)
+    rc = lh.verify_post_anchor(p, boundary_entry=2)
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "DISCLOSED_PRE_ANCHOR Entry #2" in out
+
+
+def test_fully_unmarked_entry_remains_a_tolerated_skip(tmp_path, capsys):
+    """An entry naming none of the three hash fields at all (pre-convention
+    historical entry) is still silently omitted -- only a *labeled but
+    unparseable* field is newly classified as fail."""
+    c1, p1, ch1 = _chain_genesis(b"e1")
+    body = _entry(1, c1, p1, ch1) + "### Entry #2: UNMARKED\n\nJust prose, no hash fields.\n"
+    p = _write(tmp_path, body)
+    rc = lh.verify_post_anchor(p, boundary_entry=1)
+    assert rc == 0
