@@ -159,6 +159,13 @@ def test_classify_aged_high_severity():
     assert any(r["pattern"] == "aged-high-severity" for r in results)
 
 
+def test_classify_repeated_veto_pattern():
+    e = make_event(event_type="repeated_veto_pattern", severity=3)
+    groups = {("repeated_veto_pattern", "qor-audit", e["session_id"]): [e]}
+    results = rpm.classify(groups)
+    assert any(r["pattern"] == "repeated-veto-pattern" for r in results)
+
+
 def test_classify_empty_returns_empty_list():
     assert rpm.classify({}) == []
 
@@ -186,6 +193,17 @@ def test_propose_aged_high_severity_proposal():
     }
     out = rp.propose(classification)
     assert out["proposal_kind"] in {"skill", "agent", "gate", "doctrine"}
+
+
+def test_propose_repeated_veto_pattern_proposal():
+    classification = {
+        "pattern": "repeated-veto-pattern",
+        "event_ids": ["e" * 64],
+        "skill": "qor-audit",
+    }
+    out = rp.propose(classification)
+    assert out["proposal_kind"] in {"skill", "agent", "gate", "doctrine"}
+    assert "repeated-VETO" in out["proposal_text"]
 
 
 def test_propose_event_ids_preserved():

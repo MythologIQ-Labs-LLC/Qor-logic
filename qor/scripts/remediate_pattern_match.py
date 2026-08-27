@@ -6,9 +6,10 @@ priority first):
   1. aged-high-severity
   2. hallucination
   3. regression
-  4. gate-loop            (Phase 37: unions gate_override | orchestration_override)
-  5. plan-replay           (Phase 37: session gate-artifact-based; reads stall_walk)
-  6. capability-shortfall aggregation
+  4. repeated-veto-pattern (GH #362: /qor-audit's own repeated-VETO advisory)
+  5. gate-loop            (Phase 37: unions gate_override | orchestration_override)
+  6. plan-replay           (Phase 37: session gate-artifact-based; reads stall_walk)
+  7. capability-shortfall aggregation
 
 Priority matters when one session yields events matching multiple patterns — the
 highest-priority pattern wins per group. The Phase 37 plan-replay match is
@@ -28,6 +29,8 @@ PATTERN_RULES = [
      lambda events: any(e["event_type"] == "hallucination" for e in events)),
     ("regression",
      lambda events: any(e["event_type"] == "regression" for e in events)),
+    ("repeated-veto-pattern",
+     lambda events: any(e["event_type"] == "repeated_veto_pattern" for e in events)),
     ("gate-loop",
      lambda events: (sum(1 for e in events
                          if e["event_type"] in ("gate_override", "orchestration_override"))
