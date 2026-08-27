@@ -1,345 +1,392 @@
-# ADR: Qor Roadmap as a Governed Decision-Topology On-Ramp
+# ADR: Qor Roadmap as a Governed Decision-Topology Meta Capability
 
-**Status:** Proposed, operator-approved for planning; implementation remains subject to `/qor-audit` PASS
+**Status:** Proposed, amended after pre-implementation adversarial review; formal `/qor-audit` still required
 **Date:** 2026-08-27
 **Scope:** Qor-logic base capability
+**Adversarial review:** `docs/adversarial-review-qor-roadmap-2026-08-27.md`
 
 ## Context
 
-Qor's existing lifecycle is strong once work is sufficiently defined to research, plan, audit, implement, substantiate, validate, and remediate. It is less explicit about a different class of problem: objectives that are too large, uncertain, dependency-rich, or multi-session to become a trustworthy implementation plan in one pass.
+Qor already has strong single-purpose phases for framing intent, researching facts, planning implementation, auditing plans, implementing, substantiating, validating, and remediating process failures.
 
-For that class of work, forcing uncertainty directly into `/qor-plan` creates predictable failure modes:
+A remaining gap appears when one objective is too large, dependency-rich, uncertain, or long-lived to become a trustworthy implementation plan in one pass. In that class of work, future decisions may not yet be specifiable, independent factual branches may proceed at different rates, and a new agent context may need to resume without re-asking settled questions.
 
-- premature implementation decomposition;
-- hidden factual prerequisites;
-- repeated operator questions across sessions;
-- stale decisions that remain indistinguishable from current ones;
-- duplicated research;
-- no explicit representation of work that is not yet specifiable;
-- no durable, low-resolution view of what can legally happen next.
-
-The capability must complement S.H.I.E.L.D., not replace it. It must also remain host-neutral and tracker-neutral because Qor compiles into multiple agent environments.
+The new capability must not solve that gap by creating a second ideation, research, or planning system.
 
 ## Decision
 
-Add a Qor-native capability named `/qor-roadmap`.
+Add a Qor-native meta capability named `/qor-roadmap`.
 
-`/qor-roadmap` is a situational pre-S.H.I.E.L.D. orchestrator for large, ambiguous, dependency-rich, or multi-session objectives. It models the work as a governed decision topology, resolves only the currently actionable frontier, persists decision history and prerequisites across sessions, and hands implementation-ready work to existing Qor skills.
+`/qor-roadmap` owns durable decision topology and routing for genuinely long-horizon work. It records what remains unresolved, what depends on what, what is currently actionable, and which existing Qor skill or authority actor legally resolves each item.
 
-It is not a new mandatory SDLC phase.
+It is not an SDLC phase.
 
-It does not implement production code.
+It is not a workflow bundle with a fixed phase sequence.
 
-It does not replace `/qor-plan`.
+It does not perform production implementation.
+
+It does not replace `/qor-ideate`, `/qor-research`, or `/qor-plan`.
 
 The semantic boundary is:
 
-> Roadmap determines what must become known, decided, or unblocked before an objective is ready to execute.
+> Roadmap determines what remains to become known, decided, or unblocked before a defined scope may enter planning.
 >
-> Plan determines how to implement the work after those prerequisites are sufficiently resolved.
+> Existing Qor skills perform the work that resolves those items.
+>
+> Plan determines how a sufficiently resolved scope will be implemented.
 
-## Relationship to the Qor lifecycle
+## v1 admission boundary
+
+Roadmap is intentionally narrow in v1.
+
+It is operator-invoked only and experimental until controlled evaluation demonstrates enough benefit to justify automatic routing.
+
+Use it only when at least one strong long-horizon condition exists:
+
+- the objective is expected to require multiple agent contexts before an implementation plan is trustworthy;
+- future work cannot yet be specified because independent prerequisite decisions or facts block it;
+- several independent resolution branches must be preserved across context changes;
+- one objective is expected to yield more than one governed implementation plan over time and needs a shared decision substrate.
+
+Do not invoke Roadmap merely because a feature is complex. `/qor-plan` already owns complex and multi-phase implementation planning. Do not invoke Roadmap merely because a concept is fuzzy. `/qor-ideate` already owns problem framing, assumptions, options, scope, and readiness.
+
+## Placement
+
+Roadmap is a program-level meta capability. The implementation plan should place the canonical skill under the existing meta skill surface, subject to live-tree verification.
+
+Roadmap must not declare `phase: roadmap` or become a new gate in `qor/gates/chain.md` in v1.
+
+## Ownership boundary
+
+Roadmap owns only:
+
+1. roadmap and objective identity;
+2. durable node state and history;
+3. dependency edges;
+4. unresolved-space metadata;
+5. actionable-frontier derivation;
+6. evidence and decision pointers;
+7. resolver/routing metadata;
+8. plan-handoff readiness and handoff pointers.
+
+Roadmap does not own the resolution process for another Qor skill's domain.
+
+Examples:
+
+- factual discovery requiring investigation routes to `/qor-research`;
+- missing problem framing routes to `/qor-ideate`;
+- implementation design routes to `/qor-plan`;
+- production code changes route through the existing S.H.I.E.L.D. chain;
+- authority-scoped decisions are surfaced to the actor holding sufficient authority.
+
+The delegation table remains the single source of truth for cross-skill handoffs.
+
+## Relationship to the existing lifecycle
 
 ```text
-large / ambiguous / multi-session objective
-                 |
-                 v
-           /qor-roadmap
-                 |
-       governed decision topology
-        /        |          \
-     facts    decisions   prerequisites
-       |          |            |
-       v          v            v
- /qor-research  authority   delegated Qor work
-       \          |            /
-        \         |           /
-          actionable frontier
-                 |
-          roadmap ready
-                 |
-                 v
-             /qor-plan
-                 |
-                 v
-         existing S.H.I.E.L.D.
+long-horizon objective
+        |
+        v
+  /qor-roadmap
+        |
+  existing framing present?
+    | yes       | no
+    |           v
+    |      /qor-ideate
+    |           |
+    +-----------+
+        |
+        v
+ durable prerequisite graph
+        |
+ actionable frontier
+    /          \
+ fact          decision
+  |               |
+/qor-research   authority
+    \          /
+     record result
+        |
+ recompute frontier
+        |
+ no unresolved blockers
+ for a named planning scope
+        |
+        v
+    /qor-plan
+        |
+ existing S.H.I.E.L.D.
 ```
 
-A roadmap may delegate to existing skills according to the delegation table. It must never reproduce those skills' process inline.
+Roadmap never bypasses `/qor-plan`'s existing prior-artifact rules. Before handoff, it verifies that a legal ideation or research predecessor exists for the current Qor session. If one is missing, Roadmap routes to that predecessor instead of manufacturing a gate override.
+
+A Roadmap-specific gate predecessor is outside v1 and requires a separate architecture decision.
 
 ## Working domain model
 
-These names are design vocabulary for this proposed capability. Canonical glossary entries land with the implementation slice that makes each concept executable.
-
 ### Objective
 
-The outcome the roadmap exists to make implementation-ready. The objective includes success conditions and explicit exclusions.
+The long-horizon outcome the Roadmap exists to make plannable over time. It carries success conditions and explicit exclusions.
 
 ### Roadmap Node
 
-A stable-identity unit in the decision topology. A node represents one unresolved or resolved prerequisite, not an arbitrary implementation chunk.
+A stable-identity unresolved or resolved prerequisite.
 
-Initial node kinds:
+v1 node kinds:
 
-- `fact`: evidence the agent can establish;
-- `decision`: a consequential choice requiring declared authority;
-- `prerequisite`: non-production work or external setup that must become true;
-- `implementation`: a handoff marker for work that is ready to enter `/qor-plan`, never production execution inside Roadmap itself.
+- `fact`: evidence the agent can lawfully establish, normally through `/qor-research` when investigation is required;
+- `decision`: a consequential choice with explicit authority requirement;
+- `prerequisite`: a non-production condition or setup state that must become true before a planning scope is ready.
+
+Roadmap does not model implementation tasks in v1.
 
 ### Dependency Edge
 
-A directed blocking relation. Node B cannot become actionable while an unresolved dependency edge from A blocks it.
+A directed blocking relation between Roadmap nodes. The v1 graph is acyclic. A node cannot be actionable while any blocking predecessor is unresolved or marked for review.
 
 ### Unresolved Space
 
-A named area of uncertainty whose concrete nodes cannot yet be stated responsibly. It is distinct from out-of-scope work. As upstream uncertainty resolves, unresolved space either graduates into explicit nodes or disappears as irrelevant.
+Lightweight metadata naming uncertainty that cannot yet be decomposed responsibly into nodes. It is distinct from out-of-scope work.
+
+Unresolved Space does not receive model-invented scores in v1. It either graduates into explicit nodes, is retired with rationale, or remains visible.
 
 ### Actionable Frontier
 
-The set of open nodes whose blocking dependencies are resolved and whose authority or execution prerequisites allow work now.
+The set of unresolved nodes whose blocking dependencies are resolved and whose resolver is legally available now.
+
+v1 returns the frontier set plus inspectable graph-derived annotations. It does not automatically choose the next node.
+
+Permitted annotations include:
+
+- direct dependent count;
+- transitive dependent count;
+- graph distance to an explicitly declared planning-scope condition;
+- explicit operator priority when one was actually declared.
+
+No model-estimated leverage, risk-reduction, uncertainty-reduction, or execution-cost score is authoritative in v1.
 
 ### Decision Record
 
-The immutable historical record of a resolved decision, including rationale, evidence pointers, authority, and downstream dependencies.
+The immutable historical record of a resolved authority decision, including rationale, evidence pointers, authority, and dependency references.
 
-A later decision does not silently rewrite an earlier one. It supersedes it with an explicit relationship.
+A later decision does not rewrite the prior record. It supersedes it explicitly.
 
-### Work Lease
+### Plan Handoff
 
-A bounded claim on a node by an actor/session. A lease records actor identity, session identity, claim time, scope, and release or expiry state. Interrupted work must not leave a node permanently unavailable.
+A Roadmap output, not a Roadmap node.
 
-## Authority rule
+A Plan Handoff states that a named scope has no unresolved Roadmap prerequisites and carries pointers to the objective, settled decisions, factual evidence, limitations, and exclusions required by `/qor-plan`.
 
-Roadmap separates facts from decisions.
-
-- Factual prerequisites are agent obligations when the agent has lawful access to establish them.
-- Consequential choices are resolved only by an actor with sufficient authority.
-- Missing facts should not be converted into questions for the operator merely because asking is easier than investigating.
-- One blocked decision does not block independent frontier work.
-
-This produces breadth-first progress across the ready frontier rather than serial dialogue through unrelated questions.
+It contains no implementation decomposition or production task list.
 
 ## Persistence model
 
-Roadmap state must be reconstructible and must not depend on one mutable prose artifact.
-
-The base implementation will use a repository-local append-only event stream as the canonical state source:
+v1 uses one repository-local versioned append-only event history as canonical Roadmap state:
 
 ```text
-.qor/roadmaps/<roadmap-id>/
-├── events.jsonl       # authoritative append-only history
-└── state.json         # derived, rebuildable projection
+.qor/roadmaps/<roadmap-id>/events.jsonl
 ```
 
-The event stream records topology and lifecycle changes. `state.json` is a cache/projection and may be regenerated deterministically from the event history.
+No `state.json` materialized cache ships in v1. Current state is reduced in memory from the event history on load. A persistent projection may be added later only if measured reconstruction cost justifies it.
 
-Initial event families:
+The first event declares the Roadmap contract version. Unsupported future versions fail visibly rather than being partially interpreted.
 
-- roadmap created or objective amended;
-- node added or classified;
+Initial event families are limited to behavior required by the vertical pilot:
+
+- roadmap created;
+- objective amended with rationale;
+- node added;
 - dependency added or removed with rationale;
-- node resolved;
-- decision superseded;
 - unresolved space added, graduated, or retired;
-- lease acquired, released, or expired;
-- roadmap declared implementation-ready.
+- fact resolved with evidence pointer;
+- decision resolved with authority and rationale;
+- prerequisite resolved;
+- decision superseded;
+- descendant invalidated for review;
+- plan handoff emitted.
 
-A human-readable roadmap view and external issue trackers are projections, not canonical state. This prevents platform body-size limits, child-item limits, label drift, or assignment semantics from corrupting the underlying decision model.
+Atomic append semantics must be explicit. The implementation plan should reuse or generalize proven Qor atomic JSONL behavior where doing so does not create disproportionate blast radius.
 
-## Stable identity and reconstruction
+## Single-writer v1
 
-Every roadmap and node receives a stable Qor identifier independent of tracker identifiers. Projections may store tracker backreferences, but membership and dependency reconstruction must remain possible from Qor state alone.
+v1 has one canonical Roadmap writer per invocation. Parallel subagents may investigate facts, but they return results to the Roadmap orchestrator rather than mutating canonical Roadmap state independently.
 
-A fresh session should be able to:
+Therefore v1 has no Roadmap-specific work leases, claim expiry, heartbeat, or stale-assignee model.
 
-1. load the objective and compact derived state;
-2. identify the current frontier without loading every historical detail;
-3. inspect only the selected node and its dependency/evidence neighborhood;
-4. continue without re-asking settled decisions.
+If real multi-writer demand appears later, the design must first evaluate the durable claim and live-writer semantics Qor already owns under execution continuity. A second independent claim vocabulary is not admitted by default.
 
-## Decision supersession
+## Fact and decision authority rule
 
-Resolved decisions are append-only historical facts.
+Roadmap separates discoverable facts from authority-scoped decisions.
 
-When new evidence invalidates a prior decision:
+- Facts the agent can lawfully establish are agent obligations.
+- Consequential choices remain authority-scoped decisions.
+- Missing facts should not be converted into operator questions merely because asking is easier than investigating.
+- One blocked decision does not block independent actionable nodes.
+- Roadmap records resolution evidence and authority. It does not silently infer authority.
 
-```text
-Decision A
-status: superseded
-superseded_by: Decision G
-reason: <new evidence or changed constraint>
-```
+## Supersession semantics
 
-Downstream nodes that depended on the superseded decision are re-evaluated deterministically. The historical record remains visible.
+Resolved decisions are historical facts and remain visible.
 
-This model should be reusable by other long-lived Qor decision surfaces after Roadmap proves it.
+When a prior decision is superseded:
 
-## Claim and interruption semantics
+1. append the replacement decision relation;
+2. deterministically identify graph descendants that depended on the superseded decision;
+3. mark those descendants `needs_review` or equivalent;
+4. remove affected unresolved descendants from the actionable frontier until reviewed;
+5. route each review through its lawful resolver.
 
-A claim is a lease, not permanent assignment.
+Qor does not claim that semantic validity can be recomputed automatically merely because graph impact can be computed deterministically.
 
-Minimum lease fields:
-
-```text
-actor
-session_id
-claimed_at
-scope
-status
-released_at or expires_at
-```
-
-An incomplete or interrupted session releases its lease when that state can be observed. Expiry/staleness handling must be deterministic and visible rather than silently hiding the node from the frontier forever.
-
-External tracker assignment may mirror a lease, but it cannot define the lease.
-
-## Frontier selection
-
-Creation order is only a final tie-breaker. Roadmap should prefer nodes that most reduce uncertainty or unlock useful downstream work.
-
-The first deterministic ranking contract is lexicographic, not an opaque learned score:
-
-1. higher number of blocked downstream nodes;
-2. higher unresolved-space reduction potential;
-3. higher risk-reduction value;
-4. closer dependency distance to implementation readiness;
-5. lower estimated execution cost;
-6. older creation sequence.
-
-Where values are unknown, Roadmap records `unknown` rather than inventing precision. Ranking inputs and the resulting order must be inspectable.
+Generalizing supersession beyond Roadmap is deferred until at least one additional real consumer exists.
 
 ## Research economy
 
-Research fanout is capability- and cost-aware.
+Roadmap may deduplicate identical factual needs before delegating research and should pass the minimum sufficient brief to each research invocation.
 
-Recommended routing:
+Roadmap does not define model brands or fixed cost tiers. Existing Qor capability and host policies own model selection.
 
-```text
-recon / search             -> economical qualified model
-source synthesis           -> medium reasoning tier
-architecture inference     -> strong reasoning tier
-consequential judgment     -> highest qualified tier
-```
+## Plan-handoff boundary
 
-Before parallel research is dispatched, Roadmap checks whether branches overlap materially and deduplicates shared evidence needs. A parent agent should pass the minimum sufficient brief rather than cloning its entire context into every subagent.
+A Plan Handoff is legal only when:
 
-## Implementation boundary
+- the named scope has no unresolved blocking nodes;
+- no blocking descendant is `needs_review`;
+- required evidence pointers exist;
+- every required authority decision is recorded;
+- the current Qor session has a legal predecessor artifact accepted by `/qor-plan`.
 
-Roadmap may perform or delegate:
+If the last condition is false, Roadmap routes to `/qor-ideate` or `/qor-research` as appropriate and does not create an override merely to proceed.
 
-- research;
-- evidence gathering;
-- design exploration;
-- operator questioning for authority-scoped decisions;
-- non-production prerequisites;
-- issue or environment inspection;
-- state persistence and topology maintenance.
+The handoff references settled artifacts by pointer. It does not copy a second mutable version of their contents.
 
-Roadmap may not make production implementation changes merely because an implementation node becomes actionable.
+## Production-implementation boundary
 
-When an implementation node is ready, the legal next action is a Qor handoff, normally `/qor-plan`, followed by the existing S.H.I.E.L.D. chain.
+Roadmap contains no production implementation step.
 
-## Skill invocation boundary
+The enforceable guarantee is layered rather than overstated:
 
-Roadmap is situational, not an always-required gate.
+- the canonical Roadmap procedure never instructs production-code mutation;
+- Roadmap state mutations use the narrowest available deterministic Qor helper or CLI;
+- canonical tool declarations omit production-edit capabilities where a host can enforce that distinction;
+- tests verify that Roadmap helpers write only within the Roadmap state surface and that Roadmap emits a `/qor-plan` handoff rather than an implementation action;
+- hosts with reliable pre-tool enforcement may add stronger mechanical controls;
+- hosts without such a seam receive a disclosed structural boundary, not a false universal hard guarantee.
 
-It should be directly invokable by the operator and routable by Qor when the request exhibits one or more strong signals:
+## v1 implementation strategy
 
-- cannot responsibly fit in one planning session;
-- material unresolved architecture or product decisions;
-- multiple independent research branches;
-- dependencies that make future work not yet specifiable;
-- likely interruption or cross-session continuation;
-- multiple implementation streams that require a shared decision substrate.
+Do not ship schema, reducer, frontier, persistence, and skill prose as separately released foundation layers.
 
-Host-specific invocation metadata is a compiler concern. The canonical Qor skill defines behavior and triggers without hardcoding one host's invocation mechanism.
+The first implementation target is one vertical experimental pilot that proves the entire narrow journey:
 
-## First implementation strategy
+1. initialize one Roadmap;
+2. append a few nodes and edges;
+3. reconstruct state from disk;
+4. compute the frontier set;
+5. resolve one fact or decision through the legal resolver;
+6. resume from a fresh agent context;
+7. determine that a named scope is ready;
+8. verify the legal predecessor for `/qor-plan`;
+9. emit a compact Plan Handoff;
+10. stop before production implementation.
 
-The implementation should be built as tracer-bullet waves rather than horizontal layers.
+Internal modules and test phases may be separated inside the governed implementation plan, but the capability is not considered delivered until the vertical journey is green.
 
-The first slice must prove one narrow end-to-end journey:
+## Experimental routing posture
 
-1. initialize a roadmap from an objective;
-2. append nodes and blocking edges;
-3. derive deterministic state from events;
-4. compute an actionable frontier;
-5. resolve a fact or decision node;
-6. resume from a fresh process/session using only persisted state;
-7. declare an implementation node ready;
-8. emit the legal `/qor-plan` handoff without executing implementation.
+v1 is explicitly operator-invoked only.
 
-Only after that path is green should the implementation deepen leases, supersession propagation, external projections, planning integration, and enterprise consumption.
+Automatic routing into Roadmap is deferred until controlled evaluation against the current Qor baseline demonstrates a material improvement in at least some of:
 
-## Enterprise extension boundary
+- repeated operator questions;
+- facts unnecessarily asked of the operator;
+- unresolved assumptions at plan entry;
+- duplicate research;
+- resume fidelity;
+- frontier correctness;
+- context/tool cost;
+- time to an audit-ready plan;
+- gate overrides introduced by the new flow.
 
-The canonical Roadmap contract belongs in base Qor-logic.
+A later routing decision must name the signals that justify invocation and the false-positive cost of routing ordinary complex work into Roadmap.
 
-Higher-tier enterprise orchestration may consume:
+## Enterprise and tracker boundaries
 
-- roadmap readiness;
-- frontier state;
-- authority requirements;
-- work leases;
-- decision provenance;
-- evidence pointers.
+External tracker projection, cross-repository federation, enterprise orchestration, and automatic multi-writer claims are not part of the v1 implementation issue.
 
-It must not fork a second Roadmap state model. Enterprise work-claim and governance machinery should adapt to the base contract once that contract is stable.
+They may become separate follow-up issues only after the base pilot is evaluated and the contract is stable enough to consume without forking a second state model.
 
 ## Consequences
 
 ### Positive
 
-- large work can remain honest about uncertainty without becoming plan-shaped fiction;
-- cross-session resumption becomes a first-class behavior;
-- operator attention is spent on decisions rather than discoverable facts;
-- existing Qor skills remain single-purpose and composable;
-- implementation cannot bypass S.H.I.E.L.D.;
-- tracker integration becomes replaceable projection logic;
-- decision history can support explicit supersession instead of silent mutation;
-- deterministic state reduction creates a strong CI and evidence surface.
+- long-horizon uncertainty can remain explicit without turning `/qor-plan` into persistent project memory;
+- cross-context resumption becomes durable;
+- operator attention is reserved for real decisions rather than discoverable facts;
+- existing Qor skills remain authoritative for their own domains;
+- tracker platforms remain optional projections;
+- historical decisions can be corrected without silent mutation;
+- the first implementation is small enough to evaluate before broader adoption.
 
 ### Costs
 
-- Qor gains a new persistent state family under `.qor/`;
-- node and dependency schemas require versioning discipline;
-- resumption, lease expiry, and supersession create non-trivial state-machine tests;
-- host and tracker projections need careful separation from canonical state;
-- the skill catalog gains another situational entry point, increasing discoverability pressure unless routing remains precise.
+- Qor gains one new persistent state family under `.qor/`;
+- event contracts require schema/version discipline;
+- a meta skill adds discoverability pressure even when user-invoked only;
+- Roadmap creates value only for a subset of work, so admission discipline matters;
+- formal evaluation is required before automatic routing or concurrency features are justified.
 
 ## Rejected alternatives
 
-### Extend `/qor-plan` until it handles this use case
+### Extend `/qor-plan` into a persistent long-horizon workspace
 
-Rejected. It would complect decision discovery, long-horizon state navigation, and implementation planning. `/qor-plan` should consume sufficiently resolved decisions, not become the persistent workspace for every unresolved branch.
+Rejected. `/qor-plan` already owns implementation design and should consume resolved context, not retain every unresolved future branch across governed changes.
+
+### Extend `/qor-ideate` into a persistent dependency graph
+
+Rejected for v1. Ideate owns concept framing and readiness. Turning it into long-lived graph state would complect a single-session framing artifact with multi-context program navigation.
 
 ### Add Roadmap as a mandatory lifecycle phase
 
-Rejected. Most work does not need it. Mandatory invocation would impose context and ceremony on changes that are already implementation-ready.
+Rejected. Most work does not need it.
 
-### Use the issue tracker as canonical Roadmap state
+### Use an external issue tracker as canonical Roadmap state
 
-Rejected. Tracker limits and platform-specific semantics would become correctness constraints. Trackers are useful projections and collaboration surfaces, not the Qor state authority.
+Rejected. Tracker limits and platform semantics must not become correctness constraints.
 
-### Represent claims only as assignees
+### Add Roadmap-specific work leases in v1
 
-Rejected. Assignment does not encode session identity, interruption, expiry, or stale-claim recovery.
+Rejected. Single-writer v1 has no demonstrated canonical claim conflict, and Qor already has continuity claim semantics that must be considered before another model is introduced.
 
-### Allow implementation directly from Roadmap
+### Persist a derived `state.json` cache in v1
 
-Rejected. It creates a second implementation path around the governance chain and weakens test, audit, and evidence guarantees.
+Rejected. Reconstruction cost has not demonstrated a need for a cache.
 
-### Select frontier nodes by creation order
+### Automatically rank the frontier with model-estimated values
 
-Rejected. Creation time is not decision value. It remains only a deterministic tie-breaker.
+Rejected for v1. Determinism over subjective estimates does not create objective priority.
 
-## Admission criteria for implementation
+### Represent implementation work as Roadmap nodes
 
-Implementation may begin only when:
+Rejected. That would pull implementation decomposition into a surface whose purpose is to decide when work is ready for `/qor-plan`.
 
-1. this ADR and the associated build roadmap have passed `/qor-audit`;
-2. the first slice has explicit tests for event reduction, frontier calculation, resumption, and no-implementation handoff;
-3. new canonical terms are added to the glossary in the same implementation phase as their executable consumers;
-4. the delegation table is updated before skill-to-skill handoffs are wired;
-5. no external tracker or repository is required for the base test suite;
-6. the public-safe research provenance remains isolated to the permitted lessons-learned record.
+### Allow Roadmap to resolve another skill's domain inline
+
+Rejected. The delegation table remains authoritative.
+
+## Admission criteria for the vertical pilot
+
+Implementation planning may begin only when:
+
+1. this amended ADR and the amended build roadmap have undergone formal `/qor-audit`;
+2. the implementation plan treats the first release as one vertical pilot, not a sequence of separately shipped platform layers;
+3. the v1 schema excludes leases, cache state, automatic ranking, and implementation task nodes;
+4. atomic append and unsupported-version behavior have explicit tests;
+5. fresh-context resumption is tested from repository state only;
+6. the Plan Handoff preserves `/qor-plan`'s legal prior-artifact contract without a routine override;
+7. the delegation table is updated before any Roadmap-to-skill routing is wired;
+8. no external tracker, external repository, or enterprise extension is required by the base test suite;
+9. research provenance remains documentation only and creates no runtime dependency.
+
+The associated build strategy is `docs/roadmap-qor-roadmap-build-2026-08-27.md`.
