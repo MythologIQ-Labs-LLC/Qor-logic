@@ -93,6 +93,8 @@ Recipe selection is deterministic. A runtime/model hint is honored only when it 
 
 During migration, `qor.scripts.model_pinning_lint` remains as a compatibility shim for historical consumers and for its independent fabrication-risk doctrine scan. Legacy pins, if encountered, produce advisory deprecation information only; they do not authorize or prohibit skill execution.
 
+Legacy-pinned skills default to conservative rendering until they explicitly adopt an execution-context contract. Phase 240 changes the shared authority seam; it does not require mass editing of the skill corpus merely to remove now-inert metadata.
+
 ## Negative constraints
 
 The NR-001/NR-002 protections remain independent of model identity. The distribution compiler may continue to inject those protections into cross-host variants, but the rationale is **cross-host high-risk execution**, not an asserted weaker-model tier.
@@ -139,6 +141,8 @@ Costs:
 
 ## Phase 240 scope
 
-Phase 240 implements only the execution-context inspector, bounded recipe selection, migration of live pinned skills, `/qor-plan` preflight wiring, `/qor-audit` context inspection, compatibility behavior for the old model-pinning linter, tests, and compiler wording correction.
+Phase 240 implements only the execution-context inspector, bounded recipe selection, shared-seam migration behavior for legacy-pinned skills, `/qor-plan` preflight wiring, `/qor-audit` context inspection, compatibility behavior for the old model-pinning linter, focused tests, and the minimum documentation correction needed to describe the new authority boundary.
+
+It does **not** mass-edit live pinned skills, add adaptive recipes to skills that have not explicitly opted in, or build an empirical model-qualification layer.
 
 No empirical learning service, remote registry, benchmark runner, or per-model recipe database is admitted in this phase.
