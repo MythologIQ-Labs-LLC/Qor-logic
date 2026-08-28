@@ -14,8 +14,6 @@ gate_reads: ""
 gate_writes: audit
 permitted_tools: [Read, Grep, Glob, Bash]
 permitted_subagents: []
-model_compatibility: [claude-opus-4-7]
-min_model_capability: opus
 ---
 # /qor-repo-audit - Repository Governance Audit
 

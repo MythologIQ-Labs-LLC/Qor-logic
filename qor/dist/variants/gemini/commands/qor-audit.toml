@@ -1,4 +1,4 @@
-description = "Adversarial audit of blueprint to generate mandatory PASS/VETO verdict. Use when Claude needs to review architecture plans before implementation for: (1) L2/L3 risk grade work, (2) Security-critical p"
+description = "Adversarial audit of blueprint to generate mandatory PASS/VETO verdict. Use when an agent needs to review architecture plans before implementation for: (1) L2/L3 risk grade work, (2) Security-critical"
 phase = "audit"
 prompt = """
 
@@ -24,7 +24,7 @@ executing on a weaker model, these rules are binding
   <output>.agent/staging/AUDIT_REPORT.md with PASS or VETO verdict</output>
 </skill>
 
-Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); cross-host compiled variants carry the full rules preamble.
 
 ## Governance Health Preflight
 

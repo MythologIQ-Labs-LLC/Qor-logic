@@ -14,8 +14,6 @@ gate_reads: research
 gate_writes: plan
 permitted_tools: [Read, Grep, Glob, Bash, Edit, Write]
 permitted_subagents: []
-model_compatibility: [claude-opus-4-7]
-min_model_capability: opus
 ---
 
 ## Negative Constraints (Below-Design-Tier Execution)
@@ -40,7 +38,7 @@ executing on a weaker model, these rules are binding
   <output>plan-*.md file with incremental phases and unit test descriptions</output>
 </skill>
 
-Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); cross-host compiled variants carry the full rules preamble.
 
 ## Governance Health Preflight
 
