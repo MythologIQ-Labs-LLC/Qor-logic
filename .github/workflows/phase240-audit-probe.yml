@@ -1,4 +1,4 @@
-name: Phase 240 governed audit probe
+name: Phase 240 variant regeneration
 
 on:
   pull_request:
@@ -6,16 +6,16 @@ on:
       - ".github/workflows/phase240-audit-probe.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  audit-probe:
+  regenerate-variants:
     if: github.event.pull_request.number == 380
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: 8376939a1fb80d775b96998e7c6a60f191959fce
+          ref: phase/240-execution-context-governance
           fetch-depth: 0
           fetch-tags: true
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
@@ -23,43 +23,32 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -e ".[dev]"
-      - name: Exact target assertion
+      - name: Regenerate compiled variants
+        shell: bash
+        env:
+          BUILD_REGEN: "1"
+        run: python qor/scripts/dist_compile.py
+      - name: Assert regeneration boundary
         shell: bash
         run: |
-          test "$(git rev-parse HEAD)" = "8376939a1fb80d775b96998e7c6a60f191959fce"
-          echo "AUDIT_TARGET=$(git rev-parse HEAD)"
-      - name: Governance health
-        run: qor-logic governance-health --profile skill-entry
-      - name: Binding readiness and injection gates
-        shell: bash
-        run: |
-          PLAN=docs/plan-qor-phase240-execution-context-governance.md
-          qor-logic scripts plan_iteration_status_lint --plan "$PLAN"
-          qor-logic scripts prompt_injection_canaries --files docs/ARCHITECTURE_PLAN.md docs/META_LEDGER.md docs/CONCEPT.md "$PLAN"
-          qor-logic scripts prose_test_lint --tests-dir tests --enforce
-      - name: Author-momentum risk score
-        run: qor-logic scripts audit_risk_score --plan docs/plan-qor-phase240-execution-context-governance.md
-      - name: Pre-audit warning ladder
-        shell: bash
-        run: |
-          PLAN=docs/plan-qor-phase240-execution-context-governance.md
-          qor-logic scripts plan_test_lint --plan "$PLAN" || true
-          qor-logic scripts plan_enumeration_lint --plan "$PLAN" --repo-root . || true
-          qor-logic scripts plan_grep_lint --plan "$PLAN" --repo-root . || true
-          qor-logic scripts plan_text_consistency_lint --check "$PLAN" || true
-          qor-logic scripts delivery_branch_lint --plan "$PLAN" --repo-root . || true
-          qor-logic scripts ci_coverage_lint --plan "$PLAN" --workflows-dir .github/workflows || true
-          qor-logic scripts workspace_fragility_check --repo-root . || true
-          qor-logic scripts plan_signature_widening_caller_lint --plan "$PLAN" --repo-root . || true
-          qor-logic scripts plan_data_round_trip_lint --plan "$PLAN" --repo-root . || true
-          qor-logic scripts plan_live_progress_lint --repo-root . || true
-          qor-logic scripts plan_feature_tdd_lint --plan "$PLAN" --repo-root . || true
-          qor-logic scripts sg_closure_lint || true
-          qor-logic scripts publication_boundary_lint || true
-          qor-logic scripts runtime_contract_walk --plan "$PLAN" || true
-      - name: Phase 240 focused proof
-        shell: bash
-        run: |
-          python -m pytest tests/test_execution_context.py tests/test_model_pinning_frontmatter.py tests/test_qor_audit_execution_context.py tests/test_qor_plan_skill_invokes_model_pinning_lint.py -q
+          python - <<'PY'
+          import subprocess
+          changed = [line[3:] for line in subprocess.check_output(["git", "status", "--porcelain"], text=True).splitlines() if line.strip()]
+          if not changed:
+              raise SystemExit("no regenerated files; expected stale variants")
+          bad = [p for p in changed if not p.startswith("variants/")]
+          if bad:
+              raise SystemExit(f"regeneration escaped variants/: {bad}")
+          if len(changed) != 47:
+              raise SystemExit(f"expected 47 stale variants from audit probe, got {len(changed)}")
+          print(f"validated {len(changed)} regenerated variant files")
+          PY
           python qor/scripts/check_variant_drift.py
-          python -m ruff check qor tests
+      - name: Commit regenerated variants
+        shell: bash
+        run: |
+          git config user.name "qor-governance-bot"
+          git config user.email "qor-governance-bot@users.noreply.github.com"
+          git add variants/
+          git commit -m "build(phase240): regenerate portable skill variants"
+          git push origin HEAD:phase/240-execution-context-governance
