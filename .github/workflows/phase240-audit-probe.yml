@@ -34,14 +34,22 @@ jobs:
           python - <<'PY'
           import subprocess
           changed = [line[3:] for line in subprocess.check_output(["git", "status", "--porcelain"], text=True).splitlines() if line.strip()]
-          if not changed:
-              raise SystemExit("no regenerated files; expected stale variants")
-          bad = [p for p in changed if not p.startswith("variants/")]
+          allowed_manifests = {"qor/dist/manifest.json"} | {
+              f"qor/dist/variants/{host}/manifest.json"
+              for host in ("claude", "cline", "codex", "cursor", "gemini", "kilo-code")
+          }
+          manifests = [p for p in changed if p in allowed_manifests]
+          payloads = [p for p in changed if p.startswith("qor/dist/variants/") and p not in allowed_manifests]
+          bad = [p for p in changed if p not in allowed_manifests and not p.startswith("qor/dist/variants/")]
           if bad:
-              raise SystemExit(f"regeneration escaped variants/: {bad}")
-          if len(changed) != 47:
-              raise SystemExit(f"expected 47 stale variants from audit probe, got {len(changed)}")
-          print(f"validated {len(changed)} regenerated variant files")
+              raise SystemExit(f"regeneration escaped qor/dist/: {bad}")
+          if set(manifests) != allowed_manifests:
+              raise SystemExit(f"manifest set mismatch: {manifests}")
+          if len(payloads) != 47:
+              raise SystemExit(f"expected 47 stale variant payloads, got {len(payloads)}")
+          if len(changed) != 54:
+              raise SystemExit(f"expected 54 generated changes total, got {len(changed)}")
+          print("validated 47 variant payloads + 7 manifests; no boundary escape")
           PY
           python qor/scripts/check_variant_drift.py
       - name: Commit regenerated variants
@@ -49,6 +57,7 @@ jobs:
         run: |
           git config user.name "qor-governance-bot"
           git config user.email "qor-governance-bot@users.noreply.github.com"
-          git add variants/
+          git add qor/dist/manifest.json qor/dist/variants/
+          git diff --cached --quiet && { echo "nothing staged"; exit 1; }
           git commit -m "build(phase240): regenerate portable skill variants"
           git push origin HEAD:phase/240-execution-context-governance
