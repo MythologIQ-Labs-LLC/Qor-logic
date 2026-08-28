@@ -8,11 +8,11 @@
 
 ## Context
 
-Qor's Phase 55 model-pinning mechanism encoded a valid early lesson: different AI models can require different instruction structure, wording, repetition, and control tactics. The original implementation expressed that lesson through named model allowlists and a vendor-specific capability ladder (`haiku < sonnet < opus`).
+Qor's Phase 55 model-pinning mechanism encoded a valid early lesson: different AI models can require different instruction structure, wording, repetition, and control tactics. The original implementation expressed that lesson through named-model allowlists and a vendor-specific capability ladder.
 
 That representation no longer scales. Model names change quickly, stable aliases can change behavior, hosts can route a nominal session to another responder, reasoning modes alter behavior within one model family, and host/tool/system-prompt context materially affects execution. Qor's own later research already identified declared-model/responder skew.
 
-The original metadata was also declarative and WARN-only. It was never a reliable authority boundary.
+The original metadata was also declarative and WARN-only. It was never a reliable authority boundary. Keeping those fields physically present in live executable skills after declaring them non-authoritative creates a second problem: humans and downstream tooling can still reasonably interpret them as eligibility controls. The migration therefore must remove the ambiguous live surface, not merely reinterpret it.
 
 ## Decision
 
@@ -87,17 +87,24 @@ Phase 240 admits exactly three recipe identifiers:
 
 Recipe selection is deterministic. A runtime/model hint is honored only when it names a recipe already admitted by the skill.
 
-## Legacy model pinning
+## Retirement of live model pinning
 
-`model_compatibility` and `min_model_capability` are deprecated as execution-authority fields.
+`model_compatibility` and `min_model_capability` are retired from active executable skill frontmatter as part of Phase 240.
 
-During migration, `qor.scripts.model_pinning_lint` remains as a compatibility shim for historical consumers and for its independent fabrication-risk doctrine scan. Legacy pins, if encountered, produce advisory deprecation information only; they do not authorize or prohibit skill execution.
+The compatibility module name may remain temporarily for historical callers and for its independent fabrication-risk doctrine scan, but named-model metadata is not a supported steady-state execution contract.
 
-Legacy-pinned skills default to conservative rendering until they explicitly adopt an execution-context contract. Phase 240 changes the shared authority seam; it does not require mass editing of the skill corpus merely to remove now-inert metadata.
+Phase 240 therefore requires:
+
+- removal of named-model allowlists and vendor-tier minimums from live skills;
+- replacement of model-specific eligibility language with execution-context/capability language;
+- a regression test that rejects reintroduction of the retired fields into active skills;
+- no runtime path that derives authority from a former model tier.
+
+Historical research, changelog, sealed evidence, and ADR material may describe the retired mechanism where doing so is necessary to explain provenance. That history is not executable authority.
 
 ## Negative constraints
 
-The NR-001/NR-002 protections remain independent of model identity. The distribution compiler may continue to inject those protections into cross-host variants, but the rationale is **cross-host high-risk execution**, not an asserted weaker-model tier.
+The NR-001/NR-002 protections remain independent of model identity. The distribution compiler may continue to inject those protections into cross-host variants, but the rationale is **cross-host high-risk execution**, not an asserted model tier.
 
 ## Unknown models and hosts
 
@@ -110,6 +117,10 @@ Unknown runtime capabilities are surfaced explicitly as unverified. Qor must not
 ### Maintain a named-model registry
 
 Rejected because model proliferation, aliases, routing, and host-specific behavior make the registry stale faster than Qor can govern it.
+
+### Leave model pins physically present but declare them inert
+
+Rejected because live executable metadata that appears to restrict model eligibility remains an authority ambiguity for operators, hosts, compilers, and future tooling. A governance control should not require oral tradition to explain that its visible restriction is supposedly meaningless.
 
 ### Let the model freely optimize its own prompt
 
@@ -131,18 +142,18 @@ Positive:
 - model identity remains observable without becoming authority;
 - adaptation can evolve without duplicating skill semantics;
 - model/host self-knowledge is useful but bounded;
-- execution limitations become explicit and truthfully scoped.
+- execution limitations become explicit and truthfully scoped;
+- executable skill metadata no longer contradicts the portability contract.
 
 Costs:
 
 - host adapters need to publish richer capability context over time;
 - quality qualification remains advisory until empirical suites exist;
-- historical model-pinning documentation remains as provenance and should not be rewritten retroactively.
+- the live skill corpus and tests must be migrated in this phase rather than deferred;
+- historical model-pinning documentation remains provenance and should not be rewritten to pretend the old design never existed.
 
 ## Phase 240 scope
 
-Phase 240 implements only the execution-context inspector, bounded recipe selection, shared-seam migration behavior for legacy-pinned skills, `/qor-plan` preflight wiring, `/qor-audit` context inspection, compatibility behavior for the old model-pinning linter, focused tests, and the minimum documentation correction needed to describe the new authority boundary.
+Phase 240 implements the execution-context inspector, bounded recipe selection, live skill-corpus removal of named-model admission metadata, `/qor-plan` preflight wiring, `/qor-audit` context inspection, compatibility behavior for the old module name where necessary, focused tests, and the minimum documentation correction needed to describe the new authority boundary.
 
-It does **not** mass-edit live pinned skills, add adaptive recipes to skills that have not explicitly opted in, or build an empirical model-qualification layer.
-
-No empirical learning service, remote registry, benchmark runner, or per-model recipe database is admitted in this phase.
+It does **not** build an empirical model-qualification layer, remote model registry, benchmark service, or per-model recipe database.
