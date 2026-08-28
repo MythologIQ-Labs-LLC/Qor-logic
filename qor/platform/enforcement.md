@@ -38,10 +38,10 @@ The reverse direction is prohibited. Platform state is evidence about enforcemen
 
 A downstream projection should keep four concepts distinct:
 
-1. **Desired governance contract** — the Qor/enterprise obligations selected for projection.
-2. **Platform observation** — normalized evidence describing effective external controls.
-3. **Projection plan** — deterministic desired-versus-observed delta.
-4. **Projection receipt** — evidence that an authorized operation or verification occurred against the exact plan.
+1. **Desired governance contract** - the Qor/enterprise obligations selected for projection.
+2. **Platform observation** - normalized evidence describing effective external controls.
+3. **Projection plan** - deterministic desired-versus-observed delta.
+4. **Projection receipt** - evidence that an authorized operation or verification occurred against the exact plan.
 
 Canonical Qor does not define a GitHub/GitLab/Azure DevOps/Bitbucket mutation API for these concepts.
 
@@ -60,4 +60,4 @@ A downstream adapter MUST preserve the following:
 
 The portable governance-gate path remains network independent. Qor may evaluate previously collected external evidence, but a live forge or organization API is not a prerequisite for gate semantics.
 
-Platform administration belongs downstream. The first concrete consumer of this boundary is Qor-logic Plus ADR-0018 / issue #129, which implements a read-only GitHub branch-policy projection tracer bullet.
+Platform administration belongs downstream. A paired private enterprise tracer bullet is the first concrete consumer of this boundary; its repository identity is intentionally not part of canonical Qor's published contract.
