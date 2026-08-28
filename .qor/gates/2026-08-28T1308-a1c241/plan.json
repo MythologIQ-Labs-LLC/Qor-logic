@@ -1,0 +1,44 @@
+{
+  "phase": "plan",
+  "ts": "2026-08-28T13:08:00Z",
+  "session_id": "2026-08-28T1308-a1c241",
+  "plan_path": "docs/plan-qor-phase241-portable-governance-boundary.md",
+  "phases": [
+    "Phase 1: architecture contract",
+    "Phase 2: boundary verification"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_portable_governance_boundary.py -q",
+    "python -m pytest tests/ -q",
+    "python qor/scripts/check_variant_drift.py",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md"
+  ],
+  "change_class": "feature",
+  "doc_tier": "system",
+  "required_gate_artifacts": ["plan", "audit", "implement", "substantiate"],
+  "boundaries": {
+    "limitations": [
+      "Phase 241 defines the base/downstream authority boundary; it does not prove that any enterprise platform can express every Qor obligation."
+    ],
+    "non_goals": [
+      "GitHub or forge API client",
+      "ruleset mutation",
+      "organization controller",
+      "platform webhook receiver",
+      "GitHub App",
+      "enterprise actor registry"
+    ],
+    "exclusions": [
+      "execution-context implementation remains Phase 240 / GH #379",
+      "enterprise GitHub projection implementation belongs to Qor-logic-plus#129"
+    ]
+  },
+  "affected_files": [
+    "docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md",
+    "docs/plan-qor-phase241-portable-governance-boundary.md",
+    "docs/architecture.md",
+    "README.md",
+    "qor/platform/enforcement.md",
+    "tests/test_portable_governance_boundary.py"
+  ]
+}
