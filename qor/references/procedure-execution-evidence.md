@@ -48,10 +48,9 @@ When policy also requires an exact input/change-set digest, `inputSha256` become
 
 ## Evidence classes are categorical
 
-V1 recognizes:
+V1 recognizes only:
 
 - `agent-declared`
-- `human-declared`
 - `wrapper-observed`
 - `ci-attested`
 
@@ -60,6 +59,8 @@ These classes are not a universal numeric ladder. They establish different facts
 Policy must explicitly list the classes it accepts. A verifier never upgrades one class into another merely because some additional metadata exists.
 
 In particular, externally verifying an `agent-declared` record does **not** transform it into `wrapper-observed` evidence.
+
+`human-declared` is deliberately absent from V1. An unauthenticated JSON label claiming a human declaration would be mintable by the governed actor and would therefore sound stronger than the contract could prove. A future authenticated-human evidence class requires explicit identity and verification semantics before admission.
 
 ## Independently observed classes
 
