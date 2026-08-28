@@ -25,6 +25,20 @@ def _contract_file(tmp_path: Path, extra: str = "") -> Path:
     return path
 
 
+def _legacy_file(tmp_path: Path) -> Path:
+    path = tmp_path / "qor" / "skills" / "governance" / "legacy" / "SKILL.md"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        "---\n"
+        "name: legacy\n"
+        "model_compatibility: [claude-opus-4-7]\n"
+        "min_model_capability: opus\n"
+        "---\n# legacy\n",
+        encoding="utf-8",
+    )
+    return path
+
+
 def _context(**overrides) -> ec.ExecutionContext:
     values = {
         "host": "test-host",
@@ -84,6 +98,16 @@ def test_unadmitted_rendering_hint_falls_back(tmp_path):
     contract = ec.load_contract(_contract_file(tmp_path))
     assert contract is not None
     context = _context(rendering_hint="skip-the-boring-bits")
+    assert ec.select_recipe(contract, context) == "conservative"
+
+
+def test_legacy_model_metadata_is_conservative_only(tmp_path):
+    contract = ec.load_contract(_legacy_file(tmp_path))
+    assert contract is not None
+    assert contract.hard_requirements == ()
+    assert contract.rendering_recipes == ("conservative",)
+    assert "legacy-model-metadata-advisory" in contract.quality_requirements
+    context = _context(reasoning_mode="high", rendering_hint="outcome-first")
     assert ec.select_recipe(contract, context) == "conservative"
 
 
