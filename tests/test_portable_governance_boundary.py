@@ -46,9 +46,11 @@ def test_base_boundary_forbids_platform_administration() -> None:
     text = _text(ADR).lower()
     assert "does **not** own enterprise platform administration" in text
     assert "no github api client" in text
-    assert "no github api client" not in _text(REFERENCE).lower()  # reference defines contract, not an API
+    assert "no github api client" not in _text(REFERENCE).lower()
 
 
-def test_first_enterprise_consumer_is_explicit() -> None:
-    text = _text(REFERENCE)
-    assert "Qor-logic Plus ADR-0018 / issue #129" in text
+def test_first_enterprise_consumer_stays_publication_safe() -> None:
+    text = _text(ADR) + _text(REFERENCE)
+    assert "paired private enterprise tracer bullet" in text.lower()
+    assert "Qor-logic-plus#" not in text
+    assert "MythologIQ-Labs-LLC/Qor-logic-plus" not in text
