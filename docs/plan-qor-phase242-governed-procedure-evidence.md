@@ -112,7 +112,7 @@ Phase 242 does not stretch those primitives into a claim they do not prove. A tr
 
 - `qor/gates/schema/procedure_execution_evidence.schema.json` — new portable V1 evidence contract schema.
 - `qor/compliance/procedure_evidence.py` — deterministic evaluator and trusted verified-claim boundary type.
-- `qor/references/doctrine-procedure-execution-evidence.md` — semantic home and trust-boundary doctrine.
+- `qor/references/procedure-execution-evidence.md` — draft semantic reference; formal doctrine promotion is deferred until audit/substantiation.
 - `tests/test_procedure_evidence.py` — adversarial behavioral coverage.
 - `docs/FEATURE_INDEX.md` — add the evaluator only after repository CI proves the behavior.
 
@@ -162,6 +162,8 @@ The focused suite must prove at least:
 ## Governance note
 
 The operator explicitly authorized continued implementation after the post-#131 adversarial review. This plan does not claim a new formal `/qor-audit` PASS or substantiation result. The stacked PR remains draft until repository CI and the normal evidence path support promotion.
+
+Phase 242 deliberately keeps the semantic note as a draft reference rather than increasing the published doctrine inventory before the contract has completed its evidence/admission path.
 
 ## Definition of done
 
