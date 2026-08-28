@@ -1,6 +1,6 @@
 # Plan: Phase 240 — Execution-Context Adaptive Governance
 
-**change_class**: governance-feature
+**change_class**: governance
 
 **doc_tier**: system
 
@@ -139,3 +139,10 @@ Add focused tests proving:
 - Bounded rendering hints cannot change governance semantics.
 - Negative constraints remain active independently of model identity.
 - Full CI and variant drift pass on the Phase 240 branch.
+
+## CI Commands
+
+- `python -m pytest tests/test_execution_context.py tests/test_model_pinning_frontmatter.py tests/test_qor_audit_execution_context.py -q` — focused Phase 240 contract tests.
+- `python -m pytest tests/ -q` — full repository regression suite.
+- `python qor/scripts/check_variant_drift.py` — generated-host variant consistency.
+- `python -m ruff check qor tests` — static lint over implementation and tests.
