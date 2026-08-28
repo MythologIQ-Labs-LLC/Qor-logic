@@ -30,14 +30,13 @@
     ],
     "exclusions": [
       "execution-context implementation remains Phase 240 / GH #379",
-      "enterprise GitHub projection implementation belongs to Qor-logic-plus#129"
+      "enterprise GitHub projection implementation belongs to Qor-logic-plus#129",
+      "README and broad docs/architecture positioning are deferred until paired Plus tracer-bullet evidence exists"
     ]
   },
   "affected_files": [
     "docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md",
     "docs/plan-qor-phase241-portable-governance-boundary.md",
-    "docs/architecture.md",
-    "README.md",
     "qor/platform/enforcement.md",
     "tests/test_portable_governance_boundary.py"
   ]
