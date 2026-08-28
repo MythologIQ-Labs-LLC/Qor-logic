@@ -1,70 +1,62 @@
-"""Legacy model-pinning compatibility shim.
+"""Retired model-admission metadata lint and fabrication-risk guard.
 
-Phase 240 replaces named-model execution authority with execution-context
-inspection. Legacy pinning metadata is retained as provenance/deprecation
-input only. The independent fabrication-risk doctrine guard remains active.
+Phase 240 makes execution-context capability evidence authoritative and removes
+named-model admission from live Qor skills. This module name remains temporarily
+for command compatibility, but it no longer contains a model-family allowlist or
+vendor-specific capability ladder.
 """
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from qor.scripts import execution_context
 
-# Backwards-compatible exports for historical callers. These values no longer
-# grant or deny authority to execute a Qor skill.
-_CAPABILITY_ORDER: tuple[str, ...] = ("haiku", "sonnet", "opus")
-_TIER_RE = re.compile(r"claude-(haiku|sonnet|opus)-")
+
+RETIRED_MODEL_FIELDS: tuple[str, ...] = (
+    "model_compatibility",
+    "min_model_capability",
+)
+
 _FABRICATION_RISK_SKILLS = {"qor-audit", "qor-plan", "qor-substantiate"}
 _GUARD_POINTER = "doctrine-negative-constraints"
 _FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
-_LIST_KEY_RE = re.compile(r"^model_compatibility\s*:\s*\[([^\]]*)\]", re.MULTILINE)
-_MIN_KEY_RE = re.compile(r"^min_model_capability\s*:\s*(\S+)", re.MULTILINE)
 
 
 @dataclass(frozen=True)
 class ModelPinningWarning:
     skill: str
-    declared_min: str | None
-    declared_compatibility: tuple[str, ...]
-    current_model: str | None
     reason: str
 
 
-def extract_capability_tier(model_family: str | None) -> str | None:
-    """Deprecated helper retained for historical imports and sealed evidence."""
-    if not model_family:
+def _frontmatter(text: str) -> str:
+    match = _FRONTMATTER_RE.match(text)
+    return match.group(1) if match else ""
+
+
+def _retired_fields(frontmatter: str) -> tuple[str, ...]:
+    found: list[str] = []
+    for field in RETIRED_MODEL_FIELDS:
+        if re.search(rf"^{re.escape(field)}\s*:", frontmatter, re.MULTILINE):
+            found.append(field)
+    return tuple(found)
+
+
+def _check_retired_model_fields(skill_path: Path) -> ModelPinningWarning | None:
+    text = skill_path.read_text(encoding="utf-8", errors="replace")
+    fields = _retired_fields(_frontmatter(text))
+    if not fields:
         return None
-    match = _TIER_RE.search(model_family)
-    return match.group(1) if match else None
-
-
-def _parse_pinning_keys(frontmatter: str) -> tuple[tuple[str, ...], str | None]:
-    list_match = _LIST_KEY_RE.search(frontmatter)
-    compatibility: tuple[str, ...] = ()
-    if list_match:
-        compatibility = tuple(
-            value.strip() for value in list_match.group(1).split(",") if value.strip()
-        )
-    min_match = _MIN_KEY_RE.search(frontmatter)
-    minimum = min_match.group(1).strip() if min_match else None
-    return compatibility, minimum
-
-
-def _legacy_pin_count(repo_root: Path) -> int:
-    count = 0
-    for skill in (repo_root / "qor" / "skills").rglob("SKILL.md"):
-        text = skill.read_text(encoding="utf-8", errors="replace")
-        match = _FRONTMATTER_RE.match(text)
-        if not match:
-            continue
-        compatibility, minimum = _parse_pinning_keys(match.group(1))
-        if compatibility or minimum:
-            count += 1
-    return count
+    return ModelPinningWarning(
+        skill=skill_path.parent.name,
+        reason=(
+            "live skill carries retired named-model admission metadata: "
+            + ", ".join(fields)
+        ),
+    )
 
 
 def _check_fabrication_guard(skill_path: Path) -> ModelPinningWarning | None:
@@ -76,9 +68,6 @@ def _check_fabrication_guard(skill_path: Path) -> ModelPinningWarning | None:
         return None
     return ModelPinningWarning(
         skill=skill_name,
-        declared_min=None,
-        declared_compatibility=(),
-        current_model=None,
         reason=(
             "fabrication-risk skill lacks the negative-constraints pointer; "
             "add the doctrine-negative-constraints reference line"
@@ -87,12 +76,21 @@ def _check_fabrication_guard(skill_path: Path) -> ModelPinningWarning | None:
 
 
 def check(
-    repo_root: Path, *, current_model: str | None = None,
+    repo_root: Path,
+    *,
+    current_model: str | None = None,
 ) -> list[ModelPinningWarning]:
-    """Return safety warnings only; model-family mismatches are non-authoritative."""
+    """Return live-corpus migration and fabrication-risk warnings.
+
+    ``current_model`` is accepted only for CLI/caller compatibility. Model
+    identity does not affect the result and cannot grant or deny authority.
+    """
     del current_model
     warnings: list[ModelPinningWarning] = []
     for skill in (repo_root / "qor" / "skills").rglob("SKILL.md"):
+        retired = _check_retired_model_fields(skill)
+        if retired:
+            warnings.append(retired)
         guard = _check_fabrication_guard(skill)
         if guard:
             warnings.append(guard)
@@ -101,8 +99,7 @@ def check(
 
 def _print_execution_context(repo_root: Path) -> None:
     try:
-        from qor.scripts.execution_context import scan
-        results = scan(repo_root)
+        results = execution_context.scan(repo_root)
     except (ImportError, ValueError) as exc:
         print(f"WARN [execution-context]: inspection unavailable: {exc}", file=sys.stderr)
         return
@@ -121,17 +118,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--current-model", type=str, default=None)
     args = parser.parse_args(argv)
     repo_root = args.repo_root or Path.cwd()
-    legacy_count = _legacy_pin_count(repo_root)
-    if legacy_count:
+
+    _print_execution_context(repo_root)
+    warnings = check(repo_root, current_model=args.current_model)
+    for warning in warnings:
         print(
-            f"WARN [model-pinning]: {legacy_count} skill(s) still carry legacy model "
-            "metadata; it is advisory provenance only, not execution authority",
+            f"WARN [model-admission-retired] {warning.skill}: {warning.reason}",
             file=sys.stderr,
         )
-    _print_execution_context(repo_root)
-    warnings = check(repo_root, current_model=args.current_model or os.getenv("QOR_MODEL_FAMILY"))
-    for warning in warnings:
-        print(f"WARN [model-pinning]: {warning.skill}: {warning.reason}", file=sys.stderr)
     return 0
 
 
