@@ -42,6 +42,25 @@ def test_uncertainty_and_coverage_are_not_silently_promoted() -> None:
     assert "never silently drop it" in text
 
 
+def test_procedure_execution_evidence_semantics_stay_in_base() -> None:
+    text = (_text(ADR) + _text(REFERENCE)).lower()
+    assert "governed-procedure execution evidence" in text
+    assert "canonical qor owns the portable evidence satisfaction semantics" in text
+    assert "downstream signer" in text or "downstream wrapper" in text
+
+
+def test_platform_cannot_promote_agent_self_report_to_independent_evidence() -> None:
+    text = _text(REFERENCE).lower()
+    assert "platform success state cannot promote agent self-report" in text
+    assert "cannot decide by itself that procedure-execution evidence is valid" in text
+
+
+def test_procedure_evidence_is_distinct_from_projection_receipt_and_authority() -> None:
+    text = (_text(ADR) + _text(REFERENCE)).lower()
+    assert "not the same thing as evidence that a governed skill/procedure executed" in text
+    assert "does not substitute for human approval" in text
+
+
 def test_base_boundary_forbids_platform_administration() -> None:
     text = _text(ADR).lower()
     assert "does **not** own enterprise platform administration" in text
