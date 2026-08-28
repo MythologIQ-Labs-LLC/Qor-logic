@@ -1,0 +1,30 @@
+{
+  "phase": "audit",
+  "ts": "2026-08-28T13:10:00Z",
+  "session_id": "2026-08-28T1308-a1c241",
+  "target": "docs/plan-qor-phase241-portable-governance-boundary.md",
+  "target_path": "docs/plan-qor-phase241-portable-governance-boundary.md",
+  "verdict": "PASS",
+  "risk_grade": "L2",
+  "mode": "standard",
+  "review_standard": "same-context adversarial review; no Option-B independence claim",
+  "report_path": ".agent/staging/AUDIT_REPORT_241.md",
+  "findings": [
+    {
+      "category": "macro-architecture",
+      "severity": "major",
+      "status": "fixed",
+      "summary": "Rejected both local-only framing and a speculative forge-administration API in canonical Qor; Phase 241 now defines a portable-engine boundary only."
+    },
+    {
+      "category": "specification-drift",
+      "severity": "major",
+      "status": "fixed",
+      "summary": "Separated model/host execution adaptation from downstream enterprise enforcement so the two platform concepts cannot share authority accidentally."
+    }
+  ],
+  "residuals_disclosed": [
+    "the no-platform-administration boundary is architectural until a future base change attempts to add such a surface",
+    "downstream adapters require explicit coverage semantics because not every Qor obligation has a native platform equivalent"
+  ]
+}
