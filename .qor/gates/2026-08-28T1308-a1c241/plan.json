@@ -25,13 +25,13 @@
       "ruleset mutation",
       "organization controller",
       "platform webhook receiver",
-      "GitHub App",
+      "forge App",
       "enterprise actor registry"
     ],
     "exclusions": [
-      "execution-context implementation remains Phase 240 / GH #379",
-      "enterprise GitHub projection implementation belongs to Qor-logic-plus#129",
-      "README and broad docs/architecture positioning are deferred until paired Plus tracer-bullet evidence exists"
+      "execution-context implementation remains separate",
+      "enterprise projection implementation belongs to a downstream private control-plane layer and is not identified in tracked public-repository content",
+      "README and broad docs/architecture positioning are deferred until downstream tracer-bullet evidence exists"
     ]
   },
   "affected_files": [
