@@ -1,0 +1,117 @@
+name: Phase 240 retire live model pins
+
+on:
+  push:
+    branches:
+      - phase/240-execution-context-governance
+    paths:
+      - .github/workflows/phase240-retire-model-pins.yml
+
+permissions:
+  contents: write
+
+jobs:
+  retire-model-pins:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: phase/240-execution-context-governance
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Remove retired model admission metadata
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          expected = {
+              Path('qor/skills/sdlc/qor-ideate/SKILL.md'),
+              Path('qor/skills/sdlc/qor-research/SKILL.md'),
+              Path('qor/skills/sdlc/qor-refactor/SKILL.md'),
+              Path('qor/skills/sdlc/qor-plan/SKILL.md'),
+              Path('qor/skills/sdlc/qor-implement/SKILL.md'),
+              Path('qor/skills/meta/qor-repo-audit/SKILL.md'),
+              Path('qor/skills/governance/qor-validate/SKILL.md'),
+              Path('qor/skills/governance/qor-audit/SKILL.md'),
+              Path('qor/skills/governance/qor-substantiate/SKILL.md'),
+          }
+
+          changed = set()
+          for path in sorted(expected):
+              text = path.read_text(encoding='utf-8')
+              lines = [
+                  line for line in text.splitlines(keepends=True)
+                  if not line.startswith('model_compatibility:')
+                  and not line.startswith('min_model_capability:')
+              ]
+              updated = ''.join(lines)
+              updated = updated.replace('Use when Claude needs', 'Use when an agent needs')
+              updated = updated.replace(
+                  'weak-tier compiled variants carry the full rules preamble.',
+                  'cross-host compiled variants carry the full rules preamble.',
+              )
+              if updated != text:
+                  path.write_text(updated, encoding='utf-8')
+                  changed.add(path)
+
+          if changed != expected:
+              missing = sorted(str(p) for p in expected - changed)
+              extra = sorted(str(p) for p in changed - expected)
+              raise SystemExit(f'unexpected cleanup set; missing={missing}, extra={extra}')
+
+          retired = []
+          named_models = []
+          for path in Path('qor/skills').rglob('SKILL.md'):
+              text = path.read_text(encoding='utf-8')
+              if 'model_compatibility:' in text or 'min_model_capability:' in text:
+                  retired.append(str(path))
+              for token in ('claude-opus-', 'claude-sonnet-', 'claude-haiku-'):
+                  if token in text:
+                      named_models.append(f'{path}:{token}')
+
+          if retired:
+              raise SystemExit(f'retired admission metadata remains: {retired}')
+          if named_models:
+              raise SystemExit(f'named model references remain in active skills: {named_models}')
+          PY
+
+      - name: Verify exact changed-file boundary
+        shell: bash
+        run: |
+          git diff --name-only | sort > /tmp/actual.txt
+          cat > /tmp/expected.txt <<'EOF'
+          qor/skills/governance/qor-audit/SKILL.md
+          qor/skills/governance/qor-substantiate/SKILL.md
+          qor/skills/governance/qor-validate/SKILL.md
+          qor/skills/meta/qor-repo-audit/SKILL.md
+          qor/skills/sdlc/qor-ideate/SKILL.md
+          qor/skills/sdlc/qor-implement/SKILL.md
+          qor/skills/sdlc/qor-plan/SKILL.md
+          qor/skills/sdlc/qor-refactor/SKILL.md
+          qor/skills/sdlc/qor-research/SKILL.md
+          EOF
+          diff -u /tmp/expected.txt /tmp/actual.txt
+
+      - name: Run focused portability tests
+        shell: bash
+        run: |
+          python -m pip install -e .
+          python -m pytest \
+            tests/test_model_pinning_frontmatter.py \
+            tests/test_execution_context.py \
+            tests/test_qor_audit_execution_context.py -q
+
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add qor/skills
+          git commit -m 'fix: remove live named-model admission metadata'
+          git push origin HEAD:phase/240-execution-context-governance
