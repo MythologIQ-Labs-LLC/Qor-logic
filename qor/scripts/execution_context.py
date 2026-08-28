@@ -131,6 +131,18 @@ def _as_tuple(value: object) -> tuple[str, ...]:
     raise ValueError(f"expected string/list, got {type(value).__name__}")
 
 
+def _legacy_contract(fm: dict, path: Path) -> SkillExecutionContract | None:
+    if "model_compatibility" not in fm and "min_model_capability" not in fm:
+        return None
+    return SkillExecutionContract(
+        skill=str(fm.get("name") or path.parent.name),
+        hard_requirements=(),
+        quality_requirements=("legacy-model-metadata-advisory",),
+        rendering_recipes=RENDER_RECIPES,
+        default_recipe="conservative",
+    )
+
+
 def load_contract(path: Path) -> SkillExecutionContract | None:
     fm = _frontmatter(path.read_text(encoding="utf-8"))
     hard = _as_tuple(fm.get("hard_execution_requirements"))
@@ -138,7 +150,7 @@ def load_contract(path: Path) -> SkillExecutionContract | None:
     recipes = _as_tuple(fm.get("rendering_recipes"))
     default = str(fm.get("default_rendering_recipe", "conservative"))
     if not (hard or quality or recipes or "default_rendering_recipe" in fm):
-        return None
+        return _legacy_contract(fm, path)
     recipes = recipes or ("conservative",)
     unknown = set(recipes) - set(RENDER_RECIPES)
     if unknown:
