@@ -1,5 +1,7 @@
 # Plan: Phase 241 — Portable Governance Engine Boundary
 
+**iteration**: 2
+
 **change_class**: feature
 
 **doc_tier**: system
@@ -15,6 +17,12 @@
 - **limitations**: Phase 241 defines the base/downstream authority boundary; it does not prove that any enterprise platform can express every Qor obligation.
 - **non_goals**: no GitHub/GitLab/Azure DevOps API client, no ruleset mutation, no organization controller, no platform webhook receiver, no GitHub App, no enterprise actor registry.
 - **exclusions**: execution-context implementation remains Phase 240 / GH #379; enterprise GitHub projection implementation belongs to Plus #129.
+
+## Scope Revision
+
+Iteration 1 proposed rewriting README and the broad legacy architecture overview in the same slice. That adds a large, unrelated text diff before the boundary has an executable enterprise consumer. Iteration 2 narrows the implementation to the ADR, one platform-boundary reference, and its regression test. Product-entry-point wording is documentation-currency follow-up after the paired Plus tracer bullet proves the architecture.
+
+This is a scope reduction only. It adds no new behavior or authority beyond the audited design.
 
 ## Locked Decisions
 
@@ -32,9 +40,7 @@
 ### Affected Files
 
 - `docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md` — decision of record.
-- `docs/architecture.md` — change the top-level positioning and add the portable-engine / enterprise-enforcement boundary.
-- `README.md` — concise product-boundary clarification under What Qor-logic Does.
-- `qor/platform/enforcement.md` — short extension reference separating execution adaptation from external enforcement projection.
+- `qor/platform/enforcement.md` — extension reference separating execution adaptation from external enforcement projection.
 
 ### Behavior
 
@@ -54,20 +60,20 @@ The reverse direction is prohibited: platform state cannot grant Qor authority o
 
 ### Tests
 
-The test will parse the ADR and platform reference and assert:
+The test parses the ADR and platform reference and asserts:
 
 1. the canonical role is named `portable governance engine`;
 2. the architecture explicitly separates execution adaptation, portable governance evaluation, and enterprise enforcement projection;
 3. GitHub-specific mutation is assigned downstream rather than to base Qor;
 4. `indeterminate` and `not_projectable` are preserved as required downstream states;
-5. the extension reference contains no command/API surface that mutates a forge;
+5. no forge-mutation surface is created in the base extension reference;
 6. the paired Plus issue is cited as the first concrete consumer.
 
 This is a contract/documentation regression test, not proof that an external platform is configured correctly.
 
 ## Definition of Done
 
-- Base Qor architecture no longer describes the project only as a prompt system.
+- The ADR defines Qor-logic as the portable governance engine rather than a local-only prompt layer.
 - Enterprise enforcement is recognized without entering the base runtime.
 - The three adaptation/evaluation/enforcement surfaces have separate owners.
 - Downstream mechanical enforcement cannot become semantic authority.
