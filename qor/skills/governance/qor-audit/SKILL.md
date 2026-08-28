@@ -15,6 +15,9 @@ gate_reads: plan
 gate_writes: audit
 permitted_tools: [Read, Grep, Glob, Bash]
 permitted_subagents: []
+advisory_quality_requirements: [high-reasoning, high-instruction-fidelity]
+rendering_recipes: [conservative, outcome-first, explicit-checklist]
+default_rendering_recipe: conservative
 ---
 # /qor-audit - Gate Tribunal
 

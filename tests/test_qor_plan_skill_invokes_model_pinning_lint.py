@@ -1,11 +1,9 @@
-"""Phase 55: co-occurrence behavior invariant for model-pinning lint coverage.
+"""Phase 240: retired model pins stay absent while the compatibility lint remains wired.
 
-Conditional rule: enumerate every SKILL.md whose frontmatter declares the
-pinning pair (`model_compatibility` + `min_model_capability`). For each such
-skill, assert at least one SKILL.md whose `phase:` is `plan` invokes
-`python -m qor.scripts.model_pinning_lint`.
-
-Anchored to actual frontmatter-declaration set, not a single-skill substring.
+The active skill corpus must contain no `model_compatibility` or
+`min_model_capability` admission metadata. The historical command name
+`model_pinning_lint` remains temporarily wired from a plan-phase skill because
+it now surfaces execution-context inspection and fabrication-risk checks.
 """
 from __future__ import annotations
 
@@ -45,9 +43,12 @@ def _plan_phase_skills() -> list[Path]:
     return matches
 
 
-def test_skills_with_pinning_keys_are_covered_by_pinning_lint_invocation():
+def test_active_skills_have_no_retired_pins_and_plan_keeps_compatibility_lint():
     pinning_skills = _skills_with_pinning_keys()
-    assert pinning_skills, "expected >=1 skill declaring model-pinning frontmatter"
+    assert not pinning_skills, (
+        "retired model admission metadata remains in active skills: "
+        f"{[str(path.relative_to(REPO_ROOT)) for path in pinning_skills]}"
+    )
 
     plan_skills = _plan_phase_skills()
     assert plan_skills, "expected >=1 skill with phase: plan"
@@ -63,9 +64,8 @@ def test_skills_with_pinning_keys_are_covered_by_pinning_lint_invocation():
         )
     ]
     assert invokers, (
-        f"At least one phase: plan skill MUST invoke model_pinning_lint to cover "
-        f"the {len(pinning_skills)} skills declaring pinning frontmatter; "
-        f"none of {len(plan_skills)} plan-phase skills do."
+        "At least one phase: plan skill MUST retain the compatibility lint "
+        "while it owns execution-context inspection and fabrication-risk checks."
     )
 
 
