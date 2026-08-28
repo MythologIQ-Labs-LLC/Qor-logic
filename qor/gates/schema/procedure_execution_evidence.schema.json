@@ -60,7 +60,7 @@
           "minItems": 1,
           "uniqueItems": true,
           "items": {
-            "enum": ["agent-declared", "human-declared", "wrapper-observed", "ci-attested"]
+            "enum": ["agent-declared", "wrapper-observed", "ci-attested"]
           }
         },
         "trustedPrincipals": {
@@ -82,7 +82,7 @@
         "inputSha256": { "$ref": "#/$defs/sha256" },
         "outputSha256": { "$ref": "#/$defs/sha256" },
         "evidenceClass": {
-          "enum": ["agent-declared", "human-declared", "wrapper-observed", "ci-attested"]
+          "enum": ["agent-declared", "wrapper-observed", "ci-attested"]
         },
         "observerId": { "type": "string", "minLength": 1 },
         "status": { "enum": ["completed", "failed"] }
