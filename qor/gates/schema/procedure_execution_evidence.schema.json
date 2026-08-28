@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qor-logic.mythologiq/schemas/procedure_execution_evidence.schema.json",
+  "title": "Governed Procedure Execution Evidence Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contractVersion", "requirements", "evidence"],
+  "properties": {
+    "contractVersion": { "const": "1" },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/requirement" }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "procedure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "repository", "revision", "path", "sha256"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "repository": { "type": "string", "minLength": 1 },
+        "revision": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "repository", "id", "revision", "sha256"],
+      "properties": {
+        "kind": { "type": "string", "minLength": 1 },
+        "repository": { "type": "string", "minLength": 1 },
+        "id": { "type": "string", "minLength": 1 },
+        "revision": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirementId", "procedure", "subject", "acceptedEvidenceClasses"],
+      "properties": {
+        "requirementId": { "type": "string", "minLength": 1 },
+        "procedure": { "$ref": "#/$defs/procedure" },
+        "subject": { "$ref": "#/$defs/subject" },
+        "inputSha256": { "$ref": "#/$defs/sha256" },
+        "acceptedEvidenceClasses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["agent-declared", "human-declared", "wrapper-observed", "ci-attested"]
+          }
+        },
+        "trustedPrincipals": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceId", "invocationId", "procedure", "subject", "evidenceClass", "status"],
+      "properties": {
+        "evidenceId": { "type": "string", "minLength": 1 },
+        "invocationId": { "type": "string", "minLength": 1 },
+        "procedure": { "$ref": "#/$defs/procedure" },
+        "subject": { "$ref": "#/$defs/subject" },
+        "inputSha256": { "$ref": "#/$defs/sha256" },
+        "outputSha256": { "$ref": "#/$defs/sha256" },
+        "evidenceClass": {
+          "enum": ["agent-declared", "human-declared", "wrapper-observed", "ci-attested"]
+        },
+        "observerId": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["completed", "failed"] }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "evidenceClass": { "enum": ["wrapper-observed", "ci-attested"] }
+            }
+          },
+          "then": { "required": ["observerId"] }
+        }
+      ]
+    }
+  }
+}
