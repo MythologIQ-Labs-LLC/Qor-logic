@@ -163,6 +163,12 @@ def test_agent_declaration_can_satisfy_only_when_policy_explicitly_allows_it():
     assert result.satisfied
 
 
+def test_unauthenticated_human_declared_class_is_not_admitted_in_v1():
+    ev = evidence(cls="human-declared", observer=None)
+    with pytest.raises(ProcedureEvidenceError):
+        evaluate_contract(contract(evidence_items=[ev]))
+
+
 def test_failed_invocation_does_not_satisfy_execution_requirement():
     ev = evidence(status="failed")
     result = evaluate_contract(contract(evidence_items=[ev]), [verified(ev)])
