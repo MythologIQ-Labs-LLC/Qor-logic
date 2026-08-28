@@ -26,131 +26,8 @@ jobs:
       - name: Create truthful Phase 240 plan contract
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          from qor.scripts import ai_provenance, gate_chain, session, shadow_process
-
-          sid = session.rotate()
-          capability = "execution-context-governance"
-          spec_dir = Path("qor/specs") / capability
-          delta_dir = spec_dir / "deltas"
-          delta_dir.mkdir(parents=True, exist_ok=True)
-          spec_path = spec_dir / "spec.md"
-          if not spec_path.exists():
-              spec_path.write_text("# Capability: Execution Context Governance\n", encoding="utf-8")
-
-          delta_path = delta_dir / f"{sid}.md"
-          delta_path.write_text("""# Phase 240 Execution-Context Governance Delta
-
-## ADDED Requirements
-
-### Requirement: Model identity is provenance only
-Governance admission MUST treat declared or responder model identity as provenance rather than execution authority.
-
-#### Scenario: Unknown model family
-- GIVEN a governed skill invocation with an unknown or non-vendor-specific model family
-- WHEN execution-context admission is evaluated
-- THEN model identity alone does not deny entry
-
-### Requirement: Hard capability absence requires complete inventory
-A hard execution capability MUST be classified as missing only when the runtime declares its capability inventory complete and the requirement is absent.
-
-#### Scenario: Incomplete telemetry
-- GIVEN a runtime whose capability inventory is not declared complete
-- WHEN a required capability is not observed
-- THEN the requirement is reported as unverified rather than missing
-
-### Requirement: Rendering adaptation is bounded
-Runtime rendering adaptation MUST select only a recipe explicitly admitted by the governed skill contract.
-
-#### Scenario: Unadmitted rendering hint
-- GIVEN a rendering hint outside the skill's admitted recipe set
-- WHEN the execution context selects a rendering recipe
-- THEN selection falls back deterministically without changing governance semantics
-
-### Requirement: Active skills do not pin named models
-Executable skill admission metadata MUST remain free of named-model allowlists and vendor capability tiers.
-
-#### Scenario: Corpus regression
-- GIVEN the active qor/skills corpus
-- WHEN admission metadata is inspected
-- THEN retired model_compatibility and min_model_capability fields are absent
-
-### Requirement: Audit entry is vendor-neutral
-The audit runtime MUST block entry only when a declared hard execution requirement is proven missing under complete capability telemetry.
-
-#### Scenario: Non-vendor-specific audit host
-- GIVEN a non-vendor-specific model identity with no proven missing hard requirement
-- WHEN qor-audit checks execution context
-- THEN the audit protocol remains reachable
-
-### Requirement: Fabrication protection is independent
-The NR-001 and NR-002 fabrication-risk protections MUST remain binding independently of model identity or rendering recipe.
-
-#### Scenario: Compatibility transition
-- GIVEN the retired model-pinning authority mechanism has been removed
-- WHEN compatibility linting or compiled variants are evaluated
-- THEN fabrication-risk protections remain active
-""", encoding="utf-8")
-
-          # The original plan existed before this recovery session but its gate artifact did not.
-          # Record that fact as an explicit operator-authorized advisory override instead of
-          # fabricating a predecessor research artifact.
-          gate_chain.emit_gate_override(
-              current_phase="plan",
-              prior_phase_name="research",
-              reason=(
-                  "operator-authorized Phase 240 governance recovery: the approved plan and "
-                  "implementation predate this session, but no canonical research gate artifact "
-                  "exists for the recovered plan contract"
-              ),
-              session_id=sid,
-              override_authority="user",
-          )
-
-          payload = {
-              "ts": shadow_process.now_iso(),
-              "plan_path": "docs/plan-qor-phase240-execution-context-governance.md",
-              "phases": [
-                  "Phase 1 — Execution-context seam",
-                  "Phase 2 — Live skill migration",
-                  "Phase 3 — Wire real consumers",
-                  "Phase 4 — Compatibility and safety",
-                  "Phase 5 — Tests",
-              ],
-              "ci_commands": [
-                  "python -m pytest tests/test_execution_context.py tests/test_model_pinning_frontmatter.py tests/test_qor_audit_execution_context.py -q",
-                  "python -m pytest tests/ -q",
-                  "python qor/scripts/check_variant_drift.py",
-                  "python -m ruff check qor tests",
-              ],
-              "open_questions": [],
-              "doc_tier": "system",
-              "change_class": "governance",
-              "originating_remediation": "GH #379",
-              "feature_inventory_touches": [],
-              "required_gate_artifacts": ["plan", "audit", "implement", "substantiate"],
-              "spec_deltas": [{
-                  "capability": capability,
-                  "delta_path": delta_path.as_posix(),
-                  "ops": ["ADDED"],
-                  "evidence": "qor/scripts/execution_context.py",
-              }],
-          }
-          manifest = ai_provenance.build_manifest(
-              "plan",
-              host="chatgpt",
-              model_family="gpt-5.6-sol",
-              human_oversight=ai_provenance.HumanOversight.ABSENT,
-          )
-          out = gate_chain.write_gate_artifact(
-              phase="plan", payload=payload, session_id=sid,
-              ai_provenance=manifest, skill="plan",
-          )
-          Path(".phase240-session").write_text(sid + "\n", encoding="utf-8")
-          print(f"PHASE240_SESSION={sid}")
-          print(f"PLAN_ARTIFACT={out}")
-          PY
+          echo 'ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmZyb20gcW9yLnNjcmlwdHMgaW1wb3J0IGFpX3Byb3ZlbmFuY2UsIGdhdGVfY2hhaW4sIHNlc3Npb24sIHNoYWRvd19wcm9jZXNzCgpzaWQgPSBzZXNzaW9uLnJvdGF0ZSgpCmNhcGFiaWxpdHkgPSAiZXhlY3V0aW9uLWNvbnRleHQtZ292ZXJuYW5jZSIKc3BlY19kaXIgPSBQYXRoKCJxb3Ivc3BlY3MiKSAvIGNhcGFiaWxpdHkKZGVsdGFfZGlyID0gc3BlY19kaXIgLyAiZGVsdGFzIgpkZWx0YV9kaXIubWtkaXIocGFyZW50cz1UcnVlLCBleGlzdF9vaz1UcnVlKQpzcGVjX3BhdGggPSBzcGVjX2RpciAvICJzcGVjLm1kIgppZiBub3Qgc3BlY19wYXRoLmV4aXN0cygpOgogICAgc3BlY19wYXRoLndyaXRlX3RleHQoIiMgQ2FwYWJpbGl0eTogRXhlY3V0aW9uIENvbnRleHQgR292ZXJuYW5jZVxuIiwgZW5jb2Rpbmc9InV0Zi04IikKCmRlbHRhX3BhdGggPSBkZWx0YV9kaXIgLyBmIntzaWR9Lm1kIgpkZWx0YV9wYXRoLndyaXRlX3RleHQoIiIiIyBQaGFzZSAyNDAgRXhlY3V0aW9uLUNvbnRleHQgR292ZXJuYW5jZSBEZWx0YQoKIyMgQURERUQgUmVxdWlyZW1lbnRzCgojIyMgUmVxdWlyZW1lbnQ6IE1vZGVsIGlkZW50aXR5IGlzIHByb3ZlbmFuY2Ugb25seQpHb3Zlcm5hbmNlIGFkbWlzc2lvbiBNVVNUIHRyZWF0IGRlY2xhcmVkIG9yIHJlc3BvbmRlciBtb2RlbCBpZGVudGl0eSBhcyBwcm92ZW5hbmNlIHJhdGhlciB0aGFuIGV4ZWN1dGlvbiBhdXRob3JpdHkuCgojIyMjIFNjZW5hcmlvOiBVbmtub3duIG1vZGVsIGZhbWlseQotIEdJVkVOIGEgZ292ZXJuZWQgc2tpbGwgaW52b2NhdGlvbiB3aXRoIGFuIHVua25vd24gb3Igbm9uLXZlbmRvci1zcGVjaWZpYyBtb2RlbCBmYW1pbHkKLSBXSEVOIGV4ZWN1dGlvbi1jb250ZXh0IGFkbWlzc2lvbiBpcyBldmFsdWF0ZWQKLSBUSEVOIG1vZGVsIGlkZW50aXR5IGFsb25lIGRvZXMgbm90IGRlbnkgZW50cnkKCiMjIyBSZXF1aXJlbWVudDogSGFyZCBjYXBhYmlsaXR5IGFic2VuY2UgcmVxdWlyZXMgY29tcGxldGUgaW52ZW50b3J5CkEgaGFyZCBleGVjdXRpb24gY2FwYWJpbGl0eSBNVVNUIGJlIGNsYXNzaWZpZWQgYXMgbWlzc2luZyBvbmx5IHdoZW4gdGhlIHJ1bnRpbWUgZGVjbGFyZXMgaXRzIGNhcGFiaWxpdHkgaW52ZW50b3J5IGNvbXBsZXRlIGFuZCB0aGUgcmVxdWlyZW1lbnQgaXMgYWJzZW50LgoKIyMjIyBTY2VuYXJpbzogSW5jb21wbGV0ZSB0ZWxlbWV0cnkKLSBHSVZFTiBhIHJ1bnRpbWUgd2hvc2UgY2FwYWJpbGl0eSBpbnZlbnRvcnkgaXMgbm90IGRlY2xhcmVkIGNvbXBsZXRlCi0gV0hFTiBhIHJlcXVpcmVkIGNhcGFiaWxpdHkgaXMgbm90IG9ic2VydmVkCi0gVEhFTiB0aGUgcmVxdWlyZW1lbnQgaXMgcmVwb3J0ZWQgYXMgdW52ZXJpZmllZCByYXRoZXIgdGhhbiBtaXNzaW5nCgojIyMgUmVxdWlyZW1lbnQ6IFJlbmRlcmluZyBhZGFwdGF0aW9uIGlzIGJvdW5kZWQKUnVudGltZSByZW5kZXJpbmcgYWRhcHRhdGlvbiBNVVNUIHNlbGVjdCBvbmx5IGEgcmVjaXBlIGV4cGxpY2l0bHkgYWRtaXR0ZWQgYnkgdGhlIGdvdmVybmVkIHNraWxsIGNvbnRyYWN0LgoKIyMjIyBTY2VuYXJpbzogVW5hZG1pdHRlZCByZW5kZXJpbmcgaGludAotIEdJVkVOIGEgcmVuZGVyaW5nIGhpbnQgb3V0c2lkZSB0aGUgc2tpbGwncyBhZG1pdHRlZCByZWNpcGUgc2V0Ci0gV0hFTiB0aGUgZXhlY3V0aW9uIGNvbnRleHQgc2VsZWN0cyBhIHJlbmRlcmluZyByZWNpcGUKLSBUSEVOIHNlbGVjdGlvbiBmYWxscyBiYWNrIGRldGVybWluaXN0aWNhbGx5IHdpdGhvdXQgY2hhbmdpbmcgZ292ZXJuYW5jZSBzZW1hbnRpY3MKCiMjIyBSZXF1aXJlbWVudDogQWN0aXZlIHNraWxscyBkbyBub3QgcGluIG5hbWVkIG1vZGVscwpFeGVjdXRhYmxlIHNraWxsIGFkbWlzc2lvbiBtZXRhZGF0YSBNVVNUIHJlbWFpbiBmcmVlIG9mIG5hbWVkLW1vZGVsIGFsbG93bGlzdHMgYW5kIHZlbmRvciBjYXBhYmlsaXR5IHRpZXJzLgoKIyMjIyBTY2VuYXJpbzogQ29ycHVzIHJlZ3Jlc3Npb24KLSBHSVZFTiB0aGUgYWN0aXZlIHFvci9za2lsbHMgY29ycHVzCi0gV0hFTiBhZG1pc3Npb24gbWV0YWRhdGEgaXMgaW5zcGVjdGVkCi0gVEhFTiByZXRpcmVkIG1vZGVsX2NvbXBhdGliaWxpdHkgYW5kIG1pbl9tb2RlbF9jYXBhYmlsaXR5IGZpZWxkcyBhcmUgYWJzZW50CgojIyMgUmVxdWlyZW1lbnQ6IEF1ZGl0IGVudHJ5IGlzIHZlbmRvci1uZXV0cmFsClRoZSBhdWRpdCBydW50aW1lIE1VU1QgYmxvY2sgZW50cnkgb25seSB3aGVuIGEgZGVjbGFyZWQgaGFyZCBleGVjdXRpb24gcmVxdWlyZW1lbnQgaXMgcHJvdmVuIG1pc3NpbmcgdW5kZXIgY29tcGxldGUgY2FwYWJpbGl0eSB0ZWxlbWV0cnkuCgojIyMjIFNjZW5hcmlvOiBOb24tdmVuZG9yLXNwZWNpZmljIGF1ZGl0IGhvc3QKLSBHSVZFTiBhIG5vbi12ZW5kb3Itc3BlY2lmaWMgbW9kZWwgaWRlbnRpdHkgd2l0aCBubyBwcm92ZW4gbWlzc2luZyBoYXJkIHJlcXVpcmVtZW50Ci0gV0hFTiBxb3ItYXVkaXQgY2hlY2tzIGV4ZWN1dGlvbiBjb250ZXh0Ci0gVEhFTiB0aGUgYXVkaXQgcHJvdG9jb2wgcmVtYWlucyByZWFjaGFibGUKCiMjIyBSZXF1aXJlbWVudDogRmFicmljYXRpb24gcHJvdGVjdGlvbiBpcyBpbmRlcGVuZGVudApUaGUgTlItMDAxIGFuZCBOUi0wMDIgZmFicmljYXRpb24tcmlzayBwcm90ZWN0aW9ucyBNVVNUIHJlbWFpbiBiaW5kaW5nIGluZGVwZW5kZW50bHkgb2YgbW9kZWwgaWRlbnRpdHkgb3IgcmVuZGVyaW5nIHJlY2lwZS4KCiMjIyMgU2NlbmFyaW86IENvbXBhdGliaWxpdHkgdHJhbnNpdGlvbgotIEdJVkVOIHRoZSByZXRpcmVkIG1vZGVsLXBpbm5pbmcgYXV0aG9yaXR5IG1lY2hhbmlzbSBoYXMgYmVlbiByZW1vdmVkCi0gV0hFTiBjb21wYXRpYmlsaXR5IGxpbnRpbmcgb3IgY29tcGlsZWQgdmFyaWFudHMgYXJlIGV2YWx1YXRlZAotIFRIRU4gZmFicmljYXRpb24tcmlzayBwcm90ZWN0aW9ucyByZW1haW4gYWN0aXZlCiIiIiwgZW5jb2Rpbmc9InV0Zi04IikKCmdhdGVfY2hhaW4uZW1pdF9nYXRlX292ZXJyaWRlKAogICAgY3VycmVudF9waGFzZT0icGxhbiIsCiAgICBwcmlvcl9waGFzZV9uYW1lPSJyZXNlYXJjaCIsCiAgICByZWFzb249KAogICAgICAgICJvcGVyYXRvci1hdXRob3JpemVkIFBoYXNlIDI0MCBnb3Zlcm5hbmNlIHJlY292ZXJ5OiB0aGUgYXBwcm92ZWQgcGxhbiBhbmQgIgogICAgICAgICJpbXBsZW1lbnRhdGlvbiBwcmVkYXRlIHRoaXMgc2Vzc2lvbiwgYnV0IG5vIGNhbm9uaWNhbCByZXNlYXJjaCBnYXRlIGFydGlmYWN0ICIKICAgICAgICAiZXhpc3RzIGZvciB0aGUgcmVjb3ZlcmVkIHBsYW4gY29udHJhY3QiCiAgICApLAogICAgc2Vzc2lvbl9pZD1zaWQsCiAgICBvdmVycmlkZV9hdXRob3JpdHk9InVzZXIiLAopCgpwYXlsb2FkID0gewogICAgInRzIjogc2hhZG93X3Byb2Nlc3Mubm93X2lzbygpLAogICAgInBsYW5fcGF0aCI6ICJkb2NzL3BsYW4tcW9yLXBoYXNlMjQwLWV4ZWN1dGlvbi1jb250ZXh0LWdvdmVybmFuY2UubWQiLAogICAgInBoYXNlcyI6IFsKICAgICAgICAiUGhhc2UgMSDigJQgRXhlY3V0aW9uLWNvbnRleHQgc2VhbSIsCiAgICAgICAgIlBoYXNlIDIg4oCUIExpdmUgc2tpbGwgbWlncmF0aW9uIiwKICAgICAgICAiUGhhc2UgMyDigJQgV2lyZSByZWFsIGNvbnN1bWVycyIsCiAgICAgICAgIlBoYXNlIDQg4oCUIENvbXBhdGliaWxpdHkgYW5kIHNhZmV0eSIsCiAgICAgICAgIlBoYXNlIDUg4oCUIFRlc3RzIiwKICAgIF0sCiAgICAiY2lfY29tbWFuZHMiOiBbCiAgICAgICAgInB5dGhvbiAtbSBweXRlc3QgdGVzdHMvdGVzdF9leGVjdXRpb25fY29udGV4dC5weSB0ZXN0cy90ZXN0X21vZGVsX3Bpbm5pbmdfZnJvbnRtYXR0ZXIucHkgdGVzdHMvdGVzdF9xb3JfYXVkaXRfZXhlY3V0aW9uX2NvbnRleHQucHkgLXEiLAogICAgICAgICJweXRob24gLW0gcHl0ZXN0IHRlc3RzLyAtcSIsCiAgICAgICAgInB5dGhvbiBxb3Ivc2NyaXB0cy9jaGVja192YXJpYW50X2RyaWZ0LnB5IiwKICAgICAgICAicHl0aG9uIC1tIHJ1ZmYgY2hlY2sgcW9yIHRlc3RzIiwKICAgIF0sCiAgICAib3Blbl9xdWVzdGlvbnMiOiBbXSwKICAgICJkb2NfdGllciI6ICJzeXN0ZW0iLAogICAgImNoYW5nZV9jbGFzcyI6ICJnb3Zlcm5hbmNlIiwKICAgICJvcmlnaW5hdGluZ19yZW1lZGlhdGlvbiI6ICJHSCAjMzc5IiwKICAgICJmZWF0dXJlX2ludmVudG9yeV90b3VjaGVzIjogW10sCiAgICAicmVxdWlyZWRfZ2F0ZV9hcnRpZmFjdHMiOiBbInBsYW4iLCAiYXVkaXQiLCAiaW1wbGVtZW50IiwgInN1YnN0YW50aWF0ZSJdLAogICAgInNwZWNfZGVsdGFzIjogW3sKICAgICAgICAiY2FwYWJpbGl0eSI6IGNhcGFiaWxpdHksCiAgICAgICAgImRlbHRhX3BhdGgiOiBkZWx0YV9wYXRoLmFzX3Bvc2l4KCksCiAgICAgICAgIm9wcyI6IFsiQURERUQiXSwKICAgICAgICAiZXZpZGVuY2UiOiAicW9yL3NjcmlwdHMvZXhlY3V0aW9uX2NvbnRleHQucHkiLAogICAgfV0sCn0KbWFuaWZlc3QgPSBhaV9wcm92ZW5hbmNlLmJ1aWxkX21hbmlmZXN0KAogICAgInBsYW4iLAogICAgaG9zdD0iY2hhdGdwdCIsCiAgICBtb2RlbF9mYW1pbHk9ImdwdC01LjYtc29sIiwKICAgIGh1bWFuX292ZXJzaWdodD1haV9wcm92ZW5hbmNlLkh1bWFuT3ZlcnNpZ2h0LkFCU0VOVCwKKQpvdXQgPSBnYXRlX2NoYWluLndyaXRlX2dhdGVfYXJ0aWZhY3QoCiAgICBwaGFzZT0icGxhbiIsIHBheWxvYWQ9cGF5bG9hZCwgc2Vzc2lvbl9pZD1zaWQsCiAgICBhaV9wcm92ZW5hbmNlPW1hbmlmZXN0LCBza2lsbD0icGxhbiIsCikKUGF0aCgiLnBoYXNlMjQwLXNlc3Npb24iKS53cml0ZV90ZXh0KHNpZCArICJcbiIsIGVuY29kaW5nPSJ1dGYtOCIpCnByaW50KGYiUEhBU0UyNDBfU0VTU0lPTj17c2lkfSIpCnByaW50KGYiUExBTl9BUlRJRkFDVD17b3V0fSIpCg==' | base64 --decode > /tmp/phase240_repair.py
+          python /tmp/phase240_repair.py
       - name: Validate repaired plan contract
         shell: bash
         run: |
@@ -158,7 +35,7 @@ The NR-001 and NR-002 fabrication-risk protections MUST remain binding independe
           DELTA="qor/specs/execution-context-governance/deltas/${SID}.md"
           python -m qor.scripts.spec_lint --files qor/specs/execution-context-governance/spec.md
           python -m qor.scripts.spec_lint --delta --files "$DELTA"
-          python -m qor.scripts.validate_gate_artifact plan ".qor/gates/${SID}/plan.json"
+          python -c 'from pathlib import Path; from qor.scripts import validate_gate_artifact as v; import sys; p=Path(sys.argv[1]); e=v.validate_one("plan", p); print("plan gate validation:", e or "OK"); raise SystemExit(1 if e else 0)' ".qor/gates/${SID}/plan.json"
           qor-logic scripts plan_iteration_status_lint --plan docs/plan-qor-phase240-execution-context-governance.md
           python qor/scripts/check_variant_drift.py
       - name: Assert recovery boundary and commit
@@ -166,20 +43,17 @@ The NR-001 and NR-002 fabrication-risk protections MUST remain binding independe
         run: |
           SID="$(cat .phase240-session)"
           rm .phase240-session
-          python - <<'PY'
-          import subprocess
-          changed = [line[3:] for line in subprocess.check_output(["git", "status", "--porcelain"], text=True).splitlines() if line.strip()]
-          allowed_exact = {"docs/PROCESS_SHADOW_GENOME_UPSTREAM.md"}
-          allowed_prefixes = (".qor/gates/", "qor/specs/execution-context-governance/")
-          bad = [p for p in changed if p not in allowed_exact and not p.startswith(allowed_prefixes)]
-          if bad:
-              raise SystemExit(f"plan recovery escaped governed boundary: {bad}")
-          if not any(p.startswith(".qor/gates/") and p.endswith("/plan.json") for p in changed):
-              raise SystemExit("missing plan gate artifact")
-          if not any("/deltas/" in p for p in changed):
-              raise SystemExit("missing behavioral spec delta")
-          print("plan recovery boundary validated")
-          PY
+          BAD=0
+          while IFS= read -r line; do
+            p="${line:3}"
+            case "$p" in
+              .qor/gates/*|qor/specs/execution-context-governance/*|docs/PROCESS_SHADOW_GENOME_UPSTREAM.md) ;;
+              *) echo "unexpected recovery change: $p"; BAD=1 ;;
+            esac
+          done < <(git status --porcelain)
+          test "$BAD" -eq 0
+          test -f ".qor/gates/${SID}/plan.json"
+          test -f "qor/specs/execution-context-governance/deltas/${SID}.md"
           git config user.name "qor-governance-bot"
           git config user.email "qor-governance-bot@users.noreply.github.com"
           git add ".qor/gates/${SID}" qor/specs/execution-context-governance/ docs/PROCESS_SHADOW_GENOME_UPSTREAM.md
