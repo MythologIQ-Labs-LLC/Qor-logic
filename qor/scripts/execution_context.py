@@ -138,7 +138,7 @@ def _legacy_contract(fm: dict, path: Path) -> SkillExecutionContract | None:
         skill=str(fm.get("name") or path.parent.name),
         hard_requirements=(),
         quality_requirements=("legacy-model-metadata-advisory",),
-        rendering_recipes=RENDER_RECIPES,
+        rendering_recipes=("conservative",),
         default_recipe="conservative",
     )
 
