@@ -79,11 +79,12 @@ An evidence claim contains the same procedure and subject binding plus:
 V1 evidence classes are intentionally categorical, not ordinal:
 
 - `agent-declared`
-- `human-declared`
 - `wrapper-observed`
 - `ci-attested`
 
 `wrapper-observed` and `ci-attested` require a matching trusted verified-claim fact. Verification does not promote an `agent-declared` claim into either independent class.
+
+`human-declared` is deliberately excluded from V1. Without an authenticated-human identity contract, it would be a stronger-sounding JSON assertion that the governed actor could mint. A future human declaration class requires explicit identity and verification semantics before admission.
 
 ## Evaluation invariants
 
@@ -144,6 +145,7 @@ The focused suite must prove at least:
 - untrusted observer fails;
 - verified agent self-report does not promote evidence class;
 - agent declaration passes only when policy explicitly allows it;
+- unauthenticated `human-declared` evidence is schema-rejected in V1;
 - failed invocation fails;
 - required input digest mismatch fails;
 - omitted required procedure fails completeness;
