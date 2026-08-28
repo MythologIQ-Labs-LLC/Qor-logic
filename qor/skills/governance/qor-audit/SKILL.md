@@ -1,7 +1,7 @@
 ---
 name: qor-audit
 description: >-
-  Adversarial audit of blueprint to generate mandatory PASS/VETO verdict. Use when Claude needs to review architecture plans before implementation for: (1) L2/L3 risk grade work, (2) Security-critical paths, (3) Architecture changes, or any work requiring formal approval before proceeding.
+  Adversarial audit of blueprint to generate mandatory PASS/VETO verdict. Use when an agent needs to review architecture plans before implementation for: (1) L2/L3 risk grade work, (2) Security-critical paths, (3) Architecture changes, or any work requiring formal approval before proceeding.
 metadata:
   category: governance
   author: MythologIQ
@@ -15,8 +15,6 @@ gate_reads: plan
 gate_writes: audit
 permitted_tools: [Read, Grep, Glob, Bash]
 permitted_subagents: []
-model_compatibility: [claude-opus-4-7]
-min_model_capability: opus
 ---
 # /qor-audit - Gate Tribunal
 
@@ -27,7 +25,7 @@ min_model_capability: opus
   <output>.agent/staging/AUDIT_REPORT.md with PASS or VETO verdict</output>
 </skill>
 
-Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); cross-host compiled variants carry the full rules preamble.
 
 ## Governance Health Preflight
 
