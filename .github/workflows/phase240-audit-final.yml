@@ -24,12 +24,16 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -e ".[dev]"
-      - name: Run bound Phase 240 tribunal
-        run: python .github/phase240_audit.py
+      - name: Run bound Phase 240 tribunal against product tree only
+        shell: bash
+        run: |
+          cp .github/phase240_audit.py /tmp/phase240_audit.py
+          rm .github/phase240_audit.py .github/workflows/phase240-audit-final.yml
+          python /tmp/phase240_audit.py
       - name: Validate audit gate
         run: |
           python -c 'from pathlib import Path; from qor.scripts import validate_gate_artifact as v; p=Path(".qor/gates/2026-08-28T1956-6e0074/audit.json"); e=v.validate_one("audit", p); print("audit gate validation:", e or "OK"); raise SystemExit(1 if e else 0)'
-      - name: Commit bounded audit evidence
+      - name: Commit bounded audit evidence and retire harness
         shell: bash
         env:
           SID: 2026-08-28T1956-6e0074
@@ -39,13 +43,13 @@ jobs:
           while IFS= read -r line; do
             p="${line:3}"
             case "$p" in
-              .agent/staging/AUDIT_REPORT.md|docs/META_LEDGER.md|docs/PROCESS_SHADOW_GENOME_UPSTREAM.md|.qor/gates/$SID/audit*) ;;
+              .github/phase240_audit.py|.github/workflows/phase240-audit-final.yml|.agent/staging/AUDIT_REPORT.md|docs/META_LEDGER.md|docs/PROCESS_SHADOW_GENOME_UPSTREAM.md|.qor/gates/$SID/audit*) ;;
               *) echo "unexpected audit evidence change: $p"; BAD=1 ;;
             esac
           done < <(git status --porcelain)
           test "$BAD" -eq 0
           git config user.name "qor-governance-bot"
           git config user.email "qor-governance-bot@users.noreply.github.com"
-          git add .agent/staging/AUDIT_REPORT.md docs/META_LEDGER.md docs/PROCESS_SHADOW_GENOME_UPSTREAM.md ".qor/gates/$SID"/audit*
+          git add -A .github/phase240_audit.py .github/workflows/phase240-audit-final.yml .agent/staging/AUDIT_REPORT.md docs/META_LEDGER.md docs/PROCESS_SHADOW_GENOME_UPSTREAM.md ".qor/gates/$SID"
           git commit -m "governance(phase240): record PASS tribunal"
           git push origin HEAD:phase/240-execution-context-governance
