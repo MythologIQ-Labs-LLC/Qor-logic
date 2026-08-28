@@ -18,6 +18,7 @@
 6. Hard capability requirements only become mechanically missing when the runtime explicitly declares its capability inventory complete.
 7. Legacy model pinning remains a compatibility/deprecation surface; fabrication-risk guards remain binding and independent.
 8. Phase 240 creates no model registry, empirical learner, benchmark service, or remote dependency.
+9. Live skill-corpus metadata cleanup is deferred until the shared authority seam is proven; legacy model fields may remain physically present but have no execution-authority effect.
 
 ## Phase 1 — Execution-context seam
 
@@ -37,6 +38,7 @@ Provide deterministic library + CLI behavior for:
 - completeness signal from `QOR_EXECUTION_CAPABILITIES_COMPLETE`;
 - bounded rendering hint from `QOR_RENDERING_HINT`;
 - skill contract parsing from YAML frontmatter;
+- conservative migration of existing legacy-pinned skills;
 - deterministic recipe selection;
 - complete/missing/unverified hard-requirement reporting;
 - corpus scan and single-skill inspection.
@@ -45,47 +47,57 @@ Allowed recipes are exactly `conservative`, `outcome-first`, and `explicit-check
 
 No model name appears in recipe-selection logic.
 
-## Phase 2 — Migrate live model-pinned skills
+## Phase 2 — Legacy migration behavior
 
-Replace live `model_compatibility` / `min_model_capability` frontmatter on every currently pinned skill, including `/qor-ideate`, with:
+Do **not** mass-edit the skill corpus merely to delete existing model-pinning lines.
 
-- `hard_execution_requirements`;
-- `advisory_quality_requirements`;
-- `rendering_recipes`;
-- `default_rendering_recipe`.
+Instead:
 
-Use capability requirements that reflect the skill's existing permitted tool surface without claiming host enforcement Qor cannot observe.
+- explicit execution-context frontmatter is authoritative when a skill adopts it;
+- a skill that still carries legacy `model_compatibility` / `min_model_capability` metadata receives a conservative migration contract;
+- the migration contract has no hard capability requirement derived from the old model tier;
+- legacy model identity remains provenance only;
+- a later corpus cleanup may remove the inert fields after this shared seam is proven.
 
-Risk/governance skills default to `conservative`; planning/ideation/research may admit `outcome-first`; all scoped skills may admit `explicit-checklist` where it changes presentation only.
+This preserves historical readability while removing named-model authority at one deterministic owner.
 
 ## Phase 3 — Wire real consumers
 
 ### `/qor-plan`
 
-Replace Step 0.3 model-pinning lint with execution-context scan. The scan is advisory at planning time and reports unknown/unverified context rather than inventing a capability verdict.
+Keep the existing Step 0.3 command name for compatibility. `model_pinning_lint` becomes a shim that:
+
+- no longer emits authority warnings from model-family mismatch;
+- surfaces the new execution-context scan;
+- remains WARN-only;
+- preserves the independent fabrication-risk guard.
+
+A later prose cleanup may rename Step 0.3 after the implementation is proven; behavior changes now, wording cleanup does not need its own risk surface.
 
 ### `/qor-audit`
 
-Add execution-context inspection before substantive audit passes. The inspection:
+Wire execution-context inspection through `qor_audit_runtime.check_prior_artifact()`, the existing Step 0 runtime seam. The inspection:
 
-- records the selected rendering recipe;
-- explicitly states that the recipe may not alter PASS/VETO/ABORT, authority, or evidence requirements;
+- reports the selected rendering recipe;
+- records declared and responder model identity separately;
 - treats named model compatibility as non-authoritative;
-- may ABORT only when a runtime has declared a complete capability inventory and an admitted hard requirement is actually absent.
+- reports incomplete capability telemetry as `unverified`;
+- blocks only when a future explicit execution contract has a hard requirement and the runtime declares a complete capability inventory proving that requirement absent.
 
-## Phase 4 — Compatibility and safety cleanup
+## Phase 4 — Compatibility and safety
 
 ### `qor/scripts/model_pinning_lint.py`
 
 Retain the module for backwards compatibility and fabrication-risk scanning.
 
-- Legacy model pins become deprecation warnings only.
+- Legacy model pins are advisory provenance only.
 - Unknown/new model families never become an execution denial.
+- Existing `extract_capability_tier` and `_CAPABILITY_ORDER` exports remain for historical callers but are explicitly non-authoritative.
 - Existing fabrication-risk doctrine pointer checks remain intact.
 
-### `qor/scripts/dist_compile.py`
+### Compiler safety
 
-Preserve NR-001/NR-002 injection for the existing cross-host variants but remove the stale claim that injection represents a lower model tier. Safety protections remain model-invariant.
+NR-001/NR-002 injection behavior is not changed in this slice. Its protection remains binding regardless of model identity. Renaming historical "weak-tier" prose is documentation cleanup, not a prerequisite for changing authority semantics.
 
 ## Phase 5 — Tests
 
@@ -98,16 +110,17 @@ Add focused tests proving:
 5. a valid model/runtime rendering hint selects only an admitted recipe;
 6. an unadmitted hint falls back deterministically;
 7. reasoning mode may select `outcome-first` only when the skill admits it;
-8. no recipe contains permission to alter semantic obligations;
-9. all live formerly pinned skills declare execution-context metadata and no longer carry named-model authority fields;
-10. `/qor-plan` invokes execution-context scan;
-11. `/qor-audit` invokes execution-context inspection;
-12. legacy model-pinning consumers still return WARN-only and fabrication-risk guards remain active;
-13. variant compilation still injects NR-001/NR-002 in the same host variants;
+8. rendering recipes explicitly preserve semantic obligations;
+9. legacy pinned skills receive a conservative non-authoritative migration contract;
+10. non-Claude identity does not block `/qor-audit` entry;
+11. `/qor-audit` blocks only a proven missing hard capability;
+12. legacy model-pinning checks no longer warn on family mismatch;
+13. fabrication-risk guards remain active;
 14. full repository variant drift remains clean.
 
 ## Non-goals
 
+- mass skill-frontmatter cleanup;
 - empirical qualification database;
 - automated vendor documentation ingestion;
 - runtime benchmarking;
@@ -119,9 +132,10 @@ Add focused tests proving:
 ## Definition of Done
 
 - ADR and code agree on the invariant/adaptive boundary.
-- No live skill depends on a vendor model name for execution authority.
-- Execution-context behavior is deterministic and fully unit-tested.
-- Qor can truthfully distinguish missing capability from unknown telemetry.
+- Named-model metadata has no execution-authority effect in the shared runtime seam.
+- `/qor-audit` can enter under a non-Claude declared model when no proven hard capability is missing.
+- Execution-context behavior is deterministic and unit-tested.
+- Qor truthfully distinguishes missing capability from unknown telemetry.
 - Bounded rendering hints cannot change governance semantics.
 - Negative constraints remain active independently of model identity.
 - Full CI and variant drift pass on the Phase 240 branch.
