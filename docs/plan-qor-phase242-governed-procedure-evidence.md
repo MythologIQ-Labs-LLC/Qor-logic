@@ -117,6 +117,12 @@ Phase 242 does not stretch those primitives into a claim they do not prove. A tr
 - `tests/test_procedure_evidence.py` — adversarial behavioral coverage.
 - `docs/FEATURE_INDEX.md` — add the evaluator only after repository CI proves the behavior.
 
+## New ceremony artifact justification
+
+`new_ceremony_artifacts`:
+
+- `procedure_execution_evidence.schema.json` — This schema is necessary because governed-procedure execution evidence crosses runtime and repository boundaries and must retain one portable, machine-validated meaning. Reusing an unrelated gate schema would weaken exact procedure, subject, evidence-class, and verification binding while hiding those semantics behind a structurally incompatible artifact.
+
 ## Explicit non-goals
 
 Phase 242 does not:
@@ -153,7 +159,7 @@ The focused suite must prove at least:
 - duplicate evidence ids are rejected;
 - unknown evidence class is rejected.
 
-## CI target
+## CI Commands
 
 - `python -m pytest tests/test_procedure_evidence.py -q`
 - `python -m pytest tests/ -q`
