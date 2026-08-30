@@ -166,6 +166,128 @@ def test_allowlist_is_frozen_and_contains_known_seeds():
     assert seeds <= secret_scanner._ALLOWLIST
 
 
+# --- consumer-extensible allowlist (GH #359) -------------------------------------
+
+def test_load_consumer_allowlist_returns_empty_when_file_absent(tmp_path: Path):
+    assert secret_scanner.load_consumer_allowlist(tmp_path) == frozenset()
+
+
+def test_load_consumer_allowlist_parses_tokens_ignoring_blanks_and_comments(tmp_path: Path):
+    qor_dir = tmp_path / ".qor"
+    qor_dir.mkdir()
+    (qor_dir / "secret-scanner-allowlist").write_text(
+        "\n".join([
+            "# consumer-declared suppression tokens",
+            "",
+            "MY_FIXTURE_TOKEN",
+            "  # a comment with leading whitespace",
+            "ANOTHER_TOKEN  ",
+        ]) + "\n",
+        encoding="utf-8",
+    )
+    tokens = secret_scanner.load_consumer_allowlist(tmp_path)
+    assert tokens == frozenset({"MY_FIXTURE_TOKEN", "ANOTHER_TOKEN"})
+
+
+def test_scan_merges_consumer_allowlist_when_repo_root_given(tmp_path: Path):
+    qor_dir = tmp_path / ".qor"
+    qor_dir.mkdir()
+    (qor_dir / "secret-scanner-allowlist").write_text(
+        "MY_FIXTURE_CREDENTIAL\n", encoding="utf-8",
+    )
+    f = tmp_path / "leak.py"
+    f.write_text(
+        'AWS_KEY = "AKIAIOSFODNN7VARIANT"  # MY_FIXTURE_CREDENTIAL\n',
+        encoding="utf-8",  # noqa: secret-scan
+    )
+    assert secret_scanner.scan(f, repo_root=tmp_path) == []
+
+
+def test_scan_ignores_consumer_allowlist_when_repo_root_omitted(tmp_path: Path):
+    # Backward compatibility: existing callers that never pass repo_root must
+    # keep prior behavior exactly (no filesystem lookup, no new suppression).
+    qor_dir = tmp_path / ".qor"
+    qor_dir.mkdir()
+    (qor_dir / "secret-scanner-allowlist").write_text(
+        "MY_FIXTURE_CREDENTIAL\n", encoding="utf-8",
+    )
+    f = tmp_path / "leak.py"
+    f.write_text(
+        'AWS_KEY = "AKIAIOSFODNN7VARIANT"  # MY_FIXTURE_CREDENTIAL\n',
+        encoding="utf-8",  # noqa: secret-scan
+    )
+    findings = secret_scanner.scan(f)
+    assert any(x.pattern_name == "aws-access-key" for x in findings)
+
+
+def test_scan_staged_honors_consumer_allowlist(monkeypatch, tmp_path: Path):
+    qor_dir = tmp_path / ".qor"
+    qor_dir.mkdir()
+    (qor_dir / "secret-scanner-allowlist").write_text(
+        "MY_FIXTURE_CREDENTIAL\n", encoding="utf-8",
+    )
+    f = tmp_path / "leak.py"
+    f.write_text(
+        'AWS_KEY = "AKIAIOSFODNN7VARIANT"  # MY_FIXTURE_CREDENTIAL\n',
+        encoding="utf-8",  # noqa: secret-scan
+    )
+
+    class Result:
+        returncode = 0
+        stdout = "leak.py\n"
+        stderr = ""
+
+    monkeypatch.setattr(secret_scanner.subprocess, "run", lambda *a, **k: Result())
+    assert secret_scanner.scan_staged(tmp_path) == []
+
+
+def test_cli_files_mode_honors_repo_root_consumer_allowlist(tmp_path: Path):
+    qor_dir = tmp_path / ".qor"
+    qor_dir.mkdir()
+    (qor_dir / "secret-scanner-allowlist").write_text(
+        "MY_FIXTURE_CREDENTIAL\n", encoding="utf-8",
+    )
+    f = tmp_path / "leak.py"
+    f.write_text(
+        'AWS_KEY = "AKIAIOSFODNN7VARIANT"  # MY_FIXTURE_CREDENTIAL\n',
+        encoding="utf-8",  # noqa: secret-scan
+    )
+    proc = subprocess.run(
+        [sys.executable, "-m", "qor.scripts.secret_scanner",
+         "--files", str(f), "--repo-root", str(tmp_path)],
+        capture_output=True, text=True,
+    )
+    assert proc.returncode == 0, proc.stderr
+
+
+def test_cli_prints_consumer_allowlist_disclosure_to_stderr(tmp_path: Path):
+    qor_dir = tmp_path / ".qor"
+    qor_dir.mkdir()
+    (qor_dir / "secret-scanner-allowlist").write_text(
+        "MY_FIXTURE_CREDENTIAL\nSECOND_TOKEN\n", encoding="utf-8",
+    )
+    f = tmp_path / "ok.py"
+    f.write_text('PI = 3.14159\n', encoding="utf-8")
+    proc = subprocess.run(
+        [sys.executable, "-m", "qor.scripts.secret_scanner",
+         "--files", str(f), "--repo-root", str(tmp_path)],
+        capture_output=True, text=True,
+    )
+    assert "consumer allowlist" in proc.stderr
+    assert "2 token" in proc.stderr
+
+
+def test_cli_no_disclosure_when_no_consumer_allowlist_file(tmp_path: Path):
+    f = tmp_path / "ok.py"
+    f.write_text('PI = 3.14159\n', encoding="utf-8")
+    proc = subprocess.run(
+        [sys.executable, "-m", "qor.scripts.secret_scanner",
+         "--files", str(f), "--repo-root", str(tmp_path)],
+        capture_output=True, text=True,
+    )
+    assert "consumer allowlist" not in proc.stderr
+
+
 # --- CLI ------------------------------------------------------------------------
 
 def test_cli_exit_1_on_finding_via_subprocess(tmp_path: Path):
