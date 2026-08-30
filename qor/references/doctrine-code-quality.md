@@ -1,154 +1,146 @@
-# AI Code Quality Doctrine
+# Implementation and Code Quality Doctrine
 
-Rules for writing code that resists degradation from AI agents and human developers alike.
-Inspired by Qor-logic Section 4 Razor + Ben Swerdlow's AI coding principles.
+Qor-logic's implementation-quality standard applies to artifacts and observable behavior regardless of agent, model, host, repository, programming language, framework, provider, forge, runtime, or deployment environment.
 
-## 1. Semantic vs Pragmatic Functions
+It does not infer authorship from code shape and does not treat AI provenance as a quality verdict.
 
-### Semantic Functions (Building Blocks)
+> Implementation quality is established by contextual fitness, behavioral correctness, proportional complexity, explicit failure behavior, appropriate trust boundaries, and consistency with the surrounding system. Provenance does not determine quality.
 
-Pure logic units. Minimal, correct, reusable.
+This doctrine extends the Section 4 Simplicity Razor. The canonical operational taxonomy and lifecycle profiles live in `qor/references/implementation-quality-sweep.md`.
 
-- Accept all required inputs as parameters, return all outputs directly
-- No side effects unless that IS the function's purpose
-- Name self-describes the operation — no comments needed
-- Safe to reuse without understanding internals
-- Break complex logic into a chain of semantic functions
-- Each one takes what it needs, returns data for the next, does nothing else
+## 1. Context before convention
 
-```
-Good: calculate_risk_score(action, trust_level) -> f64
-Good: validate_workspace_path(raw) -> Result<PathBuf, Error>
-Bad:  process_data(input) -> Output  (vague, could do anything)
-```
+Read the governing contracts, architecture, types or schemas, neighboring implementation, tests, and established repository conventions before applying generic engineering preferences.
 
-**Testing**: Unit testable in isolation. If it isn't, it's not semantic.
+Local consistency wins on style. It never overrides demonstrated security, correctness, data-integrity, or authority requirements.
 
-### Pragmatic Functions (Orchestrators)
+## 2. Behavior before surface plausibility
 
-Wrappers that compose semantic functions with production glue.
+Code that compiles, looks conventional, or passes a narrow happy-path test is not established as correct. Quality claims require evidence about the behavior that matters at the relevant boundary.
 
-- Organize messy real-world flows (webhooks, provisioning, migrations)
-- Should NOT be reused in multiple places — if reused, extract semantic functions
-- Expected to change completely over time
-- MUST have doc comments (unlike semantic functions)
-- Doc comments note unexpected behaviors, not obvious ones
+Presence is not behavior. A test that proves an artifact exists does not prove the artifact performs its contract.
 
-```
-Good: handle_user_signup_webhook(payload) -> Result<()>
-Good: provision_workspace_for_repo(repo_url) -> Result<Workspace>
-```
+## 3. Smallest sufficient mechanism
 
-**Testing**: Integration tested within full app context, not unit tested.
+Prefer the least complex mechanism that satisfies the demonstrated contract, risk, scale, and variability.
 
-### Function Degradation (Anti-Pattern)
+Abstraction, indirection, configurability, concurrency machinery, persistence, dependency introduction, and generalized extension points require a concrete need. Do not remove a justified mechanism merely because a simpler pattern exists in isolation.
 
-Semantic functions morph into pragmatic ones "for ease":
-- Someone adds a side effect to a pure function
-- Dependents now trigger behavior they didn't intend
-- Debugging becomes guesswork
+## 4. Semantic and pragmatic responsibilities
 
-**Rule**: If a semantic function gains side effects, rename it to signal its pragmatic nature or extract the side effect.
+Separating reusable domain logic from production orchestration can reduce degradation when the target environment supports that distinction.
 
-## 2. Model Design Rules
+### Semantic responsibilities
 
-### Make Wrong States Impossible
+A semantic unit represents cohesive domain logic. Prefer explicit inputs and outputs, limited hidden state, precise names, and behavior that can be reasoned about without knowing unrelated infrastructure details.
 
-The shape of your data should prevent invalid combinations.
+Do not turn a stable semantic unit into an implicit orchestrator merely because adding a side effect is locally convenient.
 
-- If two fields should never coexist, the type system must enforce it (use enums, not optional fields)
-- Every optional field is a question the rest of the codebase must answer repeatedly
-- Every loosely-typed field invites callers to pass incorrect values
+### Pragmatic responsibilities
 
-```rust
-// BAD: optional fields create ambiguity
-struct User {
-    verified_email: Option<String>,
-    pending_verification: Option<String>,  // which one is set?
-}
+A pragmatic unit coordinates real-world effects such as persistence, network calls, migrations, provisioning, or multi-step workflows.
 
-// GOOD: enum enforces exactly one state
-enum EmailState {
-    Unverified(String),
-    Verified(String),
-}
-```
+Its purpose is orchestration rather than universal reuse. Document non-obvious operational behavior and failure semantics when the surrounding codebase does so.
 
-### Brand Types
+This distinction is a design heuristic, not a mandate to force every language or architecture into functions, classes, purity, or a specific type system.
 
-Identical shapes can represent different domain concepts.
+## 5. Model and contract design
 
-- Wrap primitives in distinct types: `DocumentId(Uuid)` vs bare `Uuid`
-- Accidentally swapping two IDs becomes a compile error, not a silent bug
-- Apply to: IDs, paths, tokens, scores — any value with domain meaning
+Represent invalid states as narrowly as the environment reasonably permits. Prefer domain-meaningful contracts over bags of loosely related optional fields when stronger modeling materially prevents misuse.
 
-```rust
-struct AgentId(String);    // not just String
-struct WorkspaceId(String); // compile-time distinct from AgentId
-```
+Composition is usually preferable when independent concepts need to travel together but retain separate identities. Do not introduce branded/wrapper types, schemas, or validation layers solely to satisfy a generic pattern when the target environment gains no practical safety from them.
 
-### Naming Precision
+Names should communicate domain role and observable responsibility. Generic names are only defects when they materially obscure meaning in context.
 
-- Model name should tell you whether any given field belongs
-- If the name doesn't indicate membership, the model is trying to be too many things
-- Good: `UnverifiedEmail`, `PendingInvite`, `BillingAddress`
-- Bad: `UserData`, `InfoObject`, `Payload`
+## 6. No false completeness
 
-### Composition Over Flattening
+Treat placeholders, inert implementations, fabricated interfaces, swallowed failures, misleading success responses, meaningless tests, dead branches presented as functionality, and unsupported assumptions as defects when they make incomplete behavior appear complete.
 
-When two independent concepts are often needed together, compose them:
+## 7. Evidence before remediation
 
-```rust
-// GOOD: both models stay intact
-struct UserWithWorkspace {
-    user: User,
-    workspace: Workspace,
-}
+An apparent anti-pattern is a candidate finding, not a defect, until context establishes harm or contract violation.
 
-// BAD: flattened fields lose boundary
-struct UserWorkspaceBlob {
-    user_id: String,
-    user_name: String,
-    workspace_id: String,
-    workspace_path: String,
-}
-```
+Do not rewrite code merely because it resembles a generic smell. Confirm the problem, its scope, and the evidence that the proposed repair improves the actual system.
 
-## 3. Anti-Slop Rules
+## 8. Validate trust boundaries, trust established interior contracts
 
-Rules that prevent AI-generated code from degrading quality.
+Validate external or untrusted input at the appropriate boundary. Preserve authentication, authorization, integrity, and data-validation requirements.
 
-### Documentation
+Do not duplicate validation, null checks, exception wrappers, defensive copies, or type checks inside trusted paths when upstream contracts make the invalid state unreachable and the repository intentionally relies on that contract.
 
-- Semantic functions: NO comments (code is self-describing)
-- Pragmatic functions: MUST have doc comments
-- Doc comments note unexpected behaviors, NOT obvious ones
-- Never restate the function name in the doc comment
-- Caveat: doc comments may be outdated — fact-check against implementation
+## 9. Preserve intent and authority
 
-### Naming
+Hardening may improve implementation quality. It must not silently change product intent, public contracts, architecture, security policy, governance policy, data authority, or operator decisions.
 
-- Name functions by WHERE they're used, not just WHAT they do
-- Names should signal whether behavior is tightly or loosely defined
-- Generic names (`process`, `handle`, `manage`, `do`) are code smell
-- If you can't name it precisely, the function does too much
+When a quality repair would require one of those changes, stop at the authority boundary and route the decision to the owning Qor-logic process.
 
-### Code Entropy Prevention
+## 10. Scope is a contract
 
-- Every added optional field must justify its existence
-- Every loosely-typed parameter must prove no stronger type exists
-- One coding agent sloppifies a codebase — a swarm does it faster
-- Self-describing code is the primary defense against accumulated slop
+In changeset or focused review, inspect surrounding context as needed to understand the change, but do not opportunistically rewrite unrelated legacy code.
 
-## 4. Integration with Section 4 Razor
+Out-of-scope defects may be reported with evidence. They become mutation scope only through an explicit scope decision.
 
-These rules extend (not replace) the existing Section 4 constraints:
+## 11. Failure must remain visible and truthful
 
-| Existing Rule | Extension |
-|--------------|-----------|
-| Functions <= 40 lines | + Must be classifiable as semantic OR pragmatic |
-| Files <= 250 lines | + Single responsibility per file |
-| No nested ternaries | + No nested optionals (flatten with enums) |
-| Variables are noun/verbNoun | + Model names indicate field membership |
-| No unwrap() in production | + No loose typing when brand types are possible |
-| Early returns | + Semantic functions: no side effects |
+Do not convert failure into nominal success merely to keep a process running. Errors must propagate, be represented, logged, retried, or intentionally tolerated according to the actual contract.
+
+Observability should make consequential failures diagnosable without leaking secrets or sensitive data.
+
+## 12. Tests are evidence, not absolution
+
+Passing tests increase confidence only to the extent that those tests exercise the relevant behavior, failure modes, boundaries, and state transitions.
+
+Do not equate CI success with production correctness. Do not weaken tests to make an implementation pass.
+
+## 13. Repair the mechanism, not the symptom
+
+When observed behavior is failing and the cause is uncertain, causal diagnosis belongs to `/qor-debug`. Hardening may identify suspicious mechanisms, but it must not guess through a failure and call the resulting patch a root-cause fix.
+
+## 14. Abstention is a successful outcome
+
+A quality sweep must be capable of concluding that no justified change is required.
+
+Unnecessary changes, false-positive findings, invented abstractions, speculative rewrites, and style-only churn count against quality. A clean implementation should survive inspection unchanged.
+
+## 15. Section 4 Razor integration
+
+Section 4 provides deterministic complexity pressure. It is a signal and governing constraint, not permission to damage a stronger contract merely to satisfy a metric.
+
+| Razor concern | Quality extension |
+|---|---|
+| Function size | Keep responsibilities cohesive; split only where the resulting boundary is meaningful. |
+| File size | Preserve a comprehensible ownership boundary rather than producing arbitrary fragments. |
+| Nesting | Prefer clear control flow and explicit state transitions. |
+| Naming | Use domain meaning and observable responsibility. |
+| Error handling | Preserve truthful failure semantics; do not hide errors to flatten control flow. |
+| Types/contracts | Prefer the strongest practical contract supported by the actual environment. |
+| Dependencies | Introduce them only when their demonstrated value exceeds maintenance, security, and portability cost. |
+
+## 16. Evidence hierarchy
+
+When evidence conflicts, use this order unless a stronger explicit governance rule says otherwise:
+
+1. repository contracts, architecture, and authority declarations;
+2. types, schemas, invariants, and public interfaces;
+3. established neighboring implementation and conventions;
+4. executable tests, runtime evidence, and static-analysis evidence;
+5. verified external dependency and API contracts;
+6. language and framework conventions;
+7. general quality heuristics.
+
+Generic heuristics may raise questions. They may not overrule stronger evidence by themselves.
+
+## 17. Relationship to Qor-logic skills
+
+This doctrine is an invariant shared by multiple skills. Reusing a doctrine or bounded protocol profile is not the same as delegating an independently governed operation.
+
+- `/qor-plan` uses prevention-oriented questions.
+- `/qor-audit` uses adversarial prediction of likely quality failures.
+- `/qor-implement` uses local prevention and a final implementation sweep.
+- `/qor-debug` uses the taxonomy as hypothesis vocabulary while retaining causal ownership.
+- `/qor-refactor` repairs confirmed structural and maintainability defects within its authority.
+- `/qor-substantiate` detects quality failures independently but remains prove-not-improve.
+- `/qor-deep-audit` uses the full taxonomy as one discovery lens.
+- `/qor-harden` owns explicit implementation-quality review and authorized repair across the declared scope.
+
+The canonical operational taxonomy is `qor/references/implementation-quality-sweep.md`.
