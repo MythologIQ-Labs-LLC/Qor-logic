@@ -1,0 +1,44 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-30T2313-1269d2",
+  "ts": "2026-08-30T23:24:30Z",
+  "plan_path": "docs/plan-qor-phase244-qor-harden.md",
+  "phases": [
+    "Phase 1: Standalone skill + canonical taxonomy (test-first)",
+    "Phase 2: Discovery wiring + variant sync"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_harden.py -q",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest tests/ -q"
+  ],
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "originating_remediation": "GH #388",
+  "open_questions": [],
+  "terms": [
+    {
+      "term": "Implementation-Quality Sweep",
+      "home": "qor/references/implementation-quality-sweep.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "sweep protocol is a reasoning contract, not an executable scanner"
+    ],
+    "non_goals": [
+      "no second code-quality doctrine; no nested /qor-harden lifecycle invocations from lifecycle skills"
+    ],
+    "exclusions": [
+      "/qor-refactor modernization (GH #392) is a separate phase"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.156.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-08-30T23:24:30Z"
+  }
+}

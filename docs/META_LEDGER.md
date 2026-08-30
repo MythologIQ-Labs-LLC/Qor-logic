@@ -19056,6 +19056,87 @@ Next: /qor-substantiate.
 
 **Decision**: Phase 235 (GH #358): published qor/fixtures/consumer-contract/ -- canonical consumer-contract fixtures (supported, missing-optional, stale, malformed, unsupported-version, partial-migration) for the three artifact types this repository actually owns and produces (META_LEDGER, FEATURE_INDEX, gate artifacts), proven tests-first (16/16 passing, run twice for determinism) against this repository's own real parsers/schemas: meta_ledger_walker, ledger_upgrade.schema_version, feature_index_verify, jsonschema against feature_index/audit schemas. publication_boundary_lint: 0 findings. Full suite: 3037 passed / 4 skipped / 4 deselected (2 pre-existing CLI-metadata failures confirmed present on main before this change, unrelated). Scope correction disclosed rather than silently reconciled: the originating ask's fourth artifact type, tracker manifest/programs.yaml, has no Qor-logic schema, parser, template, or producer anywhere in this repository -- recorded out_of_scope in MANIFEST.json with reasoning, flagged on GH #358 for an owner decision. Two further per-state cells (FEATURE_INDEX stale/unsupported-version, gate-artifact unsupported-version) recorded as disclosed gaps for the same reason. Governance ceremony (this plan, audit, implement, substantiate) authored after the code, tests, and verification were already complete and green -- CI's pr_citation_lint correctly flagged the missing citations; every fact recorded here is a true, independently-verifiable description of that already-completed work.
 
+### Entry #634: GATE TRIBUNAL -- Phase 244 /qor-harden capability, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-30T23:26:28Z
+**Phase**: GATE (Phase 244)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase244-qor-harden.md (iteration 1)
+**Session**: 2026-08-30T2313-1269d2
+**Mode**: adversarial -- solo Judge full-surface walk plus independent code-reviewer subagent (dispatched at operator direction; audit_risk_score option_b_required false)
+
+**Content Hash**: `7ee8689f9a0e8d9afccf6a90c1a25fe44e4a2dc4e7b4860fff0d48a76cda6795`
+**Previous Hash**: `64bfdd97caa6e840770c121020cb1ae7e5abc5c9c24511905b682f0fdb7be073`
+**Chain Hash (Merkle seal)**: `3f50dff8ce44e8556d5db535f4abf536ecf551e715ec0c314b03eb9dfa33fb8b`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + coverage-gap (two mandating findings, both from the independent reviewer). Attempt 1 of 5.
+
+**THE SOLO PASS CLEARED WHAT THE INDEPENDENT PASS REFUSED.** The solo walk re-executed every LD grep-evidence statement, found and closed the compiled-variant gap (qor-harden dist variants missing across all six targets; closed at 61d671bb via the repository's own dist compiler, check_variant_drift 400 files clean) -- and still passed two defects the reviewer caught. V1: the SKILL frontmatter description and the qor-help catalog row, the two surfaces that decide skill selection, enumerated what reads as the complete dimension list while omitting IQ-CONTEXT and substituting 'reliability' (folded into IQ-CORRECT by the sweep); Step 3 of the same file lists all nine, so the artifact contradicts itself. V2: the plan declared its introduced term under the markdown key name terms_introduced; the gate artifact carried that key into JSON; doc_integrity reads the canonical key terms, received an empty list, and reported success while inspecting nothing -- and the declared term was in fact never registered in the glossary. A gate that inspects nothing and reports success is the vacuous-gate shape of GH #365/#366, reached through a key-name mismatch instead of an empty selection.
+
+**Amendment path**: fix both selection-surface enumerations; register the term with home and referenced_by; rewrite the plan artifact under the canonical terms key; bind both surfaces to the sweep's own headings with a derived-set test; prove the glossary gate live with a negative probe. Shadow Genome entry recorded (vacuous-gate family). The framework-wide terms/terms_introduced mismatch escalates as its own issue at cycle end.
+
+**Next**: /qor-plan (amend iteration 2), then /qor-audit.
+
+### Entry #635: GATE TRIBUNAL -- Phase 244 /qor-harden capability, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-30T23:26:28Z
+**Phase**: GATE (Phase 244)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase244-qor-harden.md (iteration 2)
+**Session**: 2026-08-30T2313-1269d2
+**Mode**: adversarial -- iteration-1 findings re-verified closed; full pass ladder re-run
+
+**Content Hash**: `17e302f2f51806dc6706d7e752b82f17ca4407a5700ccb37b67d9f1131ae6b50`
+**Previous Hash**: `3f50dff8ce44e8556d5db535f4abf536ecf551e715ec0c314b03eb9dfa33fb8b`
+**Chain Hash (Merkle seal)**: `2548ce321d859d44843c00bf8250326e799e8ce6401fdcdfed4eac14426fa350`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5.
+
+**THE GATE WAS PROVEN LIVE, NOT ASSUMED FIXED.** Both iteration-1 findings closed and verified by execution: the frontmatter description and qor-help row now enumerate all nine dimensions; Implementation-Quality Sweep is registered in the glossary (home + referenced_by + introduced_in_plan phase244-qor-harden); plan-iter2.json declares the term under the canonical terms key and doc_integrity.run_all_checks_from_plan(strict) re-run from the artifact passes with the term actually inspected; the negative probe (an unregistered term fed to check_glossary) raises ValueError, so the pass is no longer vacuous. The new test_discovery_surfaces_enumerate_every_canonical_dimension derives the canonical nine from the sweep's own IQ headings and binds the Step 3 list, the frontmatter description, and the qor-help row to them -- the omission class cannot recur silently. Focused suite 10/10; prose_test_lint --enforce exit 0; dist recompiled, check_variant_drift 400 files clean; prompt-injection canaries clean; doc_integrity_strict exit 0. Three non-blocking observations recorded in the report (refactor-profile ownership wording, dual 'Section 4' referent, unnamed preflight command).
+
+**Next**: /qor-implement record (ceremony-after-code disclosed at iteration 1), then /qor-substantiate (v0.157.0).
+
+### Entry #636: IMPLEMENTATION -- Phase 244 /qor-harden capability
+
+**Timestamp**: 2026-08-30T23:26:28Z
+**Phase**: IMPLEMENT (Phase 244)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase244-qor-harden.md (PASS at entry #635)
+**Session**: 2026-08-30T2313-1269d2
+
+**Content Hash**: `23a8d3399b3c706dc2234b268eff5c89e01c00b4e2684c898caf641275dbfbc5`
+**Previous Hash**: `2548ce321d859d44843c00bf8250326e799e8ce6401fdcdfed4eac14426fa350`
+**Chain Hash (Merkle seal)**: `eb4d9f89a13f91f4c8c26901eae1e91afb927190c1e79011b2d050099f4ed691`
+
+**Decision**: **Decision**: Phase 244 implementation record (GH #388, PR #391). The capability was built before this ceremony (relay handoff, disclosed at entries #634-#635 and in the plan's Governance note); this entry records the delivered surface truthfully. Delivered: qor/skills/sdlc/qor-harden/SKILL.md (scopes focused/changeset/component/comprehensive; dispositions review/repair; nine IQ dimensions; authority boundaries to /qor-debug, /qor-refactor, /qor-plan, /qor-remediate, /qor-substantiate), qor/references/implementation-quality-sweep.md (canonical protocol with lifecycle profiles), unified qor/references/doctrine-code-quality.md (duplicate doctrine removed), glossary registration, wiring across docs/SKILL_REGISTRY.md, qor-help, delegation-table, README (catalog row + Skills badge 30 -> 31), and compiled qor/dist variants for all six targets. The temporary phase244-readme-sync workflow and its bot-authored commit were removed by branch rewrite; the README fix was re-authored under the canonical git identity. Tests: tests/test_qor_harden.py 10/10 including the iteration-2 derived-set binding guard; check_variant_drift clean (400 files); publication_boundary_lint 0 findings.
+
+### Entry #637: SESSION SEAL -- Phase 244 /qor-harden capability GH #388 (v0.157.0)
+
+**Timestamp**: 2026-08-30T23:30:21Z
+**Phase**: SEAL (Phase 244)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `e20d4b6048e3`
+**Plan**: docs/plan-qor-phase244-qor-harden.md (iteration 2; PASS at entry #635)
+**Session**: 2026-08-30T2313-1269d2
+**Change Class**: feature (0.156.0 -> 0.157.0)
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PW.1.1, PW.5.1
+
+**Content Hash**: `b2a0bf7a194c9c7623be606ca44bd8b3127f07fb54a347eecbcd57a5742dde6a`
+**Previous Hash**: `eb4d9f89a13f91f4c8c26901eae1e91afb927190c1e79011b2d050099f4ed691`
+**Chain Hash (Merkle seal)**: `f13824fa0ca17bcb80d52b1d0c0e0720eca8b89209f51fc39b765ff55ca27dab`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 25 / verified: 25 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 244 (GH #388, PR #391): /qor-harden ships as a standalone, environment-neutral implementation-quality capability -- scopes focused/changeset/component/comprehensive, dispositions review/repair, nine canonical IQ dimensions, abstention as a successful outcome, no inference of AI authorship from implementation shape -- with the canonical protocol at qor/references/implementation-quality-sweep.md (lifecycle profiles reused without nested ceremony), invariants unified into doctrine-code-quality.md (duplicate doctrine removed), and wiring across registry/help/delegation/README/dist (Skills badge 31). The implementation predates the ceremony (relay handoff) and the ceremony was completed honestly per the Phase 235 precedent: the independent-reviewer tribunal iteration VETOed two real shipped defects (IQ-CONTEXT missing from both selection surfaces; a vacuous glossary gate reached through the non-canonical terms_introduced artifact key while the declared term was unregistered), and iteration 2 closed both with a derived-set binding test, a registered glossary entry, a canonical-key artifact re-proven through doc_integrity.run_all_checks_from_plan(strict), and a negative probe demonstrating check_glossary rejects unregistered terms. The temporary phase244-readme-sync workflow and its bot-authored commit were removed by branch rewrite before ceremony; the README currency fix was re-authored under the canonical git identity.
+
+**GATE LADDER**: intent-lock VERIFIED; admission + matrix OK (31 skills, 147 handoffs, 0 broken); secret-scan clean; procedural-fidelity WARN doc-surface (resolved in this commit: SYSTEM_STATE + CHANGELOG); dod-check OK; merge-velocity OK (exit 0); skill-size-budget 3 WARN / 0 EXCEEDED, exit 0; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent in this repository's toolkit; event `73dba7ae52b9`); feature-index 25/25 verified, surface-lint disclosed-SKIP (no Surface column); doc-integrity strict OK with the declared term actually inspected; governance-index advanced + enforced OK; publication-boundary 0 findings; dist recompiled, variant drift clean (400 files). Full suite green locally, run twice for determinism (counts recorded in the seal commit).
+
 ---
 
 *Chain integrity: VALID*

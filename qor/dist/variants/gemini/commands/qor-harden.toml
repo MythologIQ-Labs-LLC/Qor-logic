@@ -1,4 +1,4 @@
-description = "Context-aware implementation quality review and repair across completeness, correctness, reliability, trust boundaries, complexity, resource behavior, contracts, maintainability, and observability. Us"
+description = "Context-aware implementation quality review and repair across completeness, correctness and reliability, trust boundaries, contextual consistency, proportional complexity, resource behavior, contracts"
 phase = "harden"
 prompt = """
 # /qor-harden - Implementation Quality Hardening

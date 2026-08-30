@@ -102,6 +102,78 @@ def test_harden_preserves_debug_refactor_substantiate_authority_boundaries():
     assert "independent proof is required after implementation -> `/qor-substantiate`" in text
 
 
+def test_discovery_surfaces_enumerate_every_canonical_dimension():
+    """Iteration-2 regression guard (independent-audit V1): the two surfaces
+    that decide skill selection -- the SKILL.md frontmatter description and the
+    qor-help catalog row -- must cover every canonical dimension defined by the
+    sweep's own ``### IQ-*:`` headings. Dropping a dimension (the shipped defect
+    omitted IQ-CONTEXT) must fail here, not survive as a silent selection gap."""
+    import re
+
+    sweep_headings = re.findall(r"^### (IQ-[A-Z]+):", _read(SWEEP), flags=re.M)
+    assert sorted(sweep_headings) == sorted(
+        [
+            "IQ-COMPLETE",
+            "IQ-CORRECT",
+            "IQ-TRUST",
+            "IQ-CONTEXT",
+            "IQ-COMPLEX",
+            "IQ-RESOURCE",
+            "IQ-CONTRACT",
+            "IQ-MAINTAIN",
+            "IQ-OBSERVE",
+        ]
+    ), "sweep taxonomy headings drifted from the canonical nine"
+
+    skill_text = _read(SKILL)
+    step3_ids = re.findall(r"^- `(IQ-[A-Z]+)`", skill_text, flags=re.M)
+    assert sorted(step3_ids) == sorted(sweep_headings), (
+        "SKILL.md Step 3 dimension list drifted from the sweep headings"
+    )
+
+    frontmatter = skill_text.split("---", 2)[1]
+    description_nouns = {
+        "IQ-COMPLETE": "completeness",
+        "IQ-CORRECT": "correctness and reliability",
+        "IQ-TRUST": "trust boundaries",
+        "IQ-CONTEXT": "contextual consistency",
+        "IQ-COMPLEX": "complexity",
+        "IQ-RESOURCE": "resource behavior",
+        "IQ-CONTRACT": "contracts",
+        "IQ-MAINTAIN": "maintainability",
+        "IQ-OBSERVE": "observability",
+    }
+    assert set(description_nouns) == set(sweep_headings)
+    for dim, noun in description_nouns.items():
+        assert noun in frontmatter, (
+            f"frontmatter description omits {dim} ({noun!r}) -- the skill is "
+            "invisible for that defect class at selection time"
+        )
+
+    help_row = next(
+        line
+        for line in (REPO_ROOT / "qor" / "skills" / "meta" / "qor-help" / "SKILL.md")
+        .read_text(encoding="utf-8")
+        .splitlines()
+        if line.startswith("| `/qor-harden`")
+    )
+    help_nouns = {
+        "IQ-COMPLETE": "completeness",
+        "IQ-CORRECT": "correctness",
+        "IQ-TRUST": "trust-boundary",
+        "IQ-CONTEXT": "contextual-consistency",
+        "IQ-COMPLEX": "complexity",
+        "IQ-RESOURCE": "resource",
+        "IQ-CONTRACT": "contract",
+        "IQ-MAINTAIN": "maintainability",
+        "IQ-OBSERVE": "observability",
+    }
+    for dim, noun in help_nouns.items():
+        assert noun in help_row, (
+            f"qor-help catalog row omits {dim} ({noun!r})"
+        )
+
+
 def test_ship_verdict_is_truthful_and_three_state():
     text = _read(SKILL)
     assert "`YES`" in text

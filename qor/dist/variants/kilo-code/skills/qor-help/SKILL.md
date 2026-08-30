@@ -75,7 +75,7 @@ Bundles: /qor-deep-audit, /qor-onboard-codebase, /qor-process-review-cycle
 | `/qor-plan` | Author plan-*.md with phases, tests, open questions. | After research; before audit. |
 | `/qor-audit` | Adversarial PASS/VETO review. Each VETO ground names its required next action per `qor/references/doctrine-audit-report-language.md`: Razor -> `/qor-refactor`; Orphan or Macro-arch -> `/qor-organize`; Plan-text -> Governor amends plan, re-runs `/qor-audit`; Process-level -> `/qor-remediate`; Code-logic defect -> `/qor-debug`. | Before any L2/L3 risk implementation. |
 | `/qor-implement` | Execute work under KISS constraints after PASS. | After `/qor-audit` PASS. |
-| `/qor-harden` | Context-aware implementation quality sweep with focused, changeset, component, or comprehensive scope; review-only or authorized repair. | Explicit secondary pass for latent completeness, correctness, trust, complexity, resource, contract, maintainability, or observability defects when there is no single unknown root cause requiring `/qor-debug`. |
+| `/qor-harden` | Context-aware implementation quality sweep with focused, changeset, component, or comprehensive scope; review-only or authorized repair. | Explicit secondary pass for latent completeness, correctness, trust-boundary, contextual-consistency, complexity, resource, contract, maintainability, or observability defects when there is no single unknown root cause requiring `/qor-debug`. |
 | `/qor-refactor` | File-internal logic shape (Section 4). | When audit/implement detects bloat. |
 | `/qor-debug` | Root-cause diagnosis (cross-cutting). | Regression / hallucination / degradation. |
 | `/qor-substantiate` | Seal session, record Merkle evidence. | End of completed work session. |

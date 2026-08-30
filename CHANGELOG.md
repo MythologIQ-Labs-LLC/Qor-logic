@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.157.0] - 2026-08-30
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 244 (feature; /qor-harden implementation-quality capability, GH #388)**: adds `/qor-harden` as a standalone, environment-neutral implementation-quality review/repair skill -- scopes `focused`/`changeset`/`component`/`comprehensive`, dispositions `review`/`repair`, nine canonical IQ dimensions, abstention as a valid successful outcome, no inference of AI authorship from implementation shape, and explicit authority boundaries to `/qor-debug`, `/qor-refactor`, `/qor-plan`, `/qor-remediate`, and `/qor-substantiate`. The canonical inspection protocol ships as `qor/references/implementation-quality-sweep.md` with per-skill lifecycle profiles reused by `/qor-plan`, `/qor-audit`, `/qor-implement`, `/qor-debug`, `/qor-refactor`, `/qor-substantiate`, and `/qor-deep-audit` without nested ceremony; the quality invariants are unified into `qor/references/doctrine-code-quality.md` (the draft duplicate doctrine was removed). Wired across the skill registry, qor-help catalog, delegation table (including a new shared-protocol-reuse section that prevents ceremonial delegation), README catalog + Skills badge (31), and compiled dist variants for all six targets. The tribunal's independent-reviewer iteration caught two shipped defects -- a selection-surface enumeration that omitted IQ-CONTEXT, and a vacuous doc-integrity glossary pass reached through the non-canonical `terms_introduced` gate-artifact key -- both closed with a derived-set binding test, a registered glossary term, and a negative-probe-verified live gate.
+
 ## [0.156.0] - 2026-08-21
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

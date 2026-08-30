@@ -1520,3 +1520,14 @@ referenced_by:
   - qor/references/doctrine-shadow-genome-countermeasures.md
 introduced_in_plan: phase223-grep-evidence-truth
 ```
+
+```yaml
+term: Implementation-Quality Sweep
+definition: The canonical context-aware inspection protocol for implementation quality -- nine IQ dimensions (IQ-COMPLETE, IQ-CORRECT, IQ-TRUST, IQ-CONTEXT, IQ-COMPLEX, IQ-RESOURCE, IQ-CONTRACT, IQ-MAINTAIN, IQ-OBSERVE), scope modes, dispositions, and per-skill lifecycle profiles that lifecycle skills apply directly without a nested /qor-harden invocation.
+home: qor/references/implementation-quality-sweep.md
+referenced_by:
+  - qor/skills/sdlc/qor-harden/SKILL.md
+  - qor/references/doctrine-code-quality.md
+  - qor/gates/delegation-table.md
+introduced_in_plan: phase244-qor-harden
+```

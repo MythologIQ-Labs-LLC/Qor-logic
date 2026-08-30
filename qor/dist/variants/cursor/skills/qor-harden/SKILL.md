@@ -1,7 +1,7 @@
 ---
 name: qor-harden
 description: >-
-  Context-aware implementation quality review and repair across completeness, correctness, reliability, trust boundaries, complexity, resource behavior, contracts, maintainability, and observability. Use for an explicit secondary pass on a snippet, changeset, component, or comprehensive implementation scope when there is no single known failure that belongs in qor-debug.
+  Context-aware implementation quality review and repair across completeness, correctness and reliability, trust boundaries, contextual consistency, proportional complexity, resource behavior, contracts, maintainability, and observability. Use for an explicit secondary pass on a snippet, changeset, component, or comprehensive implementation scope when there is no single known failure that belongs in qor-debug.
 metadata:
   category: development
   author: MythologIQ
