@@ -35,6 +35,27 @@ def test_parse_index_rows_skips_separator_row():
     assert "---" not in statuses
 
 
+_INDEX_BODY_STATUS_ALIAS = """# FEATURE_INDEX
+
+| ID | Feature | Doc | Code | Test | Status | Notes | Surface |
+|---|---|---|---|---|---|---|---|
+| FX001 | Foo | docs/foo.md | src/foo.py:10 | tests/test_foo.py | verified | — | cli |
+| FX002 | Bar | docs/bar.md | src/bar.py:20 | — | unverified | — | cli |
+| FX003 | Baz | docs/baz.md | src/baz.py:30 | — | n/a | — | cli |
+"""
+
+
+def test_parse_index_rows_accepts_status_column_alias():
+    """GH #365: a header cell literally named 'Status' (not 'Verification
+    status') must not silently parse as zero rows."""
+    rows = parse_index_rows(_INDEX_BODY_STATUS_ALIAS)
+    assert len(rows) == 3
+    assert rows[0]["id"] == "FX001"
+    assert rows[0]["status"] == "verified"
+    assert rows[1]["status"] == "unverified"
+    assert rows[2]["status"] == "n/a"
+
+
 def test_tally_counts_each_status(tmp_path):
     p = tmp_path / "FEATURE_INDEX.md"
     p.write_text(_INDEX_BODY, encoding="utf-8")
