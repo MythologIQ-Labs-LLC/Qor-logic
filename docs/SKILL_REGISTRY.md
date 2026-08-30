@@ -1,6 +1,6 @@
 # Qor-logic Skill Registry
 
-**Snapshot**: 2026-05-23
+**Snapshot**: 2026-08-30
 **Authoritative location**: `qor/skills/<category>/<skill>/`
 
 Skills organized by functional category. Path-shown relative to repo root.
@@ -17,9 +17,9 @@ Gate, audit, and compliance authority.
 | qor-shadow-process | `qor/skills/governance/qor-shadow-process/` | Stub (full impl deferred) |
 | qor-process-review-cycle | `qor/skills/governance/qor-process-review-cycle/` | Active (workflow bundle) |
 
-## sdlc/ (7)
+## sdlc/ (8)
 
-Ideate → research → plan → implement → refactor → debug → remediate cycle.
+Ideate → research → plan → implement → harden/refactor/debug → remediate cycle.
 
 | Skill | Path | Status |
 |---|---|---|
@@ -27,6 +27,7 @@ Ideate → research → plan → implement → refactor → debug → remediate 
 | qor-research | `qor/skills/sdlc/qor-research/` | Active |
 | qor-plan | `qor/skills/sdlc/qor-plan/` | Active |
 | qor-implement | `qor/skills/sdlc/qor-implement/` | Active |
+| qor-harden | `qor/skills/sdlc/qor-harden/` | Active (cross-cutting implementation-quality review/repair) |
 | qor-refactor | `qor/skills/sdlc/qor-refactor/` | Active |
 | qor-debug | `qor/skills/sdlc/qor-debug/` | Active |
 | qor-remediate | `qor/skills/sdlc/qor-remediate/` | Stub (absorbs qor-course-correct) |

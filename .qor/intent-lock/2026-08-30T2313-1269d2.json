@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-30T2313-1269d2",
+  "plan_path": "docs/plan-qor-phase244-qor-harden.md",
+  "plan_hash": "b2a0bf7a194c9c7623be606ca44bd8b3127f07fb54a347eecbcd57a5742dde6a",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "b470c43ac7057c94d654cb7f10377bfd9e9bca05276d04dca4fb3e7d925b8d2b",
+  "head_commit": "61d671bb333f1546047b29105cc15d7223a04853",
+  "captured_ts": "2026-08-30T23:27:14.568426Z"
+}

@@ -390,6 +390,26 @@ This is small (~50 lines), catches the pattern mechanically, and can run in CI.
 
 ---
 
+## Entry: Phase 244 iteration 1 -- selection surfaces dropped a taxonomy dimension; glossary gate ran vacuously on a non-canonical key
+
+**Date**: 2026-08-30
+**Category**: SPECIFICATION-DRIFT
+**Verdict source**: GATE TRIBUNAL entry #634 (VETO, specification-drift + coverage-gap; independent reviewer)
+
+### What Happened
+
+Two defects survived the solo Judge pass and were caught only by the dispatched independent reviewer. First, the /qor-harden frontmatter description and the qor-help catalog row -- the two surfaces that decide when the skill is selected -- enumerated what read as the complete dimension list while omitting IQ-CONTEXT, the dimension most specific to the capability's purpose; SKILL.md's own Step 3 listed all nine, so the artifact contradicted itself. Second, the plan declared its introduced term under the markdown-template key name (terms_introduced) and the gate artifact carried that key into JSON; the doc-integrity glossary check reads the canonical key (terms), received an empty list, and reported success while inspecting nothing -- and the declared term had in fact never been registered in the glossary.
+
+### Pattern to Avoid
+
+A discovery/selection surface that enumerates a taxonomy must be bound to the taxonomy's canonical definition by a test that derives the expected set from the canonical artifact itself, not restated by hand. A schema with additionalProperties true plus a permissive reader (plan.get with a default) turns a key-name mismatch into a gate that passes on an empty population -- the same shape as GH #365/#366. Verify a gate is live by feeding it a case it must reject, not only a case it must accept.
+
+### Pattern ID
+
+Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #366 gate_chain_completeness zero-session pass), here reached through a key-name mismatch rather than an empty selection. Countermeasure shipped this phase: test_discovery_surfaces_enumerate_every_canonical_dimension derives the canonical nine from the sweep's own headings and binds both selection surfaces to them; the framework-wide terms/terms_introduced mismatch gets its own issue at cycle end.
+
+---
+
 *Shadow integrity: ACTIVE*
 
 
@@ -450,6 +470,26 @@ SG-Phase24-C (reflexive dependency introduction for trivial serializers)
 
 ---
 
+## Entry: Phase 244 iteration 1 -- selection surfaces dropped a taxonomy dimension; glossary gate ran vacuously on a non-canonical key
+
+**Date**: 2026-08-30
+**Category**: SPECIFICATION-DRIFT
+**Verdict source**: GATE TRIBUNAL entry #634 (VETO, specification-drift + coverage-gap; independent reviewer)
+
+### What Happened
+
+Two defects survived the solo Judge pass and were caught only by the dispatched independent reviewer. First, the /qor-harden frontmatter description and the qor-help catalog row -- the two surfaces that decide when the skill is selected -- enumerated what read as the complete dimension list while omitting IQ-CONTEXT, the dimension most specific to the capability's purpose; SKILL.md's own Step 3 listed all nine, so the artifact contradicted itself. Second, the plan declared its introduced term under the markdown-template key name (terms_introduced) and the gate artifact carried that key into JSON; the doc-integrity glossary check reads the canonical key (terms), received an empty list, and reported success while inspecting nothing -- and the declared term had in fact never been registered in the glossary.
+
+### Pattern to Avoid
+
+A discovery/selection surface that enumerates a taxonomy must be bound to the taxonomy's canonical definition by a test that derives the expected set from the canonical artifact itself, not restated by hand. A schema with additionalProperties true plus a permissive reader (plan.get with a default) turns a key-name mismatch into a gate that passes on an empty population -- the same shape as GH #365/#366. Verify a gate is live by feeding it a case it must reject, not only a case it must accept.
+
+### Pattern ID
+
+Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #366 gate_chain_completeness zero-session pass), here reached through a key-name mismatch rather than an empty selection. Countermeasure shipped this phase: test_discovery_surfaces_enumerate_every_canonical_dimension derives the canonical nine from the sweep's own headings and binds both selection surfaces to them; the framework-wide terms/terms_introduced mismatch gets its own issue at cycle end.
+
+---
+
 *Shadow integrity: ACTIVE*
 
 
@@ -477,6 +517,26 @@ SG-Phase24-D (remediation target mismatch: running code skill when plan-text edi
 
 ---
 
+## Entry: Phase 244 iteration 1 -- selection surfaces dropped a taxonomy dimension; glossary gate ran vacuously on a non-canonical key
+
+**Date**: 2026-08-30
+**Category**: SPECIFICATION-DRIFT
+**Verdict source**: GATE TRIBUNAL entry #634 (VETO, specification-drift + coverage-gap; independent reviewer)
+
+### What Happened
+
+Two defects survived the solo Judge pass and were caught only by the dispatched independent reviewer. First, the /qor-harden frontmatter description and the qor-help catalog row -- the two surfaces that decide when the skill is selected -- enumerated what read as the complete dimension list while omitting IQ-CONTEXT, the dimension most specific to the capability's purpose; SKILL.md's own Step 3 listed all nine, so the artifact contradicted itself. Second, the plan declared its introduced term under the markdown-template key name (terms_introduced) and the gate artifact carried that key into JSON; the doc-integrity glossary check reads the canonical key (terms), received an empty list, and reported success while inspecting nothing -- and the declared term had in fact never been registered in the glossary.
+
+### Pattern to Avoid
+
+A discovery/selection surface that enumerates a taxonomy must be bound to the taxonomy's canonical definition by a test that derives the expected set from the canonical artifact itself, not restated by hand. A schema with additionalProperties true plus a permissive reader (plan.get with a default) turns a key-name mismatch into a gate that passes on an empty population -- the same shape as GH #365/#366. Verify a gate is live by feeding it a case it must reject, not only a case it must accept.
+
+### Pattern ID
+
+Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #366 gate_chain_completeness zero-session pass), here reached through a key-name mismatch rather than an empty selection. Countermeasure shipped this phase: test_discovery_surfaces_enumerate_every_canonical_dimension derives the canonical nine from the sweep's own headings and binds both selection surfaces to them; the framework-wide terms/terms_introduced mismatch gets its own issue at cycle end.
+
+---
+
 *Shadow integrity: ACTIVE*
 
 
@@ -500,6 +560,26 @@ Any plan that adds deserializer calls in a directory not currently covered by th
 
 ### Pattern ID
 SG-Phase25-A (discipline-test scope does not track new usage sites)
+
+---
+
+## Entry: Phase 244 iteration 1 -- selection surfaces dropped a taxonomy dimension; glossary gate ran vacuously on a non-canonical key
+
+**Date**: 2026-08-30
+**Category**: SPECIFICATION-DRIFT
+**Verdict source**: GATE TRIBUNAL entry #634 (VETO, specification-drift + coverage-gap; independent reviewer)
+
+### What Happened
+
+Two defects survived the solo Judge pass and were caught only by the dispatched independent reviewer. First, the /qor-harden frontmatter description and the qor-help catalog row -- the two surfaces that decide when the skill is selected -- enumerated what read as the complete dimension list while omitting IQ-CONTEXT, the dimension most specific to the capability's purpose; SKILL.md's own Step 3 listed all nine, so the artifact contradicted itself. Second, the plan declared its introduced term under the markdown-template key name (terms_introduced) and the gate artifact carried that key into JSON; the doc-integrity glossary check reads the canonical key (terms), received an empty list, and reported success while inspecting nothing -- and the declared term had in fact never been registered in the glossary.
+
+### Pattern to Avoid
+
+A discovery/selection surface that enumerates a taxonomy must be bound to the taxonomy's canonical definition by a test that derives the expected set from the canonical artifact itself, not restated by hand. A schema with additionalProperties true plus a permissive reader (plan.get with a default) turns a key-name mismatch into a gate that passes on an empty population -- the same shape as GH #365/#366. Verify a gate is live by feeding it a case it must reject, not only a case it must accept.
+
+### Pattern ID
+
+Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #366 gate_chain_completeness zero-session pass), here reached through a key-name mismatch rather than an empty selection. Countermeasure shipped this phase: test_discovery_surfaces_enumerate_every_canonical_dimension derives the canonical nine from the sweep's own headings and binds both selection surfaces to them; the framework-wide terms/terms_introduced mismatch gets its own issue at cycle end.
 
 ---
 
@@ -1971,6 +2051,26 @@ An enumeration that gates a breaking change must be derived from the same list t
 ### Pattern ID
 
 Second occurrence of the asserted-completeness family in one day (first: Phase 226 iteration 1, entry #593 -- test inventory asserted from prose). Family: SG-AssertedCompleteness-A -- a plan states an exhaustive inventory (tests, call sites, files) that the artifact surface contradicts; the audit's independent re-derivation catches it. Countermeasure candidate now warranted per #593's own note: extend the pre-audit lint family with an enumeration-verification pass (the plan names the functions whose shape changes; the lint greps each name and compares the hit count against the plan's declared site count). Enforcer: none yet; issue filed at cycle end.
+
+---
+
+## Entry: Phase 244 iteration 1 -- selection surfaces dropped a taxonomy dimension; glossary gate ran vacuously on a non-canonical key
+
+**Date**: 2026-08-30
+**Category**: SPECIFICATION-DRIFT
+**Verdict source**: GATE TRIBUNAL entry #634 (VETO, specification-drift + coverage-gap; independent reviewer)
+
+### What Happened
+
+Two defects survived the solo Judge pass and were caught only by the dispatched independent reviewer. First, the /qor-harden frontmatter description and the qor-help catalog row -- the two surfaces that decide when the skill is selected -- enumerated what read as the complete dimension list while omitting IQ-CONTEXT, the dimension most specific to the capability's purpose; SKILL.md's own Step 3 listed all nine, so the artifact contradicted itself. Second, the plan declared its introduced term under the markdown-template key name (terms_introduced) and the gate artifact carried that key into JSON; the doc-integrity glossary check reads the canonical key (terms), received an empty list, and reported success while inspecting nothing -- and the declared term had in fact never been registered in the glossary.
+
+### Pattern to Avoid
+
+A discovery/selection surface that enumerates a taxonomy must be bound to the taxonomy's canonical definition by a test that derives the expected set from the canonical artifact itself, not restated by hand. A schema with additionalProperties true plus a permissive reader (plan.get with a default) turns a key-name mismatch into a gate that passes on an empty population -- the same shape as GH #365/#366. Verify a gate is live by feeding it a case it must reject, not only a case it must accept.
+
+### Pattern ID
+
+Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #366 gate_chain_completeness zero-session pass), here reached through a key-name mismatch rather than an empty selection. Countermeasure shipped this phase: test_discovery_surfaces_enumerate_every_canonical_dimension derives the canonical nine from the sweep's own headings and binds both selection surfaces to them; the framework-wide terms/terms_introduced mismatch gets its own issue at cycle end.
 
 ---
 

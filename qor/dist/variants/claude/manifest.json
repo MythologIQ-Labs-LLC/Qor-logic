@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-18T04:17:11Z",
+  "generated_ts": "2026-08-30T23:38:17Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -201,10 +201,16 @@
       "sha256": "af5ed63fed4345955d60bd3941751e56ea7a9c01697b161b8a1fb19eaeaa0475"
     },
     {
+      "id": "qor-harden",
+      "source_path": "skills/qor-harden/SKILL.md",
+      "install_rel_path": "skills/qor-harden/SKILL.md",
+      "sha256": "3bb01c7158dffe3c9bcc6bd8b479dc07ed86c99756176bb7656a9f21e52f9d6b"
+    },
+    {
       "id": "qor-help",
       "source_path": "skills/qor-help/SKILL.md",
       "install_rel_path": "skills/qor-help/SKILL.md",
-      "sha256": "a5f0841b891044e7021877aa62c6f71ced9543748d5c6f5e3d13835c9b9e68c9"
+      "sha256": "71e8fccf8a3fcb9f42b38059d36c8671473d817abf34b6e9461e9d53f7a42d43"
     },
     {
       "id": "qor-ideate",

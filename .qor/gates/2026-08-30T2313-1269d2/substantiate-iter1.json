@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-08-30T2313-1269d2",
+  "ts": "2026-08-30T23:30:38Z",
+  "verdict": "PASS",
+  "merkle_seal": "f13824fa0ca17bcb80d52b1d0c0e0720eca8b89209f51fc39b765ff55ca27dab",
+  "ledger_entry": 637,
+  "version": "0.157.0",
+  "plan_path": "docs/plan-qor-phase244-qor-harden.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.157.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-08-30T23:30:38Z"
+  }
+}
