@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-18T04:17:12Z",
+  "generated_ts": "2026-08-30T23:04:22Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -141,10 +141,16 @@
       "sha256": "af5ed63fed4345955d60bd3941751e56ea7a9c01697b161b8a1fb19eaeaa0475"
     },
     {
+      "id": "command-qor-harden.md",
+      "source_path": "workflows/command-qor-harden.md",
+      "install_rel_path": "workflows/command-qor-harden.md",
+      "sha256": "4e69b297e002efaa85ce56b3fc2696b0703cf82abee5e2f23256cf3ddfdbd481"
+    },
+    {
       "id": "command-qor-help.md",
       "source_path": "workflows/command-qor-help.md",
       "install_rel_path": "workflows/command-qor-help.md",
-      "sha256": "a5f0841b891044e7021877aa62c6f71ced9543748d5c6f5e3d13835c9b9e68c9"
+      "sha256": "14d4645ffbee74a01225329892f15d7997f895b4857b63cd6808b550a932be94"
     },
     {
       "id": "command-qor-ideate.md",
