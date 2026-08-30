@@ -2,6 +2,8 @@
 
 This reference contains the example transformations and report templates used by /qor-refactor.
 
+The transformation examples below are illustrative and use TypeScript for concreteness. The pattern they show (decomposition, flattening, ternary elimination, renaming) applies regardless of language; discover the target environment's own idioms rather than porting these examples literally.
+
 ## Function Decomposition Example
 
 ```typescript
@@ -166,12 +168,14 @@ class EmailService {
 ```markdown
 ### Dependency Audit
 
-| Package | Used | Vanilla Possible | Recommendation  |
+| Package | Used | Stdlib Possible | Recommendation  |
 | ------- | ---- | ---------------- | --------------- |
 | lodash  | OK   | Yes (3 lines)    | REMOVE          |
 | dayjs   | OK   | No               | KEEP            |
 | uuid    | FAIL | N/A              | REMOVE (unused) |
 ```
+
+Column names generalize across ecosystems: "Package" may be a crate, module, or gem; "Stdlib Possible" asks whether the target language's own standard library replaces it in a small, justified amount of code.
 
 ## Section 4 Compliance Report (Template)
 
@@ -181,6 +185,49 @@ class EmailService {
 | File   | Lines   | Max Function | Max Nesting | Status |
 | ------ | ------- | ------------ | ----------- | ------ |
 | [path] | [X]/250 | [X]/40       | [X]/3       | OK/FAIL |
+```
+
+## Simplification Test Finding (Template)
+
+Record one of these per breach identified in Step 2, before touching code.
+
+```markdown
+### Finding: [file:line or symbol]
+
+1. Complexity removed: [description]
+2. Why unnecessary/obscuring: [reasoning]
+3. Contract that must remain unchanged: [tests / schema / type signature / invariant]
+4. Evidence for that contract: [pointer]
+5. Result actually easier to understand: YES/NO
+6. Removes a useful abstraction/boundary/defensive mechanism: YES/NO
+7. Behavior equivalence verifiable: YES/NO, [how]
+
+**Verdict**: APPLY / NO REFACTOR REQUIRED
+```
+
+## Post-Refactor Verification Report (Template)
+
+```markdown
+### Post-Refactor Verification
+
+- Behavior preserved: YES/NO/INCONCLUSIVE
+- Complexity reduced: YES/NO
+- Clarity improved: YES/NO/SUBJECTIVE
+- Contract weakened: YES/NO
+- Scope exceeded: YES/NO
+- Tests/checks executed: [command] -> [result]
+```
+
+## NO REFACTOR REQUIRED Report (Template)
+
+Use when the Simplification Test finds no justified change for a given breach.
+
+```markdown
+### No Refactor Required: [file:line or symbol]
+
+**Metric breach observed**: [e.g. function is 47 lines]
+**Simplification Test outcome**: [which question(s) failed and why]
+**Decision**: Existing implementation retained. No structural change applied.
 ```
 
 ## Ledger Entry (Template)
@@ -193,10 +240,11 @@ class EmailService {
 **Timestamp**: [ISO 8601]
 **Phase**: IMPLEMENT (refactor)
 **Author**: Specialist
-**Scope**: [single-file / multi-file]
+**Scope mode**: [changeset / focused / component / explicit]
+**Outcome**: [refactored / NO REFACTOR REQUIRED]
 
 **Changes**:
-- [summary of changes]
+- [summary of changes, or "none - see Simplification Test findings" for NO REFACTOR REQUIRED]
 
 **Content Hash**:
 ```
@@ -220,8 +268,10 @@ SHA256(content_hash + previous_hash)
 ```markdown
 ## Refactor Complete
 
+**Scope mode**: [changeset / focused / component / explicit]
 **Scope**: [file or directory]
 **Violations Fixed**: [count]
+**NO REFACTOR REQUIRED findings**: [count]
 **Files Modified**: [count]
 
 ### Changes Summary
