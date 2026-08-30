@@ -4,7 +4,7 @@ Canonical protocol for context-aware implementation-quality inspection in Qor-lo
 
 This protocol is agent-, host-, repository-, language-, framework-, provider-, forge-, runtime-, and deployment-agnostic. Specific tools, syntax, package ecosystems, and language idioms are discovered from the target environment rather than assumed here.
 
-Normative doctrine: `qor/references/doctrine-implementation-quality.md`.
+Normative doctrine: `qor/references/doctrine-code-quality.md`.
 
 ## Operating principle
 
