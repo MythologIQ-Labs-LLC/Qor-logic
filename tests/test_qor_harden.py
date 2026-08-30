@@ -6,7 +6,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SKILL = REPO_ROOT / "qor" / "skills" / "sdlc" / "qor-harden" / "SKILL.md"
-DOCTRINE = REPO_ROOT / "qor" / "references" / "doctrine-implementation-quality.md"
+DOCTRINE = REPO_ROOT / "qor" / "references" / "doctrine-code-quality.md"
 SWEEP = REPO_ROOT / "qor" / "references" / "implementation-quality-sweep.md"
 
 
@@ -22,18 +22,14 @@ def test_harden_skill_and_shared_quality_contract_exist():
 
 def test_harden_is_explicitly_environment_agnostic():
     text = _read(SKILL).lower()
-    for term in (
-        "agent",
-        "host",
-        "repository",
-        "language",
-        "framework",
-        "provider",
-        "forge",
-        "runtime",
-    ):
-        assert term in text
-    assert "never" in text and "infer ai authorship" in text
+    assert (
+        "agent-, model-, host-, repository-, language-, framework-, provider-, "
+        "forge-, runtime-, and deployment-agnostic"
+    ) in text
+    frontmatter = text.split("---", 2)[1]
+    assert "model_compatibility" not in frontmatter
+    assert "min_model_capability" not in frontmatter
+    assert "never** infer ai authorship" in text
 
 
 def test_harden_supports_all_scope_modes_and_dispositions():
