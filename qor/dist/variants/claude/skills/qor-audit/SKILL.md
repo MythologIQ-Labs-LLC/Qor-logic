@@ -472,11 +472,11 @@ For each plan claim in scope, verify against current code:
 qor-logic scripts runtime_contract_walk --plan <plan-path> || true
 ```
 
-Two further binding sub-passes run as part of this pass, with full procedures + rationale in `references/phase37-subpasses.md` (progressive disclosure per GH #92): the **Phase 72 iter-N>1 full re-walk** of the entire Locked Decision set (not the iter-N-1 diff; any sealed-infrastructure citation lacking inline grep-evidence -> `infrastructure-mismatch` VETO, even in an unchanged LD), and the **Phase 83 citation consumer-trace + Delivery-Branch Currency** sub-passes (an unreached citation or a stale `pr_target` -> `infrastructure-mismatch` VETO). See `qor/references/doctrine-shadow-genome-countermeasures.md` `SG-InfrastructureMismatch`, `SG-CitationDrift-A`, `SG-GrepShapedRunclaim-A`, and `SG-DeliveryBranchDrift-A`.
+Two further binding sub-passes run as part of this pass and VETO with `infrastructure-mismatch` on failure: the Phase 72 iter-N>1 full re-walk (not the iter-N-1 diff) of the Locked Decision set, per `SG-CitationDrift-A`; and the Phase 83 citation consumer-trace + Delivery-Branch Currency checks. Full procedures and SG doctrine citations (`SG-InfrastructureMismatch`, `SG-GrepShapedRunclaim-A`, `SG-DeliveryBranchDrift-A`): `references/phase37-subpasses.md` (progressive disclosure per GH #92).
 
 #### Filter-Stage Ordering Coherence (Phase 78 wiring; GH #47)
 
-For any function or method with a pipeline shape -- candidate set -> multiple filter stages -> selection -- verify the code executes a topological sort of the filter-stage dependency graph: a stage may not run before a stage that enforces a precondition it assumes (the canonical defect: `validate()` invoked elsewhere instead of as the first stage of `decide()`, so invalid candidates dominate selection). The pipeline-shape heuristic (Rust/Python/TS chain forms) and the 4-step coherence procedure (preconditions -> output invariants -> dependency graph -> topo-sort check) live in `references/phase37-subpasses.md`.
+For any function or method with a pipeline shape -- candidate set -> multiple filter stages -> selection -- verify the code executes a topological sort of the filter-stage dependency graph (no stage runs before a precondition it assumes). Heuristic, the canonical defect example, and the 4-step coherence procedure: `references/phase37-subpasses.md`.
 
 ```markdown
 ### Filter-Stage Ordering Coherence Audit

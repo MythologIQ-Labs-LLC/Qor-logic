@@ -290,3 +290,11 @@ takes one of these forms and never invokes the unit:
 Each passes as long as something exists with the right name, which is precisely
 the condition a silently broken unit still satisfies.
 
+## Binding VETO doctrine citations (moved from SKILL.md, Phase 357; GH #357)
+
+The iter-N>1 full re-walk and the Phase 83 citation consumer-trace +
+Delivery-Branch Currency checks both VETO with `infrastructure-mismatch` on
+failure. Doctrine: `qor/references/doctrine-shadow-genome-countermeasures.md`
+`SG-InfrastructureMismatch`, `SG-CitationDrift-A`, `SG-GrepShapedRunclaim-A`,
+and `SG-DeliveryBranchDrift-A`.
+
