@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-21T1829-780836",
+  "plan_path": "docs/plan-qor-phase235-consumer-contract-fixtures.md",
+  "plan_hash": "d3b76e8ecccd9817bd2cd781aba91528b9ecd0ad33ea8cd0618a47a293a19407",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "3f20c381f2e552c888ba4127ada67659f4ebb02e821ddbd95799934045689bf0",
+  "head_commit": "864bb8559e7249ba5e643c7ff0944d6e6f9c9a49",
+  "captured_ts": "2026-08-21T18:33:58.816672Z"
+}

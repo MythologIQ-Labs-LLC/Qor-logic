@@ -1,0 +1,8 @@
+{
+  "phase": "audit",
+  "ts": "2026-08-15T11:00:00Z",
+  "session_id": "fixture-consumer-contract-002",
+  "target": "docs/plan-example-feature-2.md",
+  "verdict": "VETO",
+  "risk_grade": "L3"
+}
