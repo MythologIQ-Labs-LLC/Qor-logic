@@ -4,6 +4,14 @@
 
 This table is the single source of truth for cross-skill handoffs. Every `/qor-*` skill must consult this when emitting "next action" guidance.
 
+## Shared doctrine and protocol reuse
+
+Delegation applies to **independently governed operations**. It does not require one skill to invoke another merely to use a shared Qor-logic invariant, taxonomy, checklist, or bounded protocol profile.
+
+For example, `/qor-plan`, `/qor-audit`, `/qor-implement`, `/qor-debug`, `/qor-refactor`, `/qor-substantiate`, and `/qor-deep-audit` may directly apply their lifecycle profiles from `qor/references/implementation-quality-sweep.md`. They delegate to `/qor-harden` only when an explicit, independently bounded implementation-quality review or repair pass is required.
+
+This distinction prevents both failure modes: inline reinvention of a real skill process, and ceremonial skill-calling for every shared invariant.
+
 ## Delegation matrix
 
 | Detector | Condition | Delegate to | Rationale |
@@ -24,11 +32,18 @@ This table is the single source of truth for cross-skill handoffs. Every `/qor-*
 | `qor-plan` | Plan complete | `/qor-audit` | next phase in chain |
 | `qor-plan` | Architectural restructuring needed | `/qor-organize` | organize owns directory topology |
 | `qor-implement` | Implementation complete | `/qor-substantiate` | next phase in chain |
+| `qor-implement` | Explicit broad implementation-quality secondary pass requested | `/qor-harden` | harden owns bounded latent-quality review/repair across multiple defect classes |
 | `qor-implement` | Mid-implement Razor bloat detected | `/qor-refactor` | refactor enforces Section 4 |
 | `qor-implement` | Regression / hallucination / degradation detected | `/qor-debug` | debug owns root-cause analysis |
 | `qor-refactor` | File-internal refactor reveals project-level issue | `/qor-organize` | scope escalation; organize handles project shape |
 | `qor-refactor` | Refactor complete | `/qor-audit` (re-audit) or `/qor-substantiate` (if mid-implement) | depends on entry point |
+| `qor-harden` | Observed failure has uncertain root cause | `/qor-debug` | harden detects quality defects; debug owns causal diagnosis |
+| `qor-harden` | Repair requires architecture/topology or product-intent change | `/qor-plan` or `/qor-organize` | quality repair cannot silently cross architecture/authority boundaries |
+| `qor-harden` | Confirmed task is purely structural simplification | `/qor-refactor` | refactor owns known code-shape simplification |
+| `qor-harden` | Process/governance failure is the root defect | `/qor-remediate` | workflow defect is not an implementation-quality repair |
+| `qor-harden` | Repair complete and independent proof is required | `/qor-substantiate` | substantiate owns prove-not-improve verification |
 | `qor-substantiate` | Section 4 violation detected post-build | `/qor-refactor` | enforce Razor before sealing |
+| `qor-substantiate` | Broad latent quality defect confirmed without uncertain root cause | `/qor-harden` (repair disposition) then return to `/qor-substantiate` | independent verifier detects; harden repairs; verifier re-checks |
 | `qor-substantiate` | Reality != Promise (missing files, broken tests) | `/qor-debug` (diagnose) then return to `/qor-implement` | diagnose root cause; don't reseal until fixed |
 | `qor-substantiate` | PASS verdict | `/qor-validate` (if formal validation phase needed) or `/qor-repo-release` | sealed; ready for downstream |
 | `qor-validate` | Repeat failure across cycles (3+ same root cause) | `/qor-remediate` | process-level concern, not code-level |
@@ -51,6 +66,7 @@ These skills are invokable from any phase. They have no chain prior, no chain su
 | `/qor-document` | Any time | Author / update governance docs |
 | `/qor-organize` | Any time (also as destination from `qor-audit` Orphan/Macro VETO) | Project-level structure |
 | `/qor-debug` | After any phase that emits regression / hallucination / degradation | Cross-cutting diagnosis |
+| `/qor-harden` | Explicit focused/changeset/component/comprehensive implementation-quality review or authorized repair | Cross-cutting quality sweep; uses shared implementation-quality doctrine/taxonomy; does not infer authorship |
 | `/qor-help` | Any time | Command catalog (display-only) |
 | `/qor-shadow-process` | Auto-invoked by override paths and capability-shortfall handlers | Append-only shadow event recorder |
 | `/qor-ab-run` | Operator wants A/B measurement evidence for persona-vs-stance Identity Activation on stance-critical skills (Phase 39b) | Parallel Task-tool subagent dispatch; produces `docs/phase39-ab-results.md` |
@@ -77,8 +93,8 @@ Bundles are not invoked AS handoff destinations — operators invoke them direct
 |---|---|---|
 | `/qor-deep-audit` | (decomposed; runs recon then remediate) | Pre-release readiness, large tech-debt sweeps |
 | `/qor-deep-audit-recon` | `/qor-research` (subagents) | Investigation only; ends at RESEARCH_BRIEF |
-| `/qor-deep-audit-remediate` | `/qor-plan` | Action half; consumes RESEARCH_BRIEF |
-| `/qor-onboard-codebase` | `/qor-research` | Inheriting / merging an external codebase |
+| `/qor-deep-audit-remediate` | `/qor-plan` | Action half; consumes the research brief |
+| `/qor-onboard-codebase` | `/qor-research` | Inheriting or merging an external codebase |
 | `/qor-onboard` | `/qor-ideate` | Tutorial: first governed session on one small real change |
 | `/qor-process-review-cycle` | `check_shadow_threshold.py` | Periodic process health check |
 
@@ -86,6 +102,7 @@ Bundles are not invoked AS handoff destinations — operators invoke them direct
 
 - **Inline reinvention**: `qor-audit` says "fix the 60-line function" without naming `/qor-refactor`. Reader interprets this as "do it yourself" rather than invoking the dedicated skill.
 - **Process invention in implementation**: `qor-implement` notices file is bloating, inlines its own Section 4 enforcement instead of pausing to `/qor-refactor`.
+- **Ceremonial delegation**: a lifecycle skill invokes `/qor-harden` merely to apply one shared implementation-quality invariant instead of using its bounded profile from the canonical protocol.
 - **Code-level fix for process problem**: regression keeps recurring; team writes more tests when the actual issue is the gate sequence (skipped audit, missing capability). `/qor-remediate` is the right tool.
 - **Scope creep within a skill**: `qor-refactor` notices the project is structurally a mess; instead of escalating to `/qor-organize`, it tries to do project-level reshaping inside a file-internal pass.
 
