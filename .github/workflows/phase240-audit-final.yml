@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: phase240-audit-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tribunal:
     if: github.event.pull_request.number == 380
@@ -29,10 +33,13 @@ jobs:
         run: |
           cp .github/phase240_audit.py /tmp/phase240_audit.py
           rm .github/phase240_audit.py .github/workflows/phase240-audit-final.yml
-          python /tmp/phase240_audit.py
+          PYTHON_BIN="$(command -v python)"
+          "$PYTHON_BIN" /tmp/phase240_audit.py
       - name: Validate audit gate
+        shell: bash
         run: |
-          python -c 'from pathlib import Path; from qor.scripts import validate_gate_artifact as v; p=Path(".qor/gates/2026-08-28T1956-6e0074/audit.json"); e=v.validate_one("audit", p); print("audit gate validation:", e or "OK"); raise SystemExit(1 if e else 0)'
+          PYTHON_BIN="$(command -v python)"
+          "$PYTHON_BIN" -c 'from pathlib import Path; from qor.scripts import validate_gate_artifact as v; p=Path(".qor/gates/2026-08-28T1956-6e0074/audit.json"); e=v.validate_one("audit", p); print("audit gate validation:", e or "OK"); raise SystemExit(1 if e else 0)'
       - name: Commit bounded audit evidence and retire harness
         shell: bash
         env:
