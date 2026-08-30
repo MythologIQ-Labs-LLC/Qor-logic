@@ -19,7 +19,6 @@ gate_writes: ""
 <skill>
   <trigger>/qor-harden</trigger>
   <phase>cross-cutting</phase>
-  <persona>Specialist</persona>
   <output>Evidence-backed quality findings, optional minimal repairs, verification results, and ship assessment</output>
 </skill>
 
@@ -27,11 +26,11 @@ gate_writes: ""
 
 Perform an explicit implementation-quality sweep without assuming who or what authored the implementation.
 
-`/qor-harden` evaluates the artifact in its actual environment. It does not detect AI authorship, grade code by resemblance to generated-code patterns, or impose one language's conventions on another environment.
+`/qor-harden` is deliberately agent-, model-, host-, repository-, language-, framework-, provider-, forge-, runtime-, and deployment-agnostic. It evaluates the artifact in its actual environment, does not detect AI authorship, does not grade code by resemblance to generated-code patterns, and does not impose one environment's conventions on another.
 
 Normative sources:
 
-- `qor/references/doctrine-implementation-quality.md`
+- `qor/references/doctrine-code-quality.md`
 - `qor/references/implementation-quality-sweep.md`
 
 Read them before classifying findings. The doctrine governs judgment; the sweep owns the canonical taxonomy. This skill owns the explicit review/repair workflow.
@@ -250,7 +249,7 @@ List unresolved findings, out-of-scope defects worth tracking, unavailable evide
 
 - **NEVER** infer AI authorship from implementation shape.
 - **NEVER** treat a generic anti-pattern heuristic as proof by itself.
-- **NEVER** impose a language, framework, package-manager, host, provider, forge, or runtime assumption that was not discovered from the target environment.
+- **NEVER** impose an agent, model, language, framework, package-manager, host, provider, forge, runtime, or deployment assumption that was not discovered from the target environment.
 - **NEVER** mutate implementation in `review` disposition.
 - **NEVER** widen mutation scope merely because unrelated defects were discovered.
 - **NEVER** replace causal debugging with speculative cleanup.
