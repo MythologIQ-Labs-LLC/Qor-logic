@@ -1281,7 +1281,7 @@ introduced_in_plan: phase162-ledger-base-currency
 ```
 ```yaml
 term: Negative constraint
-definition: 'An explicit prohibition rule injected into weak-tier-deployment skill variants (Phase 187, GH #243) because models running below a skill design tier follow positive structure well but infer implicit negative constraints poorly. Two canonical rules: NR-001 (never reproduce secret-shaped strings; refer by prefix or descriptor) and NR-002 (a mandatory rationale/definition slot with no source fact takes the literal text "not established" instead of an invented fact).'
+definition: 'An explicit prohibition rule binding unconditionally on every execution of a fabrication-risk skill (Phase 187, GH #243; made tier-independent at Phase 247 after the Phase 240 model-identity retirement), because weaker executors follow positive structure well but infer implicit negative constraints poorly and no declared tier exists to condition on. Two canonical rules: NR-001 (never reproduce secret-shaped strings; refer by prefix or descriptor) and NR-002 (a mandatory rationale/definition slot with no source fact takes the literal text "not established" instead of an invented fact).'
 home: qor/references/doctrine-negative-constraints.md
 referenced_by:
   - qor/scripts/dist_compile.py
