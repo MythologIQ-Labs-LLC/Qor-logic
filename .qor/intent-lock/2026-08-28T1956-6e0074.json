@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-28T1956-6e0074",
+  "plan_path": "docs/plan-qor-phase240-execution-context-governance.md",
+  "plan_hash": "89423402df37c1641d8e87a4662273c3e33b595d6348a0c9a6689e679d525196",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "0480a659066f0f78f29dcce414a4952392e8e85450ffa7556986d12f8ca0427c",
+  "head_commit": "e84f534d4dd8ac9ac67ab3858ebda819dcbd249b",
+  "captured_ts": "2026-08-31T01:13:51.215071Z"
+}

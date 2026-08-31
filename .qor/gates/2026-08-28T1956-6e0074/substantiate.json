@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-08-28T1956-6e0074",
+  "ts": "2026-08-31T01:16:32Z",
+  "verdict": "PASS",
+  "merkle_seal": "0c2cb46c9cf711abe59c84f5a9ee294290d843843ff18b84d1425d91e999cf74",
+  "ledger_entry": 644,
+  "version": "version-not-applicable",
+  "plan_path": "docs/plan-qor-phase240-execution-context-governance.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.158.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-08-31T01:16:32Z"
+  }
+}
