@@ -1,0 +1,38 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-31T0428-f6844d",
+  "ts": "2026-08-31T04:28:24Z",
+  "plan_path": "docs/plan-qor-phase245-qor-refactor-modernization.md",
+  "phases": [
+    "Phase 1: Contract rewrite (delivered by the relay implementation, promoted here)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_qor_refactor_scope_modernization.py -q",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest tests/ -q"
+  ],
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "originating_remediation": "GH #392",
+  "open_questions": [],
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "Tranche A modernizes the /qor-refactor contract only"
+    ],
+    "non_goals": [
+      "no /qor-simplify skill; no line-count minimization; no behavior/architecture/governance change under the guise of cleanup"
+    ],
+    "exclusions": [
+      "/qor-implement simplification profile is GH #392's follow-up tranche; /qor-harden consumed by reference"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.161.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-08-31T04:28:24Z"
+  }
+}

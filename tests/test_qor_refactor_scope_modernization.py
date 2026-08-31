@@ -114,7 +114,7 @@ def test_refactor_declares_the_harden_authority_boundary():
     for dim in ("IQ-COMPLEX", "IQ-CONTEXT", "IQ-MAINTAIN"):
         assert dim in refactor, f"refactor boundary omits {dim}"
         assert dim in sweep
-    assert "implementation-quality-sweep.md" in refactor
+    assert "implementation-quality-sweep.md" in refactor  # prose-lint: ok=prose contract; the boundary paragraph must cite the canonical sweep so the two surfaces cannot drift apart
     assert "/qor-refactor` remediation profile" in sweep or "qor-refactor` remediation profile" in sweep
 
 
@@ -157,11 +157,11 @@ def test_threshold_steps_route_through_the_simplification_test():
         Path(__file__).resolve().parents[1]
         / "qor" / "skills" / "sdlc" / "qor-refactor" / "SKILL.md"
     ).read_text(encoding="utf-8")
-    assert "triggers the Simplification Test; split into cohesive sub-functions only when" in text
-    assert "triggers the Simplification Test; split into cohesive modules only when" in text
+    assert "triggers the Simplification Test; split into cohesive sub-functions only when" in text  # prose-lint: ok=prose contract; pins the audited conditional form against reverting to the unconditional imperative
+    assert "triggers the Simplification Test; split into cohesive modules only when" in text  # prose-lint: ok=prose contract; pins the audited conditional form against reverting to the unconditional imperative
     assert "For each function exceeding 40 lines, split" not in text
     assert "For files exceeding 250 lines, split" not in text
     # the Step 4e boundary sentence was the third F2 imperative; pin its
     # conditional form and the absence of the unconditional one
-    assert "Any finding here triggers the Simplification Test" in text
+    assert "Any finding here triggers the Simplification Test" in text  # prose-lint: ok=prose contract; pins the Step 4e conditional form (audit F2 third imperative)
     assert "If any violation is found, refactor to restore" not in text

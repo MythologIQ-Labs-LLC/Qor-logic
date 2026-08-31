@@ -19504,6 +19504,61 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; admission + matrix OK (32 skills, 152 handoffs, 0 broken); secret-scan clean; dod-check OK; merge-velocity OK; skill-size-budget 0 EXCEEDED; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `4658e42b0add`); feature-index 27/27 verified (FX027 new); doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (406 files); roadmap suites 16/16 twice. Full suite run twice for determinism post-seal (counts in the seal commit).
 
+### Entry #657: GATE TRIBUNAL -- Phase 245 qor-refactor modernization, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-31T04:30:04Z
+**Phase**: GATE (Phase 245)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase245-qor-refactor-modernization.md (iteration 1)
+**Session**: 2026-08-31T0428-f6844d
+**Mode**: adversarial -- independent code-reviewer over the promoted Tranche A delta
+
+**Content Hash**: `aca50aaaae8ff653f2d82e76dd0b5ea38bc783ec25b08f6b9427c4ae206860da`
+**Previous Hash**: `9d71317a4a97e4c1231adcbcfa48800c4ddc5780f64fd4620d071d044350b864`
+**Chain Hash (Merkle seal)**: `9213e693035e8d49795ad274c3b7c81d43c713f6f40bcd294e20042c5558bfb4`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift (two mandating findings). Attempt 1 of 5.
+
+**THE COMPLETION GATE WAS INVERTED ON THE HEADLINE INVARIANT.** The post-refactor gate blocked completion exactly when the contract was NOT weakened and let a weakened contract complete, shipped into all six compiled variants. Root cause named by the reviewer: the suite asserted the verification FIELD NAMES, not what the fields do, so 11/11 stayed green around an inverted gate -- the same presence-vs-behavior class the arc has now hit at Phases 244, 243, and 239. F2: three Section 4 sub-steps remained unconditional split imperatives contradicting the document's own examination-not-forced-decomposition rule, with no Simplification Test off-ramp on the path an executing agent actually follows.
+
+**Next**: fix polarity + route the sub-steps through the Simplification Test, pin both with property tests, recompile, re-audit.
+
+### Entry #658: GATE TRIBUNAL -- Phase 245 qor-refactor modernization, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-31T04:30:04Z
+**Phase**: GATE (Phase 245)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase245-qor-refactor-modernization.md (iteration 2)
+**Session**: 2026-08-31T0428-f6844d
+**Mode**: adversarial -- fixes re-verified at source and across all six variants by the same reviewer; cleared to seal
+
+**Content Hash**: `e5bd921250f46f9f858dfd5bb87608e73de9dc1593b4ac1f01c5c36b94ab5e1b`
+**Previous Hash**: `9213e693035e8d49795ad274c3b7c81d43c713f6f40bcd294e20042c5558bfb4`
+**Chain Hash (Merkle seal)**: `47ac5958811a6cc0365a746a0ad8eaf29b8fe0a5b765a33301795abaebe14c9c`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5.
+
+**THE GATE BLOCKS ON THE BAD OUTCOMES AND PROPERTY TESTS PIN IT.** Completion blocks on YES contract-weakened, YES scope-exceeded, or NO/INCONCLUSIVE behavior-preserved -- the reviewer noted folding the primary invariant into the gate is stronger than requested and confirmed the inverted sentence greps to zero across qor/dist while the conditional Simplification Test form appears exactly three times in each variant. The polarity test asserts direction (correct form present, inverted form absent, behavior-preserved bad-outcome explicit per the reviewer's residual note); the threshold test pins all three sub-steps including the Step 4e boundary sentence. Focused suite 13/13; variants 406 files drift clean. Reviewer confirmations: all Tranche A acceptance criteria met; JS/TS fully demoted; governance wiring preserved; harden boundary consistent with the sweep and delegation table; publication boundary clean.
+
+**Next**: /qor-implement record, then /qor-substantiate (v0.162.0).
+
+### Entry #659: IMPLEMENTATION -- Phase 245 qor-refactor modernization
+
+**Timestamp**: 2026-08-31T04:30:05Z
+**Phase**: IMPLEMENT (Phase 245)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase245-qor-refactor-modernization.md (PASS at entry #658)
+**Session**: 2026-08-31T0428-f6844d
+
+**Content Hash**: `92afe7b2933a3145cbcb50b2fdf14b0354118d48ea273b54eac4631e8f0d0d3c`
+**Previous Hash**: `47ac5958811a6cc0365a746a0ad8eaf29b8fe0a5b765a33301795abaebe14c9c`
+**Chain Hash (Merkle seal)**: `0311f4c0414b62e201ff021f3c02fdcb042994b7dcc09d5c81dc350cd10d94c1`
+
+**Decision**: **Decision**: Phase 245 implementation record (GH #392 Tranche A, PR #393). The contract rewrite arrived through a relay handoff that disclosed its skipped ceremony and correctly refused to fabricate the then-absent harden taxonomy; this promotion integrates it on the governed head. Delivered: rewritten qor/skills/sdlc/qor-refactor/SKILL.md (behavior preservation primary; scopes changeset/focused/component/explicit with no silent widening; seven-question Simplification Test; corrected completion gate; NO REFACTOR REQUIRED as success; environment discovery replacing JS/TS assumptions), illustrative-labeled examples reference with report templates, the Phase 244 harden authority boundary with its sweep-binding test, tests/test_qor_refactor_scope_modernization.py (13 tests incl. the polarity and threshold-routing property tests), and recompiled variants (406 files, drift clean). Governance wiring untouched. GH #392's /qor-implement tranche remains open as the declared residual.
+
 ---
 
 *Chain integrity: VALID*
