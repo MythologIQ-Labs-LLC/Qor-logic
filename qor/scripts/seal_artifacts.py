@@ -172,7 +172,12 @@ def _check_header(repo_root: Path) -> list[str]:
     if header is None or snapshot is None:
         return ["header: SYSTEM_STATE Snapshot/Phase markers missing"]
     if sealed:
-        latest = max(sealed)
+        # Phase 243 (GH #389): file-order-last, not max(). The ledger is
+        # append-only, so the most recent seal is the last SESSION SEAL entry
+        # in file order; phases do not always seal in ascending numeric order
+        # (Phase 244 merged before Phase 243), and the header must describe
+        # the seal that actually landed last.
+        latest = sealed[-1]
         got = int(header.group(2))
         # Phase 224 (GH #334): equality, not `latest <= got <= latest + 1`. The
         # one-step window existed only to absorb Step 6 writing the header for

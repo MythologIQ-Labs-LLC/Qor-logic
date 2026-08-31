@@ -11,6 +11,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Mapping
 
@@ -65,7 +66,21 @@ def _validate_gate_step(skill_name: str, step_num: str, root: Path, raw: str) ->
     SKILL.md or, under progressive disclosure, in one of its references/*.md
     files -- both are searched.
     """
-    matches = sorted((root / "qor" / "skills").glob(f"*/{skill_name}"))
+    corpus = root / "qor" / "skills"
+    if not corpus.is_dir():
+        # Phase 243 iteration 2 (independent-audit V2): a consumer workspace
+        # that pip-installed qor-logic has no <repo_root>/qor/skills tree --
+        # skills install into host directories (.claude/skills/, ...), never
+        # into the consumer repo. Heading resolution is impossible there, so
+        # fall back to the pre-#364 shape-only acceptance as a DISCLOSED
+        # degradation instead of rejecting every gate-step enforcer downstream.
+        sys.stderr.write(
+            f"INFO [closure_enforcer]: no skill corpus at {corpus}; gate-step "
+            f"reference {raw!r} accepted on shape only (heading resolution "
+            "requires the Qor-logic source tree)\n"
+        )
+        return
+    matches = sorted(corpus.glob(f"*/{skill_name}"))
     if not matches:
         raise ClosureEnforcerError(f"no installed skill named {skill_name!r}: {raw}")
     skill_dir = matches[0]

@@ -21,6 +21,7 @@ home: qor/references/doctrine-documentation-integrity.md
 referenced_by:
   - CLAUDE.md
   - qor/gates/delegation-table.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
   - qor/skills/sdlc/qor-plan/SKILL.md
   - qor/skills/sdlc/qor-plan/references/step-extensions.md
   - qor/skills/memory/log-decision.md

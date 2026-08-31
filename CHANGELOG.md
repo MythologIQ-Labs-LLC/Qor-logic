@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.158.0] - 2026-08-31
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 243 (feature; governed promotion of completed relay hotfixes, GH #389)**: consolidates eight completed relay fixes onto one governed head. `ledger_hash` now hard-FAILs duplicate entry numbers (a ledger fork) on both the `verify` and post-anchor release-gate surfaces and no longer disarms sequence-continuity checking for bare duplicate-previous_hash members (GH #361); a labeled but unparseable hash field fails post-anchor verification instead of silently dropping the entry from the verified surface (GH #363); `gate_chain_completeness` reports `zero_population` distinctly instead of claiming completeness over zero inspected sessions, with seal-entry regression coverage (GH #366, first two asks; the phase-optional selection residual is split to GH #395); `feature_index_verify` accepts the `Status` column alias (GH #365); `secret_scanner` gains a consumer-extensible allowlist surface at `.qor/secret-scanner-allowlist` with stderr disclosure, leaving this repository's default posture unchanged (GH #359); `repeated_veto_pattern` events gain a classifier rule and remediation proposal mapping so the event class can close (GH #362); `closure_enforcer` module and gate-step forms are validated behaviorally rather than on importability/shape alone (GH #364); `/qor-audit` recovers real skill-size-budget headroom through progressive disclosure into its phase37-subpasses reference, with compiled variants regenerated (GH #357).
+
 ## [0.157.0] - 2026-08-30
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

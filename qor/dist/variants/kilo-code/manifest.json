@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-30T23:52:54Z",
+  "generated_ts": "2026-08-31T00:33:46Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -108,7 +108,7 @@
       "id": "qor-audit",
       "source_path": "skills/qor-audit/references/phase37-subpasses.md",
       "install_rel_path": "skills/qor-audit/references/phase37-subpasses.md",
-      "sha256": "5446a8553dbeb77b07ce31a368d33e6d2e426613890cc2daab2e05b4c5dc1a68"
+      "sha256": "275206c76c5ab4f2274cc5d39bad869b6978f02af1b4f6b401ff16777fe51c40"
     },
     {
       "id": "qor-audit",

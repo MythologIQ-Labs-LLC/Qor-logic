@@ -19137,6 +19137,87 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; admission + matrix OK (31 skills, 147 handoffs, 0 broken); secret-scan clean; procedural-fidelity WARN doc-surface (resolved in this commit: SYSTEM_STATE + CHANGELOG); dod-check OK; merge-velocity OK (exit 0); skill-size-budget 3 WARN / 0 EXCEEDED, exit 0; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent in this repository's toolkit; event `73dba7ae52b9`); feature-index 25/25 verified, surface-lint disclosed-SKIP (no Surface column); doc-integrity strict OK with the declared term actually inspected; governance-index advanced + enforced OK; publication-boundary 0 findings; dist recompiled, variant drift clean (400 files). Full suite green locally, run twice for determinism (counts recorded in the seal commit).
 
+### Entry #638: GATE TRIBUNAL -- Phase 243 relay-hotfix promotion, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-31T00:11:19Z
+**Phase**: GATE (Phase 243)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase243-relay-hotfix-promotion.md (iteration 1)
+**Session**: 2026-08-30T2353-72cee7
+**Mode**: adversarial -- solo Judge diff walk plus independent code-reviewer subagent (option_b_required false; dispatched at operator direction)
+
+**Content Hash**: `1971ef3f6c22b61dee01cb3f22901b0f56d3f28f2596bd9d05e967dfdfc85dbf`
+**Previous Hash**: `f13824fa0ca17bcb80d52b1d0c0e0720eca8b89209f51fc39b765ff55ca27dab`
+**Chain Hash (Merkle seal)**: `81905b2d5ef362e1d6dcbe500db0cdfa0095b7c8eba0892a48d2c3167ea6cf6f`
+
+**Decision**: **Verdict**: **VETO** -- test-failure + infrastructure-mismatch (two mandating findings, both from the independent reviewer, both on the GH #364 fix). Attempt 1 of 5.
+
+**SEVEN OF EIGHT FIXES CLEARED; THE EIGHTH FAILED IN BOTH DIRECTIONS.** The reviewer explicitly cleared cross-fix interference on the two merge-overlap surfaces (ledger_hash.py carries #361 and #363 intact with the duplicate check on both verify and post-anchor surfaces and the tolerance narrowed to reconciled|grandfathered; test_remediate.py carries #362 plus the shared helpers) and confirmed the #366 zero-population fix does not weaken the CI merge gate. The #364 tightening failed twice: its batch-blocking test passed for the wrong reason (with repo_root=tmp_path the intended-valid gate-step member failed corpus resolution first, so deleting the four-forms rejection left the test green -- the exact anti-pattern the sibling test file documents as forbidden), and the tightened gate-step form globbed a source-tree-only qor/skills path, so every consumer workspace's gate-step closure_enforcer would raise where the pre-#364 shape check had worked.
+
+**Amendment path**: stage a real Step heading under the test's repo_root and pre-validate the intended-valid member; red-prove by neutering the rejection; add a disclosed shape-only fallback for corpus-less consumer trees with its own regression test; split the semantic-relevance residual to its own issue; fix the Phase-357 typo.
+
+**Next**: /qor-plan (amend iteration 2), then /qor-audit.
+
+### Entry #639: GATE TRIBUNAL -- Phase 243 relay-hotfix promotion, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-31T00:11:19Z
+**Phase**: GATE (Phase 243)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase243-relay-hotfix-promotion.md (iteration 2)
+**Session**: 2026-08-30T2353-72cee7
+**Mode**: adversarial -- iteration-1 findings re-verified closed by execution
+
+**Content Hash**: `c9d4749047b5f4114e86b9a505518d354256e5549cec78a429e4ecdf9402729d`
+**Previous Hash**: `81905b2d5ef362e1d6dcbe500db0cdfa0095b7c8eba0892a48d2c3167ea6cf6f`
+**Chain Hash (Merkle seal)**: `7f95196fb085583d8c580dcdca8572fd836478a633d175b133600df5c39c82a7`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5.
+
+**THE GUARD WAS RED-PROVED, NOT ASSERTED.** V1 closed: the batch-blocking test stages a real Step 4 heading under tmp_path/qor/skills and pre-validates the intended-valid member; the red-proof was executed (temporarily neutering the four-forms rejection turns the test red; restored, re-verified green twice). V2 closed: _validate_gate_step falls back to shape-only acceptance with a stderr disclosure when the repo_root carries no qor/skills corpus, and test_gate_step_form_survives_consumer_shaped_tree pins the disclosed fallback, the shape rejection on the consumer tree, and corpus-present resolution enforcement. Residuals tracked, not erased: GH #395 (phase-optional consumer-ledger selection, from #366) and GH #396 (closure-enforcer semantic relevance, from #364). Typo fix (Phase 357 -> Phase 243) recompiled into all six dist variants; drift clean at 400 files. Enforcer suites 58/58 twice; focused promotion suites 141/141; full suite 3079 passed / 6 skipped, run twice for determinism on the rebased head. Non-blocking observations recorded in the report (allowlist token-length recommendation, missing AUDIT_MOVED guard for the #357 relocation, repeated-VETO advisory for phases 234/244).
+
+**Next**: /qor-implement record (ceremony-after-code disclosed), then /qor-substantiate (v0.158.0).
+
+### Entry #640: IMPLEMENTATION -- Phase 243 relay-hotfix promotion
+
+**Timestamp**: 2026-08-31T00:11:19Z
+**Phase**: IMPLEMENT (Phase 243)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase243-relay-hotfix-promotion.md (PASS at entry #639)
+**Session**: 2026-08-30T2353-72cee7
+
+**Content Hash**: `780963294e122092a9df0bf9ebb3eab590d8b115d45e8d4bd64917089d265ad3`
+**Previous Hash**: `7f95196fb085583d8c580dcdca8572fd836478a633d175b133600df5c39c82a7`
+**Chain Hash (Merkle seal)**: `e9e4218e7c0738ea31c3ecf9129fcf76221cef3c34956d43a3797bb0abd97530`
+
+**Decision**: **Decision**: Phase 243 implementation record (GH #389, PR #390). The eight fixes were implemented and tested on relay branches that disclosed their missing ceremonies; this phase integrates them on one head based on current main and completes the governance honestly rather than fabricating the relay artifacts. Integrated: ledger fork enforcement with duplicate-entry-number FAIL on both verify and post-anchor surfaces and gated sequence-break tolerance (GH #361); labeled-but-unparseable hash fields fail post-anchor verification (GH #363); gate_chain_completeness zero-population honesty with seal-entry regression coverage (GH #366; residual -> GH #395); FEATURE_INDEX Status alias (GH #365); consumer-extensible secret-scanner allowlist with stderr disclosure, default posture unchanged for this repository (GH #359); repeated_veto_pattern classifier rule and remediation proposal (GH #362); closure_enforcer behavioral validation with iteration-2 consumer-tree fallback (GH #364; residual -> GH #396); qor-audit skill-size headroom via progressive disclosure plus the dist-variant recompile the relay branch omitted (GH #357). Tests: enforcer suites 58/58 twice; focused suites 141/141; full suite 3079/3079 twice on the rebased head; check_variant_drift clean; publication_boundary_lint 0 findings.
+
+### Entry #641: SESSION SEAL -- Phase 243 relay-hotfix promotion GH #389 (v0.158.0)
+
+**Timestamp**: 2026-08-31T00:16:34Z
+**Phase**: SEAL (Phase 243)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `0c44cf2a7cb0`
+**Plan**: docs/plan-qor-phase243-relay-hotfix-promotion.md (iteration 2; PASS at entry #639)
+**Session**: 2026-08-30T2353-72cee7
+**Change Class**: feature (0.157.0 -> 0.158.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PS.3.1, PS.3.2, PW.1.1, PW.4.1, PW.5.1, RV.2.1
+
+**Content Hash**: `a2be33052260fc4eb094bfd4762bb8ef6966e48a6ec3c68664f7af1c42b0dced`
+**Previous Hash**: `e9e4218e7c0738ea31c3ecf9129fcf76221cef3c34956d43a3797bb0abd97530`
+**Chain Hash (Merkle seal)**: `eefe9131426e8aa6f6d77b1fb4c0e944aa2684ce33987c1883631736c9513c44`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 25 / verified: 25 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 243 (GH #389, PR #390): eight completed relay hotfixes reach main through one governed promotion -- ledger-fork enforcement (duplicate-entry-number FAIL on verify and post-anchor surfaces; gated sequence-break tolerance, GH #361), post-anchor failure of labeled-but-unparseable hash fields (GH #363), gate_chain_completeness zero-population honesty (GH #366), FEATURE_INDEX Status alias (GH #365), consumer-extensible secret-scanner allowlist with disclosure and unchanged default posture here (GH #359), repeated_veto_pattern classifier + proposal (GH #362), closure_enforcer behavioral validation with a disclosed shape-only fallback for corpus-less consumer trees (GH #364), and qor-audit headroom recovery with the omitted dist recompile completed (GH #357). The relay branches disclosed their missing ceremonies; this phase's ceremony governs the integrated head per the Phase 235 precedent. The tribunal's independent-reviewer iteration VETOed two real GH #364 defects (wrong-member test raise; consumer-tree universal rejection); iteration 2 closed both with an executed red-proof and a consumer-shaped-tree regression test. Residuals tracked, not erased: GH #395 (phase-optional consumer-ledger selection) and GH #396 (closure-enforcer semantic relevance). Two seal-time discoveries were fixed red-then-green rather than tolerated: the strict doc-integrity gate forced registration of phase37-subpasses.md as a glossary Doctrine consumer, and the seal-artifact header check's max(sealed-phase) proxy misreported this out-of-numeric-order seal (Phase 244 merged before 243) as drift -- now file-order-last, which the append-only ledger makes the true most-recent seal, with a regression test pinning both directions.
+
+**GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; procedural-fidelity WARN doc-surface (resolved in this commit: SYSTEM_STATE + CHANGELOG); dod-check OK; merge-velocity OK; skill-size-budget 1 WARN / 0 EXCEEDED; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `ffb1f3cf935d`); feature-index 25/25 verified; doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (400 files); seal_artifacts --check OK. Full suite run twice for determinism post-seal (counts in the seal commit); enforcer suites 58/58 twice; focused promotion suites 141/141.
+
 ---
 
 *Chain integrity: VALID*

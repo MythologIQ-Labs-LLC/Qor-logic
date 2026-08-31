@@ -410,6 +410,26 @@ Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #3
 
 ---
 
+## Entry: Phase 243 iteration 1 -- a tightened contract's own test raised on the wrong member, and the tightening broke every consumer tree
+
+**Date**: 2026-08-31
+**Category**: TEST-INTEGRITY
+**Verdict source**: GATE TRIBUNAL entry #638 (VETO, test-failure + infrastructure-mismatch; independent reviewer)
+
+### What Happened
+
+The GH #364 tightening (closure_enforcer gate-step references resolve against real Step headings) shipped with a batch-blocking test whose intended-valid member could not validate under the test's own repo_root -- the raise fired on the wrong member, so deleting the four-forms rejection left the test green. The same tightening globbed a source-tree-only path (qor/skills), so every consumer workspace's gate-step enforcer would have raised: the fix that closed a vacuous acceptance created a universal rejection downstream.
+
+### Pattern to Avoid
+
+A test that asserts 'invalid input X is rejected' must first prove its valid fixture is actually valid under the test's own environment, or the rejection it observes may come from the fixture, not from X -- pin it with an explicit pre-validation call. And a validation that resolves against repository-layout assumptions must declare what happens where the layout does not exist; silence defaults to rejection-everywhere, which is a consumer regression the source repo's own suite cannot see. Red-proof the guard (neuter the rejection, watch the test fail) before claiming coverage.
+
+### Pattern ID
+
+Wrong-reason-red family: the sibling test file already documented the rule ('the pre-change red must be no error raised, never a wrong-reason error') and the new test violated it anyway -- doctrine text without a mechanical guard did not prevent recurrence. Countermeasures shipped this phase: the staged-corpus pre-validation in the test itself, the disclosed shape-only consumer fallback with its own regression test, and the executed red-proof recorded in the tribunal entry.
+
+---
+
 *Shadow integrity: ACTIVE*
 
 
@@ -490,6 +510,26 @@ Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #3
 
 ---
 
+## Entry: Phase 243 iteration 1 -- a tightened contract's own test raised on the wrong member, and the tightening broke every consumer tree
+
+**Date**: 2026-08-31
+**Category**: TEST-INTEGRITY
+**Verdict source**: GATE TRIBUNAL entry #638 (VETO, test-failure + infrastructure-mismatch; independent reviewer)
+
+### What Happened
+
+The GH #364 tightening (closure_enforcer gate-step references resolve against real Step headings) shipped with a batch-blocking test whose intended-valid member could not validate under the test's own repo_root -- the raise fired on the wrong member, so deleting the four-forms rejection left the test green. The same tightening globbed a source-tree-only path (qor/skills), so every consumer workspace's gate-step enforcer would have raised: the fix that closed a vacuous acceptance created a universal rejection downstream.
+
+### Pattern to Avoid
+
+A test that asserts 'invalid input X is rejected' must first prove its valid fixture is actually valid under the test's own environment, or the rejection it observes may come from the fixture, not from X -- pin it with an explicit pre-validation call. And a validation that resolves against repository-layout assumptions must declare what happens where the layout does not exist; silence defaults to rejection-everywhere, which is a consumer regression the source repo's own suite cannot see. Red-proof the guard (neuter the rejection, watch the test fail) before claiming coverage.
+
+### Pattern ID
+
+Wrong-reason-red family: the sibling test file already documented the rule ('the pre-change red must be no error raised, never a wrong-reason error') and the new test violated it anyway -- doctrine text without a mechanical guard did not prevent recurrence. Countermeasures shipped this phase: the staged-corpus pre-validation in the test itself, the disclosed shape-only consumer fallback with its own regression test, and the executed red-proof recorded in the tribunal entry.
+
+---
+
 *Shadow integrity: ACTIVE*
 
 
@@ -537,6 +577,26 @@ Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #3
 
 ---
 
+## Entry: Phase 243 iteration 1 -- a tightened contract's own test raised on the wrong member, and the tightening broke every consumer tree
+
+**Date**: 2026-08-31
+**Category**: TEST-INTEGRITY
+**Verdict source**: GATE TRIBUNAL entry #638 (VETO, test-failure + infrastructure-mismatch; independent reviewer)
+
+### What Happened
+
+The GH #364 tightening (closure_enforcer gate-step references resolve against real Step headings) shipped with a batch-blocking test whose intended-valid member could not validate under the test's own repo_root -- the raise fired on the wrong member, so deleting the four-forms rejection left the test green. The same tightening globbed a source-tree-only path (qor/skills), so every consumer workspace's gate-step enforcer would have raised: the fix that closed a vacuous acceptance created a universal rejection downstream.
+
+### Pattern to Avoid
+
+A test that asserts 'invalid input X is rejected' must first prove its valid fixture is actually valid under the test's own environment, or the rejection it observes may come from the fixture, not from X -- pin it with an explicit pre-validation call. And a validation that resolves against repository-layout assumptions must declare what happens where the layout does not exist; silence defaults to rejection-everywhere, which is a consumer regression the source repo's own suite cannot see. Red-proof the guard (neuter the rejection, watch the test fail) before claiming coverage.
+
+### Pattern ID
+
+Wrong-reason-red family: the sibling test file already documented the rule ('the pre-change red must be no error raised, never a wrong-reason error') and the new test violated it anyway -- doctrine text without a mechanical guard did not prevent recurrence. Countermeasures shipped this phase: the staged-corpus pre-validation in the test itself, the disclosed shape-only consumer fallback with its own regression test, and the executed red-proof recorded in the tribunal entry.
+
+---
+
 *Shadow integrity: ACTIVE*
 
 
@@ -580,6 +640,26 @@ A discovery/selection surface that enumerates a taxonomy must be bound to the ta
 ### Pattern ID
 
 Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #366 gate_chain_completeness zero-session pass), here reached through a key-name mismatch rather than an empty selection. Countermeasure shipped this phase: test_discovery_surfaces_enumerate_every_canonical_dimension derives the canonical nine from the sweep's own headings and binds both selection surfaces to them; the framework-wide terms/terms_introduced mismatch gets its own issue at cycle end.
+
+---
+
+## Entry: Phase 243 iteration 1 -- a tightened contract's own test raised on the wrong member, and the tightening broke every consumer tree
+
+**Date**: 2026-08-31
+**Category**: TEST-INTEGRITY
+**Verdict source**: GATE TRIBUNAL entry #638 (VETO, test-failure + infrastructure-mismatch; independent reviewer)
+
+### What Happened
+
+The GH #364 tightening (closure_enforcer gate-step references resolve against real Step headings) shipped with a batch-blocking test whose intended-valid member could not validate under the test's own repo_root -- the raise fired on the wrong member, so deleting the four-forms rejection left the test green. The same tightening globbed a source-tree-only path (qor/skills), so every consumer workspace's gate-step enforcer would have raised: the fix that closed a vacuous acceptance created a universal rejection downstream.
+
+### Pattern to Avoid
+
+A test that asserts 'invalid input X is rejected' must first prove its valid fixture is actually valid under the test's own environment, or the rejection it observes may come from the fixture, not from X -- pin it with an explicit pre-validation call. And a validation that resolves against repository-layout assumptions must declare what happens where the layout does not exist; silence defaults to rejection-everywhere, which is a consumer regression the source repo's own suite cannot see. Red-proof the guard (neuter the rejection, watch the test fail) before claiming coverage.
+
+### Pattern ID
+
+Wrong-reason-red family: the sibling test file already documented the rule ('the pre-change red must be no error raised, never a wrong-reason error') and the new test violated it anyway -- doctrine text without a mechanical guard did not prevent recurrence. Countermeasures shipped this phase: the staged-corpus pre-validation in the test itself, the disclosed shape-only consumer fallback with its own regression test, and the executed red-proof recorded in the tribunal entry.
 
 ---
 
@@ -2071,6 +2151,26 @@ A discovery/selection surface that enumerates a taxonomy must be bound to the ta
 ### Pattern ID
 
 Vacuous-gate family (kin to GH #365 feature_index_verify zero-row pass and GH #366 gate_chain_completeness zero-session pass), here reached through a key-name mismatch rather than an empty selection. Countermeasure shipped this phase: test_discovery_surfaces_enumerate_every_canonical_dimension derives the canonical nine from the sweep's own headings and binds both selection surfaces to them; the framework-wide terms/terms_introduced mismatch gets its own issue at cycle end.
+
+---
+
+## Entry: Phase 243 iteration 1 -- a tightened contract's own test raised on the wrong member, and the tightening broke every consumer tree
+
+**Date**: 2026-08-31
+**Category**: TEST-INTEGRITY
+**Verdict source**: GATE TRIBUNAL entry #638 (VETO, test-failure + infrastructure-mismatch; independent reviewer)
+
+### What Happened
+
+The GH #364 tightening (closure_enforcer gate-step references resolve against real Step headings) shipped with a batch-blocking test whose intended-valid member could not validate under the test's own repo_root -- the raise fired on the wrong member, so deleting the four-forms rejection left the test green. The same tightening globbed a source-tree-only path (qor/skills), so every consumer workspace's gate-step enforcer would have raised: the fix that closed a vacuous acceptance created a universal rejection downstream.
+
+### Pattern to Avoid
+
+A test that asserts 'invalid input X is rejected' must first prove its valid fixture is actually valid under the test's own environment, or the rejection it observes may come from the fixture, not from X -- pin it with an explicit pre-validation call. And a validation that resolves against repository-layout assumptions must declare what happens where the layout does not exist; silence defaults to rejection-everywhere, which is a consumer regression the source repo's own suite cannot see. Red-proof the guard (neuter the rejection, watch the test fail) before claiming coverage.
+
+### Pattern ID
+
+Wrong-reason-red family: the sibling test file already documented the rule ('the pre-change red must be no error raised, never a wrong-reason error') and the new test violated it anyway -- doctrine text without a mechanical guard did not prevent recurrence. Countermeasures shipped this phase: the staged-corpus pre-validation in the test itself, the disclosed shape-only consumer fallback with its own regression test, and the executed red-proof recorded in the tribunal entry.
 
 ---
 
