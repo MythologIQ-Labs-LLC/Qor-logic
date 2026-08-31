@@ -25,14 +25,16 @@ DEFAULT_OUT = Path(str(_resources.asset("dist")))
 TARGETS = ("claude", "kilo-code", "codex", "gemini", "cursor", "cline")
 
 # Phase 187 (GH #243): skills whose mandatory verdict/rationale/definition
-# slots create fabrication pressure when executed below their design tier.
+# slots create fabrication pressure regardless of the executing model.
 _FABRICATION_RISK_SKILLS = {"qor-audit", "qor-plan", "qor-substantiate"}
 
-NEGATIVE_CONSTRAINTS_BLOCK = """## Negative Constraints (Below-Design-Tier Execution)
+NEGATIVE_CONSTRAINTS_BLOCK = """## Negative Constraints (Binding on Every Execution)
 
-This skill declares a `min_model_capability` above some deployment tiers. When
-executing on a weaker model, these rules are binding
-(`qor/references/doctrine-negative-constraints.md`):
+This is a fabrication-risk skill: its mandatory verdict/rationale/definition
+slots create fabrication pressure. These rules are binding on every execution,
+independent of model identity, host, tier, or provider
+(`qor/references/doctrine-negative-constraints.md`; Phase 240: model identity
+is provenance, not execution authority):
 
 - **NR-001 (secret shapes)**: never reproduce a secret-shaped string (API keys,
   tokens, credential values). Refer to it by prefix or descriptor only, even

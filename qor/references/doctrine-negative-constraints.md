@@ -14,12 +14,15 @@ the model to define a leaked credential -- reproducing the full token three
 times -- and a mandatory "chosen over rejected *because*" slot pressured the
 model into fabricating a rationale fact absent from the source material.
 
-Generalization: weak models follow positive structure well but infer implicit
-negative constraints poorly, and mandatory slots become fabrication pressure.
-Qor skills are strongly positively structured (mandatory sections, execution
-protocols, schema-shaped outputs) and pin `min_model_capability`, but per-host
-deployment (kilo-code/codex/gemini variants) and cost pressure make
-below-design-tier execution likely.
+Generalization: weaker executors follow positive structure well but infer
+implicit negative constraints poorly, and mandatory slots become fabrication
+pressure. Qor skills are strongly positively structured (mandatory sections,
+execution protocols, schema-shaped outputs), and per-host deployment
+(kilo-code/codex/gemini variants) plus cost pressure make execution by an
+arbitrary, unknowable model routine. Phase 240 retired named-model admission
+metadata (`min_model_capability`): model identity is provenance, not
+execution authority, so no declared tier exists to condition on -- which is
+exactly why these rules cannot be tier-conditional.
 
 ## The Rules
 
@@ -35,9 +38,13 @@ below-design-tier execution likely.
 
 ## Applicability
 
-The rules bind whenever a skill declaring `min_model_capability` executes on
-a model below that tier. Because the executing tier is unknowable at compile
-time, the weak-tier-deployment variants carry the rules unconditionally.
+The rules bind unconditionally for every execution of a fabrication-risk
+skill (the declared set: `qor-audit`, `qor-plan`, `qor-substantiate`),
+independent of model identity, host, tier, or provider -- per the Phase 240
+execution-context delta, fabrication protections MUST remain binding
+independently of model identity. The compiled variants for every host carry
+the rules block unconditionally; there is no execution context in which they
+are advisory for these skills.
 
 ## Wiring
 
