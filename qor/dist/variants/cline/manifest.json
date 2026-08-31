@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T01:32:31Z",
+  "generated_ts": "2026-08-31T01:45:26Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -198,7 +198,7 @@
       "id": "command-qor-plan.md",
       "source_path": "workflows/command-qor-plan.md",
       "install_rel_path": "workflows/command-qor-plan.md",
-      "sha256": "a7809e53fb433e9b5dc8d707ea5cef4d3c5abb3016cde24f2475588700cdb7ad"
+      "sha256": "00fc74a783a517119f78beb2a0a7a07e4faa95120b93815e3e0a4398eed23e50"
     },
     {
       "id": "command-qor-process-review-cycle.md",
