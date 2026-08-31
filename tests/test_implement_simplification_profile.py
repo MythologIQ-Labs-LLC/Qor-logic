@@ -30,7 +30,7 @@ def test_profile_is_changeset_bounded_and_behavior_preserving():
     section = text[start:end]
     assert "recently modified code only" in section  # prose-lint: ok=prose contract; the profile's changeset containment rule
     assert "unrelated legacy defects are reported, not modified" in section  # prose-lint: ok=prose contract; containment against opportunistic cleanup
-    assert "gate every proposed refinement through" in section.lower() or "Gate every proposed refinement" in section  # prose-lint: ok=prose contract; pins the Simplification Test as the GATE, not a mention
+    assert "gate every proposed refinement through" in section.lower()  # prose-lint: ok=prose contract; pins the Simplification Test as the GATE (the word "through" is what makes it a gate, not a mention)
     assert "behavior preservation is the invariant" in section  # prose-lint: ok=prose contract; GH #392 primary invariant carried into the profile
     assert "No justified refinement is a successful result" in section  # prose-lint: ok=prose contract; abstention-as-success carried into the profile
 
