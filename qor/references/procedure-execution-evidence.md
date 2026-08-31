@@ -110,7 +110,11 @@ V1 rejects replay through exact binding, not wall-clock freshness:
 - wrong procedure revision/path/bytes -> mismatch;
 - verification copied from a different evidence claim -> claim digest mismatch.
 
-Time-based expiry may be added later only where a policy genuinely needs it. It is not smuggled into V1 as a vague notion of “recent.”
+Time-based expiry may be added later only where a policy genuinely needs it. It is not smuggled into V1 as a vague notion of "recent."
+
+## Requirements are policy input from an uncontrolled trust domain
+
+The same argument that keeps verified claims outside the evidence JSON applies to the requirements array: `acceptedEvidenceClasses` and `trustedPrincipals` decide what counts, so whoever authors them is the evidence policy authority. The requirements array MUST originate from a trust domain the evidence producer does not control (repository policy, a governing plan, or a downstream policy engine consuming this contract). An actor who authors both the requirements and the evidence can trivially satisfy the contract by accepting `agent-declared` everywhere -- that outcome is a policy decision by the requirements author, never an evaluator guarantee. The evaluator enforces satisfaction rules over the declared policy; it cannot detect that the policy itself was authored by the party it constrains.
 
 ## Existing provenance primitives
 

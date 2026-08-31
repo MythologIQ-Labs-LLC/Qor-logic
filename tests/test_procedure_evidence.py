@@ -213,3 +213,53 @@ def test_unknown_evidence_class_is_schema_rejected():
     ev["evidenceClass"] = "super-trusted-because-i-said-so"
     with pytest.raises(ProcedureEvidenceError):
         evaluate_contract(contract(evidence_items=[ev]))
+
+
+def test_schema_alone_rejects_independent_class_without_trusted_principals():
+    """Revalidation audit F1: the published schema must carry the same meaning
+    as the evaluator for downstream validators that only have the schema -- an
+    independent-class requirement with absent or empty trustedPrincipals must
+    fail schema validation, not only the Python cross-check."""
+    import jsonschema
+
+    from qor.compliance.procedure_evidence import _schema
+
+    validator = jsonschema.Draft202012Validator(_schema())
+    for principals in (None, []):
+        doc = contract(evidence_items=[evidence()])
+        req = doc["requirements"][0]
+        req["acceptedEvidenceClasses"] = ["wrapper-observed"]
+        if principals is None:
+            req.pop("trustedPrincipals", None)
+        else:
+            req["trustedPrincipals"] = principals
+        errors = list(validator.iter_errors(doc))
+        assert errors, (
+            "schema-only validation admitted an independent-class requirement "
+            f"with trustedPrincipals={principals!r}"
+        )
+
+
+def test_requirements_authorship_is_a_documented_precondition_not_a_guarantee():
+    """Revalidation audit F2: an actor who authors both requirements and
+    evidence can accept agent-declared everywhere and satisfy the contract --
+    the evaluator cannot detect self-serving policy. The reference must state
+    the trust-domain precondition so callers cannot mistake evaluator
+    satisfaction for policy integrity."""
+    doc = contract(
+        reqs=[requirement(classes=["agent-declared"])],
+        evidence_items=[evidence(cls="agent-declared", observer=None)],
+    )
+    result = evaluate_contract(doc)
+    assert result.satisfied, "self-authored policy accepting self-report satisfies"
+
+    from pathlib import Path
+
+    reference = (
+        Path(__file__).resolve().parents[1]
+        / "qor" / "references" / "procedure-execution-evidence.md"
+    ).read_text(encoding="utf-8")
+    assert (
+        "MUST originate from a trust domain the evidence producer does not control"
+        in reference
+    )

@@ -68,6 +68,19 @@
           "uniqueItems": true,
           "items": { "type": "string", "minLength": 1 }
         }
+      },
+      "if": {
+        "properties": {
+          "acceptedEvidenceClasses": {
+            "contains": { "enum": ["wrapper-observed", "ci-attested"] }
+          }
+        }
+      },
+      "then": {
+        "required": ["trustedPrincipals"],
+        "properties": {
+          "trustedPrincipals": { "minItems": 1 }
+        }
       }
     },
     "evidence": {
