@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T03:57:19Z",
+  "generated_ts": "2026-08-31T04:14:49Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -210,7 +210,7 @@
       "id": "qor-help",
       "source_path": "skills/qor-help/SKILL.md",
       "install_rel_path": "skills/qor-help/SKILL.md",
-      "sha256": "192ad52f5bb26a2a56ad122c564114437094219173f26cb56969206d657f5caa"
+      "sha256": "af4871112cce819e220c6828109f2a70ca0ec0b9a95ffe6f64c1e224415afe06"
     },
     {
       "id": "qor-ideate",
@@ -336,13 +336,13 @@
       "id": "qor-refactor",
       "source_path": "skills/qor-refactor/references/qor-refactor-examples.md",
       "install_rel_path": "skills/qor-refactor/references/qor-refactor-examples.md",
-      "sha256": "02124dcb02a5a96507da1cb2133683e5455bd12f190c193823281e9fd369a485"
+      "sha256": "efa88d07e8bf4efcfebdd6a49d01629806937ad0f69b118a421d8b89a9d8ad0e"
     },
     {
       "id": "qor-refactor",
       "source_path": "skills/qor-refactor/SKILL.md",
       "install_rel_path": "skills/qor-refactor/SKILL.md",
-      "sha256": "335252abe9a87f045f04c67d268f01b798803d42db7b2e2d6697ef432d038aae"
+      "sha256": "4b62dbf22f32b028d0d0f156d2cfe5ed7d10425710734e3d108cc6c46413a6fe"
     },
     {
       "id": "qor-remediate",
