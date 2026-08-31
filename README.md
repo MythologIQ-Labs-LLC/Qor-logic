@@ -403,7 +403,7 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 | [communication-tiers](qor/references/doctrine-communication-tiers.md) | Technical / standard / plain output tiers |
 | [compliance-conveyance](qor/references/doctrine-compliance-conveyance.md) | Compliance control matrix + conveyance conformance + ratchet + downstream enforcement SDK |
 | [context-discipline](qor/references/doctrine-context-discipline.md) | Persona scaffolding + measurable-effect contract for SDLC personas |
-| [negative-constraints](qor/references/doctrine-negative-constraints.md) | NR-001/NR-002 negative rules injected into weak-tier compiled variants |
+| [negative-constraints](qor/references/doctrine-negative-constraints.md) | NR-001/NR-002 rules binding on every execution of fabrication-risk skills |
 | [definition-of-done](qor/references/doctrine-definition-of-done.md) | Per-deliverable D1-D4 acceptance criteria |
 | [dependency-admission](qor/references/doctrine-dependency-admission.md) | Dependency admission + cooling-period supply-chain control |
 | [documentation-integrity](qor/references/doctrine-documentation-integrity.md) | Tiered doc topology + glossary + check surface + documentation currency |
