@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-31T0301-9e4015",
+  "plan_path": "docs/plan-qor-phase242-governed-procedure-evidence.md",
+  "plan_hash": "9a95b857d98c31b75f0e52a2686f498bfda2f8147e2d0307757c16f232c9ba5e",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "300baa51694f3949088373594b728996064a7b6fd05f6fbb84e24e1e6ef3a1ce",
+  "head_commit": "ba1afc9637b7603aaf040d5bcfacb1fa5d999ec3",
+  "captured_ts": "2026-08-31T03:02:18.669444Z"
+}

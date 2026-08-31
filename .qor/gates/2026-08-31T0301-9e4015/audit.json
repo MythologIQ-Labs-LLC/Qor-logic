@@ -1,0 +1,17 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-31T0301-9e4015",
+  "ts": "2026-08-31T03:01:29Z",
+  "target": "docs/plan-qor-phase242-governed-procedure-evidence.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.159.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-08-31T03:01:29Z"
+  }
+}

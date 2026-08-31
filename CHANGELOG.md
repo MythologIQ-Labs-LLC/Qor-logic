@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.160.0] - 2026-08-31
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 242 (feature; portable governed-procedure execution evidence, GH #384)**: when policy requires proof that an exact governed procedure executed, canonical Qor owns the meaning and satisfaction rules of that evidence. Ships `qor/compliance/procedure_evidence.py` -- a deterministic, fail-closed evaluator binding evidence to exact procedure/subject/input digests, with independent evidence classes (`wrapper-observed`, `ci-attested`) gated on declared trusted principals plus externally verified whole-claim sha256 digests so an agent-fabricated receipt cannot satisfy them -- plus the published `procedure_execution_evidence` JSON Schema (now carrying the independent-class trustedPrincipals rule so schema-only validators get the same meaning), the semantics reference including the requirements-authorship trust-domain precondition, FEATURE_INDEX FX026, and 18 behavioral tests (15 rejection/error paths). The revalidation tribunal's independent reviewer confirmed the fabrication threat model holds and both of its substantive findings were closed in this promotion.
+
 ## [0.159.0] - 2026-08-31
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

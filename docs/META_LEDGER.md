@@ -19368,6 +19368,63 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; procedural-fidelity checked; dod-check OK; merge-velocity OK; skill-size-budget 0 EXCEEDED; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `db850454bcf5`); feature-index 25/25 verified; doc-integrity strict OK (system tier); governance-index advanced + enforced OK; publication-boundary 0 findings; boundary suite 11/11. Full suite run twice for determinism post-seal (counts in the seal commit).
 
+### Entry #650: GATE TRIBUNAL -- Phase 242 governed-procedure evidence revalidation (PASS)
+
+**Timestamp**: 2026-08-31T03:02:03Z
+**Phase**: GATE (Phase 242)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase242-governed-procedure-evidence.md
+**Session**: 2026-08-31T0301-9e4015
+**Mode**: adversarial -- independent code-reviewer revalidation of the rebased head
+
+**Content Hash**: `6ffc159a291012852f93907136038e4667cfe577fb614ceb249c33d5d5211525`
+**Previous Hash**: `ec579a85e963a138a4129850746b44ad597405692296ceaed3c4f6c60b1d27fa`
+**Chain Hash (Merkle seal)**: `99713e701bba078eef0c9836cf513aa194ad0e8134b04548071f2ad0cf7fc9b9`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings; two substantive findings closed in the same promotion. Attempt 1 of 5.
+
+**THE FABRICATION THREAT HOLDS SHUT.** The reviewer confirmed an agent controlling only the evidence array cannot satisfy an independent-class requirement: observer required, observer must be a declared trusted principal, and an externally supplied VerifiedClaim must match the sha256 of the entire canonical claim, with additionalProperties:false closing mutation paths; VerifiedClaim is a function argument, never a JSON field, so no self-asserted verified:true exists. No fail-open on the canonical path; razor met; only literal-path resource reads. Two findings closed rather than deferred: F1 -- the published schema admitted an independent-class requirement without trustedPrincipals (rule lived only in Python), closed with an if/contains schema rule plus a schema-only rejection test, restoring one portable machine-validated meaning; F2 -- requirements authorship was an unstated trust boundary (author-both-sides satisfies via agent-declared), closed by declaring the trust-domain precondition in the reference with a documenting test. Evidence suite 18/18; full suite 3117 passed twice on the rebased head pre-closure; post-closure determinism runs recorded in the seal commit.
+
+### Entry #651: IMPLEMENTATION -- Phase 242 governed-procedure evidence
+
+**Timestamp**: 2026-08-31T03:02:03Z
+**Phase**: IMPLEMENT (Phase 242)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase242-governed-procedure-evidence.md (PASS at entry #650)
+**Session**: 2026-08-31T0301-9e4015
+
+**Content Hash**: `5887ddab3115912df8fccebc9cba3f9af77c0e2f44d47207a91e9747cf23bc4c`
+**Previous Hash**: `99713e701bba078eef0c9836cf513aa194ad0e8134b04548071f2ad0cf7fc9b9`
+**Chain Hash (Merkle seal)**: `9c09ff9cec83ac597ea66a08cb0e5d8bc9638f558c5a778a21c2cd16c097e0f0`
+
+**Decision**: **Decision**: Phase 242 implementation record (GH #384, PR #385). Delivered: qor/compliance/procedure_evidence.py (deterministic evaluator; procedure/subject/input binding; independent classes gated on trusted principals plus externally verified claim digests; fail-closed), qor/gates/schema/procedure_execution_evidence.schema.json (registered; now carrying the independent-class trustedPrincipals rule), qor/references/procedure-execution-evidence.md (semantics reference incl. the trust-domain precondition for requirements authorship), FEATURE_INDEX FX026, and tests/test_procedure_evidence.py (18 behavioral tests, 15 rejection/error paths). Completes the Phase 241 boundary for the procedure-execution evidence class: canonical Qor owns satisfaction semantics; downstream produces receipts and projections only.
+
+### Entry #652: SESSION SEAL -- Phase 242 governed-procedure evidence GH #384 (v0.160.0)
+
+**Timestamp**: 2026-08-31T03:03:18Z
+**Phase**: SEAL (Phase 242)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `10f4f71faa8d`
+**Plan**: docs/plan-qor-phase242-governed-procedure-evidence.md (PASS at entry #650)
+**Session**: 2026-08-31T0301-9e4015
+**Change Class**: feature (0.159.0 -> 0.160.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1, PW.4.1, PW.5.1
+
+**Content Hash**: `9a95b857d98c31b75f0e52a2686f498bfda2f8147e2d0307757c16f232c9ba5e`
+**Previous Hash**: `9c09ff9cec83ac597ea66a08cb0e5d8bc9638f558c5a778a21c2cd16c097e0f0`
+**Chain Hash (Merkle seal)**: `873dddd45887c859c1de4d68ebfa830988f28f0425736763a6bad27cac855b83`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 26 / verified: 26 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 242 (GH #384, PR #385): procedure-execution evidence semantics are canonical and fail-closed. The evaluator binds evidence to exact procedure/subject/input digests; independent classes require declared trusted principals plus externally verified whole-claim digests; missing or indeterminate never reads as satisfied; the published schema and the Python cross-checks now carry one identical meaning (the independent-class trustedPrincipals rule encoded in JSON Schema after the reviewer showed schema-only validators got a weaker contract); the requirements-authorship trust boundary is declared in the reference (policy input must originate from a domain the evidence producer does not control) with a documenting test. Completes the Phase 241 boundary for this evidence class. This closes the Phase 240-242 stack: all three stacked PRs revalidated on their actual resulting revisions with independent adversarial review at each step.
+
+**GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; dod-check WARN only (pre-authored plan lacks a DoD section; disclosed); merge-velocity OK; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `f57dbbfd8bf2`); feature-index 26/26 verified (FX026 new); doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; evidence suite 18/18. Full suite run twice for determinism post-seal (counts in the seal commit).
+
 ---
 
 *Chain integrity: VALID*

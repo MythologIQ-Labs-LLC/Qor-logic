@@ -34,3 +34,4 @@ Rows append as the surface grows; the seal-time `feature_index_verify.tally()` p
 | FX023 | Override recording-path parity | qor/scripts/shadow_process.py:68 | qor/references/doctrine-governance-enforcement.md | tests/test_override_recording_paths.py | verified |
 | FX024 | Seal-ladder order invariant | tests/test_seal_ladder_order.py:44 | qor/references/doctrine-governance-enforcement.md | tests/test_seal_ladder_order.py | verified |
 | FX025 | Step-prerequisite resolvability | tests/test_step_prerequisites_resolve.py:39 | qor/references/doctrine-governance-enforcement.md | tests/test_step_prerequisites_resolve.py | verified |
+| FX026 | Governed-procedure evidence evaluation (`procedure_evidence.evaluate_contract`) | qor/compliance/procedure_evidence.py:183 | qor/references/procedure-execution-evidence.md | tests/test_procedure_evidence.py::test_exact_independently_verified_claim_satisfies_requirement | verified |

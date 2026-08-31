@@ -1,0 +1,38 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-31T0301-9e4015",
+  "ts": "2026-08-31T03:01:28Z",
+  "plan_path": "docs/plan-qor-phase242-governed-procedure-evidence.md",
+  "phases": [
+    "Phase 1: Evidence contract schema + deterministic evaluator + reference (test-first)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_procedure_evidence.py -q",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest tests/ -q"
+  ],
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "originating_remediation": "GH #384",
+  "open_questions": [],
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "evaluator is a pure deterministic core; signature verification and receipt production live at the trusted host boundary"
+    ],
+    "non_goals": [
+      "no signer, no receipt producer, no consequence authority, no enforcement hook"
+    ],
+    "exclusions": [
+      "downstream projection implementation is out of public scope per the Phase 241 boundary"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.159.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-08-31T03:01:28Z"
+  }
+}
