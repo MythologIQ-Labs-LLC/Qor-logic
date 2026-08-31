@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T04:14:49Z",
+  "generated_ts": "2026-08-31T04:15:37Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -210,7 +210,7 @@
       "id": "qor-refactor.toml",
       "source_path": "commands/qor-refactor.toml",
       "install_rel_path": "commands/qor-refactor.toml",
-      "sha256": "d9c33887fcec25052d80eb26653b8d736fbc86261901774c45d2d58814653c9e"
+      "sha256": "6d89907d1d9edcb4685ea8907f1180b263b91b398b89641581139e94f3c91867"
     },
     {
       "id": "qor-remediate.toml",

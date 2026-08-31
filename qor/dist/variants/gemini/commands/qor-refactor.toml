@@ -23,6 +23,8 @@ Behavior preservation is the primary invariant. A metric breach (Section 4 or ot
 
 Follow the target environment's own governing instructions, conventions, formatter/linter configuration, dependency manifests, type/schema contracts, neighboring implementation, and tests. Explicit local rules take precedence over generic simplification preferences unless they conflict with stronger correctness, security, integrity, or governance requirements. Do not assume a specific language, framework, or entry-point convention (e.g. `package.json`, `main.tsx`); discover it from the target repository.
 
+Authority boundary with `/qor-harden`: harden discovers and confirms broad implementation-quality defects; `/qor-refactor` owns the confirmed behavior-preserving structural repair. A confirmed `IQ-COMPLEX`, `IQ-CONTEXT`, or `IQ-MAINTAIN` finding routes here when the repair is structurally scoped and behavior-preserving, per the `/qor-refactor` remediation profile in `qor/references/implementation-quality-sweep.md`. Uncertain behavioral failure routes to `/qor-debug`; architecture/topology or product-intent change exceeds refactor authority and routes to `/qor-plan` or `/qor-organize`.
+
 ## Execution Protocol
 
 ### Step 0: Gate Check (advisory — Phase 8 wiring)

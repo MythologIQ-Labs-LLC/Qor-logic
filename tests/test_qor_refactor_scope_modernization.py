@@ -94,3 +94,25 @@ def test_examples_file_has_simplification_test_and_verification_templates():
     assert "## Simplification Test Finding (Template)" in text
     assert "## Post-Refactor Verification Report (Template)" in text
     assert "## NO REFACTOR REQUIRED Report (Template)" in text
+
+
+def test_refactor_declares_the_harden_authority_boundary():
+    """GH #392 acceptance: /qor-harden routes confirmed structural findings to
+    /qor-refactor without duplicating its process. Written once /qor-harden
+    landed (Phase 244) -- the relay's Tranche A predated it. Binds the skill's
+    boundary prose to the canonical sweep's remediation profile so the two
+    surfaces cannot drift apart silently."""
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    refactor = (root / "qor" / "skills" / "sdlc" / "qor-refactor" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    sweep = (root / "qor" / "references" / "implementation-quality-sweep.md").read_text(
+        encoding="utf-8"
+    )
+    for dim in ("IQ-COMPLEX", "IQ-CONTEXT", "IQ-MAINTAIN"):
+        assert dim in refactor, f"refactor boundary omits {dim}"
+        assert dim in sweep
+    assert "implementation-quality-sweep.md" in refactor
+    assert "/qor-refactor` remediation profile" in sweep or "qor-refactor` remediation profile" in sweep
