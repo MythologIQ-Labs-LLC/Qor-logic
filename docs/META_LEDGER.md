@@ -19273,6 +19273,22 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; procedural-fidelity WARN doc-surface (resolved in this commit: SYSTEM_STATE + CHANGELOG); dod-check OK; merge-velocity OK; skill-size-budget 1 WARN / 0 EXCEEDED (qor-audit back under the usable-slack floor); data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `dfccf7ac0b50`); feature-index 25/25 verified; doc-integrity strict OK (system tier); governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean. Full suite 3087 passed / 6 skipped inside the tribunal; post-seal determinism runs recorded in the seal commit.
 
+### Entry #645: AMENDMENT -- Phase 240 independent-reviewer findings closed post-seal
+
+**Timestamp**: 2026-08-31T01:53:35Z
+**Phase**: GATE (Phase 240 amendment)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase240-execution-context-governance.md
+**Session**: 2026-08-28T1956-6e0074
+**Mode**: adversarial -- independent code-reviewer subagent, dispatched at operator direction after the bound tribunal's PASS
+
+**Content Hash**: `0e4d20c2354c26547df3856d24df51290c7565541d0f67887d039c4951efb117`
+**Previous Hash**: `0c2cb46c9cf711abe59c84f5a9ee294290d843843ff18b84d1425d91e999cf74`
+**Chain Hash (Merkle seal)**: `683b6a58c1421a59736ac872aa68fa9d8b9b7f325cfa866b67602a46211b7983`
+
+**Decision**: **Decision**: The independent reviewer VETOed after seal entry #644 with two findings the bound tribunal missed, both verified and closed in-session rather than papered over. V1: the plan's Phase 2 completion requirement (a corpus test failing if either retired admission field reappears in a live skill) was undelivered -- the sole live-corpus test filtered to fabrication-guard warnings and model_pinning_lint exits 0 unconditionally, so reintroduction produced a stderr WARN and green CI; closed by test_no_retired_admission_fields_in_live_corpus binding the real corpus. V2: the lint's execution-context inspection caught ValueError from the first malformed contract and returned, suppressing inspection of the remaining corpus while exiting 0; closed by scan_with_errors accumulating per-skill errors (red-first test), with execution_context.py restored to its audited 250-line razor shape. Also closed from the same pass: qor-plan Step 0.3's describing prose still documented the retired named-model tier walk. The reviewer confirmed the core claim holds (no authority decision keyed on model identity; fail-open telemetry path disclosed by design; completeness gating tested behaviorally; the closed-enum relocation lost no binding rule). Enforcement note recorded: corpus-wide hard_execution_requirements are empty today, so completeness gating is exercised only in unit tests until a consumer declares one.
+
 ---
 
 *Chain integrity: VALID*

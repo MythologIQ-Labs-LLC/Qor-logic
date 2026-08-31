@@ -97,17 +97,42 @@ def check(
     return warnings
 
 
+def scan_with_errors(repo_root: Path) -> tuple[list[dict], list[str]]:
+    """Scan every execution contract, accumulating per-skill errors instead of
+    raising: ``load_contract`` raises ``ValueError`` on the first malformed
+    contract, and the prior path caught it and returned -- one bad
+    ``rendering_recipes`` value silently suppressed inspection of every
+    remaining skill while still exiting 0 (Phase 240 iteration-2 audit)."""
+    active = execution_context.detect_context()
+    results: list[dict] = []
+    errors: list[str] = []
+    for path in sorted((repo_root / "qor" / "skills").rglob("SKILL.md")):
+        try:
+            contract = execution_context.load_contract(path)
+        except ValueError as exc:
+            errors.append(f"{path.parent.name}: {exc}")
+            continue
+        if contract is not None:
+            results.append(execution_context.inspect_contract(contract, active))
+    return results, errors
+
+
 def _print_execution_context(repo_root: Path) -> None:
     try:
-        results = execution_context.scan(repo_root)
-    except (ImportError, ValueError) as exc:
+        results, errors = scan_with_errors(repo_root)
+    except ImportError as exc:
         print(f"WARN [execution-context]: inspection unavailable: {exc}", file=sys.stderr)
         return
+    for error in errors:
+        # Phase 240 iteration-2 audit: a malformed contract is reported per
+        # skill; it no longer aborts inspection of the remaining corpus.
+        print(f"WARN [execution-context]: malformed contract: {error}", file=sys.stderr)
     unverified = sum(len(row["unverified_hard_requirements"]) for row in results)
     missing = sum(len(row["missing_hard_requirements"]) for row in results)
     print(
         f"INFO [execution-context]: {len(results)} contracts; "
-        f"{missing} missing, {unverified} unverified hard requirements",
+        f"{missing} missing, {unverified} unverified hard requirements"
+        + (f"; {len(errors)} malformed contract(s)" if errors else ""),
         file=sys.stderr,
     )
 

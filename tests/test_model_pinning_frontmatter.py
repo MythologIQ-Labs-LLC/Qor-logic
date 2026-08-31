@@ -91,3 +91,49 @@ def test_fabrication_guard_scan_clean_on_live_corpus():
     warnings = check(REPO_ROOT, current_model="arbitrary-runtime")
     guard = [warning for warning in warnings if "fabrication" in warning.reason]
     assert not guard, f"risk skills missing doctrine pointer: {guard}"
+
+
+def test_no_retired_admission_fields_in_live_corpus():
+    """Plan Phase 2 completion requirement (Phase 240 iteration-2 audit V1):
+    the corpus test that fails if either legacy admission field reappears in
+    a live skill. Detection behavior is proven against fixtures above; this
+    binds the real corpus so a reintroduced field turns CI red instead of a
+    stderr WARN nobody reads."""
+    retired = [
+        w for w in check(REPO_ROOT)
+        if "retired named-model admission metadata" in w.reason
+    ]
+    assert retired == [], (
+        "live skill(s) carry retired named-model admission metadata: "
+        + ", ".join(w.skill for w in retired)
+    )
+
+
+def test_scan_reports_malformed_contract_without_suppressing_the_rest(tmp_path):
+    """Phase 240 iteration-2 audit V2: one malformed execution contract must
+    not abort inspection of every remaining skill (the prior lint path caught
+    the first ValueError and returned, failing open corpus-wide)."""
+    from qor.scripts import model_pinning_lint as execution_context
+
+    good = tmp_path / "qor" / "skills" / "test" / "good" / "SKILL.md"
+    good.parent.mkdir(parents=True)
+    good.write_text(
+        "---\nname: good\nrendering_recipes: [conservative]\n"
+        "default_rendering_recipe: conservative\n---\nbody\n",
+        encoding="utf-8",
+    )
+    bad = tmp_path / "qor" / "skills" / "test" / "bad" / "SKILL.md"
+    bad.parent.mkdir(parents=True)
+    bad.write_text(
+        "---\nname: bad\nrendering_recipes: [conservative]\n"
+        "default_rendering_recipe: not-an-admitted-recipe\n---\nbody\n",
+        encoding="utf-8",
+    )
+
+    results, errors = execution_context.scan_with_errors(tmp_path)
+    assert [row["skill"] for row in results] == ["good"], (
+        "the well-formed contract must still be inspected"
+    )
+    assert len(errors) == 1 and "bad" in errors[0], (
+        "the malformed contract must be reported, not swallowed"
+    )

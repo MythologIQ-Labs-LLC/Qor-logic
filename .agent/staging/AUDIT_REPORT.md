@@ -75,3 +75,9 @@ Repeated-VETO pattern detected in phases 243, 244 (max pass count: 2). Recommend
 ## Disposition
 
 GATE opens. Proceed to governed implementation-evidence recovery and substantiation for session `2026-08-28T1956-6e0074`.
+
+## Post-seal independent-reviewer addendum (iteration 2)
+
+An independent code-reviewer pass dispatched at operator direction returned VETO after the bound tribunal's PASS, with two findings the tribunal missed. V1 (binding): plan Phase 2's completion requirement "add a corpus test that fails if either legacy admission field reappears in a live skill" was not delivered - the only live-corpus test filtered to fabrication-guard warnings, and model_pinning_lint exits 0 unconditionally, so a reintroduced retired field produced a stderr WARN and green CI. V2 (supporting): the lint's execution-context inspection caught ValueError from the first malformed contract and returned, silently suppressing inspection of every remaining skill.
+
+Closed in the same session: test_no_retired_admission_fields_in_live_corpus binds the real corpus (detection behavior proven against fixtures); scan_with_errors in model_pinning_lint accumulates per-skill contract errors and reports each (test_scan_reports_malformed_contract_without_suppressing_the_rest, written red-first against the missing function); execution_context.py restored to its audited 250-line shape (the accumulation loop lives in the lint, its only consumer). The reviewer's confirmations recorded: no authority decision keyed on model identity; incomplete-telemetry path fail-open by design but disclosed via unverified_hard_requirements; retired fields absent from the live corpus; completeness gating tested behaviorally; the closed-enum relocation lost no binding rule.
