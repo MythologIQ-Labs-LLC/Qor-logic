@@ -141,8 +141,9 @@ def test_completion_gate_blocks_on_the_bad_outcomes():
         "contract complete"
     )
     assert '`YES` on "scope exceeded"' in gate
-    assert "behavior preserved" in gate, (
-        "the primary invariant must participate in the completion gate"
+    assert '`NO`/`INCONCLUSIVE` on "behavior preserved"' in gate, (
+        "the primary invariant must block on its bad outcomes "
+        "(NO/INCONCLUSIVE), not merely appear in the sentence"
     )
 
 
@@ -160,3 +161,7 @@ def test_threshold_steps_route_through_the_simplification_test():
     assert "triggers the Simplification Test; split into cohesive modules only when" in text
     assert "For each function exceeding 40 lines, split" not in text
     assert "For files exceeding 250 lines, split" not in text
+    # the Step 4e boundary sentence was the third F2 imperative; pin its
+    # conditional form and the absence of the unconditional one
+    assert "Any finding here triggers the Simplification Test" in text
+    assert "If any violation is found, refactor to restore" not in text
