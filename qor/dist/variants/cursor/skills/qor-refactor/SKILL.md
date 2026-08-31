@@ -143,7 +143,7 @@ Before applying any proposed simplification, answer all seven questions. If any 
 
 ### Step 3a: Function Decomposition
 
-For each function exceeding 40 lines, split into cohesive sub-functions.
+Each function exceeding 40 lines triggers the Simplification Test; split into cohesive sub-functions only when the test justifies it (a breach that protects a stronger contract or boundary records `NO REFACTOR REQUIRED` with the rationale).
 Reference examples: `references/qor-refactor-examples.md`.
 
 ### Step 3b: Logic Flattening
@@ -187,7 +187,7 @@ Flag any file not reachable from entry point. Template:
 
 ### Step 4b: File Splitting
 
-For files exceeding 250 lines, split into cohesive modules.
+Each file exceeding 250 lines triggers the Simplification Test; split into cohesive modules only when the test justifies it (same `NO REFACTOR REQUIRED` off-ramp as Step 3a).
 Reference example: `references/qor-refactor-examples.md`.
 
 ### Step 4c: God Object Elimination
@@ -218,7 +218,7 @@ Audit module boundaries and architecture flow:
 - Centralize cross-cutting concerns (logging, auth, config) to avoid scattering.
 - Identify config/flags sprawl; consolidate or document ownership.
 
-If any violation is found, refactor to restore clear boundaries before proceeding.
+Any finding here triggers the Simplification Test; restore clear boundaries when the test justifies the change, and record `NO REFACTOR REQUIRED` with rationale when the existing shape is the stronger contract.
 
 ---
 
@@ -235,9 +235,7 @@ For each completed pass (including a `NO REFACTOR REQUIRED` outcome), establish 
 - **scope exceeded**: `YES | NO`
 - **tests/checks executed and their actual results**
 
-A `NO` on "contract weakened" or a "YES" on "scope exceeded" blocks completion until corrected. Template: `references/qor-refactor-examples.md`.
-
-All must pass before completion.
+A `YES` on "contract weakened", a `YES` on "scope exceeded", or a `NO`/`INCONCLUSIVE` on "behavior preserved" blocks completion until corrected. Template: `references/qor-refactor-examples.md`.
 
 ### Step 6: Update System State
 

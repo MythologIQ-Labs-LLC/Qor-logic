@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T04:15:37Z",
+  "generated_ts": "2026-08-31T04:27:45Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -342,7 +342,7 @@
       "id": "qor-refactor",
       "source_path": "skills/qor-refactor/SKILL.md",
       "install_rel_path": "skills/qor-refactor/SKILL.md",
-      "sha256": "329021efdbddcb175e00e3ece29a7b6f9d1205e30604b1e271852d4f0e47a6e2"
+      "sha256": "32287e28630337a76683e9d59cc514db53cba43c050ea95ba749f4fc7fe72151"
     },
     {
       "id": "qor-remediate",

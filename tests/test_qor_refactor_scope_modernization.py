@@ -116,3 +116,47 @@ def test_refactor_declares_the_harden_authority_boundary():
         assert dim in sweep
     assert "implementation-quality-sweep.md" in refactor
     assert "/qor-refactor` remediation profile" in sweep or "qor-refactor` remediation profile" in sweep
+
+
+def test_completion_gate_blocks_on_the_bad_outcomes():
+    """Phase 245 promotion audit F1: the shipped gate read 'a NO on contract
+    weakened ... blocks completion' -- inverted, so a run that DID weaken a
+    contract completed while a clean run blocked. Assert the blocking polarity
+    (the property), not the field names."""
+    import re
+    from pathlib import Path
+
+    text = (
+        Path(__file__).resolve().parents[1]
+        / "qor" / "skills" / "sdlc" / "qor-refactor" / "SKILL.md"
+    ).read_text(encoding="utf-8")
+    match = re.search(r"^A .*blocks completion.*$", text, re.MULTILINE)
+    assert match, "completion-gate sentence missing"
+    gate = match.group(0)
+    assert '`YES` on "contract weakened"' in gate, (
+        "the gate must block on contract-weakened YES (the bad outcome)"
+    )
+    assert '`NO` on "contract weakened"' not in gate, (
+        "inverted polarity: blocking on contract-weakened NO lets a weakened "
+        "contract complete"
+    )
+    assert '`YES` on "scope exceeded"' in gate
+    assert "behavior preserved" in gate, (
+        "the primary invariant must participate in the completion gate"
+    )
+
+
+def test_threshold_steps_route_through_the_simplification_test():
+    """Phase 245 promotion audit F2: the Section 4 sub-steps were unconditional
+    imperatives ('split into cohesive sub-functions') contradicting the
+    document's own examination-not-forced-decomposition rule."""
+    from pathlib import Path
+
+    text = (
+        Path(__file__).resolve().parents[1]
+        / "qor" / "skills" / "sdlc" / "qor-refactor" / "SKILL.md"
+    ).read_text(encoding="utf-8")
+    assert "triggers the Simplification Test; split into cohesive sub-functions only when" in text
+    assert "triggers the Simplification Test; split into cohesive modules only when" in text
+    assert "For each function exceeding 40 lines, split" not in text
+    assert "For files exceeding 250 lines, split" not in text
