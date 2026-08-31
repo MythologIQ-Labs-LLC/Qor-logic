@@ -1,0 +1,38 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-31T0228-2ccd6a",
+  "ts": "2026-08-31T02:28:29Z",
+  "plan_path": "docs/plan-qor-phase241-portable-governance-boundary.md",
+  "phases": [
+    "Phase 1: Boundary ADR + extension reference + regression tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_portable_governance_boundary.py -q",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest tests/ -q"
+  ],
+  "change_class": "feature",
+  "doc_tier": "system",
+  "originating_remediation": "GH #381",
+  "open_questions": [],
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "defines the base/downstream authority boundary; does not prove any platform can express every Qor obligation"
+    ],
+    "non_goals": [
+      "no forge API client, ruleset mutation, organization controller, webhook receiver, forge App, actor registry, hosted signer, or receipt implementation"
+    ],
+    "exclusions": [
+      "execution-context implementation separate (Phase 240); enterprise projection implementation downstream and unidentified in public content"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.158.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-08-31T02:28:29Z"
+  }
+}

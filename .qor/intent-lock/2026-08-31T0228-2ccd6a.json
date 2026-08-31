@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-31T0228-2ccd6a",
+  "plan_path": "docs/plan-qor-phase241-portable-governance-boundary.md",
+  "plan_hash": "3e37e6768b8e0910783412d1c7554b6dbc7ff32496904f4a19d8efa9d3970ea4",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "13ab35b393a7ebb4251b1c8f17a364225e698d536bde9a56fab9a20a95188bf7",
+  "head_commit": "86155ccabf159fc6775d343935a3b4cd0cfd9e2c",
+  "captured_ts": "2026-08-31T02:29:37.802612Z"
+}
