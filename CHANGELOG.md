@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.163.1] - 2026-08-31
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 247 (hotfix; negative-constraints remediation)**: closes the Phase 240 independent reviewer's post-merge findings that a messaging race allowed onto main. The fabrication-protection doctrine no longer keys NR-001/NR-002 applicability on the retired `min_model_capability` field (an unsatisfiable predicate after the Phase 240 retirement): the rules bind unconditionally for the fabrication-risk skill set (`qor-audit`, `qor-plan`, `qor-substantiate`), independent of model identity, host, tier, or provider. The compiled preamble is retitled "Binding on Every Execution" and stripped of the stale declaration claim across all six host variants. The retired-field guard now flags either field alone; the synthetic fixtures drive the shared detectors (red-proved); and the execution-context audit seam is tested unstubbed against the live qor-audit contract. The ledger amendment records the reviewer race and entry #642's over-claimed report assertions; the Shadow Genome gains the parallel-reviewer-racing pattern with its countermeasure.
+
 ## [0.163.0] - 2026-08-31
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

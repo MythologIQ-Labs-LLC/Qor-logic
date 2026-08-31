@@ -19662,6 +19662,85 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; dod-check OK; merge-velocity OK; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `d3d07c8a2345`); feature-index 27/27 verified; doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (406 files); focused suite 4/4; prose-lint floor clean with reasoned exemptions. Full suite run twice for determinism post-seal (counts in the seal commit).
 
+### Entry #665: GATE TRIBUNAL -- Phase 247 negative-constraints remediation, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-31T06:56:46Z
+**Phase**: GATE (Phase 247)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase247-negative-constraints-remediation.md (mandate: the Phase 240 independent reviewer's post-merge re-VETO)
+**Session**: 2026-08-31T0609-4ead35
+**Mode**: adversarial -- the Phase 240 independent reviewer's seven-finding VETO and post-seal re-confirmation, adopted verbatim
+
+**Content Hash**: `138dad614e5e1352516bae369b6a99096fe5890fbaa711cd0ab41b41e00becff`
+**Previous Hash**: `5220e4601e53bbb17b3c69ff22e1d223000e3e4f0bd5810c2dabfe7f0e1e54fc`
+**Chain Hash (Merkle seal)**: `c9c08fe3e8c49479b532a034b6006f6569b7dbc5201e840cc11672c5854c6e79`
+
+**Decision**: **Verdict**: **VETO** -- security-l3 + specification-drift + test-failure (the Phase 240 reviewer's findings, five confirmed live on main). Attempt 1 of 5.
+
+**THE MERGE OUTRAN THE VERDICT.** PR #380 merged on a replacement reviewer's narrower PASS while the original reviewer's full VETO was in flight -- a messaging race recorded as a process failure, not concealed. Re-verified live on main: V-1 (decisive) -- the negative-constraints doctrine keyed NR-001/NR-002 bindingness on the retired min_model_capability field, an unsatisfiable predicate leaving the fabrication protections structurally unbound, and falsely claimed skills still pin the field; V-2 -- dist_compile injected a preamble asserting a nonexistent declaration with below-tier-only framing into all six host variants; V-4 -- the retired-field guard's AND conjunction let single-field reintroduction pass; V-5 -- two fixture tests asserted substrings against self-authored files and could not fail; V-6 -- all three execution-context audit tests stubbed the real seam. V-3 had been fixed pre-merge (the reviewer's re-check predated commit 03f11b54). V-7 (process): the sealed entry #642 report over-claimed two assertions its checks structurally could not observe.
+
+**Next**: close all five on a remediation branch; re-verify against the reviewer's own cited checks; amend the record.
+
+### Entry #666: GATE TRIBUNAL -- Phase 247 negative-constraints remediation, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-31T06:56:46Z
+**Phase**: GATE (Phase 247)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase247-negative-constraints-remediation.md
+**Session**: 2026-08-31T0609-4ead35
+**Mode**: adversarial -- closures demonstrated by executing the originating reviewer's own cited checks; reviewer non-response after three pings over ~30 minutes disclosed
+
+**Content Hash**: `f0d7762f27132db3e0360ff76575767f1b9dd59805ebb358d0ce950cae3f2eb5`
+**Previous Hash**: `c9c08fe3e8c49479b532a034b6006f6569b7dbc5201e840cc11672c5854c6e79`
+**Chain Hash (Merkle seal)**: `249b8bae819e8e226c0ce5642ffc8c83f819941a5f0fc3b23413cb42aaa76a84`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5.
+
+**EVERY CLOSURE IS AN EXECUTED CHECK, NOT AN ASSERTION.** V-1: the old applicability sentence greps to zero; NR-001/NR-002 now bind unconditionally for the fabrication-risk set (qor-audit, qor-plan, qor-substantiate) independent of model identity, host, tier, or provider, per the Phase 240 delta's own binding-independence requirement; the false pin claim is gone (the field name survives once as retirement history). V-2: Below-Design-Tier greps to zero across qor/dist; the Binding-on-Every-Execution block is compiled into every fabrication-risk variant on every host. V-4: single-field regression tests drive the shared detector for each retired field alone. V-5: both fixtures call the shared helpers and were red-proved (neutering the detector key set turns them red). V-6: two unstubbed tests drive execution_context.inspect_skill end to end against the live qor-audit contract plus the no-contract failure path. V-7: this entry and the report record entry #642's over-claims; sealed entries are not rewritten. Focused suites 9/9; full suite 3155 passed twice. Shadow Genome gains the parallel-reviewer-racing pattern with its countermeasure: never merge while any dispatched reviewer's verdict is outstanding.
+
+**Next**: /qor-implement record, then /qor-substantiate (v0.163.1, hotfix).
+
+### Entry #667: IMPLEMENTATION -- Phase 247 negative-constraints remediation
+
+**Timestamp**: 2026-08-31T06:56:46Z
+**Phase**: IMPLEMENT (Phase 247)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase247-negative-constraints-remediation.md (PASS at entry #666)
+**Session**: 2026-08-31T0609-4ead35
+
+**Content Hash**: `bec441d16c807e251f7d41fb97deee42d5e0d73eb74e4b52ed0ffd822607a9e9`
+**Previous Hash**: `249b8bae819e8e226c0ce5642ffc8c83f819941a5f0fc3b23413cb42aaa76a84`
+**Chain Hash (Merkle seal)**: `6a8673d085db9091a51c54a63fb0ee7b5189484287ca73c570c6a907d6772967`
+
+**Decision**: **Decision**: Phase 247 implementation record. Delivered: qor/references/doctrine-negative-constraints.md applicability rewritten to bind unconditionally for the fabrication-risk skill set independent of model identity (closing the unsatisfiable predicate the Phase 240 field retirement created); qor/scripts/dist_compile.py preamble corrected and all six host variants recompiled; tests/test_qor_plan_skill_invokes_model_pinning_lint.py rewritten so the detector flags either retired field alone and the synthetic fixtures drive the shared helpers (red-proved); tests/test_qor_audit_execution_context.py gains two unstubbed real-seam tests. Focused suites 9/9; full suite 3155 passed / 6 skipped, run twice.
+
+### Entry #668: SESSION SEAL -- Phase 247 negative-constraints remediation (v0.163.1)
+
+**Timestamp**: 2026-08-31T06:58:10Z
+**Phase**: SEAL (Phase 247)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `1c88b0377c3b`
+**Plan**: docs/plan-qor-phase247-negative-constraints-remediation.md (PASS at entry #666)
+**Session**: 2026-08-31T0609-4ead35
+**Change Class**: hotfix (0.163.0 -> 0.163.1)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1, RV.2.1
+
+**Content Hash**: `b8e8394e6c17505b670562d2767ea391b18b0af54c05f16c29a200940b7ac41c`
+**Previous Hash**: `6a8673d085db9091a51c54a63fb0ee7b5189484287ca73c570c6a907d6772967`
+**Chain Hash (Merkle seal)**: `38932f14d3d32b83b204f7e7a10f9d63c721637ba5dc4ffc322c087c3752ac94`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 247: the fabrication protections are structurally bound again. NR-001/NR-002 apply unconditionally to the fabrication-risk skill set independent of model identity (the Phase 240 field retirement had left the doctrine's binding predicate unsatisfiable); the compiled preamble tells the truth on every host; the retired-field guard catches single-field reintroduction; the fixtures exercise real detection (red-proved); the execution-context seam is tested unstubbed. The record is corrected without rewriting sealed history: entries #665/#666 adopt the Phase 240 reviewer's post-merge re-VETO as this phase's mandate, disclose the messaging race and the reviewer's later non-response, and demonstrate every closure by executing the reviewer's own cited checks. Shadow Genome: parallel-reviewer-racing pattern recorded with the outstanding-verdict merge-freeze countermeasure.
+
+**GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; dod-check OK; merge-velocity OK; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `3f7e4fd8ba5a`); feature-index 27/27 verified; doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (406 files); focused suites 9/9. Full suite 3155 passed / 6 skipped, run twice for determinism (pre-seal); post-seal determinism runs recorded in the seal commit.
+
 ---
 
 *Chain integrity: VALID*
