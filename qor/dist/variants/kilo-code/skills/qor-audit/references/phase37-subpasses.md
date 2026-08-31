@@ -298,3 +298,7 @@ failure. Doctrine: `qor/references/doctrine-shadow-genome-countermeasures.md`
 `SG-InfrastructureMismatch`, `SG-CitationDrift-A`, `SG-GrepShapedRunclaim-A`,
 and `SG-DeliveryBranchDrift-A`.
 
+
+## Closed-enum taxonomy coverage detail (moved from SKILL.md, Phase 240 rebase; GH #84)
+
+When the plan declares a closed-enum taxonomy (a `CANONICAL_*_VALUES` constant paired with a `normalize*` function), the test list MUST assert BOTH forward (every alias-map key normalizes into the canonical set) AND inverse (every non-gated canonical value is reachable via at least one identity-mapping) coverage -- forward-only coverage can define a bucket `normalize*` never produces. Missing inverse coverage VETOs with the `coverage-gap` category, per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline and `SG-InverseCoverageGapTaxonomy-A`.
