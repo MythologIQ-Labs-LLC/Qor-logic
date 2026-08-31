@@ -46,7 +46,7 @@ State tracking, documentation, decision logs, session tier selection.
 | track-shadow-genome | `qor/skills/memory/track-shadow-genome.md` | Active (migrated) |
 | qor-docs-technical-writing | `qor/skills/memory/qor-docs-technical-writing/` | Active (migrated) |
 
-## meta/ (13)
+## meta/ (14)
 
 Bootstrapping, help, repo management, meta-tracking, workflow bundles, A/B measurement.
 

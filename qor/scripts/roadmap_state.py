@@ -88,6 +88,11 @@ def _dependency_added(state: RoadmapState, payload: dict, _event: dict) -> None:
 
 def _node_resolved(state: RoadmapState, payload: dict, _event: dict) -> None:
     node = _require_node(state, payload["node_id"])
+    if node.status == "resolved":
+        # P1 admits no decision supersession: a second resolution would
+        # silently replace recorded rationale/authority/evidence (Phase 239
+        # promotion audit, blocking finding). Mirrors _space_retired.
+        raise InvalidHistoryError(f"node already resolved: {node.id}")
     if node.kind == "fact" and not payload["evidence_pointers"]:
         raise InvalidHistoryError(f"fact node {node.id} requires at least one evidence pointer")
     authority = payload.get("authority")

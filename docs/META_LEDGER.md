@@ -19425,6 +19425,85 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; dod-check WARN only (pre-authored plan lacks a DoD section; disclosed); merge-velocity OK; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `f57dbbfd8bf2`); feature-index 26/26 verified (FX026 new); doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; evidence suite 18/18. Full suite run twice for determinism post-seal (counts in the seal commit).
 
+### Entry #653: GATE TRIBUNAL -- Phase 239 roadmap-pilot promotion, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-31T03:47:40Z
+**Phase**: GATE (Phase 239)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase239-roadmap-promotion.md (iteration 1 on the governed head)
+**Session**: 2026-08-31T0346-0904f5
+**Mode**: adversarial -- independent code-reviewer over the imported P1 delta
+
+**Content Hash**: `61c6d2b053a4843778d59e3ee036e535d8ff5707bc80d2c616ff81cd02274251`
+**Previous Hash**: `873dddd45887c859c1de4d68ebfa830988f28f0425736763a6bad27cac855b83`
+**Chain Hash (Merkle seal)**: `f79a1df3b352c1e2947980b5547353113395bc3403a57b66d9af91db56116098`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + coverage-gap. Attempt 1 of 5.
+
+**EVERY CONTRACT CLAUSE HELD EXCEPT THE ONE THE PHASE EXISTS TO EXCLUDE.** The reviewer verified exact P1 fidelity (event kinds, node kinds, evidence/authority rules, confined store path, atomic replace, fail-closed handoff ending at /qor-plan, no ranking, no production procedure in the skill; security clean; razor met; publication boundary clean) and then demonstrated de-facto decision supersession reachable end-to-end from the shipped CLI: _node_resolved carried no already-resolved guard, so a second resolution with the same declared authority silently replaced recorded rationale/authority/evidence -- contradicting the plan's non_goals, the admitted contract, and the skill's own no-supersession claim. The sibling _space_retired had exactly the missing guard one function away, and no test exercised re-resolution. Secondary: the contract's duplicate-identity and sequence-gap rejections were implemented but untested.
+
+**Next**: guard + red-proof + clause coverage, then re-audit.
+
+### Entry #654: GATE TRIBUNAL -- Phase 239 roadmap-pilot promotion, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-31T03:47:40Z
+**Phase**: GATE (Phase 239)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase239-roadmap-promotion.md (iteration 2)
+**Session**: 2026-08-31T0346-0904f5
+**Mode**: adversarial -- fix re-verified at source by the same independent reviewer; VETO lifted
+
+**Content Hash**: `6d3c6957c45d7f81d60c039c1bf767fda29f830d06107521a0e22f79ad983bd8`
+**Previous Hash**: `f79a1df3b352c1e2947980b5547353113395bc3403a57b66d9af91db56116098`
+**Chain Hash (Merkle seal)**: `27544a98cace1612fe827e4ceffd00943c3eca29c44b420649ca7272988345a0`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5.
+
+**THE GUARD FIRES FOR EVERY NODE KIND AND WAS RED-PROVED.** _node_resolved now rejects any already-resolved node before the kind-specific checks (mirroring _space_retired); the reviewer independently re-read the code and tests and lifted the VETO, confirming the new test isolates the guard from the pre-existing authority check and covers both the decision-rationale and fact-evidence replacement paths. Clause coverage added for duplicate node id, duplicate event_id (made discriminating per the reviewer's follow-up nit: only the event_id collides and the match is exact), and non-contiguous seq. Plan gained its Phase 38 CI Commands section; SKILL_REGISTRY meta count advanced to 14. Roadmap suites 16/16 twice; reviewer trade-off observations recorded for GH #373's evaluation phase.
+
+**Next**: /qor-implement record, then /qor-substantiate (v0.161.0).
+
+### Entry #655: IMPLEMENTATION -- Phase 239 roadmap-pilot promotion
+
+**Timestamp**: 2026-08-31T03:47:40Z
+**Phase**: IMPLEMENT (Phase 239)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase239-roadmap-promotion.md (PASS at entry #654)
+**Session**: 2026-08-31T0346-0904f5
+
+**Content Hash**: `d9f858802769f0ff06ff5ae04b91ffcdd4e5a863193b075efc6bf33fa7561756`
+**Previous Hash**: `27544a98cace1612fe827e4ceffd00943c3eca29c44b420649ca7272988345a0`
+**Chain Hash (Merkle seal)**: `b40f00132c1f36518e2789a325ab11cda6e89f754c4610b09c7937da18d79831`
+
+**Decision**: **Decision**: Phase 239 implementation record (GH #373; promotes PR #378's Phase 238 pilot). Imported prototype commit 31243902's exact P1 surfaces onto the governed head: roadmap_event schema (registered), roadmap model/state/store/view/cli modules, /qor-roadmap skill (delegation-first, no production procedure), four behavioral test suites, FEATURE_INDEX FX027 (renumbered from FX026 by base motion), SKILL_REGISTRY row (meta 14), qor-help catalog row, delegation rows routing only to ideate/research/plan, README badge 31 -> 32 + catalog row, compiled variants (406 files, no drift; 32 skills, 152 handoffs, 0 broken). Iteration-2 additions: the already-resolved supersession guard with red-proved coverage, the duplicate-identity/sequence-gap clause tests, and the plan's CI Commands section. No Phase 238 governance artifact imported; no Phase 238 seal or audit backfilled.
+
+### Entry #656: SESSION SEAL -- Phase 239 roadmap-pilot promotion GH #373 (v0.161.0)
+
+**Timestamp**: 2026-08-31T03:49:25Z
+**Phase**: SEAL (Phase 239)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `448dd2877d22`
+**Plan**: docs/plan-qor-phase239-roadmap-promotion.md (iteration 2; PASS at entry #654)
+**Session**: 2026-08-31T0346-0904f5
+**Change Class**: feature (0.160.0 -> 0.161.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1, PW.4.1, PW.5.1
+
+**Content Hash**: `f4ab4301a29a2550558906e61e28c8aad0302a46111d0e6a5a42fcac90d4d939`
+**Previous Hash**: `b40f00132c1f36518e2789a325ab11cda6e89f754c4610b09c7937da18d79831`
+**Chain Hash (Merkle seal)**: `9d71317a4a97e4c1231adcbcfa48800c4ddc5780f64fd4620d071d044350b864`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 239 (GH #373): the /qor-roadmap P1 pilot is promoted through its own governed ceremony -- the Phase 238 prototype is evidence, not a prior legal gate, and no 238 artifact was backfilled. The fail-closed promotion rule held: the only deviations from the admitted contract are the declared base-motion amendments (badge 31 -> 32; FX026 -> FX027) and the iteration-2 contract-enforcement guard the independent reviewer demanded (already-resolved nodes reject re-resolution; red-proved; reviewer re-verified at source and lifted the VETO). PR #378 is superseded by this promotion; GH #373 stays open for the evaluation phase its own contract requires. Seal-time gates forced three registrations: the problem-frame and gate_skipped_prerequisite_absent glossary consumers and the roadmap design docs into the governance index (ADR Tier 2; review + build map Tier 5).
+
+**GATE LADDER**: intent-lock VERIFIED; admission + matrix OK (32 skills, 152 handoffs, 0 broken); secret-scan clean; dod-check OK; merge-velocity OK; skill-size-budget 0 EXCEEDED; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `4658e42b0add`); feature-index 27/27 verified (FX027 new); doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (406 files); roadmap suites 16/16 twice. Full suite run twice for determinism post-seal (counts in the seal commit).
+
 ---
 
 *Chain integrity: VALID*

@@ -130,3 +130,68 @@ def test_plan_handoff_fails_closed_until_scope_is_ready() -> None:
             predecessor_phase="research",
             predecessor_artifact=".qor/gates/s/research.json",
         )
+
+
+def test_re_resolution_is_rejected_as_supersession() -> None:
+    """Phase 239 promotion audit, blocking finding: a second node_resolved for
+    an already-resolved node silently replaced recorded rationale, authority,
+    and evidence -- decision supersession by another name, which the admitted
+    P1 contract excludes in the plan's non_goals, the contract clause list,
+    and the skill's own no-supersession claim."""
+    events = [
+        _created(),
+        _node(2, "decision", "decision", authority="operator"),
+        _event(3, "node_resolved", {
+            "node_id": "decision",
+            "evidence_pointers": [],
+            "rationale": "original decision",
+            "authority": "operator",
+        }),
+        _event(4, "node_resolved", {
+            "node_id": "decision",
+            "evidence_pointers": [],
+            "rationale": "silently replaced rationale",
+            "authority": "operator",
+        }),
+    ]
+    with pytest.raises(roadmap_state.InvalidHistoryError, match="already resolved"):
+        roadmap_state.reduce_events(events)
+
+    fact_events = [
+        _created(),
+        _node(2, "fact", "fact"),
+        _event(3, "node_resolved", {
+            "node_id": "fact",
+            "evidence_pointers": ["docs/evidence-a.md"],
+            "rationale": "measured",
+            "authority": None,
+        }),
+        _event(4, "node_resolved", {
+            "node_id": "fact",
+            "evidence_pointers": ["docs/evidence-b.md"],
+            "rationale": "replaced evidence",
+            "authority": None,
+        }),
+    ]
+    with pytest.raises(roadmap_state.InvalidHistoryError, match="already resolved"):
+        roadmap_state.reduce_events(fact_events)
+
+
+def test_duplicate_identities_and_sequence_gaps_are_rejected() -> None:
+    """Phase 239 promotion audit, secondary finding: the admitted contract
+    enumerates duplicate identities and sequence gaps as reduction rejections;
+    both were implemented but untested."""
+    dup_node = [_created(), _node(2, "n1", "fact"), _node(3, "n1", "fact")]
+    with pytest.raises(roadmap_state.InvalidHistoryError, match="duplicate"):
+        roadmap_state.reduce_events(dup_node)
+
+    dup_event_id = [_created(), _node(2, "n1", "fact")]
+    clone = _node(3, "n2", "fact")  # distinct node id: only the event_id collides
+    clone["event_id"] = "evt_2"
+    dup_event_id.append(clone)
+    with pytest.raises(roadmap_state.InvalidHistoryError, match="duplicate event_id"):
+        roadmap_state.reduce_events(dup_event_id)
+
+    gap = [_created(), _node(3, "n1", "fact")]  # seq jumps 1 -> 3
+    with pytest.raises(roadmap_state.InvalidHistoryError, match="seq|sequence|contiguous"):
+        roadmap_state.reduce_events(gap)
