@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.163.0] - 2026-08-31
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 246 (feature; /qor-implement changeset simplification profile, GH #392 final tranche)**: `/qor-implement` gains Step 9.5 -- after behavior is implemented and verified, one lightweight behavior-preserving refinement pass over the recently modified code only, applying the IQ-COMPLEX/IQ-CONTEXT/IQ-MAINTAIN lenses with every refinement gated through `/qor-refactor`'s seven-question Simplification Test as an invariant profile (never a nested ceremony), abstention as a successful result, and real `/qor-refactor` delegation reserved for independently bounded structural passes. The tribunal's independent reviewer caught that Step 9's pre-existing unconditional splitting/flattening ran BEFORE the new gate and negated the invariant for Section 4 breaches -- Step 9 now routes violations through the gate with the `NO REFACTOR REQUIRED` off-ramp, pinned by test. Closes GH #392.
+
 ## [0.162.0] - 2026-08-31
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
