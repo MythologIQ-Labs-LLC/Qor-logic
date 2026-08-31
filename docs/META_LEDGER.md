@@ -19559,6 +19559,30 @@ Next: /qor-substantiate.
 
 **Decision**: **Decision**: Phase 245 implementation record (GH #392 Tranche A, PR #393). The contract rewrite arrived through a relay handoff that disclosed its skipped ceremony and correctly refused to fabricate the then-absent harden taxonomy; this promotion integrates it on the governed head. Delivered: rewritten qor/skills/sdlc/qor-refactor/SKILL.md (behavior preservation primary; scopes changeset/focused/component/explicit with no silent widening; seven-question Simplification Test; corrected completion gate; NO REFACTOR REQUIRED as success; environment discovery replacing JS/TS assumptions), illustrative-labeled examples reference with report templates, the Phase 244 harden authority boundary with its sweep-binding test, tests/test_qor_refactor_scope_modernization.py (13 tests incl. the polarity and threshold-routing property tests), and recompiled variants (406 files, drift clean). Governance wiring untouched. GH #392's /qor-implement tranche remains open as the declared residual.
 
+### Entry #660: SESSION SEAL -- Phase 245 qor-refactor modernization GH #392 (v0.162.0)
+
+**Timestamp**: 2026-08-31T04:31:31Z
+**Phase**: SEAL (Phase 245)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `31de489319e9`
+**Plan**: docs/plan-qor-phase245-qor-refactor-modernization.md (iteration 2; PASS at entry #658)
+**Session**: 2026-08-31T0428-f6844d
+**Change Class**: feature (0.161.0 -> 0.162.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1, PW.4.1
+
+**Content Hash**: `3d5b99a94506a34b79507c65bad19271d141612281f9c7a92eff750f97c01593`
+**Previous Hash**: `0311f4c0414b62e201ff021f3c02fdcb042994b7dcc09d5c81dc350cd10d94c1`
+**Chain Hash (Merkle seal)**: `0f83aef4fa34e47f6d50158b80e3b99791c43103d16de1be45b6704ff34cf448`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 245 (GH #392 Tranche A, PR #393): /qor-refactor is modernized around behavior-preserving simplification with the corrected completion gate blocking on the bad outcomes, threshold breaches routed through the Simplification Test, environment discovery replacing JS/TS assumptions, and the Phase 244 harden boundary bound by test to the canonical sweep. The relay's disclosed ceremony-skip is completed honestly on the integrated head per the Phase 235 precedent; the tribunal's independent reviewer caught an inverted completion gate the presence-shaped suite could not see, and the closure ships property tests asserting polarity and routing rather than field names. GH #392 stays open for its declared /qor-implement tranche.
+
+**GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; dod-check OK; merge-velocity OK; skill-size-budget 0 EXCEEDED; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `70cd9921791c`); feature-index 27/27 verified; doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (406 files); focused suite 13/13. Full suite run twice for determinism post-seal (counts in the seal commit).
+
 ---
 
 *Chain integrity: VALID*

@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-31T0428-f6844d",
+  "plan_path": "docs/plan-qor-phase245-qor-refactor-modernization.md",
+  "plan_hash": "3d5b99a94506a34b79507c65bad19271d141612281f9c7a92eff750f97c01593",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "7a8b5e193b8a13e1001e5cb590c64b8721b79983a64342c9d445fbb94d2c906f",
+  "head_commit": "0cb32170ab9eed528229a62b169459b1bb636324",
+  "captured_ts": "2026-08-31T04:30:21.886904Z"
+}
