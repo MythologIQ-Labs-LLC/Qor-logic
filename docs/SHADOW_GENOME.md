@@ -430,6 +430,26 @@ Wrong-reason-red family: the sibling test file already documented the rule ('the
 
 ---
 
+## Entry: Phase 247 -- parallel-reviewer racing let a VETO arrive after the merge it forbade
+
+**Date**: 2026-08-31
+**Category**: PROCESS
+**Verdict source**: GATE TRIBUNAL entries #665 (adopted re-VETO) / #666 (PASS after mechanical closure)
+
+### What Happened
+
+The Phase 240 promotion dispatched an independent reviewer that went silent; a narrower replacement reviewer was spawned, returned VETO-then-PASS on two findings, and the merge proceeded on that PASS. The original reviewer's seven-finding VETO and post-seal re-confirmation arrived after the merge. Five findings were live on main, including a decisive one: the phase's own field retirement had made the fabrication-protection doctrine's binding predicate unsatisfiable, and the presence-shaped test suite could not see it.
+
+### Pattern to Avoid
+
+Never take the action a pending reviewer could forbid while any dispatched reviewer's verdict is outstanding. Spawning a replacement does not supersede the original: either explicitly retire the first dispatch before acting on the second, or wait for both. A narrower replacement scope compounds the risk -- the second reviewer cleared exactly the subset it was asked about, and the merge inherited the unasked questions.
+
+### Pattern ID
+
+Parallel-reviewer racing (first occurrence). Countermeasure adopted at Phase 247: outstanding-verdict merge freeze, recorded in the tribunal mode line; closure of raced-in findings must execute the originating reviewer's own cited checks rather than substituting a third opinion.
+
+---
+
 *Shadow integrity: ACTIVE*
 
 
@@ -530,6 +550,26 @@ Wrong-reason-red family: the sibling test file already documented the rule ('the
 
 ---
 
+## Entry: Phase 247 -- parallel-reviewer racing let a VETO arrive after the merge it forbade
+
+**Date**: 2026-08-31
+**Category**: PROCESS
+**Verdict source**: GATE TRIBUNAL entries #665 (adopted re-VETO) / #666 (PASS after mechanical closure)
+
+### What Happened
+
+The Phase 240 promotion dispatched an independent reviewer that went silent; a narrower replacement reviewer was spawned, returned VETO-then-PASS on two findings, and the merge proceeded on that PASS. The original reviewer's seven-finding VETO and post-seal re-confirmation arrived after the merge. Five findings were live on main, including a decisive one: the phase's own field retirement had made the fabrication-protection doctrine's binding predicate unsatisfiable, and the presence-shaped test suite could not see it.
+
+### Pattern to Avoid
+
+Never take the action a pending reviewer could forbid while any dispatched reviewer's verdict is outstanding. Spawning a replacement does not supersede the original: either explicitly retire the first dispatch before acting on the second, or wait for both. A narrower replacement scope compounds the risk -- the second reviewer cleared exactly the subset it was asked about, and the merge inherited the unasked questions.
+
+### Pattern ID
+
+Parallel-reviewer racing (first occurrence). Countermeasure adopted at Phase 247: outstanding-verdict merge freeze, recorded in the tribunal mode line; closure of raced-in findings must execute the originating reviewer's own cited checks rather than substituting a third opinion.
+
+---
+
 *Shadow integrity: ACTIVE*
 
 
@@ -597,6 +637,26 @@ Wrong-reason-red family: the sibling test file already documented the rule ('the
 
 ---
 
+## Entry: Phase 247 -- parallel-reviewer racing let a VETO arrive after the merge it forbade
+
+**Date**: 2026-08-31
+**Category**: PROCESS
+**Verdict source**: GATE TRIBUNAL entries #665 (adopted re-VETO) / #666 (PASS after mechanical closure)
+
+### What Happened
+
+The Phase 240 promotion dispatched an independent reviewer that went silent; a narrower replacement reviewer was spawned, returned VETO-then-PASS on two findings, and the merge proceeded on that PASS. The original reviewer's seven-finding VETO and post-seal re-confirmation arrived after the merge. Five findings were live on main, including a decisive one: the phase's own field retirement had made the fabrication-protection doctrine's binding predicate unsatisfiable, and the presence-shaped test suite could not see it.
+
+### Pattern to Avoid
+
+Never take the action a pending reviewer could forbid while any dispatched reviewer's verdict is outstanding. Spawning a replacement does not supersede the original: either explicitly retire the first dispatch before acting on the second, or wait for both. A narrower replacement scope compounds the risk -- the second reviewer cleared exactly the subset it was asked about, and the merge inherited the unasked questions.
+
+### Pattern ID
+
+Parallel-reviewer racing (first occurrence). Countermeasure adopted at Phase 247: outstanding-verdict merge freeze, recorded in the tribunal mode line; closure of raced-in findings must execute the originating reviewer's own cited checks rather than substituting a third opinion.
+
+---
+
 *Shadow integrity: ACTIVE*
 
 
@@ -660,6 +720,26 @@ A test that asserts 'invalid input X is rejected' must first prove its valid fix
 ### Pattern ID
 
 Wrong-reason-red family: the sibling test file already documented the rule ('the pre-change red must be no error raised, never a wrong-reason error') and the new test violated it anyway -- doctrine text without a mechanical guard did not prevent recurrence. Countermeasures shipped this phase: the staged-corpus pre-validation in the test itself, the disclosed shape-only consumer fallback with its own regression test, and the executed red-proof recorded in the tribunal entry.
+
+---
+
+## Entry: Phase 247 -- parallel-reviewer racing let a VETO arrive after the merge it forbade
+
+**Date**: 2026-08-31
+**Category**: PROCESS
+**Verdict source**: GATE TRIBUNAL entries #665 (adopted re-VETO) / #666 (PASS after mechanical closure)
+
+### What Happened
+
+The Phase 240 promotion dispatched an independent reviewer that went silent; a narrower replacement reviewer was spawned, returned VETO-then-PASS on two findings, and the merge proceeded on that PASS. The original reviewer's seven-finding VETO and post-seal re-confirmation arrived after the merge. Five findings were live on main, including a decisive one: the phase's own field retirement had made the fabrication-protection doctrine's binding predicate unsatisfiable, and the presence-shaped test suite could not see it.
+
+### Pattern to Avoid
+
+Never take the action a pending reviewer could forbid while any dispatched reviewer's verdict is outstanding. Spawning a replacement does not supersede the original: either explicitly retire the first dispatch before acting on the second, or wait for both. A narrower replacement scope compounds the risk -- the second reviewer cleared exactly the subset it was asked about, and the merge inherited the unasked questions.
+
+### Pattern ID
+
+Parallel-reviewer racing (first occurrence). Countermeasure adopted at Phase 247: outstanding-verdict merge freeze, recorded in the tribunal mode line; closure of raced-in findings must execute the originating reviewer's own cited checks rather than substituting a third opinion.
 
 ---
 
@@ -2171,6 +2251,26 @@ A test that asserts 'invalid input X is rejected' must first prove its valid fix
 ### Pattern ID
 
 Wrong-reason-red family: the sibling test file already documented the rule ('the pre-change red must be no error raised, never a wrong-reason error') and the new test violated it anyway -- doctrine text without a mechanical guard did not prevent recurrence. Countermeasures shipped this phase: the staged-corpus pre-validation in the test itself, the disclosed shape-only consumer fallback with its own regression test, and the executed red-proof recorded in the tribunal entry.
+
+---
+
+## Entry: Phase 247 -- parallel-reviewer racing let a VETO arrive after the merge it forbade
+
+**Date**: 2026-08-31
+**Category**: PROCESS
+**Verdict source**: GATE TRIBUNAL entries #665 (adopted re-VETO) / #666 (PASS after mechanical closure)
+
+### What Happened
+
+The Phase 240 promotion dispatched an independent reviewer that went silent; a narrower replacement reviewer was spawned, returned VETO-then-PASS on two findings, and the merge proceeded on that PASS. The original reviewer's seven-finding VETO and post-seal re-confirmation arrived after the merge. Five findings were live on main, including a decisive one: the phase's own field retirement had made the fabrication-protection doctrine's binding predicate unsatisfiable, and the presence-shaped test suite could not see it.
+
+### Pattern to Avoid
+
+Never take the action a pending reviewer could forbid while any dispatched reviewer's verdict is outstanding. Spawning a replacement does not supersede the original: either explicitly retire the first dispatch before acting on the second, or wait for both. A narrower replacement scope compounds the risk -- the second reviewer cleared exactly the subset it was asked about, and the merge inherited the unasked questions.
+
+### Pattern ID
+
+Parallel-reviewer racing (first occurrence). Countermeasure adopted at Phase 247: outstanding-verdict merge freeze, recorded in the tribunal mode line; closure of raced-in findings must execute the originating reviewer's own cited checks rather than substituting a third opinion.
 
 ---
 

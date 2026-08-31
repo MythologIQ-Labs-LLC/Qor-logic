@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-31T0609-4ead35",
+  "plan_path": "docs/plan-qor-phase247-negative-constraints-remediation.md",
+  "plan_hash": "b8e8394e6c17505b670562d2767ea391b18b0af54c05f16c29a200940b7ac41c",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "d4e483c16f35a8533857bf0fb0cd76dea286aa4b72db54c8cf7df5c082087301",
+  "head_commit": "506cfbe2a35509876f9d52e3755e49c7160173fd",
+  "captured_ts": "2026-08-31T06:57:04.123102Z"
+}

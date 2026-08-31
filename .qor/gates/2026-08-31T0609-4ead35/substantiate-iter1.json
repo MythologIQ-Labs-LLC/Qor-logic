@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-08-31T0609-4ead35",
+  "ts": "2026-08-31T06:58:37Z",
+  "verdict": "PASS",
+  "merkle_seal": "38932f14d3d32b83b204f7e7a10f9d63c721637ba5dc4ffc322c087c3752ac94",
+  "ledger_entry": 668,
+  "version": "0.163.1",
+  "plan_path": "docs/plan-qor-phase247-negative-constraints-remediation.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.163.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-08-31T06:58:37Z"
+  }
+}

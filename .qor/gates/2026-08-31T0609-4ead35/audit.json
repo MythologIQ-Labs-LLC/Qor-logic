@@ -1,0 +1,17 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-31T0609-4ead35",
+  "ts": "2026-08-31T06:56:47Z",
+  "target": "docs/plan-qor-phase247-negative-constraints-remediation.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.163.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-08-31T06:56:47Z"
+  }
+}
