@@ -1,4 +1,4 @@
-"""Phase 187 (GH #243): negative-constraints injection into weak-tier variants.
+"""Phase 187 (GH #243): negative-constraints injection into compiled variants.
 
 The kilo-code/codex/gemini compiled variants of the fabrication-risk
 governance skills carry the NR-001/NR-002 preamble; the claude variant
@@ -54,8 +54,8 @@ def test_risk_set_names_the_three_governance_skills():
 
 
 def test_compile_all_injects_weak_tier_variants_only(tmp_path):
-    """Integration over the REAL corpus: weak-tier variants carry the rules,
-    the claude variant stays byte-identical to source."""
+    """Integration over the REAL corpus: non-claude host variants carry the
+    rules, the claude variant stays byte-identical to source."""
     out = tmp_path / "dist"
     compile_mod.compile_all(out)
 
@@ -120,3 +120,24 @@ def test_compile_all_cursor_and_cline_variants(tmp_path):
     )
     agents = sorted(p.name for p in workflows.glob("agent-*.md"))
     assert len(agents) == len(compile_mod.list_source_agents(compile_mod.AGENTS_SRC))
+
+
+def test_injected_block_carries_no_tier_condition():
+    """Phase 247 amendment (reviewer non-blocking item a): the V-2 fix had no
+    regression guard -- a revert to the tier-conditional wording would have
+    passed the suite. The block must bind unconditionally: none of the retired
+    tier-conditional phrases may reappear, and the unconditional binding
+    language must remain."""
+    block = compile_mod.NEGATIVE_CONSTRAINTS_BLOCK
+    for retired in (
+        "min_model_capability",
+        "Below-Design-Tier",
+        "weaker model",
+        "above some deployment tiers",
+        "When executing on",
+    ):
+        assert retired not in block, (
+            f"tier-conditional wording reintroduced into the injected block: {retired!r}"
+        )
+    assert "Binding on Every Execution" in block
+    assert "independent of model identity, host, tier, or provider" in block

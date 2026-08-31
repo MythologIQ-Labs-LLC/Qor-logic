@@ -19741,6 +19741,22 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; dod-check OK; merge-velocity OK; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `3f7e4fd8ba5a`); feature-index 27/27 verified; doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (406 files); focused suites 9/9. Full suite 3155 passed / 6 skipped, run twice for determinism (pre-seal); post-seal determinism runs recorded in the seal commit.
 
+### Entry #669: AMENDMENT -- Phase 247 reviewer-record correction and non-blocking closures
+
+**Timestamp**: 2026-08-31T07:23:23Z
+**Phase**: GATE (Phase 247 amendment)
+**Author**: Judge
+**Risk Grade**: L1
+**Plan**: docs/plan-qor-phase247-negative-constraints-remediation.md
+**Session**: 2026-08-31T0609-4ead35
+**Mode**: record correction at the originating reviewer's explicit request, plus closure of their two non-blocking findings
+
+**Content Hash**: `006d7250d12c5ae66f4021763f23b491f1c136f150ebd48a2479d485af03c825`
+**Previous Hash**: `38932f14d3d32b83b204f7e7a10f9d63c721637ba5dc4ffc322c087c3752ac94`
+**Chain Hash (Merkle seal)**: `8d62173d268284db4bd18e608d62bf6c325103520a165e3b877b266fb85bbd9a`
+
+**Decision**: **Decision**: Corrects entry #666's characterization at the originating reviewer's request: the Phase 240 reviewer was NOT non-responsive during the Phase 247 re-audit -- their PASS verdict was sent three times and dropped or delayed on the delivery path; the record now reads delivery failure, not reviewer silence. Their re-audit independently PASSed Phase 247 on all six published criteria before the merge completed its CI window: V-1 through V-6 verified closed at source (including a single-field slip-past attempt against the V-4 detector that failed), the variant sweep clean on all four retired-phrase probes, and -- their criterion 5 -- tribunal integrity confirmed structurally sound: the Phase 247 gate held a single iteration-1 VETO with no pre-written PASS, which the reviewer named as the structural difference from entry #642. The reviewer also conceded V-3 as fixed pre-merge (their earlier re-check read the file between two commits) and endorsed the mechanical-closure fallback as a stronger record than a static verdict alone. Their two non-blocking findings are closed in this amendment rather than deferred: the injected block gains a red-proved regression guard asserting the ABSENCE of every retired tier-conditional phrase (a revert to the old wording now fails the suite), and the residual cosmetic tier-framing is retired (doctrine H1 now names fabrication-risk skills, not below-design-tier execution; test docstrings de-tiered). Variant drift clean; doc-integrity strict clean.
+
 ---
 
 *Chain integrity: VALID*

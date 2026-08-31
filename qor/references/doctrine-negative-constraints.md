@@ -1,4 +1,4 @@
-# Doctrine: Negative Constraints for Below-Design-Tier Execution
+# Doctrine: Negative Constraints for Fabrication-Risk Skills
 
 **Origin**: GH #243 (Phase 187). Status: binding for the fabrication-risk
 skill set; advisory template for new skills.
