@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.162.0] - 2026-08-31
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Changed
+- **Phase 245 (feature; /qor-refactor modernization, GH #392 Tranche A)**: `/qor-refactor` is rewritten around context-aware, behavior-preserving simplification -- four declared scope modes (`changeset` as the recommended post-implementation default, `focused`, `component`, `explicit`) with no silent widening; the seven-question Simplification Test gating every proposed change; explicit post-refactor verification with a completion gate that blocks on the bad outcomes (contract weakened, scope exceeded, behavior not preserved); `NO REFACTOR REQUIRED` as a documented success; Section 4 threshold breaches trigger the Simplification Test instead of forced decomposition; JS/TS assumptions removed or demoted to labeled non-normative examples; and the `/qor-harden` authority boundary bound to the canonical implementation-quality sweep. The promotion tribunal's independent reviewer caught a logically inverted completion gate that the shipped presence-shaped tests could not see -- fixed with polarity/threshold property tests and recompiled into all six variants. The `/qor-implement` lightweight-simplification tranche remains GH #392's declared residual.
+
 ## [0.161.0] - 2026-08-31
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
