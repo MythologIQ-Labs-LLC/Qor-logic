@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-31T0512-e25e00",
+  "plan_path": "docs/plan-qor-phase246-implement-simplification-profile.md",
+  "plan_hash": "a99c428d35bc68d9e00dff14358b66145ed58051890842325bd148e3b9f18817",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "5591e0df1ec9d0c3bb0538833ee9807196e5ff9d68f2a80b0a9ed51f2d7f621b",
+  "head_commit": "776fd8323ce19e8596fd030508528451b731d573",
+  "captured_ts": "2026-08-31T05:37:59.611333Z"
+}

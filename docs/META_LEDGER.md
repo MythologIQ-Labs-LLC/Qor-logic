@@ -19583,6 +19583,85 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; dod-check OK; merge-velocity OK; skill-size-budget 0 EXCEEDED; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `70cd9921791c`); feature-index 27/27 verified; doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (406 files); focused suite 13/13. Full suite run twice for determinism post-seal (counts in the seal commit).
 
+### Entry #661: GATE TRIBUNAL -- Phase 246 implement simplification profile, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-31T05:37:43Z
+**Phase**: GATE (Phase 246)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase246-implement-simplification-profile.md (iteration 1)
+**Session**: 2026-08-31T0512-e25e00
+**Mode**: adversarial -- independent code-reviewer over the Step 9.5 delta
+
+**Content Hash**: `d163b3af075429e34355345c14fc9e575486ccfb08a6d719b58b1c0081e4e771`
+**Previous Hash**: `0f83aef4fa34e47f6d50158b80e3b99791c43103d16de1be45b6704ff34cf448`
+**Chain Hash (Merkle seal)**: `bd67151797f5a97668c3d78f333cdb9f3a0bfb0940d356f6cebe359e2e0d2763`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift (one narrow mandating finding). Attempt 1 of 5.
+
+**THE STEP ABOVE THE NEW GATE INSTRUCTED THE OPPOSITE BEHAVIOR, AND IT RAN FIRST.** The Step 9.5 delta itself was correct and both cited references verified real. F1: Step 9's pre-existing unconditional splitting/flattening action executed before the gate existed -- an implementer working top-to-bottom force-splits a function that exists in that shape to protect a contract, and only then reaches the gate that would have forbidden it; Step 9.5's refinement authority cannot undo the split. Contradicted three live contracts: /qor-refactor's Phase 245 examination-not-forced-decomposition rule, the delegation table's mid-implement-bloat routing, and the table's own named anti-pattern for inline Section 4 enforcement. Pre-existing text -- but a phase installing the examination-over-forced-decomposition rule cannot leave it unconditional.
+
+**Next**: route Step 9 violations through the gate; pin; re-audit.
+
+### Entry #662: GATE TRIBUNAL -- Phase 246 implement simplification profile, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-31T05:37:43Z
+**Phase**: GATE (Phase 246)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase246-implement-simplification-profile.md (iteration 2)
+**Session**: 2026-08-31T0512-e25e00
+**Mode**: adversarial -- remedy re-read at source by the same reviewer; cleared
+
+**Content Hash**: `f132226636a7d84d5c13a433bb9ea1b3e11446817c84c0bc1ebb890a70284c44`
+**Previous Hash**: `bd67151797f5a97668c3d78f333cdb9f3a0bfb0940d356f6cebe359e2e0d2763`
+**Chain Hash (Merkle seal)**: `7f8d93e869a4c5a0b3e073156e32ac0e6ad1ec059b36d6f06ab99acfe14e8786`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5.
+
+**STEP 9 NOW ROUTES INSTEAD OF ACTING.** Violations enter the Simplification Test gate with the NO REFACTOR REQUIRED off-ramp and delegation-table routing to /qor-refactor for independently bounded passes; the unconditional action is gone file-wide and pinned absent by test, with the positive routing pinned inside the Step 9 section specifically -- the reviewer confirmed a version satisfied only via Step 9.5's own prose would fail, which is the failure mode worth guarding. Both test nits closed plus the follow-up single-branch gating pin. Focused suite 4/4; prose-lint floor clean with reasoned exemptions; variants recompiled (406 clean); full suite 3152 passed twice. This closes GH #392's final tranche.
+
+**Next**: /qor-implement record, then /qor-substantiate (v0.163.0).
+
+### Entry #663: IMPLEMENTATION -- Phase 246 implement simplification profile
+
+**Timestamp**: 2026-08-31T05:37:43Z
+**Phase**: IMPLEMENT (Phase 246)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase246-implement-simplification-profile.md (PASS at entry #662)
+**Session**: 2026-08-31T0512-e25e00
+
+**Content Hash**: `7ae78c3c223250f052ca91c7b6d571bac3dd631f0e459af2751c62e1e561300e`
+**Previous Hash**: `7f8d93e869a4c5a0b3e073156e32ac0e6ad1ec059b36d6f06ab99acfe14e8786`
+**Chain Hash (Merkle seal)**: `32e136d084913a1544722ba0316b6db3e69412911aaaaf5da3faf6beb730b6f2`
+
+**Decision**: **Decision**: Phase 246 implementation record (GH #392 final tranche). Delivered: qor/skills/sdlc/qor-implement/SKILL.md Step 9.5 Changeset Simplification Profile (post-verification refinement over recently modified code only; IQ-COMPLEX/IQ-CONTEXT/IQ-MAINTAIN lenses; every refinement gated through the Simplification Test; behavior preservation invariant; abstention as success; real /qor-refactor delegation reserved for bounded structural passes) and the iteration-2 Step 9 rerouting (violations enter the gate instead of unconditional splitting/flattening). tests/test_implement_simplification_profile.py: four tests -- placement ordering, containment/invariant/abstention contract, shared-protocol reuse without nested ceremony, and the Step 9 routing pin. Variants recompiled (406 files, drift clean); skill under the size-budget WARN band.
+
+### Entry #664: SESSION SEAL -- Phase 246 implement simplification profile GH #392 (v0.163.0)
+
+**Timestamp**: 2026-08-31T05:39:12Z
+**Phase**: SEAL (Phase 246)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `cd6b7ba9a119`
+**Plan**: docs/plan-qor-phase246-implement-simplification-profile.md (iteration 2; PASS at entry #662)
+**Session**: 2026-08-31T0512-e25e00
+**Change Class**: feature (0.162.0 -> 0.163.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `a99c428d35bc68d9e00dff14358b66145ed58051890842325bd148e3b9f18817`
+**Previous Hash**: `32e136d084913a1544722ba0316b6db3e69412911aaaaf5da3faf6beb730b6f2`
+**Chain Hash (Merkle seal)**: `5220e4601e53bbb17b3c69ff22e1d223000e3e4f0bd5810c2dabfe7f0e1e54fc`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 246 (GH #392 final tranche): /qor-implement's Step 9.5 changeset simplification profile ships as an invariant profile -- refinement bounded to recently modified code, gated through the Simplification Test, behavior preservation invariant, abstention as success, real /qor-refactor delegation reserved for bounded passes -- and Step 9 routes Section 4 violations through the same gate instead of unconditional splitting/flattening (the reviewer's ordering insight: the unconditional action ran before the gate existed, making the contradiction unrecoverable). GH #392 closes; this ends the eight-phase promotion arc (239-246) in which every independent-reviewer iteration found at least one real defect and every finding closed with red-proved or property-shaped coverage.
+
+**GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; dod-check OK; merge-velocity OK; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `d3d07c8a2345`); feature-index 27/27 verified; doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (406 files); focused suite 4/4; prose-lint floor clean with reasoned exemptions. Full suite run twice for determinism post-seal (counts in the seal commit).
+
 ---
 
 *Chain integrity: VALID*

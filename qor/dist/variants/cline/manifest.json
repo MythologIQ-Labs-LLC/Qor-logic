@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T05:01:39Z",
+  "generated_ts": "2026-08-31T05:46:11Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -162,7 +162,7 @@
       "id": "command-qor-implement.md",
       "source_path": "workflows/command-qor-implement.md",
       "install_rel_path": "workflows/command-qor-implement.md",
-      "sha256": "5d695f8507271ff0e94d8f854033c7b6815903580165d6787daaa53a24f779b6"
+      "sha256": "573ff3c6c5af13d1fc7d60a12005206290b9691e275052cd9e89f9457cbe0a01"
     },
     {
       "id": "command-qor-meta-log-decision.md",
@@ -210,7 +210,7 @@
       "id": "command-qor-refactor.md",
       "source_path": "workflows/command-qor-refactor.md",
       "install_rel_path": "workflows/command-qor-refactor.md",
-      "sha256": "3a8c0c7015edaaa9416968f84a0b7c4f2b8975d9761bb41cdb6f2c946dbd96a3"
+      "sha256": "01263dd54214cad670cedca51b1047473f83aea7d504916d984149a3780f4702"
     },
     {
       "id": "command-qor-remediate.md",
