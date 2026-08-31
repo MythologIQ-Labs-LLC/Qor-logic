@@ -66,6 +66,8 @@ Promote the Phase 238 P1 content for exactly these repository surfaces.
 
 `README.md` is the single content exception discovered by Adversarial Preflight Iteration 1: preserve the Phase 239 base file and change only the Skills badge/count from 30 to 31. Do not import the prototype's unrelated `/qor-tone` wording or EOF-format drift.
 
+Base-motion amendment (promotion executed on post-v0.160.0 main): the numbers the prototype captured have moved with the base and are imported at their current values rather than the stale ones -- the Skills badge/count moves 31 to 32 (Phase 244 added /qor-harden after this plan was authored), and the FEATURE_INDEX entry renumbers from FX026 to FX027 (FX026 was allocated to Phase 242's procedure-evidence evaluator). No other semantic deviation from the admitted P1 contract is introduced; the promotion runs in this session's own gate directory rather than the pre-rebase 2026-08-27T2317-239a1c session.
+
 - `README.md`
 - `docs/FEATURE_INDEX.md`
 - `docs/SKILL_REGISTRY.md`
@@ -143,7 +145,7 @@ If repository-native signing material or a required provenance capability is una
 
 | FEATURE_INDEX entry | Operation | Test descriptor |
 |---|---|---|
-| FX026 `qor-logic scripts roadmap_cli` | NEW | `tests/test_roadmap_cli.py::test_vertical_pilot_across_fresh_loads` proves persisted topology, frontier progression, fresh-load resume, and legal `/qor-plan` handoff. |
+| FX027 `qor-logic scripts roadmap_cli` (renumbered from FX026 by base motion) | NEW | `tests/test_roadmap_cli.py::test_vertical_pilot_across_fresh_loads` proves persisted topology, frontier progression, fresh-load resume, and legal `/qor-plan` handoff. |
 
 ## Definition of Done
 

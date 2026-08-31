@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T03:09:03Z",
+  "generated_ts": "2026-08-31T03:26:07Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -210,7 +210,7 @@
       "id": "qor-help",
       "source_path": "skills/qor-help/SKILL.md",
       "install_rel_path": "skills/qor-help/SKILL.md",
-      "sha256": "71e8fccf8a3fcb9f42b38059d36c8671473d817abf34b6e9461e9d53f7a42d43"
+      "sha256": "192ad52f5bb26a2a56ad122c564114437094219173f26cb56969206d657f5caa"
     },
     {
       "id": "qor-ideate",
@@ -403,6 +403,12 @@
       "source_path": "skills/qor-research/SKILL.md",
       "install_rel_path": "skills/qor-research/SKILL.md",
       "sha256": "88189cb99de7464280a4a3576353290b76b652a146cb1cd283f49e31e77248bb"
+    },
+    {
+      "id": "qor-roadmap",
+      "source_path": "skills/qor-roadmap/SKILL.md",
+      "install_rel_path": "skills/qor-roadmap/SKILL.md",
+      "sha256": "267d77c11932cc698dd2f5f18e36f2674ceb6597ab56e544d300c2088d34edca"
     },
     {
       "id": "qor-shadow-process",

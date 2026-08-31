@@ -58,6 +58,7 @@ Bootstrapping, help, repo management, meta-tracking, workflow bundles, A/B measu
 | qor-repo-audit | `qor/skills/meta/qor-repo-audit/` | Active |
 | qor-repo-release | `qor/skills/meta/qor-repo-release/` | Active |
 | qor-repo-scaffold | `qor/skills/meta/qor-repo-scaffold/` | Active |
+| qor-roadmap | `qor/skills/meta/qor-roadmap/` | Experimental P1 (operator-invoked decision topology; Phase 239 promotion of the Phase 238 pilot) |
 | qor-meta-log-decision | `qor/skills/meta/qor-meta-log-decision/` | Active (migrated) |
 | qor-meta-track-shadow | `qor/skills/meta/qor-meta-track-shadow/` | Active (migrated) |
 | qor-deep-audit | `qor/skills/meta/qor-deep-audit/` | Active (workflow bundle; autonomy: autonomous) |
