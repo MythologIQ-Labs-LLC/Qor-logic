@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.161.0] - 2026-08-31
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 239 (feature; governed promotion of the /qor-roadmap P1 pilot, GH #373)**: imports the admitted Phase 238 prototype (commit 31243902) onto the governed head under the plan's fail-closed promotion rule -- versioned append-only Roadmap event contract with confined `.qor/roadmaps/<id>/events.jsonl` storage and atomic replace; pure state reduction rejecting unsupported versions, malformed history, unknown references, duplicate identities, sequence gaps, cycles, and illegal authority; `fact`/`decision`/`prerequisite` nodes only; evidence-backed facts and authority-gated decisions; a complete actionable frontier; fail-closed named-scope handoff ending at `/qor-plan`; and a delegation-first `/qor-roadmap` skill (Skills badge 32). The promotion tribunal's independent reviewer caught de-facto decision supersession reachable from the shipped CLI (an already-resolved node could be silently re-resolved, replacing recorded rationale/authority/evidence) -- closed with a status guard mirroring the retired-space handler, red-proved, plus behavioral coverage for the previously untested duplicate-identity and sequence-gap clauses. Evaluation of Roadmap against the current baseline remains GH #373's next task.
+
 ## [0.160.0] - 2026-08-31
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

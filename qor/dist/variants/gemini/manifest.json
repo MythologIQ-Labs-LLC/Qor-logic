@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T03:09:03Z",
+  "generated_ts": "2026-08-31T03:57:19Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -150,7 +150,7 @@
       "id": "qor-help.toml",
       "source_path": "commands/qor-help.toml",
       "install_rel_path": "commands/qor-help.toml",
-      "sha256": "5c5b550c08eac2eaed4bf56354785799267c188c50b446b00cdf8ec7e3e354c3"
+      "sha256": "fe5197bd5bbd7a5fe654717efabf77ed20dc8a4d9e84c2223a44770f383ff21c"
     },
     {
       "id": "qor-ideate.toml",
@@ -241,6 +241,12 @@
       "source_path": "commands/qor-research.toml",
       "install_rel_path": "commands/qor-research.toml",
       "sha256": "94ae02d64a6f21c62c219fc0c883b1dd89da2b21fea556483ddaaf5902b1a644"
+    },
+    {
+      "id": "qor-roadmap.toml",
+      "source_path": "commands/qor-roadmap.toml",
+      "install_rel_path": "commands/qor-roadmap.toml",
+      "sha256": "fe4e9271298141400db4e2901713268a6a4ac049f1740beaaf8d7b404343c2aa"
     },
     {
       "id": "qor-shadow-process.toml",

@@ -572,6 +572,7 @@ term: problem frame
 definition: 'Second section of the ideation artifact. Defines the actual failure mode without prescribing a solution. Required fields: problem_frame.affected_actors (list of users/systems affected), problem_frame.failure_mode (what goes wrong), problem_frame.cost_of_failure (operator hours, lost work, etc.). Anti-pattern guard for SG-PrematureSolutioning-A: skill REFUSES to advance to Transformation Statement until problem_frame is populated.'
 home: qor/references/doctrine-ideation-readiness.md
 referenced_by:
+  - qor/gates/delegation-table.md
   - qor/skills/sdlc/qor-ideate/SKILL.md
   - qor/skills/meta/qor-help/SKILL.md
   - qor/references/doctrine-shadow-genome-countermeasures.md
@@ -766,6 +767,7 @@ term: gate_skipped_prerequisite_absent
 definition: 'Shadow Process Genome event_type (severity 1 default) emitted when an operator skips a /qor-substantiate step whose declared prerequisite is absent on the host archetype (e.g., Step 7.5 version bump on a non-Python host without pyproject.toml). Catches the SG-HalfSealedClaim-A pattern. Schema enum entry added at Phase 75.'
 home: qor/gates/schema/shadow_event.schema.json
 referenced_by:
+  - qor/skills/meta/qor-roadmap/SKILL.md
   - qor/skills/sdlc/qor-implement/SKILL.md
   - qor/skills/sdlc/qor-plan/SKILL.md
   - qor/skills/meta/qor-deep-audit-recon/SKILL.md

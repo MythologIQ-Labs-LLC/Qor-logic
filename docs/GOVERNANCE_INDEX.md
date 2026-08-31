@@ -45,6 +45,7 @@ Stable; changes are explicit doctrine events. Drift signal: rules contradict eac
 | Execution-context adaptive governance ADR | `docs/ADR_EXECUTION_CONTEXT_ADAPTIVE_GOVERNANCE.md` |
 | Portable governance engine boundary ADR | `docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md` |
 | Downstream enforcement boundary | `qor/references/downstream-enforcement-boundary.md` |
+| Roadmap capability ADR | `docs/ADR_QOR_ROADMAP.md` |
 | Snapshot contract | `qor/references/snapshot-contract.md` |
 
 ## Tier 3 — Active Initiative
@@ -69,6 +70,8 @@ Informational, slow-drift. Drift signal: factual claims diverge from current cod
 
 | Artifact | Path |
 |----------|------|
+| Roadmap adversarial review | `docs/adversarial-review-qor-roadmap-2026-08-27.md` |
+| Roadmap build map | `docs/roadmap-qor-roadmap-build-2026-08-27.md` |
 | Doctrine references | `qor/references/*.md` |
 | Process notes | `docs/PROCESS_*.md` |
 | System-tier docs | `docs/architecture.md`, `docs/lifecycle.md`, `docs/operations.md`, `docs/policies.md` |

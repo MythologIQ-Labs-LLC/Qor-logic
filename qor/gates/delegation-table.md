@@ -29,6 +29,9 @@ This distinction prevents both failure modes: inline reinvention of a real skill
 | `qor-ideate` | Readiness `planning_advisory_only` | `/qor-plan` (with advisory flag) | high-impact unvalidated assumptions; allow prototype planning |
 | `qor-research` | Research complete | `/qor-plan` | next phase in chain |
 | `qor-research` | Project-structure questions surface | `/qor-organize` | restructuring is organize's domain, not plan's |
+| `qor-roadmap` | Problem framing is missing or materially ambiguous | `/qor-ideate` | ideate owns problem frame, assumptions, options, and scope; Roadmap only records the resulting pointer |
+| `qor-roadmap` | A fact node requires investigation | `/qor-research` | research owns factual investigation; Roadmap stores evidence pointers instead of reproducing research inline |
+| `qor-roadmap` | Named planning scope has all declared Roadmap blockers resolved and a legal predecessor artifact exists | `/qor-plan` | Roadmap ends at planning readiness; implementation decomposition belongs to plan |
 | `qor-plan` | Plan complete | `/qor-audit` | next phase in chain |
 | `qor-plan` | Architectural restructuring needed | `/qor-organize` | organize owns directory topology |
 | `qor-implement` | Implementation complete | `/qor-substantiate` | next phase in chain |
