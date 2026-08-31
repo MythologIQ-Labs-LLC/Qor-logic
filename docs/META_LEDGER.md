@@ -19289,6 +19289,85 @@ Next: /qor-substantiate.
 
 **Decision**: **Decision**: The independent reviewer VETOed after seal entry #644 with two findings the bound tribunal missed, both verified and closed in-session rather than papered over. V1: the plan's Phase 2 completion requirement (a corpus test failing if either retired admission field reappears in a live skill) was undelivered -- the sole live-corpus test filtered to fabrication-guard warnings and model_pinning_lint exits 0 unconditionally, so reintroduction produced a stderr WARN and green CI; closed by test_no_retired_admission_fields_in_live_corpus binding the real corpus. V2: the lint's execution-context inspection caught ValueError from the first malformed contract and returned, suppressing inspection of the remaining corpus while exiting 0; closed by scan_with_errors accumulating per-skill errors (red-first test), with execution_context.py restored to its audited 250-line razor shape. Also closed from the same pass: qor-plan Step 0.3's describing prose still documented the retired named-model tier walk. The reviewer confirmed the core claim holds (no authority decision keyed on model identity; fail-open telemetry path disclosed by design; completeness gating tested behaviorally; the closed-enum relocation lost no binding rule). Enforcement note recorded: corpus-wide hard_execution_requirements are empty today, so completeness gating is exercised only in unit tests until a consumer declares one.
 
+### Entry #646: GATE TRIBUNAL -- Phase 241 portable-governance boundary revalidation, iteration 1 (VETO)
+
+**Timestamp**: 2026-08-31T02:29:25Z
+**Phase**: GATE (Phase 241)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase241-portable-governance-boundary.md (iteration 4 at review; branch carried an iteration-3 PASS artifact)
+**Session**: 2026-08-31T0228-2ccd6a
+**Mode**: adversarial -- independent code-reviewer revalidation of the rebased head (evidence is revision-sensitive; the carried verdict was not trusted)
+
+**Content Hash**: `4f4bf2fa18c14a2ed623557c1b3e304fe9bd0258e427be02d5c1c09bd0ca6037`
+**Previous Hash**: `683b6a58c1421a59736ac872aa68fa9d8b9b7f325cfa866b67602a46211b7983`
+**Chain Hash (Merkle seal)**: `1b072108d05c14f5b561762bfe294a7b4a36fe276eaffd8b36160654ed455c82`
+
+**Decision**: **Verdict**: **VETO** -- infrastructure-mismatch + test-failure (one seal-blocking finding plus four coherence/quality findings). Attempt 1 of 5.
+
+**THE CONTENT PASSED; THE CARRIED EVIDENCE DID NOT.** The reviewer cleared the boundary substance: publication boundary clean across all five content files, no downstream authority to redefine evidence semantics (strengthening-only), non-goals honored. Blocking F1: the delta carried .qor/gates/2026-08-28T1308-a1c241/ recording a PASS for plan iteration 3 -- superseded by iteration 4, with no provenance sidecars, so provenance verification skips rather than rejects it: a stale verdict sitting in the chain that a seal could consume, the exact indeterminate-read-as-satisfied failure the ADR itself warns against. F2: the extension reference lived in qor/platform/, the directory owning the execution-adaptation concern the ADR separates. F3: that reference was an orphan in the shipped package. F4: neither the ADR nor the reference was registered in the governance index. F5: all nine boundary tests were phrase-presence assertions a gutted document would survive, and two implemented the plan's test contract as vacuous negative checks.
+
+**Next**: amend (remove stale artifacts, relocate, register, harden tests), then re-audit.
+
+### Entry #647: GATE TRIBUNAL -- Phase 241 portable-governance boundary revalidation, iteration 2 (PASS)
+
+**Timestamp**: 2026-08-31T02:29:25Z
+**Phase**: GATE (Phase 241)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase241-portable-governance-boundary.md (iteration 5)
+**Session**: 2026-08-31T0228-2ccd6a
+**Mode**: adversarial -- iteration-1 findings re-verified closed
+
+**Content Hash**: `a8661c51e8d6129a7b077ef2aac6e15ca018dcfe15cce1997d0dcd48623aae08`
+**Previous Hash**: `1b072108d05c14f5b561762bfe294a7b4a36fe276eaffd8b36160654ed455c82`
+**Chain Hash (Merkle seal)**: `9bd3dd7fb6eaef65c149f1afbf8a504b40650502f2d4c96a89bd9d619bfb8790`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5.
+
+**ALL FIVE FINDINGS CLOSED ON THE ACTUAL REVISION.** Stale iteration-3 gate artifacts and the carried report removed; this promotion's own session supplies iteration-current artifacts with provenance sidecars. Extension reference relocated to qor/references/downstream-enforcement-boundary.md with the housing rationale stated in the ADR (qor/platform/ keeps execution-context adaptation only). Both the ADR and the reference registered in the governance index Tier 2. Tests hardened from phrase presence to contract: the reference's binding guard sentence asserted verbatim, the ADR authority-direction diagram asserted as an ordered block (inversion fails), and a forge-SDK import scan over executable qor/ code enforcing the no-mutation-surface non-goal. Boundary suite 11/11; plan advanced to iteration 5 with the closure recorded in its own revision history.
+
+**Next**: /qor-implement record, then /qor-substantiate (v0.159.0).
+
+### Entry #648: IMPLEMENTATION -- Phase 241 portable-governance boundary
+
+**Timestamp**: 2026-08-31T02:29:25Z
+**Phase**: IMPLEMENT (Phase 241)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase241-portable-governance-boundary.md (PASS at entry #647)
+**Session**: 2026-08-31T0228-2ccd6a
+
+**Content Hash**: `2c9018d1717447a2c5d58edf97509a235e1a397907046ecf7a3c6f2c5e81b6f7`
+**Previous Hash**: `9bd3dd7fb6eaef65c149f1afbf8a504b40650502f2d4c96a89bd9d619bfb8790`
+**Chain Hash (Merkle seal)**: `ab0951865ab0765c028f85e59abb3c2e51355e024c9fc879f79016991328bf05`
+
+**Decision**: **Decision**: Phase 241 implementation record (GH #381, PR #383). The boundary content predates this ceremony (authored through four governed iterations on the original branch); this promotion adds the iteration-5 closures. Delivered: docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md (canonical Qor owns portable governance semantics; downstream layers produce and project but never redefine evidence meaning; strengthening-only evidence posture; indeterminate never reads as satisfied), qor/references/downstream-enforcement-boundary.md (execution adaptation / portable evaluation / enterprise projection ownership split; no forge mutation API defined), and tests/test_portable_governance_boundary.py (11 tests including the iteration-5 block-order, guard-sentence, and forge-SDK-import hardenings). Governance-index rows for both documents. Purely additive; no executable runtime surface.
+
+### Entry #649: SESSION SEAL -- Phase 241 portable governance boundary GH #381 (v0.159.0)
+
+**Timestamp**: 2026-08-31T02:30:50Z
+**Phase**: SEAL (Phase 241)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `b45476515248`
+**Plan**: docs/plan-qor-phase241-portable-governance-boundary.md (iteration 5; PASS at entry #647)
+**Session**: 2026-08-31T0228-2ccd6a
+**Change Class**: feature (0.158.0 -> 0.159.0; also carries the unversioned Phase 240 governance change)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `3e37e6768b8e0910783412d1c7554b6dbc7ff32496904f4a19d8efa9d3970ea4`
+**Previous Hash**: `ab0951865ab0765c028f85e59abb3c2e51355e024c9fc879f79016991328bf05`
+**Chain Hash (Merkle seal)**: `ec579a85e963a138a4129850746b44ad597405692296ceaed3c4f6c60b1d27fa`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 25 / verified: 25 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 241 (GH #381, PR #383): the portable-governance-engine boundary is canonical. Base owns lifecycle, authority, evidence meaning, gate semantics, portable contracts, host adaptation, deterministic mechanisms; downstream layers produce and project but only strengthen, never redefine, evidence semantics; indeterminate never reads as satisfied. The revalidation tribunal refused the branch's carried iteration-3 verdict (stale target, no provenance sidecars -- the indeterminate-as-satisfied failure the ADR itself names) and required this promotion's own ceremony; the reference relocated from qor/platform/ to qor/references/downstream-enforcement-boundary.md; both authorities registered in the governance index; boundary tests hardened from phrase presence to contract (guard sentence verbatim, ordered authority-direction block, forge-SDK import scan). Purely additive delta; no executable runtime surface.
+
+**GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; procedural-fidelity checked; dod-check OK; merge-velocity OK; skill-size-budget 0 EXCEEDED; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `db850454bcf5`); feature-index 25/25 verified; doc-integrity strict OK (system tier); governance-index advanced + enforced OK; publication-boundary 0 findings; boundary suite 11/11. Full suite run twice for determinism post-seal (counts in the seal commit).
+
 ---
 
 *Chain integrity: VALID*

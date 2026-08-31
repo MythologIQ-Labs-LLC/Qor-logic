@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ADR = ROOT / "docs" / "ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md"
-REFERENCE = ROOT / "qor" / "platform" / "enforcement.md"
+REFERENCE = ROOT / "qor" / "references" / "downstream-enforcement-boundary.md"
 
 
 def _text(path: Path) -> str:
@@ -65,7 +65,51 @@ def test_base_boundary_forbids_platform_administration() -> None:
     text = _text(ADR).lower()
     assert "does **not** own enterprise platform administration" in text
     assert "no github api client" in text
-    assert "no github api client" not in _text(REFERENCE).lower()
+    # Iteration-5 hardening (independent-audit F5): assert the reference's
+    # actual binding guard sentence, not the absence of a phrase nobody
+    # would write there.
+    assert (
+        "Canonical Qor does not define a GitHub/GitLab/Azure DevOps/Bitbucket "
+        "mutation API for these concepts." in _text(REFERENCE)
+    )
+
+
+def test_authority_direction_block_survives_as_a_block() -> None:
+    """Iteration-5 hardening (independent-audit F5): the ADR's authority-flow
+    diagram must survive as an ordered block -- a document gutted to a bullet
+    list of scattered phrases must fail here."""
+    text = _text(ADR)
+    block = text[text.index("```text"):]
+    for upstream, downstream in (
+        ("Qor invariant contract + portable evidence semantics",
+         "portable repository facts + evidence verdicts"),
+        ("portable repository facts + evidence verdicts",
+         "enterprise desired state (downstream)"),
+        ("enterprise desired state (downstream)",
+         "platform-specific projection (downstream)"),
+        ("platform-specific projection (downstream)",
+         "GitHub / GitLab / other enforcement"),
+    ):
+        assert block.index(upstream) < block.index(downstream), (
+            f"authority direction inverted or broken: {upstream!r} must "
+            f"precede {downstream!r}"
+        )
+
+
+def test_no_qor_module_imports_a_forge_sdk() -> None:
+    """Iteration-5 hardening (independent-audit F5): the non-goal 'no forge
+    mutation surface' is enforced against executable code, not prose."""
+    import re
+
+    forge = re.compile(
+        r"^\s*(?:import|from)\s+(?:github|gitlab|azure\.devops|atlassian|pygithub)\b",
+        re.IGNORECASE | re.MULTILINE,
+    )
+    offenders = [
+        str(p) for p in (ROOT / "qor").rglob("*.py")
+        if forge.search(p.read_text(encoding="utf-8", errors="replace"))
+    ]
+    assert offenders == []
 
 
 def test_first_enterprise_consumer_stays_publication_safe() -> None:

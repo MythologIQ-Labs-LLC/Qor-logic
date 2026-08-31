@@ -43,6 +43,8 @@ Stable; changes are explicit doctrine events. Drift signal: rules contradict eac
 | Negative constraints | `qor/references/doctrine-negative-constraints.md` |
 | Spec grammar | `qor/references/spec-grammar.md` |
 | Execution-context adaptive governance ADR | `docs/ADR_EXECUTION_CONTEXT_ADAPTIVE_GOVERNANCE.md` |
+| Portable governance engine boundary ADR | `docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md` |
+| Downstream enforcement boundary | `qor/references/downstream-enforcement-boundary.md` |
 | Snapshot contract | `qor/references/snapshot-contract.md` |
 
 ## Tier 3 — Active Initiative

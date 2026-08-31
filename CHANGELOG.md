@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.159.0] - 2026-08-31
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 241 (feature; portable governance engine boundary, GH #381)**: defines the base/downstream authority boundary -- canonical Qor-logic owns portable governance semantics (lifecycle, authority, evidence meaning, gate semantics, portable repository contracts, host adaptation, deterministic mechanisms); downstream enterprise/platform layers produce evidence and project conclusions into enforcement substrates but may only strengthen, never redefine, what counts as valid governance evidence, and `indeterminate` never reads as satisfied. Ships `docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md` and `qor/references/downstream-enforcement-boundary.md` (both governance-index registered) with 11 boundary regression tests, including an ordered authority-direction block assertion and a forge-SDK import scan over executable code. The revalidation tribunal's independent-reviewer iteration removed the branch's stale carried-over iteration-3 audit artifacts and relocated the reference out of `qor/platform/` (which owns execution-context adaptation only). This release also carries the unversioned Phase 240 governance change recorded under the prior Unreleased note.
+
 ### Changed
 - **Phase 240 (governance; execution-context adaptive governance, GH #379; version-not-applicable)**: replaces model-name pinning with an execution-context contract -- model identity is provenance, not execution authority; skill frontmatter retires `model_compatibility`/`min_model_capability` in favor of `advisory_quality_requirements`/`rendering_recipes`/`default_rendering_recipe`; hard capability absence binds only under explicitly complete capability telemetry; rendering adaptation is bounded and presentation-only. Ships `qor/scripts/execution_context.py`, the behavioral spec + session delta, a rewritten `model_pinning_lint`, and behavioral tests. Rides unversioned under the next release per the phase's version-applicability classification.
 

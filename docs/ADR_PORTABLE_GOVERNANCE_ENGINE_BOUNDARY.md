@@ -216,7 +216,7 @@ Costs:
 
 ## Phase 241 scope
 
-Phase 241 records this architecture in this ADR and the concise `qor/platform/enforcement.md` extension-boundary reference, with regression tests that protect the responsibility split.
+Phase 241 records this architecture in this ADR and the concise `qor/references/downstream-enforcement-boundary.md` extension-boundary reference (deliberately housed with the doctrine/reference corpus rather than under `qor/platform/`, which owns execution-context adaptation -- the two concerns this ADR separates do not share a namespace), with regression tests that protect the responsibility split.
 
 Phase 241 adds no GitHub API client, ruleset schema, organization controller, platform mutation code, hosted signer, procedure-execution receipt implementation, remote dependency, README rewrite, or broad architecture-document rewrite.
 

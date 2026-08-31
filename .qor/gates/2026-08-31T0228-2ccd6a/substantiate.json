@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-08-31T0228-2ccd6a",
+  "ts": "2026-08-31T02:31:15Z",
+  "verdict": "PASS",
+  "merkle_seal": "ec579a85e963a138a4129850746b44ad597405692296ceaed3c4f6c60b1d27fa",
+  "ledger_entry": 649,
+  "version": "0.159.0",
+  "plan_path": "docs/plan-qor-phase241-portable-governance-boundary.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.159.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-08-31T02:31:15Z"
+  }
+}
