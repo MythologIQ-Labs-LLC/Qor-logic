@@ -1,132 +1,65 @@
-"""Model-pinning frontmatter lint (Phase 55).
+"""Retired model-admission metadata lint and fabrication-risk guard.
 
-Walks ``qor/skills/**/SKILL.md``; reads each frontmatter for
-``model_compatibility`` and ``min_model_capability``; compares declared
-minimum-capability tier against the harness-supplied current model
-(``QOR_MODEL_FAMILY`` env or ``--current-model`` argv).
-
-Maps to OWASP LLM05 (Supply Chain — model-pinning) and NIST AI RMF GV-6.1
-(third-party AI risk).
-
-WARN-only (Phase 54-style declarative-only rollout); Phase 56+ may promote
-to ABORT.
+Phase 240 makes execution-context capability evidence authoritative and removes
+named-model admission from live Qor skills. This module name remains temporarily
+for command compatibility, but it no longer contains a model-family allowlist or
+vendor-specific capability ladder.
 """
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from qor.scripts import execution_context
 
-# Canonical capability tier ordering. Lower index = lower capability.
-_CAPABILITY_ORDER: tuple[str, ...] = ("haiku", "sonnet", "opus")
 
-# Phase 187 (GH #243): skills with mandatory verdict/rationale/definition
-# slots must point at the negative-constraints doctrine. Kept as an
-# independent copy of dist_compile's set (equality is test-locked) so the
-# lint stays import-light.
+RETIRED_MODEL_FIELDS: tuple[str, ...] = (
+    "model_compatibility",
+    "min_model_capability",
+)
+
 _FABRICATION_RISK_SKILLS = {"qor-audit", "qor-plan", "qor-substantiate"}
-
 _GUARD_POINTER = "doctrine-negative-constraints"
-
 _FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
-_LIST_KEY_RE = re.compile(
-    r"^model_compatibility\s*:\s*\[([^\]]*)\]",
-    re.MULTILINE,
-)
-_MIN_KEY_RE = re.compile(
-    r"^min_model_capability\s*:\s*(\S+)",
-    re.MULTILINE,
-)
-_TIER_RE = re.compile(r"claude-(haiku|sonnet|opus)-")
 
 
 @dataclass(frozen=True)
 class ModelPinningWarning:
     skill: str
-    declared_min: str | None
-    declared_compatibility: tuple[str, ...]
-    current_model: str | None
     reason: str
 
 
-def extract_capability_tier(model_family: str | None) -> str | None:
-    """Extract capability tier from a model family string."""
-    if not model_family:
-        return None
-    match = _TIER_RE.search(model_family)
-    return match.group(1) if match else None
+def _frontmatter(text: str) -> str:
+    match = _FRONTMATTER_RE.match(text)
+    return match.group(1) if match else ""
 
 
-def _parse_pinning_keys(frontmatter: str) -> tuple[tuple[str, ...], str | None]:
-    list_match = _LIST_KEY_RE.search(frontmatter)
-    compatibility: tuple[str, ...] = tuple()
-    if list_match:
-        compatibility = tuple(
-            s.strip() for s in list_match.group(1).split(",") if s.strip()
-        )
-    min_match = _MIN_KEY_RE.search(frontmatter)
-    min_capability = min_match.group(1).strip() if min_match else None
-    return compatibility, min_capability
+def _retired_fields(frontmatter: str) -> tuple[str, ...]:
+    found: list[str] = []
+    for field in RETIRED_MODEL_FIELDS:
+        if re.search(rf"^{re.escape(field)}\s*:", frontmatter, re.MULTILINE):
+            found.append(field)
+    return tuple(found)
 
 
-def _check_one_skill(
-    skill_path: Path, current_model: str | None,
-) -> ModelPinningWarning | None:
+def _check_retired_model_fields(skill_path: Path) -> ModelPinningWarning | None:
     text = skill_path.read_text(encoding="utf-8", errors="replace")
-    fm_match = _FRONTMATTER_RE.match(text)
-    if not fm_match:
+    fields = _retired_fields(_frontmatter(text))
+    if not fields:
         return None
-    compatibility, min_capability = _parse_pinning_keys(fm_match.group(1))
-    if min_capability is None and not compatibility:
-        return None  # skill not in scoped pinning set
-    if not current_model:
-        return None  # cannot warn without known model
-
-    current_tier = extract_capability_tier(current_model)
-    if current_tier is None:
-        return None  # unknown model family; skip lint
-
-    skill_name = skill_path.parent.name
-    if min_capability and min_capability in _CAPABILITY_ORDER:
-        if _CAPABILITY_ORDER.index(current_tier) < _CAPABILITY_ORDER.index(min_capability):
-            return ModelPinningWarning(
-                skill=skill_name, declared_min=min_capability,
-                declared_compatibility=compatibility, current_model=current_model,
-                reason=f"current model tier {current_tier!r} < declared min {min_capability!r}",
-            )
-    if compatibility and current_model not in compatibility:
-        return ModelPinningWarning(
-            skill=skill_name, declared_min=min_capability,
-            declared_compatibility=compatibility, current_model=current_model,
-            reason=f"current model {current_model!r} not in compatibility list {list(compatibility)}",
-        )
-    return None
-
-
-def check(
-    repo_root: Path, *, current_model: str | None = None,
-) -> list[ModelPinningWarning]:
-    """Walk skills; emit warnings for pinning mismatches."""
-    if current_model is None:
-        current_model = os.environ.get("QOR_MODEL_FAMILY")
-    skills_dir = repo_root / "qor" / "skills"
-    warnings: list[ModelPinningWarning] = []
-    for skill in skills_dir.rglob("SKILL.md"):
-        warning = _check_one_skill(skill, current_model)
-        if warning:
-            warnings.append(warning)
-        guard = _check_fabrication_guard(skill)
-        if guard:
-            warnings.append(guard)
-    return warnings
+    return ModelPinningWarning(
+        skill=skill_path.parent.name,
+        reason=(
+            "live skill carries retired named-model admission metadata: "
+            + ", ".join(fields)
+        ),
+    )
 
 
 def _check_fabrication_guard(skill_path: Path) -> ModelPinningWarning | None:
-    """Phase 187 (GH #243): risk skills must carry the doctrine pointer."""
     skill_name = skill_path.parent.name
     if skill_name not in _FABRICATION_RISK_SKILLS:
         return None
@@ -135,14 +68,72 @@ def _check_fabrication_guard(skill_path: Path) -> ModelPinningWarning | None:
         return None
     return ModelPinningWarning(
         skill=skill_name,
-        declared_min=None,
-        declared_compatibility=tuple(),
-        current_model=None,
         reason=(
             "fabrication-risk skill lacks the negative-constraints pointer; "
-            "add the doctrine-negative-constraints reference line "
-            "(NR-001 secret shapes / NR-002 no fabrication)"
+            "add the doctrine-negative-constraints reference line"
         ),
+    )
+
+
+def check(
+    repo_root: Path,
+    *,
+    current_model: str | None = None,
+) -> list[ModelPinningWarning]:
+    """Return live-corpus migration and fabrication-risk warnings.
+
+    ``current_model`` is accepted only for CLI/caller compatibility. Model
+    identity does not affect the result and cannot grant or deny authority.
+    """
+    del current_model
+    warnings: list[ModelPinningWarning] = []
+    for skill in (repo_root / "qor" / "skills").rglob("SKILL.md"):
+        retired = _check_retired_model_fields(skill)
+        if retired:
+            warnings.append(retired)
+        guard = _check_fabrication_guard(skill)
+        if guard:
+            warnings.append(guard)
+    return warnings
+
+
+def scan_with_errors(repo_root: Path) -> tuple[list[dict], list[str]]:
+    """Scan every execution contract, accumulating per-skill errors instead of
+    raising: ``load_contract`` raises ``ValueError`` on the first malformed
+    contract, and the prior path caught it and returned -- one bad
+    ``rendering_recipes`` value silently suppressed inspection of every
+    remaining skill while still exiting 0 (Phase 240 iteration-2 audit)."""
+    active = execution_context.detect_context()
+    results: list[dict] = []
+    errors: list[str] = []
+    for path in sorted((repo_root / "qor" / "skills").rglob("SKILL.md")):
+        try:
+            contract = execution_context.load_contract(path)
+        except ValueError as exc:
+            errors.append(f"{path.parent.name}: {exc}")
+            continue
+        if contract is not None:
+            results.append(execution_context.inspect_contract(contract, active))
+    return results, errors
+
+
+def _print_execution_context(repo_root: Path) -> None:
+    try:
+        results, errors = scan_with_errors(repo_root)
+    except ImportError as exc:
+        print(f"WARN [execution-context]: inspection unavailable: {exc}", file=sys.stderr)
+        return
+    for error in errors:
+        # Phase 240 iteration-2 audit: a malformed contract is reported per
+        # skill; it no longer aborts inspection of the remaining corpus.
+        print(f"WARN [execution-context]: malformed contract: {error}", file=sys.stderr)
+    unverified = sum(len(row["unverified_hard_requirements"]) for row in results)
+    missing = sum(len(row["missing_hard_requirements"]) for row in results)
+    print(
+        f"INFO [execution-context]: {len(results)} contracts; "
+        f"{missing} missing, {unverified} unverified hard requirements"
+        + (f"; {len(errors)} malformed contract(s)" if errors else ""),
+        file=sys.stderr,
     )
 
 
@@ -151,17 +142,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repo-root", type=Path, default=None)
     parser.add_argument("--current-model", type=str, default=None)
     args = parser.parse_args(argv)
-
     repo_root = args.repo_root or Path.cwd()
+
+    _print_execution_context(repo_root)
     warnings = check(repo_root, current_model=args.current_model)
-    if not warnings:
-        return 0
-    for w in warnings:
+    for warning in warnings:
         print(
-            f"WARN [model-pinning] {w.skill}: {w.reason}",
+            f"WARN [model-admission-retired] {warning.skill}: {warning.reason}",
             file=sys.stderr,
         )
-    return 0  # WARN-only per Open Question 3 default
+    return 0
 
 
 if __name__ == "__main__":

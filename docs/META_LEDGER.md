@@ -19218,6 +19218,77 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; procedural-fidelity WARN doc-surface (resolved in this commit: SYSTEM_STATE + CHANGELOG); dod-check OK; merge-velocity OK; skill-size-budget 1 WARN / 0 EXCEEDED; data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `ffb1f3cf935d`); feature-index 25/25 verified; doc-integrity strict OK; governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean (400 files); seal_artifacts --check OK. Full suite run twice for determinism post-seal (counts in the seal commit); enforcer suites 58/58 twice; focused promotion suites 141/141.
 
+### Entry #642: GATE TRIBUNAL
+
+**Timestamp**: 2026-08-31T01:12:35Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Session**: 2026-08-28T1956-6e0074
+**Target SHA**: 3dd51126ac9120666f177c77164aa0605d551bc9
+
+**Content Hash**: `0480a659066f0f78f29dcce414a4952392e8e85450ffa7556986d12f8ca0427c`
+**Previous Hash**: `eefe9131426e8aa6f6d77b1fb4c0e944aa2684ce33987c1883631736c9513c44`
+**Chain Hash (Merkle seal)**: `0f3f1ecc879682fcc19c83370458803d47dd174d980f7eb7da43f4fb976b12d3`
+
+**Decision**: Phase 240 execution-context governance passed the complete tribunal; proceed to governed implementation evidence recovery and substantiation.
+
+### Entry #643: IMPLEMENTATION -- Phase 240 execution-context adaptive governance
+
+**Timestamp**: 2026-08-31T01:14:05Z
+**Phase**: IMPLEMENT (Phase 240)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase240-execution-context-governance.md (PASS at entry #642)
+**Session**: 2026-08-28T1956-6e0074
+
+**Content Hash**: `80bd2a77a6fe7c3faee0b343f50fbc3a21502d4f8e9f8ce94b383898aa6cdd74`
+**Previous Hash**: `0f3f1ecc879682fcc19c83370458803d47dd174d980f7eb7da43f4fb976b12d3`
+**Chain Hash (Merkle seal)**: `89fa67e45bcd42bf5f47c99807e47132343c790d88950e998dd75ec4fc73f03f`
+
+**Decision**: **Decision**: Phase 240 implementation record (GH #379, PR #380). The implementation predates this ceremony (authored on the original branch; the branch's own bounded tribunal harness was designed to produce the audit evidence and retire itself). Delivered: qor/scripts/execution_context.py (execution-context contract: capability classification, advisory quality requirements, bounded rendering recipes; model identity is provenance, not execution authority), model_pinning_lint rewritten around the contract, qor_audit_runtime compatibility seams, the execution-context behavioral spec plus its session delta, retirement of model_compatibility/min_model_capability frontmatter across the skill corpus in favor of advisory_quality_requirements/rendering_recipes/default_rendering_recipe, and behavioral tests (test_execution_context, test_qor_audit_execution_context, reworked test_model_pinning_frontmatter). Rebase integration onto v0.158.0 main required two truthful additions recorded on this branch: dist-manifest reconciliation, and recovery of the qor-audit skill-size slack that Phase 243's usable-slack guard (>= 600 B) newly enforces -- frontmatter description tightened and the closed-enum coverage detail relocated to phase37-subpasses.md with the binding VETO rule kept inline. The CI tribunal workflow was retired after its porcelain guard tripped on in-run dist regeneration; the repinned tribunal ran locally against product head 3dd51126 and recorded PASS at entry #642 with truthful execution provenance. Full suite 3087 passed / 6 skipped inside the tribunal run.
+
+### Entry #644: SESSION SEAL -- Phase 240 execution-context adaptive governance GH #379
+
+**Timestamp**: 2026-08-31T01:16:06Z
+**Phase**: SEAL (Phase 240)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `1db12930beb3`
+**Plan**: docs/plan-qor-phase240-execution-context-governance.md (PASS at entry #642)
+**Session**: 2026-08-28T1956-6e0074
+**Change Class**: governance (version-not-applicable; no version bump or tag)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1, PW.4.1
+
+**Content Hash**: `89423402df37c1641d8e87a4662273c3e33b595d6348a0c9a6689e679d525196`
+**Previous Hash**: `89fa67e45bcd42bf5f47c99807e47132343c790d88950e998dd75ec4fc73f03f`
+**Chain Hash (Merkle seal)**: `0c2cb46c9cf711abe59c84f5a9ee294290d843843ff18b84d1425d91e999cf74`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 25 / verified: 25 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 240 (GH #379, PR #380): execution-context adaptive governance replaces model-name pinning. Model identity is provenance, not execution authority; skill frontmatter retires model_compatibility/min_model_capability for advisory_quality_requirements/rendering_recipes/default_rendering_recipe; hard capability absence binds only under explicitly complete capability telemetry; rendering adaptation is bounded and presentation-only; fabrication protections remain independent. The branch's bounded tribunal (designed to produce PASS evidence and retire itself) ran locally against product head 3dd51126 after its CI form tripped on its own porcelain guard during in-run dist regeneration -- PASS at entry #642 with truthful execution provenance, harness deleted. Rebase-integration truths recorded rather than papered over: dist-manifest reconciliation; qor-audit slack recovery under Phase 243's new usable-slack guard (description tightened, closed-enum detail relocated with the binding VETO rule inline, both glossary term references registered when the strict term-drift gate caught them); the new ADR registered in the governance index when the fail-closed index gate caught it unregistered.
+
+**GATE LADDER**: intent-lock VERIFIED; admission + matrix OK; secret-scan clean; procedural-fidelity WARN doc-surface (resolved in this commit: SYSTEM_STATE + CHANGELOG); dod-check OK; merge-velocity OK; skill-size-budget 1 WARN / 0 EXCEEDED (qor-audit back under the usable-slack floor); data-api-acl disclosed-SKIP (no SQL migrations); instruction-hygiene disclosed-SKIP (module absent; event `dfccf7ac0b50`); feature-index 25/25 verified; doc-integrity strict OK (system tier); governance-index advanced + enforced OK; publication-boundary 0 findings; variant drift clean. Full suite 3087 passed / 6 skipped inside the tribunal; post-seal determinism runs recorded in the seal commit.
+
+### Entry #645: AMENDMENT -- Phase 240 independent-reviewer findings closed post-seal
+
+**Timestamp**: 2026-08-31T01:53:35Z
+**Phase**: GATE (Phase 240 amendment)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase240-execution-context-governance.md
+**Session**: 2026-08-28T1956-6e0074
+**Mode**: adversarial -- independent code-reviewer subagent, dispatched at operator direction after the bound tribunal's PASS
+
+**Content Hash**: `0e4d20c2354c26547df3856d24df51290c7565541d0f67887d039c4951efb117`
+**Previous Hash**: `0c2cb46c9cf711abe59c84f5a9ee294290d843843ff18b84d1425d91e999cf74`
+**Chain Hash (Merkle seal)**: `683b6a58c1421a59736ac872aa68fa9d8b9b7f325cfa866b67602a46211b7983`
+
+**Decision**: **Decision**: The independent reviewer VETOed after seal entry #644 with two findings the bound tribunal missed, both verified and closed in-session rather than papered over. V1: the plan's Phase 2 completion requirement (a corpus test failing if either retired admission field reappears in a live skill) was undelivered -- the sole live-corpus test filtered to fabrication-guard warnings and model_pinning_lint exits 0 unconditionally, so reintroduction produced a stderr WARN and green CI; closed by test_no_retired_admission_fields_in_live_corpus binding the real corpus. V2: the lint's execution-context inspection caught ValueError from the first malformed contract and returned, suppressing inspection of the remaining corpus while exiting 0; closed by scan_with_errors accumulating per-skill errors (red-first test), with execution_context.py restored to its audited 250-line razor shape. Also closed from the same pass: qor-plan Step 0.3's describing prose still documented the retired named-model tier walk. The reviewer confirmed the core claim holds (no authority decision keyed on model identity; fail-open telemetry path disclosed by design; completeness gating tested behaviorally; the closed-enum relocation lost no binding rule). Enforcement note recorded: corpus-wide hard_execution_requirements are empty today, so completeness gating is exercised only in unit tests until a consumer declares one.
+
 ---
 
 *Chain integrity: VALID*

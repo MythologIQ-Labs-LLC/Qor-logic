@@ -2,6 +2,7 @@
 """Runtime helpers for the qor-audit skill (Phase 7 wiring).
 
 Used by qor-audit to:
+  - surface execution context before substantive audit work
   - check that a prior plan artifact exists before auditing
   - decide whether to run in adversarial mode (claude-code + codex-plugin)
   - log capability_shortfall when adversarial isn't available
@@ -10,15 +11,18 @@ Used by qor-audit to:
 from __future__ import annotations
 
 import hashlib
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from qor.scripts import execution_context
 from qor.scripts import gate_chain
 from qor.scripts import qor_platform as qplat
 from qor.scripts import session
 from qor.scripts import shadow_process
 
 CURRENT_PHASE = "audit"
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 @dataclass(frozen=True)
@@ -32,6 +36,32 @@ class ShortCircuitResult:
     should_skip: bool
     prior_verdict: str | None = None
     plan_content_hash: str | None = None
+
+
+def audit_execution_context() -> dict:
+    """Inspect audit context; only proven missing hard capabilities can block."""
+    result = execution_context.inspect_skill(_REPO_ROOT, "qor-audit")
+    recipe = result["rendering_recipe"]
+    declared = result["context"]["declared_model_family"]
+    responder = result["context"]["responder_model_family"]
+    print(
+        f"INFO [execution-context]: qor-audit recipe={recipe}; "
+        f"declared_model={declared}; responder_model={responder}",
+        file=sys.stderr,
+    )
+    unverified = result["unverified_hard_requirements"]
+    if unverified:
+        print(
+            f"WARN [execution-context]: unverified hard requirements: {unverified}",
+            file=sys.stderr,
+        )
+    missing = result["missing_hard_requirements"]
+    if missing:
+        raise RuntimeError(
+            "qor-audit execution context is missing declared hard requirements: "
+            f"{missing}"
+        )
+    return result
 
 
 def check_unchanged_plan_short_circuit(
@@ -72,7 +102,8 @@ def check_unchanged_plan_short_circuit(
 
 
 def check_prior_artifact(session_id: str | None = None) -> gate_chain.GateResult:
-    """Delegate to gate_chain. Returns the prior-phase (plan) GateResult."""
+    """Surface context, then delegate the prior-plan check to gate_chain."""
+    audit_execution_context()
     return gate_chain.check_prior_artifact(CURRENT_PHASE, session_id=session_id)
 
 

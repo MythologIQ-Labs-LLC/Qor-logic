@@ -1,0 +1,20 @@
+{
+  "phase": "audit",
+  "session_id": "2026-08-28T1956-6e0074",
+  "ts": "2026-08-31T01:12:35Z",
+  "target": "docs/plan-qor-phase240-execution-context-governance.md",
+  "verdict": "PASS",
+  "violations": [],
+  "risk_grade": "L2",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "target_content_hash": "89423402df37c1641d8e87a4662273c3e33b595d6348a0c9a6689e679d525196",
+  "reviews_remediate_gate": null,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.158.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-08-31T01:12:35Z"
+  }
+}

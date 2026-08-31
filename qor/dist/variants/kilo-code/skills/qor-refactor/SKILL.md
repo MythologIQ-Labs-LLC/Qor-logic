@@ -14,8 +14,6 @@ gate_reads: audit
 gate_writes: implement
 permitted_tools: [Read, Grep, Glob, Bash, Edit, Write]
 permitted_subagents: []
-model_compatibility: [claude-opus-4-7]
-min_model_capability: opus
 ---
 # /qor-refactor - KISS Simplification Pass
 

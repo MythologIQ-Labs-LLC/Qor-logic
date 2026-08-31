@@ -24,7 +24,7 @@ executing on a weaker model, these rules are binding
   <output>plan-*.md file with incremental phases and unit test descriptions</output>
 </skill>
 
-Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); cross-host compiled variants carry the full rules preamble.
 
 ## Governance Health Preflight
 
@@ -128,13 +128,13 @@ Fix on drift: `qor-logic install --host <host> --scope <scope>` regenerates the 
 
 ### Step 0.3: Model-pinning lint (Phase 55 wiring)
 
-Verify the operator's running model meets each scoped skill's declared `min_model_capability`. Non-blocking WARN; operator decides whether to swap models before proceeding.
+Verify no live skill carries retired named-model admission metadata and that fabrication-risk skills keep their negative-constraints guard. Non-blocking WARN; operator decides how to proceed.
 
 ```bash
 qor-logic scripts model_pinning_lint --repo-root . || true
 ```
 
-Reads `QOR_MODEL_FAMILY` env (set by harness when available) and walks `qor/skills/**/SKILL.md` for `model_compatibility` + `min_model_capability` frontmatter. Emits stderr warnings for any skill whose declared minimum exceeds the current model's tier (`haiku < sonnet < opus`). Per `qor/references/doctrine-ai-rmf.md` §MANAGE-3.1.
+Phase 240 retired named-model admission: the lint now walks `qor/skills/**/SKILL.md` for the retired `model_compatibility` / `min_model_capability` frontmatter (their presence is the warning) and for fabrication-risk skills missing the `doctrine-negative-constraints` guard pointer; execution-context capability evidence is authoritative per `qor/scripts/execution_context.py`. Per `qor/references/doctrine-ai-rmf.md` §MANAGE-3.1.
 
 ### Step 0.4: Stabilization-capacity checkpoint (Phase 129 wiring; GH #154)
 

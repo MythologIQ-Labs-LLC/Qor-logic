@@ -1,7 +1,7 @@
 ---
 name: qor-audit
 description: >-
-  Adversarial audit of blueprint to generate mandatory PASS/VETO verdict. Use when Claude needs to review architecture plans before implementation for: (1) L2/L3 risk grade work, (2) Security-critical paths, (3) Architecture changes, or any work requiring formal approval before proceeding.
+  Adversarial audit of blueprint for a mandatory PASS/VETO verdict. Use when an agent must review architecture plans before implementation: L2/L3 risk work, security-critical paths, architecture changes, or work requiring formal approval.
 metadata:
   category: governance
   author: MythologIQ
@@ -15,8 +15,9 @@ gate_reads: plan
 gate_writes: audit
 permitted_tools: [Read, Grep, Glob, Bash]
 permitted_subagents: []
-model_compatibility: [claude-opus-4-7]
-min_model_capability: opus
+advisory_quality_requirements: [high-reasoning, high-instruction-fidelity]
+rendering_recipes: [conservative, outcome-first, explicit-checklist]
+default_rendering_recipe: conservative
 ---
 
 ## Negative Constraints (Below-Design-Tier Execution)
@@ -41,7 +42,7 @@ executing on a weaker model, these rules are binding
   <output>.agent/staging/AUDIT_REPORT.md with PASS or VETO verdict</output>
 </skill>
 
-Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); weak-tier compiled variants carry the full rules preamble.
+Negative constraints: `qor/references/doctrine-negative-constraints.md` (NR-001 secret shapes, NR-002 no fabrication); cross-host compiled variants carry the full rules preamble.
 
 ## Governance Health Preflight
 
@@ -413,7 +414,7 @@ A test is **presence-only** when its assertion is solely about artifact existenc
 `qor-logic scripts prose_test_lint --tests-dir tests --enforce`
 **Non-zero exit -> VETO with `test-failure` category.** A new presence-only assertion must be converted to a behavioral check or carry an explicit `# prose-lint: ok=<reason>` allowlist comment; only UNEXPLAINED findings VETO (exempted-with-reason do not). Per `qor/references/doctrine-verification-closure-integrity.md` Prose-Behavior Test Lint.
 
-**Closed-enum taxonomy coverage (Phase 84 wiring; GH #84)**: when the plan declares a closed-enum taxonomy (a `CANONICAL_*_VALUES` constant paired with a `normalize*` function), the test list MUST assert BOTH forward (every alias-map key normalizes into the canonical set) AND inverse (every non-gated canonical value is reachable via at least one identity-mapping) coverage — forward-only coverage can define a bucket `normalize*` never produces. **Missing inverse coverage -> VETO with `coverage-gap` category.** Per `qor/references/doctrine-test-functionality.md` inverse-coverage discipline and `SG-InverseCoverageGapTaxonomy-A`.
+**Closed-enum taxonomy coverage (Phase 84 wiring; GH #84)**: a plan declaring a closed-enum taxonomy (`CANONICAL_*_VALUES` + `normalize*`) MUST list BOTH forward AND inverse coverage tests. **Missing inverse coverage -> VETO with `coverage-gap` category.** Full discipline: `references/phase37-subpasses.md` + `qor/references/doctrine-test-functionality.md` (`SG-InverseCoverageGapTaxonomy-A`).
 
 #### Dependency Audit
 

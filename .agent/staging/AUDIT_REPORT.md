@@ -1,60 +1,83 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-08-31T00:55:00Z
-**Target**: docs/plan-qor-phase243-relay-hotfix-promotion.md (Phase 243, GH #389, PR #390)
+**Target**: Phase 240 execution-context governance at 3dd51126ac9120666f177c77164aa0605d551bc9
+**Session**: `2026-08-28T1956-6e0074`
+**Mode**: solo adversarial tribunal; author-momentum scorer reported Option B not required
+**Date**: 2026-08-31
 **Risk Grade**: L2
-**Auditor**: The Qor-logic Judge (solo pass) + independent code-reviewer subagent (adversarial pass)
 
----
+## Verdict: PASS
 
-## VERDICT: PASS
+Phase 240 satisfies the recovered governed plan and declared behavioral spec delta. Model identity is provenance rather than execution authority; active skill metadata contains no retired named-model admission fields; hard capability absence is binding only when capability telemetry is explicitly complete; rendering adaptation is bounded; fabrication protections remain independent. The full repository suite, source lint, variant drift, spec-delta lint, prompt-injection gate, prose-test gate, and governance-health preflight pass on the bound target.
 
-(iteration 2; iteration 1 was a VETO by the independent reviewer)
+## Audit Results
 
----
+### Security Pass
+**Result**: PASS
+No credential, unsafe-deserialization, shell-execution, eval/exec, or remote-dependency surface was introduced.
 
-### Executive Summary
+### OWASP Top 10 Pass
+**Result**: PASS
+No applicable A03, A04, A05, or A08 violation was found in the changed runtime path.
 
-Phase 243 consolidates eight completed relay hotfixes (GH #357, #359, #361-#366) onto one governed head for promotion, plus a dist-variant recompile the #357 relay branch omitted. Iteration 1: the independent reviewer confirmed seven of eight fixes sound (including explicit cross-fix interference clearance on the two merge-overlap surfaces) and VETOed on two GH #364 defects. Iteration 2 remediated both with red-proved regression coverage; all passes now clear.
+### Ghost UI Pass
+**Result**: PASS
+No UI surface is introduced or modified.
 
-### Iteration 1 findings (independent reviewer; VETO)
+### Section 4 Razor Pass
+**Result**: PASS
+The new execution-context module and functions remain inside the phase's razor limits.
 
-**V1 (test-failure)**: tests/test_remediate_per_event_enforcers.py::test_invalid_member_prevents_entire_batch_mutation passed for the wrong reason - with repo_root=tmp_path the intended-valid gate-step member ("/qor-audit Step 4") failed corpus resolution first, so the four-forms rejection of "not-an-enforcer" was never exercised; deleting that rejection left the test green.
+### Self-Application Pass
+**Result**: PASS
+The live skill corpus obeys the governance Phase 240 introduces: retired model-admission fields are absent and audit entry is vendor-neutral.
 
-**V2 (infrastructure-mismatch)**: the tightened gate-step enforcer form globbed <repo_root>/qor/skills/*, a tree that exists only in the Qor-logic source checkout - skills install into host directories, never into a consumer repo - so every downstream gate-step closure_enforcer would raise; the pre-#364 form worked anywhere.
+### Test Functionality Pass
+**Result**: PASS
+Enforced prose-test lint and behavioral tests pass; the Phase 240 tests exercise runtime behavior rather than artifact presence alone.
 
-### Iteration 2 remediation (verified)
+### Dependency Pass
+**Result**: PASS
+No dependency manifest or remote service dependency is added.
 
-- V1: the test stages a real Step 4 heading under tmp_path/qor/skills/governance/qor-audit/SKILL.md and pre-validates the intended-valid member; red-proof executed (temporarily neutering the four-forms raise turns the test red; restored and re-verified green).
-- V2: _validate_gate_step falls back to shape-only acceptance with a stderr disclosure when the repo_root carries no qor/skills corpus; new test_gate_step_form_survives_consumer_shaped_tree covers the disclosed fallback, shape rejection on the consumer tree, and corpus-present resolution enforcement (Step 99 raises).
-- Reviewer's plan-text corrections applied: "Phase 357" -> "Phase 243" in phase37-subpasses.md (dist recompiled, drift clean); plan file-count header corrected.
-- The #364 semantic-relevance residual (disclosed in the module docstring but previously untracked) is now GH #396.
-- Enforcer suites 58/58, run twice for determinism.
+### Macro-Level Architecture Pass
+**Result**: PASS
+Execution-context policy is centralized in `qor/scripts/execution_context.py` and consumed through the audit/runtime compatibility seams.
 
-### Audit Results (iteration 2)
+### Feature Test Coverage Pass
+**Result**: PASS
+Governance-only change with an empty feature-inventory touch set; exempt by protocol.
 
-- Prompt Injection Pass: PASS (canaries exit 0).
-- Security Pass: PASS. Secret-scanner consumer allowlist is default-off for this repository (no .qor/secret-scanner-allowlist present), disclosed via stderr when active, path fixed-relative (no traversal); reviewer concurrence with a non-blocking recommendation (minimum token length + token listing) recorded for follow-up.
-- Ghost UI Pass: PASS (n/a).
-- Section 4 Razor Pass: PASS.
-- Test Functionality Pass: PASS (prose_test_lint --enforce exit 0; iteration-2 tests are behavioral with an executed red-proof).
-- Dependency Pass: PASS (none added).
-- Orphan Pass: PASS.
-- Macro-Level Architecture Pass: PASS. Cross-fix interference explicitly cleared by the independent reviewer: ledger_hash.py carries #361 and #363 intact (duplicate check on both verify and post-anchor surfaces; tolerance narrowed to reconciled|grandfathered; label-present branch ordered ahead of the tolerated skip; no dead branches); test_remediate.py carries #362 and the shared helpers test_sg_closure_enforcement.py imports.
-- Infrastructure Alignment Pass: PASS (plan lints 0 findings; LD evidence re-executed; V2's consumer-tree mismatch remediated with a disclosed fallback rather than a silent assumption).
-- Reviewer CI-soundness confirmations recorded: zero_population does not weaken the merge gate (wiped gates directory still fails; missing ledger is ok=False); post-anchor duplicate check is boundary-relative by design while strict verify() catches forks unconditionally and runs in CI.
+### Infrastructure Alignment Pass
+**Result**: PASS
+Declared runtime, skill, spec-delta, and compiled-variant surfaces resolve to live repository seams; compiled variants report zero drift.
 
-### Non-blocking observations (recorded)
+### Filter-Stage Ordering Coherence Pass
+**Result**: PASS
+Capability classification and bounded rendering selection introduce no dependent filter inversion.
 
-1. Secret-scanner allowlist: recommend minimum token length and listing tokens (not just count) in the disclosure.
-2. The #357 relocation added no AUDIT_MOVED entry in test_skill_corpus_consolidation.py's guard list, so that specific move is unguarded against a future silent cut.
-3. Repeated-VETO advisory fired (phases 234, 244 each required two audit passes; this phase makes three). The #362 classifier shipped in this very branch enables the remediation loop to close the event class; a /qor-process-review-cycle pass is the standing recommendation at cycle end.
+### Orphan Pass
+**Result**: PASS
+The execution-context module is consumed by audit runtime and compatibility lint paths and covered by behavioral tests.
 
-### Process Pattern Advisory
+## Violations Found
 
-<!-- qor:veto-pattern-advisory -->
-Repeated-VETO pattern detected in phases 234, 244 (max pass count: 2). Recommend invoking /qor-remediate to address the process-level drift. The current-audit verdict stands independently; this advisory is non-blocking.
+None.
 
-### Next Action
+## Documentation Drift
 
-/qor-implement record (ceremony-after-code disclosed), then /qor-substantiate (v0.158.0).
+(clean)
+
+## Process Pattern Advisory
+
+Repeated-VETO pattern detected in phases 243, 244 (max pass count: 2). Recommend invoking `/qor-remediate` to address the process-level drift. The current-audit verdict stands independently; this advisory is non-blocking.
+
+## Disposition
+
+GATE opens. Proceed to governed implementation-evidence recovery and substantiation for session `2026-08-28T1956-6e0074`.
+
+## Post-seal independent-reviewer addendum (iteration 2)
+
+An independent code-reviewer pass dispatched at operator direction returned VETO after the bound tribunal's PASS, with two findings the tribunal missed. V1 (binding): plan Phase 2's completion requirement "add a corpus test that fails if either legacy admission field reappears in a live skill" was not delivered - the only live-corpus test filtered to fabrication-guard warnings, and model_pinning_lint exits 0 unconditionally, so a reintroduced retired field produced a stderr WARN and green CI. V2 (supporting): the lint's execution-context inspection caught ValueError from the first malformed contract and returned, silently suppressing inspection of every remaining skill.
+
+Closed in the same session: test_no_retired_admission_fields_in_live_corpus binds the real corpus (detection behavior proven against fixtures); scan_with_errors in model_pinning_lint accumulates per-skill contract errors and reports each (test_scan_reports_malformed_contract_without_suppressing_the_rest, written red-first against the missing function); execution_context.py restored to its audited 250-line shape (the accumulation loop lives in the lint, its only consumer). The reviewer's confirmations recorded: no authority decision keyed on model identity; incomplete-telemetry path fail-open by design but disclosed via unverified_hard_requirements; retired fields absent from the live corpus; completeness gating tested behaviorally; the closed-enum relocation lost no binding rule.

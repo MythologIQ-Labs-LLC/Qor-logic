@@ -898,6 +898,7 @@ home: qor/references/doctrine-shadow-genome-countermeasures.md
 referenced_by:
   - qor/scripts/plan_test_lint.py
   - qor/skills/governance/qor-audit/SKILL.md
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
   - qor/references/doctrine-test-functionality.md
 introduced_in_plan: phase84-audit-readiness-guards
 ```
@@ -907,6 +908,7 @@ term: inverse-coverage discipline
 definition: 'A test-list rule for closed-enum taxonomies (a CANONICAL_*_VALUES constant plus a normalize* function): the test list must assert BOTH the forward direction (every alias-map key normalizes into the canonical set) AND the inverse direction (every non-gated canonical value is reachable via at least one identity-mapping). Gated buckets (documented fallbacks, runtime-checked allowlist values) are exempt. Documented in doctrine-test-functionality.md; enforced at /qor-plan Step 5, /qor-audit Step 3 Test Functionality Pass, and qor.scripts.plan_test_lint. Phase 84 wiring (GH #84).'
 home: qor/references/doctrine-test-functionality.md
 referenced_by:
+  - qor/skills/governance/qor-audit/references/phase37-subpasses.md
   - qor/references/doctrine-test-functionality.md
   - qor/skills/sdlc/qor-plan/SKILL.md
   - qor/skills/governance/qor-audit/SKILL.md

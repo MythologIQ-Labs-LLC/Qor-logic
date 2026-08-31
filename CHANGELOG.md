@@ -10,6 +10,9 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+### Changed
+- **Phase 240 (governance; execution-context adaptive governance, GH #379; version-not-applicable)**: replaces model-name pinning with an execution-context contract -- model identity is provenance, not execution authority; skill frontmatter retires `model_compatibility`/`min_model_capability` in favor of `advisory_quality_requirements`/`rendering_recipes`/`default_rendering_recipe`; hard capability absence binds only under explicitly complete capability telemetry; rendering adaptation is bounded and presentation-only. Ships `qor/scripts/execution_context.py`, the behavioral spec + session delta, a rewritten `model_pinning_lint`, and behavioral tests. Rides unversioned under the next release per the phase's version-applicability classification.
+
 ## [0.158.0] - 2026-08-31
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
