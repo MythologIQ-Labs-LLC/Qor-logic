@@ -98,6 +98,25 @@ def test_ladder_rewrite_left_usable_slack():
     )
 
 
+def test_audit_disclosure_pass_left_usable_slack():
+    """Phase 357 (GH #357): qor-audit needs ROOM under HEADROOM_BYTES, not a
+    razor's edge. Before this pass qor-audit sat 167 B under the 39,936 B
+    bound (39,769 B) -- one wiring-paragraph addition away from re-tripping
+    `test_governance_skills_keep_headroom`. A further progressive-disclosure
+    trim (two already-duplicated Step 3 Infrastructure Alignment rationale
+    paragraphs relocated to the already-cited `references/phase37-subpasses.md`,
+    zero spine tokens touched, including the SG-CitationDrift-A / diff-vs-full-
+    rewalk contrast `test_qor_audit_full_citation_rewalk.py` locks) recovers
+    real headroom rather than merely re-squeaking under the same ceiling.
+    """
+    size = os.path.getsize(GOVERNANCE_SKILLS["qor-audit"])
+    slack = HEADROOM_BYTES - size
+    assert slack >= 600, (
+        f"qor-audit is {size} B, leaving {slack} B under the {HEADROOM_BYTES} "
+        f"B bound; the disclosure pass must leave usable room, not a razor's edge"
+    )
+
+
 @pytest.mark.parametrize("variant", VARIANTS, ids=lambda p: p.parts[-4])
 def test_variants_match_canonical_step_9_5(variant):
     # prose-lint: ok=variant-vs-canonical equality of the same operator

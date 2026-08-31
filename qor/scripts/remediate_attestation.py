@@ -11,6 +11,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Mapping
 
@@ -23,17 +24,88 @@ class ClosureEnforcerError(Exception):
     """Raised when a closure lacks a valid executable enforcer (Phase 166; GH #249)."""
 
 
-_MODULE_RE = re.compile(r"^qor\.(scripts|reliability)\.[a-z0-9_]+$")
-_GATE_STEP_RE = re.compile(r"^/qor-[a-z-]+ Step [0-9]+(\.[0-9]+)*$")
+_BARE_MODULE_RE = re.compile(r"^qor\.(scripts|reliability)\.[a-z0-9_]+$")
+_MODULE_CALLABLE_RE = re.compile(
+    r"^(qor\.(?:scripts|reliability)\.[a-z0-9_]+):([A-Za-z_][A-Za-z0-9_]*)$"
+)
+_GATE_STEP_RE = re.compile(r"^/(qor-[a-z-]+) Step ([0-9]+(?:\.[0-9]+)*)$")
 _CANNOT_AUTOMATE_PREFIX = "cannot-automate:"
+
+
+def _validate_module_callable(module_name: str, callable_name: str, raw: str) -> None:
+    """Resolve module_name and require a callable attribute named callable_name.
+
+    GH #364: the prior module form validated importability alone, so any
+    importable module -- including one unrelated to the pattern it claimed to
+    guard -- satisfied the contract. Naming and resolving a specific callable
+    does not prove semantic relevance (out of scope; no relevance classifier
+    is introduced here), but it closes the mechanical gap: the cited name must
+    resolve to something that actually exists and runs.
+    """
+    if importlib.util.find_spec(module_name) is None:
+        raise ClosureEnforcerError(f"enforcer module is not importable: {raw}")
+    try:
+        module = importlib.import_module(module_name)
+    except Exception as exc:
+        raise ClosureEnforcerError(f"enforcer module failed to import: {raw}: {exc}") from exc
+    target = getattr(module, callable_name, None)
+    if not callable(target):
+        raise ClosureEnforcerError(
+            f"enforcer module {module_name!r} has no callable named {callable_name!r}: {raw}"
+        )
+
+
+_STEP_HEADING_TEMPLATE = r"^#{{1,4}}\s*Step\s+{0}(?!\.\d)\b"
+
+
+def _validate_gate_step(skill_name: str, step_num: str, root: Path, raw: str) -> None:
+    """Resolve a '/qor-<skill> Step N[.M]' reference against installed skill docs.
+
+    GH #364: the prior form validated on regex shape alone, so a step number
+    that never existed still passed. A skill's Step headings may live in its
+    SKILL.md or, under progressive disclosure, in one of its references/*.md
+    files -- both are searched.
+    """
+    corpus = root / "qor" / "skills"
+    if not corpus.is_dir():
+        # Phase 243 iteration 2 (independent-audit V2): a consumer workspace
+        # that pip-installed qor-logic has no <repo_root>/qor/skills tree --
+        # skills install into host directories (.claude/skills/, ...), never
+        # into the consumer repo. Heading resolution is impossible there, so
+        # fall back to the pre-#364 shape-only acceptance as a DISCLOSED
+        # degradation instead of rejecting every gate-step enforcer downstream.
+        sys.stderr.write(
+            f"INFO [closure_enforcer]: no skill corpus at {corpus}; gate-step "
+            f"reference {raw!r} accepted on shape only (heading resolution "
+            "requires the Qor-logic source tree)\n"
+        )
+        return
+    matches = sorted(corpus.glob(f"*/{skill_name}"))
+    if not matches:
+        raise ClosureEnforcerError(f"no installed skill named {skill_name!r}: {raw}")
+    skill_dir = matches[0]
+    docs = [skill_dir / "SKILL.md", *sorted(skill_dir.glob("references/*.md"))]
+    heading_re = re.compile(_STEP_HEADING_TEMPLATE.format(re.escape(step_num)), re.MULTILINE)
+    for doc in docs:
+        if doc.is_file() and heading_re.search(doc.read_text(encoding="utf-8")):
+            return
+    raise ClosureEnforcerError(
+        f"skill {skill_name!r} has no 'Step {step_num}' heading in SKILL.md "
+        f"or references/*.md: {raw}"
+    )
 
 
 def _validate_closure_enforcer(value: str, repo_root: Path | None = None) -> None:
     """Accept exactly four enforcer forms; raise ClosureEnforcerError otherwise.
 
-    Forms: (1) existing tests/test_*.py path; (2) importable qor.scripts.* /
-    qor.reliability.* module; (3) '/qor-<skill> Step N[.M]' gate reference;
-    (4) 'cannot-automate: <justification >= 50 chars>'.
+    Forms: (1) existing tests/test_*.py path; (2) 'qor.scripts.*:<callable>' /
+    'qor.reliability.*:<callable>' -- an importable module naming a resolvable
+    callable attribute (Phase 166 accepted bare-module importability alone;
+    GH #364 tightened this because any importable-but-irrelevant module
+    satisfied it); (3) '/qor-<skill> Step N[.M]' gate reference, resolved
+    against the named skill's actual SKILL.md/references Step headings (GH
+    #364 tightened this from regex-shape-only); (4) 'cannot-automate:
+    <justification >= 50 chars>'.
     """
     root = repo_root or Path.cwd()
     if not value or not value.strip():
@@ -50,15 +122,23 @@ def _validate_closure_enforcer(value: str, repo_root: Path | None = None) -> Non
         if not (root / value).is_file():
             raise ClosureEnforcerError(f"enforcer test file does not exist: {value}")
         return
-    if _MODULE_RE.fullmatch(value):
-        if importlib.util.find_spec(value) is None:
-            raise ClosureEnforcerError(f"enforcer module is not importable: {value}")
+    if _BARE_MODULE_RE.fullmatch(value):
+        raise ClosureEnforcerError(
+            f"module enforcer must name a callable, e.g. {value}:<callable> "
+            f"(GH #364: importability alone no longer suffices): {value!r}"
+        )
+    match = _MODULE_CALLABLE_RE.fullmatch(value)
+    if match:
+        _validate_module_callable(match.group(1), match.group(2), value)
         return
-    if _GATE_STEP_RE.fullmatch(value):
+    match = _GATE_STEP_RE.fullmatch(value)
+    if match:
+        _validate_gate_step(match.group(1), match.group(2), root, value)
         return
     raise ClosureEnforcerError(
         f"closure_enforcer matches none of the four accepted forms: {value!r} "
-        "(test path | qor module | '/qor-<skill> Step N' | 'cannot-automate: <justification>')"
+        "(test path | 'qor module:callable' | '/qor-<skill> Step N' | "
+        "'cannot-automate: <justification>')"
     )
 
 

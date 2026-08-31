@@ -1,0 +1,9 @@
+{
+  "session": "2026-08-30T2353-72cee7",
+  "plan_path": "docs/plan-qor-phase243-relay-hotfix-promotion.md",
+  "plan_hash": "a2be33052260fc4eb094bfd4762bb8ef6966e48a6ec3c68664f7af1c42b0dced",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "eb7a1e4c43279d592ee4230a8a080d3e984a9e8540f25ff032fc54fc85c13762",
+  "head_commit": "d5d9a0801f6d2ba3b75e2a2cef92b872b409a874",
+  "captured_ts": "2026-08-31T00:27:53.305919Z"
+}

@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-08-30T2353-72cee7",
+  "ts": "2026-08-31T00:13:38Z",
+  "verdict": "PASS",
+  "merkle_seal": "d253e34478cf3a9000b1b50756ff6dcf65a82e906e660055f3c28d44e4493db5",
+  "ledger_entry": 641,
+  "version": "0.158.0",
+  "plan_path": "docs/plan-qor-phase243-relay-hotfix-promotion.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.158.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-08-31T00:13:38Z"
+  }
+}

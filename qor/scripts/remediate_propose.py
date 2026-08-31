@@ -14,6 +14,7 @@ PATTERN_TO_KIND = {
     "hallucination": "skill",
     "capability-shortfall aggregation": "agent",
     "aged-high-severity": "doctrine",
+    "repeated-veto-pattern": "doctrine",
 }
 
 
@@ -44,6 +45,12 @@ PROPOSAL_TEMPLATES = {
         "Escalate aged high-severity event in {skill}: unaddressed >90 days. "
         "Either mark resolved with rationale or promote to a first-class "
         "doctrine change (new SG entry) so the failure surface is prevented."
+    ),
+    "repeated-veto-pattern": (
+        "Escalate repeated-VETO pattern flagged by {skill}: the last 2 sealed "
+        "phases each required more than one audit pass. Review plan-authoring "
+        "and self-review calibration; promote to a doctrine change (new SG "
+        "entry) if the pattern persists across further phases."
     ),
 }
 

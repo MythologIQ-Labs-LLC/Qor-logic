@@ -19,7 +19,7 @@ from test_remediate import (
     make_event,
 )
 
-_MODULE_ENFORCER = "qor.scripts.sg_closure_lint"
+_MODULE_ENFORCER = "qor.scripts.sg_closure_lint:main"
 _LONG_JUSTIFICATION = (
     "cannot-automate: the failure mode is a human judgment call about prose tone "
     "that no deterministic check can classify without unacceptable false positives"
@@ -36,7 +36,7 @@ def test_validate_accepts_all_four_forms():
 def test_validate_rejects_bad_forms():
     bad = [
         "tests/test_does_not_exist_anywhere.py",   # missing test file
-        "qor.scripts.no_such_module_xyz",           # non-importable module
+        "qor.scripts.no_such_module_xyz:main",      # non-importable module
         "qor-substantiate Step 6.5",                # malformed gate ref (no leading /)
         "cannot-automate: too short",               # justification under 50 chars
         "",                                          # empty
@@ -45,6 +45,49 @@ def test_validate_rejects_bad_forms():
     for value in bad:
         with pytest.raises(rma.ClosureEnforcerError):
             rma._validate_closure_enforcer(value)
+
+
+def test_validate_module_form_requires_named_callable():
+    """GH #364: a bare importable module previously satisfied the contract
+    regardless of whether it enforces anything relevant to the pattern."""
+    with pytest.raises(rma.ClosureEnforcerError):
+        rma._validate_closure_enforcer("qor.scripts.sg_closure_lint")
+
+
+def test_validate_module_form_rejects_nonexistent_callable():
+    with pytest.raises(rma.ClosureEnforcerError):
+        rma._validate_closure_enforcer("qor.scripts.sg_closure_lint:no_such_function")
+
+
+def test_validate_module_form_accepts_real_callables():
+    rma._validate_closure_enforcer("qor.scripts.sg_closure_lint:main")
+    rma._validate_closure_enforcer("qor.scripts.sg_closure_lint:parse_entries")
+
+
+def test_validate_gate_step_rejects_unknown_skill():
+    """GH #364: a step reference previously validated on regex shape alone,
+    so a skill that does not exist still passed."""
+    with pytest.raises(rma.ClosureEnforcerError):
+        rma._validate_closure_enforcer("/qor-does-not-exist Step 1")
+
+
+def test_validate_gate_step_rejects_nonexistent_step_number():
+    with pytest.raises(rma.ClosureEnforcerError):
+        rma._validate_closure_enforcer("/qor-substantiate Step 99.9")
+
+
+def test_validate_gate_step_rejects_prefix_confusion():
+    """'Step 4' must resolve against the real bare heading, not match by
+    substring luck against a longer step number like 'Step 4.6'."""
+    rma._validate_closure_enforcer("/qor-substantiate Step 4")
+    with pytest.raises(rma.ClosureEnforcerError):
+        rma._validate_closure_enforcer("/qor-substantiate Step 4.99")
+
+
+def test_validate_gate_step_resolves_against_references_subfile():
+    """Some Step headings live under progressive disclosure in a skill's
+    references/*.md rather than directly in SKILL.md."""
+    rma._validate_closure_enforcer("/qor-substantiate Step 4.6.5")
 
 
 def _happy_path(tmp_path, enforcer):

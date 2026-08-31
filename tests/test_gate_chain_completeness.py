@@ -140,6 +140,39 @@ def test_check_skips_phases_below_phase_min(tmp_path):
     result = check(tmp_path, phase_min=52, ledger_path=ledger, gates_root=gates)
     assert result.ok is True, f"Phase 50 should be grandfathered; got missing={result.missing}"
     assert result.sessions_checked == []
+    assert result.zero_population is True
+
+
+def test_check_flags_zero_population_when_ledger_has_no_entries(tmp_path):
+    """GH #366: an empty/no-SESSION-SEAL ledger inspects zero sessions. ``ok``
+    stays True (there is nothing incomplete to report), but ``zero_population``
+    must be True so a caller can tell "verified complete" apart from "verified
+    nothing"."""
+    from qor.reliability.gate_chain_completeness import check
+
+    ledger = tmp_path / "META_LEDGER.md"
+    ledger.write_text("# Meta Ledger\n\nNo entries yet.\n", encoding="utf-8")
+    gates = tmp_path / ".qor" / "gates"
+
+    result = check(tmp_path, phase_min=52, ledger_path=ledger, gates_root=gates)
+    assert result.ok is True
+    assert result.sessions_checked == []
+    assert result.zero_population is True
+
+
+def test_check_reports_no_zero_population_when_a_session_is_inspected(tmp_path):
+    """Sanity converse: a real inspected session must NOT be flagged
+    zero_population, even though it passes."""
+    from qor.reliability.gate_chain_completeness import check
+
+    ledger = tmp_path / "META_LEDGER.md"
+    ledger.write_text(_make_seal_entry(52, "s52"), encoding="utf-8")
+    gates = tmp_path / ".qor" / "gates"
+    _make_session_dir(gates, "s52", "plan", "audit", "implement", "substantiate")
+
+    result = check(tmp_path, phase_min=52, ledger_path=ledger, gates_root=gates)
+    assert result.ok is True
+    assert result.zero_population is False
 
 
 def test_check_handles_missing_ledger_gracefully(tmp_path):
@@ -175,6 +208,29 @@ def test_main_exits_zero_on_clean_state(tmp_path):
     )
     assert result.returncode == 0, f"expected exit 0; stdout={result.stdout!r} stderr={result.stderr!r}"
     assert "OK" in result.stdout
+
+
+def test_main_warns_instead_of_ok_on_zero_population(tmp_path):
+    """GH #366: the CLI must not print "OK: gate-chain complete for 0
+    sessions" -- that reads as a verified pass when nothing was inspected.
+    rc stays 0 (a WARN, not a FAIL: an empty population is not itself a
+    completeness gap), but the message must be a distinct WARN naming the
+    empty selection."""
+    repo_root = Path(__file__).resolve().parent.parent
+    ledger = tmp_path / "docs" / "META_LEDGER.md"
+    ledger.parent.mkdir(parents=True)
+    ledger.write_text("# Meta Ledger\n\nNo entries yet.\n", encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, "-m", "qor.reliability.gate_chain_completeness",
+         "--phase-min", "52", "--repo-root", str(tmp_path)],
+        capture_output=True, text=True, check=False,
+        cwd=str(repo_root),
+    )
+    assert result.returncode == 0, f"stdout={result.stdout!r} stderr={result.stderr!r}"
+    assert "WARN" in result.stdout
+    assert "0 sessions" in result.stdout
+    assert "OK: gate-chain complete" not in result.stdout
 
 
 def test_main_exits_one_on_missing_artifacts(tmp_path):

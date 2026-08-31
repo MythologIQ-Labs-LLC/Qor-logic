@@ -1,0 +1,38 @@
+{
+  "phase": "plan",
+  "session_id": "2026-08-30T2353-72cee7",
+  "ts": "2026-08-30T23:53:52Z",
+  "plan_path": "docs/plan-qor-phase243-relay-hotfix-promotion.md",
+  "phases": [
+    "Phase 1: Integrated verification (work pre-existing)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ledger_hash_duplicate_entry.py tests/test_post_anchor_verify.py tests/test_seal_entry_check.py tests/test_secret_scanner.py tests/test_gate_chain_completeness.py tests/test_feature_index_verify_helper.py tests/test_remediate.py tests/test_remediate_enforcer_edges.py tests/test_sg_closure_enforcement.py tests/test_substantiate_staging_gates.py -q",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest tests/ -q"
+  ],
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "originating_remediation": "GH #389",
+  "open_questions": [],
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "promotes already-reviewed integrated fixes; no new capability beyond the eight issues' scopes"
+    ],
+    "non_goals": [
+      "GH #366 third ask split to GH #395, not resolved here"
+    ],
+    "exclusions": [
+      "relay branches' missing pre-implementation ceremonies are not retroactively fabricated"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.157.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-08-30T23:53:52Z"
+  }
+}

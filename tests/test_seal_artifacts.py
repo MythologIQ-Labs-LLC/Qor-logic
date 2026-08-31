@@ -219,3 +219,27 @@ def test_header_behind_latest_seal_is_a_mismatch(tmp_path):
     assert _header_mismatches(root) == [
         "header: SYSTEM_STATE records Phase 7, latest seal is Phase 8"
     ]
+
+
+def test_header_tracks_file_order_latest_seal_not_max_phase(tmp_path):
+    """Phase 243 regression guard: phases do not always seal in ascending
+    numeric order (Phase 244 merged before Phase 243). The ledger is
+    append-only, so the MOST RECENT seal is the last SESSION SEAL entry in
+    file order -- the header must match that entry, not the numeric maximum.
+    Under the old ``max(sealed)`` proxy the truthful header for a
+    lower-numbered later seal was reported as drift."""
+    root = _make_repo(tmp_path)
+    ledger = root / "docs" / "META_LEDGER.md"
+    ledger.write_text(
+        ledger.read_text(encoding="utf-8")
+        + "\n### Entry #4: SESSION SEAL -- Phase 7 out-of-order later seal (v0.2.0)\n\nx\n",
+        encoding="utf-8",
+    )
+
+    _set_header_phase(root, 7)
+    assert _header_mismatches(root) == []
+
+    _set_header_phase(root, 8)
+    assert _header_mismatches(root) == [
+        "header: SYSTEM_STATE records Phase 8, latest seal is Phase 7"
+    ]

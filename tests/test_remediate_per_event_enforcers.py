@@ -57,7 +57,6 @@ def test_mark_addressed_preserves_per_event_enforcers(tmp_path, monkeypatch):
         session_id="phase226",
         review_pass_artifact_path=audit,
         remediate_gate_path=gate,
-        repo_root=tmp_path,
     )
 
     assert changed == 2
@@ -75,6 +74,18 @@ def test_invalid_member_prevents_entire_batch_mutation(tmp_path, monkeypatch):
     ]
     writes = _shadow(monkeypatch, events)
     audit, gate = _attestation(tmp_path)
+    # Iteration-2 regression guard (Phase 243 independent-audit V1): the
+    # intended-valid gate-step member must actually validate under this
+    # repo_root, or the raise fires on the WRONG member and this test stops
+    # proving the four-forms rejection blocks the batch. Stage a real Step
+    # heading so "/qor-audit Step 4" resolves and only "not-an-enforcer"
+    # can be the raising member.
+    skill_dir = tmp_path / "qor" / "skills" / "governance" / "qor-audit"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "### Step 4: Generate Verdict\n", encoding="utf-8"
+    )
+    subject._validate_closure_enforcer("/qor-audit Step 4", repo_root=tmp_path)
 
     with pytest.raises(subject.ClosureEnforcerError):
         subject.mark_addressed(
@@ -87,6 +98,32 @@ def test_invalid_member_prevents_entire_batch_mutation(tmp_path, monkeypatch):
 
     assert not writes
     assert not any(event["addressed"] for event in events)
+
+
+def test_gate_step_form_survives_consumer_shaped_tree(tmp_path, capsys):
+    """Phase 243 iteration-2 regression guard (independent-audit V2): a
+    consumer workspace has no <repo_root>/qor/skills tree (skills install to
+    host directories, never into the consumer repo). The gate-step form must
+    fall back to shape-only acceptance with a disclosed degradation there --
+    not reject every downstream gate-step enforcer -- while a shape-invalid
+    reference is still rejected."""
+    # consumer-shaped tree: exists, but carries no qor/skills corpus
+    (tmp_path / "src").mkdir()
+
+    subject._validate_closure_enforcer("/qor-audit Step 4", repo_root=tmp_path)
+    disclosure = capsys.readouterr().err
+    assert "shape only" in disclosure and "qor" in disclosure
+
+    with pytest.raises(subject.ClosureEnforcerError):
+        subject._validate_closure_enforcer("/qor-audit Step", repo_root=tmp_path)
+
+    # with a corpus present, resolution is enforced: a step heading that does
+    # not exist raises even though the shape is valid
+    skill_dir = tmp_path / "qor" / "skills" / "governance" / "qor-audit"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text("### Step 4: Verdict\n", encoding="utf-8")
+    with pytest.raises(subject.ClosureEnforcerError):
+        subject._validate_closure_enforcer("/qor-audit Step 99", repo_root=tmp_path)
 
 
 def test_correct_closure_enforcers_repairs_only_citation(tmp_path, monkeypatch):
@@ -114,7 +151,6 @@ def test_correct_closure_enforcers_repairs_only_citation(tmp_path, monkeypatch):
         session_id="phase226",
         review_pass_artifact_path=audit,
         remediate_gate_path=gate,
-        repo_root=tmp_path,
     )
 
     assert changed == 1
@@ -136,7 +172,6 @@ def test_list_signature_remains_supported(tmp_path, monkeypatch):
         review_pass_artifact_path=audit,
         remediate_gate_path=gate,
         closure_enforcer="/qor-audit Step 4",
-        repo_root=tmp_path,
     )
 
     assert (changed, missing) == (1, [])

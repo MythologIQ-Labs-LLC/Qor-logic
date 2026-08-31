@@ -159,6 +159,13 @@ def test_classify_aged_high_severity():
     assert any(r["pattern"] == "aged-high-severity" for r in results)
 
 
+def test_classify_repeated_veto_pattern():
+    e = make_event(event_type="repeated_veto_pattern", severity=3)
+    groups = {("repeated_veto_pattern", "qor-audit", e["session_id"]): [e]}
+    results = rpm.classify(groups)
+    assert any(r["pattern"] == "repeated-veto-pattern" for r in results)
+
+
 def test_classify_empty_returns_empty_list():
     assert rpm.classify({}) == []
 
@@ -186,6 +193,17 @@ def test_propose_aged_high_severity_proposal():
     }
     out = rp.propose(classification)
     assert out["proposal_kind"] in {"skill", "agent", "gate", "doctrine"}
+
+
+def test_propose_repeated_veto_pattern_proposal():
+    classification = {
+        "pattern": "repeated-veto-pattern",
+        "event_ids": ["e" * 64],
+        "skill": "qor-audit",
+    }
+    out = rp.propose(classification)
+    assert out["proposal_kind"] in {"skill", "agent", "gate", "doctrine"}
+    assert "repeated-VETO" in out["proposal_text"]
 
 
 def test_propose_event_ids_preserved():
@@ -351,7 +369,7 @@ def test_mark_addressed_requires_review_pass_artifact(tmp_path):
                 session_id="s-req-rp",
                 review_pass_artifact_path=str(nonexistent),
                 remediate_gate_path=str(remediate_gate),
-                closure_enforcer="qor.scripts.sg_closure_lint",
+                closure_enforcer="qor.scripts.sg_closure_lint:main",
             )
 
 
@@ -375,7 +393,7 @@ def test_mark_addressed_verifies_artifact_is_audit_pass(tmp_path):
                 session_id="s-veto",
                 review_pass_artifact_path=str(audit_path),
                 remediate_gate_path=str(remediate_gate),
-                closure_enforcer="qor.scripts.sg_closure_lint",
+                closure_enforcer="qor.scripts.sg_closure_lint:main",
             )
 
 
@@ -399,7 +417,7 @@ def test_mark_addressed_rejects_audit_without_reviews_remediate_gate_field(tmp_p
                 session_id="s-no-field",
                 review_pass_artifact_path=str(audit_path),
                 remediate_gate_path=str(remediate_gate),
-                closure_enforcer="qor.scripts.sg_closure_lint",
+                closure_enforcer="qor.scripts.sg_closure_lint:main",
             )
 
 
@@ -425,7 +443,7 @@ def test_mark_addressed_rejects_reviews_remediate_gate_mismatch(tmp_path):
                 session_id="s-mismatch",
                 review_pass_artifact_path=str(audit_path),
                 remediate_gate_path=str(remediate_gate),
-                closure_enforcer="qor.scripts.sg_closure_lint",
+                closure_enforcer="qor.scripts.sg_closure_lint:main",
             )
 
 
@@ -448,7 +466,7 @@ def test_mark_addressed_success_path_sets_addressed_ts(tmp_path):
             session_id="s-success",
             review_pass_artifact_path=str(audit_path),
             remediate_gate_path=str(remediate_gate),
-            closure_enforcer="qor.scripts.sg_closure_lint",
+            closure_enforcer="qor.scripts.sg_closure_lint:main",
         )
     assert flipped == 1
     assert missing == []

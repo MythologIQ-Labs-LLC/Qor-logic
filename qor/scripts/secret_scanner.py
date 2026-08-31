@@ -85,6 +85,30 @@ _ALLOWLIST: frozenset[str] = frozenset({
 })
 
 
+_CONSUMER_ALLOWLIST_PATH = Path(".qor/secret-scanner-allowlist")
+
+
+def load_consumer_allowlist(repo_root: Path) -> frozenset[str]:
+    """Consumer-declared suppression tokens from ``<repo_root>/.qor/secret-scanner-allowlist``.
+
+    Gives downstream consumers (e.g. a repository whose test fixtures need a
+    credential-shaped placeholder) a declaration surface that does not
+    require editing this module's hardcoded ``_ALLOWLIST``. One token per
+    line; blank lines and lines starting with ``#`` are ignored. Returns an
+    empty frozenset when the file does not exist. See GH #359.
+    """
+    path = repo_root / _CONSUMER_ALLOWLIST_PATH
+    if not path.exists():
+        return frozenset()
+    tokens: set[str] = set()
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        tokens.add(stripped)
+    return frozenset(tokens)
+
+
 _FENCED_RE = re.compile(r"```[\s\S]*?```", re.MULTILINE)
 _INLINE_RE = re.compile(r"`[^`\n]*`")
 
@@ -114,14 +138,21 @@ def _is_binary(path: Path) -> bool:
     return b"\x00" in chunk
 
 
-def _line_is_allowlisted(line: str) -> bool:
+def _line_is_allowlisted(line: str, extra_allowlist: frozenset[str] = frozenset()) -> bool:
+    if extra_allowlist and any(token in line for token in extra_allowlist):
+        return True
     return any(token in line for token in _ALLOWLIST)
 
 
-def scan_text(content: str, file: str = "<text>") -> list[Finding]:
+def scan_text(
+    content: str,
+    file: str = "<text>",
+    *,
+    extra_allowlist: frozenset[str] = frozenset(),
+) -> list[Finding]:
     findings: list[Finding] = []
     for line_num, line in enumerate(content.splitlines(), start=1):
-        if _line_is_allowlisted(line):
+        if _line_is_allowlisted(line, extra_allowlist):
             continue
         for pattern in PATTERNS:
             m = pattern.regex.search(line)
@@ -137,7 +168,12 @@ def scan_text(content: str, file: str = "<text>") -> list[Finding]:
     return findings
 
 
-def scan(path: Path, *, mask_blocks: bool | None = None) -> list[Finding]:
+def scan(
+    path: Path,
+    *,
+    mask_blocks: bool | None = None,
+    repo_root: Path | None = None,
+) -> list[Finding]:
     if _is_binary(path):
         return []
     try:
@@ -151,15 +187,16 @@ def scan(path: Path, *, mask_blocks: bool | None = None) -> list[Finding]:
         mask_blocks = path.suffix.lower() in (".md", ".markdown")
     if mask_blocks:
         content = mask_code_blocks(content)
-    return scan_text(content, file=str(path))
+    extra_allowlist = load_consumer_allowlist(repo_root) if repo_root is not None else frozenset()
+    return scan_text(content, file=str(path), extra_allowlist=extra_allowlist)
 
 
-def scan_paths(paths: list[Path]) -> list[Finding]:
+def scan_paths(paths: list[Path], *, repo_root: Path | None = None) -> list[Finding]:
     out: list[Finding] = []
     for p in paths:
         if not p.exists():
             continue
-        out.extend(scan(p))
+        out.extend(scan(p, repo_root=repo_root))
     return out
 
 
@@ -172,7 +209,7 @@ def scan_staged(repo_root: Path) -> list[Finding]:
         return []
     stdout = getattr(proc, "stdout", "") or ""
     paths = [repo_root / line for line in stdout.splitlines() if line.strip()]
-    return scan_paths(paths)
+    return scan_paths(paths, repo_root=repo_root)
 
 
 def to_gitleaks_json(findings: list[Finding]) -> list[dict]:
@@ -222,8 +259,9 @@ def _write_findings(out_path: Path, findings: list[Finding]) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = _build_argparser().parse_args(argv)
+    repo_root = Path(args.repo_root)
     if args.staged:
-        findings = scan_staged(Path(args.repo_root))
+        findings = scan_staged(repo_root)
     elif args.files:
         paths = [Path(p) for p in args.files]
         rc = _validate_files(paths)
@@ -234,10 +272,17 @@ def main(argv: list[str] | None = None) -> int:
         force = True if args.mask_blocks else None
         findings = []
         for p in paths:
-            findings.extend(scan(p, mask_blocks=force))
+            findings.extend(scan(p, mask_blocks=force, repo_root=repo_root))
     else:
         sys.stderr.write("usage: --staged | --files PATH...\n")
         return 2
+
+    consumer_allowlist = load_consumer_allowlist(repo_root)
+    if consumer_allowlist:
+        sys.stderr.write(
+            f"INFO: consumer allowlist: {len(consumer_allowlist)} token(s) "
+            f"from {repo_root / _CONSUMER_ALLOWLIST_PATH}\n"
+        )
 
     if args.out:
         _write_findings(Path(args.out), findings)
