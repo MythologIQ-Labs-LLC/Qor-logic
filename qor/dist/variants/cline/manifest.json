@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T04:53:38Z",
+  "generated_ts": "2026-08-31T05:01:39Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
@@ -210,7 +210,7 @@
       "id": "command-qor-refactor.md",
       "source_path": "workflows/command-qor-refactor.md",
       "install_rel_path": "workflows/command-qor-refactor.md",
-      "sha256": "32287e28630337a76683e9d59cc514db53cba43c050ea95ba749f4fc7fe72151"
+      "sha256": "3a8c0c7015edaaa9416968f84a0b7c4f2b8975d9761bb41cdb6f2c946dbd96a3"
     },
     {
       "id": "command-qor-remediate.md",
