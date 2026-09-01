@@ -85,7 +85,7 @@ The spark becomes a solution before the problem is fully understood. **Guard**: 
 
 ### Language Drift
 
-Terms (governance, memory, runtime, evidence, audit, agent) mean different things across artifacts. **Guard**: glossary entries with `home:` field tied to ideation artifact's `terms_introduced` (carried forward to `/qor-plan` schema's `terms_introduced` per Phase 28).
+Terms (governance, memory, runtime, evidence, audit, agent) mean different things across artifacts. **Guard**: glossary entries with `home:` field tied to ideation artifact's declared terms (carried forward to `/qor-plan` schema's canonical `terms` field per Phase 28; GH #394 closed a drift where this doctrine and `/qor-plan`'s own dialogue named a `terms_introduced` alias the schema never actually defined).
 
 ### Assumption Laundering
 

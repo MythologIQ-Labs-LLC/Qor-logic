@@ -83,7 +83,7 @@ glossary, yet no doc references it and no in-flight plan introduced it.
 
 | Skill | Behavior |
 |---|---|
-| `/qor-plan` | Warns during dialogue (Step 1b) when `doc_tier` is omitted (defaults to `standard`); warns when `system` declared without `terms_introduced`. Non-blocking. |
+| `/qor-plan` | Warns during dialogue (Step 1b) when `doc_tier` is omitted (defaults to `standard`); warns when `system` declared without `terms`. Non-blocking. |
 | `/qor-audit` | Emits a `## Documentation Drift` section in AUDIT_REPORT.md when the glossary diverges from the plan's declarations. Non-VETO. |
 | `/qor-substantiate` | Step 4.7 invokes `check_topology`, `check_glossary`, `check_orphans` per the plan's declared tier. Any `ValueError` ABORTs substantiation (`legacy` tier bypasses all three checks). |
 
