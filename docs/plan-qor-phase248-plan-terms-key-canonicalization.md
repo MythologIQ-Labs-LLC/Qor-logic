@@ -87,7 +87,7 @@ operators/agents to write, not in what the check reads.
   difference(s)` before it).
 - `python -m qor.scripts.publication_boundary_lint` -- `0 finding(s)`.
 
-## CI commands
+## CI Commands
 
 - `python -m pytest -q`
 - `python -m ruff check qor/ tests/`
