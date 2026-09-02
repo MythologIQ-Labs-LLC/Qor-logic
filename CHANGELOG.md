@@ -10,6 +10,14 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.165.0] - 2026-09-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 251 (feature; ledger-commitment integrity)**: closes GH #408 and #414. A ledger entry recording a `**Content Hash**` claims an artifact's bytes; when a later phase corrects that artifact the claim goes stale, and chain verification cannot see it -- chain hashes commit to the recorded string, not to live bytes. `qor/references/doctrine-ledger-commitment.md` codifies the amendment convention this repository had practiced six times and written down nowhere, and `/qor-substantiate` Step 3 now enforces it: an undisclosed stale commitment ABORTs the seal, while a mismatch whose latest commitment is an AMENDMENT recording the current bytes passes. That pairing makes the doctrine self-policing rather than an instruction someone has to remember mid-VETO. Scoped to the implement gate's `files_touched`, so seal cost does not grow with ledger length.
+- **The omission route into the vacuous glossary check is closed** (GH #414). A `standard` or `system` tier plan that declares no `terms` key at all now fails documentation integrity; an explicit `terms: []` satisfies it and means the author claimed no vocabulary rather than forgot to. Enforced in `doc_integrity` rather than in the plan schema: a schema `if/then` would have retroactively invalidated 109 already-sealed plan artifacts, since the Phase 248 sealed-history exemption strips only the top-level `not` clause.
+
 ## [0.164.0] - 2026-09-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

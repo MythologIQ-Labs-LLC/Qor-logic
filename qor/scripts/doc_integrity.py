@@ -15,40 +15,12 @@ from typing import Iterable
 import yaml
 
 from qor.scripts import governance_paths, shadow_process
-from qor.scripts.layout_paths import resolve_glossary_path, tier_requirements  # noqa: F401
-
-_TIERS = ("minimal", "standard", "system", "legacy")
-
-_TIER_REQUIREMENTS: dict[str, tuple[tuple[str, str], ...]] = {
-    "minimal": (("README.md", "README.md"),),
-    "standard": (
-        ("README.md", "README.md"),
-        ("qor/references/glossary.md", "glossary"),
-    ),
-    "system": (
-        ("README.md", "README.md"),
-        ("qor/references/glossary.md", "glossary"),
-        ("docs/architecture.md", "architecture.md"),
-        ("docs/lifecycle.md", "lifecycle.md"),
-        ("docs/operations.md", "operations.md"),
-        ("docs/policies.md", "policies.md"),
-    ),
-    "legacy": (),
-}
-
-
-@dataclass
-class Entry:
-    """A canonical glossary entry. Represents both a term and a concept home."""
-
-    term: str
-    definition: str
-    home: str
-    aliases: list[str] = field(default_factory=list)
-    referenced_by: list[str] = field(default_factory=list)
-    introduced_in_plan: str | None = None
-    scope_exclude: list[str] = field(default_factory=list)
-
+from qor.scripts.layout_paths import (  # noqa: F401
+    _TIER_REQUIREMENTS,
+    _TIERS,
+    resolve_glossary_path,
+    tier_requirements,
+)
 
 def check_topology(tier: str, repo_root: str) -> None:
     if tier not in _TIERS:
@@ -118,6 +90,19 @@ def check_orphans(
 
 _FENCE_PATTERN = re.compile(r"```yaml\s*\n(.*?)\n```", re.DOTALL)
 
+
+
+@dataclass
+class Entry:
+    """A canonical glossary entry. Represents both a term and a concept home."""
+
+    term: str
+    definition: str
+    home: str
+    aliases: list[str] = field(default_factory=list)
+    referenced_by: list[str] = field(default_factory=list)
+    introduced_in_plan: str | None = None
+    scope_exclude: list[str] = field(default_factory=list)
 
 def parse_glossary(glossary_path: str) -> list[Entry]:
     text = Path(glossary_path).read_text(encoding="utf-8")
@@ -210,6 +195,9 @@ def run_all_checks_from_plan(plan: dict, repo_root: str, strict: bool = False) -
         return
     check_topology(tier, repo_root)
     glossary_path = resolve_glossary_path(repo_root)
+    if tier in ("standard", "system") and "terms" not in plan:
+        # GH #414: "declared empty" != "never declared".
+        raise ValueError(f"doc_tier {tier!r} requires `terms`; use `terms: []` for none")
     declared = [t["term"] for t in plan.get("terms", [])]
     check_glossary(glossary_path, declared_terms=declared, repo_root=repo_root)
     plan_slug = plan.get("plan_slug", "")

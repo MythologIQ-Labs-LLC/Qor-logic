@@ -444,3 +444,24 @@ there.
 been filed against text that existed only in an operator's installed copy. The
 gap in the numbering is the record of that, and closing it would erase the
 evidence that a gate was once declared and never existed.
+
+## Step 3 -- ledger-commitment integrity (Phase 251; GH #408)
+
+A ledger entry recording a `**Content Hash**` claims the artifact's bytes. When
+a later phase corrects that artifact -- which is what an audit VETO is for --
+the claim goes stale, and chain verification cannot see it: chain hashes commit
+to the recorded string, not to live bytes. That is a property of the chain
+rather than a defect in it.
+
+```bash
+qor-logic-plus scripts ledger_commitment --session "$SESSION_ID" --repo-root . || ABORT
+```
+
+Scoped to the implement gate's `files_touched`, not the whole ledger -- a full
+sweep would make seal cost grow with ledger length and is a `/qor-validate`
+concern. An undisclosed mismatch ABORTs the seal. A mismatch whose latest
+commitment is an `AMENDMENT` recording the current bytes passes, because the
+drift was disclosed; that pairing is what makes the doctrine self-policing
+rather than an instruction someone has to remember mid-VETO.
+
+Per `qor/references/doctrine-ledger-commitment.md`.

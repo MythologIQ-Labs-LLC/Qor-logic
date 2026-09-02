@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-02T2038-c5668a",
+  "plan_path": "docs/plan-qor-phase251-commitment-integrity.md",
+  "plan_hash": "76b284e6e90bc005519871f31d5ab162190075a6381961a889890ee52cf89bf7",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "bead395cd0021f1ca1519d84f0399eaa6218abcf6d45d2fd545ed5c7c1b0ca3d",
+  "head_commit": "d9b25f577d3995355f4d72f8c2eaa8ba7776c412",
+  "captured_ts": "2026-09-02T21:06:37.044970Z"
+}

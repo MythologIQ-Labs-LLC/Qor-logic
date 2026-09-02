@@ -171,6 +171,7 @@ Template: `references/qor-substantiate-templates.md`.
 - **MISSING**: Planned but not created -> FAIL
 - **UNPLANNED**: Created but not in blueprint -> WARNING (document in ledger)
 - **EXISTS**: Matches -> PASS
+- **STALE COMMITMENT** (#408): `ledger_commitment` || ABORT; see `references/seal-gate-ladder.md`
 
 ### Step 3.5: Blocker Verification
 
