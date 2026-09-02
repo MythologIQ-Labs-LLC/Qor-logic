@@ -88,25 +88,33 @@ def test_low1_verify_handles_both_formats(tmp_path):
     """verify() accepts both old-format and new-format chain hashes."""
     from qor.scripts.ledger_hash import chain_hash, legacy_chain_hash, verify
 
-    # Entry 1 uses legacy format (no separator)
-    content_a = "a" * 64
-    prev_a = "0" * 64
+    import hashlib
+
+    # Real digests: a repeated-character hex is a placeholder pattern, which
+    # the entries would now be REJECTED for. Before Phase 249 both entries were
+    # silently skipped, so the placeholder detector never saw them.
+    content_a = hashlib.sha256(b"entry-1-content").hexdigest()
+    prev_a = hashlib.sha256(b"genesis").hexdigest()
     chain_a_legacy = legacy_chain_hash(content_a, prev_a)
 
-    # Entry 2 uses new format (with separator)
-    content_b = "b" * 64
+    content_b = hashlib.sha256(b"entry-2-content").hexdigest()
     chain_b_new = chain_hash(content_b, chain_a_legacy)
 
+    # Phase 249 (GH #404): the Chain Hash lines were previously written
+    # unbolded (`Chain Hash = <hex>`), which CHAIN_HASH_RE does not match, so
+    # BOTH entries were silently skipped and this test passed without ever
+    # verifying a chain hash in either format. Bolded so the assertion below
+    # actually exercises the legacy/new chain math it names.
     ledger = tmp_path / "ledger.md"
     ledger.write_text(f"""### Entry #1: LEGACY
 **Content Hash**: `{content_a}`
 **Previous Hash**: `{prev_a}`
-Chain Hash = {chain_a_legacy}
+**Chain Hash**: `{chain_a_legacy}`
 
 ### Entry #2: NEW
 **Content Hash**: `{content_b}`
 **Previous Hash**: `{chain_a_legacy}`
-Chain Hash = {chain_b_new}
+**Chain Hash**: `{chain_b_new}`
 """, encoding="utf-8")
     rc = verify(ledger)
     assert rc == 0

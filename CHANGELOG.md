@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.163.3] - 2026-09-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 249 (hotfix; bootstrap seed correctness)**: closes GH #404 and #405, where `/qor-bootstrap` seeded a workspace whose artifacts the governance gates could not read. The ledger template now emits backtick-wrapped hash values and documents a subsequent-entry example -- the GENESIS entry has no predecessor hash, so it could never show an operator the form that actually matters, and following the old template produced an inline unbackticked hex matching none of `ledger_dialect`'s three accepted value forms. The FEATURE_INDEX template adopts the canonical seven-column vocabulary, so rows resolve the doc, test and surface citations the coverage tally is meant to substantiate rather than only `id` and `status`. `feature_index_verify.header_is_readable` lets a caller distinguish "no rows" from "rows I could not read". And `ledger_hash.verify` gains the rule GH #363 gave `verify_post_anchor` and never gave `verify`: an entry that NAMES a hash field is making an integrity claim, so a value the dialect cannot read fails, while an entry naming no hash field claims nothing and stays a tolerated skip. That closes the reported "7 of 8 entries skipped, exit status 0" at its cause, and ends a state where the two verifiers disagreed about the same entry. GH #407 was verified already closed with no code change -- a work-named plan resolves through the GOVERNANCE_INDEX Tier 4 glob row -- and gains permanent regression coverage. Seven pre-existing tests were corrected: five encoded the pre-#363 contract, and two were passing vacuously, including one that wrote its chain hashes unbolded so both entries were silently skipped and it never verified a chain hash in either format it named.
+
 ## [0.163.2] - 2026-09-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

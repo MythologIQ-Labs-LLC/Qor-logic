@@ -19963,5 +19963,133 @@ Next: /qor-substantiate.
 
 ---
 
+---
+
+### Entry #680: GATE TRIBUNAL -- Phase 249 bootstrap seed correctness, iteration 1 (VETO)
+
+**Timestamp**: 2026-09-02T20:45:00Z
+**Phase**: GATE (Phase 249)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase249-bootstrap-seed-correctness.md
+**Session**: 2026-09-02T1859-a6d0aa
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `d1686f33bf2f54658722c60c3d05693180d1018a6629ed0fa725e8199b650c52`
+**Previous Hash**: `9d25c2b0960779fef23c2af823aa5d7151cdfd62c18b4b8768bd46f5b251a99f`
+**Chain Hash (Merkle seal)**: `d5f3c48cbe628859375973b99502895abef9035b3e81b1be1a13a695da5199c9`
+
+**Decision**: **Verdict**: **VETO** -- one mandating finding. Attempt 1 of 5. Both live defects reproduce under execution: the seeded ledger template yields `content True / prev False / chain False` at genesis and `content True / prev False / chain True` after, matching the reporter's observation, because an inline unbackticked hex on a `**Previous Hash**:` line matches none of `ledger_dialect`'s three accepted value forms; and the seeded FEATURE_INDEX header resolves only `id` and `status` while `name`, `source-of-truth file:line`, `doc citation`, `test path` and `surface` come back absent. GH #407 is verified genuinely closed with no code change -- `resolve_governance_plan_path` admits a work-named plan because Tier 4 carries a `docs/plan-*.md` glob row, `_is_registered` resolves globs, and the seed template ships that row; the plan records that the research brief was wrong about #407 twice, first claiming the index is unseeded and then claiming per-plan registration was the gap. Blast radius enumerated: `ledger_hash.verify`'s three consumers (`cli.py:71`, `governance_health.py:161`, transitively `seal_entry_check`) all inherit the fix-2 posture, which is inert here because 555 of 677 entries sit at or above `MARKUP_COMPAT_BOUNDARY` so the tightening condition is False; `parse_index_rows`'s two internal callers stay untouched because the plan adds a companion rather than changing the return type. **V-1 (`test-failure`)**: `tests/test_qor_bootstrap_feature_index_template.py:27` asserts the DEFECTIVE header is "the canonical 7-column table header", and every assertion in that file is substring-presence against the template rather than a parser invocation. That test is why GH #405 survived -- it was positioned to catch this defect and was structurally unable to. Fix 3 turns it red and the plan declares no fate for it; a string swap would preserve a presence-only test over precisely the surface presence-only tests cannot guard. The required fate is conversion: drive the template's header through `feature_index_verify.parse_index_rows` and assert the canonical columns resolve, so a future template edit that breaks parsing fails regardless of which strings are present.
+
+---
+
+---
+
+### Entry #681: GATE TRIBUNAL -- Phase 249, iteration 2 (PASS)
+
+**Timestamp**: 2026-09-02T20:55:00Z
+**Phase**: GATE (Phase 249)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase249-bootstrap-seed-correctness.md
+**Session**: 2026-09-02T1859-a6d0aa
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `66347652d3bf8e0e67da8cbab7da138c9a095ee546f8bad6c5e32c76acfab8f8`
+**Previous Hash**: `d5f3c48cbe628859375973b99502895abef9035b3e81b1be1a13a695da5199c9`
+**Chain Hash (Merkle seal)**: `e13fc76a6cd0d37af1806e254f083bd3bfe8ef3440a9d509e88adda33ef3675d`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5. V-1 closed by conversion rather than string swap, which is the distinction the ground turned on: fix 5 now declares that `tests/test_qor_bootstrap_feature_index_template.py` extracts the header from the template region and drives it through `parse_index_rows`, asserting the canonical columns resolve, so a future template edit that breaks parsing fails regardless of which strings are present. The scoping is right -- only the line-27 header assertion had a parser behind it that the test declined to invoke; the file's remaining structural assertions (`{project_name}` placeholder, Coverage Summary, Gaps Surfaced, the `/qor-implement` reference) are genuine template-shape checks with no behavioral counterpart, and converting them would be noise rather than rigor. Carried forward from iteration 1, all verified by execution: both defects reproduce with the reporter's exact signatures; fix 2 is inert in this repository because 555 of 677 entries sit at or above `MARKUP_COMPAT_BOUNDARY`; GH #407 is genuinely closed with no code change and the plan records the research brief's two wrong claims about it; and the blast radius of both changed units is enumerated, with `ledger_hash.verify`'s three consumers inheriting the fix-2 posture intentionally and `parse_index_rows`'s two internal callers untouched by the companion-function choice.
+
+---
+
+---
+
+### Entry #682: AMENDMENT -- Phase 249 fix-2 redesigned during implementation
+
+**Timestamp**: 2026-09-02T22:05:00Z
+**Phase**: GATE (Phase 249 amendment)
+**Author**: Judge
+**Risk Grade**: L2
+**Amends**: Entry #681
+**Plan**: docs/plan-qor-phase249-bootstrap-seed-correctness.md
+**Session**: 2026-09-02T1859-a6d0aa
+**Superseded Content Hash**: `66347652` (prefix; the iteration-2 plan revision)
+
+**Content Hash**: `9ef10e6ef99f0fb1adf014272fada93646f88279d0c43eef32fdebef05e3c76d`
+**Previous Hash**: `e13fc76a6cd0d37af1806e254f083bd3bfe8ef3440a9d509e88adda33ef3675d`
+**Chain Hash (Merkle seal)**: `113f59aa8cf44509fdd241e93788f361dbfa8ab595c7d26531fa3c1306b6b65b`
+
+**Decision**: Fix 2 was redesigned during implementation and the plan is amended rather than the divergence shipped quietly. The audited design keyed the tightening on `MARKUP_COMPAT_BOUNDARY`: fail the skips when no entry reaches the cutoff. Implementation showed that condition is both too broad and aimed at the wrong property -- it broke `test_low6_verify_reports_skipped_entries`, whose fixture entries name no hash field at all and are therefore genuine pre-convention residuals claiming nothing. A boundary measures WHEN an entry was written, not WHAT it asserts, which is the same defect shape this session already recorded twice. The replacement draws the line this codebase drew in GH #363 and never applied in `verify`: an entry that NAMES a hash field makes an integrity claim, so a value the dialect cannot read is a broken claim and fails regardless of entry number; an entry naming no hash field stays a tolerated skip. `ledger_dialect.any_hash_label_present` exists for exactly this distinction, and `verify_post_anchor` has used it since GH #363 -- `verify`, the function `qor-logic-plus verify-ledger` actually calls, simply never got the rule, which is why the consumer observed "7 of 8 skipped, exit 0". Seven pre-existing tests encoded the old contract or were passing vacuously and are corrected with rationale in each docstring; none is deleted or weakened. This repository's ledger stays clean for a principled reason rather than by luck: 32 legacy entries carry labeled-but-unreadable hash fields and every one is covered by an in-chain MIGRATION ATTESTATION checked before the new branch, so they are grandfathered by recorded digest evidence rather than by entry number -- strictly stronger than the boundary the original design proposed to lean on.
+
+---
+
+---
+
+### Entry #683: GATE TRIBUNAL -- Phase 249, iteration 3 (PASS)
+
+**Timestamp**: 2026-09-02T22:10:00Z
+**Phase**: GATE (Phase 249)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase249-bootstrap-seed-correctness.md
+**Session**: 2026-09-02T1859-a6d0aa
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `f6e4331536225dc783d56c43b6a8bcdf71d8039e7309be4bad2181376e1e3ee6`
+**Previous Hash**: `113f59aa8cf44509fdd241e93788f361dbfa8ab595c7d26531fa3c1306b6b65b`
+**Chain Hash (Merkle seal)**: `8a9cf31980922b33e4b21163030387f0797f5bed490617a633cdb1628a586169`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 3 of 5. The fix-2 redesign is narrower than what iteration 2 audited, needs no new constant, and repairs an inconsistency rather than adding a rule: `verify` and `verify_post_anchor` now apply one contract instead of disagreeing about the same entry. Verified by execution: `verify` exits 0 on this repository's 677-entry ledger, and not by luck -- 32 legacy entries carry labeled-but-unreadable hash fields, all covered by in-chain MIGRATION ATTESTATION, which the new branch is correctly ordered after so attested entries never reach it. Governance-health clean on all eight artifacts; `seal_entry_check` reports failure only because no Phase 249 SESSION SEAL exists yet, the expected pre-seal state. Full suite 3173 passed / 6 skipped / 4 deselected, zero failures. Seven pre-existing tests are corrected, each renamed with its rationale, none deleted or weakened; the bounded-span test keeps its real guard (`OK Entry #1:` absent from output, proving the span does not sweep the next field's value into Content Hash) and only the disposition of the unreadable claim changed. Two of the seven were passing vacuously and surfaced only when the code around them started working -- `test_low1_verify_handles_both_formats` wrote its chain hashes unbolded so BOTH entries were silently skipped and it never verified a chain hash in either format it names, and the bootstrap template header assertion from ground V-1. That a test which cannot fail is indistinguishable from a passing one until something forces the question is itself the argument for the contract change: a verifier exiting 0 on an entry whose content hash reads `TBD000...` is exactly what GH #404 reports, and those tests asserted that behavior was correct.
+
+---
+
+---
+
+### Entry #684: IMPLEMENTATION -- Phase 249 bootstrap seed correctness
+
+**Timestamp**: 2026-09-02T22:20:00Z
+**Phase**: IMPLEMENT (Phase 249)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase249-bootstrap-seed-correctness.md (PASS at entry #683)
+**Session**: 2026-09-02T1859-a6d0aa
+
+**Content Hash**: `9ef10e6ef99f0fb1adf014272fada93646f88279d0c43eef32fdebef05e3c76d`
+**Previous Hash**: `8a9cf31980922b33e4b21163030387f0797f5bed490617a633cdb1628a586169`
+**Chain Hash (Merkle seal)**: `0d289a1c0dfcffcdef6cde3b1b6816ff7477b46dc83c56105794e472f5bce69c`
+
+**Decision**: **Decision**: Phase 249 implemented under TDD across 23 files. `tests/test_bootstrap_seed_correctness.py` was written first and run red (5 failed / 2 passed), and one of the two initial passes was corrected before implementing because it was a wrong-reason green: the template probe substituted a backticked value into the Previous Hash line, manufacturing the condition it claimed to test. Re-aimed at what an operator actually copies, it went red as it should have. Delivered: the bootstrap ledger template emits backtick-wrapped hash values and now documents a subsequent-entry example, since the GENESIS entry has no predecessor hash and so could never show an operator the form that matters; the bootstrap FEATURE_INDEX template adopts the canonical seven-column vocabulary from `qor/templates/FEATURE_INDEX.example.md`; `feature_index_verify.header_is_readable` lets a caller tell "no rows" from "rows I could not read" without changing `parse_index_rows`'s contract, so its two internal callers are untouched; and `ledger_hash.verify` gains the GH #363 marked-but-unparseable rule it never had. GH #407 required no code and is closed on executed evidence, with `test_work_named_plan_resolves_through_the_tier4_glob_row` added as a permanent pin so a future index edit that drops the Tier 4 glob row fails loudly. Seven pre-existing tests were corrected: five encoded the pre-#363 contract in `verify`, and two were passing vacuously -- `test_low1_verify_handles_both_formats` wrote its chain hashes unbolded so both entries were silently skipped and it never verified a chain hash in either format it names, and the bootstrap header assertion from tribunal ground V-1. Both vacuous tests surfaced only once the code around them began working. Full suite 3173 passed / 6 skipped / 4 deselected, zero failures; `ruff` clean; variant drift clean at 406 files; this repository's own ledger verifies exit 0 under the new contract, its 32 labeled legacy entries being covered by in-chain MIGRATION ATTESTATION checked ahead of the new branch.
+
+---
+
+---
+
+### Entry #685: SESSION SEAL -- Phase 249 bootstrap seed correctness (v0.163.3)
+
+**Timestamp**: 2026-09-02T22:30:00Z
+**Phase**: SEAL (Phase 249)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `cd50f1f508c4`
+**Plan**: docs/plan-qor-phase249-bootstrap-seed-correctness.md (PASS at entry #683)
+**Session**: 2026-09-02T1859-a6d0aa
+**Change Class**: hotfix (0.163.2 -> 0.163.3)
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash**: `9ef10e6ef99f0fb1adf014272fada93646f88279d0c43eef32fdebef05e3c76d`
+**Previous Hash**: `0d289a1c0dfcffcdef6cde3b1b6816ff7477b46dc83c56105794e472f5bce69c`
+**Chain Hash (Merkle seal)**: `5c69117b89b137b760b9e7b2a21c16519607adbb962efb0143a66e1445dc57fb`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 249 seals GH #404 and #405, and closes GH #407 on executed evidence with no code change. A bootstrapped workspace now emits artifacts the gates can read: the ledger template emits backtick-wrapped hash values and documents a subsequent-entry example, which the old template never did -- the GENESIS entry has no predecessor hash, so it could not show an operator the one form that mattered, and following it produced an inline unbackticked hex matching none of the three accepted value forms. The FEATURE_INDEX template adopts the canonical seven-column vocabulary, so rows resolve the doc, test and surface citations the coverage tally exists to substantiate rather than only `id` and `status`. Beyond the templates, `ledger_hash.verify` gains the rule GH #363 gave `verify_post_anchor` and never gave `verify`: an entry that NAMES a hash field makes an integrity claim, so a value the dialect cannot read fails, while an entry naming no hash field claims nothing and stays a tolerated skip. That repairs an inconsistency rather than adding a rule -- the two verifiers had been disagreeing about the same entry -- and it closes the reported "7 of 8 skipped, exit status 0" at its cause. The design reached that line by correction: the audited version keyed on `MARKUP_COMPAT_BOUNDARY`, and implementation proved a boundary measures WHEN an entry was written rather than WHAT it asserts, which is the third time this session an absolute reference to this repository's own history stood in for a property a checker actually cared about. The plan was amended and re-audited (entries #682, #683) rather than the divergence shipped quietly. Seven pre-existing tests were corrected, each renamed with rationale and none deleted or weakened: five encoded the pre-#363 contract, and two were passing vacuously -- `test_low1_verify_handles_both_formats` wrote its chain hashes unbolded so both entries were silently skipped and it never verified a chain hash in either format it named, and the bootstrap header assertion from tribunal ground V-1, which asserted the defective header was canonical by substring presence and is why GH #405 survived a test positioned to catch it. Both vacuous tests surfaced only once the code around them began working. This repository's ledger verifies exit 0 under the new contract for a principled reason rather than by luck: its 32 labeled legacy entries are covered by in-chain MIGRATION ATTESTATION, checked ahead of the new branch, so they are grandfathered by recorded digest evidence rather than by entry number.
+
+**GATE LADDER**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix clean; secret-scan clean; merge-velocity healthy; data-api-acl disclosed-SKIP (event `87e3dc2a7d5c`); instruction-hygiene disclosed-SKIP, module absent (event `9438a0fa3c19`); doc-integrity strict PASS; governance-index advanced + enforced clean; feature-index 27/27 verified with no regression; publication-boundary 0 findings; variant drift clean at 406 files; ruff clean. Full suite 3173 passed / 6 skipped / 4 deselected, zero failures.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

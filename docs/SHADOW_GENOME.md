@@ -2370,4 +2370,30 @@ Retroactive-prohibition family (first occurrence). Sibling of the `MARKUP_COMPAT
 
 ---
 
+---
+
+## Entry: Phase 249 -- a test that cannot fail is indistinguishable from a passing one
+
+**Date**: 2026-09-02
+**Category**: PROCESS
+**Verdict source**: GATE TRIBUNAL entries #680 (VETO), #683 (PASS); SESSION SEAL #685
+
+### What Happened
+
+GH #405 reported that a bootstrap-seeded FEATURE_INDEX misaligns against its parser. A test existed over exactly that template. It asserted, by substring presence, that the defective header was "the canonical 7-column table header" -- and never invoked the parser. It was positioned to catch the defect and structurally unable to.
+
+Fixing the template then turned two more tests red, and both proved to have been passing without testing anything. `test_low1_verify_handles_both_formats` wrote its chain hashes unbolded, which the dialect does not match, so BOTH its entries were silently skipped: the test named legacy-vs-new chain-hash verification and verified neither. Five further tests asserted that a ledger entry whose content hash reads `TBD000...` should be skipped with exit 0 -- the exact behavior GH #404 was filed to report.
+
+### Pattern to Avoid
+
+A green test is not evidence until you know what makes it red. Presence-only assertions and fixtures that never reach the code path both produce permanent green, and neither announces itself; they surface only when something else changes and forces the question. When a defect is reported in a surface that already has tests, the first question is not "why did the code fail" but "why did the test pass" -- and the answer is often that it could not have done otherwise.
+
+Corollary for the corrections themselves: a test that encodes a defective contract must be renamed and re-asserted with its rationale, not deleted and not string-swapped. Deleting it loses the record of what was believed; swapping a string in a presence-only test preserves the very structure that failed.
+
+### Pattern ID
+
+Vacuous-test family, extending SG-035 (doctrine-content test unanchored). Two new sub-shapes recorded: the *unreached-fixture* test, whose input never reaches the assertion's subject, and the *defect-encoding* test, which asserts the broken behavior is correct and so converts every future fix into an apparent regression. Countermeasure shipped this phase: the template test now drives the template's own header through `feature_index_verify.parse_index_rows`, so a template edit that breaks parsing fails regardless of which strings are present. Related: the retroactive-prohibition entry from Phase 248, where the same instinct -- ask what else reads this -- was the missing audit question.
+
+---
+
 *Shadow integrity: ACTIVE*

@@ -87,6 +87,24 @@ def parse_index_rows(text: str) -> list[dict[str, str]]:
     return rows
 
 
+def header_is_readable(text: str) -> bool:
+    """True when the table's header declares a column ``parse_index_rows`` reads.
+
+    GH #405: ``parse_index_rows`` returns ``[]`` both for a table with no rows
+    and for a table whose header it cannot interpret, so a permanently-empty
+    tally was indistinguishable from an honestly empty index. This lets a
+    caller tell the two apart without changing ``parse_index_rows``'s contract
+    (its two internal callers are unaffected).
+    """
+    for line in text.splitlines():
+        line = line.rstrip()
+        if not _TABLE_ROW.match(line) or _SEPARATOR.match(line):
+            continue
+        header = [c.strip().lower() for c in line.strip("|").split("|")]
+        return "verification status" in header or "status" in header
+    return False
+
+
 def _normalize_status(text: str) -> str | None:
     cleaned = text.strip().lower()
     if cleaned in STATUS_VALUES:

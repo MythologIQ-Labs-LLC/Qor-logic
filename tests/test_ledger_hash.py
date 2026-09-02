@@ -231,19 +231,36 @@ def test_verify_clean_synthetic_ledger(tmp_path, capsys):
 
 
 def test_verify_skips_entries_without_required_markers(tmp_path):
-    """Entries lacking Content/Previous/Chain hash markup are skipped, not failed."""
+    """An entry naming no hash field claims nothing, so it stays a skip.
+
+    Phase 249 (GH #404) split this case from its opposite. An entry that names
+    NO hash field is a genuine pre-convention residual and still skips. An entry
+    that LABELS a hash field with an unreadable value is a broken integrity
+    claim and now fails -- see the companion test below. Previously both were
+    "skipped quietly" and `verify` exited 0.
+    """
     fake_ledger = tmp_path / "ledger.md"
     fake_ledger.write_text("""### Entry #1: ANCIENT
 
 **Decision**: this entry is from before the chain hash convention.
-
-### Entry #2: MODERN
-
-**Content Hash**: `aaaa...` is malformed; should also be skipped quietly.
 """, encoding="utf-8")
-    # Should not crash; should return 0 (no errors)
     rc = lh.verify(fake_ledger)
     assert rc == 0
+
+
+def test_verify_fails_entry_that_labels_a_hash_with_an_unreadable_value(tmp_path):
+    """A labeled hash field is a claim; an unreadable value is a broken claim.
+
+    Matches what `verify_post_anchor` has done since GH #363; Phase 249 applied
+    the same rule in `verify`, which is the function `verify-ledger` calls.
+    """
+    fake_ledger = tmp_path / "ledger.md"
+    fake_ledger.write_text("""### Entry #1: MODERN
+
+**Content Hash**: `aaaa...` is malformed and cannot be read.
+""", encoding="utf-8")
+    rc = lh.verify(fake_ledger)
+    assert rc != 0, "a labeled but unreadable hash must not verify clean"
 
 
 # ----- V-10 (Phase 12 v2 audit) parser-robustness tests, split per V-B -----
@@ -516,10 +533,13 @@ def test_verify_bounded_span_stops_at_next_field(tmp_path, capsys):
 """, encoding="utf-8")
     rc = lh.verify(fake_ledger)
     out = capsys.readouterr().out + capsys.readouterr().err
-    # Entry must be skipped (no content hash), not FAIL on bogus chain math
-    assert rc == 0
-    assert "OK   Entry #1:" not in out
-    assert "FAIL Entry #1" not in out
+    # The point of this test is that the bounded span does NOT sweep Previous
+    # Hash's value into Content Hash and then "verify" the entry on it. Phase
+    # 249 (GH #404) changed the disposition of the unreadable claim from a
+    # silent skip to a failure; the false-capture guard below is unchanged and
+    # is what this test exists for.
+    assert rc != 0, "a labeled but unreadable content hash must not verify clean"
+    assert "OK   Entry #1:" not in out, "entry must never be reported verified"
 
 
 def test_verify_accepts_fenced_content_hash(tmp_path, capsys):
