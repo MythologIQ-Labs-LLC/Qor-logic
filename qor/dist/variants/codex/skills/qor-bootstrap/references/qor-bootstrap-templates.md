@@ -125,12 +125,31 @@ src/
 **Author**: Governor
 **Risk Grade**: [from ARCHITECTURE_PLAN]
 
-**Content Hash**:
-SHA256(CONCEPT.md + ARCHITECTURE_PLAN.md) = [calculated hash]
-
+**Content Hash**: `[calculated hash]`
 **Previous Hash**: GENESIS (no predecessor)
 
 **Decision**: Project DNA initialized. Lifecycle: ALIGN/ENCODE complete.
+
+---
+
+### Entry #2: RESEARCH BRIEF
+
+**Timestamp**: [ISO 8601]
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: [from ARCHITECTURE_PLAN]
+
+**Content Hash**: `[calculated hash]`
+**Previous Hash**: `[hash]`
+**Chain Hash (Merkle seal)**: `[calculated hash]`
+
+**Decision**: [what this entry records].
+
+<!-- Every hash value MUST be backtick-wrapped exactly as above. qor/scripts/
+     ledger_dialect.py accepts three value forms; an inline unbackticked hex
+     on a **Previous Hash**: line matches none of them, so the entry is
+     classified non-verifiable and `qor-logic-plus verify-ledger` skips it.
+     Backticks are the strictest accepted form and always parse (GH #404). -->
 
 ---
 *Chain integrity: VALID*
@@ -181,7 +200,7 @@ Single canonical cross-reference of every user-touchable feature in {project_nam
 
 ## Section: {first category}
 
-| ID | Feature | Doc | Code | Test | Status | Notes |
+| ID | Name | Source-of-truth file:line | Doc citation | Test path | Surface | Verification status |
 |---|---|---|---|---|---|---|
 <!-- First /qor-implement cycle appends rows here. -->
 

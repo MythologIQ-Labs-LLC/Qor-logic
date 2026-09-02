@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-02T1859-a6d0aa",
+  "plan_path": "docs/plan-qor-phase249-bootstrap-seed-correctness.md",
+  "plan_hash": "9ef10e6ef99f0fb1adf014272fada93646f88279d0c43eef32fdebef05e3c76d",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "f6e4331536225dc783d56c43b6a8bcdf71d8039e7309be4bad2181376e1e3ee6",
+  "head_commit": "09cb1e7a94f082e80048aeacefd8bdc6d3b1a642",
+  "captured_ts": "2026-09-02T19:39:47.543482Z"
+}

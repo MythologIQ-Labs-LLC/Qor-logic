@@ -70,25 +70,34 @@ def test_verify_accepts_known_good_chain(tmp_path, capsys):
     assert "Entry #1: chain hash verified" in capsys.readouterr().out
 
 
-def test_verify_skips_entries_with_placeholder_content_hash(tmp_path, capsys):
-    """Regex pre-filter: 'TBD...' is not [0-9a-f]{64}; entry lands in skip path."""
+def test_verify_fails_entries_with_placeholder_content_hash(tmp_path, capsys):
+    """A labeled Content Hash of 'TBD...' is a broken claim, not a skip.
+
+    Phase 249 (GH #404): `verify` now FAILS an entry that names a hash field whose value the dialect cannot read, matching what `verify_post_anchor` has done since GH #363. A labeled field is an integrity claim; an unreadable value is a broken claim. Entries naming no hash field at all still skip. Previously such entries were counted as informational skips and `verify` exited 0 -- a verifier reporting the chain fine when it meant it could not read the claim.
+    """
     p = _write_ledger(tmp_path, _entry(1, "TBD" + ("0" * 61), "b" * 64, "c" * 64))
     rc = ledger_hash.verify(p)
-    assert rc == 0
-    assert "Skipped 1 entries" in capsys.readouterr().out
+    assert rc != 0, "a labeled but unreadable content hash must not verify clean"
 
 
-def test_verify_skips_entries_with_uppercase_hash(tmp_path, capsys):
+def test_verify_fails_entries_with_uppercase_hash(tmp_path, capsys):
+    """Uppercase hex is not the canonical form; the claim is unreadable.
+
+    Phase 249 (GH #404): `verify` now FAILS an entry that names a hash field whose value the dialect cannot read, matching what `verify_post_anchor` has done since GH #363. A labeled field is an integrity claim; an unreadable value is a broken claim. Entries naming no hash field at all still skip. Previously such entries were counted as informational skips and `verify` exited 0 -- a verifier reporting the chain fine when it meant it could not read the claim.
+    """
     p = _write_ledger(tmp_path, _entry(1, "A" * 64, "b" * 64, "c" * 64))
     rc = ledger_hash.verify(p)
-    assert rc == 0
-    assert "Skipped 1 entries" in capsys.readouterr().out
+    assert rc != 0, "a labeled but unreadable hash must not verify clean"
 
 
-def test_verify_skips_entries_with_short_hash(tmp_path, capsys):
+def test_verify_fails_entries_with_short_hash(tmp_path, capsys):
+    """A 32-character value is not a SHA-256 digest; the claim is unreadable.
+
+    Phase 249 (GH #404): `verify` now FAILS an entry that names a hash field whose value the dialect cannot read, matching what `verify_post_anchor` has done since GH #363. A labeled field is an integrity claim; an unreadable value is a broken claim. Entries naming no hash field at all still skip. Previously such entries were counted as informational skips and `verify` exited 0 -- a verifier reporting the chain fine when it meant it could not read the claim.
+    """
     p = _write_ledger(tmp_path, _entry(1, "a" * 32, "b" * 64, "c" * 64))
     rc = ledger_hash.verify(p)
-    assert rc == 0
+    assert rc != 0, "a labeled but unreadable hash must not verify clean"
 
 
 def test_verify_rejects_fabricated_but_well_formed_chain_hash(tmp_path, capsys):

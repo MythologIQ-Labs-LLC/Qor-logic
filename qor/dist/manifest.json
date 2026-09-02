@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-09-02T18:41:03Z",
+  "generated_ts": "2026-09-02T19:42:51Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -144,7 +144,7 @@
       "id": "qor-bootstrap",
       "source_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
       "install_rel_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
-      "sha256": "5a898fdc2432a18278f2b0e7861ab2d6dc95a6de82e07df865b3df003626961c"
+      "sha256": "b8f8754a9ca15a301eeedaecc15ecc0393640bf5bf9a7de039e2501546044a1d"
     },
     {
       "id": "qor-bootstrap",

@@ -551,6 +551,23 @@ def verify(
                     )
                     errors += 1
                     last_failed = num
+            elif _dialect.any_hash_label_present(body):
+                # GH #404: `markup_required_cutoff` is an absolute entry number
+                # from THIS repository's history, so below it every unparseable
+                # entry degraded to an informational skip and exit 0 -- in a
+                # workspace younger than the cutoff, that is every entry.
+                # GH #363 already drew the right line in verify_post_anchor:
+                # an entry that NAMES a hash field is making a claim, and a
+                # value the dialect cannot read is a broken claim regardless of
+                # entry number. An entry with no hash label at all claims
+                # nothing and stays a tolerated pre-convention skip.
+                print(
+                    f"FAIL Entry #{num}: hash field labeled but its value "
+                    f"matches no recognized form",
+                    file=sys.stderr,
+                )
+                errors += 1
+                last_failed = num
             else:
                 skipped += 1
             continue
