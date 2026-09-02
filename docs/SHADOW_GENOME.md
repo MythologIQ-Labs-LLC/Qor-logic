@@ -2274,4 +2274,46 @@ Parallel-reviewer racing (first occurrence). Countermeasure adopted at Phase 247
 
 ---
 
+---
+
+## Entry: Research 2026-09-02 -- externally-reported defects age against a moving repository
+
+**Date**: 2026-09-02
+**Category**: PROCESS
+**Verdict source**: RESEARCH BRIEF docs/research-brief-open-repository-issues-2026-09-02.md
+
+### What Happened
+
+Eight issues filed from a single consumer governance cycle were verified line-by-line against current `main`. Three of them (#404, #405, #407) named root causes that had already been closed by GH #282 and GH #365 after the version the reporter ran. #404's "two verifiers disagree on hash markup" was resolved by the shared `ledger_dialect` module; #405's "every row silently dropped" was resolved by the `status` column alias; #407's literal plan-path regex had been replaced by a registration-aware resolver. Each issue still described a live defect, but at a different location and, for #405, at a materially lower severity than reported. A plan written from the issue text alone would have rebuilt shipped work and missed the real residuals.
+
+### Pattern to Avoid
+
+Do not plan against an externally-reported defect without first re-deriving its root cause from current source. The filing date does not bound staleness -- the reporter's toolkit version does, and the issue body rarely carries that version into anyone's planning. Verification is not a formality here: a stale root cause does not merely waste the fix, it relocates the defect somewhere no one is looking.
+
+### Pattern ID
+
+Stale-root-cause family (first occurrence). Related to the vacuous-gate family (#365/#366/#394) by consequence rather than mechanism: both end with a gate reported as covering something it does not. Countermeasure: `/qor-research` Step 2.5 already checks for a superseding PR; this extends the same discipline to the issue's cited source lines, not just its issue number.
+
+---
+
+## Entry: Research 2026-09-02 -- a history constant is a layout constant
+
+**Date**: 2026-09-02
+**Category**: ARCHITECTURE
+**Verdict source**: RESEARCH BRIEF docs/research-brief-open-repository-issues-2026-09-02.md
+
+### What Happened
+
+`qor/scripts/ledger_dialect.py:26` sets `MARKUP_COMPAT_BOUNDARY = 123` so that pre-convention historical entries in this repository's own ledger are skipped rather than failed. `ledger_hash.verify` fails an unparseable entry only at or above that number. Because 123 is an absolute entry number from this repository's release history, no entry in a freshly bootstrapped workspace ever reaches it: every unparseable entry degrades to a silent skip and `verify-ledger` exits 0. The reported symptom -- seven of eight entries skipped, exit status 0 -- was attributed to hash markup alone, but markup was only the trigger. The absolute cutoff is what converted a hard failure into a clean verdict.
+
+### Pattern to Avoid
+
+An absolute reference to this repository's own release history is the same defect class as an absolute reference to its directory tree, and it hides better. A grandfathering cutoff expressed as a bare number silently inverts its own meaning in any workspace younger than the one it was written for -- the affordance that protects legacy entries here becomes blanket permission there. Grandfathering must be expressed relative to something the consuming workspace can establish (a recorded convention-adoption entry, a config declaration), never as a constant from the author's own history.
+
+### Pattern ID
+
+Layout-bound-gate family, history variant. Siblings verified in the same pass: hardcoded `qor/references/glossary.md` (`doc_integrity.py`, `doc_integrity_strict.py`), hardcoded `qor/skills/**` (`skill_size_budget_lint.py`), and the `docs/plan-qor-phase*` always-allowed family (`governance_paths.py`). Countermeasure direction: resolve all four through the existing `qorlogic_config.load_section` channel that `badge_layout` and `attribution_policy` already use.
+
+---
+
 *Shadow integrity: ACTIVE*

@@ -1,0 +1,93 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-02T1840-a1c7d2",
+  "ts": "2026-09-02T15:27:59Z",
+  "questions": [
+    "Which of the 9 open issues describe defects still live on current main?",
+    "Which cited root causes were closed after the reporting toolkit version?",
+    "Which issues are Qor-logic-owned vs owned outside this repository?",
+    "Is there a cross-cutting theme that should shape one plan instead of many?"
+  ],
+  "findings": [
+    {
+      "issue": 394,
+      "status": "SUPERSEDED",
+      "detail": "open PR #403 closes it; substantive CI green, lint red on disclosed missing ledger/seal citations; needs ceremony not research"
+    },
+    {
+      "issue": 404,
+      "status": "LIVE_PARTIAL_STALE",
+      "detail": "bootstrap template inline unbackticked Previous Hash fails all three ledger_dialect value forms (LIVE); dual-verifier disagreement and Phase-N header requirement both closed by GH #282 (STALE); MARKUP_COMPAT_BOUNDARY=123 is the unreported amplifier"
+    },
+    {
+      "issue": 405,
+      "status": "LIVE_NARROWER",
+      "detail": "status column alias shipped GH #365 (STALE); six remaining seed-template columns still misalign, converting row loss into silent doc/test citation loss; unrecognized-header finding still absent"
+    },
+    {
+      "issue": 406,
+      "status": "LIVE_AS_FILED",
+      "detail": "glossary path and skills root hardcoded in 3 gates; qorlogic_config.load_section already exists as the mechanism; typed-skip contract is separable doctrine work"
+    },
+    {
+      "issue": 407,
+      "status": "LIVE_RELOCATED",
+      "detail": "literal regex replaced by governance_paths resolver (STALE); residual is that bootstrap seeds no GOVERNANCE_INDEX.md and qor-plan registers no row"
+    },
+    {
+      "issue": 408,
+      "status": "LIVE_AS_FILED",
+      "detail": "AMENDMENT practiced at ledger entries 645/669 but codified in no doctrine; no gate recomputes ledger-committed content hashes for session-touched artifacts"
+    },
+    {
+      "issue": 409,
+      "status": "SPLIT_OWNERSHIP",
+      "detail": "qor-plan Step 0.5 unconditional branch creation is local and actionable; qor-enterprise-auto-dev is not in this repository"
+    },
+    {
+      "issue": 410,
+      "status": "SPLIT_DECISION_REQUIRED",
+      "detail": "deferred-upstream state and per-change flips are local; whether addressed_pending counts toward threshold is an operator authority call"
+    },
+    {
+      "issue": 411,
+      "status": "SPLIT_OWNERSHIP",
+      "detail": "satisfied-by-fallback belongs in qor/platform (local); the environment adapter that emits it does not exist here"
+    },
+    {
+      "issue": null,
+      "status": "CROSS_CUTTING",
+      "detail": "5 of 8 are one family: Qor-logic layout and release history compiled into gate constants; 6 DRIFT rows against the Phase 241 portable-engine-boundary claim"
+    }
+  ],
+  "sources": [
+    "qor/scripts/ledger_dialect.py:26,35-48",
+    "qor/scripts/ledger_hash.py:158-160,527-556",
+    "qor/reliability/seal_entry_check.py:27-40",
+    "qor/skills/meta/qor-bootstrap/references/qor-bootstrap-templates.md:127-131,184",
+    "qor/scripts/feature_index_verify.py:48-80,207-209",
+    "qor/templates/FEATURE_INDEX.example.md:6",
+    "qor/scripts/doc_integrity.py:26,30,176,212",
+    "qor/scripts/doc_integrity_strict.py:77,199",
+    "qor/scripts/skill_size_budget_lint.py:3",
+    "qor/scripts/qorlogic_config.py:20-36",
+    "qor/scripts/governance_paths.py:26-32,108-120",
+    "qor/scripts/prompt_injection_canaries.py:10-14",
+    "qor/skills/governance/qor-substantiate/SKILL.md:158-172",
+    "qor/skills/sdlc/qor-plan/references/step-extensions.md:5-22",
+    "qor/scripts/check_shadow_threshold.py:86",
+    "qor/scripts/qor_platform.py:190-204",
+    "qor/platform/profiles/claude-code-solo.md:22",
+    "qor/platform/detect.md:92",
+    "docs/META_LEDGER.md#645,#669"
+  ],
+  "brief_path": "docs/research-brief-open-repository-issues-2026-09-02.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.163.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-02T15:27:59Z"
+  }
+}
