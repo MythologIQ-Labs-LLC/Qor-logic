@@ -62,8 +62,13 @@ jobs:
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_ACTOR: ${{ github.event.pull_request.user.login }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          printf '%s' "$PR_BODY" | python qor/scripts/pr_citation_lint.py --actor "$PR_ACTOR"
+          # Phase 252 (GH #413): which citations are required depends on what the
+          # PR changes. A research-phase record has no plan artifact and no seal,
+          # so demanding all three made a legitimate governance PR unpassable.
+          CHANGED=$(git diff --name-only "$BASE_SHA"...HEAD || true)
+          printf '%s' "$PR_BODY" | python qor/scripts/pr_citation_lint.py             --actor "$PR_ACTOR" --changed-files "$CHANGED"
 
       - name: Doc-only PR — citation lint skipped
         if: steps.docs_only.outputs.result == 'true'

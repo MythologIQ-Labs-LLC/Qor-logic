@@ -151,3 +151,43 @@ def create_phase_branch(phase: int, slug: str) -> str:
     branch = f"phase/{phase:02d}-{slug}"
     subprocess.run(["git", "checkout", "-b", branch], check=True)
     return branch
+
+
+_CONVENTIONAL_DEFAULTS = frozenset({"main", "master"})
+
+
+def default_branches(repo_root: Path | str = ".") -> frozenset[str]:
+    """Branch names that count as "the default" for isolation purposes.
+
+    Prefers what the remote actually says. With no remote -- a fresh or
+    disconnected repository -- fall back to the conventional names rather than
+    to `init.defaultBranch`, which reflects the *user's* global git preference
+    and can disagree with the branch the repository is actually on.
+    """
+    import subprocess
+
+    r = subprocess.run(
+        ["git", "symbolic-ref", "--short", "refs/remotes/origin/HEAD"],
+        cwd=str(repo_root), capture_output=True, text=True,
+    )
+    if r.returncode == 0 and r.stdout.strip():
+        return frozenset({r.stdout.strip().rsplit("/", 1)[-1]})
+    return _CONVENTIONAL_DEFAULTS
+
+
+def branch_isolation_satisfied(repo_root: Path | str = ".") -> bool:
+    """True when HEAD is not the default branch (Phase 252; GH #409).
+
+    `/qor-plan` Step 0.5 exists to isolate a phase's work. An operator already
+    on a feature branch already has that isolation, so requiring branch
+    *creation* rather than isolation forces an `orchestration_override` on every
+    cycle driven by an orchestrator whose Review Boundary keeps work staged and
+    uncommitted. The override then accrues severity carrying no information.
+    """
+    import subprocess
+
+    r = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                       cwd=str(repo_root), capture_output=True, text=True)
+    if r.returncode != 0:
+        return False
+    return r.stdout.strip() not in default_branches(repo_root)

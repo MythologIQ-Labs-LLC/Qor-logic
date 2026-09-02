@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.166.0] - 2026-09-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 252 (feature; governance signal fidelity)**: closes GH #409, #411 and #413 -- three surfaces that reported something untrue, each teaching an operator to discount the channel it arrived on. `/qor-plan` Step 0.5 now accepts existing branch isolation instead of demanding branch creation, so an orchestrated cycle whose Review Boundary keeps work staged no longer records the same `orchestration_override` every time. `qor_platform.availability()` distinguishes `satisfied-by-fallback` from `missing` against a module-level `FALLBACKS` map, so a host with native subagent dispatch stops recording a `capability_shortfall` for `agent-teams` -- reserving that event for capabilities with no viable substitute is what makes it worth its severity. And `pr_citation_lint` derives its required citations from what a PR changes as well as what it carries: a research-phase record has no plan artifact and no Merkle seal, so demanding all three made a legitimate governance PR unpassable. A diff touching non-governance source still demands the full triple regardless of accompanying artifacts, so the lenient rules cannot be reached by adding an artifact. `_PLAN_PATTERN` widens to `docs/plan-<slug>.md`; the phase-number convention is this repository's own and never described what a governance plan is.
+
 ## [0.165.0] - 2026-09-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

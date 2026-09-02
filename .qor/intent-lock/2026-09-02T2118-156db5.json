@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-02T2118-156db5",
+  "plan_path": "docs/plan-qor-phase252-governance-signal-fidelity.md",
+  "plan_hash": "fe46f1ea25380434999b94975887e4c7453cb842e2c056086aa5ad654760e0b3",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "af1bf58dff00d82291cbde4795adb673279e43c41903476281a5d3c628dc856e",
+  "head_commit": "aca787784738abb5e2a5e51de54c8e050d7e4a5c",
+  "captured_ts": "2026-09-02T21:30:14.186934Z"
+}
