@@ -1,0 +1,42 @@
+{
+  "phase": "implement",
+  "session_id": "2026-09-02T2118-156db5",
+  "ts": "2026-09-02T21:30:14Z",
+  "files_touched": [
+    ".agent/staging/AUDIT_REPORT.md",
+    ".github/workflows/pr-lint.yml",
+    ".qor/gates/2026-09-02T2118-156db5/",
+    "docs/META_LEDGER.md",
+    "docs/plan-qor-phase252-governance-signal-fidelity.md",
+    "qor/dist/manifest.json",
+    "qor/dist/variants/claude/manifest.json",
+    "qor/dist/variants/claude/skills/qor-plan/references/step-extensions.md",
+    "qor/dist/variants/cline/manifest.json",
+    "qor/dist/variants/codex/manifest.json",
+    "qor/dist/variants/codex/skills/qor-plan/references/step-extensions.md",
+    "qor/dist/variants/cursor/manifest.json",
+    "qor/dist/variants/cursor/skills/qor-plan/references/step-extensions.md",
+    "qor/dist/variants/gemini/manifest.json",
+    "qor/dist/variants/kilo-code/manifest.json",
+    "qor/dist/variants/kilo-code/skills/qor-plan/references/step-extensions.md",
+    "qor/platform/profiles/claude-code-solo.md",
+    "qor/scripts/governance_helpers.py",
+    "qor/scripts/pr_citation_lint.py",
+    "qor/scripts/qor_platform.py",
+    "qor/skills/sdlc/qor-plan/references/step-extensions.md",
+    "tests/test_governance_signal_fidelity.py"
+  ],
+  "test_summary": {
+    "passed": 3209,
+    "failed": 0,
+    "skipped": 6
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.165.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-02T21:30:14Z"
+  }
+}

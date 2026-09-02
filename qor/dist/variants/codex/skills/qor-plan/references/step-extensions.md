@@ -11,14 +11,21 @@ Before authoring a plan, cut a per-phase branch. Dirty tree blocks checkout; ope
 import subprocess
 from qor.scripts import governance_helpers as gh
 
-result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
-if result.stdout.strip():
-    raise gh.InterdictionError(
-        "Working tree dirty; operator must choose stash/commit/abandon before plan branch"
-    )
-
-phase_num, slug = gh.derive_phase_metadata(plan_path)  # raises on letter-suffix legacy plans
-subprocess.run(["git", "checkout", "-b", f"phase/{phase_num:02d}-{slug}"], check=True)
+# Phase 252 (GH #409): the step exists to ISOLATE, not to create a branch. An
+# operator already on a non-default branch already has that isolation, so
+# requiring creation forced an `orchestration_override` on every cycle driven by
+# an orchestrator whose Review Boundary keeps work staged and uncommitted -- an
+# override that then accrued severity carrying no information.
+if gh.branch_isolation_satisfied("."):
+    pass  # already isolated; Step 0.5 is satisfied
+else:
+    result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
+    if result.stdout.strip():
+        raise gh.InterdictionError(
+            "Working tree dirty; operator must choose stash/commit/abandon before plan branch"
+        )
+    phase_num, slug = gh.derive_phase_metadata(plan_path)  # raises on letter-suffix legacy plans
+    subprocess.run(["git", "checkout", "-b", f"phase/{phase_num:02d}-{slug}"], check=True)
 ```
 
 Plan header MUST declare `**change_class**: hotfix | feature | breaking` (bold — V-2). Doctrine test `test_plans_declare_change_class` enforces.

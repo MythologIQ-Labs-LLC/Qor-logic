@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-02T2118-156db5",
+  "ts": "2026-09-02T21:21:20Z",
+  "target": "docs/plan-qor-phase252-governance-signal-fidelity.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "infrastructure-mismatch",
+    "specification-drift"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.165.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "veto",
+    "ts": "2026-09-02T21:21:20Z"
+  }
+}

@@ -20365,5 +20365,92 @@ Next: /qor-substantiate.
 
 ---
 
+---
+
+### Entry #699: GATE TRIBUNAL -- Phase 252 governance signal fidelity, iteration 1 (VETO)
+
+**Timestamp**: 2026-09-03T03:40:00Z
+**Phase**: GATE (Phase 252)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase252-governance-signal-fidelity.md
+**Session**: 2026-09-02T2118-156db5
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `aa5f907caeb781af9c7eca8efc0837d8a4bd5176329f7c1544228fe080071b6d`
+**Previous Hash**: `83eeeeb7b2f36de368e1f847f78abcac440de0b1a345a308720d79ae126b52d8`
+**Chain Hash (Merkle seal)**: `64718d6d8e57bf1b5e30a01d5a05590ffaebdd6ada6728776cf4250a0b7a5a90`
+
+**Decision**: **Verdict**: **VETO** -- two mandating findings. Attempt 1 of 5. Fix 1 (GH #409) is sound and needs no amendment: accepting HEAD-not-default as satisfying isolation is the correct reading, since the phase branch exists to isolate and an operator already on a feature branch already is, and the declared test pair keeps it from becoming always-true. **V-1 (`infrastructure-mismatch`)**: fix 2 says the active profile "declares a non-blocking substitute", but no such declaration exists in machine-readable form -- profiles are markdown prose whose only `fallback` mention is descriptive, and `qor_platform.current()` returns None in this repository. `availability()` would have nothing to consult, so the plan consumes a mechanism it would first have to invent. The concrete home must be named: a constant map in `qor_platform` is the smaller option and fits the fact that `agent-teams`' substitute is a toolkit-level property rather than a per-workspace one, whereas a `fallbacks` section in platform state would let an operator silence a real shortfall by declaring a substitute that does not exist. **V-2 (`specification-drift`, self-application)**: fix 3 derives citation requirements from the gate artifacts present in the diff, with "no artifacts" correctly defaulting to the full triple -- but the derivation reads only what the PR adds, so a PR that changes source and also includes a `research.json` is judged under the lenient research rule and never cites a seal. The plan's own reasoning says the phase must be evidence-derived rather than "a self-declared label in the PR body that any author could set to the least demanding value"; deriving from artifacts alone reintroduces that hazard one level down, with the artifact set becoming the settable label. Required: a diff touching non-governance source demands the full triple regardless of accompanying artifacts, so the lenient rules apply only to PRs that are genuinely governance records. Verified by execution: the widened plan pattern admits `docs/plan-sprint1-install.md` and `docs/plan-qor-phase252-x.md` while still rejecting `docs/planning-notes.md` and `docs/plan.md`, and PR bodies #415, #416 and #417 all still pass unchanged.
+
+---
+
+---
+
+### Entry #700: GATE TRIBUNAL -- Phase 252, iteration 2 (PASS)
+
+**Timestamp**: 2026-09-03T03:50:00Z
+**Phase**: GATE (Phase 252)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase252-governance-signal-fidelity.md
+**Session**: 2026-09-02T2118-156db5
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `af1bf58dff00d82291cbde4795adb673279e43c41903476281a5d3c628dc856e`
+**Previous Hash**: `64718d6d8e57bf1b5e30a01d5a05590ffaebdd6ada6728776cf4250a0b7a5a90`
+**Chain Hash (Merkle seal)**: `d9d2038285b19f0360d98d864bf437dd5cdaaa734a26b366a3a9e21b343fa830`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5. Both grounds closed, each with the reasoning for the option not taken, which is the part that survives into the next phase. V-1: the substitute now lives in a module-level `FALLBACKS` map in `qor_platform`, and the plan records why that beats a platform-state section on the merits rather than on convenience -- whether a host provides subagent dispatch as a substitute for `agent-teams` is a toolkit-level fact, not per-workspace configuration, and operator-editable state would let someone silence a real shortfall by declaring a substitute that does not exist, turning a fidelity fix into a mute button. A capability absent from the map reports `missing`, pinned by its own test, which is what keeps `capability_shortfall` worth its severity. V-2: fix 3 now keys on what the PR changes as well as what it carries, so a diff touching non-governance source demands the full triple regardless of accompanying artifacts; the plan states the principle it had been violating, that reading only the artifact set reintroduces the settable-label hazard one level down. Verified by execution: the widened plan pattern admits work-named and phase-named plans while rejecting `docs/planning-notes.md` and `docs/plan.md`; PR bodies #415, #416 and #417 still pass unchanged, so the change is backward-compatible on real inputs rather than only on fixtures; and `qor_platform.current()` returning None with no profile carrying a machine-readable fallback is what made V-1 a real finding rather than a stylistic one. GH #410 is correctly excluded from this phase: it changes when development is allowed to proceed, and bundling that behind three signal-fidelity fixes would put a routing-authority change inside a phase nobody would audit for it.
+
+---
+
+---
+
+### Entry #701: IMPLEMENTATION -- Phase 252 governance signal fidelity
+
+**Timestamp**: 2026-09-03T04:10:00Z
+**Phase**: IMPLEMENT (Phase 252)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase252-governance-signal-fidelity.md (PASS at entry #700)
+**Session**: 2026-09-02T2118-156db5
+
+**Content Hash**: `fe46f1ea25380434999b94975887e4c7453cb842e2c056086aa5ad654760e0b3`
+**Previous Hash**: `d9d2038285b19f0360d98d864bf437dd5cdaaa734a26b366a3a9e21b343fa830`
+**Chain Hash (Merkle seal)**: `c058e1cdb386f77fe52082bb6b72e59ba82e2aa686f8f32fc2124f4e2269c0d2`
+
+**Decision**: **Decision**: Phase 252 implemented under TDD across 22 files; `tests/test_governance_signal_fidelity.py` was written first and run red at 10 of 12 before any source change. Delivered: `governance_helpers.branch_isolation_satisfied` lets `/qor-plan` Step 0.5 accept existing isolation instead of demanding branch creation (GH #409); `qor_platform.availability` returns `available` / `satisfied-by-fallback` / `missing` against a module-level `FALLBACKS` map, with `is_available`'s boolean contract untouched (GH #411); and `pr_citation_lint.required_citations` derives the citation set from what a PR changes as well as what it carries, with `_PLAN_PATTERN` widened to `docs/plan-<slug>.md` (GH #413). The seal ladder's own workflow now passes `--changed-files` from the PR diff. One implementation refinement inside the audited contract: `default_branch` became `default_branches`, remote-first and falling back to the conventional `{main, master}` set rather than to `git config init.defaultBranch`. The test caught it -- a fresh fixture repository created on `main` reported isolation satisfied, because that config reflects the user's global git preference and can disagree with the branch the repository is actually on. Reading a per-user setting as a per-repository fact is the same shape as the layout constants this session has now corrected five times. Verified against real inputs rather than fixtures alone: PR bodies #415, #416 and #417 all still pass under the new rules with their true changed-file lists. Full suite 3209 passed / 6 skipped / 4 deselected; ruff clean; variant drift clean at 406 files; publication-boundary 0 findings.
+
+---
+
+---
+
+### Entry #702: SESSION SEAL -- Phase 252 governance signal fidelity (v0.166.0)
+
+**Timestamp**: 2026-09-03T04:20:00Z
+**Phase**: SEAL (Phase 252)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `39eaf31b7bad`
+**Plan**: docs/plan-qor-phase252-governance-signal-fidelity.md (PASS at entry #700)
+**Session**: 2026-09-02T2118-156db5
+**Change Class**: feature (0.165.0 -> 0.166.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `fe46f1ea25380434999b94975887e4c7453cb842e2c056086aa5ad654760e0b3`
+**Previous Hash**: `c058e1cdb386f77fe52082bb6b72e59ba82e2aa686f8f32fc2124f4e2269c0d2`
+**Chain Hash (Merkle seal)**: `9c14f94b4f38140e82378974784705433cd41de854877c30cfe3bd27a72e4ac3`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 252 seals GH #409, #411 and #413 -- three surfaces reporting something untrue, each teaching an operator to discount the channel it arrived on. `/qor-plan` Step 0.5 accepts existing isolation rather than demanding branch creation, so an orchestrated cycle whose Review Boundary keeps work staged stops recording the same `orchestration_override` every time; the step exists to isolate, and an operator already on a feature branch already is. `qor_platform.availability()` distinguishes `satisfied-by-fallback` from `missing` against a module-level `FALLBACKS` map, so a host with native subagent dispatch stops charging severity for a capability the fallback demonstrably covers -- reserving `capability_shortfall` for capabilities with no viable substitute is what makes it worth its severity. The map's placement was tribunal ground V-1 (entry #699): the plan first said "the active profile declares" a substitute, but no machine-readable declaration existed, and a constant map is also right on the merits, since operator-editable state would let someone silence a real shortfall by declaring a substitute that does not exist. `pr_citation_lint` now derives required citations from what a PR changes as well as what it carries; a research record has no plan artifact and no seal, so demanding all three made a legitimate governance PR unpassable, as PR #412 demonstrated. Ground V-2 caught the version that read only the artifact set: that would have let a source-changing PR land under the lenient research rule by including a `research.json`, making the artifact set exactly the settable label the plan's own reasoning rejected. One refinement inside the audited contract, caught by its own test: `default_branch` became `default_branches`, remote-first with a conventional `{main, master}` fallback, because reading `git config init.defaultBranch` treats a per-user preference as a per-repository fact -- the same shape as the layout constants this session has now corrected five times. Verified against real inputs rather than fixtures alone: PR bodies #415, #416 and #417 all still pass under the new rules with their true changed-file lists.
+
+**GATE LADDER**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix clean; secret-scan clean; merge-velocity healthy; ledger-commitment OK (22 touched artifacts); data-api-acl disclosed-SKIP (event `4ea390bb1873`); instruction-hygiene disclosed-SKIP (event `2ce6159797d2`); doc-integrity strict PASS; governance-index advanced + enforced clean; feature-index 27/27 verified; publication-boundary 0 findings; variant drift clean at 406 files; ruff clean. Full suite 3209 passed / 6 skipped / 4 deselected.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

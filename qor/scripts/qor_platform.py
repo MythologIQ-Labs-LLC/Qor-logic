@@ -298,3 +298,25 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# Phase 252 (GH #411): capabilities whose absence is covered by a supported,
+# non-blocking substitute. A toolkit-level fact rather than per-workspace
+# configuration -- putting this in operator-editable platform state would let an
+# operator silence a real shortfall by declaring a substitute that does not
+# exist. A capability absent from this map reports "missing", which is what
+# keeps `capability_shortfall` worth its severity.
+FALLBACKS: dict[str, str] = {
+    "agent-teams": "host-native subagent dispatch (general-purpose Agent tool)",
+}
+
+
+def availability(capability: str, marker: Path | None = None) -> str:
+    """Return "available", "satisfied-by-fallback", or "missing".
+
+    Richer than `is_available`, whose boolean contract is unchanged for existing
+    callers. Reserve `capability_shortfall` for the "missing" case.
+    """
+    if is_available(capability, marker):
+        return "available"
+    return "satisfied-by-fallback" if capability in FALLBACKS else "missing"
