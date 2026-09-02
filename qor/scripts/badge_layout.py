@@ -33,6 +33,12 @@ class BadgeLayout:
     agents_pattern: str = "**/*.md"
     doctrines_root: Path = Path("qor/references")
     doctrines_pattern: str = "doctrine-*.md"
+    # Phase 250 (GH #406): the glossary is layout-bound the same way the three
+    # counted roots are -- doc_integrity and doc_integrity_strict resolved it as
+    # a literal, so the strict tier was unreachable in any workspace that keeps
+    # its glossary elsewhere. Declared here rather than in a second resolver so
+    # one module owns the `layout` section.
+    glossary_path: Path = Path("qor/references/glossary.md")
 
 
 DEFAULT_LAYOUT = BadgeLayout()
@@ -49,6 +55,7 @@ def add_layout_args(parser: argparse.ArgumentParser) -> None:
     for name in ("skills", "agents", "doctrines"):
         parser.add_argument(f"--{name}-root", type=Path, default=None)
         parser.add_argument(f"--{name}-pattern", default=None)
+    parser.add_argument("--glossary-path", type=Path, default=None)
 
 
 def _declared(section: dict, key: str, cast=None):
@@ -77,7 +84,7 @@ def layout_from_args(args: argparse.Namespace) -> BadgeLayout:
         if flag is not None:
             resolved[field.name] = flag
             continue
-        cast = Path if field.name.endswith("_root") else None
+        cast = Path if field.name.endswith(("_root", "_path")) else None
         declared = _declared(section, field.name, cast)
         if declared is not None:
             resolved[field.name] = declared
