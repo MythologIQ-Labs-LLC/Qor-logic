@@ -83,8 +83,88 @@ def sweep(events: list[dict], now: datetime) -> tuple[list[dict], list[dict], in
             existing_escalations.add(e["id"])
 
     combined = events + new_escalations
-    sum_unaddressed = sum(e["severity"] for e in combined if not e["addressed"])
+    # Phase 253 (GH #410): collapse recurrence and honor enforcer-backed pending
+    # proposals, so the sum measures process debt rather than phase count.
+    sum_unaddressed = collapsed_severity(combined)
     return events, new_escalations, sum_unaddressed
+
+
+
+def _signature(event: dict) -> tuple:
+    """The identity a recurring disclosed event shares across occurrences."""
+    details = event.get("details") or {}
+    return (event.get("event_type"), details.get("gate") or details.get("capability"))
+
+
+def _pending_discount_applies(event: dict) -> bool:
+    """True when a pending proposal has bought its discount with real evidence.
+
+    GH #410 fix 4. Excluding `addressed_pending` unconditionally would let a bare
+    proposal silence the signal -- the closing-on-prose failure this repository
+    rejects elsewhere. Requiring a `closure_enforcer` that validates means the
+    discount costs the same evidence stage 2 demands; stage 2 still requires the
+    review-pass attestation before `addressed` becomes true.
+    """
+    if not event.get("addressed_pending"):
+        return False
+    enforcer = event.get("closure_enforcer")
+    if not enforcer:
+        return False
+    from qor.scripts.remediate_mark_addressed import (
+        ClosureEnforcerError,
+        _validate_closure_enforcer,
+    )
+
+    try:
+        _validate_closure_enforcer(enforcer)
+    except (ClosureEnforcerError, Exception):
+        return False
+    return True
+
+
+def collapsed_severity(events: list[dict]) -> int:
+    """Severity sum with recurrence collapsed (GH #410 fix 6).
+
+    A disclosed event repeating with the same signature contributes its severity
+    ONCE. Every occurrence stays in the log as history; only the sum changes.
+
+    Without this the threshold measured how many phases had been sealed rather
+    than accumulated process debt: `data_api_acl_lint` skips every seal because
+    a repository has no SQL migrations -- a permanent, correct property of it --
+    and each seal added severity that nothing could ever remediate, because
+    nothing was wrong.
+
+    A genuinely new gate skipping, or a new capability falling short, still adds
+    its severity, which is what keeps the threshold a signal rather than merely
+    quieter.
+    """
+    seen: set[tuple] = set()
+    total = 0
+    for event in events:
+        if event.get("addressed"):
+            continue
+        if _pending_discount_applies(event):
+            continue
+        sig = _signature(event)
+        if sig in seen:
+            continue
+        seen.add(sig)
+        total += event.get("severity", 0)
+    return total
+
+
+def every_unaddressed_event_has_a_pending_proposal(events: list[dict]) -> bool:
+    """True when no unaddressed event is missing a remediation proposal.
+
+    GH #410 fix 5: a routing escape that clears the marker even when the sum
+    stays at or above threshold. With fix 4 in place this is usually
+    unreachable; it exists so a future phase judging that discount too permissive
+    can revert it without reintroducing the deadlock the issue reported.
+    """
+    unaddressed = [e for e in events if not e.get("addressed")]
+    if not unaddressed:
+        return True
+    return all(e.get("addressed_pending") for e in unaddressed)
 
 
 def write_marker(sum_severity: int, unaddressed_ids: list[str]) -> None:

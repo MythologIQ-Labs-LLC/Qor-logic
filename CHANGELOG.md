@@ -10,6 +10,14 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.167.0] - 2026-09-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 253 (feature; remediation closure states)**: closes GH #410. A remediation owned by another repository can now be closed as `deferred_upstream`, which requires the upstream issue URL -- closure by verified transfer of ownership rather than by a claim of repair, and materially different from both "remediated" and "cannot automate". `/qor-audit` Step 4.2 passes the per-change `{event_id: enforcer}` mapping when a proposal declares one, a capability `mark_addressed` has accepted since Phase 166 and the skill never used; a proposal that is partly local and partly upstream is the normal case for a consumer workspace, not an edge case.
+- **The threshold now measures process debt rather than phase count.** A disclosed event repeating with the same signature contributes its severity once; occurrences stay in the log as history. `data_api_acl_lint` skips every seal in a repository with no SQL migrations -- a permanent, correct property of it -- and each seal used to add severity nothing could ever remediate. On this repository the sum drops from 171 to 42 against a threshold of 10: the collapse removes recurrence noise and does not clear the breach, which is the honest outcome rather than a tuned one. A pending remediation is excluded from the sum only when its `closure_enforcer` validates, so a bare proposal cannot silence the signal.
+
 ## [0.166.0] - 2026-09-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

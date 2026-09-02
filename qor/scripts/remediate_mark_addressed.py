@@ -196,3 +196,42 @@ def correct_closure_enforcers(
     assert enforcers is not None
     _verify_review_pass_artifact(review_pass_artifact_path, remediate_gate_path)
     return _flip_event_fields_per_event(enforcers, {}, addressed_only=True)
+
+
+class UpstreamClosureError(ValueError):
+    """A deferred_upstream closure without a recorded destination.
+
+    GH #410: the state means ownership transferred to another repository, which
+    is closure by verified transfer rather than by a claim of repair. Without the
+    issue URL it is a synonym for "not my problem".
+    """
+
+
+def mark_deferred_upstream(
+    event_ids: list[str],
+    session_id: str,
+    issue_url: str,
+    closure_enforcer: str | None = None,
+    repo_root: Path | None = None,
+) -> MarkResult:
+    """Close events as owned by another repository (GH #410).
+
+    Materially different from both `addressed` (repaired here) and
+    `cannot-automate:` (nothing will repair it): the enforcer exists, it is just
+    not ours. Requires the upstream issue URL so the transfer is recorded rather
+    than asserted.
+    """
+    if not (issue_url or "").strip():
+        raise UpstreamClosureError(
+            "deferred_upstream closure requires the upstream issue_url; "
+            "closure by transfer of ownership must record where the work went"
+        )
+    if closure_enforcer is not None:
+        _validate_closure_enforcer(closure_enforcer, repo_root=repo_root)
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return _flip_event_fields(event_ids, {
+        "addressed": True,
+        "addressed_reason": "deferred_upstream",
+        "addressed_ts": now,
+        "issue_url": issue_url,
+    })

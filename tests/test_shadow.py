@@ -89,9 +89,14 @@ def test_threshold_sum_ignores_addressed():
 
 def test_threshold_breach_triggers_marker(tmp_path, monkeypatch):
     log = tmp_path / "shadow.md"
+    # Phase 253 (GH #410): distinct signatures. This test checks that a breach
+    # writes the marker, not how severity is counted -- and since recurrence now
+    # collapses, two events differing only in timestamp are one signature and
+    # would sum to 5 rather than 10.
     events = [
-        make_event(severity=5, ts="2026-04-15T10:00:00Z"),
-        make_event(severity=5, ts="2026-04-15T11:00:00Z", session_id="2026-04-15T11:00-def456"),
+        make_event(severity=5, ts="2026-04-15T10:00:00Z", details={"gate": "gate_a"}),
+        make_event(severity=5, ts="2026-04-15T11:00:00Z",
+                   session_id="2026-04-15T11:00-def456", details={"gate": "gate_b"}),
     ]
     log.write_text("\n".join(json.dumps(e) for e in events) + "\n", encoding="utf-8")
 
@@ -200,9 +205,14 @@ def test_create_shadow_issue_flips_addressed(tmp_path, monkeypatch):
     monkeypatch.setattr(csi, "MARKER_PATH", marker)
     monkeypatch.setattr(shadow_process, "LOG_PATH", log)
 
+    # Phase 253 (GH #410): distinct signatures. This test checks that a breach
+    # writes the marker, not how severity is counted -- and since recurrence now
+    # collapses, two events differing only in timestamp are one signature and
+    # would sum to 5 rather than 10.
     events = [
-        make_event(severity=5, ts="2026-04-15T10:00:00Z"),
-        make_event(severity=5, ts="2026-04-15T11:00:00Z", session_id="2026-04-15T11:00-def456"),
+        make_event(severity=5, ts="2026-04-15T10:00:00Z", details={"gate": "gate_a"}),
+        make_event(severity=5, ts="2026-04-15T11:00:00Z",
+                   session_id="2026-04-15T11:00-def456", details={"gate": "gate_b"}),
     ]
     log.write_text("\n".join(json.dumps(e) for e in events) + "\n", encoding="utf-8")
 
