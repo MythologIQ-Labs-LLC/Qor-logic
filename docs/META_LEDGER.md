@@ -19795,5 +19795,173 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #672: GATE TRIBUNAL -- Phase 248 plan-terms key canonicalization, iteration 1 (VETO)
+
+**Timestamp**: 2026-09-02T17:35:00Z
+**Phase**: GATE (Phase 248)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase248-plan-terms-key-canonicalization.md
+**Session**: 2026-09-02T1713-da52da
+**Mode**: solo -- `audit_risk_score` reported `option_b_required: false` (no author-momentum signal; the plan was authored in a prior session by a different context than this auditor). Step 0 plan-artifact override recorded as severity-1 event `ec10c35008ec172e1a9407df621dfddf8e50c768a42d88bad4f439ec771f1d07`: PR #403 authored the plan and its full implementation outside the ceremony, as that PR body discloses.
+
+**Content Hash**: `322662c7d495f8473e55b6f2f344c4819623d3754fc14e870cc76fb709f6f034`
+**Previous Hash**: `e052c53b82f1418b94e02cd3db247e55775432de0a22ecae33687d20601ca196`
+**Chain Hash (Merkle seal)**: `e6b6e5862fc3f0b442ab0cee5e1e483ba68bbdc4b8ff94654a74ec575d5eb676`
+
+**Decision**: **Verdict**: **VETO** -- two mandating findings. Attempt 1 of 5. The implementation is sound and every infrastructure claim verifies: the schema `not: {required: [terms_introduced]}` rule is present and load-bearing (`additionalProperties: true` still set), `doc_integrity.py`'s read path is untouched as the plan claims, all three cited test node IDs resolve and pass, `check_variant_drift` reports 406 files with no drift, and every residual `terms_introduced` string under `qor/` is deliberate retirement-notice text rather than surviving drift. The VETO does not rest on the fix. **V-1 (`specification-drift`, self-application):** the plan declares, under the very canonical `terms` key it exists to canonicalize, a term with no glossary entry -- `check_glossary("qor/references/glossary.md", ["terms_introduced (retired alias)"], repo_root=".")` raises, as it does for the bare alias and for `terms`; none is registered. Both downstream outcomes are defects: transcribed into the plan gate artifact, `/qor-substantiate` Step 4.7 ABORTs the seal on an unregistered term; dropped in transcription, the glossary check inspects nothing and reports success, which is the exact vacuous-gate defect this plan closes, reproduced by the plan that closes it. `docs/SHADOW_GENOME.md:790` already records SG-036 against the phase that first codified these fields for the identical failure. The field name is not domain vocabulary and must not be registered to satisfy the check; this phase introduces no new domain terms. **V-2 (`coverage-gap`, omission route):** the `not` rule rejects the alias but `terms` is absent from schema `required`, so an artifact declaring neither key validates and `plan.get("terms", [])` still returns `[]` -- the same vacuous check reached by omission. The plan's `boundaries.non_goals` names the read path and `derive_phase_metadata` but not this route, leaving an undeclared residual while #394 closes. V-2 does not demand scope expansion: closing the route, or declaring it a non-goal with rationale and a follow-on issue, both satisfy it. Pre-audit ladder clean: both ABORT gates exit 0, all eleven WARN-only lints exit 0 (`ci_coverage_lint` 2 WARN), binding `prose_test_lint --enforce` exit 0, `sg_closure_lint` 40 entries with 0 missing enforcer citations; `workspace_fragility_check` reports `fragility=medium action=branch_only`. Non-blocking advisory: repeated-VETO pattern detected in phases 246 and 247, severity-3 `repeated_veto_pattern` event recorded.
+
+---
+
+### Entry #673: GATE TRIBUNAL -- Phase 248 plan-terms key canonicalization, iteration 2 (PASS)
+
+**Timestamp**: 2026-09-02T17:55:00Z
+**Phase**: GATE (Phase 248)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase248-plan-terms-key-canonicalization.md
+**Session**: 2026-09-02T1713-da52da
+**Mode**: solo -- `audit_risk_score` `option_b_required: false`. Authorship disclosed: iteration 1 audited a plan authored in a prior session; the iteration-2 amendments were authored by this auditing context, which is the SG-007 author-momentum posture. Mitigation in lieu of Option B: every closure is evidenced by executed command output rather than by reading the amended prose, and the amendments are text-only -- no code, schema, or test changed between iterations.
+
+**Content Hash**: `c416a058740526a0e35b2f21e5fdfbdd8b6d3eb4ffb6978d6627f5af070fc5a0`
+**Previous Hash**: `e6b6e5862fc3f0b442ab0cee5e1e483ba68bbdc4b8ff94654a74ec575d5eb676`
+**Chain Hash (Merkle seal)**: `ba4092d665309e293e2412e382cca9eec9a694b553bde07d529cc1bf126b0b7e`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5. Both entry-#672 grounds closed, each demonstrated by executing the check that produced the finding. **V-1 (self-application)**: the plan now declares `terms: []` with the rationale that the retired name is a schema key rather than domain vocabulary; `check_glossary(glossary, [], repo_root=".")` PASSES, `run_all_checks_from_plan` on the amended shape PASSES, `jsonschema.validate` accepts it, and -- decisively -- the `terms_introduced` alias is STILL REJECTED, so the closure did not come from weakening the rule GH #394 exists to add. **V-2 (omission route)**: closed by declaration, which iteration 1 accepted as sufficient. `boundaries.non_goals` now states that `terms` remains absent from schema `required`, that an artifact declaring neither key still validates to an empty declared-terms list, that this phase closes the alias route only, and that the residual is filed as GH #414 with a proposed `doc_tier`-conditional requirement -- so the hole keeps its record rather than disappearing when #394 closes. A third amendment, not a tribunal ground: the plan's `exclusions` line asserted this cycle would not run the sealing ceremony, which became false when the tribunal convened; it now records the retrofit onto the pre-existing PR #403 diff and cites the Step 0 override event. `plan_text_consistency_lint` did not flag that stale assertion in iteration 1 -- recorded as an observation, not a finding. Implementation re-verified unchanged: schema `not` rule present and load-bearing, `doc_integrity.py` read path untouched, `check_variant_drift` OK at 406 files, all three cited test node IDs resolving and 26/26 passing, residual `terms_introduced` strings all deliberate retirement notice. Twelve lints exit 0 including binding `prose_test_lint --enforce`; `publication_boundary_lint` 0 findings; Step 0.4 correctly reports `should_skip: False` (plan changed, cycle legitimately consumed). Non-blocking advisory carried forward: repeated-VETO pattern in phases 246-247.
+
+---
+
+---
+
+### Entry #674: IMPLEMENTATION -- Phase 248 plan-terms key canonicalization
+
+**Timestamp**: 2026-09-02T18:20:00Z
+**Phase**: IMPLEMENT (Phase 248)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase248-plan-terms-key-canonicalization.md (PASS at entry #673)
+**Session**: 2026-09-02T1713-da52da
+**Mode**: verification pass over a pre-existing diff -- no new code written this phase
+
+**Content Hash**: `06fda8c7be2d8fc9c30c9063d630ab83f1ee333980e9f2147504cd43b7dfa2f4`
+**Previous Hash**: `ba4092d665309e293e2412e382cca9eec9a694b553bde07d529cc1bf126b0b7e`
+**Chain Hash (Merkle seal)**: `13fb286b3a888c2855efb43f631a5469543fb25d29ce3d8d9bca160518f7c112`
+
+**Decision**: **Decision**: Phase 248 implementation record, with an honest scope statement: the diff was authored in a prior session on PR #403 outside the governed ceremony, and this pass verified it rather than writing it. No TDD red-then-green occurred in this pass, and none is claimed. What this pass DID do is refuse to take the plan's red-proof claim on trust: the schema `not` rule was removed, `test_plan_schema_rejects_terms_introduced_alias` was re-run and FAILED at `tests/test_plan_schema_doc_integrity.py:77`, the rule was restored, the probe PASSED, and `git diff` confirms the schema is byte-identical to its branch state. The guard is therefore red-proved by execution in this phase, not merely asserted by the prior one. Delivered surface (25 files): `qor/gates/schema/plan.schema.json` gains the `not: {required: [terms_introduced]}` rule; `qor/skills/sdlc/qor-plan/SKILL.md` + its `references/step-extensions.md`, `qor/references/doctrine-documentation-integrity.md`, and `qor/references/doctrine-ideation-readiness.md` rename the retired alias to canonical `terms`; six host variants recompiled; `tests/test_plan_schema_doc_integrity.py` and `tests/test_doc_integrity.py` carry the negative probe plus two entry-point regression tests. Gate obligations checked and correctly not triggered: no `src/` path in the changeset and no `Feature Inventory Touches` table, so the Phase 73 FEATURE_INDEX update obligation does not apply; no BACKLOG blocker references this issue. Step 8.5 doc sync at `doc_tier: standard`: `docs/ARCHITECTURE_PLAN.md` carries no file tree and enumerates no tests or schemas, so item 1 is non-applicable; the two doctrine surfaces that documented the field-name contract were themselves the thing corrected, and `doc_integrity_strict` exits 0. Intent lock captured (`LOCKED: 2026-09-02T1713-da52da`). Full suite 3159 passed / 6 skipped / 4 deselected -- three above main's 3156, matching the three tests this branch adds. `workspace_fragility_check` reports `fragility=medium action=branch_only`; scope stayed inside the approved blueprint with no shared-surface broadening.
+
+---
+
+---
+
+---
+
+---
+
+### Entry #675: AMENDMENT -- Phase 248 scope expanded after a seal-time abort
+
+**Timestamp**: 2026-09-02T19:15:00Z
+**Phase**: SEAL (Phase 248 amendment)
+**Author**: Judge
+**Risk Grade**: L2
+**Amends**: Entry #674
+**Plan**: docs/plan-qor-phase248-plan-terms-key-canonicalization.md
+**Session**: 2026-09-02T1713-da52da
+**Superseded Content Hash**: `06fda8c7be2d8fc9c30c9063d630ab83f1ee333980e9f2147504cd43b7dfa2f4`
+
+**Content Hash**: `1444026479fb5648f8b930e7a92d40ac9ad240548859105be07a807ddb499858`
+**Previous Hash**: `13fb286b3a888c2855efb43f631a5469543fb25d29ce3d8d9bca160518f7c112`
+**Chain Hash (Merkle seal)**: `a3797e5a8098de716d0ae0e847bae758797362dfc0378fbac8ecf9c4f6539307`
+
+**Decision**: The Phase 248 seal ABORTED at `/qor-substantiate` Step 7.8 after the iteration-2 PASS, and the plan is amended rather than the abort worked around. `gate_chain_completeness` walks every SESSION SEAL entry with phase >= 52 and validates each gate artifact against the CURRENT schema; eight already-sealed plan artifacts across phases 187, 191 and 192 carry `terms_introduced`, so the new `not` rule retroactively invalidated them and the fail-closed gate exited 1. Scope items 1-3 shipped alone would mean no seal in this repository ever completes again, including the seal that ships them -- a release blocker, not a nicety. Two corrections are recorded here. First, the plan's `limitations` line asserted that historical artifacts are "frozen sealed records" that nothing re-reads; that was false -- a live gate re-reads them every seal -- and the audit's Infrastructure Alignment Pass verified the rule was present and load-bearing without asking what consumes historical artifacts. The gate tribunal missed it; the seal ladder caught it, which is the ladder working as designed. Second, migration of the eight artifacts is not merely unnecessary but wrong: each carries a `.provenance` sidecar whose `payload_sha256` binds its exact bytes, so a key rename would trade a schema failure for an evidence-integrity failure. Scope item 4 adds the remedy: `validate_gate_artifact.validate_one` gains a keyword-only `sealed_history` flag that validates with the schema's top-level `not` clause removed, and `gate_chain_completeness.check` passes it. The boundary is a role distinction rather than a phase number -- everything that checker walks is already sealed, its stated purpose is detecting skill-protocol bypass, and a prohibition introduced later says nothing about whether the protocol was followed at the time. Enforcement of a new prohibition stays at authoring time, where `gate_chain.write_gate_artifact` already validates the full current schema and is forward-only by construction. `required`, `type`, `properties` and `$ref` continue to apply under the flag, so GAP-GOV-14 is preserved exactly: empty, malformed, and required-field-missing artifacts still fail completeness. Seal-phase mutations from the aborted attempt were reverted before this entry: the premature SESSION SEAL entry was removed (a seal entry for a seal that did not complete is the `SG-AdjacentState-A` failure), the version bump returned to 0.163.1, the CHANGELOG was un-stamped, and the seal artifacts were resynced to Phase 247. Next: audit iteration 3 against the amended plan.
+
+---
+
+---
+
+### Entry #676: GATE TRIBUNAL -- Phase 248, iteration 3 (VETO)
+
+**Timestamp**: 2026-09-02T19:25:00Z
+**Phase**: GATE (Phase 248)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase248-plan-terms-key-canonicalization.md (amended at entry #675)
+**Session**: 2026-09-02T1713-da52da
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `8a5a2b653b683970717c6014d13e41229e705cd2331bff0e2de8c912c2a5e7b0`
+**Previous Hash**: `a3797e5a8098de716d0ae0e847bae758797362dfc0378fbac8ecf9c4f6539307`
+**Chain Hash (Merkle seal)**: `df0c3ec1e0c0ae4c66c6f725a8331d512089e3847eabf89f93a97826347be57b`
+
+**Decision**: **Verdict**: **VETO** -- one mandating finding. Attempt 3 of 5. Scope item 4's design holds and two of its load-bearing claims were verified by execution rather than read: `not` appears in exactly one gate schema at exactly one place (the rule this phase adds), so `sealed_history=True` forfeits no pre-existing protection; and the authoring path still enforces the full current schema, proven in iteration 2 when `write_gate_artifact` rejected a `terms_introduced` payload and accepted `terms: []`. **V-3 (`coverage-gap`)**: the fix names one sealed-history consumer and there are two. `qor/scripts/evidence_bundle.py:90` validates artifacts for an operator-selected session, and line 52 shows the session is selectable rather than pinned to the current one, so a bundle targeting phase 187, 191 or 192 marks a validly sealed plan artifact `valid: false` citing a prohibition introduced long after it was written. That is the same false statement the seal-time abort made, failing open into an evidence document instead of fail-closed into a gate -- and an evidence packet exists precisely to attest that a sealed session's gate chain was intact. The remaining `validate_one` call sites were checked and are correctly out of scope: `gate_chain.py:101,127,143` read the current session, whose artifacts are authored under the current schema. Recorded plainly: iteration 2 PASSed a plan whose `limitations` line asserted that sealed artifacts are frozen records nothing re-reads, and the Infrastructure Alignment Pass did not test that assertion -- it confirmed the new rule was present and load-bearing without asking what consumes historical artifacts. The seal ladder caught what the tribunal missed. V-3 is that same question asked correctly: not whether the rule works, but who else reads what the rule now forbids.
+
+---
+
+---
+
+### Entry #677: GATE TRIBUNAL -- Phase 248, iteration 4 (PASS)
+
+**Timestamp**: 2026-09-02T19:35:00Z
+**Phase**: GATE (Phase 248)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase248-plan-terms-key-canonicalization.md
+**Session**: 2026-09-02T1713-da52da
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `6e50f832ea15efba9c5cef7a1ca074131ead90e9a54eef377a99715347601520`
+**Previous Hash**: `df0c3ec1e0c0ae4c66c6f725a8331d512089e3847eabf89f93a97826347be57b`
+**Chain Hash (Merkle seal)**: `b5dbde2a89f1ff1bf91f75376758812eef26c8e23395d293da3375265990b762`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 4 of 5. V-3 closed, and the closure was checked by re-running the sweep that produced it rather than by reading the amendment: `validate_one` has exactly five call sites outside its own module, two of which read sealed history (`gate_chain_completeness.py:90`, `evidence_bundle.py:90`) and now both take `sealed_history=True`, while three (`gate_chain.py:101,127,143`) read the current session, whose artifacts are authored under the current schema and where full validation is correct. No third sealed-history consumer exists. The two differ in failure direction and the amendment treats them together: `gate_chain_completeness` fails closed at seal time, `evidence_bundle` fails open into an evidence document -- the same false statement about a validly sealed artifact, so the fix generalizes to the next schema tightening instead of needing rediscovery. Claims carried forward and previously verified by execution: `not` occurs in exactly one gate schema at one location, so the exemption forfeits no pre-existing protection; `required`/`type`/`properties`/`$ref` are untouched so GAP-GOV-14 holds, guarded permanently by the declared structurally-invalid probe; and the authoring path still enforces the full schema, proven when `write_gate_artifact` rejected a `terms_introduced` payload and accepted `terms: []`. Tribunal record for this phase: four iterations, two VETOs, both on one shape -- a route into the failure left open and undeclared. V-2 was the omission route into a vacuous glossary check; V-3 was the second sealed-history consumer, which this phase's own schema prohibition is what made reachable.
+
+---
+
+---
+
+### Entry #678: IMPLEMENTATION -- Phase 248 scope item 4 (sealed-history exemption)
+
+**Timestamp**: 2026-09-02T19:50:00Z
+**Phase**: IMPLEMENT (Phase 248)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase248-plan-terms-key-canonicalization.md (PASS at entry #677)
+**Session**: 2026-09-02T1713-da52da
+
+**Content Hash**: `de36eeec6764c0eecc939c90764891138a16c572288f9e9b4653a9f3f63d0ded`
+**Previous Hash**: `b5dbde2a89f1ff1bf91f75376758812eef26c8e23395d293da3375265990b762`
+**Chain Hash (Merkle seal)**: `6a7ed60f2ec5a5509333917559e1efe1337f816c27e973ef1e5414eca2a047b1`
+
+**Decision**: **Decision**: Scope item 4 implemented under real TDD in this pass, unlike the entry-#674 verification pass over pre-existing work. `tests/test_gate_chain_completeness_sealed_history.py` was written first and run red: 4 failed / 1 passed, the single pass being `test_validate_one_rejects_retired_alias_by_default`, which correctly passes pre-fix because it asserts the authoring-time prohibition already in place. Then `qor/scripts/validate_gate_artifact.py` gained the keyword-only `sealed_history` flag (drops the schema's top-level `not` clause only), and both sealed-history consumers opt in: `qor/reliability/gate_chain_completeness.py` and `qor/scripts/evidence_bundle.py` (tribunal ground V-3). Green, run twice for determinism: 5 passed both times. One test failure during implementation was instructive enough to record: the fixture's placeholder `session_id` of `s1` failed under `sealed_history=True` with `session_id: 's1' is too short`, which is the `properties` constraint still being enforced. The exemption behaved exactly as specified -- narrow, dropping only the prohibition -- and the fixture was corrected rather than the implementation. The decisive verification is against the live repository rather than fixtures: `gate_chain_completeness --repo-root . --phase-min 52` previously exited 1 naming phases 187, 191 and 192; it now reports `OK: gate-chain complete for 175 sessions` and exits 0. The seal-time abort that halted this phase is resolved at its cause, and the eight historical artifacts were left byte-identical, so every `.provenance` sidecar's `payload_sha256` still binds. `ruff check qor/ tests/` clean; `dist_compile` re-run with `check_variant_drift` reporting 406 files and no drift.
+
+---
+
+---
+
+### Entry #679: SESSION SEAL -- Phase 248 plan-terms key canonicalization (v0.163.2)
+
+**Timestamp**: 2026-09-02T20:05:00Z
+**Phase**: SEAL (Phase 248)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `eab36ed98a75`
+**Plan**: docs/plan-qor-phase248-plan-terms-key-canonicalization.md (PASS at entry #677)
+**Session**: 2026-09-02T1713-da52da
+**Change Class**: hotfix (0.163.1 -> 0.163.2)
+**SSDF Practices**: PO.1.3, PS.2.1, PW.1.1, PW.5.1, RV.2.1
+
+**Content Hash**: `de36eeec6764c0eecc939c90764891138a16c572288f9e9b4653a9f3f63d0ded`
+**Previous Hash**: `6a7ed60f2ec5a5509333917559e1efe1337f816c27e973ef1e5414eca2a047b1`
+**Chain Hash (Merkle seal)**: `9d25c2b0960779fef23c2af823aa5d7151cdfd62c18b4b8768bd46f5b251a99f`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 248 seals GH #394 together with the release blocker its own fix created. The schema rejects the retired `terms_introduced` alias, every authoring surface names the canonical `terms`, six host variants are recompiled, and `doc_integrity.py` is untouched because its read path was always correct; the guard is red-proved by execution rather than on the prior session's word. Scope item 4 exists because the first seal attempt ABORTed at Step 7.8: `gate_chain_completeness` validates every sealed phase's artifacts against the CURRENT schema, so the new prohibition retroactively invalidated eight artifacts across sealed phases 187, 191 and 192 and the fail-closed gate exited 1 -- scope items 1-3 shipped alone would have meant no seal in this repository ever completing again, including the one that ships them. The remedy draws the boundary at a role rather than a phase number: everything a sealed-history reader walks is already sealed, its purpose is detecting skill-protocol bypass, and a prohibition introduced later says nothing about whether the protocol was followed at the time. `validate_one` gained a keyword-only `sealed_history` flag dropping only the schema's top-level `not` clause; both sealed-history readers opt in -- `gate_chain_completeness`, which fails closed at seal time, and `evidence_bundle`, which fails open into an evidence packet (tribunal ground V-3). `required`, `type`, `properties` and `$ref` still apply, so GAP-GOV-14 is preserved exactly, and the three current-session `validate_one` call sites in `gate_chain.py` are deliberately unchanged because their artifacts are authored under the current schema. The eight historical artifacts are byte-identical: each carries a `.provenance` sidecar whose `payload_sha256` binds its bytes, so migrating the key would have traded a schema failure for an evidence-integrity failure. Verification is against the live repository, not fixtures -- the gate that exited 1 naming three phases now reports `OK: gate-chain complete for 175 sessions`. Disclosures the record should carry plainly: the diff for scope items 1-3 was authored on PR #403 outside the ceremony in a prior session and the ceremony was retrofitted onto it, so the Step 0 override is event `ec10c35008ec172e1a9407df621dfddf8e50c768a42d88bad4f439ec771f1d07` and the plan gate artifact was written at seal time from the existing plan document; it declares `terms: []`, so the fix is exercised by the ceremony that seals it. The intent lock was re-captured after the plan amendments and the iteration-4 re-audit, the drift having been real and legitimately re-adjudicated rather than waived. Four tribunal iterations, two VETOs, both on one shape: a route into the failure left open and undeclared -- V-2 the omission route into a vacuous glossary check, V-3 the second sealed-history consumer that this phase's own prohibition made reachable. The omission route stays open by declaration and is filed as GH #414. Shadow Genome: SG-036 self-application failure recorded as a recurrence.
+
+**GATE LADDER**: intent-lock VERIFIED (re-captured post-amendment); skill-admission ADMITTED; gate-skill-matrix 32 skills / 156 handoffs / 0 broken; secret-scan clean; procedural-fidelity 1 WARN (doc-surface-uncovered; the check reads the implement gate's files_touched, which legitimately excludes SYSTEM_STATE because the seal step regenerates it -- disclosed, not suppressed); dod-check 1 WARN (plan carries no Definition of Done section; WARN-only, disclosed rather than added post-audit); merge-velocity healthy; skill-size-budget 3 WARN / 0 EXCEEDED; data-api-acl disclosed-SKIP, no SQL migrations (event `1849e4a014788cbedf2540bf242a1e0979e085af2dc7b5fa19a4d23b493e387c`); instruction-hygiene disclosed-SKIP, module absent (event `74e8f462ef58e75f6081214c49f4869dfb92f8e41031fae8e79c17cba278fb50`); doc-integrity strict PASS; governance-index advanced + enforced clean; feature-index 27/27 verified, no regression against snapshot 2026-08-31T0609-4ead35; surface-lint disclosed-SKIP (no Surface column); gate-chain completeness OK for 175 sessions; publication-boundary 0 findings; variant drift clean at 406 files; ruff clean. Full suite 3164 passed / 6 skipped / 4 deselected.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-02T1713-da52da",
+  "plan_path": "docs/plan-qor-phase248-plan-terms-key-canonicalization.md",
+  "plan_hash": "de36eeec6764c0eecc939c90764891138a16c572288f9e9b4653a9f3f63d0ded",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "6e50f832ea15efba9c5cef7a1ca074131ead90e9a54eef377a99715347601520",
+  "head_commit": "b8df788148a4a1fecdf54a95d2287ee6d305e86b",
+  "captured_ts": "2026-09-02T18:39:18.016194Z"
+}

@@ -87,7 +87,15 @@ def _gate_artifacts(repo_root: Path, sid: str) -> dict:
     artifacts = []
     for ph in declared:
         path = sess / f"{ph}.json"
-        errs = vga.validate_one(ph, path) if path.exists() else ["missing"]
+        # Phase 248 (GH #394), tribunal ground V-3: the bundled session is
+        # operator-selected and may be an already-sealed phase. An evidence
+        # packet attests the gate chain was intact when sealed, so a
+        # prohibition added later must not mark a valid artifact invalid.
+        errs = (
+            vga.validate_one(ph, path, sealed_history=True)
+            if path.exists()
+            else ["missing"]
+        )
         artifacts.append({"phase": ph, "path": str(path),
                           "valid": path.exists() and not errs, "errors": errs[:1]})
     return {"found": any(a["valid"] for a in artifacts), "declared_set": declared,

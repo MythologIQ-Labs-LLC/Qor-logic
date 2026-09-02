@@ -87,7 +87,15 @@ def check(
             # GAP-GOV-14: existence alone is not enough -- an empty / malformed /
             # schema-invalid gate file must not satisfy completeness. validate_one
             # reports not-found, invalid-JSON, and schema violations alike.
-            errs = validate_gate_artifact.validate_one(required, artifact)
+            #
+            # Phase 248 (GH #394): every entry this checker walks is already
+            # sealed, so it is judged as sealed history -- prohibitions added
+            # after an artifact was written do not retroactively invalidate it.
+            # `required`/`type`/`properties` still apply, so GAP-GOV-14 above is
+            # unchanged; only the schema's top-level `not` clause is dropped.
+            errs = validate_gate_artifact.validate_one(
+                required, artifact, sealed_history=True
+            )
             if errs:
                 missing.append((phase_num, f"{sid}/{required}.json: {errs[0]}"))
     return CompletenessResult(

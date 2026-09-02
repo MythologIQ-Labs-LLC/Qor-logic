@@ -1,84 +1,84 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-09-01T12:27:03Z",
+  "generated_ts": "2026-09-02T18:41:02Z",
   "files": [
     {
       "id": "agent-agent-architect.md",
       "source_path": "workflows/agent-agent-architect.md",
       "install_rel_path": "workflows/agent-agent-architect.md",
-      "sha256": "a50e54daa65163716dd2668b2751e86af18443543d4913c5b23ffa49492f9558"
+      "sha256": "c2249a5e68c402aa693ca2667d067c3e7457c9e48e82f9198f6a3a63a5dd72a5"
     },
     {
       "id": "agent-build-doctor.md",
       "source_path": "workflows/agent-build-doctor.md",
       "install_rel_path": "workflows/agent-build-doctor.md",
-      "sha256": "a98cf941e97267e98d8fa074073388b407f7d88a8d4ba8b2cb913ed338eca45b"
+      "sha256": "bf0b28f729bcdc76830efa4a10f241cd547bce75ba6af96944e4eb9aba7a6e7c"
     },
     {
       "id": "agent-documentation-scribe.md",
       "source_path": "workflows/agent-documentation-scribe.md",
       "install_rel_path": "workflows/agent-documentation-scribe.md",
-      "sha256": "10724584dabfef37fe1a8499f9068a1abaf8e25e7bbeefe11678fb8f984d7323"
+      "sha256": "8240c60b16c3e5853495e997b1a199358d991b6fe9379cbeafce72c471e3349e"
     },
     {
       "id": "agent-learning-capture.md",
       "source_path": "workflows/agent-learning-capture.md",
       "install_rel_path": "workflows/agent-learning-capture.md",
-      "sha256": "cd99096e1dda302c02b79459dac033f579b89935208762161efce2a52395537e"
+      "sha256": "a2b3367fce94cdec68ea830baecf67d5a92cd9df622a77b61705ead3053de245"
     },
     {
       "id": "agent-project-planner.md",
       "source_path": "workflows/agent-project-planner.md",
       "install_rel_path": "workflows/agent-project-planner.md",
-      "sha256": "9427c4e2e9e16a2695d08322d960c1370f147c01c96b5b0bd18bce3221346cf0"
+      "sha256": "d3d7e45a4e16056c71c537c761fb277866ac53863d38f339c111a4991a331162"
     },
     {
       "id": "agent-qor-fixer.md",
       "source_path": "workflows/agent-qor-fixer.md",
       "install_rel_path": "workflows/agent-qor-fixer.md",
-      "sha256": "33e65f5a7bd25c92ccbd961dfe98deb767e029a1017a06ebac5a58126158b108"
+      "sha256": "86256eaba9c153d9512c187aa4b71c27e4f182becd34d48c8bc520493d62a4bb"
     },
     {
       "id": "agent-qor-governor.md",
       "source_path": "workflows/agent-qor-governor.md",
       "install_rel_path": "workflows/agent-qor-governor.md",
-      "sha256": "46681057448f8dcc54435719a71cd2ded14aeced5e5809b43ae3093822509fb9"
+      "sha256": "d196b8d1c29fe92224f3315db566e252d1aceb92eb19dc7b936f29a452a9206d"
     },
     {
       "id": "agent-qor-judge.md",
       "source_path": "workflows/agent-qor-judge.md",
       "install_rel_path": "workflows/agent-qor-judge.md",
-      "sha256": "0ed3c79d4812fbbdeef02000721c66ea8bf00e09ecbeb84d9bafc4fd7bde61ce"
+      "sha256": "af9915ab3580b7fbb1fa34436940a6058554fbc3b8ad332c9638493c926cb9ef"
     },
     {
       "id": "agent-qor-specialist.md",
       "source_path": "workflows/agent-qor-specialist.md",
       "install_rel_path": "workflows/agent-qor-specialist.md",
-      "sha256": "7916c062d148c66c55e16f879fa7c92af22059a703b18f3e79860f3cde7cfe7c"
+      "sha256": "79de4279661ee5a0c54358f96f4a4895455af2a390e6964f0cc7077d458a3e6b"
     },
     {
       "id": "agent-qor-strategist.md",
       "source_path": "workflows/agent-qor-strategist.md",
       "install_rel_path": "workflows/agent-qor-strategist.md",
-      "sha256": "48bfd1b72aef58040e124ab2385b5b9cd43da1db7fa8f8f5de3f16c07fcc6e60"
+      "sha256": "6fa306bd484be6a57fae3c8d43f0c613794ddf21d0a04bb29d806106ff5b882c"
     },
     {
       "id": "agent-qor-technical-writer.md",
       "source_path": "workflows/agent-qor-technical-writer.md",
       "install_rel_path": "workflows/agent-qor-technical-writer.md",
-      "sha256": "4351367e985eecac40c92510ed2e8bf55a566b5b196875a9d2510128b9792a3d"
+      "sha256": "bc3e697ba6c084bafc8588b3d7c6804606ec4a63143b578ba05102902c23aaa2"
     },
     {
       "id": "agent-qor-ux-evaluator.md",
       "source_path": "workflows/agent-qor-ux-evaluator.md",
       "install_rel_path": "workflows/agent-qor-ux-evaluator.md",
-      "sha256": "7f94df342c55bd5f7828eaf397b615609b1533815a7361fe6b4bfb70c761a011"
+      "sha256": "e7f32dcd64f4ab7b41330bbb143491f5cc65dfab1ac7562ef000e659de39a82b"
     },
     {
       "id": "agent-system-architect.md",
       "source_path": "workflows/agent-system-architect.md",
       "install_rel_path": "workflows/agent-system-architect.md",
-      "sha256": "9da6df8fae696c616bc89710bef996bd30950daef60fce6c1cc2c31f8bd0bb64"
+      "sha256": "72161aba2550a35ca16c06f2ce27795f68c07376502840fe4615f2e5db724f00"
     },
     {
       "id": "command-log-decision.md",

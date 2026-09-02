@@ -1,0 +1,27 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-02T1713-da52da",
+  "ts": "2026-09-02T18:11:26Z",
+  "plan_path": "docs/plan-qor-phase248-plan-terms-key-canonicalization.md",
+  "phases": [
+    "schema: reject the retired terms_introduced alias",
+    "rename the alias to canonical terms across skill + doctrine surfaces",
+    "recompile host variants"
+  ],
+  "ci_commands": [
+    "python -m pytest -q",
+    "python -m ruff check qor/ tests/",
+    "python -m qor.scripts.check_variant_drift"
+  ],
+  "doc_tier": "standard",
+  "terms": [],
+  "change_class": "hotfix",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.163.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-02T18:11:26Z"
+  }
+}
