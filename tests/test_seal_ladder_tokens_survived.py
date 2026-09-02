@@ -61,8 +61,23 @@ def _destination_text() -> str:
     ))
 
 
+# Phase 250 (GH #406): tokens deliberately retired since BASELINE_REV, each with
+# the reason it no longer belongs. A retirement must be declared here rather than
+# by advancing BASELINE_REV, which would silently absolve every other drop in the
+# same range. Exact-match only: a near-miss still fails.
+INTENTIONALLY_RETIRED = {
+    "qor-logic scripts skill_size_budget_lint --skills-root qor/skills || true":
+        "GH #406: the hardcoded skills root made the layout config channel inert, "
+        "so the flag is dropped and skill_size_budget_lint resolves "
+        "flag > .qorlogic/config.json > qor/skills itself.",
+}
+
+
 def _missing(destination: str) -> list[str]:
-    return sorted(t for t in sg.extract_ladder_tokens(_baseline_text()) if t not in destination)
+    return sorted(
+        t for t in sg.extract_ladder_tokens(_baseline_text())
+        if t not in destination and t not in INTENTIONALLY_RETIRED
+    )
 
 
 def test_every_baseline_token_survives_the_rewrite():
@@ -88,3 +103,26 @@ def test_the_survival_check_can_fail():
 
 def test_the_baseline_token_set_is_not_empty():
     assert len(sg.extract_ladder_tokens(_baseline_text())) > 40
+
+
+def test_retired_tokens_carry_a_reason():
+    """The allowlist is evidence, not a mute button.
+
+    An empty or unexplained entry would let any future drop be waved through by
+    adding a bare string, which is the closure-on-prose shape this repository
+    rejects elsewhere.
+    """
+    for token, reason in INTENTIONALLY_RETIRED.items():
+        assert token.strip(), "a retired token must be a real command string"
+        assert len(reason) > 40, f"retirement of {token!r} needs a substantive reason"
+        assert "GH #" in reason, f"retirement of {token!r} must cite its issue"
+
+
+def test_retired_tokens_are_actually_absent():
+    """A token on the allowlist that is still present means the list is stale."""
+    destination = _destination_text()
+    still_present = [t for t in INTENTIONALLY_RETIRED if t in destination]
+    assert not still_present, (
+        f"allowlisted token(s) still present; remove them from "
+        f"INTENTIONALLY_RETIRED: {still_present}"
+    )

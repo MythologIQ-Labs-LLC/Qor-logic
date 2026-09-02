@@ -14,8 +14,8 @@ from typing import Iterable
 
 import yaml
 
-from qor.scripts import governance_paths
-from qor.scripts import shadow_process
+from qor.scripts import governance_paths, shadow_process
+from qor.scripts.layout_paths import resolve_glossary_path, tier_requirements  # noqa: F401
 
 _TIERS = ("minimal", "standard", "system", "legacy")
 
@@ -56,7 +56,7 @@ def check_topology(tier: str, repo_root: str) -> None:
             f"Unknown doc_tier: {tier!r}. Expected one of {_TIERS}."
         )
     root = Path(repo_root)
-    for rel_path, label in _TIER_REQUIREMENTS[tier]:
+    for rel_path, label in tier_requirements(repo_root)[tier]:
         if rel_path == "docs/architecture.md":
             # GH #282: the architecture slot is the repo's registered authority
             # (which may be docs/ARCHITECTURE_PLAN.md), not a hardcoded filename.
@@ -173,7 +173,7 @@ def render_drift_section(plan: dict, repo_root: str) -> str:
         check_topology(tier, repo_root)
     except ValueError as exc:
         issues.append(f"- Topology: {exc}")
-    glossary_path = str(Path(repo_root) / "qor" / "references" / "glossary.md")
+    glossary_path = resolve_glossary_path(repo_root)
     declared = [t["term"] for t in plan.get("terms", [])]
     try:
         check_glossary(glossary_path, declared_terms=declared, repo_root=repo_root)
@@ -209,7 +209,7 @@ def run_all_checks_from_plan(plan: dict, repo_root: str, strict: bool = False) -
     if tier == "legacy":
         return
     check_topology(tier, repo_root)
-    glossary_path = str(Path(repo_root) / "qor" / "references" / "glossary.md")
+    glossary_path = resolve_glossary_path(repo_root)
     declared = [t["term"] for t in plan.get("terms", [])]
     check_glossary(glossary_path, declared_terms=declared, repo_root=repo_root)
     plan_slug = plan.get("plan_slug", "")

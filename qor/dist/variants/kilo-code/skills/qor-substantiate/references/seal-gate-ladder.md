@@ -73,7 +73,7 @@ in 6 weeks — monotonic, never contracted, with no consolidation counterweight.
 CLI exits 1 when any EXCEEDED finding (>= 40 KB) is present, which is what let
 V2 convert the gate to a hard ABORT. **V2 (Phase 234; GH #320)**: the ladder row
 dropped the true-wrap -- the superseded V1 command was
-`qor-logic scripts skill_size_budget_lint --skills-root qor/skills || true` --
+`qor-logic scripts skill_size_budget_lint || true` --
 and the row's policy reads ABORT. WARN-band findings remain advisory; only an
 EXCEEDED finding (the CLI's sole exit-1 condition) now aborts the seal. No
 override path: a size breach is self-inflicted by the sealing phase's own edits,

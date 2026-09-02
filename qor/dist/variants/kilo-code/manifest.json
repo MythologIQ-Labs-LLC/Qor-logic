@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-09-02T19:42:51Z",
+  "generated_ts": "2026-09-02T20:24:31Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -144,7 +144,7 @@
       "id": "qor-bootstrap",
       "source_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
       "install_rel_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
-      "sha256": "b8f8754a9ca15a301eeedaecc15ecc0393640bf5bf9a7de039e2501546044a1d"
+      "sha256": "f54b13b9e55b2be99a390304c5e7d352218c74858d65576abf3656c5e1907ef9"
     },
     {
       "id": "qor-bootstrap",
@@ -438,13 +438,13 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
       "install_rel_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
-      "sha256": "934732776b2167e393b3ba92aa16d5b845a833da3b7340ee3b88b2029af89d8a"
+      "sha256": "8e67e764252683e19387e1b71a8eef4ad66d564cb7697141571a25107d31b0dd"
     },
     {
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/SKILL.md",
       "install_rel_path": "skills/qor-substantiate/SKILL.md",
-      "sha256": "5686ffde4d6bca8f46605fedec8180885089735169518cfe4eb56123a3b73e14"
+      "sha256": "18fceb645e8932df037694f3d31aaaec846a0b413db3580792378ca61ba71eb9"
     },
     {
       "id": "qor-tone",

@@ -24,6 +24,63 @@ WARN_BYTES = 25 * 1024
 EXCEEDED_BYTES = 40 * 1024
 
 
+
+class LayoutUndeclaredError(RuntimeError):
+    """A layout-bound path does not resolve and the operator declared nothing.
+
+    Phase 250 (GH #406). A silent pass on an unresolvable path is the
+    vacuous-gate shape; declaring the key absent turns the skip into evidence.
+    """
+
+
+def resolve_skills_root(args, *, require: bool = False) -> Path | None:
+    """Resolve the skills root as flag > `.qorlogic/config.json` > `qor/skills`.
+
+    ``require=True`` applies the typed-skip contract: an unresolvable root whose
+    key the operator explicitly declared absent returns ``None`` (a typed skip);
+    an unresolvable root with no declaration at all raises
+    ``LayoutUndeclaredError`` naming the key the operator must declare.
+    """
+    from qor.scripts import badge_layout
+    from qor.scripts.qorlogic_config import load_section
+
+    repo_root = Path(getattr(args, "repo_root", None) or ".")
+    flag = getattr(args, "skills_root", None)
+    if flag is not None:
+        return repo_root / flag
+    section = load_section(repo_root, "layout")
+    declared_absent = "skills_root" in section and section["skills_root"] is None
+    resolved = repo_root / badge_layout.layout_from_args(args).skills_root
+    if resolved.is_dir() or not require:
+        return resolved
+    if declared_absent:
+        return None
+    raise LayoutUndeclaredError(
+        "skills_root does not resolve and is not declared in .qorlogic/config.json; "
+        "declare layout.skills_root, or set it to null to record a typed skip"
+    )
+
+
+def layout_skip_event(layout_key: str, session: str) -> dict:
+    """A groupable typed skip naming the layout key the gate needed.
+
+    Phase 250 (GH #406): the shadow genome previously accumulated free-text
+    reasons nobody could group.
+    """
+    from qor.scripts import shadow_process
+
+    return {
+        "ts": shadow_process.now_iso(),
+        "skill": "qor-substantiate",
+        "session_id": session,
+        "event_type": "gate_skipped_prerequisite_absent",
+        "severity": 1,
+        "details": {"gate": "skill_size_budget_lint", "layout_key": layout_key},
+        "addressed": False, "issue_url": None, "addressed_ts": None,
+        "addressed_reason": None, "source_entry_id": None,
+    }
+
+
 @dataclass(frozen=True)
 class SizeFinding:
     skill_path: str
@@ -58,14 +115,24 @@ def check_skills(skills_root: Path) -> list[SizeFinding]:
     return findings
 
 
+def scan(skills_root: Path | None) -> list[SizeFinding]:
+    """Findings for one resolved skills root; empty for a typed-skip (None)."""
+    if skills_root is None:
+        return []
+    return check_skills(skills_root)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="qor.scripts.skill_size_budget_lint")
     parser.add_argument(
-        "--skills-root", type=Path, default=Path("qor/skills"),
+        "--skills-root", type=Path, default=None,
         help="root directory holding SKILL.md files (default qor/skills)",
     )
+    parser.add_argument("--repo-root", type=Path, default=Path("."))
     args = parser.parse_args(argv)
-    findings = check_skills(args.skills_root)
+    # Phase 250 (GH #406): resolve flag > config > default rather than reading a
+    # constant, so a consumer workspace's declared layout is honored.
+    findings = scan(resolve_skills_root(args))
     if not findings:
         return 0
     print(f"skill_size_budget_lint: {len(findings)} finding(s)")

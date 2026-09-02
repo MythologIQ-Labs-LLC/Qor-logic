@@ -29,6 +29,18 @@ _STRICT_EXCLUDE_SUFFIXES = (".py", ".json", ".toml", ".cedar")
 _STRICT_EXCLUDE_DIRS = ("vendor", "fixtures", "dist")
 
 
+
+def resolve_glossary_path(repo_root: str | Path) -> str:
+    """Config-resolved glossary path (Phase 250; GH #406).
+
+    Delegates to `layout_paths` so both tiers read one resolver rather than two
+    literals that can drift apart.
+    """
+    from qor.scripts.layout_paths import resolve_glossary_path as _r
+
+    return _r(repo_root)
+
+
 def _iter_scan_files(repo_root: str):
     root = Path(repo_root)
     for rel in _STRICT_SCAN_ROOTS:
@@ -74,7 +86,11 @@ def check_term_drift(
     entries = parse_glossary(glossary_path)
     findings: list[str] = []
     repo = Path(repo_root)
-    glossary_rel = Path(glossary_path).relative_to(repo).as_posix() if Path(glossary_path).is_absolute() else "qor/references/glossary.md"
+    glossary_rel = (
+        Path(glossary_path).relative_to(repo).as_posix()
+        if Path(glossary_path).is_absolute()
+        else Path(resolve_glossary_path(repo_root)).relative_to(repo).as_posix()
+    )
     scanned = _scan_corpus(repo_root)
     for entry in entries:
         pattern = re.compile(r"\b" + re.escape(entry.term) + r"\b")
@@ -196,7 +212,11 @@ def check_cross_doc_conflicts(
     entries = parse_glossary(glossary_path)
     findings: list[str] = []
     repo = Path(repo_root)
-    glossary_rel = Path(glossary_path).relative_to(repo).as_posix() if Path(glossary_path).is_absolute() else "qor/references/glossary.md"
+    glossary_rel = (
+        Path(glossary_path).relative_to(repo).as_posix()
+        if Path(glossary_path).is_absolute()
+        else Path(resolve_glossary_path(repo_root)).relative_to(repo).as_posix()
+    )
     scanned = _scan_corpus(repo_root)
     for entry in entries:
         pattern = re.compile(

@@ -10,6 +10,14 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.164.0] - 2026-09-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 250 (feature; layout configurability)**: closes GH #406. Gates that resolved truth from paths existing only in the Qor-logic repository now read them from the `layout` section of `.qorlogic/config.json`, through the same per-key `flag > config > default` precedence `badge_layout` already used. `BadgeLayout` gains `glossary_path`; `qor/scripts/layout_paths.py` resolves it for `doc_integrity` and `doc_integrity_strict`, so a workspace keeping its glossary at, say, `docs/00-glossary.md` can reach the strict tier at all. `skill_size_budget_lint` resolves its skills root the same way -- and the hardcoded `--skills-root qor/skills` is dropped from the seal ladder, without which the config channel would have stayed inert at the only caller that matters. A workspace declaring nothing behaves exactly as before.
+- **Typed gate skips**: `gate_skipped_prerequisite_absent` now carries `details.layout_key`, so the shadow genome accumulates groupable events rather than free-text reasons. A layout-bound path that does not resolve is a hard failure naming the key the operator must declare; declaring the key absent converts it into a typed skip. A silent pass on an unresolvable path is the vacuous-gate shape this repository has now closed five times; requiring a declaration is what makes the skip evidence rather than absence.
+
 ## [0.163.3] - 2026-09-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
