@@ -19759,5 +19759,41 @@ Next: /qor-substantiate.
 
 ---
 
+### Entry #670: RESEARCH BRIEF -- open repository issues (#394, #404-#411)
+
+**Timestamp**: 2026-09-02T18:40:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Session**: 2026-09-02T1840-a1c7d2
+**Brief**: docs/research-brief-open-repository-issues-2026-09-02.md
+
+**Content Hash**: `2b826d4f1a84b3cb44ceb8f812b1f5cf6d1398d539d83b5052ba186d81fb0815`
+**Previous Hash**: `8d62173d268284db4bd18e608d62bf6c325103520a165e3b877b266fb85bbd9a`
+**Chain Hash (Merkle seal)**: `cb3d02b418d82d826b4e60bf65ab82e792ed995e90eb68c6264fc45431cb7d34`
+
+**Decision**: All nine open issues verified line-by-line against current `main`; no claim accepted on report text alone. #394 is superseded by open PR #403 (diff complete, substantive CI green, `lint` red on the missing ledger/seal citations the branch discloses) and needs the ceremony, not new work. Every remaining issue names a live defect, but three (#404, #405, #407) cite root causes already closed by GH #282 and GH #365 after the reporting version, so the defect has relocated in each: #404's dialect disagreement is resolved but the bootstrap template's inline unbackticked `Previous Hash` still fails all three recognized value forms; #405's row-drop is resolved by the `status` alias but the seed template's six other columns still misalign against the canonical parser, turning total row loss into silent citation loss; #407's literal regex is gone but `/qor-bootstrap` seeds no `GOVERNANCE_INDEX.md` and `/qor-plan` registers no row, so a consumer plan is still unresolvable. #406, #408 confirmed live as filed. #409, #410, #411 split across the repository boundary -- the `/qor-plan` Step 0.5 precondition, the `satisfied-by-fallback` platform status, the `deferred-upstream` closure state and per-change flips are all local and actionable; the enterprise-skill halves are not in this repository and route to the operator. One finding beyond the reports: `ledger_dialect.MARKUP_COMPAT_BOUNDARY = 123` is an absolute entry number from this repository's own history, so every unparseable entry in any younger workspace degrades to a silent skip and exit 0 -- the amplifier behind the reported "7 of 8 skipped, exit 0", and the same portability defect as #406's hardcoded paths. Six DRIFT rows recorded against the Phase 241 portable-engine-boundary claim. Primary recommendation: one consumer-portability phase covering #406/#404/#405/#407 rather than four point fixes, with the typed-skip contract split out as its own governed phase because it changes seal-ladder failure semantics. Shadow Genome: stale-root-cause family (first occurrence) and layout-bound-gate family, history variant.
+
+---
+
+### Entry #671: AMENDMENT -- research brief revised (toolkit-boundary addendum + #407 correction)
+
+**Timestamp**: 2026-09-02T19:05:00Z
+**Phase**: RESEARCH (Entry #670 amendment)
+**Author**: Analyst
+**Risk Grade**: L1
+**Session**: 2026-09-02T1840-a1c7d2
+**Amends**: Entry #670
+**Artifact**: docs/research-brief-open-repository-issues-2026-09-02.md
+**Superseded Content Hash**: `2b826d4f1a84b3cb44ceb8f812b1f5cf6d1398d539d83b5052ba186d81fb0815`
+
+**Content Hash**: `b6766e3c022e9f8460dc4d248822bffbe96f7711e74f64d36a7993eba5c28336`
+**Previous Hash**: `cb3d02b418d82d826b4e60bf65ab82e792ed995e90eb68c6264fc45431cb7d34`
+**Chain Hash (Merkle seal)**: `e052c53b82f1418b94e02cd3db247e55775432de0a22ecae33687d20601ca196`
+
+**Decision**: The brief committed by entry #670 is revised in-session, so this amendment records the superseded hash rather than letting entry #670's commitment go stale -- the exact drift GH #408 describes, disclosed here by the doctrine that issue recommends and that this repository practices but has not codified. Two changes. First, a correction: entry #670 recorded that `/qor-bootstrap` seeds no `docs/GOVERNANCE_INDEX.md`. That was checked against the skill text, which indeed never mentions the index, and not against `qor/seed.py:25-39` `SEED_TARGETS`, which does seed it and pins it scaffold-owned via `scaffold_file_targets()`. The #407 residual is therefore narrower than recorded: the index exists in a seeded workspace, and the load-bearing gap is that `/qor-plan` writes no registration row for the plan it authors, leaving that plan unresolvable by `governance_paths.resolve_governance_plan_path`. Second, an addendum answering the operator's toolkit-boundary question, carrying one new defect found in the course of it: `host_capability._read_installed_version` (`host_capability.py:78-83`) reads the consuming repository's `pyproject.toml` and extracts the first `version = "X.Y.Z"` line (`host_capability.py:21`), which in any consumer repository is that repository's own product version, then compares it against a Qor-logic version and emits `qor_logic_stale_install` (severity 1) on the mismatch. The check is correct only where the first version line happens to be Qor-logic's -- this repository -- and elsewhere drifts permanently while contributing standing severity, joining GH #411 as an uninformative threshold contributor. It is the layout-bound-gate family in its sharpest form: the toolkit reading the consumer's product identity as its own, and a mechanical breach of precisely the boundary a consumer workspace's agent had to assert by hand. Recommendation 8 (P1) added: one governed phase for the inbound toolkit boundary -- doctrine as the twin of `doctrine-publication-boundary.md`, a seeded declaration in the already-scaffold-owned `GOVERNANCE_INDEX.md`, a `toolkit_boundary_lint` enforcer mirroring `publication_boundary_lint`'s structural pattern, and the `host_capability` correction in the same phase, since a control asserting the toolkit is not a dependency must not ship alongside code that reads the consumer's version as the toolkit's.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)
