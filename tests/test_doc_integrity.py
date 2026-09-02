@@ -183,12 +183,18 @@ def test_run_all_checks_from_plan_raises_on_unregistered_term(tmp_path):
         doc_integrity.run_all_checks_from_plan(plan, repo_root=str(tmp_path))
 
 
-def test_run_all_checks_from_plan_ignores_terms_introduced_alias(tmp_path):
-    """A plan payload that (incorrectly) carries the legacy `terms_introduced`
-    key instead of `terms` must not be silently treated as declaring zero
-    terms passing cleanly for the wrong reason -- it should behave exactly as
-    if no terms were declared (checked at the schema boundary separately),
-    not as a way to smuggle an unregistered term past the glossary check."""
+def test_run_all_checks_from_plan_rejects_a_terms_introduced_only_plan(tmp_path):
+    """Phase 251 (GH #414) supersedes this test's original premise.
+
+    Phase 248 (GH #394) wrote it to document that a plan carrying only the
+    retired `terms_introduced` alias evaluates to zero declared terms at this
+    layer, with the real protection living at the schema boundary. GH #414
+    closed the remaining route: a standard-tier plan that declares no canonical
+    `terms` key now fails here regardless of what else it carries.
+
+    The alias case turns out to be a subset of the omission case, so this now
+    asserts the stronger outcome rather than the documented gap.
+    """
     (tmp_path / "README.md").write_text("# x\n", encoding="utf-8")
     (tmp_path / "qor" / "references").mkdir(parents=True)
     _write_glossary(tmp_path / "qor" / "references" / "glossary.md", [])
@@ -196,11 +202,8 @@ def test_run_all_checks_from_plan_ignores_terms_introduced_alias(tmp_path):
         "doc_tier": "standard",
         "terms_introduced": [{"term": "Unregistered", "home": "README.md"}],
     }
-    # No declared `terms` -> nothing to check against the glossary -> passes.
-    # This is the behavior the schema-level rejection (GH #394) exists to
-    # prevent from ever reaching this function in the first place.
-    doc_integrity.run_all_checks_from_plan(plan, repo_root=str(tmp_path))
-
+    with pytest.raises(ValueError, match="terms"):
+        doc_integrity.run_all_checks_from_plan(plan, repo_root=str(tmp_path))
 
 def test_check_topology_system_passes_with_registered_architecture_plan(tmp_path):
     """No docs/architecture.md; docs/ARCHITECTURE_PLAN.md is the registered authority."""
@@ -212,3 +215,76 @@ def test_check_topology_system_fails_when_architecture_authority_unregistered(tm
     _system_repo(tmp_path, ["docs/README.md"])  # ARCHITECTURE_PLAN.md present but not registered
     with pytest.raises(ValueError, match="architecture"):
         doc_integrity.check_topology("system", str(tmp_path))
+
+
+# --- Phase 251 (GH #414): the omission route into a vacuous glossary check ---
+#
+# GH #394 closed the alias route (the schema rejects `terms_introduced`). The
+# omission route stayed open: a plan declaring NEITHER key evaluated to zero
+# declared terms, so the gate inspected nothing and reported success. Enforced
+# here rather than in plan.schema.json -- an `if/then` on doc_tier would
+# retroactively invalidate 109 already-sealed plan artifacts, since Phase 248's
+# sealed_history exemption strips only the top-level `not` clause.
+
+
+def _consumer(tmp_path):
+    (tmp_path / "README.md").write_text("# r\n", encoding="utf-8")
+    g = tmp_path / "qor" / "references"
+    g.mkdir(parents=True, exist_ok=True)
+    (g / "glossary.md").write_text("# Glossary\n", encoding="utf-8")
+    return tmp_path
+
+
+def test_standard_tier_requires_a_terms_declaration(tmp_path):
+    """`declared empty` and `never declared` must stop being the same thing."""
+    root = _consumer(tmp_path)
+    plan = {"doc_tier": "standard"}  # no `terms` key at all
+
+    with pytest.raises(ValueError, match="terms"):
+        doc_integrity.run_all_checks_from_plan(plan, repo_root=str(root))
+
+
+def test_standard_tier_accepts_an_explicit_empty_terms(tmp_path):
+    """Declaring no vocabulary stays possible, and stays a claim the author made."""
+    root = _consumer(tmp_path)
+
+    doc_integrity.run_all_checks_from_plan(
+        {"doc_tier": "standard", "terms": []}, repo_root=str(root)
+    )
+
+
+def test_minimal_tier_does_not_require_terms(tmp_path):
+    """The exemption holds, so this does not become the unconditional
+    requirement GH #414 explicitly rejects."""
+    root = _consumer(tmp_path)
+
+    doc_integrity.run_all_checks_from_plan({"doc_tier": "minimal"}, repo_root=str(root))
+
+
+def test_sealed_plan_artifacts_still_validate_against_the_schema():
+    """Permanent guard against this rule migrating into plan.schema.json.
+
+    109 sealed plan artifacts carry doc_tier standard|system with no `terms`
+    key. A schema `if/then` would abort every future seal via
+    gate_chain_completeness. Passes today; it exists to fail loudly if anyone
+    moves the rule.
+    """
+    from qor.reliability import gate_chain_completeness as gcc
+    from qor.scripts import validate_gate_artifact as vga
+
+    # Scoped to the sessions gate_chain_completeness actually inspects -- the
+    # ones a SESSION SEAL entry names -- rather than every file under .qor/gates,
+    # which also holds test fixtures that were never sealed.
+    repo = Path(__file__).resolve().parents[1]
+    ledger = (repo / "docs" / "META_LEDGER.md").read_text(encoding="utf-8")
+    sessions = set(gcc._extract_seal_sessions(ledger, 52).values())
+
+    checked = 0
+    for sid in sorted(sessions):
+        artifact = repo / ".qor" / "gates" / sid / "plan.json"
+        if not artifact.is_file():
+            continue
+        errs = vga.validate_one("plan", artifact, sealed_history=True)
+        assert errs == [], f"sealed plan artifact no longer validates: {sid}: {errs[:1]}"
+        checked += 1
+    assert checked > 50, f"expected the sealed corpus, inspected only {checked}"

@@ -16,6 +16,25 @@ import argparse
 from pathlib import Path
 
 
+_TIERS = ("minimal", "standard", "system", "legacy")
+
+_TIER_REQUIREMENTS: dict[str, tuple[tuple[str, str], ...]] = {
+    "minimal": (("README.md", "README.md"),),
+    "standard": (
+        ("README.md", "README.md"),
+        ("qor/references/glossary.md", "glossary"),
+    ),
+    "system": (
+        ("README.md", "README.md"),
+        ("qor/references/glossary.md", "glossary"),
+        ("docs/architecture.md", "architecture.md"),
+        ("docs/lifecycle.md", "lifecycle.md"),
+        ("docs/operations.md", "operations.md"),
+        ("docs/policies.md", "policies.md"),
+    ),
+    "legacy": (),
+}
+
 def _resolved_layout(repo_root: str | Path):
     from qor.scripts import badge_layout
 
@@ -37,8 +56,6 @@ def tier_requirements(
     repo_root: str | Path,
 ) -> dict[str, tuple[tuple[str, str], ...]]:
     """Tier -> required docs, with the glossary row resolved from the layout."""
-    from qor.scripts.doc_integrity import _TIER_REQUIREMENTS
-
     glossary_rel = _resolved_layout(repo_root).glossary_path.as_posix()
     return {
         tier: tuple(

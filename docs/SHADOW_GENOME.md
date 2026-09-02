@@ -2396,4 +2396,34 @@ Vacuous-test family, extending SG-035 (doctrine-content test unanchored). Two ne
 
 ---
 
+---
+
+## Entry: Phase 251 -- run the new gate against the phase that builds it
+
+**Date**: 2026-09-03
+**Category**: PROCESS
+**Verdict source**: GATE TRIBUNAL entries #692 (VETO), #695 (PASS); SESSION SEAL for Phase 251
+
+### What Happened
+
+Phase 251 built a seal gate that recomputes ledger-committed content hashes. Running it once against its own phase surfaced three defects that no test had:
+
+1. Its parser read a GATE TRIBUNAL entry's `**Plan**:` citation as a commitment, but that entry's content hash binds the AUDIT REPORT. Left in, it would have produced a false ABORT at every seal following an audit -- which is every seal.
+2. The phase's own amendment (entry #694) recorded the prior entry's *chain* hash where the plan's *content* hash belonged.
+3. Two earlier amendments in this session had written a `Superseded Content Hash` that was never a computed digest.
+
+The unit tests passed throughout. Each defect needed the gate pointed at real history, which the fixtures could not approximate because the fixtures were built from the same misunderstanding as the parser.
+
+### Pattern to Avoid
+
+A gate written from a mental model of the data inherits that model's errors in both the code and the fixtures, so the tests agree with the bug. Before sealing a phase that adds a gate, run the gate against that phase's own artifacts. It is the cheapest available adversarial input: real, current, and authored by someone who cannot see their own blind spot.
+
+Corollary for repairs: when a recorded value was never computed, retract the field rather than substituting a plausible one. A digest that looks right and was invented is worse than an acknowledged gap -- it survives review precisely because it looks right.
+
+### Pattern ID
+
+Self-directed-gate family (first occurrence). Complements the vacuous-test family from Phase 249: there, a test could not fail; here, tests passed while agreeing with the defect. Both are cases where green means "consistent with my assumptions" rather than "correct". Countermeasure shipped: `/qor-substantiate` Step 3 now runs `ledger_commitment` on every phase, so each future phase exercises the gate against fresh real history rather than fixtures.
+
+---
+
 *Shadow integrity: ACTIVE*

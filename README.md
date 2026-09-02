@@ -7,14 +7,14 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-3192%20passing-brightgreen" alt="Tests: 3192 passing">
+  <img src="https://img.shields.io/badge/Tests-3203%20passing-brightgreen" alt="Tests: 3203 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-32-blue" alt="Skills: 32">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-39-blue" alt="Doctrines: 39">
-  <img src="https://img.shields.io/badge/Ledger-689%20entries%20sealed-green" alt="Ledger: 689 entries sealed">
+  <img src="https://img.shields.io/badge/Doctrines-40-blue" alt="Doctrines: 40">
+  <img src="https://img.shields.io/badge/Ledger-696%20entries%20sealed-green" alt="Ledger: 696 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -386,6 +386,7 @@ python qor/scripts/check_variant_drift.py                  # SSoT vs dist consis
 | [`docs/RESEARCH_BRIEF.md`](docs/RESEARCH_BRIEF.md) | Phase 28 recon: documentation-integrity gap audit (18 gaps identified, all closed by Phase 31) |
 | [`docs/security-audit-2026-04-16.md`](docs/security-audit-2026-04-16.md) | OWASP Top 10 + stability audit |
 | [`qor/references/doctrine-nist-ssdf-alignment.md`](qor/references/doctrine-nist-ssdf-alignment.md) | NIST SP 800-218A lifecycle mapping |
+| [`qor/references/doctrine-ledger-commitment.md`](qor/references/doctrine-ledger-commitment.md) | Ledger content-hash commitments and amendment discipline |
 | [`qor/references/doctrine-shadow-genome-countermeasures.md`](qor/references/doctrine-shadow-genome-countermeasures.md) | Codified failure-pattern countermeasures |
 
 ### Doctrines (complete inventory)
