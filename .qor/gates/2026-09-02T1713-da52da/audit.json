@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-02T1713-da52da",
+  "ts": "2026-09-02T18:30:05Z",
+  "target": "docs/plan-qor-phase248-plan-terms-key-canonicalization.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.163.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-09-02T18:30:05Z"
+  }
+}

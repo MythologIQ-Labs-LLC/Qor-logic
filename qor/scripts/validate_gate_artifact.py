@@ -71,7 +71,27 @@ def load_schema(phase: str) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def validate_one(phase: str, artifact_path: Path) -> list[str]:
+def validate_one(
+    phase: str,
+    artifact_path: Path,
+    *,
+    sealed_history: bool = False,
+) -> list[str]:
+    """Validate one gate artifact against its phase schema.
+
+    ``sealed_history=True`` is for readers of ALREADY-SEALED sessions
+    (``gate_chain_completeness``, ``evidence_bundle``). It drops the schema's
+    top-level ``not`` clause, so a prohibition added after an artifact was
+    sealed cannot retroactively invalidate it (GH #394 / Phase 248). A sealed
+    artifact attests that the protocol was followed at the time, which a later
+    prohibition says nothing about; enforcement of a new prohibition belongs at
+    authoring time, where ``gate_chain.write_gate_artifact`` validates the full
+    current schema and is forward-only by construction.
+
+    The exemption is deliberately narrow: ``required``, ``type``,
+    ``properties`` and ``$ref`` still apply, so GAP-GOV-14 holds -- a missing,
+    empty, malformed, or required-field-missing artifact still fails.
+    """
     if not artifact_path.exists():
         return [f"artifact not found: {artifact_path}"]
     try:
@@ -79,6 +99,8 @@ def validate_one(phase: str, artifact_path: Path) -> list[str]:
     except json.JSONDecodeError as e:
         return [f"invalid JSON: {e}"]
     schema = load_schema(phase)
+    if sealed_history and "not" in schema:
+        schema = {k: v for k, v in schema.items() if k != "not"}
     errors: list[str] = []
     validator = jsonschema.Draft202012Validator(schema, registry=_registry())
     for err in validator.iter_errors(data):

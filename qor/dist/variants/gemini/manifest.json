@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T07:29:46Z",
+  "generated_ts": "2026-09-02T18:41:03Z",
   "files": [
     {
       "id": "agent-agent-architect.toml",
@@ -198,7 +198,7 @@
       "id": "qor-plan.toml",
       "source_path": "commands/qor-plan.toml",
       "install_rel_path": "commands/qor-plan.toml",
-      "sha256": "8f9de4dfff27c92e3e18372cee1401e20c1c4cbd8baa282eae3bacaf0f26168e"
+      "sha256": "7892c9a6eb771787ddeee813ae92bdbaa49be43d50a194cc18bd02f9ddbe97c8"
     },
     {
       "id": "qor-process-review-cycle.toml",

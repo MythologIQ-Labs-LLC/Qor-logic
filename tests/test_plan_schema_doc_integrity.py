@@ -67,3 +67,17 @@ def test_plan_schema_terms_requires_term_and_home():
             _base_payload(terms=[{"term": "Foo"}]),  # missing home
             _schema(),
         )
+
+
+def test_plan_schema_rejects_terms_introduced_alias():
+    """GH #394: the operator-facing dialogue/template must not diverge from the
+    schema's canonical `terms` key. `additionalProperties: true` previously let
+    a `terms_introduced` payload validate while doc_integrity's `plan.get("terms",
+    [])` read nothing, so the glossary check silently checked zero terms."""
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(
+            _base_payload(
+                terms_introduced=[{"term": "Foo", "home": "README.md"}]
+            ),
+            _schema(),
+        )

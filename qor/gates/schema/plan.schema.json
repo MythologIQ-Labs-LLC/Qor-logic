@@ -4,6 +4,10 @@
   "title": "Plan Gate Artifact",
   "type": "object",
   "additionalProperties": true,
+  "not": {
+    "required": ["terms_introduced"],
+    "description": "GH #394: terms_introduced is a retired alias of the canonical `terms` field. additionalProperties: true would otherwise let it validate silently while every terms-reading check (doc_integrity.run_all_checks_from_plan) sees zero declared terms."
+  },
   "required": [
     "phase",
     "ts",

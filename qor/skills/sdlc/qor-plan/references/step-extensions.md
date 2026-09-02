@@ -35,7 +35,7 @@ Before authoring the plan body, elicit doc-integrity declarations per `qor/refer
 
 2. **Default + warnings**:
    - If operator skips the question: default to `standard` and warn.
-   - If operator picks `system` without any terms_introduced: warn ("system tier typically introduces concepts; continue?").
+   - If operator picks `system` without any declared `terms`: warn ("system tier typically introduces concepts; continue?").
 
 3. **Terms** (only for standard/system): "Does this plan introduce any new terms (domain concepts, acronyms, canonical names)? If yes, list them with their canonical home file."
 

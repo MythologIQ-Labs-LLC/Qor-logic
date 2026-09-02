@@ -166,6 +166,42 @@ def _system_repo(tmp_path: Path, registered: list[str], make_arch_plan: bool = T
     )
 
 
+# ---------- GH #394: run_all_checks_from_plan must not vacuously pass ----------
+
+def test_run_all_checks_from_plan_raises_on_unregistered_term(tmp_path):
+    """The full plan-dict entry point (not just check_glossary's explicit
+    declared_terms list) must fail closed when a plan declares a term under
+    the canonical `terms` key that has no glossary entry."""
+    (tmp_path / "README.md").write_text("# x\n", encoding="utf-8")
+    (tmp_path / "qor" / "references").mkdir(parents=True)
+    _write_glossary(tmp_path / "qor" / "references" / "glossary.md", [])
+    plan = {
+        "doc_tier": "standard",
+        "terms": [{"term": "Unregistered", "home": "README.md"}],
+    }
+    with pytest.raises(ValueError, match="Unregistered"):
+        doc_integrity.run_all_checks_from_plan(plan, repo_root=str(tmp_path))
+
+
+def test_run_all_checks_from_plan_ignores_terms_introduced_alias(tmp_path):
+    """A plan payload that (incorrectly) carries the legacy `terms_introduced`
+    key instead of `terms` must not be silently treated as declaring zero
+    terms passing cleanly for the wrong reason -- it should behave exactly as
+    if no terms were declared (checked at the schema boundary separately),
+    not as a way to smuggle an unregistered term past the glossary check."""
+    (tmp_path / "README.md").write_text("# x\n", encoding="utf-8")
+    (tmp_path / "qor" / "references").mkdir(parents=True)
+    _write_glossary(tmp_path / "qor" / "references" / "glossary.md", [])
+    plan = {
+        "doc_tier": "standard",
+        "terms_introduced": [{"term": "Unregistered", "home": "README.md"}],
+    }
+    # No declared `terms` -> nothing to check against the glossary -> passes.
+    # This is the behavior the schema-level rejection (GH #394) exists to
+    # prevent from ever reaching this function in the first place.
+    doc_integrity.run_all_checks_from_plan(plan, repo_root=str(tmp_path))
+
+
 def test_check_topology_system_passes_with_registered_architecture_plan(tmp_path):
     """No docs/architecture.md; docs/ARCHITECTURE_PLAN.md is the registered authority."""
     _system_repo(tmp_path, ["docs/ARCHITECTURE_PLAN.md"])

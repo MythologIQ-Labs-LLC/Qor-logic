@@ -2316,4 +2316,58 @@ Layout-bound-gate family, history variant. Siblings verified in the same pass: h
 
 ---
 
+---
+
+## Entry: Phase 248 -- the plan that arms the glossary gate fails it
+
+**Date**: 2026-09-02
+**Category**: PROCESS
+**Verdict source**: GATE TRIBUNAL entry #672 (VETO, iteration 1)
+
+### What Happened
+
+Phase 248 closes GH #394: plan artifacts carried `terms_introduced` while `doc_integrity` read the canonical `terms`, so the glossary check received an empty list and reported success while inspecting nothing. The fix is correct and complete -- schema rejection of the retired alias, the authoring surfaces renamed, variants recompiled, a red-proved negative probe.
+
+The plan then declared its own `terms` entry as `terms_introduced (retired alias)`, homed at the schema file. That term is registered in no glossary, so `check_glossary` raises on it. Had the declaration reached the gate artifact, the seal would have ABORTed on an unregistered term; had transcription dropped it, the glossary check would have inspected nothing and passed -- the very defect being closed, reproduced by the closing plan. The Judge found it by executing the check against the plan's own declaration rather than reading the declaration as prose.
+
+### Pattern to Avoid
+
+A plan that arms a gate must be run through that gate before it is audited as complete. The author's attention is on the mechanism, and the plan's own declarations read as commentary about the mechanism rather than as inputs to it -- which is exactly what they become at seal time. Every field a plan declares is live data for some check; a field written to explain the fix, rather than to satisfy the check, will still be evaluated by the check.
+
+Related and distinct: the second VETO ground. Closing one route into a vacuous gate (the alias) while leaving another open (omitting the field entirely, since `terms` is not schema-required) and declaring neither the closure nor the residual in `boundaries` is the half-measure-closure shape. An undeclared residual route is worse than a declared one, because the issue closes and the remaining hole loses its record.
+
+### Pattern ID
+
+SG-036 self-application failure, recurrence. First recorded at `docs/SHADOW_GENOME.md:790` against the phase that originally codified `doc_tier` / terms / `boundaries` and did not apply them to itself. That entry described the grace period between codifying a discipline and the discipline becoming load-bearing; this recurrence shows the gap persists two hundred phases later and is not a property of newness. Countermeasure direction: `/qor-plan` should execute `check_glossary` against its own declared terms before writing the plan file, so a self-violating declaration cannot reach audit.
+
+---
+
+---
+
+## Entry: Phase 248 -- a schema tightening retroactively condemned its own sealed history
+
+**Date**: 2026-09-02
+**Category**: ARCHITECTURE
+**Verdict source**: seal-time ABORT at `/qor-substantiate` Step 7.8; ledger entries #675 (amendment), #676 (VETO), #679 (seal)
+
+### What Happened
+
+Phase 248 added a schema prohibition so a retired plan-artifact field name could no longer validate silently. The tribunal PASSed it at iteration 2. The seal then ABORTed: `gate_chain_completeness` validates every sealed phase's gate artifacts against the CURRENT schema, and eight artifacts across sealed phases 187, 191 and 192 carried the now-prohibited key. Shipping the fix alone would have meant no seal in the repository ever completing again -- including the seal that shipped it.
+
+The audit had verified that the new rule was present and load-bearing. It never asked what else reads the artifacts the rule now forbids. A later re-audit found a second consumer with the same defect (`evidence_bundle`), which the first amendment had missed for the same reason.
+
+### Pattern to Avoid
+
+Adding a prohibition is not a local change. Before tightening any schema, enumerate every consumer that validates existing instances of it, and separate the ones authoring new instances from the ones verifying old ones. The two need opposite treatment: authoring must enforce the new rule, verification of sealed history must not, because a prohibition introduced later says nothing about whether the protocol was followed at the time.
+
+The audit question that would have caught this is not "does the rule work" but "who else reads what the rule now forbids." Grep for the validator's call sites, not for the rule.
+
+Also: when a fix breaks sealed evidence, migrating the evidence is the wrong instinct. Each sealed artifact here carried a provenance sidecar binding its exact bytes, so a key rename would have traded a schema failure for an evidence-integrity failure -- a worse defect wearing a green check.
+
+### Pattern ID
+
+Retroactive-prohibition family (first occurrence). Sibling of the `MARKUP_COMPAT_BOUNDARY` finding in `docs/research-brief-open-repository-issues-2026-09-02.md`, approached from the opposite direction: there an absolute grandfathering constant silently forgives unverifiable history; here the absence of any era boundary retroactively condemns valid history. Both are sealed evidence re-judged against today's rules, and both argue for the same discipline -- a verifier of sealed history must know which era it is judging. Countermeasure shipped this phase: `validate_one(..., sealed_history=True)` drops only the schema's top-level `not` clause, so the exemption is narrow by construction, generalizes to the next tightening without a new constant, and leaves `required`/`type`/`properties` enforcing GAP-GOV-14 unchanged.
+
+---
+
 *Shadow integrity: ACTIVE*

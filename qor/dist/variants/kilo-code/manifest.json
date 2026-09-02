@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-08-31T07:29:46Z",
+  "generated_ts": "2026-09-02T18:41:03Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -318,13 +318,13 @@
       "id": "qor-plan",
       "source_path": "skills/qor-plan/references/step-extensions.md",
       "install_rel_path": "skills/qor-plan/references/step-extensions.md",
-      "sha256": "12d343bcfef5b1539f1a2756db007f98257dc72d8761e316dacf25afbaa7a7c8"
+      "sha256": "ae6954b1864bfd4196029f179988c649adffbabb7198b47182212bc6eda32968"
     },
     {
       "id": "qor-plan",
       "source_path": "skills/qor-plan/SKILL.md",
       "install_rel_path": "skills/qor-plan/SKILL.md",
-      "sha256": "7b6afc55485fdce1976d5262b32e9d1b1dd9d3106af73894b2d1498d82a31f61"
+      "sha256": "ff90dcfb0a3b58d110d1ab8bc078b164fda319eec76016b6527bba58881e8839"
     },
     {
       "id": "qor-process-review-cycle",
