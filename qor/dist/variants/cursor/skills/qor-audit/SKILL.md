@@ -559,12 +559,14 @@ reviews_gate = audit_gate_payload.get("reviews_remediate_gate")
 if verdict == "PASS" and reviews_gate:
     with open(reviews_gate, encoding="utf-8") as f:
         remediate_proposal = json.load(f)
+    # Phase 253 (GH #410): per-change enforcers when declared; see references.
+    per_change = remediate_proposal.get("event_enforcers")
     rma.mark_addressed(
-        remediate_proposal["addressed_event_ids"],
+        per_change or remediate_proposal["addressed_event_ids"],
         session_id=sid,
         review_pass_artifact_path=f".qor/gates/{sid}/audit.json",
         remediate_gate_path=reviews_gate,
-        closure_enforcer=remediate_proposal["closure_enforcer"],  # Phase 166 (GH #249)
+        closure_enforcer=None if per_change else remediate_proposal["closure_enforcer"],
     )
 ```
 

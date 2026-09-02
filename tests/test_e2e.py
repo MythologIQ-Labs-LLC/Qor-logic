@@ -153,9 +153,14 @@ def test_capability_shortfall_pipeline(isolated):
 
 def test_threshold_breach_writes_marker(isolated):
     """Append events totaling sev >= 10; marker written with aggregated ids."""
+    # Phase 253 (GH #410): distinct signatures. Recurrence now collapses, so two
+    # events differing only in timestamp are one signature and sum to 5. This
+    # test asserts the marker's contents on breach, not the counting rule.
     events = [
-        _mk_event(severity=5, ts="2026-04-15T10:00:00Z", session_id="s-a"),
-        _mk_event(severity=5, ts="2026-04-15T11:00:00Z", session_id="s-b"),
+        _mk_event(severity=5, ts="2026-04-15T10:00:00Z", session_id="s-a",
+                  details={"gate": "gate_a"}),
+        _mk_event(severity=5, ts="2026-04-15T11:00:00Z", session_id="s-b",
+                  details={"gate": "gate_b"}),
     ]
     isolated.shadow_log.write_text(
         "\n".join(json.dumps(e) for e in events) + "\n", encoding="utf-8"

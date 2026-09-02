@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-02T2142-789e4d",
+  "plan_path": "docs/plan-qor-phase253-remediation-closure-states.md",
+  "plan_hash": "63533e60a715b6acb91ad41e644648fa9ec77d2bc113326d8c90dce033909932",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "0c4e9c0e175261cadc0e63a02f71e75998929a423ca325709c7c5c0de431dd13",
+  "head_commit": "ed02006831aa4efcc4f2cf2cb1912bb1715b8294",
+  "captured_ts": "2026-09-02T22:07:20.910161Z"
+}

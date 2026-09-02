@@ -20452,5 +20452,133 @@ Next: /qor-substantiate.
 
 ---
 
+---
+
+### Entry #703: GATE TRIBUNAL -- Phase 253 remediation closure states, iteration 1 (VETO)
+
+**Timestamp**: 2026-09-03T04:50:00Z
+**Phase**: GATE (Phase 253)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase253-remediation-closure-states.md
+**Session**: 2026-09-02T2142-789e4d
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `f983daf7092d9157cb57f61bd7852b48af8ff216605db59c842c96af5c052cfe`
+**Previous Hash**: `9c14f94b4f38140e82378974784705433cd41de854877c30cfe3bd27a72e4ac3`
+**Chain Hash (Merkle seal)**: `d960d86889709d89bde46efe8066ec47624594b65b389f36681633c4036a13c8`
+
+**Decision**: **Verdict**: **VETO** -- one mandating finding. Attempt 1 of 5. All five fixes are correct and the scoping is honest: the plan checked what already exists and narrowed accordingly, finding that `mark_addressed` already accepts a per-change `{event_id: enforcer}` mapping so fix 3 is skill wiring rather than new capability, and that `addressed_reason` is already a closed enum with `closure_enforcer` and `issue_url` as existing fields so fix 1 adds a value rather than a shape. Fix 4's compensating guard is the right instinct -- buying the threshold discount with the same enforcer validation stage 2 demands, rather than letting a bare proposal silence the signal. **V-1 (`coverage-gap`, self-application)**: the plan fixes the deadlock's exit and not its entrance, and this repository is the proof. Measured against its own Process Shadow Genome: severity sum 171 against a threshold of 10, across 105 unaddressed events, of which `gate_skipped_prerequisite_absent` contributes 39 and `gate_override` 28 -- events emitted BECAUSE the protocol was followed. `data_api_acl_lint` skips every seal because this repository has no SQL migrations, a permanent and correct property of it, and each seal adds severity 1 that nothing will ever remediate because nothing is wrong. The threshold is therefore not measuring accumulated process debt; it is measuring how many phases have been sealed. Under the delegation table every phase at or above threshold routes to `/qor-remediate`, so this repository has been in continuous nominal breach while sealing six phases today and the rule has simply not been honored -- a governance contradiction the plan would leave in place. GH #410 names this directly as a slow drip toward a trigger carrying no new information, signal decaying into noise. Required: a sixth fix collapsing recurrence, so a disclosed event repeating with the same signature (same `event_type` and same `details.gate` or `details.capability`) contributes its severity once rather than once per occurrence, with occurrences retained in the log as history and only the sum changing. A genuinely new gate skipping still adds signal, which is what keeps the threshold meaningful. It belongs in this phase rather than a later one, because without it fixes 1 through 5 ship into a repository whose threshold is permanently breached for reasons they cannot touch. Recorded side effect: running `check_shadow_threshold` during this audit wrote the gitignored operator-local `.qor/remediate-pending`; it records a true state and is left in place, since deleting a marker because an auditor produced it would be the wrong instinct.
+
+---
+
+---
+
+### Entry #704: GATE TRIBUNAL -- Phase 253, iteration 2 (PASS)
+
+**Timestamp**: 2026-09-03T05:05:00Z
+**Phase**: GATE (Phase 253)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase253-remediation-closure-states.md
+**Session**: 2026-09-02T2142-789e4d
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `b6ff3e7b9bddcd05a6eae07ed231b4a40d660c24b6044eb6076df8cfe2a37051`
+**Previous Hash**: `d960d86889709d89bde46efe8066ec47624594b65b389f36681633c4036a13c8`
+**Chain Hash (Merkle seal)**: `398656c7fc14e12d073e94019811b7dc010bdc94995430b6426fe7c7042ab83c`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5. V-1 closed by fix 6, and the amendment did something better than satisfy the ground: it caught a false claim the Governor had written into the ground's own remedy. The first draft asserted the collapsed sum would fall below the threshold for this repository; measured, 171 raw collapses to 39 against a threshold of 10. The plan now states that, names the earlier claim as false, and says why asserting it would have been worse than useless -- it would have shipped a test that cannot pass, or invited tuning the rule until it did. That distinction carries the ground's whole value: fix 6 exists to make the threshold measure process debt rather than phase count, and whether the resulting number is comfortable is a separate question that must not be answered by adjusting the rule, which would be tuning the instrument to the reading. The residue is correctly left alone -- `gate_override` 12, `gate_skipped_prerequisite_absent` 6, `capability_shortfall` 5, `degradation` 4, `hallucination` 4, `regression` 3, `repeated_veto_pattern` 3, `orchestration_override` 2 -- because hallucination, regression and degradation are precisely what the Process Shadow Genome exists to accumulate, and the plan routes working them down to an operator backlog rather than to a line of code. The honest consequence, which the plan states: after this ships, the debt this repository actually carries becomes visible for the first time, and it is above threshold. Verified by execution: the 171-to-39 collapse computed against the live genome rather than a fixture; `mark_addressed` already accepting a per-change enforcer mapping so fix 3 stays skill wiring; `mark_addressed_pending` taking no enforcer today so fix 4's guard is a real addition; and `addressed_reason` already being a closed enum with `closure_enforcer` and `issue_url` present, so fix 1 adds a value rather than a shape.
+
+---
+
+---
+
+### Entry #705: AMENDMENT -- Phase 253 implementation divergences
+
+**Timestamp**: 2026-09-03T05:35:00Z
+**Phase**: GATE (Phase 253 amendment)
+**Author**: Judge
+**Risk Grade**: L2
+**Amends**: Entry #704
+**Plan**: docs/plan-qor-phase253-remediation-closure-states.md
+**Session**: 2026-09-02T2142-789e4d
+**Superseded Content Hash**: `398656c7fc14e12d073e94019811b7dc010bdc94995430b6426fe7c7042ab83c`
+
+**Content Hash**: `63533e60a715b6acb91ad41e644648fa9ec77d2bc113326d8c90dce033909932`
+**Previous Hash**: `398656c7fc14e12d073e94019811b7dc010bdc94995430b6426fe7c7042ab83c`
+**Chain Hash (Merkle seal)**: `98971d6534fd03be164eab068078c863f0ab3708e1f4d6dc1db0003328f56177`
+
+**Decision**: Four divergences amended before seal. Fix 2 shipped as a separate `mark_deferred_upstream` rather than a `reason=` parameter on `mark_addressed`: that function requires a verified review-pass artifact and a remediate-gate path, and an upstream transfer has neither, so overloading it would have meant weakening stage 2's evidence bar for every caller or fabricating artifacts for a closure that is not a review pass. Two pre-existing fixtures were corrected with their assertions untouched -- `test_shadow.py::test_threshold_breach_triggers_marker` and `test_e2e.py::test_threshold_breach_writes_marker` both built a breach from two events differing only in timestamp, which under fix 6 is one signature summing to 5; both assert what happens ON a breach rather than how severity is counted, so the fixtures now use distinct gates. And `qor-audit/SKILL.md` needed LF normalization plus a terser Step 4.2 comment, the edit having pushed it past its headroom bound with CRLF inflating `os.path.getsize` by 685 bytes. The most useful result is not a divergence: that TWO independent tests reached a threshold breach by repeating a single event is the clearest evidence in this phase that fix 6 is right, since repetition was the easiest way to cross the threshold in fixtures and in the practice those fixtures modelled -- a better argument for the rule than the plan's own, because it was not constructed to make the case.
+
+---
+
+---
+
+### Entry #706: GATE TRIBUNAL -- Phase 253, iteration 3 (PASS)
+
+**Timestamp**: 2026-09-03T05:40:00Z
+**Phase**: GATE (Phase 253)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase253-remediation-closure-states.md
+**Session**: 2026-09-02T2142-789e4d
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `0c4e9c0e175261cadc0e63a02f71e75998929a423ca325709c7c5c0de431dd13`
+**Previous Hash**: `98971d6534fd03be164eab068078c863f0ab3708e1f4d6dc1db0003328f56177`
+**Chain Hash (Merkle seal)**: `857d6345e87f3f2fa70c4a097c9f2aba311f5d2b0b905085b026c7d481faee88`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 3 of 5. Verified by execution: 171 collapses to 42 on the live genome, still above the threshold of 10 exactly as the plan predicted, with nothing tuned to improve the number; `_pending_discount_applies` returns False for a pending event with no enforcer and for one whose enforcer does not validate, so a bare proposal cannot buy the discount; the `addressed_reason` enum stays closed, with `deferred_upstream` added and an unknown reason still rejected; and the schema conditional binds, so a `deferred_upstream` event lacking `issue_url` fails validation and a hand-written event cannot bypass the helper. Filter-stage ordering checked explicitly: the pending discount is evaluated before the signature collapse, so an enforcer-backed pending event is excluded rather than merely deduplicated. Full suite 3221 passed / 6 skipped / 4 deselected, zero failures; ruff clean; variant drift clean at 406 files; publication-boundary 0 findings.
+
+---
+
+---
+
+### Entry #707: IMPLEMENTATION -- Phase 253 remediation closure states
+
+**Timestamp**: 2026-09-03T05:45:00Z
+**Phase**: IMPLEMENT (Phase 253)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase253-remediation-closure-states.md (PASS at entry #706)
+**Session**: 2026-09-02T2142-789e4d
+
+**Content Hash**: `63533e60a715b6acb91ad41e644648fa9ec77d2bc113326d8c90dce033909932`
+**Previous Hash**: `857d6345e87f3f2fa70c4a097c9f2aba311f5d2b0b905085b026c7d481faee88`
+**Chain Hash (Merkle seal)**: `06de868f5792f447ebaa89a50f0ce6d7fd3bde23f4b4211ef94a25f4a00186ed`
+
+**Decision**: **Decision**: Phase 253 implemented across 26 files under TDD; `tests/test_remediation_closure_states.py` was written first and run red at 9 of 12. Delivered all six fixes: `shadow_event.schema.json` gains `deferred_upstream` with a conditional requiring `issue_url`, so closure by transfer of ownership must record where the work went; `remediate_mark_addressed.mark_deferred_upstream` sets that state and refuses without the URL; `/qor-audit` Step 4.2 now passes the per-change `{event_id: enforcer}` mapping when a proposal declares one, a capability `mark_addressed` has accepted since Phase 166 and the skill never used; `check_shadow_threshold._pending_discount_applies` excludes a pending event only when its `closure_enforcer` validates through the same function stage 2 uses; `every_unaddressed_event_has_a_pending_proposal` provides the routing escape as a deliberately-unreachable fallback; and `collapsed_severity` counts a repeating disclosed signature once. The live effect is 171 to 42 against a threshold of 10 -- the plan predicted the collapse would remove recurrence noise without clearing the breach, and it does; nothing was tuned to improve that number, and the residue (`hallucination` 4, `regression` 3, `degradation` 4 among others) is real debt routed to an operator backlog rather than suppressed. Three fixture corrections were needed and none weakened an assertion: two threshold tests built a breach from two events differing only in timestamp, which under fix 6 is one signature, so they now use distinct gates while still asserting what happens ON a breach. That two independent tests had reached a breach by repetition is the strongest evidence for fix 6 in the phase, and it was not constructed to make the case. Full suite 3221 passed / 6 skipped / 4 deselected; ruff clean; variant drift clean at 406 files.
+
+---
+
+---
+
+### Entry #708: SESSION SEAL -- Phase 253 remediation closure states (v0.167.0)
+
+**Timestamp**: 2026-09-03T06:00:00Z
+**Phase**: SEAL (Phase 253)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `94ba9eaf290b`
+**Plan**: docs/plan-qor-phase253-remediation-closure-states.md (PASS at entry #706)
+**Session**: 2026-09-02T2142-789e4d
+**Change Class**: feature (0.166.0 -> 0.167.0)
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Content Hash**: `63533e60a715b6acb91ad41e644648fa9ec77d2bc113326d8c90dce033909932`
+**Previous Hash**: `06de868f5792f447ebaa89a50f0ce6d7fd3bde23f4b4211ef94a25f4a00186ed`
+**Chain Hash (Merkle seal)**: `6c2188b5c0bba02a88eddd64bebe66782ccc55d22363e992e1766bed749ad5bd`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 253 seals GH #410, the last open issue on this repository's board. A remediation owned by another repository can now be closed as `deferred_upstream`, which requires the upstream issue URL -- closure by verified transfer of ownership rather than by a claim of repair, materially different from both `remediated` and `cannot-automate:`. `/qor-audit` Step 4.2 passes the per-change enforcer mapping when a proposal declares one, a capability `mark_addressed` has accepted since Phase 166 and the skill never used; a proposal that is partly local and partly upstream is the normal case for a consumer workspace rather than an edge case. The decisive change was not in the issue's three suggested remedies but in what the tribunal found beneath them (ground V-1, entry #703): the threshold counted every occurrence of a correctly-disclosed event, so it measured how many phases had been sealed rather than accumulated process debt, and this repository sat at 171 against a threshold of 10 while sealing six phases in nominal breach. Recurrence now collapses -- a disclosed event repeating with the same signature contributes once, occurrences retained as history -- and the sum drops to 42. It does not clear the breach, and the plan says so: an earlier draft asserted it would, that claim was false, and asserting it would have shipped an unpassable test or invited tuning the rule until the number looked acceptable. The residue is real debt (`hallucination` 4, `regression` 3, `degradation` 4 among others), routed to an operator backlog rather than suppressed, because tuning the instrument to the reading is the one move this phase must not make. The pending discount is bought with the same enforcer validation stage 2 demands, so a bare proposal cannot silence the signal. Three fixture corrections were needed and none weakened an assertion; that two independent tests had reached a breach by repeating a single event is the strongest evidence for the collapse rule in the phase, and it was not constructed to make the case.
+
+**GATE LADDER**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix clean; secret-scan clean; merge-velocity healthy; ledger-commitment OK (26 touched artifacts); data-api-acl disclosed-SKIP (event `139a0002e440`); instruction-hygiene disclosed-SKIP (event `3ec2c08361b5`); doc-integrity strict PASS; governance-index advanced + enforced clean; feature-index 27/27 verified; publication-boundary 0 findings; variant drift clean at 406 files; ruff clean. Full suite 3221 passed / 6 skipped / 4 deselected.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

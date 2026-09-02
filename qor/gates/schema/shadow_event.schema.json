@@ -69,24 +69,38 @@
       "type": "boolean"
     },
     "issue_url": {
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "addressed_ts": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
     },
     "addressed_reason": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "enum": [
         "issue_created",
         "remediated",
         "stale",
+        "deferred_upstream",
         null
-      ]
+      ],
+      "description": "How the event was closed. `deferred_upstream` (Phase 253; GH #410) means ownership transferred to another repository -- closure by verified transfer rather than by a claim of repair -- and REQUIRES a non-null issue_url."
     },
     "source_entry_id": {
       "description": "For aged_high_severity_unremediated: the id of the event being escalated. Null otherwise.",
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^[0-9a-f]{64}$"
     },
     "addressed_pending": {
@@ -100,35 +114,89 @@
     },
     "closure_enforcer": {
       "description": "Phase 166 (GH #249): the executable mechanism that now guards the closed pattern -- an existing tests/test_*.py path, an importable qor.scripts.*/qor.reliability.* module, a '/qor-<skill> Step N' gate reference, or 'cannot-automate: <justification >= 50 chars>'. Required when addressed=true with addressed_reason='remediated' (enforced by the allOf rule below); validated at write time by remediate_mark_addressed._validate_closure_enforcer.",
-      "type": ["string", "null"]
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "allOf": [
     {
       "if": {
         "properties": {
-          "addressed": { "const": true },
-          "addressed_reason": { "const": "remediated" }
+          "addressed": {
+            "const": true
+          },
+          "addressed_reason": {
+            "const": "remediated"
+          }
         },
-        "required": ["addressed", "addressed_reason"]
+        "required": [
+          "addressed",
+          "addressed_reason"
+        ]
       },
       "then": {
-        "properties": { "addressed_pending": { "const": true } },
-        "required": ["addressed_pending"]
+        "properties": {
+          "addressed_pending": {
+            "const": true
+          }
+        },
+        "required": [
+          "addressed_pending"
+        ]
       }
     },
     {
       "if": {
         "properties": {
-          "addressed": { "const": true },
-          "addressed_reason": { "const": "remediated" }
+          "addressed": {
+            "const": true
+          },
+          "addressed_reason": {
+            "const": "remediated"
+          }
         },
-        "required": ["addressed", "addressed_reason"]
+        "required": [
+          "addressed",
+          "addressed_reason"
+        ]
       },
       "then": {
-        "properties": { "closure_enforcer": { "type": "string", "minLength": 8 } },
-        "required": ["closure_enforcer"]
+        "properties": {
+          "closure_enforcer": {
+            "type": "string",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "closure_enforcer"
+        ]
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "addressed_reason": {
+            "const": "deferred_upstream"
+          }
+        },
+        "required": [
+          "addressed_reason"
+        ]
+      },
+      "then": {
+        "properties": {
+          "issue_url": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "issue_url"
+        ]
+      },
+      "description": "GH #410: a deferred_upstream closure must record where the work went."
     }
   ]
 }
