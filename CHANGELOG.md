@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.167.2] - 2026-09-03
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 255 (hotfix; reference path resolution)**: discharges the remedy recorded on an unaddressed severity-4 `hallucination` event from 2026-08-12. A doctrine path that did not exist had been asserted as fact and written into a plan as an Affected File, and the reason it went undetected was that `plan_grep_lint._REFERENCE_PATH_RE` was defined and never used -- while its module-path and skill-path siblings each drove a working loop. The regex now drives one too, emitting `reference-path-missing`, with the new-path exemption first, then a placeholder skip, then the existence test. `_ALLOW_RE` accepts `grep-lint: ok=<reason>` for plans that discuss a broken path rather than citing it, matching the repository's existing `boundary-lint:` and `prose-lint:` markers; the reason is required and scope is per line. Run over all 277 plan documents the check finds two genuine broken citations, both left as historical record -- a Phase 244 plan citing `doctrine-implementation-quality.md` where the real file is `implementation-quality-sweep.md`, which is the same invented-path class as the event being closed, and a Phase 28 plan citing a `qor/references/README.md` that never existed.
+
 ## [0.167.1] - 2026-09-03
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
