@@ -402,3 +402,59 @@ run `git clean -fdx` in a governed workspace should snapshot elsewhere first.
 
 Enforced by `tests/test_governance_snapshot.py` and the Phase 175 additions in
 `tests/test_governance_health.py`.
+
+## 17. Merge readiness (Phase 257; closes the merge-on-green override)
+
+**No merge proceeds while `qor-logic scripts merge_readiness --pr <n>` exits
+non-zero.** `--admin` is for ruleset-blocked GREEN runs only, never for a run
+still in flight. This is the rule `/qor-substantiate` Step 9.6 enforces before
+options 2 and 3.
+
+The rule exists because a pull request was admin-merged on 2026-08-17 while
+checks were still running; the pending run failed after the merge, `main` went
+red, and the release was refused. The remedy recorded on that severity-3
+`gate_override` -- never admin-merge with any check pending -- was a question
+answered by reading a list, at the moment of least patience in the cycle.
+
+### Why the naive rule is unimplementable
+
+Every pull request in this repository carries a `publish` check permanently in
+state `WAITING` on a deployment approval granted only after merge. A gate
+treating pending as blocking would refuse every merge and become a control
+nobody can satisfy, which §15 already identifies as how a control becomes one
+nobody enforces. `merge_readiness.classify` therefore separates
+pending-because-running (`QUEUED`, `IN_PROGRESS`, `PENDING`) from
+pending-because-waiting-on-a-human (`WAITING`).
+
+### The default is deny
+
+`READY` is not the fall-through case. It requires every check to be positively
+recognized as bucket `pass`, bucket `skipping`, or state `WAITING`; anything else
+blocks with the unrecognized value named. A `cancel` bucket -- a cancelled
+required check, which did not pass and is not running -- would read as green
+under a fall-through rule, and an empty check list is `NO_CHECKS` rather than
+success, because absence of evidence is not evidence of health.
+
+Failing closed on an unknown value keeps the rule correct without perfect
+knowledge of the forge's check vocabulary, which this repository does not control
+and which changes without notice. A gate that fails open needs that knowledge
+forever; one that fails closed needs none.
+
+### What this control is not
+
+It is detective and procedural, not preventive. `--admin` exists to bypass branch
+protection, so no CI job can gate the flag whose purpose is to ignore CI jobs.
+The downstream consequence stays gated by `release_ci_gate` (Phase 163), which
+refuses a publish whose SHA is not green -- which is why the 2026-08-17 failure
+stopped at a red `main` and a refused release rather than a bad artifact.
+
+### Placement note
+
+The invocation is documented here rather than inline in the `/qor-substantiate`
+skill because that skill stands at 2,702 B of slack against its size floor, and
+every way to add even a two-line pointer required compressing normative gate
+text. Buying room by weakening a gate directive is the pattern the floor exists
+to stop. The seal skill needs a progressive-disclosure pass before it can absorb
+another inline wiring note; until then, merge-time rules live in this doctrine,
+which Step 9.6 already cites.
+

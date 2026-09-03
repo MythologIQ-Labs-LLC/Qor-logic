@@ -15266,8 +15266,6 @@ Change class: feature (v0.131.0 -> v0.132.0). Tests: 11 new (renderer round-trip
 **Previous Hash**: `a3528bb82b6c3db9529885c4bf5151ea565c2d6c15f8a0e3a139ad2ee1747f70`
 **Chain Hash (Merkle seal)**: `b1c69912886c2598579759053d5e1141d35ad886c64dbde7a4b154e84f62fc04`
 
----
-
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 193; v0.132.0; ledger emit API + retroactive attestation -- whole ledger verifies; local checkpoint pending release sequencing)
 
@@ -20886,6 +20884,95 @@ On the boundary: the operator's instruction is that deferring upstream must mean
 
 ---
 
+### Entry #722: GATE TRIBUNAL -- Phase 257, iterations 1-3 (VETO, PASS, revised PASS)
+
+**Timestamp**: 2026-09-03T17:20:00Z
+**Phase**: GATE (Phase 257)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase257-merge-readiness.md
+**Session**: 2026-09-03T1548-db06e9
+
+**Content Hash**: `1f64cec137e1947e5c6d1ceec26be7e73361a4166c2fd5dd77fb75524f8c07db`
+**Previous Hash**: `5426ee78e4127161b3bf28428ed8c715e38962ca9b35f5f6f2e546e771a68f73`
+**Chain Hash (Merkle seal)**: `58115a9491cdbc214c6c4458540aec3a77435c42e293e70680e281d669005521`
+
+**Decision**: **VERDICT: PASS** at iteration 3. `audit_risk_score` returned `option_b_required: false`; mode solo. Reports were superseded in place, so this entry's content hash binds the iteration-3 record and the earlier grounds are stated here.
+
+**V-1 (filter-stage-ordering), iteration 1**: the classifier was default-allow, in a gate whose entire purpose is to catch a false green. As first specified, `classify` blocked on exactly two conditions -- the `fail` bucket and three running states -- and returned `READY` for everything else, making `READY` the fall-through. `gh pr checks` also emits a `cancel` bucket, and a cancelled required check did not pass and is not running, so a workflow cancelled by a force-push, a timeout, or a concurrency-group eviction would have been waved through. The plan already contained the correct principle -- "zero checks is not evidence of health; it is absence of evidence" -- and applied it to exactly one case. Directive: invert the default so `READY` requires every check to be positively recognized, and name the unrecognized value in the output. Closed by `_OK_BUCKETS` / `_DEFERRED_STATES` recognition preceding acceptance, the `UNRECOGNIZED` state, and `test_unrecognized_bucket_blocks`. The argument that carried it: failing closed on an unknown value keeps the rule correct without perfect knowledge of a check vocabulary this repository does not control and which changes without notice.
+
+**V-2 (specification-drift), iteration 1, and its revision at iteration 3**: the plan located the control's force in a `/qor-substantiate` wiring it did not list as touched, so the module would have shipped referenced by nothing -- the same defect class the phase discharges. Iteration 2 accepted wiring into the seal skill and dismissed the size cost as ordinary. **That was wrong, and the implement pass proved it.** `qor-substantiate/SKILL.md` stands at 2,702 B of slack against the 2,700 B floor enforced by `test_ladder_rewrite_left_usable_slack`; a 708 B wiring note breached it, and so did the 185 B pointer that replaced it. Every remaining route to those bytes ran through compressing normative gate text -- the runtime-principal fidelity directive, the presence-only seal gate -- which is precisely the trade that floor exists to refuse, its docstring recording three prior phases that each resolved a size breach under pressure and each made the next one harder. The edit was reverted, the skill left byte-identical to `main`, and the rule placed in `doctrine-governance-enforcement.md` section 17, where merge rules belong and where Step 9.6 already points. The floor test refused a change this tribunal had directed and was obeyed rather than amended, which is the only reading under which such a floor means anything.
+
+**Verified by execution**: all three most recent pull requests carry sixteen passing checks and exactly one `publish` check in state `WAITING`, so the naive pending-blocks rule would refuse every merge this repository makes; `ac_close_guard.py:119` shells `["gh", *args]` and four further modules do the same, while `test_no_qor_module_imports_a_forge_sdk` bans SDK imports rather than CLI invocation, so the declared non-goal is satisfiable as written; `check_shadow_threshold` expires unaddressed severity 1-2 events after 90 days but escalates severity 3 and above to a severity-5 `aged_high_severity_unremediated`, so the target event would have grown louder rather than aged out.
+
+**On the honesty of the closure**: the plan concedes that no control here can be preventive, because `--admin` exists to bypass exactly the checks a preventive control would install, and closes a severity-3 event on a detective and procedural instrument in those words. That concession is what makes the closure defensible.
+
+**Required next action**: `/qor-implement`.
+
+---
+
+### Entry #723: IMPLEMENTATION -- Phase 257 merge readiness
+
+**Timestamp**: 2026-09-03T17:45:00Z
+**Phase**: IMPLEMENT (Phase 257)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase257-merge-readiness.md (PASS at entry #722)
+**Session**: 2026-09-03T1548-db06e9
+
+**Content Hash**: `c0dabfa4af4b02271563fb6b7f92663771c8d9afc9b8727bc0fe4b872f141d30`
+**Previous Hash**: `58115a9491cdbc214c6c4458540aec3a77435c42e293e70680e281d669005521`
+**Chain Hash (Merkle seal)**: `0876cd555033f90d0cb3864e563d2d470647d40b795848d204286732d7d70283`
+
+**Decision**: Phase 257 implemented under TDD. `tests/test_merge_readiness.py` was written first and failed collection because the module did not exist. `qor/scripts/merge_readiness.py` keeps the decision logic in a pure `classify` over the parsed check list so the rule is testable offline, with only `main` shelling out to `gh` in list form as `ac_close_guard` does; no forge SDK is imported.
+
+The D4 empirical criterion was met against live data rather than fixtures: `merge_readiness --pr 422` reports `READY: 17 check(s) accounted for; deferred on approval: publish`, exit 0 -- the `WAITING` distinction working on a real pull request.
+
+The V-2 wiring was attempted in the seal skill and reverted. `test_ladder_rewrite_left_usable_slack` failed at 1,994 B of slack against its 2,700 B floor on the first attempt and at 2,517 B on the minimal pointer that replaced it. Reclaiming the difference required compressing normative gate text, which the floor exists to prevent, so the skill was restored byte-identical to `main` and the rule placed in `doctrine-governance-enforcement.md` section 17. The plan and the tribunal record carry the placement note so a later reader learns why the wiring is not where they would look for it, and the seal skill's need for a progressive-disclosure pass is recorded as a finding rather than paid for out of a gate directive.
+
+The severity-3 `merge-on-green` event closed through the attested path: a remediation proposal at `.qor/gates/2026-09-03T1548-db06e9/remediate.json`, a PASS review artifact naming that gate, then `mark_addressed_pending` followed by `mark_addressed` under the enforcer `tests/test_merge_readiness.py`. Collapsed severity falls from 38 to 35.
+
+Full suite 3251 passed / 6 skipped / 4 deselected; new tests run twice for determinism; ruff clean; variant drift clean at 406 files; publication boundary 0 findings.
+
+---
+
+### Entry #724: SESSION SEAL -- Phase 257 merge readiness (v0.169.0)
+
+**Timestamp**: 2026-09-03T17:55:00Z
+**Phase**: SEAL (Phase 257)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `f0574c27a5c9`
+**Plan**: docs/plan-qor-phase257-merge-readiness.md (PASS at entry #722)
+**Session**: 2026-09-03T1548-db06e9
+**Change Class**: feature (0.168.0 -> 0.169.0)
+**SSDF Practices**: PS.2.1, PW.7.2, RV.2.1
+
+**Content Hash**: `c0dabfa4af4b02271563fb6b7f92663771c8d9afc9b8727bc0fe4b872f141d30`
+**Previous Hash**: `0876cd555033f90d0cb3864e563d2d470647d40b795848d204286732d7d70283`
+**Chain Hash (Merkle seal)**: `2b02afe9accb7de2c09540a6f222aa1d0aa244672fab7544c4f6034432da209b`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 257 discharges the last item in the shadow-genome residue that had a real remedy and no enforcer: the severity-3 `merge-on-green` override of 2026-08-17, where a pull request was admin-merged while checks were still running, the pending run failed after the merge, and `main` went red with the release refused. Phase 256 deliberately left it open rather than close it on prose. Its remedy -- never admin-merge with any check pending -- was a question answered by reading a list, at the moment of least patience in the cycle; `qor-logic scripts merge_readiness --pr <n>` answers it in one command.
+
+The naive rule turned out to be unimplementable, and finding that out by measurement is what made the phase worth doing. Every pull request in this repository carries a `publish` check permanently in state `WAITING` on a deployment approval granted only after merge. A gate treating pending as blocking would have refused every merge this repository will ever make and become a control nobody can satisfy. `classify` therefore separates pending-because-running from pending-because-waiting-on-a-human.
+
+The tribunal's V-1 caught the deeper defect: the classifier was default-allow. `READY` was the fall-through, so a `cancel` bucket -- a cancelled required check, which did not pass and is not running -- would have read as green, which is the same false green the gate exists to catch arriving through a different door. `READY` now requires every check to be positively recognized as passing, skipping, or deferred, and anything else blocks with the unrecognized value named. That inversion also makes the rule correct without perfect knowledge of a check vocabulary this repository does not control.
+
+**The tribunal was itself overruled, by a test.** V-2 directed wiring the invocation into the seal skill. `test_ladder_rewrite_left_usable_slack` refused it: the skill sits at 2,702 B of slack against a 2,700 B floor, and every route to the needed bytes ran through compressing normative gate text -- exactly the trade the floor was written to stop after three phases each resolved a size breach under pressure and made the next one harder. The floor was obeyed rather than amended, the skill left byte-identical to `main`, and the rule placed in `doctrine-governance-enforcement.md` section 17 where Step 9.6 already points. A floor that yields to the tribunal that tripped it is not a floor.
+
+What this control is, stated plainly rather than dressed up: detective and procedural, not preventive. `--admin` exists to bypass branch protection, so no CI job can gate the flag whose purpose is to ignore CI jobs. The downstream consequence stays gated by `release_ci_gate`, which is why the 2026-08-17 failure stopped at a red `main` rather than a bad published artifact.
+
+Collapsed severity falls from 38 to 35. What remains is three correct `repeated_veto_pattern` firings, one unconfigured host capability, and the recorded operator disclosures -- of which the severity 1-2 majority expire on the 90-day stale sweep that measurement confirmed is already working.
+
+**GATE LADDER**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix 32 skills / 156 handoffs / 0 broken; secret-scan clean; merge-velocity healthy; skill-size-budget WARN-only with no EXCEEDED; data-api-acl and feature-index-surface disclosed-SKIP, both closed on emission by the Phase 256 declared permanent skips; doc-integrity strict PASS; governance-index advanced + enforced clean; feature-index 27/27 verified; publication-boundary 0 findings; variant drift clean at 406 files; ruff clean. Full suite 3251 passed / 6 skipped / 4 deselected.
+
+**Disclosures**: (1) The plan was amended after the iteration-2 PASS to move the wiring target from the seal skill to the doctrine; rather than record it as a silent post-audit amendment, the tribunal was re-run and entry #722 binds the iteration-3 report. (2) The seal skill has no remaining headroom for inline wiring and needs a progressive-disclosure pass; recorded here as a finding, not resolved in this phase.
+
+---
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)
