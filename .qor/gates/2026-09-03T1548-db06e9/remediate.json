@@ -1,0 +1,15 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-09-03T1548-db06e9",
+  "events_addressed": [
+    "38bdb6041e724601ed1225be20a1ff3ea7721ab3853e31b050e9d86753bed8bb"
+  ],
+  "proposed_changes": [
+    {
+      "target": "qor.scripts.merge_readiness",
+      "change": "Phase 257 turns the recorded remedy -- never admin-merge with any check pending -- from a rule someone remembers into a question one command answers. classify() separates pending-because-running from pending-because-waiting-on-a-human, defaults to deny so an unrecognized bucket or state blocks rather than reading as green, and treats an empty check list as NO_CHECKS. The normative rule is doctrine-governance-enforcement.md section 17, which /qor-substantiate Step 9.6 cites. The control is detective and procedural, not preventive: --admin exists to bypass branch protection, and release_ci_gate continues to gate the downstream publish.",
+      "closure_enforcer": "tests/test_merge_readiness.py"
+    }
+  ],
+  "ts": "2026-09-03T17:35:31Z"
+}

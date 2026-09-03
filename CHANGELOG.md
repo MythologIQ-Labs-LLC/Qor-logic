@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.169.0] - 2026-09-03
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 257 (feature; merge readiness)**: `qor.scripts.merge_readiness` answers "is any check still pending?" in one command, closing the severity-3 `merge-on-green` override of 2026-08-17 where a pull request was admin-merged with checks in flight and the later failure landed a red `main` and a refused release. The naive rule is unimplementable here: every pull request in this repository carries a `publish` check permanently in state `WAITING` on a post-merge approval, so a gate treating pending as blocking would refuse every merge. `classify` therefore separates pending-because-running (`QUEUED`, `IN_PROGRESS`, `PENDING`) from pending-because-waiting-on-a-human (`WAITING`). The default is deny: `READY` is not the fall-through case but requires every check to be positively recognized as passing, skipping, or deferred, so a `cancel` bucket -- a cancelled required check, which did not pass and is not running -- blocks instead of reading as green, and an empty check list is `NO_CHECKS` rather than success. Failing closed on an unknown value makes the check independent of how completely its author enumerated GitHub's vocabulary, which this repository does not control. Wired into `/qor-substantiate` Step 9.6 before any merge. The control is detective and procedural, not preventive, and says so: `--admin` exists to bypass branch protection, so no CI job can gate the flag whose purpose is to ignore CI jobs; the downstream consequence stays gated by `release_ci_gate`.
+
 ## [0.168.0] - 2026-09-03
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
