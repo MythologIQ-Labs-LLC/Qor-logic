@@ -91,9 +91,30 @@ def sweep(events: list[dict], now: datetime) -> tuple[list[dict], list[dict], in
 
 
 def _signature(event: dict) -> tuple:
-    """The identity a recurring disclosed event shares across occurrences."""
+    """The identity a recurring disclosed event shares across occurrences.
+
+    Phase 254: collapse requires positive evidence that two events describe the
+    same condition. A shared ``gate``, ``capability`` or ``pattern`` is that
+    evidence; absent all three, identical details are. Differing details mean we
+    do not know the events are the same, so they are not merged.
+
+    Phase 253 keyed only on ``gate``/``capability``, so events carrying neither
+    collapsed by ``event_type`` alone and two unrelated ``degradation`` defects
+    counted as one. That direction is the more dangerous one: a rule that hides
+    real debt produces a number that looks better.
+
+    ``gate`` resolves before the digest, so an event whose details carry a
+    varying field such as ``phase`` still collapses.
+    """
+    import hashlib
+    import json
+
     details = event.get("details") or {}
-    return (event.get("event_type"), details.get("gate") or details.get("capability"))
+    key = details.get("gate") or details.get("capability") or details.get("pattern")
+    if key is None:
+        blob = json.dumps(details, sort_keys=True, default=str).encode("utf-8")
+        key = "details:" + hashlib.sha256(blob).hexdigest()[:12]
+    return (event.get("event_type"), key)
 
 
 def _pending_discount_applies(event: dict) -> bool:

@@ -2426,4 +2426,32 @@ Self-directed-gate family (first occurrence). Complements the vacuous-test famil
 
 ---
 
+---
+
+## Entry: Phase 254 -- a reasoned number reads exactly like a measured one
+
+**Date**: 2026-09-03
+**Category**: PROCESS
+**Verdict source**: GATE TRIBUNAL entries #709 (VETO), #712 (PASS); amendment #711; SESSION SEAL #714
+
+### What Happened
+
+Three predicted figures entered governance artifacts in one session, and all three were wrong in the same direction -- the one that made the work look finished.
+
+A Phase 253 test asserted the severity collapse would drop this repository below its threshold; measured, 171 became 42, still above. A Phase 254 plan predicted 46 after an emitter fix that turned out to be forward-only, so already-written events kept their old shape and never collapsed. And that same plan's entire measurement table used `shadow_process.read_events()` -- the local genome, 75 events -- while the threshold CLI calls `read_all_events()` and sees 134.
+
+Two were caught by the tribunal. The third surfaced only when the real CLI was run and answered 63 against a plan that said 46.
+
+### Pattern to Avoid
+
+A number that was reasoned about is typographically identical to a number that was measured. Review attends to the argument around a figure, not the arithmetic behind it, so a wrong figure passes audit and then becomes the baseline the next decision rests on. The error is reliably optimistic, because the predicted value is the one that would mean the change is done.
+
+Two specific traps sit underneath it. A module often exposes both a narrow and a full reader, and the narrow one is the easier import -- so confirm which loader production calls before quoting anything it produces. And a fix that only affects newly-written data must be described as forward-only rather than having its effect projected onto existing records; the alternative temptation, editing sealed records so the projection comes true, is worse than the wrong number.
+
+### Pattern ID
+
+Predicted-metric family (first occurrence). Related to the vacuous-test family from Phase 249 by consequence rather than mechanism: there a test could not fail, here a figure could not be checked by reading. Both produce green that means "consistent with my assumptions". Countermeasure: compute every metric against the production loader before it enters a plan, test, issue, or ledger entry; when a measured figure contradicts a predicted one, record both rather than replacing the prediction, so the correction survives as evidence that the artifact was checked.
+
+---
+
 *Shadow integrity: ACTIVE*

@@ -1,0 +1,25 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-02T2219-96c4be",
+  "ts": "2026-09-03T13:03:26Z",
+  "plan_path": "docs/plan-qor-phase254-signature-discrimination.md",
+  "phases": [
+    "discriminator chain with details-digest fallback"
+  ],
+  "ci_commands": [
+    "python -m pytest -q",
+    "python -m ruff check qor/ tests/",
+    "python -m qor.scripts.check_variant_drift"
+  ],
+  "doc_tier": "standard",
+  "terms": [],
+  "change_class": "hotfix",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.167.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-03T13:03:26Z"
+  }
+}
