@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.167.1] - 2026-09-03
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 254 (hotfix; signature discrimination)**: corrects the severity collapse Phase 253 introduced. The signature keyed only on `details.gate` or `details.capability`, so events carrying neither collapsed by `event_type` alone -- two unrelated `degradation` defects, one about amending a plan mid-audit and one about a mandated reviewer going idle, counted as one. Phase 253 was written to stop over-counting recurrence and introduced an under-count of distinct defects, which is the more dangerous direction because the resulting number looks better. The discriminator now resolves `gate` > `capability` > `pattern` > a stable digest of the details mapping, on the principle that collapse requires positive evidence two events describe the same condition. `veto_pattern` supplies an explicit `pattern` so a sliding-window detector collapses rather than accumulating one signature per seal. Measured against the loader the threshold CLI actually calls: this repository's visible debt rises from 42 to 63 against a threshold of 10, because distinct defects stop being merged.
+
 ## [0.167.0] - 2026-09-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

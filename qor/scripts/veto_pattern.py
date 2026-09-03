@@ -121,6 +121,12 @@ def build_event_payload(result: PatternResult, session_id: str) -> dict:
         "event_type": _EVENT_TYPE,
         "severity": _SEVERITY,
         "details": {
+            # Phase 254: `recent_phases` advances every firing, so without an
+            # explicit classifier the threshold's digest fallback would turn one
+            # recurring condition into one signature per seal, growing without
+            # bound. The condition reported here is "repeated VETOs are
+            # occurring" -- one condition, whichever phase pair exhibits it.
+            "pattern": "repeated-veto",
             "recent_phases": list(result.recent_phases),
             "max_pass_count": result.max_pass_count,
         },

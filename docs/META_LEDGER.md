@@ -20580,5 +20580,133 @@ Next: /qor-substantiate.
 
 ---
 
+---
+
+### Entry #709: GATE TRIBUNAL -- Phase 254 signature discrimination, iteration 1 (VETO)
+
+**Timestamp**: 2026-09-03T07:10:00Z
+**Phase**: GATE (Phase 254)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase254-signature-discrimination.md
+**Session**: 2026-09-02T2219-96c4be
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `45bfc7dc0a1db6c077bdf37fa344f2c2273b4d6fac2d7837b1116aeb6832d535`
+**Previous Hash**: `6c2188b5c0bba02a88eddd64bebe66782ccc55d22363e992e1766bed749ad5bd`
+**Chain Hash (Merkle seal)**: `65df749705159dc5c5870eb67aab856c630ee2706c5eef00d12c051f28bfe4d5`
+
+**Decision**: **Verdict**: **VETO** -- one mandating finding. Attempt 1 of 5. The diagnosis and the discriminator chain are right, and the plan is honest about raising its own repository's number from 39 to 52 rather than lowering it, stating explicitly that no option was chosen for the figure it produces. **V-1 (`coverage-gap`)**: the digest fallback makes one detector permanently uncollapsible, and that detector fires once per seal. `veto_pattern.py:123-126` emits details of only `recent_phases` and `max_pass_count`, and `recent_phases` is a sliding window that differs on every firing -- the three present firings name [234,244], [243,244] and [246,247]. Under the shipped rule they collapse to 3; under the proposed rule they become 9, then 12, growing by one severity-3 signature per seal of any phase that took two audit passes. That is not the fail-safe direction the plan argues for but a rule that grows the sum monotonically with phase count, which is precisely the failure Phase 253 existed to remove, reintroduced through the fallback rather than the primary key. The condition the detector reports is "repeated VETOs are occurring", which is one condition regardless of which phase pair currently exhibits it, so the emitter must carry `"pattern": "repeated-veto"` and let the chain resolve at step 3, with `recent_phases` and `max_pass_count` retained as per-firing evidence. The plan should also state the general rule this exposes, because the next detector will meet it: an event type whose details vary BY CONSTRUCTION on every emission must carry an explicit `pattern`, since relying on the digest for such a type converts recurrence into unbounded distinct signatures. The distinction to apply is whether details vary by construction (a sliding window) or by content (a different decision) -- `orchestration_override` also reaches the digest with three genuinely distinct operator decisions on three phases, and those are correctly distinct and need no classifier. Verified by execution: across 69 unaddressed events, 59 resolve on gate or capability, 3 on pattern and 7 reach the digest, so it is a genuine last resort; and the 28 `instruction_hygiene_lint` skips carrying a varying `details.phase` still resolve on `gate` before the digest is consulted, so Phase 253's collapse survives for the events it was written for.
+
+---
+
+---
+
+### Entry #710: GATE TRIBUNAL -- Phase 254, iteration 2 (PASS)
+
+**Timestamp**: 2026-09-03T07:25:00Z
+**Phase**: GATE (Phase 254)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase254-signature-discrimination.md
+**Session**: 2026-09-02T2219-96c4be
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `33a3c04a2002a38e4fc91b235a6c05447752bf55b94d4cf313169d75fd72d2b5`
+**Previous Hash**: `65df749705159dc5c5870eb67aab856c630ee2706c5eef00d12c051f28bfe4d5`
+**Chain Hash (Merkle seal)**: `7de19cc363af8a257be9fd747cd414a6892342b6d517bdf7449fde7407b9375f`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5. V-1 closed at the emitter: `veto_pattern` now supplies `"pattern": "repeated-veto"` so the chain resolves at step 3 and a sliding-window detector collapses to one signature instead of accumulating one per seal, with `recent_phases` and `max_pass_count` retained as per-firing evidence. The plan states the general rule the ground exposed -- an event type whose details vary BY CONSTRUCTION must carry an explicit `pattern` -- and gives the test for applying it, correctly leaving `orchestration_override` alone because its three events vary by content rather than by construction. The amendment also recomputed rather than assumed: the headline moved from 52 to 46, and the plan explains why the larger figure was the less true one, since 6 of that 52 was one detector's window counted three times and growing. That correction runs in the harder direction, because this phase's whole argument is that a smaller number is suspect, so a change that REDUCES the figure needed its own justification and the plan supplies it rather than quietly banking the improvement. Verified by execution: 23 signatures summing to 52 without the emitter fix, 21 summing to 46 with it; of 69 unaddressed events 59 resolve on gate or capability, 3 on pattern and 7 reach the digest; and the 28 `instruction_hygiene_lint` skips carrying a varying `details.phase` still collapse on `gate`, so Phase 253 survives for the events it was written for. Net effect on this repository: 39 to 46 against a threshold of 10, the debt growing because distinct defects stop being merged.
+
+---
+
+---
+
+### Entry #711: AMENDMENT -- Phase 254 measured section corrected twice
+
+**Timestamp**: 2026-09-03T08:05:00Z
+**Phase**: GATE (Phase 254 amendment)
+**Author**: Judge
+**Risk Grade**: L2
+**Amends**: Entry #710
+**Plan**: docs/plan-qor-phase254-signature-discrimination.md
+**Session**: 2026-09-02T2219-96c4be
+**Superseded Content Hash**: `7de19cc363af8a257be9fd747cd414a6892342b6d517bdf7449fde7407b9375f`
+
+**Content Hash**: `d03e2dfc65ec3f0db0177b14e2386846392b32bce25bf80028136c058d4fad6b`
+**Previous Hash**: `7de19cc363af8a257be9fd747cd414a6892342b6d517bdf7449fde7407b9375f`
+**Chain Hash (Merkle seal)**: `662b107b41e1f0634aae4a1b4c4827ef94c8dd9c75476891f97e10daf8aa239a`
+
+**Decision**: The plan's measured section was wrong twice, both errors flattering the result, and both are now recorded beside the corrected figures rather than replaced. First, wrong population: the earlier drafts measured `shadow_process.read_events()`, the local genome at 75 events, while the threshold CLI calls `read_all_events()` and sees 134 events with 107 unaddressed -- every original figure was computed against a population production does not use. Second, a forward-only fix projected backward: the iteration-2 draft predicted 46 by assuming the new `"pattern": "repeated-veto"` classifier would collapse the three existing `repeated_veto_pattern` firings, but those events are already written and carry no `pattern`, so they remain three signatures; the emitter change caps future growth and changes nothing about history, and editing sealed events to improve a number would be the worst available move. Corrected and verified against the CLI's own loader: raw 173, Phase 253 shipped rule 20 signatures summing 42, Phase 254 chain 33 signatures summing 63. The phase still stands because its claim was never a particular number but that Phase 253's discriminator merged distinct defects and under-reported debt; both corrections move the figure in the direction that claim predicts, 42 to 63 rather than 39 to 46, so they strengthen the argument rather than undermining it. Had either correction moved the number the other way this would be a VETO, since a rule whose justification survives only under a mis-measured population is not justified.
+
+---
+
+---
+
+### Entry #712: GATE TRIBUNAL -- Phase 254, iteration 3 (PASS)
+
+**Timestamp**: 2026-09-03T08:10:00Z
+**Phase**: GATE (Phase 254)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase254-signature-discrimination.md
+**Session**: 2026-09-02T2219-96c4be
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `d1260bbe458ea8bfbd3f2650ca9c556b89cae2d8c5300ce175b78f140adfded2`
+**Previous Hash**: `662b107b41e1f0634aae4a1b4c4827ef94c8dd9c75476891f97e10daf8aa239a`
+**Chain Hash (Merkle seal)**: `8045bc89573a6921a1e505b83ff5ef18c2750896eeafa7f704fe86ae74bded5b`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 3 of 5. Verified by execution: the chain resolves `gate` > `capability` > `pattern` > digest with a test pinning the order; `gate` still wins over the digest so the 28 `instruction_hygiene_lint` skips carrying a varying `details.phase` keep collapsing, meaning Phase 253 survives for the events it was written for; and the two distinct `degradation` defects now count separately, which is the specific under-count that motivated the phase. Full suite 3227 passed / 6 skipped / 4 deselected, zero failures; ruff clean. A pattern is recorded for the Shadow Genome rather than raised as a finding against this plan: three predicted figures in this session's artifacts were wrong and all three were optimistic -- the Phase 253 test asserting the collapse would clear the threshold, the 46 here, and the local-only population. The common cause is that a number reasoned about reads exactly like a number measured, and reviewers check the argument around it rather than the arithmetic behind it.
+
+---
+
+---
+
+### Entry #713: IMPLEMENTATION -- Phase 254 signature discrimination
+
+**Timestamp**: 2026-09-03T08:15:00Z
+**Phase**: IMPLEMENT (Phase 254)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase254-signature-discrimination.md (PASS at entry #712)
+**Session**: 2026-09-02T2219-96c4be
+
+**Content Hash**: `d03e2dfc65ec3f0db0177b14e2386846392b32bce25bf80028136c058d4fad6b`
+**Previous Hash**: `8045bc89573a6921a1e505b83ff5ef18c2750896eeafa7f704fe86ae74bded5b`
+**Chain Hash (Merkle seal)**: `cb0e2accf7f65562c06632d6539667b7acdce8432a9d462b5ac3f0596e90c54f`
+
+**Decision**: **Decision**: Phase 254 implemented under TDD across 16 files; `tests/test_signature_discrimination.py` was written first and run red at 3 of 6. `check_shadow_threshold._signature` now resolves `gate` > `capability` > `pattern` > a stable digest of the whole details mapping, on the principle that collapse requires positive evidence two events describe the same condition -- differing details mean we do not know they are the same, so they are not merged. `veto_pattern` supplies `"pattern": "repeated-veto"` so a sliding-window detector collapses instead of accumulating one signature per seal (tribunal ground V-1, entry #709). The measured effect against the loader the CLI actually calls: 134 events, 107 unaddressed, raw 173, Phase 253 rule 42, Phase 254 chain 63. This repository's visible debt rises by 21 because distinct defects stop being merged, which is the phase's purpose. Two corrections to the plan's own arithmetic are recorded at entry #711 rather than silently replaced -- an earlier draft measured the local genome only when production reads local plus upstream, and another projected a forward-only emitter fix onto already-written events. Both flattered the result; both now sit beside the corrected figures. Full suite 3227 passed / 6 skipped / 4 deselected; ruff clean.
+
+---
+
+---
+
+### Entry #714: SESSION SEAL -- Phase 254 signature discrimination (v0.167.1)
+
+**Timestamp**: 2026-09-03T08:30:00Z
+**Phase**: SEAL (Phase 254)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `86df0c8b9382`
+**Plan**: docs/plan-qor-phase254-signature-discrimination.md (PASS at entry #712)
+**Session**: 2026-09-02T2219-96c4be
+**Change Class**: hotfix (0.167.0 -> 0.167.1)
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash**: `d03e2dfc65ec3f0db0177b14e2386846392b32bce25bf80028136c058d4fad6b`
+**Previous Hash**: `cb0e2accf7f65562c06632d6539667b7acdce8432a9d462b5ac3f0596e90c54f`
+**Chain Hash (Merkle seal)**: `2ea6470dd64319dcfe2472b94fa37e8b6199cddd712dbaa909112177c8a55160`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 254 corrects the collapse Phase 253 shipped one day earlier. That rule keyed only on `details.gate` or `details.capability`, so events carrying neither collapsed by `event_type` alone and two unrelated `degradation` defects -- one about amending a plan mid-audit, one about a mandated reviewer going idle without delivering -- counted as one. Phase 253 was written to stop the threshold over-counting recurrence and introduced an under-count of distinct defects, which is the more dangerous direction precisely because the number it produces looks better. The discriminator now resolves `gate` > `capability` > `pattern` > a stable digest of the details mapping, on the principle that collapse requires positive evidence that two events describe the same condition: differing details mean we do not know they are the same, so they are not merged. Tribunal ground V-1 (entry #709) caught that the digest fallback made a sliding-window detector permanently uncollapsible -- `repeated_veto_pattern` carries a `recent_phases` window that advances every firing, so each would have become a distinct severity-3 signature growing once per seal, reintroducing through the fallback the exact failure Phase 253 removed through the primary key. The emitter now supplies `"pattern": "repeated-veto"`, and the plan states the general rule this exposed: an event type whose details vary BY CONSTRUCTION must carry an explicit classifier, the test being whether details vary by construction or by content. The phase's own arithmetic was wrong twice, both times flattering, and both corrections are recorded at entry #711 beside the figures rather than replacing them -- an earlier draft measured `read_events()` (local genome, 75 events) when the threshold CLI calls `read_all_events()` (local plus upstream, 134), and another projected the forward-only emitter fix onto already-written events that carry no `pattern` and never will, since editing sealed events to improve a number would be the worst available move. Measured correctly: raw 173, Phase 253 rule 42, Phase 254 chain 63. The visible debt rises by 21 against a threshold of 10, which is the phase working. Recorded for the Shadow Genome: three predicted figures in this session were wrong and all three were optimistic, because a number reasoned about reads exactly like a number measured and review attends to the argument around it rather than the arithmetic behind it.
+
+**GATE LADDER**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix clean; secret-scan clean; merge-velocity healthy; ledger-commitment OK (16 touched artifacts); data-api-acl disclosed-SKIP (event `932a6ab6ead0`); instruction-hygiene disclosed-SKIP (event `1a3c3249f862`); doc-integrity strict PASS; governance-index advanced + enforced clean; feature-index 27/27 verified; publication-boundary 0 findings; variant drift clean; ruff clean. Full suite 3227 passed / 6 skipped / 4 deselected.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

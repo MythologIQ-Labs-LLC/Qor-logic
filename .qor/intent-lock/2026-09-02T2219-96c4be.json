@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-02T2219-96c4be",
+  "plan_path": "docs/plan-qor-phase254-signature-discrimination.md",
+  "plan_hash": "d03e2dfc65ec3f0db0177b14e2386846392b32bce25bf80028136c058d4fad6b",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "d1260bbe458ea8bfbd3f2650ca9c556b89cae2d8c5300ce175b78f140adfded2",
+  "head_commit": "b9a06fb05f8e68fd8e72954c7ae35cdf934efae2",
+  "captured_ts": "2026-09-03T13:21:46.189357Z"
+}
