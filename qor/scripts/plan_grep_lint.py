@@ -53,6 +53,15 @@ class LintWarning:
 _MODULE_RE = re.compile(r"\bqor\.(?:scripts|policy|reliability|cli_handlers)\.([\w_]+)")
 _SKILL_PATH_RE = re.compile(r"qor/skills/(?:[\w_-]+/)+SKILL\.md")
 _REFERENCE_PATH_RE = re.compile(r"qor/references/[\w_-]+\.md")
+# Phase 255: a plan that DISCUSSES an unresolvable path is indistinguishable
+# from one that CITES it. Mirrors publication_boundary_lint's
+# `boundary-lint: ok=<reason>` and prose_test_lint's `# prose-lint: ok=<reason>`:
+# the reason is required (`\S`) so an empty marker cannot silence the control,
+# and scope is per line -- no file-level or directory-level suppression.
+_ALLOW_RE = re.compile(r"grep-lint:\s*ok=(\S[^\s>]*)")
+# Placeholder citations the reference family uses by convention.
+_REFERENCE_PLACEHOLDERS = ("foo", "bar", "baz", "example", "nonexistent",
+                          "fake", "synthetic", "new-thing")
 _NEW_DECLARATION_RE = re.compile(
     r"^[-*]\s+`(?P<path>[^`]+)`.*\bNEW\b", re.MULTILINE,
 )
@@ -97,6 +106,23 @@ def check_plan(plan_path: Path, repo_root: Path) -> list[LintWarning]:
                     reason=f"module path {full_path.relative_to(repo_root)} does not exist",
                     kind="module-path-missing",
                 ))
+
+        if not _ALLOW_RE.search(line):
+            for match in _REFERENCE_PATH_RE.finditer(line):
+                ref_path = match.group(0)
+                if ref_path in new_paths:
+                    continue
+                stem = ref_path.rsplit("/", 1)[-1][:-3]
+                bare = stem[len("doctrine-"):] if stem.startswith("doctrine-") else stem
+                if bare in _REFERENCE_PLACEHOLDERS:
+                    continue
+                if not (repo_root / ref_path).exists():
+                    warnings.append(LintWarning(
+                        plan=str(plan_path), line=line_no,
+                        citation=ref_path,
+                        reason="reference path does not exist",
+                        kind="reference-path-missing",
+                    ))
 
         for match in _SKILL_PATH_RE.finditer(line):
             skill_path = match.group(0)

@@ -20708,5 +20708,92 @@ Next: /qor-substantiate.
 
 ---
 
+---
+
+### Entry #715: GATE TRIBUNAL -- Phase 255 reference path resolution, iteration 1 (VETO)
+
+**Timestamp**: 2026-09-03T09:10:00Z
+**Phase**: GATE (Phase 255)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase255-reference-path-resolution.md
+**Session**: 2026-09-03T1338-d3fc00
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `968acc3ca3b3702c1a9f638746a2fac0218eb685b83501487e2b99c05b60dcdb`
+**Previous Hash**: `2ea6470dd64319dcfe2472b94fa37e8b6199cddd712dbaa909112177c8a55160`
+**Chain Hash (Merkle seal)**: `e5646369ee5b797fa56b6077fc33774ec8d5744791d33b46920b610fb4331334`
+
+**Decision**: **Verdict**: **VETO** -- one mandating finding. Attempt 1 of 5. The diagnosis is exact, the fix is the right shape, the WARN-posture argument is made rather than assumed, and the prospective measurement over all 277 plan documents is honest work: 4 unresolvable citations, two of them placeholders by convention, two genuine -- `doctrine-implementation-quality.md` which never existed against a real `implementation-quality-sweep.md` carrying no `doctrine-` prefix, and `qor/references/README.md`. The remedy really is still open: `_REFERENCE_PATH_RE` appears exactly once in `plan_grep_lint.py`, at its definition, while `_MODULE_RE` and `_SKILL_PATH_RE` each drive a loop with a new-path exemption and placeholder skips. **V-1 (`specification-drift`, self-application)**: a plan that DISCUSSES an unresolvable reference path is indistinguishable from one that CITES it, and this plan quotes ten such paths -- the event's own artifact three times, both genuine bad citations, both placeholders twice each, and a hypothetical new doctrine -- so the phase introducing the check would emit ten findings from it. The declared placeholder skip covers two; the other eight are prose about paths that no exemption reaches. Not cosmetic despite the WARN posture: every future plan discussing a broken citation inherits the same noise, and a check whose loudest output is its own documentation is the kind operators learn to skim. The siblings avoid this by accident rather than design, no plan having yet needed to discuss a bad skill path at length. The instrument already exists here -- `publication_boundary_lint._ALLOW_RE` accepts `boundary-lint: ok=<reason>` and `prose_test_lint._ALLOW_RE` accepts `# prose-lint: ok=<reason>`, both per-line and both requiring a non-empty reason so an empty marker cannot silence the control -- so add the matching `grep-lint: ok=<reason>`, use it on this plan's own discussion lines, and state the two properties that make it evidence rather than a mute button: the reason is required, and scope is per line with no file-level or directory-level suppression. Affirmed separately: the plan does not claim WARN-only closes a severity-4 event on its own but argues parity with the working sibling checks and locates the binding force in the Infrastructure Alignment Pass, where an unresolvable citation is a VETO with `infrastructure-mismatch` -- the correct division of labour, and the difference between closing on a working enforcer and closing on prose.
+
+---
+
+---
+
+### Entry #716: GATE TRIBUNAL -- Phase 255, iteration 2 (PASS)
+
+**Timestamp**: 2026-09-03T09:25:00Z
+**Phase**: GATE (Phase 255)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase255-reference-path-resolution.md
+**Session**: 2026-09-03T1338-d3fc00
+**Mode**: solo -- `option_b_required: false`
+
+**Content Hash**: `9e9c47d43a052caa123f82d737114e13aed80538a12c011efbfa38d0cfa46a04`
+**Previous Hash**: `e5646369ee5b797fa56b6077fc33774ec8d5744791d33b46920b610fb4331334`
+**Chain Hash (Merkle seal)**: `42cece4d8f19c0073f1810a155a3ddc6dc9767f3a2632608f05946a09d5aed75`
+
+**Decision**: **Verdict**: **PASS** -- no mandating findings. Attempt 2 of 5. V-1 closed the hard way: `plan_grep_lint` gains `_ALLOW_RE` accepting `grep-lint: ok=<reason>` to match the repository's existing `boundary-lint: ok=` and `# prose-lint: ok=` markers, and the plan then applied it to itself, so the artifact introducing the check passes its own check -- verified by execution, zero unmarked unresolved citations, with ten discussion lines carrying `grep-lint: ok=discussing-not-citing`. The plan states the two properties that keep such a marker from becoming a mute button, both inherited from the siblings: the reason is required and non-empty, and scope is per line with no file-level or directory-level suppression. The validation line was also corrected, having claimed the plan's own citations must resolve when eight of them are now marked rather than resolved; it now says resolve OR carry the marker, since the earlier wording set an acceptance criterion the plan could not meet. Carried forward: 277 plans scanned with 4 unresolvable citations, two placeholders and two genuine; `doctrine-implementation-quality.md` never existed against a real `implementation-quality-sweep.md` carrying no `doctrine-` prefix, the same invented-path class as the event being closed and undetected in a sealed plan; `_REFERENCE_PATH_RE` appears exactly once at its definition while both siblings drive loops, so the August remedy is genuinely still open. WARN posture affirmed rather than accepted: the plan argues parity with the working sibling checks and locates the binding force in the Infrastructure Alignment Pass, which is the difference between closing a severity-4 event on a working enforcer and closing it on prose.
+
+---
+
+---
+
+### Entry #717: IMPLEMENTATION -- Phase 255 reference path resolution
+
+**Timestamp**: 2026-09-03T09:40:00Z
+**Phase**: IMPLEMENT (Phase 255)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase255-reference-path-resolution.md (PASS at entry #716)
+**Session**: 2026-09-03T1338-d3fc00
+
+**Content Hash**: `c37fbafdb27e2f8d78d13deafc7cd93fdacdf2ae00fb2296b84f05ca84f3cb91`
+**Previous Hash**: `42cece4d8f19c0073f1810a155a3ddc6dc9767f3a2632608f05946a09d5aed75`
+**Chain Hash (Merkle seal)**: `3b1089b1348e2e74662bbedfe67a1f62345547620871d07e9d73ea7c7222666c`
+
+**Decision**: **Decision**: Phase 255 implemented under TDD across 13 files; `tests/test_reference_path_resolution.py` was written first and run red at 3 of 6. `plan_grep_lint.check_plan` gains a `_REFERENCE_PATH_RE` loop symmetric to its skill-path sibling, emitting `reference-path-missing`, with the `_new_paths` exemption first, then a placeholder skip covering the `foo` convention the reference family actually uses, then the existence test. `_ALLOW_RE` accepts `grep-lint: ok=<reason>` to match the repository's two existing markers, with the reason required so an empty marker cannot silence the control and scope confined to a single line (tribunal ground V-1, entry #715). Verified against the live corpus rather than fixtures: the check reports `docs/plan-qor-phase244-qor-harden.md:24` citing `qor/references/doctrine-implementation-quality.md`, a path that never existed against a real `implementation-quality-sweep.md` carrying no `doctrine-` prefix -- the same invented-path class as the 2026-08-12 hallucination event, sitting undetected in a sealed plan for three weeks. `docs/plan-qor-phase28-documentation-integrity.md:69` citing `qor/references/README.md` is the second. Both are left as historical record; nothing rewrites a sealed plan to clean a number, and the corpus test pins exactly these two so a future doctrine rename that orphans another citation fails loudly. The August remedy recorded on that event -- "wire `_REFERENCE_PATH_RE` or delete it" -- is now discharged: the regex drives a loop, its binding force is the Infrastructure Alignment Pass where an unresolvable citation is a VETO with `infrastructure-mismatch`, and the CLI confirms that classification on the Phase 244 plan. Full suite 3233 passed / 6 skipped / 4 deselected; ruff clean; variant drift clean at 406 files.
+
+---
+
+---
+
+### Entry #718: SESSION SEAL -- Phase 255 reference path resolution (v0.167.2)
+
+**Timestamp**: 2026-09-03T09:50:00Z
+**Phase**: SEAL (Phase 255)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `8baba0f14681`
+**Plan**: docs/plan-qor-phase255-reference-path-resolution.md (PASS at entry #716)
+**Session**: 2026-09-03T1338-d3fc00
+**Change Class**: hotfix (0.167.1 -> 0.167.2)
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**Content Hash**: `c37fbafdb27e2f8d78d13deafc7cd93fdacdf2ae00fb2296b84f05ca84f3cb91`
+**Previous Hash**: `3b1089b1348e2e74662bbedfe67a1f62345547620871d07e9d73ea7c7222666c`
+**Chain Hash (Merkle seal)**: `07a618d4a2a710414dfafbc757f9cc1f8a352669e80a89ac8c52dbeca6be7e40`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 255 discharges the remedy recorded on the unaddressed severity-4 `hallucination` event of 2026-08-12, which had stood open for three weeks. A doctrine path that did not exist was asserted to the operator as fact and written into a plan as an Affected File, and the event itself named why nothing caught it: `plan_grep_lint._REFERENCE_PATH_RE` was defined and never used, so the `qor/references` family was resolved by no check, while `_MODULE_RE` and `_SKILL_PATH_RE` each drove a working loop. The regex now drives one too, emitting `reference-path-missing`, ordered new-path exemption then placeholder skip then existence test, matching its sibling. Tribunal ground V-1 (entry #715) caught that a plan DISCUSSING an unresolvable path is indistinguishable from one CITING it, and that this plan quoted ten such paths and would have emitted ten findings from its own check -- so `_ALLOW_RE` accepts `grep-lint: ok=<reason>` in the shape of the repository's existing `boundary-lint:` and `prose-lint:` markers, with the reason required so an empty marker cannot silence the control and scope confined to one line. The plan then applied the marker to itself and passes its own check with zero unmarked unresolved citations. Verified against the live corpus rather than fixtures: over all 277 plan documents the check finds exactly two genuine broken citations. `plan-qor-phase244-qor-harden.md:24` cites `doctrine-implementation-quality.md` where the real file is `implementation-quality-sweep.md` with no `doctrine-` prefix -- the same invented-path class as the event being closed, undetected in a sealed plan; `plan-qor-phase28-documentation-integrity.md:69` cites a `qor/references/README.md` that never existed. Both stay as historical record, and the corpus test pins exactly these two so a future doctrine rename that orphans another citation fails loudly. On posture, argued rather than assumed: the lint is WARN-only at Step 0.6 in parity with its working siblings, and the binding force is the Infrastructure Alignment Pass, where an unresolvable citation is a VETO with `infrastructure-mismatch` -- the CLI confirms that classification on the Phase 244 plan. Closing a severity-4 event on a check with no teeth would have been the half-measure; closing it on the mechanism that already catches invented module and skill paths closes it on a working enforcer. The event's flip to `addressed` belongs to a `/qor-remediate` pass and is not performed here, since the enforcer now exists but the closure ceremony is separate work.
+
+**GATE LADDER**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix clean; secret-scan clean; merge-velocity healthy; ledger-commitment OK (13 touched artifacts); data-api-acl disclosed-SKIP (event `f36d8a71f13c`); instruction-hygiene disclosed-SKIP (event `f6a4e731deb0`); doc-integrity strict PASS; governance-index advanced + enforced clean; feature-index 27/27 verified; publication-boundary 0 findings; variant drift clean at 406 files; ruff clean. Full suite 3233 passed / 6 skipped / 4 deselected.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)
