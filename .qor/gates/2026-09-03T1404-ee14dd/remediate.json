@@ -1,0 +1,41 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-09-03T1404-ee14dd",
+  "events_addressed": [
+    "139a0002e440cffe402799a84c298a7c9f96216717597ed04b9c495f29e89316",
+    "14432f62f0f99b0c6dc47393d51baf07b613e798add4fb6c0b5ba5489a8efac6",
+    "170e7cc44bd45e34ff65f83c7c0f650d3401fc57caf613ab11e1c4cd57339d96",
+    "1849e4a014788cbedf2540bf242a1e0979e085af2dc7b5fa19a4d23b493e387c",
+    "1b8268c523fcc10d5a46dab1a8ccb2b3bf3f279393694e01c8aa935b206130f7",
+    "1b95ac33f9b859d5b61a2bda08f5c6506c2be833b49ffd42e9c3744ec1095259",
+    "2a55765abd5fb8c372d914fad6c26e26decb8e331d59d89835b8fa8cca813054",
+    "41b0431335432bd838de61d218dcb31d891ee3f288ab219156e0bf9690c1a513",
+    "4ea390bb1873419f655b177028cc7b755273a0167f22b03a33eb47928a2264b6",
+    "6c1faa1590c396e547844a19c641bb41b8ba696d231dddc0967b9696db16570d",
+    "87e3dc2a7d5c9ab331928aa0bc4b3749fe5befe17b21cee419ce676f823adaa2",
+    "882fcef9cca57a776cf666ff041871d6fb53199b755b9121c29d3a5b5c48663b",
+    "888993719d29518ee9662a80477c4968ddcf4a3a0eebe2d440f872dad9e64948",
+    "932a6ab6ead0d3f0a6a3f15d231709c2c7ce3641ce313eea1ab50494f0f9264d",
+    "9592bdccdf58ad60884a0dae31d6f2ca17784ca273802a982d01c68ee476af4a",
+    "ef9ae2b425d4aa2972bc331cb431cb2017a816e4e1ad6d50f128335e022e1b6a",
+    "f36d8a71f13cb39c553012f2eb7a47587c8263ada0efd2b96089ada07922a593"
+  ],
+  "proposed_changes": [
+    {
+      "target": "qor.scripts.plan_grep_lint",
+      "change": "Phase 255 wired _REFERENCE_PATH_RE into check_plan, emitting reference-path-missing. The enforcer the 2026-08-12 hallucination event named as its remedy now exists; this closes the event against it.",
+      "closure_enforcer": "qor.scripts.plan_grep_lint:check_plan"
+    },
+    {
+      "target": ".github/workflows/ci.yml + tests/test_gate_provenance.py",
+      "change": "verify-committed runs keylessly on every PR and its negative cases (artifact tamper, missing sidecar) are proven, so a hand-edited gate artifact that breaks its payload binding now fails CI.",
+      "closure_enforcer": "tests/test_gate_provenance.py"
+    },
+    {
+      "target": ".qorlogic/config.json permanent_skips + qor.scripts.permanent_skips",
+      "change": "Three gates skip on properties of this repository no enforcer will satisfy. Declared permanent with justifications; append_event stamps future emissions closed so the disclosure survives without accruing.",
+      "closure_enforcer": "cannot-automate: declared permanent skips, see .qorlogic/config.json"
+    }
+  ],
+  "ts": "2026-09-03T15:22:38Z"
+}

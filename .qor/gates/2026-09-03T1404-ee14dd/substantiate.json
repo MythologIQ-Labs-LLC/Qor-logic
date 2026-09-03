@@ -1,0 +1,19 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-03T1404-ee14dd",
+  "ts": "2026-09-03T15:42:14Z",
+  "verdict": "PASS",
+  "version": "0.168.0",
+  "merkle_seal": "5426ee78e4127161b3bf28428ed8c715e38962ca9b35f5f6f2e546e771a68f73",
+  "entry_id": "47e399e99805",
+  "plan_path": "docs/plan-qor-phase256-shadow-residue-closure.md",
+  "change_class": "feature",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.168.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "pass",
+    "ts": "2026-09-03T15:42:14Z"
+  }
+}

@@ -19,6 +19,8 @@ import jsonschema
 
 from qor import resources as _resources
 from qor import workdir as _workdir
+from qor.scripts import permanent_skips
+from qor.scripts.permanent_skips import PermanentSkipDeclarationError  # noqa: F401
 
 SCHEMA_PATH = Path(str(_resources.schema("shadow_event.schema.json")))
 LOCAL_LOG_PATH = _workdir.shadow_log()
@@ -119,6 +121,7 @@ def append_event(
         if attribution is None:
             raise ValueError("append_event requires attribution=... or log_path=...")
         log_path = log_path_for(attribution)
+    event = permanent_skips.apply(event)
     validate(event)
     _apply_override_friction(event, log_path)
     event_id = compute_id(event)

@@ -1,5 +1,10 @@
 {
   "attribution": {
     "model_coauthor": false
+  },
+  "permanent_skips": {
+    "data_api_acl_lint": "This repository ships no SQL migrations, so the Data-API grant and definer-view scan has no subject; the scanner prints a disclosed SKIP and exits 0 by design.",
+    "feature_index_surface_lint": "This repository's FEATURE_INDEX header declares no Surface column, which is the gate's prerequisite; the surface lint exists for a consuming repository and has nothing to read here.",
+    "agent-teams": "No host in this repository's supported set exposes an agent-teams capability, and qor_platform.FALLBACKS declares host-native subagent dispatch as the substitute, so the absence costs no function."
   }
 }

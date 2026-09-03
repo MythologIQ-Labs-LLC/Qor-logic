@@ -10,6 +10,16 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.168.0] - 2026-09-03
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 256 (feature; declared permanent skips)**: `.qorlogic/config.json` gains a `permanent_skips` section mapping a gate or capability name to the justification for why no enforcer will ever satisfy it in this repository. `shadow_process.append_event` -- the one choke point every emitter passes through, including the ones an operator writes by hand from a skill step -- stamps a covered event closed as it is written. The event still reaches the log, because the Phase 75 disclosed-skip exists so a skipped gate stays visible; only its debt accrual changes. Three gates skipped on every single cycle here (no SQL migrations for the Data-API scan, no `Surface` column for the feature-index lint, no host agent-teams capability), so closing their events one pass at a time was a treadmill. Scope is bounded to event types that report an *absence*: a declaration cannot close a `degradation`, `regression`, `hallucination`, `gate_override`, or `repeated_veto_pattern`, which keep the attested two-stage path through `mark_addressed` and its review-pass artifact. A justification under 50 characters raises rather than being ignored.
+
+### Changed
+- **Phase 256 (governance; shadow-genome residue closure)**: the collapsed severity drops from 63 to a measured 38 across 23 signatures. Fourteen severity transferred to the private companion line as `deferred_upstream` against filed issues -- an orchestrator amending a plan while a review is in flight, a mandated reviewer going idle without delivering its verdict, an orchestrated implementation that never captures the intent lock so `intent_lock verify` exits 0 with no referent, and two faces of the installed-corpus drift. Seven closed as remediated against enforcers verified by execution: the reference-path loop shipped in Phase 255, and the keyless `verify-committed` CI step whose negative cases (artifact tamper, missing sidecar) are proven. Four declared permanent. Nothing was closed to make the number smaller: `codex-plugin` was withdrawn from the closure during audit because `external_reviewer.command` is a key this repository ships and reads, so the capability is unconfigured rather than unobtainable, and the `merge-on-green` override stays open because its remedy is real and no mechanical enforcer exists for it. Because the public repository must not name an outside one, the genome records an anonymized reference and the resolvable mapping stays in the gitignored private area.
+
 ## [0.167.2] - 2026-09-03
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
