@@ -20793,7 +20793,99 @@ Next: /qor-substantiate.
 
 **GATE LADDER**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix clean; secret-scan clean; merge-velocity healthy; ledger-commitment OK (13 touched artifacts); data-api-acl disclosed-SKIP (event `f36d8a71f13c`); instruction-hygiene disclosed-SKIP (event `f6a4e731deb0`); doc-integrity strict PASS; governance-index advanced + enforced clean; feature-index 27/27 verified; publication-boundary 0 findings; variant drift clean at 406 files; ruff clean. Full suite 3233 passed / 6 skipped / 4 deselected.
 
+
 ---
+
+### Entry #719: GATE TRIBUNAL -- Phase 256, iterations 1-2 (VETO then PASS)
+
+**Timestamp**: 2026-09-03T15:25:00Z
+**Phase**: GATE (Phase 256)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase256-shadow-residue-closure.md
+**Session**: 2026-09-03T1404-ee14dd
+
+**Content Hash**: `9f14cfa38e83c47ad3f30e3ce8af3c901ebb29406af9ce8b4d4f3f957dec9c66`
+**Previous Hash**: `07a618d4a2a710414dfafbc757f9cc1f8a352669e80a89ac8c52dbeca6be7e40`
+**Chain Hash (Merkle seal)**: `92ee82efefd1f6ba4acc6eb4935aa29cd00508de4586e6af91961b54d91e5663`
+
+**Decision**: **VERDICT: PASS** at iteration 2, after a VETO at iteration 1 on three grounds. `audit_risk_score` returned `option_b_required: false`; mode solo. The iteration-1 report was superseded in place at `.agent/staging/AUDIT_REPORT.md`, so this entry's content hash binds the iteration-2 record and the iteration-1 grounds are stated here rather than cited by hash.
+
+**V-1 (control-weakening)**: the mechanism built to stop the treadmill was a second, unguarded road to `addressed: true`. Two-stage closure exists because that is a strong claim -- `mark_addressed` calls `_verify_review_pass_artifact` and refuses to flip anything without a genuine PASS review of the named remediate gate, and `mark_deferred_upstream` refuses without a destination. An emit-time stamp reached the same terminal state with neither, gated only by a key in a tracked config file that no gate protects, and the plan's answer ("only the operator can declare a permanent skip") is an assertion about who edits a file rather than a control. As written, `permanent_skips` naming `intent_lock` would have silently closed every future intent-lock skip -- the exact gate whose false PASS this same plan defers upstream. Directive: bound the mechanism to the event types that report an absence, and prove the bound with a test. Closed by `_CLOSABLE_ON_EMISSION` plus `test_declared_key_cannot_close_a_defect_event`.
+
+**V-2 (specification-drift)**: `codex-plugin` was declared a permanent property. It is not one. `.qorlogic/config.json` reads an `external_reviewer.command` key that `qor/scripts/external_reviewer.py` consumes and Phase 123 shipped the subprocess bridge for; the capability is unconfigured, not unobtainable. `cannot-automate:` asserts that nothing will ever repair it, which the repository's own configuration contradicts, and the false claim would have been more durable than the event it closed. Directive: remove it from the closure. Closed -- it stays open at severity 2, still recording that 29 audits ran with no adversarial engine.
+
+**V-3 (specification-drift)**: `agent-teams` was closed as `remediated` against a live emitter. Neither `qor_audit_runtime.emit_capability_shortfall` nor `/qor-implement` Step 1.a consults the `availability()` helper Phase 252 added, so `satisfied-by-fallback` is computed and never reaches the emitter. The flip would have repaired nothing durable and would have scheduled a failure into the plan's own anti-recurrence test at the next firing. Directive: move it to the declared permanent skips. Closed; the non-permanent set in that test drops from eight signatures to seven.
+
+**Verified by execution**: `collapsed_severity` over `read_all_events()` returns 63 across 33 unaddressed signatures and the per-signature contributions sum to 63 exactly; `publication_boundary_lint._SELF_REPO` is this repository alone while `_GH_URL_RE` matches any other owner/repo, and both genome files are tracked, so the boundary hazard the plan identifies is real; `git check-ignore` resolves the private mapping to `.gitignore:37`; `tests/test_gate_provenance.py` proves the keyless `verify-committed` CI step fails on artifact tamper and on a missing sidecar rather than only passing when nothing is wrong.
+
+**Note of record**: the plan identifies that counting a justified `gate_override` as unaddressed debt penalizes disclosure, and declines to act on it. That restraint was affirmed rather than treated as an omission: changing what the threshold counts, inside a pass whose purpose is to lower the number that threshold produces, would be indistinguishable from tuning the instrument to read clean.
+
+**Required next action**: `/qor-implement`.
+
+---
+
+### Entry #720: IMPLEMENTATION -- Phase 256 shadow residue closure
+
+**Timestamp**: 2026-09-03T15:45:00Z
+**Phase**: IMPLEMENT (Phase 256)
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase256-shadow-residue-closure.md (PASS at entry #719)
+**Session**: 2026-09-03T1404-ee14dd
+
+**Content Hash**: `056142110058fc1115c91771e027957b520274ed3a6e79966cf6680f02ed0857`
+**Previous Hash**: `92ee82efefd1f6ba4acc6eb4935aa29cd00508de4586e6af91961b54d91e5663`
+**Chain Hash (Merkle seal)**: `d0b7dc6011fdeef4041f75d5b1796992ae9948e063464a17213a3100d9a20cc3`
+
+**Decision**: Phase 256 implemented under TDD. `tests/test_permanent_skips.py` was written first and run red at 3 of 6, failing on the absent `PermanentSkipDeclarationError` and on events that read back unaddressed. `qor/scripts/permanent_skips.py` is a new module rather than an addition to `shadow_process.py`, which stood at 240 lines against the 250-line Razor cap; `append_event` gains one call to `permanent_skips.apply` before `validate`, so the stamped shape is what the schema checks.
+
+Three closures went through the attested path rather than a direct flip: a remediation proposal was emitted to `.qor/gates/2026-09-03T1404-ee14dd/remediate.json`, reviewed by a PASS artifact naming that gate, and `mark_addressed_pending` then `mark_addressed` flipped 17 events under per-event enforcers. Thirty-four events were closed as `deferred_upstream` against filed destinations. The remaining residue was measured with the loader the CLI actually calls: 38 across 23 signatures and 60 unaddressed events, matching the plan's projection of 38 exactly. The plan's Measured effect section was then corrected from projection to measurement, which is what the plan instructed and which is disclosed as a `post_audit_plan_amendment` gate_override because the audit's `target_content_hash` no longer matches the file.
+
+Proven live rather than only in fixtures: running `feature_index_verify --surface-lint` emitted a fresh `gate_skipped_prerequisite_absent`, the log grew from 138 events to 139 so the disclosure survived, and the new event read back `addressed: true` carrying the declared justification in its `closure_enforcer`. The subsequent `post_audit_plan_amendment` disclosure collapsed into the existing signature and left the sum at 38, which is the Phase 253/254 collapse rule working on a live event.
+
+Two defects in this pass were caught and fixed rather than shipped. The review-pass artifact embedded an absolute local path returned by `remediate_emit_gate.emit`, which `publication_boundary_lint` flagged; it was rewritten repo-relative and the attestation re-verified against the new value. And a test helper named `_emit` collided with a keyword-only function of that name in `qor/scripts`, failing `test_no_positional_calls_to_keyword_only_functions`; the helper was renamed rather than the name-based lint weakened.
+
+Full suite 3244 passed / 6 skipped / 4 deselected; new tests run twice for determinism; ruff clean; variant drift clean at 406 files; publication boundary 0 findings.
+
+---
+
+### Entry #721: SESSION SEAL -- Phase 256 shadow residue closure (v0.168.0)
+
+**Timestamp**: 2026-09-03T15:55:00Z
+**Phase**: SEAL (Phase 256)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `47e399e99805`
+**Plan**: docs/plan-qor-phase256-shadow-residue-closure.md (PASS at entry #719)
+**Session**: 2026-09-03T1404-ee14dd
+**Change Class**: feature (0.167.2 -> 0.168.0)
+**SSDF Practices**: PS.2.1, PW.7.2, RV.2.1
+
+**Content Hash**: `056142110058fc1115c91771e027957b520274ed3a6e79966cf6680f02ed0857`
+**Previous Hash**: `d0b7dc6011fdeef4041f75d5b1796992ae9948e063464a17213a3100d9a20cc3`
+**Chain Hash (Merkle seal)**: `5426ee78e4127161b3bf28428ed8c715e38962ca9b35f5f6f2e546e771a68f73`
+
+**Decision**: **Verdict**: **PASS** -- Reality matches Promise.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Decision**: Phase 256 closes the shadow-genome residue and fixes the emitter that would have reopened it. The collapsed severity moves from 63 to a measured 38 across 23 signatures.
+
+Two things were wrong with 63 and only one was this repository's debt. Five signatures were owned by the private companion line -- an orchestrator amending a plan while a review is in flight, a mandated reviewer going idle without delivering its verdict, an orchestrated implementation that never captures the intent lock so `intent_lock verify` exits 0 with no referent, and two faces of the installed-corpus drift. None is repairable here, and `deferred_upstream` exists for exactly that. Three further signatures re-emitted every cycle on permanent properties of this repository: no SQL migrations for the Data-API scan, no `Surface` column for the feature-index lint, no host agent-teams capability. Flipping those events without touching the emitter would have been a pass to re-run every phase, so `.qorlogic/config.json` gains `permanent_skips` and `shadow_process.append_event` -- the one choke point every emitter passes through, hand-written ones included -- stamps a declared event closed as it is written. The event still reaches the log, because the Phase 75 disclosed-skip exists so a skipped gate stays visible; only its debt accrual changes.
+
+The tribunal VETOed the first draft on three grounds and every correction made this phase's headline number worse. V-1: emit-time closure reached `addressed: true` without the review-pass attestation `mark_addressed` demands, and unbounded it could have silenced any event class -- now confined to `gate_skipped_prerequisite_absent` and `capability_shortfall`, with a test proving a declaration cannot close a `degradation`. V-2: `codex-plugin` was withdrawn from the closure because `external_reviewer.command` is a key this repository ships and reads, so the capability is unconfigured rather than unobtainable; it stays open at severity 2. V-3: `agent-teams` was reclassified from a repair claim to a declared permanence because its emitter is live.
+
+Nothing was closed to make the number smaller. The `merge-on-green` override stays open because its remedy is real and no mechanical enforcer exists for it, and building one was outside this scope. Three `repeated_veto_pattern` firings stay open because the detector was correct. Eighteen `gate_override` disclosures stay open, and the plan records the question they raise without answering it: an override carrying `override_authority: user` and a written justification is a completed oversight action logged because EU AI Act Art. 14 and AI-RMF MANAGE-1.1 require it, not outstanding work, so counting it as debt means diligent disclosure worsens the health number. Changing what the threshold counts belongs in its own cycle with its own adversarial pass, not in a pass whose purpose is to lower that number.
+
+On the boundary: the operator's instruction is that deferring upstream must mean a real issue exists, and the publication boundary is that a tracked artifact here must not identify an outside repository -- mechanically enforced, since `_GH_URL_RE` matches any owner but this one and both genome files are tracked. Both hold. The destination issues are really filed, the genome records the anonymized reference the doctrine's delete-or-anonymize remedy prescribes, and the resolvable mapping lives in the gitignored private area. A private-repository URL is unreadable to a public reader whatever its shape, so the anonymized form loses no verification that ever existed.
+
+**GATE LADDER**: intent-lock VERIFIED; skill-admission ADMITTED; gate-skill-matrix 32 skills / 156 handoffs / 0 broken; secret-scan clean; merge-velocity healthy; dod-check WARN (plan carries no Definition of Done section; WARN-only, not amended post-PASS); skill-size-budget WARN-only at 25.6 KB with no EXCEEDED; data-api-acl disclosed-SKIP, now closed on emission by declared permanent skip; feature-index-surface disclosed-SKIP, likewise; doc-integrity strict PASS; governance-index advanced + enforced clean; feature-index 27/27 verified; publication-boundary 0 findings; variant drift clean at 406 files; ruff clean. Full suite 3244 passed / 6 skipped / 4 deselected.
+
+**Disclosures**: (1) The plan's Measured effect section was corrected from projection to measurement after the PASS audit, so the audit artifact's `target_content_hash` no longer matches the file; the amendment executes an instruction the audited plan contained and the measurement confirmed the projection exactly, and a severity-2 `post_audit_plan_amendment` gate_override records it rather than leaving it silent. (2) The iteration-1 VETO report was superseded in place; its three grounds are recorded in full at entry #719 rather than cited by hash. (3) `codex-plugin` remains an open severity-2 signature by tribunal directive, not by oversight.
+
+---
+
 
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

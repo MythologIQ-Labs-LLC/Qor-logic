@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-03T1404-ee14dd",
+  "plan_path": "docs/plan-qor-phase256-shadow-residue-closure.md",
+  "plan_hash": "056142110058fc1115c91771e027957b520274ed3a6e79966cf6680f02ed0857",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "9f14cfa38e83c47ad3f30e3ce8af3c901ebb29406af9ce8b4d4f3f957dec9c66",
+  "head_commit": "308c8250f26b38d97c4690f38984263e09e45116",
+  "captured_ts": "2026-09-03T15:32:52.385473Z"
+}
