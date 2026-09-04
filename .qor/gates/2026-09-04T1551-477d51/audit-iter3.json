@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-04T1551-477d51",
+  "ts": "2026-09-04T16:55:04Z",
+  "target": "docs/plan-qor-phase258-adr-contract-and-status-lint.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "test-failure",
+    "specification-drift"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "veto",
+    "ts": "2026-09-04T16:55:04Z"
+  }
+}

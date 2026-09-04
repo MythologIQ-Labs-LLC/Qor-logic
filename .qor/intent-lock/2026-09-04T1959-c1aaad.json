@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-04T1959-c1aaad",
+  "plan_path": "docs/plan-qor-phase262-bind-findings-category-mirror.md",
+  "plan_hash": "95f5aa324cc3826b9110d31063a32741c070d988db23c67875c19b9c16cdc53d",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "b08aa63d5de06280f1d757b6ad3cfaebb5e630a55044fbff78514f5ec5490071",
+  "head_commit": "9bb10b6153289852e3d0ca50906bb3396b5c1a0f",
+  "captured_ts": "2026-09-04T20:35:06.828784Z"
+}

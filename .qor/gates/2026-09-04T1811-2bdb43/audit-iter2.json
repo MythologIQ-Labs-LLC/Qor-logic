@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-04T1811-2bdb43",
+  "ts": "2026-09-04T18:36:03Z",
+  "target": "docs/plan-qor-phase261-scope-claim-controls.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "test-failure",
+    "infrastructure-mismatch"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "veto",
+    "ts": "2026-09-04T18:36:03Z"
+  }
+}

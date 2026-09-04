@@ -1,0 +1,121 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-04T1551-477d51",
+  "ts": "2026-09-04T15:53:34Z",
+  "questions": [
+    "How are ADR status lines shaped across docs/ADR_*.md, and do they carry a machine-readable binding to an implementing phase?",
+    "Can an ADR be bound to its implementing phase through META_LEDGER entry headings?",
+    "What lint/detector conventions in qor/scripts/ must a new ADR status detector match, and where does it wire?",
+    "What does qor/scripts/ already provide for git/gh introspection that an extended /qor-status tier can reuse?",
+    "Does gh availability need a fail-safe path for CI and forks with no token?",
+    "How does an actor classification separating bot from developer and agent work get implemented without duplicating an existing predicate?",
+    "Does the <5KB default budget and skill size headroom constrain adding an opt-in --full tier?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "kind": "DRIFT",
+      "summary": "The three ADRs share no common machine-readable binding field; ADR_QOR_ROADMAP.md:3 names neither a phase nor an issue, so a status-line detector would report clean on the stalest ADR.",
+      "sources": [
+        "docs/ADR_EXECUTION_CONTEXT_ADAPTIVE_GOVERNANCE.md:3",
+        "docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md:3",
+        "docs/ADR_QOR_ROADMAP.md:3"
+      ]
+    },
+    {
+      "id": "F2",
+      "kind": "MATCH",
+      "summary": "Phase-to-ledger binding verified by execution: walk() returns a complete 722-of-722 enumeration; Phase 239->#656, 240->#644, 241->#649. Ids 510/532 are genuine ledger numbering gaps, not parser drops.",
+      "sources": [
+        "qor/scripts/meta_ledger_walker.py:73",
+        "qor/scripts/meta_ledger_walker.py:29"
+      ]
+    },
+    {
+      "id": "F3",
+      "kind": "DRIFT",
+      "summary": "All three ADRs are Tier 2 rows, but the Tier 2 contract has no freshness-marker column, so the tier tracking them cannot express staleness.",
+      "sources": [
+        "docs/GOVERNANCE_INDEX.md:26",
+        "docs/GOVERNANCE_INDEX.md:45",
+        "docs/GOVERNANCE_INDEX.md:46",
+        "docs/GOVERNANCE_INDEX.md:48"
+      ]
+    },
+    {
+      "id": "F4",
+      "kind": "MATCH",
+      "summary": "Lint CLI/finding conventions and generic scripts dispatch already exist; a new qor/scripts/<name>.py needs no registration and can register as a status_json ladder Check.",
+      "sources": [
+        "qor/scripts/governance_index.py:184",
+        "qor/cli.py:262",
+        "qor/scripts/status_json.py:88"
+      ]
+    },
+    {
+      "id": "F5",
+      "kind": "DRIFT",
+      "summary": "Machine-author classification exists twice with divergent predicates behind a docstring claiming parity it does not have. Latent, not live: the narrow form's only caller passes the login form it matches.",
+      "sources": [
+        "qor/scripts/github_surface.py:45",
+        "qor/scripts/pr_citation_lint.py:89",
+        ".github/workflows/pr-lint.yml:71"
+      ]
+    },
+    {
+      "id": "F6",
+      "kind": "MATCH",
+      "summary": "github_surface supplies the reusable gh pattern: injected fetcher for testability, exit 2 on (RuntimeError, OSError, ValueError) covering both a failing and an absent gh. No shutil.which probe exists in the corpus.",
+      "sources": [
+        "qor/scripts/github_surface.py:74",
+        "qor/scripts/github_surface.py:111",
+        "qor/scripts/merge_readiness.py:93"
+      ]
+    },
+    {
+      "id": "F7",
+      "kind": "DRIFT",
+      "summary": "Assumption refuted by measurement: qor-status is 7,369 B against a 25 KB WARN threshold (18,231 B headroom). The progressive-disclosure pressure that constrained Phase 257 does not apply.",
+      "sources": [
+        "qor/skills/memory/qor-status/SKILL.md",
+        "qor/scripts/skill_size_budget_lint.py:23"
+      ]
+    },
+    {
+      "id": "F8",
+      "kind": "MEASURED",
+      "summary": "Actor baseline on origin/main: 722 commits = 621 developer, 88 agent, 13 bot. Dependabot holds 9 commits, 15 PRs all-time (0 open), 0 outstanding branches.",
+      "sources": [
+        "git log --format=%an origin/main",
+        "gh pr list --author app/dependabot --state all"
+      ]
+    }
+  ],
+  "sources": [
+    "docs/ADR_EXECUTION_CONTEXT_ADAPTIVE_GOVERNANCE.md",
+    "docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md",
+    "docs/ADR_QOR_ROADMAP.md",
+    "docs/GOVERNANCE_INDEX.md",
+    "docs/META_LEDGER.md",
+    "qor/scripts/meta_ledger_walker.py",
+    "qor/scripts/governance_index.py",
+    "qor/scripts/status_json.py",
+    "qor/scripts/github_surface.py",
+    "qor/scripts/pr_citation_lint.py",
+    "qor/scripts/merge_readiness.py",
+    "qor/scripts/skill_size_budget_lint.py",
+    "qor/cli.py",
+    ".github/workflows/pr-lint.yml",
+    ".github/workflows/nightly-health.yml",
+    "qor/skills/memory/qor-status/SKILL.md"
+  ],
+  "brief_path": "docs/research-brief-adr-status-drift-and-extended-status-2026-09-04.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-04T15:53:34Z"
+  }
+}

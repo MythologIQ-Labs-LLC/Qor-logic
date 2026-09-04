@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.169.1] - 2026-09-04
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 262 (hotfix; bind findings-category mirror)**: `findings_signature._VALID_CATEGORIES` is a hand-maintained mirror of the `findings_categories` enum in `qor/gates/schema/audit.schema.json`, and nothing compared the two, so they drifted -- 15 schema values against 14 in the frozenset, with `feature-test-undeclared` missing. That is the category the audit skill names in its own Critical Invariants as the mandatory tag for a Feature Test Declaration Pass violation, so it is emitted by a correct audit rather than being hypothetical. The consequence was not an undercount: `compute_record` raises `UnmappedCategoryError` on any value outside the frozenset, and `stall_walk` calls it unguarded at both its sites, behind `cycle_count_escalator.check` and `check_session_total`, which run at `/qor-plan` Step 2c and `/qor-audit` Step 0.5. The first audit to issue that VETO would have broken the control that watches for repeated VETOs on the next cycle. The fix is one frozenset member; the tests are the part that matters, binding the two sources three ways -- set equality in both directions so a retired schema value also fails, per-value acceptance driven through the function that raises rather than through a collection comparison, and a walk of the whole enum through `count_session_signature_totals` seeded via `audit_history.append` into the JSONL that function actually reads. The tribunal caught the third test being specified against the wrong surface: seeding per-category files into the gate directory, as the first plan iteration described, yields an empty history and a test that passes before the change while asserting nothing.
+
 ## [0.169.0] - 2026-09-03
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

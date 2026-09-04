@@ -40,6 +40,7 @@ _VALID_CATEGORIES = frozenset({
     "infrastructure-mismatch",
     "prompt-injection",
     "live-progress-fake",
+    "feature-test-undeclared",
 })
 
 
