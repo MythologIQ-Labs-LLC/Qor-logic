@@ -2454,4 +2454,86 @@ Predicted-metric family (first occurrence). Related to the vacuous-test family f
 
 ---
 
+## Entry: Phase 258 -- a predicate measured only where it was convenient
+
+### What Happened
+
+Research established that a decision record could be bound to its implementing phase by searching the ledger for `SESSION SEAL -- Phase <N>`. The claim was measured, not assumed: `meta_ledger_walker.walk()` was executed against the live ledger, and the predicate resolved Phase 239 to entry #656, Phase 240 to #644, and Phase 241 to #649. Three for three. The research brief recorded it as "a reliable 'this phase shipped' predicate," and the plan built both drift kinds on it.
+
+The three phases sampled were the three the work already concerned, and all three were recent. Across the whole corpus the predicate matches 203 phases and misses 21: nineteen seal under an em-dash rather than a double hyphen, Phase 12 seals as `SUBSTANTIATE`, and Phase 60 as `SESSION RECONCILIATION SEAL`. The ledger's label dialect changed over time, and every sampled entry sat on the near side of that change.
+
+A second defect rode along undetected for the same reason. The predicate carried no word boundary, so `**Phase:** 5` would bind to Phase 50. Testing against 239, 240, and 241 -- none of which is a prefix of another phase number in the corpus -- could not have surfaced it. `governance_index.py:143` already solves the boundary with `` and was cited by the plan as its shape model, so the correct form was in the file the plan named while the plan copied the incorrect one.
+
+### Pattern to Avoid
+
+Measurement satisfies the instinct that a claim was checked, and then the sample silently decides the answer. The samples that come to hand are the ones the current work already touches, which in a chronological corpus means the newest ones -- exactly the region where a format drift is invisible, because drift is a property of the tail you did not read.
+
+The tell is a sample chosen by relevance rather than by coverage. Three confirmations from the phases under discussion is not evidence about a 722-entry ledger; it is evidence about three entries. A predicate over a corpus owes a denominator: how many records exist, how many the predicate matches, and what the residual looks like. The residual is the finding, and it cannot appear in a sample selected for being on-topic.
+
+A boundary condition compounds it. Numeric identifiers that are prefixes of other identifiers only collide at certain values, so a sample of large or non-prefix numbers cannot reach the bug. When a predicate interpolates an integer into a text search, the prefix case is a required sample, not an edge case.
+
+### Pattern ID
+
+Convenience-sample family (first occurrence). Distinct from the predicted-metric family of Phase 254 by mechanism rather than consequence: there a figure was reasoned and never measured, here it was measured against a sample that could not have disconfirmed it. Both yield a green that means "consistent with what I looked at". Countermeasure: any claim of the form "predicate P holds for corpus C" must report matched, unmatched, and total, with the unmatched set enumerated rather than summarized; and when P interpolates an identifier, the sample must include a value that is a proper prefix of another.
+
+---
+
+## Entry: Phase 258 -- asserting why a test will fail, before writing it
+
+### What Happened
+
+The Definition of Done contract requires each deliverable to declare D4: the test that proves it, and the behavior that test asserts. Plans in this repository routinely add a clause naming why the test is red today, because a test that is not red before the change proves nothing.
+
+That clause is a prediction about a test that does not exist yet, and it went wrong twice inside one phase.
+
+Iteration 1 declared a D4 row red "before the backfill" for a test whose module was scheduled in the next phase; it would have been red for an ImportError. That was caught, and the module moved. Iteration 3 then declared a different test red "today on ADR_QOR_ROADMAP.md". Measured, `grep -c "^\*\*Phase" docs/ADR_*.md` returns zero for all three records, so the test is red on all three. The failing set was understated by two thirds, in a row certifying that the test fails for the stated reason.
+
+Both times the prediction was optimistic in the same direction: it described a narrower, tidier failure than the real one, and the narrower failure was the one that made the plan look precise.
+
+### Pattern to Avoid
+
+A D4 red-reason clause reads like an observation and is written like one, but nothing has been executed. The test does not exist, so the claim cannot be checked by the author at the moment of writing, and it cannot be checked by review either, because a reviewer verifying it would have to construct the test themselves.
+
+The trap is sharpest when the change is a backfill or a migration. The author knows which artifact motivated the work, and writes that artifact's name into the red-reason clause. The other artifacts in the same class are usually failing too, for the same reason, and never get mentioned -- because the author was thinking about the case that prompted the phase rather than the predicate the test actually evaluates.
+
+The clause is worth keeping. It is the only thing standing between a plan and a test written after the fact to pass. But it must be derived from the predicate, not from the motivating example: run the predicate's condition against the whole set the test will scan, and name the full failing set with its size.
+
+### Pattern ID
+
+Predicted-red family (second occurrence within one phase; first correction did not generalize). Sibling of the predicted-metric family from Phase 254 -- there a number was reasoned rather than measured; here a test outcome is. Distinct from the convenience-sample family logged earlier this same phase by what goes unexamined: there the denominator, here the failing set. All three share one shape, an author checking the case that prompted the work rather than the population the code will meet. Countermeasure: every D4 red-reason clause must state the failing set and its size, derived by running the test's own condition -- as a grep or a one-line script -- against the full scan target before the clause is written.
+
+---
+
+## Entry: Phase 258 -- the scope of the measurement is not the scope of the claim
+
+### What Happened
+
+Four times in one session, a claim was checked and still wrong, always in the same way: the check was narrower than the sentence written from it.
+
+A seal predicate was verified against three phases, all recent, and recorded as reliable; measured across the corpus it missed twenty-one. The correction was then measured against phases appearing in entry labels, which excluded by construction the one phase that appears in no label. Two docstrings were asserted to sit inside a documentation fence whose corpus is Markdown-only. And a grep run as `grep -rn plan_slug qor/ --include=*.py` returned three read sites, from which came the sentence "written by nothing in `qor/`" -- the producer being a governance prompt, `qor/skills/governance/qor-substantiate/SKILL.md:268`, which injects the key in memory two lines before the check consumes it.
+
+The last one left the repository. A GitHub issue was filed asserting a documented escape hatch could never fire, against code that populates it at every seal. It was closed with the correction rather than deleted.
+
+Three of the four were caught by independent review. The one caught internally was caught by applying a countermeasure written to this file earlier in the same session, which was then violated twice more.
+
+### Pattern to Avoid
+
+A measurement produces a true statement about what it measured. The sentence written afterwards is a different statement, usually broader, and nothing in the workflow forces the two to be compared. `--include=*.py` becomes "in the code". Three sampled phases become "the predicate is reliable". A `.md`-only corpus becomes "in scope".
+
+The widening is invisible because both sentences are true-sounding and the narrower one really was verified. Reviewing the claim does not catch it; only re-deriving it does, which is why independent review caught three of these and self-review caught one.
+
+Two shapes recur. A tool flag that scopes the search -- `--include`, a path argument, a glob -- silently scopes the conclusion, and the flag does not appear in the sentence. And a sample chosen because it is the material at hand, which in a chronological corpus is always the newest and therefore always the region where format drift is invisible.
+
+The generalization is reliably in the flattering direction, because the broader claim is the one that makes the work look finished.
+
+**Corrections inherit the defect they correct.** Two of the five instances were written inside retractions of earlier instances: the sentence narrowing a false claim about a seal predicate was itself measured against a denominator that excluded the failing case, and the sentence retracting a false claim about a glossary escape hatch asserted a live run had exercised a branch when the evidence showed only that a field was populated. The mechanism is that a retraction is written at the speed of the error it retracts. It arrives with the same urgency, from the same context, under the same wish to have the matter settled, and so it inherits the same scope. A correction is a new claim and owes a new measurement; the fact that it is narrower than the thing it replaces is not evidence that it is narrow enough.
+
+### Pattern ID
+
+Scope-widening family (fourth occurrence in one session; parent of the convenience-sample and predicted-red entries logged earlier this phase, which are this pattern applied to a denominator and to a test outcome respectively). Countermeasure: when a claim is derived from a command, the command's scope belongs in the sentence -- write "no `.py` file under `qor/` mentions it", not "nothing in `qor/` writes it". Where the two cannot be made to match, the claim is not yet established and must be re-derived at the width it asserts. Before any claim of absence leaves the repository as an issue, a bug report, or a doctrine statement, run the search once more without the narrowing flag.
+
+The countermeasure has to be a re-run, not a recollection. This session supplies the argument in its detection form: a case-sensitive grep for a Tier 2 contract sentence returned one hit where three exist, and the error was caught only because the author happened to remember a capital letter from reading the file an hour earlier. Memory caught it that time and will not next time. So the rule is procedural rather than attentional -- any sentence that retracts or narrows a measurement restates that measurement's scope explicitly, and is checked against the command that produced it rather than against the recollection of what the command showed.
+
+---
+
 *Shadow integrity: ACTIVE*

@@ -1,0 +1,74 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-04T1551-477d51",
+  "ts": "2026-09-04T16:46:01Z",
+  "plan_path": "docs/plan-qor-phase258-adr-contract-and-status-lint.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: Decision-record contract -- qor/scripts/adr_contract.py (vocabulary, record parser, tier-table parser; reads no ledger), doctrine-decision-records.md, backfill three ADRs, three-column Tier 2 in both the live index and the seed template, glossary with enumerated referenced_by",
+    "Phase 2: Decision-record conformance detector -- qor/scripts/adr_status_lint.py with two ledger-free finding kinds (adr-missing-phase, adr-invalid-status), registered as a Check in status_json.default_registry, FEATURE_INDEX FX028",
+    "Phase 3: One machine-author predicate -- attribution.is_machine_author becomes the sole implementation, doctrine-attribution.md defines the concept the glossary homes there, github_surface imports it, pr_citation_lint.is_exempt_actor delegates"
+  ],
+  "terms": [
+    {
+      "term": "decision record",
+      "home": "qor/references/doctrine-decision-records.md"
+    },
+    {
+      "term": "phase binding field",
+      "home": "qor/references/doctrine-decision-records.md"
+    },
+    {
+      "term": "machine author",
+      "home": "qor/references/doctrine-attribution.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "The detector reads decision records only and never opens docs/META_LEDGER.md, so it cannot judge whether a declared status matches reality.",
+      "The three backfilled Implemented statuses are asserted on evidence recorded in the plan; they become machine-checked when Phase 259 ships the seal binding."
+    ],
+    "non_goals": [
+      "Deciding whether a decision record's content is correct.",
+      "Any change to how /qor-status behaves without an explicit flag."
+    ],
+    "exclusions": [
+      "The entire seal-binding surface: adr-status-stale, adr-phase-unsealed, the meta_ledger_walker plan field, the label-dialect predicate, and the consumer-contract fixture amendment. Carried to Phase 259; facts preserved in .agent/staging/PHASE259_SEED.md.",
+      "qor/scripts/status_full.py and the /qor-status --full flag. Phase 260.",
+      "The governance_index.py:143 seal-predicate defect. Phase 259.",
+      "Branch pruning beyond the 104 gone-tracking refs already cleared, and workspace_fragility_check threshold tuning.",
+      "GH #431 and GH #432, filed separately 2026-09-04."
+    ]
+  },
+  "open_questions": [],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "FX028",
+      "operation": "NEW",
+      "test_path": "tests/test_adr_status_lint.py",
+      "test_descriptor": "qor-logic scripts adr_status_lint exits 1 naming adr-missing-phase for a record with no phase field and adr-invalid-status for a status outside the vocabulary, and exits 0 when every record conforms"
+    }
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_adr_contract.py tests/test_adr_status_lint.py tests/test_machine_author.py -v",
+    "python -m pytest tests/test_pr_citation_lint.py tests/test_github_surface.py tests/test_status_json.py -v",
+    "python -m pytest -q",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.scripts.dependency_admission_lint",
+    "qor-logic scripts adr_status_lint --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase258-adr-contract-and-status-lint.md",
+    "qor-logic governance-index --repo-root . --cross-check-ledger",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.scripts.status_json --repo-root .",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-04T16:46:01Z"
+  }
+}

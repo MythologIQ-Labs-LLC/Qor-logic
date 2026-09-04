@@ -1,0 +1,79 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-04T1551-477d51",
+  "ts": "2026-09-04T16:29:50Z",
+  "plan_path": "docs/plan-qor-phase258-adr-contract-and-status-lint.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: Decision-record contract -- qor/scripts/adr_contract.py (vocabulary, parser, dialect-tolerant seal predicate), doctrine-decision-records.md, backfill three ADRs, three-column Tier 2 in BOTH docs/GOVERNANCE_INDEX.md and qor/templates/GOVERNANCE_INDEX.md, glossary and index registration",
+    "Phase 2: ADR status drift detector -- qor/scripts/adr_status_lint.py importing adr_contract, four finding kinds with terminal statuses exempt, correction of the same em-dash defect at governance_index.py:143, registration as a Check in status_json.default_registry, FEATURE_INDEX FX028",
+    "Phase 3: One machine-author predicate -- attribution.is_machine_author becomes the sole implementation; github_surface imports it; pr_citation_lint.is_exempt_actor delegates"
+  ],
+  "terms": [
+    {
+      "term": "decision record",
+      "home": "qor/references/doctrine-decision-records.md"
+    },
+    {
+      "term": "phase binding field",
+      "home": "qor/references/doctrine-decision-records.md"
+    },
+    {
+      "term": "machine author",
+      "home": "qor/references/doctrine-attribution.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "The detector binds a decision record to a phase only through an explicit Phase field; a record without one yields adr-missing-phase rather than a guessed binding.",
+      "Staleness is judged against seal-class entries in docs/META_LEDGER.md. A phase that shipped without any seal-class entry produces a false adr-phase-unsealed for a record claiming Implemented; one such phase exists today (Phase 23). A known false positive, not a blind spot.",
+      "Superseded and Rejected are terminal states carrying no claim about seal status, so no drift rule applies in either seal state. A declared exemption, verified by test.",
+      "WARN-only in V1: the lint exits 1 on findings and the nightly ladder reports it, but no seal aborts on it."
+    ],
+    "non_goals": [
+      "Deciding whether a decision record's content is correct.",
+      "Any change to how /qor-status behaves without an explicit flag.",
+      "Normalizing the ledger's historical label dialects; the predicate tolerates them, it does not rewrite them."
+    ],
+    "exclusions": [
+      "qor/scripts/status_full.py and the /qor-status --full flag; deferred to Phase 259.",
+      "Pruning the 30 unmerged remote branches, the 24 unmerged local-only branches, and archive/session-2026-05-09.",
+      "Pruning the 46 fully-merged local-only branches; outside the gone-tracking set the operator authorized.",
+      "Tuning workspace_fragility_check's active_branch_count >= 10 threshold; Open Question 1.",
+      "Remediating GH #431 and GH #432, filed separately 2026-09-04."
+    ]
+  },
+  "open_questions": [
+    "Whether workspace_fragility_check's active_branch_count >= 10 threshold is correctly tuned for this repository, given 33 live-upstream branches already exceed it."
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "FX028",
+      "operation": "NEW",
+      "test_path": "tests/test_adr_status_lint.py",
+      "test_descriptor": "qor-logic scripts adr_status_lint exits 1 naming adr-status-stale for a record claiming Proposed after its phase sealed, and 0 when every record matches its seal state"
+    }
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_adr_contract.py tests/test_adr_status_lint.py tests/test_machine_author.py -v",
+    "python -m pytest tests/test_pr_citation_lint.py tests/test_github_surface.py tests/test_status_json.py tests/test_governance_index.py -v",
+    "python -m pytest -q",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.scripts.dependency_admission_lint",
+    "qor-logic scripts adr_status_lint --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase258-adr-contract-and-status-lint.md",
+    "qor-logic governance-index --repo-root . --cross-check-ledger",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.scripts.status_json --repo-root .",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-04T16:29:50Z"
+  }
+}

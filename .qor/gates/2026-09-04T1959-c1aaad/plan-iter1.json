@@ -1,0 +1,43 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-04T1959-c1aaad",
+  "ts": "2026-09-04T20:02:42Z",
+  "plan_path": "docs/plan-qor-phase262-bind-findings-category-mirror.md",
+  "change_class": "hotfix",
+  "doc_tier": "minimal",
+  "originating_remediation": "GH #437",
+  "phases": [
+    "Phase 1: add feature-test-undeclared to findings_signature._VALID_CATEGORIES and bind that frozenset to the audit schema enum with three tests: set parity, per-value acceptance by compute_record, and survival of the stall_walk call path GH #437 describes"
+  ],
+  "boundaries": {
+    "limitations": [
+      "The parity test binds two sources meant to agree; it does not prevent a third copy of the vocabulary appearing elsewhere.",
+      "Closing the drift does not make any category reachable from an audit run; the mapping table in the audit skill is a separate surface and is out of scope."
+    ],
+    "non_goals": [
+      "Any change to what /qor-audit emits, to its passes, or to its mapping table.",
+      "Removing the mirror by deriving the frozenset from the schema at import time; that trade deserves its own phase."
+    ],
+    "exclusions": [
+      "The scope-overgeneralization category and the plan_absolute_claim_lint work; Phase 261 reached its attempt cap at META_LEDGER entry #735.",
+      "GH #438 and GH #440."
+    ]
+  },
+  "open_questions": [],
+  "feature_inventory_touches": [],
+  "ci_commands": [
+    "python -m pytest tests/test_findings_signature_schema_parity.py -v",
+    "python -m pytest tests/test_findings_signature.py tests/test_stall_walk.py tests/test_session_total_signature_count.py tests/test_audit_gate_emits_findings_categories.py -v",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-04T20:02:42Z"
+  }
+}

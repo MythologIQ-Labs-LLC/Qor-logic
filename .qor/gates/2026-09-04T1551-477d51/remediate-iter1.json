@@ -1,0 +1,39 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-09-04T1551-477d51",
+  "ts": "2026-09-04T18:03:51Z",
+  "events_addressed": [
+    "40ac4cd89030ac89078470d4bdc845e1c4503388fab5cbab1a931fb47dec23ec",
+    "6d896e8faf235b076ef5b9a0621ef74372888d2a44c85ace1b84bcfb9e148822",
+    "ed1b29a1d14062d1569a5f51c63bc893e4b352925a8da773a05b5951c4540a2c",
+    "1392987697641f774bbf3fba6116efdf48c3b1e4567b83697405f16add86ae52",
+    "b713e830516cb660cf6d6fc924ac062e858a986f9d8919c5a451abe3ba0b5a14",
+    "55d264e726c571fa60098ec7291677a93b096ecd9d2966f6f90faffdafeafa25"
+  ],
+  "continuity_outcome": "verified",
+  "proposed_changes": [
+    {
+      "target": "qor/gates/schema/audit.schema.json + qor/gates/schema/shadow_event.schema.json + qor/scripts/remediate_pattern_match.py",
+      "change": "Add a 'scope-overgeneralization' value to the audit findings_categories enum, a matching 'scope_overgeneralization' event_type to the shadow-event enum, and a corresponding pattern to classify().",
+      "rationale": "Measured: the five Phase 258 VETO verdicts carried different category sets, so cycle_count_escalator.check and check_session_total returned None at every step and no escalation fired across five audits of one phase. A shared category makes the third occurrence fire the existing escalator. Demonstrated by execution: six severity-2/3 events emitted for this session classify as nothing, because none of the five existing patterns covers the class. The attempt cap was the only control that surfaced it."
+    },
+    {
+      "target": "qor/scripts/plan_absolute_claim_lint.py (new), wired WARN-only into /qor-audit Step 0.6",
+      "change": "Over Locked-Decision blocks only, flag any sentence carrying an absolute quantifier -- no, none, nothing, only, every other, zero, never, always, exactly N -- that is not paired with a grep-evidence statement or an explicit scope qualifier.",
+      "rationale": "Thirteen of the sixteen instances were absolute claims of exactly this shape. plan_grep_lint already proves evidence-pairing works as a control and supplies the statement parser, so this reuses that mechanism rather than inventing a second one. WARN-only in V1, matching how skill_size_budget_lint and procedural_fidelity were staged."
+    },
+    {
+      "target": "qor/references/doctrine-shadow-genome-countermeasures.md",
+      "change": "Add an SG entry carrying the scope-of-measurement rule: a claim derived from a command states that command's scope in the sentence; a retraction restates the scope and is checked against a re-run of the command rather than a recollection of its output; any claim of absence is re-run without the narrowing flag before it leaves the repository as an issue, bug report, or doctrine statement.",
+      "rationale": "Two of the sixteen instances were written inside corrections of earlier instances, because a retraction is written at the speed of the error it retracts and inherits its scope. One escaped as GH #435, filed on a false premise against live code and since closed. Three narrative Shadow Genome entries written during the session did not prevent instances six through sixteen, which is the evidence that narrative capture alone is not a control and needs a doctrine clause plus the P-2 enforcer behind it."
+    }
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-04T18:03:51Z"
+  }
+}

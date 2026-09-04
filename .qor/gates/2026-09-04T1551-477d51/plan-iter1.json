@@ -1,0 +1,77 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-04T1551-477d51",
+  "ts": "2026-09-04T16:07:47Z",
+  "plan_path": "docs/plan-qor-phase258-adr-contract-and-status-lint.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: Decision-record contract -- doctrine-decision-records.md, backfill three ADRs with a Phase field and a canonical status, Tier 2 gains a Freshness marker column, glossary and index registration",
+    "Phase 2: ADR status drift detector -- qor/scripts/adr_status_lint.py with four finding kinds, registered as a Check in status_json.default_registry, FEATURE_INDEX FX028",
+    "Phase 3: One machine-author predicate -- attribution.is_machine_author becomes the sole implementation; github_surface imports it; pr_citation_lint.is_exempt_actor delegates"
+  ],
+  "terms": [
+    {
+      "term": "decision record",
+      "home": "qor/references/doctrine-decision-records.md"
+    },
+    {
+      "term": "phase binding field",
+      "home": "qor/references/doctrine-decision-records.md"
+    },
+    {
+      "term": "machine author",
+      "home": "qor/references/doctrine-attribution.md"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "The detector binds a decision record to a phase only through an explicit Phase field; a record without one yields adr-missing-phase rather than a guessed binding.",
+      "Staleness is judged against SESSION SEAL -- Phase <N> entries in docs/META_LEDGER.md only.",
+      "WARN-only in V1: the lint exits 1 on findings and the nightly ladder reports it, but no seal aborts on it."
+    ],
+    "non_goals": [
+      "Deciding whether a decision record's content is correct.",
+      "Any change to how /qor-status behaves without an explicit flag."
+    ],
+    "exclusions": [
+      "qor/scripts/status_full.py and the /qor-status --full flag; deferred to Phase 259.",
+      "Pruning the 30 unmerged remote branches, the 24 unmerged local-only branches, and archive/session-2026-05-09.",
+      "Pruning the 46 fully-merged local-only branches; safe, but outside the gone-tracking set the operator authorized.",
+      "Tuning workspace_fragility_check's active_branch_count >= 10 threshold; recorded as Open Question 3.",
+      "Remediating GH #431 and GH #432, filed separately 2026-09-04."
+    ]
+  },
+  "open_questions": [
+    "Confirm doctrine-decision-records.md belongs in GOVERNANCE_INDEX Tier 2 alongside the records it governs rather than in a tier of its own.",
+    "Retain Rejected in the closed status vocabulary though no rejected record exists today, or omit it until one does?",
+    "Whether workspace_fragility_check's active_branch_count >= 10 threshold is correctly tuned for this repository, given 33 live-upstream branches already exceed it."
+  ],
+  "feature_inventory_touches": [
+    {
+      "entry_id": "FX028",
+      "operation": "NEW",
+      "test_path": "tests/test_adr_status_lint.py",
+      "test_descriptor": "qor-logic scripts adr_status_lint exits 1 naming adr-status-stale for a record claiming Proposed after its phase sealed, and 0 when every record matches its seal state"
+    }
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_adr_contract.py tests/test_adr_status_lint.py tests/test_machine_author.py -v",
+    "python -m pytest tests/test_pr_citation_lint.py tests/test_github_surface.py tests/test_status_json.py -v",
+    "python -m pytest -q",
+    "qor-logic scripts adr_status_lint --repo-root .",
+    "qor-logic scripts plan_text_consistency_lint --check docs/plan-qor-phase258-adr-contract-and-status-lint.md",
+    "qor-logic governance-index --repo-root . --cross-check-ledger",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.scripts.status_json --repo-root .",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.0",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-04T16:07:47Z"
+  }
+}
