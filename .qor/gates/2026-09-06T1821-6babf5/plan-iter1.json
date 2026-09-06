@@ -1,0 +1,30 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T1821-6babf5",
+  "ts": "2026-09-06T18:25:00Z",
+  "plan_path": "docs/plan-qor-phase267-discarded-validation.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #441, GH #448",
+  "phases": [
+    "Write T1-T6; confirm T1, T2, T3, T5, T6 red",
+    "audit_history.append and read check _validate_data return and raise",
+    "validate_session_id as first statement of check_session_total",
+    "Amend META_LEDGER entry #751 to correct the false structural claim"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_audit_history_validation.py tests/test_session_id_path_safety.py tests/test_cycle_count_escalator.py tests/test_stall_walk.py tests/test_session_total_signature_count.py tests/test_provenance_iteration_scope.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "After this phase a corrupt history file aborts every reader, not only the Phase 266 accessor; measured inert on this repository 1761 rows, not measured against consumer workspaces",
+      "The escalators propagate rather than degrade on a corrupt history file",
+      "T4 asserts an invariant over the live corpus rather than a count, per entry #749"
+    ],
+    "non_goals": [
+      "Making /qor-plan and /qor-audit tolerant of a corrupt history file",
+      "Changing _validate_data signature; one of its three callers uses it correctly"
+    ]
+  }
+}

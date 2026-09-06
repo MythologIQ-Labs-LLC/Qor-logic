@@ -1,0 +1,33 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T1821-6babf5",
+  "ts": "2026-09-06T18:45:00Z",
+  "plan_path": "docs/plan-qor-phase267-discarded-validation.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #441, GH #448",
+  "phases": [
+    "Write T1-T7 including T6b; confirm which are red and which are green-before, and report both",
+    "audit_history.append raises on invalid; read loses its inert try/except and documents that it does not validate",
+    "session_signature_timestamps yields ts only where present; counter untouched; false docstring guarantee replaced",
+    "Guard the K-window index in check_session_total against a short list, treating unanchorable as not-suppressed",
+    "validate_session_id as first statement of check_session_total",
+    "Amend META_LEDGER entry #751"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_audit_history_validation.py tests/test_session_id_path_safety.py tests/test_cycle_count_escalator.py tests/test_stall_walk.py tests/test_session_total_signature_count.py tests/test_provenance_iteration_scope.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "read stays permissive by design; only append fails closed, so a file may contain rows this code would refuse to write",
+      "The two accessors may disagree in length by design; the difference is guarded only at the K-window anchor, its single consumer",
+      "Real corpus is 259 rows across 188 files; the 1502 rows in the gitignored sess-12345 fixture are excluded from every figure"
+    ],
+    "non_goals": [
+      "Retiring findings_signature.LEGACY_SENTINEL",
+      "Making the escalators degrade rather than propagate on a corrupt history file",
+      "Changing _validate_data signature or count_session_signature_totals behaviour"
+    ]
+  }
+}

@@ -12,6 +12,7 @@ counts across the entire session history) and `check_session_total`
 from __future__ import annotations
 
 
+import json
 import pytest
 
 from qor import workdir as _workdir
@@ -68,6 +69,21 @@ def _seed_history(records: list[dict], session_id: str) -> None:
     """Append records to the session's audit_history.jsonl."""
     for rec in records:
         audit_history.append(rec, session_id=session_id)
+
+
+def _seed_history_raw(records: list[dict], session_id: str) -> None:
+    """Write rows straight to the JSONL, bypassing `append`.
+
+    Phase 267: `append` rejects schema-invalid records, so a VETO without
+    `findings_categories` cannot be written through the public writer. `read`
+    still tolerates it so `LEGACY_SENTINEL` keeps recognising pre-Phase-37
+    history; this seeds the foreign input that shape now comes from.
+    """
+    path = _workdir.gate_dir() / session_id / "audit_history.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as fh:
+        for rec in records:
+            fh.write(json.dumps(rec, separators=(",", ":"), sort_keys=True) + chr(10))
 
 
 def test_empty_session_returns_no_signatures(tmp_path, isolate_gates_dir):
@@ -127,11 +143,10 @@ def test_consecutive_triple_veto_same_signature(tmp_path, isolate_gates_dir):
 def test_legacy_sentinel_excluded(tmp_path, isolate_gates_dir):
     """Audit records without findings_categories (pre-Phase-37) do not contribute."""
     sid = "fixture-legacy"
+    # Phase 267: the legacy row is seeded directly; `append` rejects it now.
+    _seed_history_raw([_audit_record(sid, "2026-05-14T10:00:00Z", "VETO")], sid)
     _seed_history(
-        [
-            _audit_record(sid, "2026-05-14T10:00:00Z", "VETO"),  # no categories -> LEGACY
-            _audit_record(sid, "2026-05-14T11:00:00Z", "VETO", ["specification-drift"]),
-        ],
+        [_audit_record(sid, "2026-05-14T11:00:00Z", "VETO", ["specification-drift"])],
         sid,
     )
     totals = count_session_signature_totals(sid)

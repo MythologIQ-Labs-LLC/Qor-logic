@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-06T1821-6babf5",
+  "plan_path": "docs/plan-qor-phase267-discarded-validation.md",
+  "plan_hash": "abda62cb46c8cb13289399da6079c7a4b15eebf7e39e3f365a1bd513b2ceaded",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "ba3714c4423f556fac5bf131271854297265053a468fa5369acc0c2a1d7e4da5",
+  "head_commit": "bc8ab79995ff4ec0982ba45cdc745c6f98029cc1",
+  "captured_ts": "2026-09-06T20:20:50.034503Z"
+}

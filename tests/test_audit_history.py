@@ -40,7 +40,7 @@ def test_history_path_uses_gate_session_dir(tmp_path):
 
 def test_append_creates_jsonl_record(tmp_path):
     with mock.patch("qor.scripts.audit_history._workdir.gate_dir", return_value=tmp_path):
-        path = audit_history.append(_audit_payload(session_id="s1", verdict="PASS"), session_id="s1")
+        path = audit_history.append(_audit_payload(session_id="s-1", verdict="PASS"), session_id="s-1")
     assert path.exists()
     lines = path.read_text(encoding="utf-8").splitlines()
     assert len(lines) == 1

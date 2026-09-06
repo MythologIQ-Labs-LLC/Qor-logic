@@ -19,9 +19,14 @@ Reset conditions (any one breaks the consecutive run):
 from __future__ import annotations
 
 import json
+import re
 
 from qor import workdir as _workdir
 from qor.scripts import audit_history, findings_signature
+
+# Phase 267: mirrors audit.schema.json's `ts` pattern. A value failing it is
+# omitted rather than sorted, because this list is indexed positionally.
+_TS_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
 
 
 def _list_break_artifacts(session_id: str) -> list[dict]:
@@ -112,13 +117,20 @@ def session_signature_timestamps(session_id: str) -> dict[str, list[str]]:
     Two properties the caller depends on, both established here rather than
     inherited:
 
-    - Every contributing record's ``ts`` is appended UNCONDITIONALLY. The
-      defensive ``payload.get("ts")`` idiom in ``_list_break_artifacts`` above
-      must not be copied: a conditional append is a filter the counter does not
-      have, and a list shorter than the count silently mis-indexes a caller
-      selecting the k-th newest element. ``ts`` is schema-required with a pinned
-      pattern and re-validated per line by ``audit_history.read``, so no record
-      reaching here can lack one.
+    - Only a USABLE ``ts`` is collected: the key present AND its value matching
+      the schema pattern. Phase 267 corrected the claim that stood here, which
+      said ``audit_history.read`` re-validates every line so no record could
+      lack one. It does not validate, by design (see that function), so this
+      list can be SHORTER than ``count_session_signature_totals`` for the same
+      signature. That asymmetry is deliberate: filtering the counter to match
+      would change its answer for rows it counts today and could silence an
+      escalation that fires now. The single consumer of the difference is the
+      K-window anchor in ``cycle_count_escalator``, which degrades rather than
+      indexing blindly.
+
+      The pattern check is not fussiness. This list is sorted lexicographically
+      and indexed positionally, so a malformed value would sort and anchor
+      wrongly rather than merely being extra.
     - Each list is SORTED ascending before return. ``audit_history.read``
       returns records in file order and nothing enforces monotonic ``ts``; this
       module already sorts explicitly in ``_walk_backward`` for that reason.
@@ -130,5 +142,8 @@ def session_signature_timestamps(session_id: str) -> dict[str, list[str]]:
         sig = findings_signature.compute_record(record)
         if sig == findings_signature.LEGACY_SENTINEL:
             continue
-        stamps.setdefault(sig, []).append(record["ts"])
+        ts = record.get("ts")
+        if not isinstance(ts, str) or not _TS_RE.fullmatch(ts):
+            continue
+        stamps.setdefault(sig, []).append(ts)
     return {sig: sorted(values) for sig, values in stamps.items()}

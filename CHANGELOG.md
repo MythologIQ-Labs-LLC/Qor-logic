@@ -10,6 +10,23 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.169.3] - 2026-09-06
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 267 (hotfix; discarded validation)**: `validate_gate_artifact._validate_data` returns a list of errors and never raises. Of its three callers, only `write_artifact` checked the return. `audit_history.append` called it bare and discarded the result, so schema-invalid rows were written despite a docstring promising validation; `audit_history.read` wrapped the same non-raising call in a `try/except` whose handler could never fire, so reading validated nothing either. Closes GH #441 and GH #448.
+
+  The repair is deliberately asymmetric. `append` fails closed, because nothing should create a row the schema rejects. `read` does NOT validate and no longer pretends to: `audit.schema.json` requires `findings_categories` when `verdict` is VETO, which is exactly the shape `findings_signature.LEGACY_SENTINEL` recognises in pre-Phase-37 history, so a strict reader would make that control unreachable and retire behaviour documented in four places. A history file may now contain rows this module would decline to create, and that is the point.
+
+  This phase also repairs a regression it shipped one release earlier. Phase 266's `session_signature_timestamps` was the first consumer to index `record["ts"]`, so a malformed row that had been inert began raising `KeyError` and aborting the escalator at `/qor-audit` Step 0.5 and `/qor-plan` Step 2c. The guarantee that made that look safe -- that `read` re-validates every line -- was asserted in the Phase 266 plan, recorded in ledger entry #751, and shipped in the accessor's own docstring in v0.169.2. It was false in all three places: a docstring promising behaviour its dependency does not have, which is the defect class GH #447 was filed for, reproduced by the phase that closed GH #447. Entry #751 is amended.
+
+  The accessor now collects a `ts` only when the key is present and its value matches the schema pattern, so its list may be shorter than `count_session_signature_totals` for the same signature. Forcing the two to agree was tried and rejected: it changes the counter's answer for rows it counts today, which could drop a signature below the escalation threshold and silence a firing that occurs now. The single consumer of the difference, the K-window anchor, degrades instead -- full window, else the earliest stamp, else `None`, which `_suppression_active` already treats as not-suppressed. An earlier draft skipped the suppression check on a short list, which let an operator record a decline that did nothing.
+
+  `check_session_total` now validates its `session_id` before building a path, matching `check`. Phase 266 added a validating call to the same function, but after the unvalidated read, which is why GH #448 was filed separately and is not closed by it.
+
+  The set of existing tests requiring rewrite was derived by applying the change and running the full suite rather than by enumeration. Two hand-built lists gave three and then four; the derived answer was five, and the fifth was a different class -- a fixture using a two-character `session_id` against a schema requiring three, invalid since it was written and accepted only because `append` never checked.
+
 ## [0.169.2] - 2026-09-06
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -1,0 +1,32 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T1821-6babf5",
+  "ts": "2026-09-06T18:35:00Z",
+  "plan_path": "docs/plan-qor-phase267-discarded-validation.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #441, GH #448",
+  "phases": [
+    "Write T1-T7; confirm T1, T2, T5, T6 red and T3, T4, T7 green-before",
+    "audit_history.append checks _validate_data return and raises; read loses its inert try/except and documents that it does not validate",
+    "stall_walk gains _contributing_records; both accessors consume it; the false docstring guarantee is replaced",
+    "validate_session_id as first statement of check_session_total",
+    "Amend META_LEDGER entry #751 to correct the false structural claim"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_audit_history_validation.py tests/test_session_id_path_safety.py tests/test_cycle_count_escalator.py tests/test_stall_walk.py tests/test_session_total_signature_count.py tests/test_provenance_iteration_scope.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "read stays permissive by design, so a corrupt row is still tolerated; only append fails closed",
+      "_contributing_records silently skips a VETO row with no usable ts, the one place a row is dropped",
+      "The real corpus is 259 rows across 188 files; the 1502 rows in the gitignored sess-12345 fixture are excluded from every figure in this plan"
+    ],
+    "non_goals": [
+      "Retiring findings_signature.LEGACY_SENTINEL, which a strict read would have done silently",
+      "Making the escalators degrade rather than propagate on a corrupt history file",
+      "Changing _validate_data signature"
+    ]
+  }
+}

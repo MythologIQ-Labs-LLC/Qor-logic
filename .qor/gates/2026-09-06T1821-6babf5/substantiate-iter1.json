@@ -1,0 +1,12 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-06T1821-6babf5",
+  "ts": "2026-09-06T19:20:00Z",
+  "ledger_entry": 755,
+  "version": "0.169.3",
+  "verdict": "PASS",
+  "merkle_seal": "6fee680416621cd753b95fb844c9c8f5e1153a5a60dde07ea6e7dd06e31ecbc6",
+  "plan_path": "docs/plan-qor-phase267-discarded-validation.md",
+  "tests_passed": 3271,
+  "tests_failed": 0
+}

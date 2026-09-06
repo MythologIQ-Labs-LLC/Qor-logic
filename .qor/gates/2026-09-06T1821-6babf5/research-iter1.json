@@ -1,0 +1,63 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-06T1821-6babf5",
+  "ts": "2026-09-06T18:22:00Z",
+  "brief_path": "GH #441 + GH #448",
+  "questions": [
+    "How many call sites treat _validate_data as raising when it returns?",
+    "What does the Phase 266 accessor do when a record lacks a schema-required field?",
+    "Would making the validation fire break any existing history file?"
+  ],
+  "findings": [
+    {
+      "id": "R-1",
+      "category": "defect-confirmed",
+      "statement": "_validate_data returns a list of errors and never raises; audit_history.append calls it bare and discards the result, so schema-invalid records are appended despite a docstring promising validation",
+      "evidence": "qor/scripts/validate_gate_artifact.py:210-218 returns list[str]; qor/scripts/audit_history.py:53 discards it"
+    },
+    {
+      "id": "R-2",
+      "category": "defect-confirmed",
+      "statement": "audit_history.read wraps the same non-raising call in try/except ValueError, so its handler can never fire and read does not validate either; executed, read accepts a record with no ts",
+      "evidence": "qor/scripts/audit_history.py:85-90; probe returned the malformed record instead of raising"
+    },
+    {
+      "id": "R-3",
+      "category": "regression-introduced",
+      "statement": "Phase 266 session_signature_timestamps is the first consumer to index record[ts], so a malformed row that was previously harmless now raises KeyError and aborts check_session_total at /qor-audit Step 0.5 and /qor-plan Step 2c",
+      "evidence": "executed: count_session_signature_totals OK, session_signature_timestamps KeyError, check_session_total KeyError at threshold"
+    },
+    {
+      "id": "R-4",
+      "category": "false-claim-shipped",
+      "statement": "The Phase 266 plan and ledger entry #751 assert that read re-validates every line so no record can lack a well-formed ts. That guarantee does not exist and was accepted by an independent reviewer as structural",
+      "evidence": "ledger entry #751; the R-2 probe"
+    },
+    {
+      "id": "R-5",
+      "category": "blast-radius",
+      "statement": "Exactly three call sites exist and only the two in audit_history are wrong; validate_gate_artifact.write_artifact checks the return and raises correctly",
+      "evidence": "grep over qor/: audit_history.py:53, audit_history.py:86, validate_gate_artifact.py:194-196"
+    },
+    {
+      "id": "R-6",
+      "category": "feasibility-measured",
+      "statement": "Making the validation fire is inert on live data: all 1761 rows across 189 session history files validate clean, so no existing file becomes unreadable",
+      "evidence": "validated every row against audit.schema.json via _validate_data"
+    },
+    {
+      "id": "R-7",
+      "category": "defect-confirmed",
+      "statement": "check_session_total builds a session path before validating session_id while its sibling check validates first; executed, check(../evil) raises ValueError and check_session_total(../evil) returns None having attempted the traversed read",
+      "evidence": "qor/scripts/cycle_count_escalator.py:45 vs :104; GH #448"
+    }
+  ],
+  "sources": [
+    "qor/scripts/audit_history.py",
+    "qor/scripts/validate_gate_artifact.py",
+    "qor/scripts/cycle_count_escalator.py",
+    "qor/scripts/stall_walk.py",
+    "GH #441",
+    "GH #448"
+  ]
+}
