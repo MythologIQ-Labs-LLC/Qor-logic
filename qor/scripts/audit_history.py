@@ -50,7 +50,12 @@ def append(
     record.setdefault("session_id", session_id)
     if artifact_filename is not None:
         record["artifact_filename"] = artifact_filename
-    _vga._validate_data("audit", record)
+    # Phase 267 (GH #441): `_validate_data` RETURNS its errors and never raises,
+    # so calling it bare validated nothing. `append` fails closed: nothing should
+    # create a row the schema rejects.
+    errors = _vga._validate_data("audit", record)
+    if errors:
+        raise ValueError(f"Invalid audit record for session {session_id}: {errors}")
 
     path = history_path(session_id)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -61,7 +66,14 @@ def append(
 
 
 def read(session_id: str) -> list[dict]:
-    """Read all audit history records in file order.
+    """Parse all audit history records in file order. Does NOT validate them.
+
+    Phase 267 (GH #441): reading is deliberately permissive. Rows that the
+    current schema rejects -- notably a VETO without ``findings_categories``,
+    the pre-Phase-37 shape ``findings_signature.LEGACY_SENTINEL`` recognises --
+    are returned as-is so that control keeps working. Validation lives in
+    ``append``, which refuses to write such a row. A file may therefore contain
+    rows this module would decline to create.
 
     Returns ``[]`` when the history file is absent. Raises ``ValueError`` naming
     the offending line number on malformed JSON or schema failure.
@@ -82,11 +94,13 @@ def read(session_id: str) -> list[dict]:
                 raise ValueError(
                     f"Malformed JSON in {path} at line {line_num}: {exc}"
                 ) from exc
-            try:
-                _vga._validate_data("audit", record)
-            except Exception as exc:  # noqa: BLE001
-                raise ValueError(
-                    f"Schema violation in {path} at line {line_num}: {exc}"
-                ) from exc
+            # Phase 267 (GH #441): this used to wrap `_validate_data` in a
+            # try/except whose handler could never fire, because that function
+            # returns its errors rather than raising. The guard is removed
+            # rather than made to work: `read` tolerates rows the current schema
+            # rejects on purpose, because `findings_signature.LEGACY_SENTINEL`
+            # exists to recognise pre-Phase-37 history. A strict reader would
+            # make that control unreachable. `append` is the side that fails
+            # closed.
             records.append(record)
     return records

@@ -83,6 +83,28 @@ def check(session_id: str) -> EscalationRecommendation | None:
     )
 
 
+def _anchor(ts_list: list[str]) -> str | None:
+    """The K-window floor, degrading when the list is too short to hold one.
+
+    Phase 267: a signature can be over threshold while its timestamp list is
+    shorter than K, because `count_session_signature_totals` counts rows that
+    `session_signature_timestamps` omits (see that function). Indexing blindly
+    raised; skipping the suppression check instead would let an operator record
+    a decline that does nothing, with no in-band escape.
+
+    So the anchor degrades: full window, else the earliest stamp, else None.
+    `_suppression_active` returns False on None, so an empty list yields "not
+    suppressed" -- the safe direction for a governance signal, where the failure
+    mode should be a prompt the operator can decline rather than a silence they
+    never see.
+    """
+    if len(ts_list) >= ESCALATION_THRESHOLD:
+        return ts_list[-ESCALATION_THRESHOLD]
+    if ts_list:
+        return ts_list[0]
+    return None
+
+
 def check_session_total(session_id: str) -> EscalationRecommendation | None:
     """Session-total mode: escalate when any signature reaches K=3 cumulative.
 
@@ -101,6 +123,10 @@ def check_session_total(session_id: str) -> EscalationRecommendation | None:
     further times; suppressed signatures are filtered out before a winner is
     chosen, so declining one never masks another.
     """
+    # Phase 267 (GH #448): validate before any path is built, matching `check`.
+    # Phase 266's `_suppression_active` call also validates, but only after the
+    # read below, so it did not close this.
+    session.validate_session_id(session_id)
     totals = stall_walk.count_session_signature_totals(session_id)
     if not totals:
         return None
@@ -115,7 +141,7 @@ def check_session_total(session_id: str) -> EscalationRecommendation | None:
     live = [
         (sig, n) for sig, n in over_threshold
         if not _suppression_active(
-            session_id, stamps[sig][-ESCALATION_THRESHOLD], inclusive=True
+            session_id, _anchor(stamps.get(sig, [])), inclusive=True
         )
     ]
     if not live:

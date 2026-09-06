@@ -22,6 +22,26 @@ def _seed(tmp_path, sid, audits):
             audit_history.append(a, session_id=sid)
 
 
+def _seed_raw(tmp_path, sid, audits):
+    """Write rows straight to the JSONL, bypassing `append`.
+
+    Phase 267: `append` rejects schema-invalid records, so the legacy shape --
+    a VETO with no `findings_categories` -- is no longer producible through the
+    public writer. `read` still tolerates it deliberately, because
+    `findings_signature.LEGACY_SENTINEL` exists to recognise pre-Phase-37
+    history. Seeding directly models the foreign or pre-existing input that is
+    now the only source of that shape.
+    """
+    path = tmp_path / sid / "audit_history.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as fh:
+        for a in audits:
+            rec = dict(a)
+            rec.setdefault("phase", "audit")
+            rec.setdefault("session_id", sid)
+            fh.write(json.dumps(rec, separators=(",", ":"), sort_keys=True) + chr(10))
+
+
 def _check(tmp_path, sid):
     # Patch all three workdir call sites
     with mock.patch("qor.scripts.audit_history._workdir.gate_dir", return_value=tmp_path), \
@@ -101,7 +121,7 @@ def test_legacy_records_do_not_escalate(tmp_path):
     for ts in ("2026-04-20T12:00:00Z", "2026-04-20T12:01:00Z", "2026-04-20T12:02:00Z"):
         a = _audit(ts, "VETO", None, sid)
         a.pop("findings_categories", None)
-        _seed(tmp_path, sid, [a])
+        _seed_raw(tmp_path, sid, [a])   # Phase 267: append rejects this shape
     assert _check(tmp_path, sid) is None
 
 
@@ -224,7 +244,9 @@ def test_session_signature_timestamps_are_sorted_and_exclude_pass_and_legacy(tmp
         _audit("2026-04-20T12:02:00Z", "VETO", _SIG_A, sid),   # out of order
         _audit("2026-04-20T12:00:00Z", "VETO", _SIG_A, sid),
         _audit("2026-04-20T12:01:00Z", "PASS", [], sid),       # excluded
-        legacy,                                                # excluded
+    ])
+    _seed_raw(tmp_path, sid, [legacy])                         # Phase 267: append rejects it
+    _seed(tmp_path, sid, [
         _audit("2026-04-20T12:03:00Z", "VETO", _SIG_A, sid),
     ])
     with mock.patch("qor.scripts.audit_history._workdir.gate_dir", return_value=tmp_path), \
@@ -263,3 +285,35 @@ def test_same_second_decline_still_suppresses(tmp_path):
         "2026-04-20T12:07:00Z", "2026-04-20T12:07:00Z"]))
     _marker(tmp_path, sid, "2026-04-20T12:07:00Z")
     assert _check_total(tmp_path, sid) is None
+
+
+def test_a_short_list_anchors_on_its_first_element_and_a_decline_takes_effect(tmp_path):
+    """T8 (Phase 267): the degraded anchor, and why skipping the check was wrong.
+
+    A signature can be over threshold while its timestamp list is too short to
+    hold a K-window anchor, because the counter counts rows the timestamp
+    accessor omits. An earlier design skipped the suppression check entirely in
+    that case, which let an operator record a decline that did nothing, with no
+    in-band escape -- the mirror of the defect ledger entry #753 vetoed.
+
+    Degrading the anchor to the first available stamp keeps the safe direction
+    (an empty list still yields "not suppressed", via `_suppression_active`
+    returning False on None) while making a decline effective whenever any
+    anchor exists.
+    """
+    sid = "st-8b"
+    stamped = _audit("2026-04-20T12:00:00Z", "VETO", _SIG_A, sid)
+    unstamped = [_audit("2026-04-20T12:01:00Z", "VETO", _SIG_A, sid) for _ in range(2)]
+    for rec in unstamped:
+        rec.pop("ts")
+    _seed(tmp_path, sid, [stamped])
+    _seed_raw(tmp_path, sid, unstamped)   # append rejects a row with no ts
+
+    # Over threshold by count, one usable stamp.
+    assert _check_total(tmp_path, sid) is not None
+
+    _marker(tmp_path, sid, "2026-04-20T12:00:30Z")   # after the only stamp
+    assert _check_total(tmp_path, sid) is None, (
+        "a decline must take effect when any anchor exists; skipping the "
+        "suppression check on a short list makes the decline inert"
+    )

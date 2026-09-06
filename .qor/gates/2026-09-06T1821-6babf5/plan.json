@@ -1,0 +1,35 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T1821-6babf5",
+  "ts": "2026-09-06T18:55:00Z",
+  "plan_path": "docs/plan-qor-phase267-discarded-validation.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #441, GH #448",
+  "phases": [
+    "Rewrite the five existing tests the derived red set names; four seed legacy rows by direct write, one uses a conforming session id",
+    "Write T1-T9; report which are red and which are green-before",
+    "audit_history.append raises on invalid; read loses its inert handler and documents that it does not validate",
+    "session_signature_timestamps collects usable ts only; false docstring guarantee replaced; counter and _walk_backward untouched",
+    "check_session_total validates session_id first and degrades its anchor per D3",
+    "Amend META_LEDGER entry #751"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_audit_history.py tests/test_audit_history_validation.py tests/test_session_id_path_safety.py tests/test_cycle_count_escalator.py tests/test_stall_walk.py tests/test_session_total_signature_count.py tests/test_provenance_iteration_scope.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "read stays permissive by design; a history file may contain rows this code would refuse to write",
+      "The two accessors may disagree in length by design; guarded at the K-window anchor, their single consumer",
+      "Three functions hold three ts policies: _walk_backward tolerates, the counter ignores, the timestamp accessor omits",
+      "Real corpus 259 rows across 188 directories; 1502 further rows in the gitignored sess-12345 fixture, excluded from every figure"
+    ],
+    "non_goals": [
+      "Retiring findings_signature.LEGACY_SENTINEL",
+      "Converting _walk_backward to a shared ts policy",
+      "Making the escalators degrade rather than propagate on a corrupt history file",
+      "Changing _validate_data signature or count_session_signature_totals behaviour"
+    ]
+  }
+}

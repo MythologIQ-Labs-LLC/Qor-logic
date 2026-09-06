@@ -21914,6 +21914,12 @@ Two were properties asserted with nothing establishing them. Iterations 1 throug
 
 **THE LAST FINDING IS THE ONE MOST WORTH KEEPING.** `_suppression_active` carries no docstring and this phase gives it two comparison semantics behind a flag. GH #447 exists because `check_session_total`'s docstring promised behaviour its body did not have. Adding a mode switch to an undocumented helper is that same defect one level down, with nothing written to be wrong. Iteration 9 gives the helper a docstring stating both semantics and what the anchor argument means under each.
 
+**CORRECTION, ADDED BY PHASE 267. THE STRUCTURAL GUARANTEE RECORDED IN THIS ENTRY DOES NOT EXIST.** This entry lists among the reviewer-verified items "the structural `ts` guarantee at `audit.schema.json:7,10` with `audit_history.py:86`", meaning that `ts` is schema-required and re-validated per line on read, so no record reaching the accessor can lack one. Executed, `read` does not validate: `validate_gate_artifact._validate_data` returns its errors and never raises, and `read` wrapped that non-raising call in a `try/except` whose handler could not fire. A record with no `ts` is returned rather than rejected.
+
+The consequence was a live defect in shipped code. `session_signature_timestamps`, added by the phase this entry passed, is the first consumer to index `record["ts"]`, so a malformed row that had been inert began raising `KeyError` and aborting `check_session_total` at `/qor-audit` Step 0.5 and `/qor-plan` Step 2c. The same false guarantee was carried in the accessor's own docstring at `stall_walk.py:119-121` and shipped in v0.169.2 -- a docstring promising behaviour its dependency does not have, which is the defect class GH #447 was filed for, reproduced by the phase that closed GH #447.
+
+The independent reviewer supplied that justification and this tribunal accepted it as structural; both parties read `audit_history.py:86` and neither noticed that the call it wraps cannot raise. Verified-by-reading is not verified. Repaired in Phase 267 (GH #441), tribunal at entry #754.
+
 **CARRIED INTO IMPLEMENTATION AS OBLIGATIONS, NOT SUGGESTIONS.** T8 is red today for T1's reason, that the marker is never read at all, and red again only if the anchor and the filter land WITHOUT the inclusive flag. Only the second red exercises the flag, so a final all-green run does not establish that T8 tests anything; the failure must be observed at the intermediate commit. No artifact records that, which is why it is written into the plan's limitations as a discipline the implementer owes. The same-second guard is precautionary rather than corrective: measured across the 188 real session histories there are zero same-second pairs and zero same-second K-tuples, so nothing in this repository's history exercises T8 at all.
 
 **Scope boundaries reaffirmed.** GH #448, the missing `validate_session_id` at the head of `check_session_total`, is not fixed here; this phase adds a validating helper call AFTER the unvalidated read and must not be recorded as closing it. The interpolated-reason defect in `orchestration_override.record` that defeats signature collapse remains on GH #447's tail or moves to its own issue. `doctrine-governance-enforcement.md` section 10.5 is rewritten to describe both modes, so that line 278's "Same suppression marker applies" resolves to a description covering the mode it points from.
@@ -21958,6 +21964,129 @@ The T3 and T4 bracketing was demonstrated by substituting the rejected anchors i
 **Scope boundaries held.** GH #448, the missing `validate_session_id` at the head of `check_session_total`, is NOT closed by this phase: the new `_suppression_active` call validates, but only after the unvalidated read that #448 describes. GH #446, the remediation gate's missing iteration versioning, remains open. The interpolated-reason defect in `orchestration_override.record` that prevents signature collapse under `collapsed_severity` remains unfixed and unfiled separately.
 
 **Version**: 0.169.1 -> 0.169.2 per the plan's declared `hotfix` change class.
+
+---
+
+### Entry #753: GATE TRIBUNAL -- remediation proposal review, iteration 4 (VETO)
+
+**Timestamp**: 2026-09-06T18:15:00Z
+**Phase**: GATE (remediation review)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `602bc02af6a8`
+**Target**: .qor/gates/2026-09-05T0227-eb46ab/remediate-iter4.json
+**Session**: 2026-09-05T0227-eb46ab
+**Mode**: adversarial -- reviews-remediate; an independent architecture reviewer held Read/Grep/Glob only and the Judge executed every structural claim against the live corpus before ruling
+
+**Content Hash**: `e6a4da1425e4ec21a3f079c80191ae5a57c5d696ebfc1032798be71a318e1de0`
+**Previous Hash**: `2d987e684467738a012cbaf8400a15846bf9a8b486e352d02c3b7eb37f22059d`
+**Chain Hash (Merkle seal)**: `e3a311179d7ae4fe23b5023a3287504724e78a78e6053e886c437b2e4ad352f9`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + regression (three blocking grounds). The two-stage flip does NOT complete; shadow event `8a2a386f...` stays `addressed_pending` with `addressed: false`. This is the fifth artifact in this cluster and the fourth to be vetoed.
+
+**THE CONTROL WOULD DISABLE TWO WORKING CONTROLS, ROUTINELY, FROM THE DAY IT SHIPPED.** That is the finding, and it is not a matter of tuning.
+
+**GROUND 1 (`specification-drift`): the aggregate never decays, so the signal fires on sealed work at the head of every future session.** Section (a) keys on the normalised `target` field aggregated across all sessions, with no recency window, no in-flight restriction and no expiry. A scope's count is therefore monotone non-decreasing over the repository's whole history. Measured against the live corpus: thirteen scopes stand at or above N=3 today, all of them finished -- phases 223 twice, 224, 225, 248, 249, 250, 251, 253, 254, 258, 261 and 265 -- and none can ever fall below it. The mode would not warn about the scope in front of the operator before its cap; it would report a decade of sealed work at every `/qor-plan` Step 2c and every `/qor-audit` Step 0.5, forever.
+
+**GROUND 2 (`specification-drift`): this is entry #750's defect one level up, and the Phase 266 repair does not generalise to a scope key.** Entry #750 vetoed a predecessor because `.qor/session/<sid>/escalation_suppressed` holds one bare timestamp and cannot express which signature was declined. Phase 266 survived that identitylessness by a specific trick: the ANCHOR carries the identity implicitly, because `stamps[sig][-ESCALATION_THRESHOLD]` is derived from that signature's own timestamps, and it re-arms because that list keeps growing while the session is live.
+
+The trick needs a per-key anchor AND a key whose timestamp list keeps growing. For a scope key the first holds and the second fails. A sealed scope's contributing timestamps are frozen. Measured, the K-window floor for each of the thirteen is a fixed historical instant -- `2026-08-12T03:26:25Z` for the phase 223 plan, `2026-09-05T03:30:08Z` for phase 265, and so on -- and every one of them is older than any decline that could be made today. Once `marker >= anchor` holds it holds for the rest of the session and nothing can restore it, because no sealed scope will ever gain another audit record.
+
+Re-specifying the anchor cannot repair this. The whole one-parameter family the reviewer identified in Phase 266 -- oldest, K-window floor, newest -- indexes a list that never changes again. The signal is structurally wrong on the shared marker, not merely mis-anchored, and the proposal's dependency section compounds it by prescribing the OLDEST anchor, which Phase 266 rejected on measured evidence and did not ship; its closure enforcer would test for behaviour that no longer exists.
+
+**GROUND 3 (`regression`): one decline disarms both working modes, and the false positives guarantee that decline happens immediately.** `orchestration_override._write_suppression_marker` writes exactly one file per session and both existing modes read that same path. Measured: seeding three same-signature VETOs makes `check` and `check_session_total` both fire; writing one marker silences BOTH. A marker written at decline time exceeds every anchor either live mode can produce, because both anchor on records inside the current session.
+
+The consequence chain is routine rather than exotic. The thirteen permanent scopes fire before any live signal has accumulated. The operator declines, because the report is about sealed work. The marker is written. `check` and `check_session_total` are then suppressed for the remainder of that session. Filter-then-select cannot repair it: that operates inside one mode's candidate list, and this is cross-mode.
+
+**AND THE COST MODEL IS WRONG IN BOTH DIRECTIONS.** The proposal prices ten false positives as "ten operator declines and severity 2 in total". Measured, one decline silences all thirteen at once, since every anchor is historical and one marker beats all of them, so the operator-time cost is LOWER than stated. The governance cost is far higher and unstated: the routine price of the false positives is the loss of both existing escalators for the rest of every session. A remediation that degrades the controls it supplements is worse than the gap it addresses, which is the ground entry #748 vetoed the first artifact of this cluster on.
+
+**WHAT SURVIVES.** The diagnosis has been sound since entry #748 and is unchanged: every control in this area keys on the findings-category signature, none keys on scope, and fifteen tribunal audits across three capped scopes produced no firing before the cap. The measured firing counts are correct as arithmetic. The doctrine half -- that a characterization corpus offered as a behaviour-preserving refactor's safety argument must be derived from the code's acceptance conditions rather than enumerated by the author -- has been untouched by every verdict in this cluster and stands on entries #743 through #747.
+
+**Minor, recorded because the pattern recurs.** The proposal's corpus denominators went stale while it sat unaudited: 257 records and 191 scopes when written, 259 and 192 now, because this session's own audits landed. The N=3 firing count is unchanged at thirteen, so no conclusion moves, but a proposal that quotes a live-corpus denominator is stale the moment more work happens -- the same property that made an exact-firing-set binding test inadmissible at entry #749.
+
+**Required next action: NOT a sixth proposal.** Five artifacts have now been written against this gap and four vetoed, and the grounds have moved from arithmetic to method to structure. The structural finding is that a scope-keyed signal cannot ride a per-session, scope-blind, single-timestamp marker, and no anchor choice changes that. What the direction needs is a suppression record that names what was declined and how much evidence existed at the time -- which is a change to what `orchestration_override.record` writes, shared with two live modes, and therefore a planned phase with its own tribunal rather than a remediation proposal. Until that exists, the honest state is that the gap is understood, documented across entries #748 through #753, and unremediated. The shadow event should remain `addressed_pending` rather than be closed on a proposal that would make the system worse.
+
+---
+
+### Entry #754: GATE TRIBUNAL -- Phase 267 discarded validation, iteration 5 (PASS)
+
+**Timestamp**: 2026-09-06T19:00:00Z
+**Phase**: GATE (Phase 267)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `89bfc5d9f94f`
+**Plan**: docs/plan-qor-phase267-discarded-validation.md (iteration 5)
+**Session**: 2026-09-06T1821-6babf5
+**Mode**: adversarial -- an independent architecture reviewer held Read/Grep/Glob only for the entire review and executed nothing; the Judge derived the affected-test set by execution rather than enumeration
+
+**Content Hash**: `da1847c3dc0e5c5b618e15214b60ab4e31d07c66d17438545f88c09cf47d4148`
+**Previous Hash**: `e3a311179d7ae4fe23b5023a3287504724e78a78e6053e886c437b2e4ad352f9`
+**Chain Hash (Merkle seal)**: `96a6775a0f1e431225b04fea8795bd3159bdce5345a2c8d68daaa6b85a6a3ae4`
+
+**Decision**: **Verdict**: **PASS** -- iteration 5. Four prior iterations were vetoed under one continuous adversarial review; the document was rewritten rather than patched.
+
+**WHAT IS BEING PASSED.** Three defects sharing one shape, a guard whose answer is discarded. `validate_gate_artifact._validate_data` returns `list[str]` and never raises; of its three callers, `write_artifact` checks the return and the two in `audit_history` do not. `append` calls it bare, so schema-invalid rows are written despite a docstring promising validation. `read` wraps the same non-raising call in `try/except`, so its handler -- which raises the right error for the right reason -- can never fire. Separately, `check_session_total` builds a session path before validating its `session_id` while its sibling `check` validates first.
+
+**AND A REGRESSION THIS PHASE CREATED.** Phase 266's `session_signature_timestamps` is the first consumer to index `record["ts"]`. Measured, a malformed row that was previously inert now raises `KeyError` and aborts `/qor-audit` Step 0.5 and `/qor-plan` Step 2c. The guarantee that made that look safe -- that `read` re-validates every line so no record can lack `ts` -- exists in three places including shipped code at `stall_walk.py:119-121`, and is false in all three. It is a docstring promising behaviour its dependency does not have: the defect class GH #447 was filed for, one level down, shipped by the phase that closed GH #447. An independent reviewer supplied that justification and both parties read the line it rests on without noticing the call it wraps cannot raise.
+
+**THE DESIGN, AND WHY IT IS ASYMMETRIC.** `append` fails closed; `read` stays permissive and stops pretending otherwise. Making both strict was the first design and it silently retires a documented control: `audit.schema.json` requires `findings_categories` when `verdict == VETO`, which is exactly the shape `findings_signature.LEGACY_SENTINEL` recognises, so a strict `read` makes the sentinel branches unreachable and retires behaviour documented in four places. The asymmetry is declared rather than incidental -- after this phase the legacy row shape is unproducible through the public writer and exists only as pre-existing or foreign input, which is what turns the tests that seed it into tests of read-side tolerance.
+
+The two accessors are permitted to disagree. Forcing them to agree through a shared filtered iterator was the third design and it changes `count_session_signature_totals`'s answer for an input it handles today, which could drop a signature below the escalation threshold and silence a firing that occurs now. The counter is therefore untouched and the single consumer of the difference, the K-window anchor, degrades rather than skips: full list, then first element, then `None`, which `_suppression_active` already treats as not-suppressed.
+
+**THE INSTRUMENT MATTERED MORE THAN THE ARGUMENT.** The set of existing tests this phase must rewrite was derived by applying the strict `append` and running the full suite, not by enumeration. Two hand-built lists gave three and then four; the derived answer is five, and the fifth is a class neither list contained -- `test_append_creates_jsonl_record` seeds `session_id="s1"` against a schema requiring `minLength: 3`, a fixture that has always been invalid and passed only because `append` never checked. The reviewer's four were each correct. Enumeration was the wrong instrument, and it was used after the same reviewer had already demonstrated its cost once in this cluster.
+
+**WHAT FOUR VETOES ESTABLISHED, RECORDED BECAUSE THE PATTERN IS THE FINDING.** Iteration 1 would have silently retired the legacy sentinel while claiming "two production files, four lines of behaviour change". Iteration 2 specified a test that cannot be written in either available form. Iteration 3 proposed a shared iterator whose skip changes an existing function's result, in the section citing GH #394 and entry #749 as the reason silent skips are forbidden. Iteration 4 guarded the anchor by skipping the suppression check, which let an operator record a decline that does nothing -- the mirror of the defect entry #753 vetoed one hour earlier in this same session. Each was a claim asserted without being tested. Each was found by a reviewer holding Read, Grep and Glob only, executing nothing.
+
+By iteration 4 the document described four designs simultaneously, because every revision was edited onto the last rather than replacing it. That is its own finding: a plan patched five times is less trustworthy than a plan rewritten once, and the reviewer's veto named the incoherence rather than any single line.
+
+**Scope boundaries reaffirmed.** `LEGACY_SENTINEL` is preserved deliberately. `_walk_backward` keeps a third `ts` policy -- it tolerates a missing value as empty string where the counter ignores the field and the timestamp accessor omits the row -- and that divergence is stated, not reconciled. The escalators still propagate rather than degrade on a corrupt history file. `_validate_data`'s signature is unchanged.
+
+GH #441's title names both halves of its defect and its body is empty, so the title is the whole specification. This phase closes the first half by making `append` raise and the second by REMOVING `read`'s inert guard rather than making it fire. That asymmetry is deliberate and is recorded so the issue is not read as fixed in a way it was not.
+
+**Required next action**: `/qor-implement` against iteration 5, tests first, with the five derived rewrites performed before the production change so their new form is exercised against both old and new behaviour.
+
+---
+
+### Entry #755: SESSION SEAL -- Phase 267 discarded validation (v0.169.3)
+
+**Timestamp**: 2026-09-06T19:20:00Z
+**Phase**: SEAL (Phase 267)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `328471a16a68`
+**Plan**: docs/plan-qor-phase267-discarded-validation.md (iteration 5)
+**Session**: 2026-09-06T1821-6babf5
+**Closes**: GH #441, GH #448
+
+**Content Hash**: `da1847c3dc0e5c5b618e15214b60ab4e31d07c66d17438545f88c09cf47d4148`
+**Previous Hash**: `96a6775a0f1e431225b04fea8795bd3159bdce5345a2c8d68daaa6b85a6a3ae4`
+**Chain Hash (Merkle seal)**: `6fee680416621cd753b95fb844c9c8f5e1153a5a60dde07ea6e7dd06e31ecbc6`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 5. Full suite green: **3271 passed, 6 skipped, 4 deselected, 0 failed**, exit 0, in 8m18s. The new and rewritten test files were run three consecutive times at 48 passed each to establish determinism.
+
+**WHAT SHIPPED.** `validate_gate_artifact._validate_data` returns a list of errors and never raises; of its three callers only `write_artifact` checked the return. `audit_history.append` called it bare, so schema-invalid rows were written despite a docstring promising validation. `audit_history.read` wrapped the same non-raising call in a `try/except` whose handler could never fire, so reading validated nothing either. Closes GH #441 and GH #448.
+
+The repair is deliberately asymmetric and that asymmetry is the design. `append` fails closed. `read` does not validate and no longer claims to, because `audit.schema.json` requires `findings_categories` when the verdict is VETO -- exactly the shape `findings_signature.LEGACY_SENTINEL` recognises in pre-Phase-37 history -- so a strict reader would make that control unreachable and retire behaviour documented in four places. A history file may now contain rows this module would decline to create.
+
+`session_signature_timestamps` collects a `ts` only when present and matching the schema pattern, so its list may be shorter than `count_session_signature_totals` for the same signature. `check_session_total` validates its `session_id` first and its K-window anchor degrades: full window, else the earliest stamp, else `None`.
+
+**THIS PHASE REPAIRED A DEFECT IT SHIPPED ONE RELEASE EARLIER.** Phase 266's accessor was the first consumer to index `record["ts"]`, so a malformed row that had been inert began raising `KeyError` and aborting the escalator at `/qor-audit` Step 0.5 and `/qor-plan` Step 2c. The guarantee that made it look safe -- that `read` re-validates every line so no record can lack `ts` -- was asserted in the Phase 266 plan, recorded as reviewer-verified in entry #751, and shipped in the accessor's own docstring in v0.169.2. False in all three places. Entry #751 carries the correction.
+
+**FOUR VETOES, AND WHAT EACH ONE TAUGHT.** Iteration 1 would have made both sides strict, silently retiring `LEGACY_SENTINEL` while the document claimed "two production files, four lines of behaviour change". Iteration 2 specified a test writable in neither available form: behaviourally it duplicated another test and could not discriminate the regression it existed to catch, and as source-text inspection it was a presence-only test the doctrine forbids and `/qor-substantiate` Step 4 refuses to seal on. Iteration 3 proposed a shared filtered iterator so the two accessors would agree by construction; measured, its skip changes `count_session_signature_totals`'s answer for rows it counts today, which could drop a signature below the escalation threshold and silence a firing that occurs now -- and that argument appeared in the section citing GH #394 and entry #749 as the reason silent skips are forbidden. Iteration 4 guarded the anchor by skipping the suppression check on a short list, which let an operator record a decline that did nothing, with no in-band escape: the mirror of the defect entry #753 vetoed roughly an hour earlier in this same session.
+
+Every one was a claim asserted without being tested. Every one was found by an independent reviewer holding Read, Grep and Glob only, which executed nothing across the entire review.
+
+**THE INSTRUMENT WAS THE LESSON.** The set of existing tests requiring rewrite was derived by applying the strict `append` and running the full suite. The reviewer's hand-built list held four and was correct as far as it went; the Judge's held three; the derived answer is five. The fifth is a different class entirely -- `test_append_creates_jsonl_record` seeds `session_id="s1"` against a schema requiring `minLength: 3`, invalid since it was written and passing only because `append` never checked. Enumeration was the wrong instrument and it was used after the same reviewer had already demonstrated its cost once in this session's remediation cluster.
+
+**AND THE DOCUMENT ITSELF BECAME A FINDING.** By iteration 4 the plan described four designs simultaneously, because each revision was edited onto the last rather than replacing it: a deleted iterator still named in the phase list, a rationale asserting the accessors agree beside a table pinning that they disagree, a corpus figure from a withdrawn measurement, one file listed twice under a count of three. The reviewer's veto named the incoherence rather than any single line, and the plan was rewritten from scratch. A plan patched five times is less trustworthy than a plan rewritten once.
+
+**A REPEATED FAILURE, RECORDED BECAUSE IT WAS REPEATED WITHIN A DAY.** An iteration quoted "1761 rows across 189 session history files" as evidence that failing closed breaks nothing. Of those, 1502 are in a gitignored synthetic fixture; the real corpus is 259 rows across 188 directories. The identical defect -- quoting a corpus figure without naming its exclusion -- was recorded against this session's remediation cluster and written into the operator's memory file the day before. All figures in the sealed plan name their exclusions.
+
+**Scope boundaries held.** `LEGACY_SENTINEL` is preserved deliberately, pinned by a test that seeds a legacy row by direct write. `_walk_backward` keeps a third `ts` policy -- it tolerates a missing value as empty string where the counter ignores the field and the accessor omits the row -- stated in the plan and not reconciled. The escalators still propagate rather than degrade on a corrupt history file. `_validate_data`'s signature is unchanged.
+
+GH #441's body is empty, two characters, so its title is the whole specification. It names both halves of the defect; this phase closes the first by making `append` raise and the second by removing `read`'s inert guard rather than making it fire. That asymmetric close is recorded so the issue is not read as fixed in a way it was not.
+
+**Version**: 0.169.2 -> 0.169.3 per the plan's declared `hotfix` change class.
 
 ---
 

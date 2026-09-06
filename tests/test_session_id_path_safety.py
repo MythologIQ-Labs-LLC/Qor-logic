@@ -55,3 +55,18 @@ def test_record_accepts_valid_sid(tmp_path, monkeypatch):
     assert event_id
     marker = tmp_path / ".qor" / "session" / sid / "escalation_suppressed"
     assert marker.is_file()
+
+
+def test_check_session_total_rejects_a_traversal_session_id():
+    """Phase 267 (GH #448): the sibling of `check` must validate before it builds a path.
+
+    `check` carries an explicit GAP-SEC-05/07 validation at the head of the
+    function; `check_session_total` did not, so a traversal id reached
+    `audit_history.read`'s path construction. Phase 266 added a
+    `_suppression_active` call that does validate, but only AFTER that read,
+    which is why GH #448 was filed separately and is not closed by it.
+    """
+    from qor.scripts import cycle_count_escalator
+
+    with pytest.raises(ValueError):
+        cycle_count_escalator.check_session_total("../evil")

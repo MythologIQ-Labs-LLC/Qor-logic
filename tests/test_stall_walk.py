@@ -26,6 +26,25 @@ def _seed_audits(tmp_path, sid, audits):
             audit_history.append(a, session_id=sid)
 
 
+def _seed_raw(tmp_path, sid, audits):
+    """Write rows straight to the JSONL, bypassing `append`.
+
+    Phase 267: `append` now rejects schema-invalid records, so the legacy row
+    shape -- a VETO with no `findings_categories` -- can no longer be produced
+    through the public writer. It is still readable, deliberately, because
+    `findings_signature.LEGACY_SENTINEL` exists to recognise pre-Phase-37
+    history. Seeding it directly is therefore the honest fixture: it models
+    foreign or pre-existing input, which is the only way that shape now arises.
+    """
+    path = tmp_path / sid / "audit_history.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as fh:
+        for a in audits:
+            rec = dict(a)
+            rec.setdefault("phase", "audit")
+            rec.setdefault("session_id", sid)
+            fh.write(json.dumps(rec, separators=(",", ":"), sort_keys=True) + chr(10))
+
 def _seed_break(tmp_path, sid, kind, ts):
     path = tmp_path / sid / f"{kind}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -87,8 +106,9 @@ def test_run_resets_on_legacy_record(tmp_path):
     sid = "s-legacy"
     legacy = _audit("2026-04-20T12:00:00Z", "VETO", ["razor-overage"], sid)
     legacy.pop("findings_categories")
+    # Phase 267: seeded directly; `append` rejects this shape now.
+    _seed_raw(tmp_path, sid, [legacy])
     _seed_audits(tmp_path, sid, [
-        legacy,
         _audit("2026-04-20T12:01:00Z", "VETO", ["razor-overage"], sid),
     ])
     count, _, _ = _run(tmp_path, sid)

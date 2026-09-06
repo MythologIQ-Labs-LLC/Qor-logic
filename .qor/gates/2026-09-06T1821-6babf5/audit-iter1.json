@@ -1,0 +1,12 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-06T1821-6babf5",
+  "ts": "2026-09-06T19:00:00Z",
+  "target": "docs/plan-qor-phase267-discarded-validation.md",
+  "verdict": "PASS",
+  "risk_grade": "L2",
+  "ledger_entry": 754,
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "findings_categories": [],
+  "iteration": 5
+}
