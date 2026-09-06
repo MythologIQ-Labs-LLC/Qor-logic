@@ -1,0 +1,29 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T1618-e0f4fb",
+  "ts": "2026-09-06T16:25:00Z",
+  "plan_path": "docs/plan-qor-phase266-session-total-suppression.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #447",
+  "phases": [
+    "Write T1-T5 in tests/test_cycle_count_escalator.py and confirm T1, T3, T4 red",
+    "Add stall_walk.session_signature_first_ts; leave count_session_signature_totals byte-identical",
+    "Move the suppression check below winning-signature selection in check_session_total and pass the real timestamp"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_cycle_count_escalator.py tests/test_session_total_signature_count.py tests/test_findings_signature_schema_parity.py tests/test_stall_walk.py tests/test_orchestration_override.py tests/test_session_total_escalator_skill_wiring.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "A decline suppresses the winning signature only; a second signature crossing the threshold escalates on its own and is untested because no corpus fixture exhibits two signatures at three or more in one session",
+      "session_signature_first_ts walks audit_history.read a second time per check; the duplication is stated, its cost is not measured",
+      "Inherits _suppression_active lexicographic ISO timestamp comparison; correct for the %Y-%m-%dT%H:%M:%SZ form now emitted, would break on a mixed-offset format"
+    ],
+    "non_goals": [
+      "The interpolated-reason defect in orchestration_override.record that prevents signature collapse; stays on GH #447 or moves to its own issue",
+      "Any new escalation mode, including the blocked scope-count proposal"
+    ]
+  }
+}

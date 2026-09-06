@@ -1,0 +1,12 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-06T1618-e0f4fb",
+  "ts": "2026-09-06T17:35:00Z",
+  "ledger_entry": 752,
+  "version": "0.169.2",
+  "verdict": "PASS",
+  "merkle_seal": "2d987e684467738a012cbaf8400a15846bf9a8b486e352d02c3b7eb37f22059d",
+  "plan_path": "docs/plan-qor-phase266-session-total-suppression.md",
+  "tests_passed": 3262,
+  "tests_failed": 0
+}

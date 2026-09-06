@@ -35,6 +35,11 @@ def isolate_gates_dir(tmp_path, monkeypatch):
     isolated = tmp_path / ".qor" / "gates"
     monkeypatch.setattr(vga, "GATES_DIR", isolated)
     monkeypatch.setattr(_workdir, "gate_dir", lambda: isolated)
+    # Phase 266: `check_session_total` now reads the suppression marker under
+    # `root()/.qor/session/<sid>`, so an unpatched root would stat the real
+    # repository. Patch to `tmp_path` exactly -- `workdir.gate_dir()` is
+    # `root()/".qor"/"gates"`, which is the path pinned above.
+    monkeypatch.setattr(_workdir, "root", lambda: tmp_path)
     yield
 
 

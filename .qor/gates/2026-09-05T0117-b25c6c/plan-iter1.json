@@ -1,0 +1,50 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-05T0117-b25c6c",
+  "ts": "2026-09-05T01:18:04Z",
+  "plan_path": "docs/plan-qor-phase264-surface-post-anchor-disagreement.md",
+  "change_class": "hotfix",
+  "doc_tier": "minimal",
+  "originating_remediation": "GH #430",
+  "boundaries": {
+    "limitations": [
+      "Closes the operator-visible half of GH #430; no exit code changes, so a consumer with a failing strict verifier and a clean post-anchor surface still releases, now knowing what over.",
+      "The tainted count is a distance-to-first-failure measure because taint propagates unconditionally, and the disclosure says so."
+    ],
+    "non_goals": [
+      "Changing what verify_post_anchor returns for any input; every exit code is byte-identical to today.",
+      "GH #430 suggestions 1 and 2, measured contract-breaking at the Phase 263 tribunal and refused with the measurement recorded."
+    ],
+    "exclusions": [
+      "GH #443 and GH #425.",
+      "Attestation parity between the two modes, measured as not fixing GH #430.",
+      "Phase 263's declared-anchor design, VETOed at META_LEDGER entry #741."
+    ]
+  },
+  "open_questions": [],
+  "phases": [
+    "Phase 1: verify_post_anchor appends verified / disclosed / above-boundary counts to its summary lines, and governance_health._ledger_damage appends the strict verifier's FAIL and TAINTED counts to the OK note it currently emits as a fixed string, both additive so every existing substring assertion and every exit code is preserved"
+  ],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "feature_inventory_touches": [],
+  "ci_commands": [
+    "python -m pytest tests/test_post_anchor_disagreement_disclosure.py -v",
+    "python -m pytest tests/test_post_anchor_verify.py tests/test_ledger_hash_duplicate_entry.py tests/test_ledger_hash.py tests/test_verify_ledger_cli.py tests/test_seal_entry_check.py tests/test_ledger_upgrade.py tests/test_governance_health.py tests/test_governance_health_post_anchor_tolerance.py tests/test_governance_health_json.py tests/test_cli_governance_health.py tests/test_qor_status_governance_health.py tests/test_variant_drift_governance_health.py -v",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-05T01:18:04Z"
+  }
+}

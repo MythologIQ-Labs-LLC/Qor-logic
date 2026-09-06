@@ -1,0 +1,56 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-06T1618-e0f4fb",
+  "brief_path": "GH #447",
+  "questions": [
+    "Does cycle_count_escalator.check_session_total honour the escalation-suppression marker as its docstring claims?",
+    "If not, what timestamp does the suppression comparison need, and does the data to produce it already exist?",
+    "What is the blast radius of changing stall_walk's session-total counter, and which existing tests pin its shape?"
+  ],
+  "findings": [
+    {
+      "id": "R-1",
+      "category": "defect-confirmed",
+      "statement": "check_session_total never reads the suppression marker: it calls _suppression_active(session_id, None) and that helper returns False unconditionally when first_match_ts is None, so the marker file is never opened",
+      "evidence": "qor/scripts/cycle_count_escalator.py:33-41 and :74; executed cce._suppression_active('2026-09-05T0227-eb46ab', None) returns False"
+    },
+    {
+      "id": "R-2",
+      "category": "contract-drift",
+      "statement": "The docstring asserts the opposite of the behaviour: 'Respects the same suppression marker as check.' No test covers suppression in session-total mode, which is why the drift survived since Phase 69",
+      "evidence": "qor/scripts/cycle_count_escalator.py:68; the only suppression test is tests/test_cycle_count_escalator.py:108, which exercises the consecutive-streak check only"
+    },
+    {
+      "id": "R-3",
+      "category": "operator-impact",
+      "statement": "Both modes are surfaced together at /qor-audit Step 0.5 and /qor-plan Step 2c and the documented decline path writes the marker, so a declined session-total escalation re-fires on every subsequent audit in the session and each decline appends another severity-2 orchestration_override event",
+      "evidence": "qor/skills/governance/qor-audit/SKILL.md:132-148; qor/scripts/orchestration_override.py:39-53"
+    },
+    {
+      "id": "R-4",
+      "category": "data-available",
+      "statement": "The timestamp the comparison needs already exists in the records the counter reads; stall_walk.count_session_signature_totals walks every VETO record and discards each record's ts, keeping only the per-signature count",
+      "evidence": "qor/scripts/stall_walk.py:81-103"
+    },
+    {
+      "id": "R-5",
+      "category": "blast-radius",
+      "statement": "count_session_signature_totals has exactly one production consumer and its return shape is pinned by six test assertions, so the fix must add a sibling accessor rather than widen the existing return type",
+      "evidence": "qor/scripts/cycle_count_escalator.py:71 is the sole non-test caller; tests/test_session_total_signature_count.py:70,80,99,116,150 and tests/test_findings_signature_schema_parity.py:101"
+    },
+    {
+      "id": "R-6",
+      "category": "semantics",
+      "statement": "The consecutive mode compares the marker against the OLDEST audit in the current run, so the session-total mode must compare against the oldest record contributing to the over-threshold signature for the two modes to mean the same thing by the same words",
+      "evidence": "qor/scripts/stall_walk.py:70-72 assigns first_match_ts on every accepted record while walking newest-to-oldest, leaving the oldest"
+    }
+  ],
+  "sources": [
+    "qor/scripts/cycle_count_escalator.py",
+    "qor/scripts/stall_walk.py",
+    "qor/scripts/orchestration_override.py",
+    "qor/skills/governance/qor-audit/SKILL.md",
+    "GH #447"
+  ],
+  "ts": "2026-09-06T16:20:00Z"
+}

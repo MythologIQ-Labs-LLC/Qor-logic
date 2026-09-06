@@ -1,0 +1,34 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T1618-e0f4fb",
+  "ts": "2026-09-06T17:02:00Z",
+  "plan_path": "docs/plan-qor-phase266-session-total-suppression.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #447",
+  "phases": [
+    "Add _check_total helper and T1-T8; T3/T4 seed the marker between the n0-th and (n0+1)-th record, T6 seeds out-of-order records, T8 seeds a marker equal to the anchor; confirm T1, T3, T4, T5, T6, T8 red",
+    "Add stall_walk.session_signature_timestamps, appending unconditionally and sorting each list ascending before return",
+    "Add inclusive flag to _suppression_active; anchor check_session_total on stamps[sig][-K] with inclusive=True and filter suppressed signatures before sorting and selecting",
+    "Replace the check_session_total docstring and rewrite doctrine 10.5 to describe both modes",
+    "Extend isolate_gates_dir to patch _workdir.root to tmp_path exactly"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_cycle_count_escalator.py tests/test_session_total_signature_count.py tests/test_findings_signature_schema_parity.py tests/test_stall_walk.py tests/test_orchestration_override.py tests/test_session_id_path_safety.py tests/test_session_total_escalator_skill_wiring.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "The same-second guard is precautionary: measured across 188 real session histories there are zero same-second pairs and zero same-second K-tuples, so nothing in the repository history exercises T8",
+      "A decline suppresses that signature for K-1 further occurrences then re-arms",
+      "T3 and T4 discriminate the anchors only if the marker is seeded between the n0-th and (n0+1)-th record; a late marker silently makes T3 pass under every anchor",
+      "T6 is vacuous unless it seeds records whose file order is not ascending",
+      "No real session in the corpus has ever exceeded the K=3 threshold, so the anchor is pinned by tests and a stated contract, not by history"
+    ],
+    "non_goals": [
+      "GH #448 missing validate_session_id at the head of check_session_total; this phase adds a validating helper call AFTER the unvalidated read and must not be recorded as fixing it",
+      "The interpolated-reason defect in orchestration_override.record",
+      "Any new escalation mode"
+    ]
+  }
+}

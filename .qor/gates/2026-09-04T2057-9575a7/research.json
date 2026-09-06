@@ -1,0 +1,108 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-04T2057-9575a7",
+  "ts": "2026-09-04T23:54:39Z",
+  "brief_path": "docs/research-brief-post-anchor-divergence-2026-09-04.md",
+  "questions": [
+    "What guarantees is verify_post_anchor contractually required to retain from verify()?",
+    "Should GH #425, #430 and #443 be one phase or several?",
+    "Does pre-anchor tolerance for linkage breaks preserve the GH #55 consumer contract?",
+    "What test shape pins mode parity going forward?"
+  ],
+  "findings": [
+    {
+      "id": "F-1",
+      "category": "contract-drift",
+      "statement": "verify_post_anchor honors 2 of doctrine section 14's contract elements fully, 1 partially, 1 not at all",
+      "evidence": "qor/references/doctrine-governance-enforcement.md:332-347"
+    },
+    {
+      "id": "F-2",
+      "category": "missing-check",
+      "statement": "No linkage pass in verify_post_anchor: _report_sequence has one call site repo-wide, inside verify() (473-595), not verify_post_anchor (615-725); spans AST-resolved",
+      "evidence": "qor/scripts/ledger_hash.py:594"
+    },
+    {
+      "id": "F-3",
+      "category": "reachability-proof",
+      "statement": "Forked fixture returns verify=1 with 2 BREAK lines and verify_post_anchor=0 clean; deterministic over 2 consecutive runs",
+      "evidence": "scratchpad ledger_good.md / ledger_forked.md"
+    },
+    {
+      "id": "F-3b",
+      "category": "consumer-surface",
+      "statement": "The blind mode is consumed by substantiate Step 7.7 and by the skill-entry preflight",
+      "evidence": "qor/reliability/seal_entry_check.py:149; qor/scripts/governance_health.py:149"
+    },
+    {
+      "id": "F-4",
+      "category": "hypothesis-refuted",
+      "statement": "The Phase 258-262 working-tree fork is #443's class, not #425's; _duplicate_entry_numbers returns an empty list on the live ledger. No seal ran between break and repair, so there is no observed gate miss",
+      "evidence": "docs/META_LEDGER.md entries #729,#730,#737,#738"
+    },
+    {
+      "id": "F-5",
+      "category": "feasibility-local",
+      "statement": "Live ledger: 737 entries, 0 linkage breaks with and without tolerance, reconciled set empty. Adding the check costs this repository nothing",
+      "evidence": "docs/META_LEDGER.md at d07daac3"
+    },
+    {
+      "id": "F-6",
+      "category": "feasibility-consumer",
+      "statement": "A re-anchored consumer ledger of the GH #55 shape carries 1 linkage break at the re-anchor seam, below the boundary. An unconditional _report_sequence call would fail every such consumer; the tolerance rule preserves them",
+      "evidence": "GH #55; scratchpad ledger_reanchored.md"
+    },
+    {
+      "id": "F-7",
+      "category": "shared-root",
+      "statement": "boundary_entry = max(ok_entries) makes the reporting loop's error branch unreachable whenever the newest entry classifies ok; shared root of #425 and #430",
+      "evidence": "qor/scripts/ledger_hash.py:681-684,690"
+    },
+    {
+      "id": "F-8",
+      "category": "coverage-gap",
+      "statement": "test_post_anchor_verify.py has 11 tests and 0 covering linkage; test_post_anchor_tolerates_duplicate_number_strictly_before_boundary pins #425's behaviour as intended, so a fix must amend a green test",
+      "evidence": "tests/test_post_anchor_verify.py; tests/test_ledger_hash_duplicate_entry.py"
+    },
+    {
+      "id": "F-9",
+      "category": "recommendation-withdrawn",
+      "statement": "F-6's tolerance rule and recommendations R-1/R-2 are withdrawn. boundary_entry = max(ok_entries) and a linkage fork leaves every entry chain-math-ok, so the boundary lands at the tail and no linkage break can fall above it; the rule is inert on the fork it targets. #443 is downstream of the boundary, not independent of it.",
+      "evidence": "ledger_forked boundary=#4 breaks=[3,4] above=[]; ledger_reanchored boundary=#8 breaks=[5] above=[]"
+    }
+  ],
+  "sources": [
+    "qor/scripts/ledger_hash.py",
+    "qor/reliability/seal_entry_check.py",
+    "qor/scripts/governance_health.py",
+    "qor/references/doctrine-governance-enforcement.md",
+    "qor/references/glossary.md",
+    "tests/test_post_anchor_verify.py",
+    "tests/test_ledger_hash_duplicate_entry.py",
+    "docs/META_LEDGER.md"
+  ],
+  "issues": [
+    425,
+    430,
+    443,
+    55,
+    88,
+    199,
+    428
+  ],
+  "ledger_entry": 740,
+  "recommended_next": "NOT qor-plan. Either qor-research on the verify()-routing candidate for non-re-anchored repos, or a phase against GH #430.",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-04T23:54:39Z"
+  },
+  "withdrawn": [
+    "R-1 two-phase split",
+    "R-2 order A before B",
+    "F-6 conclusion"
+  ]
+}

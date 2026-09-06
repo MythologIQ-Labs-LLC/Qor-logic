@@ -1,0 +1,51 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-05T0227-eb46ab",
+  "ts": "2026-09-05T02:53:37Z",
+  "plan_path": "docs/plan-qor-phase265-decompose-verify-post-anchor.md",
+  "change_class": "hotfix",
+  "doc_tier": "minimal",
+  "originating_remediation": "GH #430",
+  "iteration": 2,
+  "boundaries": {
+    "limitations": [
+      "Changes no behaviour; every exit code, printed line and stream stays byte-identical. No issue in the cluster is closed.",
+      "The corpus pins observable behaviour, not intent; recorded defects are pinned on purpose so a later change is deliberate.",
+      "The new helpers mirror _resolve_recorded and _classify_entry rather than unifying with them; unification is a behaviour change this phase forbids itself."
+    ],
+    "non_goals": [
+      "Fixing anything. GH #443, #425, #430 and the four missing attestation paths remain untouched.",
+      "Extracting the entry-parsing loop, which appears at four sites: lines 241, 509, 642 and 735."
+    ],
+    "exclusions": [
+      "GH #444.",
+      "Any change to governance_health, seal_entry_check, ledger_upgrade, qor/cli.py or pyproject.toml."
+    ]
+  },
+  "open_questions": [],
+  "phases": [
+    "Phase 1: pin verify_post_anchor's observable behaviour with a thirteen-fixture characterization corpus using inlined literal goldens and no tooling beyond pytest, landed in its own commit at the pre-change SHA; then decompose into six named helpers -- _post_anchor_recorded, _post_anchor_classify, _post_anchor_boundary, _post_anchor_report_entries, _post_anchor_report_duplicates, _post_anchor_summary -- shaped to mirror the Phase 153 extraction from verify(), with the errors accumulator re-joined by the caller, all seven units measured at most 40 lines and nesting at most 3 by AST against drafted text, and equivalence proven byte-identical across fifteen invocations"
+  ],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "feature_inventory_touches": [],
+  "ci_commands": [
+    "python -m pytest tests/test_post_anchor_characterization.py -v",
+    "python -m pytest tests/test_post_anchor_verify.py tests/test_ledger_hash_duplicate_entry.py tests/test_ledger_hash.py tests/test_ledger_hash_validation.py tests/test_ledger_hash_verify_helpers.py tests/test_verify_ledger_cli.py tests/test_seal_entry_check.py tests/test_ledger_upgrade.py tests/test_governance_health.py tests/test_governance_health_post_anchor_tolerance.py tests/test_governance_health_json.py tests/test_cli_governance_health.py tests/test_qor_status_governance_health.py tests/test_variant_drift_governance_health.py tests/test_ledger_dialect.py -v",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-05T02:53:37Z"
+  }
+}

@@ -99,3 +99,36 @@ def count_session_signature_totals(session_id: str) -> dict[str, int]:
             continue
         totals[sig] = totals.get(sig, 0) + 1
     return totals
+
+
+def session_signature_timestamps(session_id: str) -> dict[str, list[str]]:
+    """Return ``{signature: [ts, ...]}`` ascending, across the whole session.
+
+    Phase 266 (GH #447): the sibling of ``count_session_signature_totals`` that
+    keeps the timestamps that counter discards. Same records, same exclusions --
+    PASS audits and LEGACY-sentinel records do not contribute -- so for every
+    signature ``len(timestamps) == count``.
+
+    Two properties the caller depends on, both established here rather than
+    inherited:
+
+    - Every contributing record's ``ts`` is appended UNCONDITIONALLY. The
+      defensive ``payload.get("ts")`` idiom in ``_list_break_artifacts`` above
+      must not be copied: a conditional append is a filter the counter does not
+      have, and a list shorter than the count silently mis-indexes a caller
+      selecting the k-th newest element. ``ts`` is schema-required with a pinned
+      pattern and re-validated per line by ``audit_history.read``, so no record
+      reaching here can lack one.
+    - Each list is SORTED ascending before return. ``audit_history.read``
+      returns records in file order and nothing enforces monotonic ``ts``; this
+      module already sorts explicitly in ``_walk_backward`` for that reason.
+    """
+    stamps: dict[str, list[str]] = {}
+    for record in audit_history.read(session_id):
+        if record.get("verdict") != "VETO":
+            continue
+        sig = findings_signature.compute_record(record)
+        if sig == findings_signature.LEGACY_SENTINEL:
+            continue
+        stamps.setdefault(sig, []).append(record["ts"])
+    return {sig: sorted(values) for sig, values in stamps.items()}

@@ -1,0 +1,33 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T1618-e0f4fb",
+  "ts": "2026-09-06T16:50:00Z",
+  "plan_path": "docs/plan-qor-phase266-session-total-suppression.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #447",
+  "phases": [
+    "Add _check_total helper and T1-T7, seeding the marker strictly between the n0-th and (n0+1)-th contributing record in T3 and T4; confirm T1, T3, T4, T5, T6 red",
+    "Add stall_walk.session_signature_timestamps appending record ts unconditionally for every record the counter counts",
+    "Anchor check_session_total on the K-window floor and filter suppressed signatures before selecting the winner",
+    "Extend isolate_gates_dir to patch _workdir.root"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_cycle_count_escalator.py tests/test_session_total_signature_count.py tests/test_findings_signature_schema_parity.py tests/test_stall_walk.py tests/test_orchestration_override.py tests/test_session_id_path_safety.py tests/test_session_total_escalator_skill_wiring.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "A same-second pair at t[n0] costs one extra escalation; a same-second K-tuple containing the decline costs a MISSED suppression. Both disclosed, neither fixed; fixing needs marker time resolution that check shares",
+      "A decline suppresses that signature for K-1 further occurrences then re-arms",
+      "T3 and T4 discriminate the anchors only if the marker is seeded between the n0-th and (n0+1)-th record; a late marker silently makes T3 pass under every anchor",
+      "No real session in the corpus has ever exceeded the K=3 threshold, so the anchor is pinned by tests and a stated contract, not by history"
+    ],
+    "non_goals": [
+      "GH #448 missing validate_session_id at the head of check_session_total; this phase adds a validating helper call AFTER the unvalidated read and must not be recorded as fixing it",
+      "The interpolated-reason defect in orchestration_override.record",
+      "The doctrine-governance-enforcement 10.5 sentence claiming suppression lasts the remainder of the session, which is false for check",
+      "Any new escalation mode"
+    ]
+  }
+}

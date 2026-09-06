@@ -1,0 +1,24 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-05T0117-b25c6c",
+  "ts": "2026-09-05T01:29:24Z",
+  "target": "docs/plan-qor-phase264-surface-post-anchor-disagreement.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "specification-drift",
+    "coverage-gap",
+    "test-failure"
+  ],
+  "reviews_remediate_gate": null,
+  "ledger_entry": 742,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "veto",
+    "ts": "2026-09-05T01:29:24Z"
+  }
+}

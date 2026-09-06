@@ -1,0 +1,54 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-05T0227-eb46ab",
+  "ts": "2026-09-05T03:57:04Z",
+  "plan_path": "docs/plan-qor-phase265-decompose-verify-post-anchor.md",
+  "change_class": "hotfix",
+  "doc_tier": "minimal",
+  "originating_remediation": "GH #430",
+  "iteration": 4,
+  "boundaries": {
+    "limitations": [
+      "Changes no behaviour; every exit code, printed line and stream stays byte-identical in the implementation commit.",
+      "The corpus pins observable behaviour, not intent; recorded defects are pinned on purpose.",
+      "Nothing shipped re-measures the corpus as the function later changes; GH #445 is a worked instance of that decay in this file.",
+      "The razor file clause moves further from compliance and was already violated roughly threefold before this phase."
+    ],
+    "non_goals": [
+      "Fixing anything. GH #443, #425, #430 and the missing attestation paths remain untouched.",
+      "Extracting the entry-parsing loop at ledger_hash.py lines 241, 509, 642 and 735.",
+      "Unifying _post_anchor_classify with _classify_entry, a behaviour change belonging to the parity phase this one makes cheaper."
+    ],
+    "exclusions": [
+      "GH #444 and GH #445.",
+      "Any change to governance_health, seal_entry_check, ledger_upgrade, qor/cli.py or pyproject.toml."
+    ]
+  },
+  "open_questions": [],
+  "phases": [
+    "Phase 1: ship the fixture corpus as tests/post_anchor_corpus.py so the enumeration is an artifact rather than a described quantity, land it with inlined literal goldens in a first commit at the pre-change SHA, then decompose verify_post_anchor into five helpers with _post_anchor_classify delegating to the shipped _resolve_recorded and the GH #363 label check moved to the caller where verify carries it; razor compliance, delegation and the boundary-zero identity check are asserted by shipped tests rather than by figures in the plan"
+  ],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "feature_inventory_touches": [],
+  "method_note": "Iteration 4 changes method after three VETOs on the same class: a number appears in the plan only if the plan states the command that re-derives it. All previously asserted measured quantities were removed into shipped artifacts.",
+  "ci_commands": [
+    "python -m pytest tests/test_post_anchor_characterization.py tests/test_post_anchor_decomposition.py -v",
+    "python -m pytest tests/test_post_anchor_verify.py tests/test_ledger_hash_duplicate_entry.py tests/test_ledger_hash.py tests/test_ledger_hash_validation.py tests/test_ledger_hash_verify_helpers.py tests/test_verify_ledger_cli.py tests/test_seal_entry_check.py tests/test_ledger_upgrade.py tests/test_governance_health.py tests/test_governance_health_post_anchor_tolerance.py tests/test_governance_health_json.py tests/test_cli_governance_health.py tests/test_qor_status_governance_health.py tests/test_variant_drift_governance_health.py tests/test_ledger_dialect.py tests/test_qor_validate_skill_post_anchor_prose.py -v",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-05T03:57:04Z"
+  }
+}
