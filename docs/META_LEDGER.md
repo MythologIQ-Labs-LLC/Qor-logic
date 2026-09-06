@@ -22014,14 +22014,14 @@ The consequence chain is routine rather than exotic. The thirteen permanent scop
 **Phase**: GATE (Phase 267)
 **Author**: Judge
 **Risk Grade**: L2
-**Entry ID**: `89bfc5d9f94f`
+**Entry ID**: `2099ab47f02b`
 **Plan**: docs/plan-qor-phase267-discarded-validation.md (iteration 5)
 **Session**: 2026-09-06T1821-6babf5
 **Mode**: adversarial -- an independent architecture reviewer held Read/Grep/Glob only for the entire review and executed nothing; the Judge derived the affected-test set by execution rather than enumeration
 
-**Content Hash**: `da1847c3dc0e5c5b618e15214b60ab4e31d07c66d17438545f88c09cf47d4148`
+**Content Hash**: `abda62cb46c8cb13289399da6079c7a4b15eebf7e39e3f365a1bd513b2ceaded`
 **Previous Hash**: `e3a311179d7ae4fe23b5023a3287504724e78a78e6053e886c437b2e4ad352f9`
-**Chain Hash (Merkle seal)**: `96a6775a0f1e431225b04fea8795bd3159bdce5345a2c8d68daaa6b85a6a3ae4`
+**Chain Hash (Merkle seal)**: `623dfcee58b20978e93df79e3e3d7fd4f0a59631576593463cfd7e1f24bb2a8e`
 
 **Decision**: **Verdict**: **PASS** -- iteration 5. Four prior iterations were vetoed under one continuous adversarial review; the document was rewritten rather than patched.
 
@@ -22053,14 +22053,14 @@ GH #441's title names both halves of its defect and its body is empty, so the ti
 **Phase**: SEAL (Phase 267)
 **Author**: Governor
 **Risk Grade**: L2
-**Entry ID**: `328471a16a68`
+**Entry ID**: `a42d083cabf1`
 **Plan**: docs/plan-qor-phase267-discarded-validation.md (iteration 5)
 **Session**: 2026-09-06T1821-6babf5
 **Closes**: GH #441, GH #448
 
-**Content Hash**: `da1847c3dc0e5c5b618e15214b60ab4e31d07c66d17438545f88c09cf47d4148`
-**Previous Hash**: `96a6775a0f1e431225b04fea8795bd3159bdce5345a2c8d68daaa6b85a6a3ae4`
-**Chain Hash (Merkle seal)**: `6fee680416621cd753b95fb844c9c8f5e1153a5a60dde07ea6e7dd06e31ecbc6`
+**Content Hash**: `abda62cb46c8cb13289399da6079c7a4b15eebf7e39e3f365a1bd513b2ceaded`
+**Previous Hash**: `623dfcee58b20978e93df79e3e3d7fd4f0a59631576593463cfd7e1f24bb2a8e`
+**Chain Hash (Merkle seal)**: `7f6f032a8d996c1b2150f9de1aba086cd6dee46d4e472b14c3ab67c90f9e8da6`
 
 **Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 5. Full suite green: **3271 passed, 6 skipped, 4 deselected, 0 failed**, exit 0, in 8m18s. The new and rewritten test files were run three consecutive times at 48 passed each to establish determinism.
 
