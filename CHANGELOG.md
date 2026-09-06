@@ -10,6 +10,19 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.169.2] - 2026-09-06
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 266 (hotfix; session-total suppression)**: `cycle_count_escalator.check_session_total` documented that it honoured the operator-decline suppression marker and never read it. It called `_suppression_active(session_id, None)`, and that helper returns `False` unconditionally when its anchor argument is `None`, so an operator could not decline a cumulative escalation even once: the recommendation re-fired on every subsequent audit in the session and each decline appended another severity-2 `orchestration_override` event. Closes GH #447.
+
+  Supplying the missing timestamp is not sufficient, and two designs that look obvious both fail. Anchoring on the oldest contributing record makes the suppression permanent, because the cumulative counter never resets while `check`'s run does -- measured, `first_match_ts` advances from `10:00:00Z` to `10:04:00Z` across a PASS that the cumulative counter carries 6 through. Anchoring on the newest is defeated by the skill's own step order: the escalator runs at `/qor-audit` Step 0.5 and the audit appends its history record at Step Z, so the audit during which the operator declines writes a record newer than the marker it just created. The anchor used is the K-window floor, `stamps[sig][-K]`, the oldest of the most recent `ESCALATION_THRESHOLD` occurrences, which silences a signature until it recurs `K` further times and then re-arms.
+
+  Two further defects were found while designing it and are fixed here. Suppression was applied after a single winner was selected, so one declined signature masked every other over-threshold signature including ones the operator had never seen; suppressed signatures are now filtered out of the candidate list before a winner is chosen. And `now_iso` formats to whole seconds, so a decline sharing a second with the anchor failed to suppress under a strict comparison; `_suppression_active` gains an `inclusive` keyword, defaulted so `check` is byte-for-byte unaffected, and the cumulative mode compares `marker >= anchor`. That guard is precautionary rather than corrective: measured across the 188 real session histories there are zero same-second pairs and zero same-second K-tuples.
+
+  The new `stall_walk.session_signature_timestamps` establishes its ascending order by sorting rather than inheriting it, since `audit_history.read` returns records in file order and this module already sorts explicitly elsewhere for that reason. Doctrine section 10.5 is rewritten to describe both modes, because it claimed suppression lasts "for the remainder of the session", which was false for `check` independently of this change, and because the Phase 69 paragraph points at it saying the same marker applies. Four of the eight new tests discriminate the chosen design from ones that would otherwise pass: swapping the anchor to the oldest reddens the re-arm test alone, swapping it to the newest reddens the survives-own-record test, and the same-second test was confirmed red at the intermediate commit where the anchor and filter had landed but the inclusive flag had not.
+
 ## [0.169.1] - 2026-09-04
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

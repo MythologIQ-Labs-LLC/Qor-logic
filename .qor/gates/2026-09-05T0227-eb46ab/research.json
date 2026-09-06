@@ -1,0 +1,51 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-05T0227-eb46ab",
+  "ts": "2026-09-05T02:27:33Z",
+  "brief_path": "docs/research-brief-post-anchor-divergence-2026-09-04.md",
+  "questions": [
+    "Can a characterization corpus cover verify_post_anchor completely enough to prove a refactor preserves behaviour?",
+    "Where are the natural seams, and does splitting there put each refuted design in one place?",
+    "Do any corpus fixtures collide, and does a collision mean the corpus is redundant or that a defect exists?"
+  ],
+  "findings": [
+    {
+      "id": "R-1",
+      "category": "feasibility-proven",
+      "statement": "A twelve-fixture corpus plus a pinned-boundary call and the live ledger covers 51 of 51 executable statements in lines 615-725 with none missed",
+      "evidence": "coverage 7.13.0 branch measurement over qor/scripts/ledger_hash.py"
+    },
+    {
+      "id": "R-2",
+      "category": "seams-located",
+      "statement": "Four contiguous concerns separate at existing boundaries: classification 648-679, boundary resolution 681-684, entry reporting 686-697 and duplicate reporting 699-716, summary 718-725",
+      "evidence": "qor/scripts/ledger_hash.py:649,684,704,719"
+    },
+    {
+      "id": "R-3",
+      "category": "collisions-are-defects",
+      "statement": "Two fixture pairs produce byte-identical output; empty vs unlabeled is the concealment recorded at entry #742 and placeholder vs nonhex is the discarded field name recorded at entry #741",
+      "evidence": "10 distinct signatures across 12 fixtures, measured"
+    },
+    {
+      "id": "R-4",
+      "category": "razor",
+      "statement": "verify_post_anchor spans 615-725, 111 lines against a 40-line limit, AST-resolved; the largest proposed helper is 32 body lines",
+      "evidence": "ast.FunctionDef end_lineno - lineno + 1"
+    }
+  ],
+  "sources": [
+    "qor/scripts/ledger_hash.py",
+    "docs/META_LEDGER.md entries #741 and #742"
+  ],
+  "ledger_entry": 742,
+  "recommended_next": "qor-plan (Phase 265, decomposition)",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-05T02:27:33Z"
+  }
+}

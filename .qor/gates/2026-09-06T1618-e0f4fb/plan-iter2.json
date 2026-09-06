@@ -1,0 +1,31 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T1618-e0f4fb",
+  "ts": "2026-09-06T16:45:00Z",
+  "plan_path": "docs/plan-qor-phase266-session-total-suppression.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #447",
+  "phases": [
+    "Add _check_total helper and T1-T7; confirm T1, T3, T4, T5, T6 red",
+    "Add stall_walk.session_signature_timestamps returning ascending ts per signature",
+    "Anchor check_session_total on the K-window floor and filter suppressed signatures before selecting the winner",
+    "Extend isolate_gates_dir to patch _workdir.root"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_cycle_count_escalator.py tests/test_session_total_signature_count.py tests/test_findings_signature_schema_parity.py tests/test_stall_walk.py tests/test_orchestration_override.py tests/test_session_id_path_safety.py tests/test_session_total_escalator_skill_wiring.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "now_iso is whole-second; a decline in the same second as the newest contributing record shifts the window by one occurrence, costing one extra escalation, never a missed one",
+      "A decline suppresses that signature for K-1 further occurrences then re-arms",
+      "No real session in the corpus has ever exceeded the K=3 threshold, so the anchor is pinned by tests and a stated contract, not by history"
+    ],
+    "non_goals": [
+      "GH #448 missing validate_session_id at the head of check_session_total; this phase adds a validating helper call AFTER the unvalidated read and must not be recorded as fixing it",
+      "The interpolated-reason defect in orchestration_override.record",
+      "Any new escalation mode"
+    ]
+  }
+}

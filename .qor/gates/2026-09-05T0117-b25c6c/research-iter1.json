@@ -1,0 +1,61 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-05T0117-b25c6c",
+  "ts": "2026-09-05T01:17:49Z",
+  "brief_path": "docs/research-brief-post-anchor-divergence-2026-09-04.md",
+  "questions": [
+    "Does attestation parity between verify() and verify_post_anchor close GH #430?",
+    "What is the operator harm GH #430 actually reports, and what closes it?",
+    "Can the disclosure be added without disturbing the GH #88 / GH #199 contract tests?"
+  ],
+  "findings": [
+    {
+      "id": "R-1",
+      "category": "remedy-refuted",
+      "statement": "Attestation parity does not close GH #430: find_grandfathered_entries returns an empty set for both the reporter and GH #55 fixtures and verify(tolerate_known_grandfathered=True) still returns 1 for both",
+      "evidence": "executed against scratchpad ledger_reporter.md and ledger_gh55shape.md"
+    },
+    {
+      "id": "R-2",
+      "category": "harm-located",
+      "statement": "The reported harm is that the strict finding is discarded; governance_health computes it at governance_health.py:140 and drops the buffer, returning a fixed note at :153",
+      "evidence": "qor/scripts/governance_health.py:140,153"
+    },
+    {
+      "id": "R-3",
+      "category": "constraint-measured",
+      "statement": "Every assertion reading either surface is a substring test, so an additive change disturbs nothing; the four contract tests Phase 263 broke assert status and substrings only",
+      "evidence": "tests/test_verify_ledger_cli.py:55; tests/test_governance_health_post_anchor_tolerance.py:119"
+    },
+    {
+      "id": "R-4",
+      "category": "coverage-separates",
+      "statement": "Reporter shape verifies 1 and tolerates 7; GH #55 shape verifies 6 and tolerates 2; both print an identical post-anchor clean line today",
+      "evidence": "measured via verify() and verify_post_anchor over both fixtures"
+    },
+    {
+      "id": "R-5",
+      "category": "local-impact",
+      "statement": "This repository is unaffected: strict verify returns 0 with 738 OK, so governance_health never reaches the fallback that emits the note",
+      "evidence": "verify(docs/META_LEDGER.md) rc=0, FAIL=0, TAINTED=0"
+    }
+  ],
+  "sources": [
+    "qor/scripts/ledger_hash.py",
+    "qor/scripts/governance_health.py",
+    "tests/test_governance_health_post_anchor_tolerance.py",
+    "tests/test_verify_ledger_cli.py",
+    "docs/META_LEDGER.md",
+    "GH #430, #443, #425, #55, #88, #199"
+  ],
+  "ledger_entry": 740,
+  "recommended_next": "qor-plan (Phase 264)",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-05T01:17:49Z"
+  }
+}

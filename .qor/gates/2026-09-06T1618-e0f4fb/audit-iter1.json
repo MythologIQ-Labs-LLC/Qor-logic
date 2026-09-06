@@ -1,0 +1,15 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-06T1618-e0f4fb",
+  "ts": "2026-09-06T16:35:00Z",
+  "target": "docs/plan-qor-phase266-session-total-suppression.md",
+  "verdict": "VETO",
+  "risk_grade": "L2",
+  "ledger_entry": 750,
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "findings_categories": [
+    "specification-drift",
+    "coverage-gap"
+  ],
+  "iteration": 3
+}

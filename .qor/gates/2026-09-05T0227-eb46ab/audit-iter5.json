@@ -1,0 +1,26 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-05T0227-eb46ab",
+  "ts": "2026-09-05T13:10:43Z",
+  "target": "docs/plan-qor-phase265-decompose-verify-post-anchor.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "iteration": 5,
+  "findings_categories": [
+    "coverage-gap",
+    "specification-drift"
+  ],
+  "reviews_remediate_gate": null,
+  "ledger_entry": 747,
+  "attempt_cap_reached": true,
+  "legal_next": "qor-remediate",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "veto",
+    "ts": "2026-09-05T13:10:43Z"
+  }
+}

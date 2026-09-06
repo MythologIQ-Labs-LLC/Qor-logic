@@ -1,0 +1,51 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-04T2057-9575a7",
+  "ts": "2026-09-05T00:55:02Z",
+  "plan_path": "docs/plan-qor-phase263-declared-post-anchor-anchor.md",
+  "change_class": "feature",
+  "doc_tier": "minimal",
+  "originating_remediation": "GH #430",
+  "boundaries": {
+    "limitations": [
+      "The declaration is a single entry number; it says where the trustworthy band begins, not why the entries below it fail.",
+      "A consumer with failures and no declaration changes from exit 0 to exit 1, including ledger_upgrade.upgrade, which will decline to swap.",
+      "This repository must declare 111 rather than 12 because entries #109 and #111 classify as failures, understating the chain by 81 measured verifying entries in the #12 to #108 span."
+    ],
+    "non_goals": [
+      "Changing what counts as a failing entry; the classification loop is untouched.",
+      "Taint propagation in post-anchor mode; GH #430 suggestion 1 is measured contract-breaking and not adopted."
+    ],
+    "exclusions": [
+      "GH #443 and GH #425.",
+      "GH #430 suggestion 3, surfacing the strict/post-anchor disagreement in governance_health.",
+      "Formalizing the Non-chain-advancing entry marker, undocumented and used on three entries."
+    ]
+  },
+  "open_questions": [],
+  "phases": [
+    "Phase 1: resolve the post-anchor boundary as explicit argument, then a declaration in .qorlogic/config.json read via qorlogic_config.load_section, then auto-detection permitted only when no entry classifies as a failure, then a fail-closed refusal naming the failing entries and the config key; declare this repository's boundary at 111; correct doctrine section 14 and the post-anchor boundary glossary definition"
+  ],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "feature_inventory_touches": [],
+  "ci_commands": [
+    "python -m pytest tests/test_post_anchor_declared_anchor.py -v",
+    "python -m pytest tests/test_post_anchor_verify.py tests/test_ledger_hash_duplicate_entry.py tests/test_ledger_hash.py tests/test_seal_entry_check.py tests/test_ledger_upgrade.py tests/test_governance_health.py -v",
+    "python -m pytest -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "ruff check ."
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.169.1",
+    "host": "claude-code",
+    "model_family": "claude",
+    "human_oversight": "absent",
+    "ts": "2026-09-05T00:55:02Z"
+  }
+}

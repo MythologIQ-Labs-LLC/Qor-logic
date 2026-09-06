@@ -29,7 +29,32 @@ class EscalationRecommendation:
     cycle_count: int
 
 
-def _suppression_active(session_id: str, first_match_ts: str | None) -> bool:
+def _suppression_active(
+    session_id: str,
+    first_match_ts: str | None,
+    *,
+    inclusive: bool = False,
+) -> bool:
+    """True when an operator decline should silence this escalation.
+
+    The marker file holds the timestamp of the decline. ``first_match_ts`` is
+    the anchor it is compared against, and the two modes anchor differently:
+
+    - ``check`` passes the OLDEST audit of the current consecutive run, and
+      compares strictly (``inclusive=False``, ``marker > anchor``). Its run
+      resets on a PASS, a signature change or an implement break, so the anchor
+      advances and the suppression naturally expires.
+    - ``check_session_total`` passes the K-window floor -- the oldest of the
+      most recent ``ESCALATION_THRESHOLD`` occurrences of one signature -- and
+      compares inclusively (``inclusive=True``, ``marker >= anchor``). Its
+      counter never resets, so the window is what makes the suppression expire
+      after K further occurrences instead of lasting the session.
+
+    ``inclusive`` exists because ``now_iso`` formats to whole seconds: a decline
+    can share a second with the anchor record, and under a strict comparison
+    that would mean a decline the operator just made does not take effect
+    (Phase 266, GH #447). The default preserves ``check``'s behaviour exactly.
+    """
     session.validate_session_id(session_id)  # GAP-SEC-05: no path traversal
     if first_match_ts is None:
         return False
@@ -37,6 +62,8 @@ def _suppression_active(session_id: str, first_match_ts: str | None) -> bool:
     if not marker.is_file():
         return False
     marker_ts = marker.read_text(encoding="utf-8").strip()
+    if inclusive:
+        return marker_ts >= first_match_ts
     return marker_ts > first_match_ts
 
 
@@ -66,7 +93,13 @@ def check_session_total(session_id: str) -> EscalationRecommendation | None:
 
     Returns ``EscalationRecommendation`` with
     ``escalation_reason="session-total"`` when threshold met; ``None`` otherwise.
-    Respects the same suppression marker as ``check``.
+
+    Phase 266 (GH #447): reads the same suppression marker FILE as ``check``
+    under different semantics, which the previous wording ("respects the same
+    suppression marker") obscured while the code in fact read no marker at all.
+    A decline silences one signature until it recurs ``ESCALATION_THRESHOLD``
+    further times; suppressed signatures are filtered out before a winner is
+    chosen, so declining one never masks another.
     """
     totals = stall_walk.count_session_signature_totals(session_id)
     if not totals:
@@ -74,10 +107,21 @@ def check_session_total(session_id: str) -> EscalationRecommendation | None:
     over_threshold = [(sig, n) for sig, n in totals.items() if n >= ESCALATION_THRESHOLD]
     if not over_threshold:
         return None
-    if _suppression_active(session_id, None):
+    # Phase 266 (GH #447): filter suppressed signatures BEFORE selecting a
+    # winner. Suppressing after selection made one declined signature mask
+    # every other over-threshold signature, including ones the operator had
+    # never seen.
+    stamps = stall_walk.session_signature_timestamps(session_id)
+    live = [
+        (sig, n) for sig, n in over_threshold
+        if not _suppression_active(
+            session_id, stamps[sig][-ESCALATION_THRESHOLD], inclusive=True
+        )
+    ]
+    if not live:
         return None
-    over_threshold.sort(key=lambda item: (-item[1], item[0]))
-    signature, count = over_threshold[0]
+    live.sort(key=lambda item: (-item[1], item[0]))
+    signature, count = live[0]
     return EscalationRecommendation(
         suggested_skill="/qor-remediate",
         escalation_reason="session-total",

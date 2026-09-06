@@ -2534,6 +2534,174 @@ Scope-widening family (fourth occurrence in one session; parent of the convenien
 
 The countermeasure has to be a re-run, not a recollection. This session supplies the argument in its detection form: a case-sensitive grep for a Tier 2 contract sentence returned one hit where three exist, and the error was caught only because the author happened to remember a capital letter from reading the file an hour earlier. Memory caught it that time and will not next time. So the rule is procedural rather than attentional -- any sentence that retracts or narrows a measurement restates that measurement's scope explicitly, and is checked against the command that produced it rather than against the recollection of what the command showed.
 
+## Entry: Phase 263 research -- an incident and a nearby open issue are not evidence for each other
+
+### What Happened
+
+A chain-linkage fork was introduced into the working-tree ledger during the Phase 258-262 session, at entries #729 and #730, and survived eight appends before being caught and repaired. Reviewing the backlog afterwards, GH #425 stood out: "verify_post_anchor: the ledger-fork duplicate check has a one-entry detection window". It is about `verify_post_anchor`. It uses the word fork. It describes a detection gap that lets a fork persist. The inference was immediate and, stated aloud, sounded like diligence: this session's fork is live evidence for #425's premise.
+
+It was wrong. #425 concerns two entries allocated the same entry *number*. The break here used distinct numbers and mislinked their `previous_hash` values, so `_duplicate_entry_numbers` returns nothing for it -- against the live ledger it returns an empty list. The two defects share a function, a vocabulary, and a symptom class, and are otherwise unrelated.
+
+The refutation cost one fixture: four entries, each internally self-consistent, wrongly linked. `verify()` exits 1 and names both breaks; `verify_post_anchor()` returns 0 and reports the ledger clean. That measurement did not confirm the hypothesis, it replaced it -- with a third, previously unfiled defect, that `verify_post_anchor` runs no linkage pass at all.
+
+### Pattern to Avoid
+
+Treating an open issue as an explanation for an incident because the two are adjacent. Adjacency here was strong: same module, same function, overlapping terminology, and a filed reproduction that reads like the thing just experienced. Every one of those is a reason to *investigate* the connection and none of them is the connection.
+
+The failure mode is specific to a well-maintained tracker. A repository with sixty filed issues, each carrying a verified reproduction, offers a plausible pre-written explanation for almost any incident. The better the issues are, the more readily a fresh incident snaps onto one, and the less the snapping feels like a leap. What makes it a leap is that the incident's own mechanism was never derived -- the issue supplied a mechanism, and it was adopted rather than tested.
+
+This is the scope-widening family seen from the other end. There, a narrow measurement was reported as a broad claim. Here, a broad category (a fork in the ledger) was collapsed onto a narrow filed instance (a duplicate entry number) without checking that the incident fell inside it. Both are the same failure to keep the evidence and the sentence the same size.
+
+### Pattern ID
+
+Adjacent-issue attribution. Countermeasure: before citing an open issue as the cause of an observed incident, reproduce the incident's mechanism against the issue's own predicate and confirm it fires. If the predicate returns nothing on the incident, the issue does not explain it, however closely the prose matches. The check is cheap -- here it was one fixture and one function call -- and it converts a plausible citation into either a confirmed one or a new finding.
+
+Second-order note worth keeping: the refuted hypothesis had already been stated to the operator, hedged, in a prior turn ("I have not yet verified that #425's specific window is what let it through, and I'm not going to assert that until I've tested it"). The hedge was correct and it held. Hedging is not a substitute for the measurement, but it is what keeps an unverified inference from hardening into a Locked Decision while the measurement is still pending.
+
+---
+
+## Entry: Phase 263 research -- a remedy recommended without ever being run against the defect
+
+### What Happened
+
+A research brief established eight findings about `verify_post_anchor`, seven of them by execution, and recommended a fix: tolerate linkage breaks at or below the post-anchor boundary, error above it. The recommendation was refuted during the planning pass that consumed the brief, before any plan text was written.
+
+The refutation is that the rule never fires. The boundary is `max(ok_entries)`, and a linkage fork leaves every entry chain-math-consistent, so the boundary lands at the ledger's tail and no break can fall above it. Run against the brief's own two fixtures, the rule reports the forked ledger clean, which is what the unfixed code already does.
+
+What makes this instructive is where the measurement stopped. F-6 did run: it built a re-anchored consumer fixture and confirmed a linkage break exists below the boundary. That measurement is true and remains in the brief. The sentence written from it was that the tolerance rule therefore preserves the consumer contract while closing the defect. The first half was measured. The second half -- that the rule fires on the defect -- was never executed, and is false.
+
+Every input to the refutation was already present. The brief itself recorded, as F-7, that `boundary = max(ok)` empties the post-boundary band whenever the newest entry classifies `ok`. It recorded that a linkage fork leaves every entry self-consistent. Those two facts compose directly into "the band is empty for a fork", and the brief drew that conclusion for GH #425 and GH #430 while missing that it applied to its own recommendation.
+
+### Pattern to Avoid
+
+Recommending a remedy on evidence that the defect exists, without executing the remedy's own predicate against the case it is meant to catch. Verifying a defect and verifying a fix are different measurements, and the first does not license the second.
+
+The failure hides well because the evidence supporting the recommendation is genuine and abundant. Seven findings were measured. The eighth inherited their credibility without earning it. A brief that is mostly measured reads as measured throughout, and the one inference that was reasoned rather than run is the one carrying the recommendation.
+
+The specific shape here: a constraint was discovered (a consumer ledger carries a break below the boundary), a rule was designed to satisfy that constraint (tolerate below, error above), and the rule was checked only against the constraint that motivated it. It was never checked against the defect. A rule built to satisfy one case will satisfy that case; that is not evidence about any other.
+
+### Pattern ID
+
+Unrun-remedy family; sibling of the scope-widening family and the same defect at the recommendation layer rather than the finding layer. Countermeasure: before a research brief or a plan recommends a mechanism, execute that mechanism's decision predicate against the failing fixture and record the observed branch. Where the mechanism is not yet code, compute its predicate by hand against the fixture's real values -- here that was two lines producing `boundary=#4 break_ids=[3, 4] above_boundary=[]`, which is the whole refutation and cost one command.
+
+The stronger form, worth adopting where a fix is proposed against a reproduction: the reproduction is the test. A recommendation that cannot state which branch of its own rule the reproduction takes has not been checked, whatever else in the document has.
+
+---
+
+## Entry: Phase 263 -- a wrong premise carried through three artifacts because nobody re-ran it
+
+### What Happened
+
+A plan proposed a declared-anchor contract for `verify_post_anchor`, justified by the claim that this repository's ledger classifies ten entries as failures and therefore needs a declaration to certify its trustworthy band. The tribunal ran the strict verifier against the same file. It returns 0, with 738 OK lines, zero FAIL and zero TAINTED, and reports entries #1 through #11 as attested by migration entry #492.
+
+There are no failures. The ten exist only inside `verify_post_anchor`'s classifier, which implements none of the four attestation paths `verify()` has. Entries #109, #111 and #113 are the documented SG-ConcurrentLedgerRace-A federation residual with a purpose-built remedy already shipped, not the "deliberate non-chain-advancing narrative entries" the plan called them.
+
+The number was produced once, by a hand-rolled reimplementation of the classifier written to answer a different question, and then inherited. It passed into a research brief as a finding, into a META_LEDGER entry as a recorded fact, and into a plan as two Locked Decisions and a migration value. At no point between its first computation and the tribunal did anyone run the shipped verifier against the shipped ledger and read the result.
+
+The tribunal also found that the plan's load-bearing scope claim, that no existing test changes, was false: four currently-green tests break, and they are the codified tolerance contracts the plan claimed to preserve. That claim had been checked, twice, by the same too-narrow method both times -- direct calls in two test files, missing every call that reaches the function through a caller.
+
+### Pattern to Avoid
+
+Reusing a derived number across artifact boundaries without re-deriving it at each one. A measurement is valid for the question it was computed for and the code path it was computed with. Once it crosses into a different document serving a different argument, it is an assumption wearing a measurement's clothes.
+
+The reimplementation is what made it durable. A hand-rolled classifier written to explore a question looks like evidence in the transcript, and its output is a concrete list of entry numbers, which reads as more grounded than prose. But it was never validated against the function it imitates. The two agreed on the shape of the answer -- both said "these ten entries" -- while disagreeing about what the answer meant, because the real function has four tolerance paths the copy did not.
+
+A second, quieter lesson sits underneath. Eleven pre-audit lints returned rc=0 on this plan, including the grep-evidence truth-check that verifies cited lines really say what the plan quotes. Every citation was accurate. The plan was still wrong, because the defect was not in any citation but in a number no lint reads and a claim no lint runs. A clean ladder narrows where a defect can be; it never shows there is none.
+
+### Pattern ID
+
+Inherited-measurement family; the durable form of the unrun-remedy and scope-widening entries logged earlier in this session. Countermeasure, in two parts.
+
+First: when a plan's Locked Decision rests on a numeric property of a live artifact, the plan must cite the shipped command that produces it and its observed output, not a value carried from an earlier document. If the number came from a script written in the transcript, that is a signal to re-derive it with the production code path before it is written down.
+
+Second, and this is the one that would have caught this earliest: when a claim asserts that a repository is in a bad state, run the tool whose job it is to say so and read what it actually says. The premise here was "this ledger has failures". The repository ships a verifier that answers exactly that question and had been answering it, correctly and repeatedly, throughout the same session.
+
+---
+
+## Entry: Phase 264 -- a fully green suite on a change that reversed a shipped contract
+
+### What Happened
+
+Phase 263 was VETOed partly because a scope claim, "no existing test changes", had been asserted from reading rather than running. The correction adopted for Phase 264 was to stop asserting and start measuring: simulate the proposed change faithfully by monkeypatching both edited functions, then run the entire suite against it.
+
+That was done. The suite returned 3254 passed, 6 skipped, 4 deselected, zero failed, exit 0.
+
+The change it was measuring puts the tokens `FAIL` and `TAINTED` back into `governance_health`'s reason string, which `governance_health.py:317` prints at main() level and which `status_json` embeds in a JSON payload that the nightly workflow posts verbatim into a GitHub issue. Phase 182 removed exactly those tokens from exactly those three surfaces, under GH #268, because raw FAIL/TAINTED diagnostics contradicted an OK verdict when they bled into them. The docstring of the function being edited says so, six lines above the line being changed.
+
+A test does pin the tokens' absence: `test_tolerated_residuals_emit_no_fail_or_tainted_lines` asserts `"TAINTED" not in stream` over both captured streams. It passed, because it calls `_classify_one`, which returns the reason rather than printing it. The contract holds one function call further out than the only test that guards it.
+
+Three other blocking findings landed the same way. Two of them were arithmetic already present in the author's own artifacts: a count that is structurally always zero, printed three times in the simulation output and read as success, and a 707 plus 10 against a 739-entry ledger where the missing 22 was never subtracted.
+
+### Pattern to Avoid
+
+Treating a green suite as evidence about a contract no test expresses. The instrument was chosen well and executed correctly, and the inference drawn from it was still wrong, because a suite can only report on the assertions someone wrote. Running everything does not widen that; it only makes the existing coverage run.
+
+The specific trap is that this looks like the fix for the previous failure. Phase 263 failed by not measuring; Phase 264 measured, got green, and concluded safety. But "I ran the tests and they passed" answers a narrower question than "I checked that nothing breaks", and the gap between them is exactly the set of contracts that were shipped without a test. Those are disproportionately the *governance* contracts, because they are about what a surface must not say, and absence is harder to pin than presence.
+
+The corollary is that the strongest available evidence for a diagnostics change is not the test suite at all. It is the git archaeology of the surface being changed: who last constrained it, and why. Here that evidence was in the docstring of the edited function and cost one read.
+
+### Pattern ID
+
+Green-suite-as-proof family. Countermeasure, specific enough to execute: before changing any operator-facing string, read the blame or the docstring of the emitting line and identify the phase or issue that last constrained it. If a prior phase deliberately removed content from that surface, the current change must name it and argue against it, or it is a silent reversal. A test suite cannot supply that argument and its passing is not a substitute for it.
+
+Second countermeasure, from the two arithmetic misses: when a change adds counts to an output, sum them against the population they partition and state the remainder. If the remainder is not zero, either report it as its own bucket or say why it is excluded. A disclosure whose numbers do not add up to the whole is the defect it was written to fix, wearing the fix's clothes.
+
+---
+
+## Entry: Phase 265 -- three enumerations in a row stopped where attention stopped, and each felt complete
+
+### What Happened
+
+A plan claimed that injecting one composition slip into `verify_post_anchor` would redden three already-shipped tests. The number mattered: it was the evidence for a claim about which guard catches which defect, and the previous iteration had been vetoed for asserting exactly that kind of claim without checking the shipped suite.
+
+Three people counted, in sequence, and all three were short.
+
+The author ran the mutation against the two test files most obviously about post-anchor behaviour and found three. The independent reviewer, reading rather than executing, traced the mutation into two caller suites the author had not opened and found five. Re-running the mutation against a file list written down earlier for an unrelated purpose found seven: the last two live in `tests/test_ledger_upgrade.py`, which neither the author nor the reviewer had reason to open for this question.
+
+The reviewer named the pattern on itself, unprompted, in its closing message: its enumeration "stopped at the suites I had already opened for other findings, which is the same shape of error I was filing against, one layer up."
+
+### Pattern to Avoid
+
+Enumerating from recall instead of from a property. Each of the three counts terminated at the edge of what was already loaded into working memory, and from the inside every one of them felt like completeness rather than like stopping. There is no phenomenal difference between "I looked everywhere" and "I looked everywhere I was already looking", which is why care does not fix it and why a second reviewer does not reliably fix it either -- the reviewer has its own working set and stops at its own edge.
+
+The failure survives review because reviewer and author fail independently but in the same shape. It survived here through two levels: the author under-counted, the reviewer caught the author and under-counted in turn, and only a mechanically derived list caught both. Note that the third count was not a smarter search. It was the same command applied to a file list that had been produced for a different question and therefore did not share the author's blind spot.
+
+### Pattern ID
+
+Recall-bounded enumeration; the search-set sibling of the scope-widening and inherited-measurement families. Countermeasure: when a claim counts occurrences of anything, the search set must be derived from a property rather than assembled from memory. Here the property was available and cheap -- every test importing or transitively exercising the symbol, taken from grep across `tests/`, rather than the suites that came to mind.
+
+The stronger form, worth applying to any count that appears in a plan: write down how the search set was produced before writing the number it produced. If the answer is "the files I was already looking at", the number is a lower bound and must be labelled as one. A count whose derivation cannot be stated is not a measurement, and this cluster has now spent three tribunals establishing that a number written in the present tense is read as a measurement whether or not it was one.
+
+---
+
+## Entry: Phase 265 -- a finding can be correct and still arrive the wrong size
+
+### What Happened
+
+A reviewer without an execution tool established, by reading, that `verify_post_anchor` accepts an entry through either of two different chain-hash digests and that the characterization corpus offered as the phase's safety argument pinned neither the legacy form nor any fixture that would notice its removal. The finding was correct. It was filed as a missing fixture in a path list.
+
+Executed, the branch turned out to carry 119 of the live ledger's 743 entries. Dropping it changes no corpus fixture and breaks the repository's own chain across a hundred-plus entries. The same finding, correctly reasoned, was a coverage nit at the severity it was filed and the largest single defect of the cluster at the severity it actually held.
+
+The reviewer named this on itself afterwards: it could derive that the branch was unpinned but not how heavily it was trafficked, and its tooling disclosure sat in a header paragraph rather than beside the finding, so a reader would reasonably infer a rarer path from the way the finding was written.
+
+### Pattern to Avoid
+
+Letting a capability limit travel in a document header while the findings it constrains travel on their own. A disclosure at the top answers "what could this reviewer do"; it does not answer "which of these specific claims is weakened, and in which direction". Those are different questions and only the second one changes how a reader acts.
+
+The asymmetry is specific and predictable. Reading establishes *existence* -- this branch is unpinned, this caller is unenumerated, this figure has no command behind it. Execution establishes *magnitude* -- how much depends on it, how many tests move, how far the number drifted. A reviewer restricted to reading will systematically produce findings that are sound in kind and unsized in degree, and the natural prose for an unsized finding reads as a small one, because a writer who cannot say "119 entries" writes "no fixture covers this".
+
+The consumer error is the mirror: reading such a report and triaging by the severity the prose implies rather than by the severity the evidence permits. Here the Judge happened to re-execute every blocking finding and caught it. Had the finding been triaged as filed, a decomposition could have shipped that passed every golden and broke the chain.
+
+### Pattern ID
+
+Unsized-finding family; the reporting-layer sibling of recall-bounded enumeration. Countermeasure, two-sided.
+
+For the reporter: attach the limit to the claim, not only to the header. "This branch is unpinned; I cannot measure how much depends on it" is a materially different sentence from "this branch is unpinned", and costs one clause.
+
+For the consumer: when a finding arrives from an unexecuting reviewer, treat its severity as unstated rather than as low, and measure the magnitude before triaging. Existence-only findings are not minor findings; they are findings whose size has not been taken.
+
+---
+
 ---
 
 *Shadow integrity: ACTIVE*

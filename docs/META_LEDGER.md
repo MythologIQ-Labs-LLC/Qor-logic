@@ -21423,5 +21423,543 @@ The fix is one frozenset member. The tests are the part that matters, and they b
 
 ---
 
+### Entry #740: RESEARCH BRIEF -- post-anchor divergence from its written contract
+
+**Timestamp**: 2026-09-04T21:10:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+**Entry ID**: `5154f83fdf09`
+**Session**: 2026-09-04T2057-9575a7
+**Brief**: docs/research-brief-post-anchor-divergence-2026-09-04.md
+
+**Content Hash**: `e3bfaedb355390fde464dbe11dd1d075087064d03f7ccacb728a57e565c0f54a`
+**Previous Hash**: `2841722a84660517b4bfadd7d42d9261c6a95c3f0c0b4990e64f0017e54d51df`
+**Chain Hash (Merkle seal)**: `75a6b9010e4d746510f786bbaa8746cb65a738cb636934bbd7e6a34b7b29ddc2`
+
+**Decision**: The three open issues against `verify_post_anchor` -- GH #425, #430, and #443, the last filed during this research -- are not three feature requests. They are three respects in which one function fails to implement a contract this repository already ships in writing at `qor/references/doctrine-governance-enforcement.md:332-347`. Audited bullet by bullet, `verify_post_anchor` honors two of section 14's contract elements fully, one partially, and one not at all. `TAINTED` propagation, which line 344 states explicitly and which line 344 also explains the reason for ("math consistency alone is not trust"), appears zero times in the function's 615-725 span against five occurrences in `verify()`. The placeholder check at line 671 calls `_find_placeholder_field` in a bare truth test and discards the field name that line 345 of the doctrine promises to report. And the per-link chain check that the raw-mode definition at line 336 names -- "every chain link math-checks against its recorded predecessor" -- is absent entirely: `_report_sequence` has exactly one call site repository-wide, at `ledger_hash.py:594`, which an AST resolution places inside `verify()` (spanning 473-595), not inside `verify_post_anchor` (spanning 615-725). That absence is what GH #443 records; it was filed during this research because no existing issue covered it.
+
+The omission is reachable, not theoretical. A four-entry fixture whose entries are each internally self-consistent but wrongly linked returns exit 1 from `verify`, which names both breaks, and exit 0 from `verify_post_anchor`, which prints every entry `OK` and declares the ledger clean. Run twice consecutively, identical output both times. This matters because `verify_post_anchor` is not a diagnostic backwater: it is what `seal_entry_check.check()` calls at `qor/reliability/seal_entry_check.py:149`, which is `/qor-substantiate` Step 7.7, and what `governance_health._ledger_damage` calls at `qor/scripts/governance_health.py:149`, which is the preflight every governance-reading skill runs. Both were pointed there deliberately, by GH #88 and GH #199; neither change enumerated what else was being surrendered.
+
+**The claim's scope is stated narrowly on purpose.** A fork of exactly this shape occurred in this repository's working tree during the Phase 258-262 session and survived eight entries before repair at entries #737 and #738. That is not an observed gate miss. No seal ran between the break and its repair, so `seal_entry_check` was never invoked on the forked file; the fixture establishes what the gate would do, not what it did. A hypothesis raised earlier in the session -- that GH #425's one-entry duplicate window explained that fork -- was refuted by measurement rather than reasoned about: the fork used distinct entry numbers, so `_duplicate_entry_numbers` returns an empty list against the live ledger, placing the incident in #443's class and not #425's. The refutation is logged to the Shadow Genome as adjacent-issue attribution, a failure mode that a well-maintained tracker makes easier rather than harder, because a good issue offers a plausible pre-written mechanism that gets adopted instead of tested.
+
+**Feasibility was measured at both ends before any fix was proposed.** Against the live ledger at d07daac3: 737 entries, `reconciled` set empty, zero linkage breaks with and without tolerance, no duplicate entry numbers -- so the check costs this repository nothing. But GH #55, the originating issue for the whole tolerance contract, describes a consumer ledger with a hand-edited pre-anchor cluster, and editing an entry body changes its content hash, hence its chain hash, hence what its successor recorded. An eight-entry fixture of that shape carries exactly one linkage break, at the re-anchor seam, below the auto-detected boundary. So an unconditional `_report_sequence` call would fail every consumer the mode exists to serve, while the tolerance rule -- breaks at or below the boundary disclosed, above it errors -- preserves GH #55 and closes the surface. That single measurement is what rules out the naive fix, and it was taken before the recommendation was written rather than after.
+
+**Recommended shape: two phases, A before B.** Phase A takes #443 plus the field-naming gap; it amends no existing green test and is feasible-verified at both ends. Phase B takes #425 and #430 together, because both are consequences of the single line `boundary_entry = max(ok_entries)` at `ledger_hash.py:684`, which makes the reporting loop's error branch unreachable whenever the newest entry classifies `ok`, and because both must amend `tests/test_ledger_hash_duplicate_entry.py::test_post_anchor_tolerates_duplicate_number_strictly_before_boundary`, a currently-green test that pins #425's behaviour as intended. The sizing follows this session's own evidence rather than preference: Phases 258 and 261 reached five-attempt caps on the breadth of their claims, and Phase 262, scoped to one defect in two files, passed on attempt 1. Splitting B further would put two plans against the same four lines. A durable countermeasure is also recommended at P1 -- a parity property asserting that whenever `verify_post_anchor` returns 0, every error `verify` reports lies at or below the detected boundary -- which is a generated relation rather than an enumerated case list and would have failed on the day the linkage pass was omitted.
+
+One correction to record against this session's own framing: an instruction issued for this research named GH #66 as part of the originating tolerance contract. It is not; GH #66 is "Phase 71: qor-implement Step 8.5 Documentation Sync". The docstring reads "Phase 66 (GH #55)", and *Phase* 66 was conflated with *issue* #66. The contract's sole originating issue is GH #55. Separately, a count of tests in `tests/test_post_anchor_verify.py` stated earlier in the session as 12 measures as 11.
+
+**WITHDRAWN BEFORE USE, and recorded here rather than quietly fixed.** The `/qor-plan` pass that consumed this brief refuted its own P0 recommendation before writing any plan text, so the brief carries a Post-Brief Correction section and this entry's content hash binds the corrected file. What failed: F-6 concluded that tolerating linkage breaks at or below `boundary_entry` would close GH #443 while preserving GH #55. It closes nothing. `boundary_entry` is `max(ok_entries)`, and a linkage fork leaves every entry chain-math-consistent, so the boundary lands at the ledger's tail and no break can fall above it. Measured on the brief's own two fixtures: `ledger_forked` gives boundary #4 with breaks at [3, 4] and none above; `ledger_reanchored` gives boundary #8 with a break at [5] and none above. The proposed rule would have reported the forked ledger clean, exactly as today.
+
+That is F-7 reaching further than F-6 allowed for: the single `max(ok)` line that empties the post-boundary band for GH #425 and GH #430 empties it for linkage too, which makes #443 downstream of the boundary rather than independent of it, and the recommended ordering backwards. The obvious repair -- letting linkage breaks feed classification so a broken entry lowers the boundary beneath itself -- catches the fork but converts a legitimate re-anchor seam into an error, and the existing tolerance path cannot express a seam: `verify()` computes it as `_attested_reconciled(entries) & _duplicate_previous_hash_members(entries)` at `ledger_hash.py:518`, and a seam is a single entry whose `previous_hash` does not follow its predecessor, not one sharing a `previous_hash` with another, so the intersection is empty however the seam is attested. A third measurement rules out the most natural implementation independently: `_sequence_breaks` resets `previous_chain` to `None` across a tolerated id, so passing the pre-boundary set as `tolerated` erases a break at the first entry above the boundary -- tolerating {1,2,3,4} against a break at #5 returns an empty list, while tolerating {1,2,3} returns it.
+
+The branch `phase/263-post-anchor-linkage-pass` was cut and deleted without a plan. No plan artifact was written, no audit cycle consumed. GH #443's own Suggested direction section proposed the refuted rule and has been corrected in place, since it is public and would otherwise misdirect an implementer.
+
+**Next**: not `/qor-plan`. Either `/qor-research` on the routing candidate -- whether `seal_entry_check` and `governance_health` should call strict `verify()` for a repository that declares no re-anchor, reserving `verify_post_anchor` for those that do, which would restore linkage detection to this repository's seal gate immediately and partly inverts GH #88 -- or a phase against GH #430, which is the more tractable entry point. GH #425 remains independent of both. Findings F-1 through F-5, F-7 and F-8 stand.
+
+---
+
+### Entry #741: GATE TRIBUNAL -- Phase 263 declared post-anchor anchor, iteration 1 (VETO)
+
+**Timestamp**: 2026-09-05T01:15:00Z
+**Phase**: GATE (Phase 263)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `d0c7337c5aef`
+**Plan**: docs/plan-qor-phase263-declared-post-anchor-anchor.md (iteration 1)
+**Session**: 2026-09-04T2057-9575a7
+**Mode**: adversarial -- `audit_risk_score` returned `option_b_required: false`; an independent architecture reviewer was dispatched regardless
+
+**Content Hash**: `89dd683b70e1aacdfe31531e98f20d25a82814c2284d9dfd2573192ecd1c5570`
+**Previous Hash**: `75a6b9010e4d746510f786bbaa8746cb65a738cb636934bbd7e6a34b7b29ddc2`
+**Chain Hash (Merkle seal)**: `a76e2013d8d1402cbfea727e04385e7ea5f4b902b7afeea856797c67f11411d6`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + test-failure + coverage-gap + infrastructure-mismatch (five findings). Attempt 1 of 5.
+
+**THE PLAN IS BUILT ON A CONDITION THAT DOES NOT EXIST.** V-5: LD-1 and LD-5 rest on the claim that this repository's ledger classifies ten entries as failures. Strict `verify()` returns 0 with 738 OK lines, zero FAIL and zero TAINTED, and reports entries #1 through #11 as `attested by migration entry #492`. Entries #109, #111 and #113 are the documented SG-ConcurrentLedgerRace-A duplicate-`previous_hash` residual from a pre-Phase-76 federation episode, not the "deliberate non-chain-advancing narrative entries" the plan calls them; `find_grandfathered_entries` returns exactly those three, and the repository already ships a purpose-built remedy for them in the Phase 119 reconcile propose/authorize path. The ten failures exist only inside `verify_post_anchor`'s classifier, which implements none of the four attestation paths `verify()` has -- `_migration_attested`, `_attested_reconciled`, `find_grandfathered_entries` and `DISCLOSED_GRANDFATHERED` all appear in `verify()` and none in `verify_post_anchor`. The proposed migration would have declared 81 measured verifying entries plus eleven migration-attested ones as untrusted, to work around a classifier gap rather than a ledger defect. The same wrong classification had already survived a research brief, a ledger entry and a plan before anyone re-ran it.
+
+**The load-bearing scope claim was false, and two independent methods said so.** V-1: the plan states no existing test changes. Simulating its own rule over the suite gives 4 failed against a 44-passed baseline, and the four are `test_disclosed_pre_anchor_residual_is_not_damaged`, `test_tolerated_residuals_emit_no_fail_or_tainted_lines`, `test_ok_reason_names_the_disclosed_tolerance` and `test_check_tolerates_disclosed_pre_anchor_failure` -- the codified GH #88 and GH #199 tolerance contracts the plan claims to preserve. The independent reviewer derived the identical four by tracing fixture bytes with no execution tool available to it. LD-6 had enumerated only direct calls in two test files and missed every call reaching the function through a caller, which is this session's recurring defect once more: a measurement taken at one width, a sentence written at a wider one.
+
+V-2: the plan's own CI Commands would have hidden three of those four. It names `tests/test_governance_health.py`, one of six `governance_health` test files, and never names `tests/test_governance_health_post_anchor_tolerance.py` where the contract actually lives; running exactly the declared command under the rule yields 1 failed, 86 passed.
+
+V-3: `ledger_md.parent.parent` derives the repository root correctly only for a ledger exactly one directory deep, and three callers accept an arbitrary `--ledger` path. A root-level ledger in a sibling repository derives the shared parent directory as its root and would silently apply a boundary declared by a config the repository never wrote; a ledger nested deeper misses a correct declaration and fails closed. V-4: nothing bounds the declared value, so `post_anchor_boundary` set beyond the highest entry returns 0 forever -- measured at 999999 and at one billion, rc=0 with empty stderr -- which makes the control fail-open by declaration and is worse through config than through the existing flag, because it is persistent and invisible at the call site.
+
+**What the ladder did not catch.** All eleven pre-audit lints returned rc=0 on this plan, including the grep-evidence truth-check. Every binding finding came from executing the plan's rule against the suite and from re-deriving its premise, and no lint performs either. A clean ladder is not evidence a plan is correct, and this tribunal is the record of that.
+
+**What stands**: LD-2's refusal of GH #430's own first suggestion is correct and well-measured. LD-4's citations are accurate and its fail-closed composition reasoning is sound. All four grep-evidence statements re-execute exactly as written. The observation that `boundary_entry = max(ok_entries)` makes the reporting loop's error branch unreachable is true and remains the cluster's root.
+
+**The independent reviewer's full report enlarged the remediation without changing the verdict**, and each item was re-verified here by execution. The refusal guidance this plan adds is discarded at two of its four callers, because `ledger_upgrade` and `governance_health` both wrap the call in a stdout/stderr redirect and drop the buffers, so a test asserting that guidance would pass while the behaviour did not exist. The `ledger_upgrade` consequence is a circularity rather than a disclosed limitation: the module exists to recover a ledger that went format-damaged, a format-damaged ledger is by definition one with failures, and the operator would now have to declare a boundary before running the tool that would tell them what the boundary is. The auto-detect precondition treats "nothing was checked" as "nothing failed" -- a ledger carrying no hash labels at all measures `rc=0` and `post-anchor clean (boundary=#0)`. One declared test, `test_malformed_declaration_does_not_tolerate_a_failing_ledger`, cannot fail for its stated reason, since a failing ledger with no declaration already returns 1; it would pass with the declaration lookup deleted, which corrects this Judge's earlier reading that none of the seven was presence-only. `qor/skills/governance/qor-validate/SKILL.md` states the superseded default verbatim and is a declared `referenced_by` consumer of the glossary term being changed, yet is absent from Affected Files.
+
+Two findings bear on honesty rather than correctness. Entries #109, #111 and #113 carry an identical `**Previous Hash**` of `1cc74e892f2cab70e161cfbad195579d874d7a94bad20cb322f3d21cb876169e` at lines 4076, 4121 and 4170, which is what makes them the grandfathered set; tolerating them by that documented structural signature is strictly narrower than blanketing 111 entries, and the plan's non_goals and exclusions foreclose both instruments that would reach it without recording that the narrower option was considered. And `qor/references/doctrine-test-discipline.md:35` prohibits live-state coupling by name, using the real `docs/META_LEDGER.md` as its worked example, with line 71 prescribing an opt-in `tests/integration/` suite as the remedy -- so the plan's `test_this_repository_verifies_under_its_own_declaration` violates a named rule whose fix is already written down. Its deeper flaw is asymmetry: asserting only `rc == 0`, it reddens for reasons unrelated to the declaration and stays green if the declared value is inflated to silence it, which is V-4's attack arriving through the lock meant to prevent it.
+
+The reviewer had no execution tool and recorded that limit itself: the LD-5 exit-code table and the chain math for entries #2 through #10 are unverified by it. Its structural confirmation that the entries eligible to fail match the plan's list exactly is consistent with V-5 rather than in tension with it -- they are eligible to fail in `verify_post_anchor`'s classifier and tolerated in `verify()` by attestation paths that classifier lacks.
+
+**Required next action**: `/qor-plan` iteration 2. The premise must be re-derived before any design survives: with zero genuine failures here, the declared-anchor contract needs a justification it does not currently have, and the four missing attestation paths in `verify_post_anchor` are the likelier phase.
+
+---
+
+### Entry #742: GATE TRIBUNAL -- Phase 264 surface the post-anchor disagreement, iteration 1 (VETO)
+
+**Timestamp**: 2026-09-05T01:45:00Z
+**Phase**: GATE (Phase 264)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `8433881be172`
+**Plan**: docs/plan-qor-phase264-surface-post-anchor-disagreement.md (iteration 1)
+**Session**: 2026-09-05T0117-b25c6c
+**Mode**: adversarial -- `audit_risk_score` returned `option_b_required: true` (flag `high-citation-surface`), so Option B independent review was mandatory
+
+**Content Hash**: `a43c0d285cb46896d48a23428dfdd62d72db0f98bfddbb73d2f07ba7d46c72c6`
+**Previous Hash**: `a76e2013d8d1402cbfea727e04385e7ea5f4b902b7afeea856797c67f11411d6`
+**Chain Hash (Merkle seal)**: `1aaabf11464906ea73be58900b61a31ba2537ad2919e2ae3a1b06d159587f992`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + coverage-gap + test-failure (four findings). Attempt 1 of 5.
+
+**THE DISCLOSURE WOULD REPORT THE OPPOSITE OF THE TRUTH FOR THE CLUSTER'S OWN FAILURE CLASS.** V-1: the plan counts the strict verifier's `FAIL` and `TAINTED` lines, and a chain-linkage break emits neither. `_report_sequence` emits `BREAK Entry #N`, which carries no `FAIL` and no `TAINTED` token while adding to the error count that sets the return value. Measured against the forked fixture this cluster has used since the GH #443 filing: strict verify returns 1 with 0 FAIL lines, 0 TAINTED lines and 2 BREAK lines, so the proposed note would tell the operator that strict verify reports zero failing and zero tainted entries on a ledger that strict-failed. D1 promises the operator is told what the strict verifier found; for a fork they are told its negation. A reachable green fixture for the shape already exists in `tests/test_ledger_hash_duplicate_entry.py`.
+
+**The change reverses a shipped contract without naming it.** V-2: `governance_health.py:317` prints `finding.reason` at main() level, and the docstring of the function the plan edits records at `:128-132` that Phase 182 (GH #268) removed exactly these tokens because their raw FAIL/TAINTED diagnostics "contradicted an OK verdict when bleeding into the CLI, status_json, and the nightly summary". The plan returns both tokens to all three surfaces and cites neither the issue nor the phase. Its defence that the change touches only diagnostics is backwards, because GH #268 was itself a diagnostics-only contract. The suite would not have caught this: `test_tolerated_residuals_emit_no_fail_or_tainted_lines` asserts the tokens' absence over both captured streams and survives only because `_classify_one` returns the reason instead of printing it, and nothing pins the absence at main() level. LD-2 claimed every assertion reading either surface was a substring test and cited two positive ones; it missed this negative assertion on the same surface, which is the Phase 263 error class committed inside the plan written to avoid it.
+
+**Two of the four findings are arithmetic the Judge's own artifacts already contained.** V-3: `boundary_entry = max(ok_entries)`, so the reporting loop's error branch fires only above the boundary and forces the DIRTY line; on the clean line the count of entries above the boundary is structurally always zero. The Judge's own simulation printed `0 above boundary` for all three fixture shapes and reported the run as a success. That also falsifies the framing this phase rests on: in auto mode "the band is clean" and "the band is empty" are one state, not two that print alike. V-4: entries carrying no hash label never enter `classifications`, so on the live ledger 739 entry headings yield 707 verified plus 10 disclosed and leave 22 in no bucket at all. The line written to stop a clean verdict concealing what was not verified conceals twenty-two entries, and the plan's own table carried both numbers without the subtraction being performed.
+
+**On method.** The mandated independent reviewer had no execution tool and disclosed that per finding, deriving all four blocking grounds from source by exhaustive grep; each was re-executed here and confirmed. The full-suite simulation the Judge ran to test the plan's central promise was the wrong instrument for V-2 by construction, and it returned **3254 passed, 6 skipped, 4 deselected, 0 failed, exit 0** against the simulated change. A completely green suite, on a change that reverses a shipped contract in three operator surfaces. The instrument was chosen precisely because the previous phase's scope claim had gone unmeasured, and it still could not see this, because no test pins the token absence at main() level. This is the second time in this cluster that a passing gate has failed to be evidence, the first being the eleven pre-audit lints that returned clean on the Phase 263 plan.
+
+**What stands**: the caller enumeration is complete and correct and no caller parses stdout, which is the Phase 263 miss not repeated. Every positive assertion on either surface is a substring test, enumerated exhaustively across all six governance-health files. LD-1's mechanism is real. No exit-code path reads either changed string. No declared test couples to live repository state.
+
+**Required next action**: not a fourth surgical attempt. Three designs against `verify_post_anchor` have now been refuted, each by a different collision with a contract embedded in the same 111-line function: a boundary-relative tolerance that was inert, a declared anchor that broke four contract tests on a false premise, and a disclosure that misreports the cluster's own failure class. The common cause is that classification, boundary selection, tolerance and reporting are complected in one function, so every surgical change collides with a contract somewhere else in it. The recommendation is `/qor-refactor` or a deliberate decomposition before any further behaviour change, and an operator decision on whether this cluster warrants that cost.
+
+---
+
+### Entry #743: GATE TRIBUNAL -- Phase 265 decompose verify_post_anchor, iteration 1 (VETO)
+
+**Timestamp**: 2026-09-05T02:50:00Z
+**Phase**: GATE (Phase 265)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `d636987135a0`
+**Plan**: docs/plan-qor-phase265-decompose-verify-post-anchor.md (iteration 1)
+**Session**: 2026-09-05T0227-eb46ab
+**Mode**: adversarial -- `audit_risk_score` returned `option_b_required: false`; an independent architecture reviewer was dispatched regardless
+
+**Content Hash**: `6a9d3f1110d781c38c607582f7b277faf647c70de00e9294aaaff6fb943f1597`
+**Previous Hash**: `1aaabf11464906ea73be58900b61a31ba2537ad2919e2ae3a1b06d159587f992`
+**Chain Hash (Merkle seal)**: `84b919cdf0167a3cb2cd81ae5dac0513993dc35c2400f28cb4a941cc2adb74ee`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + test-failure + coverage-gap + dependency-unjustified (six findings). Attempt 1 of 5.
+
+**THE DESIGN IS NOT REFUTED. THE INSTRUMENT THAT WAS TO PROVE IT SAFE IS.** That distinguishes this tribunal from the three preceding it in the cluster, where the design itself failed. Every ground here concerns how the phase proposed to demonstrate preservation, not whether decomposing this function is right.
+
+**The headline metric and its guard test measure different things.** V-1: LD-2 claims 51 of 51 executable statements covered with none missed. Reproduced under the condition the declared test actually runs in, with the module imported before the tracer starts as it always is under pytest, the measurement is `executable=51 covered=50 MISSED=[615]`. Line 615 is the `def`, which executes at import. The plan's figure was obtained by starting coverage before importing the module, which the test cannot reproduce, so the test as specified fails forever on unmodified code. The reviewer derived this by hand-enumerating all 51 statements with no execution tool and named the exact line.
+
+**The proof instrument cannot run where it matters.** V-2: `coverage` appears in no dependency group -- runtime is jsonschema and PyYAML, `dev` is pytest and ruff, `sast` is bandit -- and CI installs `.[dev]` on three jobs and bare `-e .` on a fourth. The test either reddens every job or is skipped forever by an `importorskip`, which would leave the control the plan calls the thing that stops the golden master degrading into a sample proving nothing. Admitting the dependency requires editing `pyproject.toml`, falsifying the plan's own "No other file changes", and clearing `doctrine-dependency-admission.md`, which the plan does not cite. This is the Phase 263 failure class recurring in a new place: the plan enumerated its four callers exhaustively and never enumerated what its own new test imports.
+
+**Three further grounds.** V-3: the guard test loses 39 of the 51 statements to the very refactor it guards, because they move into five helpers it neither names nor measures, and it loses them green. V-4: LD-4's razor margin is computed on bodies while the declared test measures AST spans; the module's extracted-helper convention is a 5 to 6 line docstring, measured, so the largest helper lands at exactly 40 rather than under it, and `verify_post_anchor`'s own docstring is 20 lines. V-6: `_resolve_recorded` at lines 317-334 and `_classify_entry` at 337-364 are already extracted from `verify()`, and `tests/test_ledger_hash_verify_helpers.py` records the Phase 153 precedent of pairing characterization with direct unit tests on the extracted units. The plan cites neither, adds no direct helper tests, and would create a second differently-named classifier pair -- entrenching the exact fork that GH #430 attestation parity would later have to reconcile, which is the opposite of the tractability D1 promises.
+
+**The safety argument itself is false as stated.** V-5: `errors` is accumulated by two independent loops and read by the summary, and measured across the corpus no fixture produces both an entry failure and a duplicate failure, so the arithmetic joining them is unverified. LD-2's closing sentence, that full statement coverage "is what makes a byte-identity assertion a proof rather than a sample", is wrong: coverage establishes that each statement ran, not that the composition combining them is correct, and that sentence is the entire justification for calling the refactor safe.
+
+**Two reviewer claims were adjusted rather than accepted.** Its B3, that the coverage input set is a superset of the tested set and therefore leaves something unasserted, was withdrawn to non-blocking on measurement: the twelve fixtures plus the pinned call miss only line 615, so the uniquely-covered set is empty. And V-5's accompanying sub-claim, that the error count in the DIRTY summary is never observed above 1, is refuted by the same run, where the pinned-boundary case observes 2. Its principal claim stood in both cases and its proposed remedy is correct.
+
+**What stands**: all four grep-evidence citations re-execute exactly. The seam analysis is correct and the four concerns are separable where the plan says. The corpus is real and useful, twelve fixtures yielding ten distinct signatures, and both collisions are genuine already-recorded defects rather than redundancy. The classification of characterization as regression coverage backfill under the CLAUDE.md exception was declared rather than smuggled.
+
+**The reviewer's tail resolved both presses and one open risk.** The `continue` statements survive extraction cleanly because the loop header travels with them, and no hidden closure exists; but "verbatim" is false in three ways, of which one is material -- `errors` is a single accumulator split across two helpers and re-joined by the caller, which is a restructure rather than a move, and is precisely the slip V-5 shows the corpus cannot see. On the golden master, `verify_post_anchor` never echoes a hash, path or timestamp, so inlined literals are cheap and right, while snapshot-with-autocreate would be actively dangerous, self-approving on the first CI run of a fresh clone. None of the three storage choices fixes provenance, and the only mechanism that makes ordering checkable afterwards is two commits: the characterization suite at the pre-change SHA, then the decomposition. The one risk the reviewer flagged and could not check is resolved in the plan's favour: `_duplicate_entry_numbers` appends in file order and uses its set only for membership, so multi-duplicate goldens are deterministic.
+
+Three further non-blocking findings were confirmed here. Unit Test 2's rationale, that a pinned boundary is the only path reaching the reporting loop's error branch, is contradicted by the plan's own LD-3 and by measurement, since the placeholder and non-hex fixtures both return 1 under auto-detection. LD-3's attribution of the second collision to a single cause would under-scope a later fix by the whole GH #363 branch, since that path never computes a field name at all. And the file is 782 lines against a 250-line razor clause, so "the razor overage is gone" holds for one clause on one function inside a file 3.1x over another, while the classification block nests four deep and the declared test measures only length. On the duplication the plan declines to extract, the reviewer counted three `ENTRY_RE.split` sites; there are four, at lines 241, 509, 642 and 735.
+
+**The reviewer's bottom line is recorded because the Judge agrees with it**: this plan is a better idea than its three predecessors, its structural diagnosis is correct, its caller analysis is exhaustive, and it should ship after repair. That is the material difference between this VETO and the three before it.
+
+**Required next action**: `/qor-plan` iteration 2, with bounded and known corrections: follow the Phase 153 precedent by pairing characterization with direct unit tests on named helpers; reconcile with `_resolve_recorded` and `_classify_entry` rather than creating twins; drop the coverage-based guard or admit the dependency through the doctrine that governs it; verify the razor arithmetic by AST against the intended post-refactor text before asserting it; and add the fixture that exercises both error accumulators together.
+
+---
+
+### Entry #744: GATE TRIBUNAL -- Phase 265 decompose verify_post_anchor, iteration 2 (VETO)
+
+**Timestamp**: 2026-09-05T03:20:00Z
+**Phase**: GATE (Phase 265)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `3531e01fe6c5`
+**Plan**: docs/plan-qor-phase265-decompose-verify-post-anchor.md (iteration 2)
+**Session**: 2026-09-05T0227-eb46ab
+**Mode**: adversarial -- `audit_risk_score` returned `option_b_required: false`; an independent code reviewer was dispatched regardless
+
+**Content Hash**: `4970347f9a903ca85506287b738520ddcb40e980c16d10ba400963bad275510b`
+**Previous Hash**: `84b919cdf0167a3cb2cd81ae5dac0513993dc35c2400f28cb4a941cc2adb74ee`
+**Chain Hash (Merkle seal)**: `d6880f22567eb02ea80b69c1c7b97c75e478732d251e22e3a012bc5d3c09cced`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + test-failure + coverage-gap (four findings). Attempt 2 of 5.
+
+**THE MOST PRODUCTIVE VETO IN THIS CLUSTER: ONE GROUND HANDS BACK A STRICTLY BETTER DESIGN.** Iteration 1 was vetoed at entry #743 partly for forking two already-extracted helpers without noticing them. Iteration 2 noticed them and mirrored them, which is the wrong repair. V-2: `_resolve_recorded` at lines 317-334 already performs the post-anchor resolution exactly. Measured across every entry body in the thirteen-fixture corpus plus the live ledger -- 779 bodies compared, 0 mismatches -- the shipped helper is a drop-in. The key the plan missed is that `verify()` puts the GH #363 label check in the *caller*, at line 554, not in its resolver; with the check placed there, the shipped resolver fits post-anchor unmodified. So the planned `_post_anchor_recorded` would re-implement a shipped, already-unit-tested function with an incompatible sentinel protocol (`tuple | "fail" | "skip"` against `tuple | None`), while `_resolve_recorded` has two live callers, at lines 385 and 525, whose contract a later unification would then have to change. LD-7's justification for not unifying -- that the two differ in taint, grandfathering and reconciliation -- is true of `_classify_entry` and false of `_resolve_recorded`, and the resolver pair is what LD-7 was justifying.
+
+The design the finding implies was measured before this verdict was issued: `_post_anchor_classify` delegating to `_resolve_recorded` with the label check in the caller is 24 lines at nesting 3, with 0 classification mismatches across 779 entries in 13 ledgers. Five helpers instead of six, the string sentinel gone, and the classification duplication shrinking rather than growing.
+
+**The ordering procedure cannot execute.** V-1: Changes requires the characterization suite to land in its own commit at the pre-change SHA "with the full suite green", while D4 declares two of the six tests in that same single file red beforehand. Both cannot hold. Worse, the repository's convention for exactly this file class is a module-top import of the private helpers -- `tests/test_ledger_hash_verify_helpers.py:9-13` -- so a file following the precedent the plan itself cites in LD-7 fails at collection at the pre-change SHA, erroring all six tests including the golden masters. The ordering evidence D4 rests on would never exist in the recorded history. The repair is plan text, not implementation, because Affected Files is a governed enumeration.
+
+**The safety argument is not reproducible, which is iteration 1's refuted defect moved to a new place.** V-4: LD-6's fifteen-invocation equivalence run compares a drafted decomposition that appears in no file in the repository, so no reviewer can inspect it and no auditor can re-derive it, and it is not the text that will ship. Invocation fifteen is the live `docs/META_LEDGER.md`, which changes at every seal including this phase's own. Iteration 1 was refuted in part for a headline metric unreproducible in its declared harness; iteration 2 corrected that metric and moved the same defect onto the thing it calls the phase's safety argument. The genuinely reproducible instrument is the shipped corpus with inlined literals, which the plan demotes without promoting anything in its place.
+
+**And a concrete slip the instrument is blind to, which is the sharpest single finding of the cluster.** `qor/cli.py:204` declares `--boundary` as `type=int, default=None` and forwards it verbatim, so `--boundary 0` is a live path. The current code discriminates at line 682 with `if boundary_entry is None`. Measured on one corpus fixture:
+
+```
+boundary_entry=None (auto)   rc=0  post-anchor clean (boundary=#8)
+boundary_entry=0  (pinned)   rc=1  post-anchor DIRTY (boundary=#0; 2 post-boundary failures)
+```
+
+Opposite verdicts. `boundary_entry` is the one argument in the signature where identity and truthiness diverge, and extracting it into a helper taking `int | None` and returning `int` is precisely the edit that invites `if not boundary_entry`. No fixture pins 0, so fifteen byte-identical invocations would pass over it in silence.
+
+**The general form of that gap is the deepest methodological finding this cluster has produced**, and it is recorded here because it outlives the phase. A byte-comparison over N fixed inputs checks the function's image; a refactor's risk lives in its predicate structure, and a branch condition is only distinguished by an input that straddles it. The corpus was designed by covering statements, and statement coverage guarantees each branch was entered, not that any input sits on either side of each boundary. So the method is structurally weakest exactly where LD-5 says the risk is, and the misalignment is invisible because the risk register and the proof instrument are written in the same confident register. V-3 records the related under-disclosure: LD-5 names three mechanical differences and omits a fourth, the relocation of the label-check control flow across a function boundary through a stringly-typed channel, which is larger than the two it does name and belongs to the helper this iteration added.
+
+**What stands**: the six-helper naming and signatures are well-formed and the `_post_anchor_` prefix correctly avoids the one-character collision with `_classify_entry`. The razor figures were measured by AST against drafted text rather than estimated, and hold. The both-accumulators fixture does what LD-6 claims, producing `2 post-boundary failures` with one error from each loop. The withdrawal of the coverage-based guard in LD-3 is correct and honestly reported. LD-8's two self-corrections are accurate.
+
+**A fifth ground arrived with the reviewer's tail and is recorded because it repeats the error the plan itself corrects.** V-5: LD-6 calls the thirteenth fixture "the assertion that fails if the composition writes `errors =` where it must write `errors +=`". Injecting that exact slip and running the shipped suites reddens three existing tests -- `test_post_anchor_dirty_when_post_boundary_fails`, `test_post_boundary_failure_reported_with_entry_number` and `test_post_boundary_non_hex_previous_hash_is_a_hard_fail` -- because each pins a boundary where the entry loop contributes and the duplicate loop does not, so the overwrite drives the count to zero and `assert rc != 0` fails. The fixture is correctly specified and worth keeping; its claimed uniqueness is false, and LD-8 exists in the same document to correct iteration 1 for making a uniqueness claim without enumerating the shipped suite.
+
+**The empirical case against carrying an unguarded number forward is in the file being changed.** `ledger_hash.py:447` states in a docstring that "``verify`` is a pre-existing Section 4 violation at 97 lines". Measured, `verify` spans 473 to 595, which is 123 lines. A 26-line drift in an in-module measurement, uncaught. That is the reviewer's answer to whether LD-3's retention of "51 of 51" is honest, and the Judge accepts it: the withdrawal of the broken guard is argued at length and correct, while the retention of its output is granted in a subordinate clause and is not. The number was measured against twelve fixtures where thirteen now ship, against a seven-function decomposition the redesign discards, and nothing re-measures it after today. Three further stale figures compound it: LD-2's cross-reference names the fourth helper where it means the fifth, LD-5 counts three helpers gaining a `return` where at least five do, and LD-3 says twelve fixtures where LD-6 ships thirteen. The pattern rather than any instance is the finding -- the document was not re-checked after its own edits.
+
+**Iteration 3 owes three things beyond the repairs already named.** The five-helper redesign does not retire the reproducibility objection: a decomposition proven over 779 bodies is a better argument than fifteen invocations and is still an argument about text no reviewer can open, so either the harness ships alongside the plan or the shipped corpus is named as the safety argument and the run demoted to a pre-landing smoke check. LD-7 needs rewriting rather than amending, because the true sentence is stronger and shorter than the false one: there is no post-anchor counterpart to build, `_resolve_recorded` already is one, and a parity phase's job shrinks from unifying two resolvers to unifying two classifiers. And every number must be re-derived against the design that ships rather than carried across the edit.
+
+**Required next action**: `/qor-plan` iteration 3. Every repair is now specified and three are already measured: delete `_post_anchor_recorded` and delegate to `_resolve_recorded` with the label check in the caller; split the characterization file from the decomposition-assertion file so commit 1 can be green; demote the equivalence run to a pre-landing smoke check and name the shipped corpus as the safety argument; add a fixture pinning `boundary_entry=0`; and state the fourth mechanical difference or let it dissolve with the helper that caused it.
+
+---
+
+### Entry #745: GATE TRIBUNAL -- Phase 265 decompose verify_post_anchor, iteration 3 (VETO)
+
+**Timestamp**: 2026-09-05T03:55:00Z
+**Phase**: GATE (Phase 265)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `c8bc5f3e83bc`
+**Plan**: docs/plan-qor-phase265-decompose-verify-post-anchor.md (iteration 3)
+**Session**: 2026-09-05T0227-eb46ab
+**Mode**: adversarial -- `audit_risk_score` returned `option_b_required: true` (flag `high-citation-surface`), so Option B independent review was mandatory
+
+**Content Hash**: `a4ef2ed8c06450326d849b75421f59ce840c3b0ceab18a99f6f9aa07376d6fce`
+**Previous Hash**: `d6880f22567eb02ea80b69c1c7b97c75e478732d251e22e3a012bc5d3c09cced`
+**Chain Hash (Merkle seal)**: `38b1f424e82e069adf6e4b37f865d94a8bcc72c44968886c225145c0d5b35ba7`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + coverage-gap + test-failure (six findings). Attempt 3 of 5.
+
+**THE DESIGN IS CORRECT AND THE PROSE ABOUT IT IS NOT, FOR THE THIRD ITERATION RUNNING.** The independent reviewer confirmed by case analysis what 779 executed body comparisons had already shown: `_resolve_recorded` is equivalent to the post-anchor inline block on every path, `_dialect.hash_value` is never reached with a `None` match in either version, and relocating the GH #363 label check to the caller preserves behaviour. It separately confirmed the both-loops fixture's mechanics, the `boundary_entry=0` discrimination, the seven-template output alphabet that makes inlined literals viable, both LD-9 corrections, and the completeness of the caller enumeration. What failed is every load-bearing number in the document.
+
+**Three figures are wrong, and the reviewer's own count of one of them was wrong in the other direction.** V-1: the corpus builds twelve fixtures and `both_loops` makes thirteen, so LD-6's "fourteen fixtures", LD-7's "a fourteenth fixture" and LD-8's "fourteen now ship" are all false; `both_loops` was already the thirteenth in iteration 2 and this iteration added no fixture at all, only an invocation. The reviewer read fourteen as given and derived that "sixteen invocations" must be seventeen; measured, sixteen is correct and the fixture count is the error. V-2: the file delta is not +19. That figure was the sum of AST function spans, which omits the blank separators between top-level definitions; the drafted text is 142 lines against 111 removed, so the real growth is **+31**, and the file goes to about 813 rather than the 801 asserted in D2 and the limitations block. The reviewer estimated +29 by counting two blanks per new definition; the measured value is worse than its estimate.
+
+**The enumeration stopped one file short again, in the paragraph written to stop doing that.** V-3: LD-7 states that injecting the `errors =` overwrite reddens three already-shipped tests. Executed across the caller suites the plan itself names in its CI Commands four lines later, it reddens **seven**: three in `test_post_anchor_verify.py`, one in `test_seal_entry_check.py`, one in `test_governance_health_post_anchor_tolerance.py`, and two in `test_ledger_upgrade.py`. The reviewer found the first five and missed the last two. Iteration 2 was vetoed for a uniqueness claim made without enumerating the shipped suite; iteration 3 enumerated one file and asserted a count.
+
+**The ordering guarantee produces no evidence.** V-4: `.github/workflows/ci.yml` fires on `push` only for `branches: [main]`, and on `pull_request` at the PR head, with `cancel-in-progress: true`. A commit on a phase branch runs no CI. So "lands first, at the pre-change SHA, with the full suite green" is precisely the operator account D4 claims a reviewer need not trust, and no CI Command checks out that SHA. The diff-based half is also weaker than stated: goldens captured before the refactor and goldens back-committed after it produce byte-identical diffs, so the diff shows they were not visibly tuned, not that they were captured first.
+
+**Two further grounds.** V-5: `test_classification_delegates_to_the_shared_resolver` cannot fail for the reason its name gives, because after the change the inline logic it compares against no longer exists; either it restates the implementation or it hardcodes expectations, and in the latter form a `_post_anchor_classify` that re-inlined resolution passes identically. V-6: `test_both_error_accumulators_are_joined` asserts a strict subset of what the golden-master test already asserts on the same fixture and cannot fail without it failing too. The plan grants exactly this concession for the collision test, calling it "a signpost, not a net", and withholds it here.
+
+**Recorded because it is the finding that outlives the phase.** Across three iterations the design converged and the prose did not. The stable defect is not any single number but a method: figures computed rather than measured and then written in the present tense, and enumerations that terminate where the author stopped looking rather than where the property ends. Iteration 1 shipped an instrument that could not run. Iteration 2 carried four figures across an edit. Iteration 3 declared that every figure had been re-measured against the shipping text, in a Scoping paragraph written for that purpose, and then carried three. A plan that asserts numbers it does not ship the means to re-derive will keep failing this way, and the next iteration should reduce the count of asserted figures rather than try harder to get them right.
+
+**What stands, verified twice**: LD-1's span and all four grep citations; LD-2's equivalence, by case analysis and by 779 executed comparisons; the caller enumeration and the claim that none parses stdout; the parsing-loop sites at 241, 509, 642 and 735; the `--boundary` citation and the `boundary_entry=0` discrimination, for which no shipped test pins zero; the both-loops fixture mechanics; the seven-template output alphabet; both LD-9 corrections; the razor limits; and that no shipped test performs AST length or nesting checks on this module.
+
+**Required next action**: operator decision before `/qor-plan` iteration 4. The engineering is ready -- the five-helper design is verified equivalent and the two new fixtures are sound -- and the remaining defects are all in how the plan talks about itself. The recommendation is to change method rather than iterate prose: ship the corpus and the equivalence harness as files and have the plan cite them, so that the figures are re-derivable by anyone rather than asserted, and cut every number the plan does not need to make its argument.
+
+---
+
+### Entry #746: GATE TRIBUNAL -- Phase 265 decompose verify_post_anchor, iteration 4 (VETO)
+
+**Timestamp**: 2026-09-05T04:30:00Z
+**Phase**: GATE (Phase 265)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `e003b397b0d0`
+**Plan**: docs/plan-qor-phase265-decompose-verify-post-anchor.md (iteration 4)
+**Session**: 2026-09-05T0227-eb46ab
+**Mode**: adversarial -- `audit_risk_score` returned `option_b_required: true` (flag `high-citation-surface`), so Option B independent review was mandatory
+
+**Content Hash**: `2b61bb4ec7114551dde3b490c676dd5a202fbf8a61b5b9e2ce79a68968d177cd`
+**Previous Hash**: `38b1f424e82e069adf6e4b37f865d94a8bcc72c44968886c225145c0d5b35ba7`
+**Chain Hash (Merkle seal)**: `a846f638bd4b8a52844e08ff97ee615c7707669f93d0bc2548318b6c40535ea5`
+
+**Decision**: **Verdict**: **VETO** -- coverage-gap + specification-drift (three findings). Attempt 4 of 5.
+
+**THE METHOD CHANGE WORKED AND EXPOSED A HOLE THE FIGURES HAD BEEN HIDING.** The reviewer's primary charge was to decide whether iteration 4's figure-elimination rule was real or cosmetic, and its verdict is that the rule is genuinely applied and genuinely load-bearing, incompletely applied in two places. Three iterations of wrong numbers are gone. What the removal surfaced is that the corpus those numbers described was never complete, and the gap is the largest single finding of the cluster.
+
+**V-1 (`coverage-gap`): the corpus omits the branch that carries 119 of this repository's own ledger entries.** `ledger_hash.py:676` accepts an entry when `expected == recorded or expected_legacy == recorded`. Those are different digests, not formatting variants: `chain_hash` is SHA256(content + "|" + prev) and `legacy_chain_hash` is SHA256(content + prev), per the docstrings at `:41-48`. LD-6 promises "one ledger per distinguishable path through the function" and names no legacy-form fixture.
+
+Measured. Dropping the legacy acceptance branch and reclassifying every fixture changes exactly two artifacts: a synthesised legacy-only ledger, which is not in the corpus, and `docs/META_LEDGER.md`. Zero corpus fixtures change. Against the live ledger the split is 592 entries verifying in canonical form, **119 verifying only in the legacy form**, and 32 unresolved. So a decomposition that dropped `expected_legacy` from the classification helper would pass all thirteen fixtures and every golden, and break this repository's own chain across a hundred-plus entries.
+
+This is the cluster's signature defect moved from a count to a path list, which is precisely the risk the Judge asked the reviewer to look for when figures were replaced by an enumeration of paths. Removing the numbers did not remove the failure mode; it relocated it to the one place the new method still depends on the author's attention.
+
+**V-2 (`specification-drift`): the plan's one substantive re-derivation command does not re-derive its claim.** LD-6 offers a `grep -nE 'print\('` pipeline to establish that the output alphabet interpolates only integers. Executed, it returns seven lines of which four are a bare `print(` with the format string on the following line, so a reader sees three templates and four opaque lines. The underlying claim is true; the command that iteration 4's whole thesis requires to stand behind it is not. A rule that admits a figure only when a command re-derives it is only as good as the commands, and this one was not run before being written down.
+
+**V-3 (`specification-drift`): a red-before property is asserted that no artifact establishes, in the section whose job is naming exactly that.** `tests/test_post_anchor_decomposition.py` lands in the second commit with the decomposition, so it exists at no commit in a red state. The Affected Files line calls it "Red at the pre-change SHA", the Unit Tests section says "Red beforehand" twice, and D4 repeats it. LD-7 carefully names the limits of the ordering convention for the goldens and offers a manual recovery, and says nothing about the decomposition suite, where the gap is total rather than partial and where the unestablished property is the test-first claim itself. Checking out the first commit does not help, because the file is not there.
+
+**What the reviewer verified as sound, and it is most of the plan.** The span and all four boundary citations match the working tree exactly, quoted text included. The `:554` citation, the two call sites of `_resolve_recorded`, the four production callers with none parsing stdout, the four parsing-loop sites as a complete enumeration, the `--boundary` reachability of zero, both LD-9 corrections, the razor limits, the GH #445 example, the Phase 153 precedent, the existence of all sixteen test files named in CI Commands, and the equivalence of `_resolve_recorded` with the inline block by independent case analysis. It also confirmed the spy test is mechanically sound: `_post_anchor_classify` resolves the helper as a module global at call time, so `monkeypatch.setattr` is seen, re-inlining drives the call count to zero, and the test fails for the reason its name gives.
+
+**Non-blocking findings worth carrying**: "roughly a factor of three" is a smuggled measurement with no stated command; the caller-enumeration command returns a superset of the list it is said to produce; LD-1 mixes working-tree and pinned-SHA provenance so its AST command stops returning the cited span once the phase lands; the "collide by one character" claim is wrong as written, since the unprefixed form differs from the existing name by six; the razor test now carries the counting convention with no definition stated in the plan, and no existing checker to inherit one from; LD-2's coupling disclosure names one direction and omits `_sequence_breaks` entirely, and the coupling raises the cost of the very GH #443 fix D1 says this phase makes cheaper; the `pull_request` trigger runs against the merge ref rather than the PR head; LD-6 reports that a comparison was run and withholds its outcome, which is not a figure and is material; the spy's exact-count assertion would redden a legitimate short-circuiting implementation; the historical figures about prior iterations are the one class exempted from the plan's own rule; and the re-derivation commands are POSIX-shell only in a repository whose primary environment is PowerShell.
+
+**Attempt 4 of 5.** One plan/audit attempt remains on this scope before the cap routes to `/qor-remediate`. The remediation is bounded and the reviewer supplied it: name a legacy-form fixture in LD-6 or state in limitations that the branch is unpinned and why; replace or drop the print-grep command; extend LD-7 to say that the decomposition suite's red-before property is established by no artifact at all. The rest are one-line text fixes. The engineering has been ready since iteration 2's tribunal; what remains is a corpus that covers the branch 119 live entries depend on, and a plan that does not assert more than it can hand a reviewer.
+
+---
+
+### Entry #747: GATE TRIBUNAL -- Phase 265 decompose verify_post_anchor, iteration 5 (VETO, attempt cap reached)
+
+**Timestamp**: 2026-09-05T05:10:00Z
+**Phase**: GATE (Phase 265)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `572e1d71cd11`
+**Plan**: docs/plan-qor-phase265-decompose-verify-post-anchor.md (iteration 5)
+**Session**: 2026-09-05T0227-eb46ab
+**Mode**: adversarial -- `audit_risk_score` returned `option_b_required: true`, so Option B independent review was mandatory
+
+**Content Hash**: `82f0b638aac6045b28b89b0ce145a5968406d3fd1637f21bbb2588b4c3c308f8`
+**Previous Hash**: `a846f638bd4b8a52844e08ff97ee615c7707669f93d0bc2548318b6c40535ea5`
+**Chain Hash (Merkle seal)**: `97d62b43a0ec42c658b894eed7ab0932f5c7a8a9d9f5c6a3a59dcd31ba351caa`
+
+**Decision**: **Verdict**: **VETO** -- coverage-gap + specification-drift (five findings). **Attempt 5 of 5. The cap is reached; the legal next action on this scope is `/qor-remediate`, not a sixth plan.**
+
+**THE REPAIR FOR THE LAST VETO WAS CORRECT AND ITS JUSTIFICATION WAS FALSE.** V-1: iteration 4 was vetoed because the corpus omitted the `legacy_chain_hash` acceptance branch. Iteration 5 added the fixture and justified it by asserting that dropping the branch would break the live chain. Measured, with and without the branch, the live ledger yields `boundary=#746`, zero post-boundary errors and exit 0 -- **identical**. The 119 legacy-form entries reclassify as failures but all sit below the auto-detected boundary, so they print as disclosed residuals and the return code never moves. No emitter writes the legacy form; the only uses are the two acceptance checks. The reviewer derived this without an execution tool and was right. The consequence is that the true statement is stronger than the false one: no consumer, no CI command and no existing test would detect the drop, which makes the new fixture the sole detector rather than a redundant guard.
+
+**AND THE GENERALISATION OF THAT FINDING IS LARGER THAN THE FINDING WAS.** V-2: the Judge asked the reviewer to sweep for other unpinned acceptance branches, because a path list can be incomplete the same way a count can. `ledger_dialect.hash_value` returns the first of three capture groups, and `_field_re` makes a parenthetical field suffix optional. Measured against the live ledger: 639 Chain Hash fields match through group 1, 80 through group 2, none through group 3, and 505 entries carry the `(...)` suffix. The corpus builds every fixture in exactly one dialect -- inline backticks, no suffix. So a resolution rewrite substituting `xh.group(1)` for `_dialect.hash_value(xh)` is green on every fixture and every golden while misreading 80 live entries, and a field regex rebuilt without the suffix is green while misreading 505. LD-2 makes resolution the code under refactor, and the corpus contains no fixture that discriminates the dialect paths resolution exists to handle. Every fixture in the list is described by ledger semantics; not one is described by markup.
+
+**Three further grounds, all refutable from the plan and the source without execution.** V-3: LD-3 justifies `_post_anchor_report_duplicates(entries, ...)` by claiming duplicates are invisible to classification by construction. They are not -- a parseable duplicate is appended twice -- and the two candidate arguments carry the same type, so passing `classifications` type-checks and returns the same result for every entry that reached one. The code's own comment says the true thing, that the fork is invisible *as an error* because both occurrences classify ok. The one signature decision the plan singles out for justification rests on a false premise, and no listed fixture discriminates the choice. V-4: the placeholder check runs before chain math, so an entry honestly chained onto a fabricated `previous_hash` must fail despite verifying arithmetic -- the GH #54 shape. Both checks move into the same new helper, making the reordering a one-line change, and a placeholder fixture built the ordinary way (where the placeholder also breaks the math) emits identical output under either order. LD-5 enumerates the intended differences and does not mention preserving this one. V-5: the plan states that per-helper tests prevent an unexercised sixth helper. They cannot: the suite names five fixed helpers and nothing enumerates the module's `_post_anchor_*` functions, so a sixth has no test and the suite stays green. The suite-level shape that would catch it is precisely what iteration 5 replaced, and the guarantee is refutable from the plan text alone.
+
+**On the method, which is the part worth carrying past this phase.** Iteration 4's rule -- a number appears only if the plan states the command that re-derives it -- held up under a fifth adversarial pass. Every quoted command in iteration 5 was executed before being written and every one re-derives its claim. The failures that remain are not arithmetic. They are consequence claims (V-1), completeness claims about an enumeration (V-2), and structural claims about why a design choice was made (V-3, V-5). Removing unbacked figures removed one failure class cleanly and left the classes underneath it visible: a plan can state only checkable numbers and still assert a false reason, a false consequence, and an incomplete list.
+
+**What five tribunals have established about this scope.** The design is correct and has not been the ground of a verdict since entry #744: `_resolve_recorded` is equivalent to the inline block on every path, confirmed twice by independent case analysis and once by 779 executed body comparisons; the caller inventory is complete; the reuse shrinks duplication; the razor and nesting clauses are satisfiable. What has failed five times is the corpus-completeness argument, in five different places. That is not a drafting problem and the sixth attempt would not be either: a corpus assembled from an author's list of paths is bounded by the author's attention, and every iteration has proved that bound sits somewhere different from where the code's branches sit.
+
+**Required next action**: `/qor-remediate`. The process finding for it is that a behaviour-preserving refactor guarded by a hand-enumerated corpus is guarded by the enumerator's recall, and this cluster now carries five measured instances. The candidate remedy is to derive the corpus from the code rather than from a list -- enumerate the acceptance conditions in `_resolve_recorded`, `hash_value`, `_find_placeholder_field` and the classification and reporting branches mechanically, and require a fixture per condition -- which is a different kind of work from planning a decomposition and belongs to its own phase. The engineering artifacts from this phase, the five-helper design and the drafted equivalent text, remain sound and should be carried forward rather than rebuilt.
+
+---
+
+### Entry #748: GATE TRIBUNAL -- remediation proposal review, Phase 265 cluster (VETO)
+
+**Timestamp**: 2026-09-05T13:40:00Z
+**Phase**: GATE (remediation review)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `be7176027ba1`
+**Target**: .qor/gates/2026-09-05T0227-eb46ab/remediate.json
+**Session**: 2026-09-05T0227-eb46ab
+**Mode**: adversarial -- reviews-remediate; an independent architecture reviewer was dispatched, and the Judge executed the proposed remedy against the live ledger before ruling
+
+**Content Hash**: `44c1cc7baf9611b3b55cc6735c59e1fe85b65877e1cec71c60f41ae0e61271f9`
+**Previous Hash**: `97d62b43a0ec42c658b894eed7ab0932f5c7a8a9d9f5c6a3a59dcd31ba351caa`
+**Chain Hash (Merkle seal)**: `148c947702e2dcaf7ae2c78f0a58c4ce20f5b2daccae11d11cd8fd5accd58642`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift. The two-stage flip does NOT complete; the event stays `addressed_pending` with `addressed: false`, which is the designed state for an unreviewed proposal.
+
+**THE PROPOSAL'S DIAGNOSIS IS SOUND AND ITS REMEDY IS WRONG IN BOTH HALVES.** The diagnosis holds: `parse_phase_audit_counts` restricts the window to SEAL-closed phases, `parse_in_flight_audit_count` offers only the newest unsealed phase, and `detect_repeated_veto_pattern` requires every window member to be multi-audit. Each behaviour is deliberate and pinned by an existing test. Composed, they let sealed phase 262, which closed cleanly on one audit before phases 263, 264 and 265 were attempted, sit adjacent to 265 in the window and clear the signal through a rule whose meaning is that a run ended well.
+
+The remedy was then executed rather than reasoned about, and it fails.
+
+- The proposal asserts "either half alone would have fired here". **Half A does not fire.** Composing the window from the phase-number sequence so abandoned phases are members yields `[(264, 1), (265, 5)]`, because phase 264 took a single audit, so unanimity still fails and `detected` stays false. The claim is false as written.
+- **Half B fires, and destroys the signal.** Making the reset directional so only a newer clean phase clears the pattern does fire on 265. Walked across this repository's whole audited history it also fires on twelve phases where the current rule does not, and ten of those are ordinary: `[(214, 1), (215, 2)]`, `[(229, 1), (230, 2)]`, `[(242, 1), (243, 2)]` and seven more of the same shape -- a single phase that took one VETO and then passed. The rule as proposed collapses "repeated VETOs across phases" into "any phase that ever took a second audit". Only 258 and 265 among the twelve are genuine.
+
+A remediation proposal that would degrade the control it repairs is worse than the gap it addresses, and this one asserts a firing claim its author did not run. That is the cluster's signature defect appearing in the artifact written to remediate the cluster's signature defect.
+
+**THE INDEPENDENT REVIEWER MADE THE REMEDY WORSE THAN THE JUDGE HAD RECORDED IT.** Hand-tracing without an execution tool, it reproduced both blocking findings and then showed that the proposal is ambiguous between two readings it never distinguishes. Half two says only "make the reset directional". If directionality is ADDED alongside the existing unanimity requirement, phase 262 is still a clean member, `all_multi_pass` is still false, and nothing fires -- so under that reading NEITHER half fires and the proposal repairs nothing. If directionality REPLACES unanimity, the rule needs an at-least-one-multi-member guard it does not specify, or `{10: 1, 11: 1}` satisfies it vacuously and `test_detector_no_pattern` breaks. The Judge's own simulation silently assumed the second reading with the guard, which is how "Half B fires" was measured; a remedy that fires only under an interpretation its author did not write down has not been specified.
+
+The reviewer also traced a downstream consequence the Judge did not. `render_advisory_text` interpolates `result.recent_phases` verbatim, so under the firing reading the advisory would read "Repeated-VETO pattern detected in phases 262, 265" -- naming a phase that passed on its first attempt as a member of a repeated-VETO run. The proposal would put a false statement into operator-facing output, which is a worse failure than the silence it was written to fix.
+
+**A BETTER FINDING WAS MEASURED WHILE TESTING THE WRONG ONE.** Every control in this area keys on the findings-category signature, and none keys on scope. `cycle_count_escalator.check_session_total` counts signature recurrences against a threshold of three; measured, the three cap-hitting scopes produced signature totals of `{1, 2, 2}` for phase 265, `{1, 1, 2, 1}` for 258 and five singletons for 261. None reached three, and the reason is not a defect in the counter: each audit iteration found genuinely different real defects, so five VETOs on one plan file legitimately read as several different problems rather than one recurring one. The taxonomy is doing what it was built to do.
+
+What no control watches is the scope. Five audits against one plan path is a strong signal regardless of whether the findings repeat, and `parse_in_flight_audit_count` already computes exactly that -- it returns `(265, 5)` today -- before `detect_repeated_veto_pattern` discards it for want of a second multi-audit phase. The detector deliberately excludes the single-phase case, pinned by `test_detector_one_phase_many_passes_is_not_the_pattern`, on the reasoning that the attempt cap is the backstop for one runaway scope. That reasoning is sound and its consequence was never evaluated: the cap fires at five, when five attempts are already spent, whereas a scope-keyed signal at three would route to remediation while two remain. This session spent fifteen tribunal audits across three capped scopes with no control firing before the cap.
+
+**Artifact-integrity disclosure, added after the fact.** The proposal this entry audits no longer exists at the cited path. `remediate_emit_gate.emit` writes to a fixed `remediate.json` via `os.replace` with no iteration suffix, unlike `gate_chain.write_gate_artifact`, which versions every phase artifact as `-iter1`, `-iter2` and so on. Emitting the superseding proposal therefore overwrote the audited one, which had never been committed and is unrecoverable. The content hash recorded above, `44c1cc7b...`, is now unverifiable against any file. The remediation path is precisely where iteration is expected -- propose, VETO, revise -- so it is the one gate path that most needs versioning and is the only one that lacks it. Filed as GH #446. The loss is recorded here rather than quietly tolerated, because an entry whose bound artifact has been destroyed is exactly the condition a hash chain exists to make visible.
+
+**Required next action**: `/qor-remediate` again, with a proposal that (a) drops both proposed window changes, (b) proposes a scope-keyed signal on audit count per plan path within a session, firing below the cap rather than at it, and (c) carries a firing claim that has been executed against this repository's history for both true positives and false positives, which this one did not. The doctrine half of the proposal, that a characterization corpus offered as a refactor's safety argument must be derived from the code's acceptance conditions rather than listed by the author, is untouched by this verdict and stands on the evidence of entries #743 through #747.
+
+---
+
+### Entry #749: GATE TRIBUNAL -- remediation proposal review, iteration 2 (VETO)
+
+**Timestamp**: 2026-09-06T16:10:00Z
+**Phase**: GATE (remediation review)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `48d6f937eef3`
+**Target**: .qor/gates/2026-09-05T0227-eb46ab/remediate-iter2.json (preserved copy of remediate.json)
+**Session**: 2026-09-05T0227-eb46ab
+**Mode**: adversarial -- reviews-remediate; an independent architecture reviewer was dispatched, and the Judge executed every firing claim against the live ledger and the full session audit history before ruling
+
+**Content Hash**: `1c6c171c8a8fd3c288983e4ee63d8dea4a1f1b39464f460a495826940e78e2a7`
+**Previous Hash**: `148c947702e2dcaf7ae2c78f0a58c4ce20f5b2daccae11d11cd8fd5accd58642`
+**Chain Hash (Merkle seal)**: `8632800c53d444408e5e66222f4d1965c7f6f7d3ce4ddbecb7324fe1aad14ec0`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + coverage-gap + test-failure (six grounds). The two-stage flip does NOT complete; the event stays `addressed_pending` with `addressed: false`.
+
+**EVERY FIGURE IN THIS PROPOSAL IS TRUE, AND THE PROPOSAL IS STILL WRONG.** Entry #748 vetoed its predecessor for asserting a firing claim its author never ran. That failure is gone. Executed against the live ledger: N=4 fires on 5 of 113 audited phases, 223 at nine, 248 at four, 258, 261 and 265 at five; N=3 fires on 13 with ten sealed; N=5 fires on 4. Tightening the phase reference from "contains Phase N" to "opens with Phase N" changes exactly one audit count and no seal at all -- across all 748 entries only four descriptions differ under the two rules, of which one, #748 itself, is a counted type. The escalator claim holds too: no findings-category signature reaches K=3 in any capped scope. Six separate numeric claims, all re-derived, all correct. The remedy fails on what the numbers are counting.
+
+**GROUND 1 (`specification-drift`): the proposal diagnoses that nothing keys on scope, and then keys on the phase.** These are not the same key, and they diverge on the case the proposal leans on hardest. Phase 223's nine tribunals are two distinct scopes: entries #570 through #573 and #578 audit `docs/plan-qor-phase223-grep-evidence-truth.md`, and entries #574 through #577 audit `docs/remediation-phase223-detector-blind-spots-2026-08-12.md`. Neither exceeded five. "223 (9 audits, sealed), arguably a genuine stall regardless of its eventual seal" describes a depth no scope in that phase ever reached; it is two normally-terminating tracks added together, one of which is the two-stage remediation flip working as designed. Phase 248 compounds it: entry #673 is iteration 2 PASS and #676 is iteration 3 VETO, so its four spans a post-amendment re-audit rather than a four-deep stall. The tightening rule is cosmetic against this: it drops #748 for putting the phase reference after a comma while keeping #574 through #577, which are equally remediation reviews and merely happen to open with "Phase 223". It repairs a title-format accident, not the class defect it is sold as repairing.
+
+**And the Judge seeded this error.** Entry #748 wrote that "`parse_in_flight_audit_count` already computes exactly that", meaning audit count per plan path. It does not; it counts by phase. The proposal did what the tribunal that ordered it said to do, and the tribunal's instruction was itself imprecise. That is recorded here because a remediation cycle in which the reviewing authority hands down the defect it later vetoes is a worse failure than the proposal's.
+
+**GROUND 2 (`specification-drift`): the named function cannot produce the miscount attributed to it.** The proposal states that `parse_phase_audit_counts` counted #748 as a sixth plan audit of phase 265 and that tightening takes 265 "from six to five". Executed, that function returns a maximum phase of 262: line 54 restricts the result to SEAL-closed phases, the newest seal is entry #739 for phase 262, and 258, 261, 263, 264 and 265 are absent from its output entirely. It never counted 265 at six or at five. The function that returns `(265, 6)` is `parse_in_flight_audit_count`, and that function is the `in_flight` argument to the existing detector at lines 174 to 176. So the proposal's assurance that "the cross-phase detector is left exactly as designed" is false in effect: the input changes even though the body does not. Measured, today's outcome is unchanged, `detected=False` under both rules, so the drift is latent rather than active -- but it is asserted absent and it is not absent. The independent reviewer established this from control flow with no execution tool while the Judge's own measurement, taken against an unrestricted tally built in a scratch script rather than against the function's return, concealed it.
+
+**GROUND 3 (`coverage-gap`): the parse the predicate requires does not exist, and the proposal names none.** "At least four plan-audit tribunal entries, whether or not that phase has sealed", "evaluated on the same ledger parse". There is no such parse. `parse_phase_audit_counts` is sealed-restricted and at N=4 yields only 223 and 248. `parse_in_flight_audit_count` returns a single phase, `max(unsealed)`, so it yields 265 and can never yield 258 or 261. Nothing in the module returns the claimed firing set, and neither parser discriminates a plan tribunal from a remediation tribunal, which Ground 1 shows the predicate depends on. The headline property, that the signal catches every capped scope, rests on a function the proposal did not write and did not specify. Closure item (d) could not be written today because there is nothing to call.
+
+**GROUND 4 (`specification-drift`): the stated reason for choosing four over three is off by one, and no hook point is named.** "Four is chosen so the signal arrives with two of the five attempts still available." The cap counts verdicts, one per tribunal entry: entry #730 reads "Attempt 5 of 5; the cap is reached" while its Plan line records iteration 7 with two iterations withdrawn without verdict. Firing when the count reaches four means four attempts are spent and one remains. Worse, the answer depends on a placement the proposal never states. `qor-audit/SKILL.md` runs the cycle-count escalation at Step 0.5, explicitly "before engaging adversarial mode", so the current audit's record does not exist yet there; it writes the ledger entry at Step 5 and runs the veto detector at Step 7. A threshold N therefore leaves `4-N` attempts at Step 0.5 and `5-N` at Step 7. N=4 leaves zero at the earlier hook and one at the later; no placement of N=4 leaves two. Both placements of N=3 do. The threshold the proposal rejects as too noisy is the only one that delivers the property it claims for the threshold it chose.
+
+**GROUND 5 (`specification-drift`): "emits its own advisory" hides a cost, and the classifier is unspecified.** `qor-audit/SKILL.md` line 584 is explicit that the existing advisory is accompanied by a severity-3 genome event. `check_shadow_threshold._signature` keys on `details["gate"]`, then `["capability"]`, then `["pattern"]`, and falls back to a digest of the whole details blob. The proposal's stated details are the phase and its count, both of which vary per firing, and it names no fixed classifier, so each firing phase would take its own signature and none would collapse. That is verbatim the defect `veto_pattern.build_event_payload`'s own comment records Phase 254 as having fixed, reintroduced by the proposal written to strengthen the same control. The genome already carries 68 unaddressed events at severity sum 40 against a threshold of 10, so the marginal load does not cause a breach; what it adds is permanent unremediable debt for 223 and 248, two phases that sealed correctly. The alternative reading, that no event is emitted, leaves the signal with no closure path and makes it weaker than the control it supplements. Entry #748 vetoed the predecessor partly for this same ambiguity.
+
+**GROUND 6 (`test-failure`): the closure enforcer's binding test is inadmissible in the file it would join.** Item (d) asserts that the firing set is exactly five named phases, against the live `docs/META_LEDGER.md`. `doctrine-test-discipline.md` line 35 forbids asserting against the contents of files that change outside the test and line 44 names hardcoded live-state coupling as a prohibited pattern with the ledger as its example; `CLAUDE.md` line 50 repeats it. The file the test would join already documents the admissible form fifteen lines above: `test_the_real_ledger_parses_to_nonempty_counts_above_phase_200` asserts "a monotone structural property ... never specific values -- the deliberate opposite of the synthetic-only suite that concealed eight phases of blindness". At five firings per 113 phases a sixth is due roughly every twenty-three phases, and this cycle appends to the ledger while the proposal is being read; the proposal's own anecdote, that #748 was counted "within minutes of being written", is the proof. The defensible form asserts membership and the `>= N` invariant, not the complement. Item (b), "does not alter `detect_repeated_veto_pattern`'s result for any input", is an unbounded universal a test can only sample; its load-bearing version, that the shared parser change alters no existing count, is checkable and is the one worth writing.
+
+**WHAT SURVIVES, AND IT IS NOT NOTHING.** The withdrawal of both window changes is correct and settles entry #748's verdict. `tests/test_veto_pattern_detector.py` is a valid closure-enforcer form. Six measured claims re-derived clean is a real change of method from the artifact #748 vetoed, and the doctrine half, that a characterization corpus offered as a behaviour-preserving refactor's safety argument must be derived from the code's acceptance conditions rather than enumerated by the author, is untouched by this verdict and stands on entries #743 through #747.
+
+**THE MECHANISM NEITHER ARTIFACT LOOKED FOR, WITH ITS OWN DEFECTS DISCLOSED.** Every audit already records its scope. `.qor/gates/<sid>/audit_history.jsonl` writes a `target` field naming the plan path, present in all 1741 records across 188 session histories. Keyed on (session, target) that gives 192 distinct scopes after normalisation, and at N=4 it fires on six: the phase 223 plan at five, the phase 223 remediation document at four, 248 at four, and 258, 261 and 265 at five. The true false-positive cost is three recovered scopes, not two, and the phase 223 plan reached five and still sealed, so "five audits means the scope was abandoned", the premise under the proposal's threshold, is false. This route needs no ledger parse, no regex change, and no live-ledger test. Its defects, measured rather than assumed: the `target` format drifts, with seven records from phases 101 through 107 carrying a prose title instead of a path and seven carrying Windows separators, and phases 217 and 218 each split across both separator forms inside a single session, so any implementation owes a normalisation; a `sess-12345` fixture directory holds 494 synthetic records against `docs/plan-qor-phaseXX.md` and would be ingested by a naive glob over `.qor/gates/*`; and a session-scoped counter cannot see a scope audited across two sessions, which phase 225 was. None of these change the N=4 firing set, and all three must be handled by name rather than discovered later.
+
+**Required next action**: `/qor-remediate` again. The proposal must (a) key on the audited scope rather than the phase number, and say which parse or record produces that key; (b) name the hook point, because Step 0.5 and Step 7 give the same threshold different meanings and the choice of four was justified by a property no placement of four delivers; (c) state whether a genome event is emitted and, if so, carry a fixed `pattern` classifier in its details; (d) replace the exact-firing-set binding with a membership-and-invariant assertion admissible under `doctrine-test-discipline.md`; and (e) disclose the three measured defects of the `audit_history` route by name if it takes that route. The artifact audited here has been preserved at `.qor/gates/2026-09-05T0227-eb46ab/remediate-iter2.json` before any further emission, so that unlike entry #748 this entry's content hash remains verifiable against a file that exists. That preservation is manual; the underlying defect, that `remediate_emit_gate` is the only gate writer without iteration versioning, remains open as GH #446.
+
+---
+
+### Entry #750: GATE TRIBUNAL -- Phase 266 session-total suppression, iteration 3 (VETO)
+
+**Timestamp**: 2026-09-06T16:35:00Z
+**Phase**: GATE (Phase 266)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `6eda8b01cd37`
+**Plan**: docs/plan-qor-phase266-session-total-suppression.md (iteration 3)
+**Session**: 2026-09-06T1618-e0f4fb
+**Mode**: adversarial -- an independent architecture reviewer was dispatched, and the Judge executed both blocking grounds against seeded sessions under pytest before ruling
+
+**Content Hash**: `c8f3d8683f72571aff3094bc1ed50eaf660504bfeebccd002f9276292acea6c4`
+**Previous Hash**: `8632800c53d444408e5e66222f4d1965c7f6f7d3ce4ddbecb7324fe1aad14ec0`
+**Chain Hash (Merkle seal)**: `9fcb91ef47980ec2db8b2ea04e31dcdacaefb3d819f35a920d4d5fbab0137422`
+
+**Decision**: **Verdict**: **VETO** -- specification-drift + coverage-gap (two grounds, both blocking). Attempt 1 of 5 on this scope. The plan is withdrawn rather than amended, because the defect is in what the suppression marker can express and not in how the plan reads it.
+
+**THE FIX IS NOT THE SIZE THE ISSUE MADE IT LOOK.** GH #447 records that `cycle_count_escalator.check_session_total` calls `_suppression_active(session_id, None)` and that the helper returns False whenever its timestamp argument is None, so the operator-decline marker is never read. That much is correct and confirmed by execution. The plan proposed supplying the missing timestamp, which reads as a one-argument repair. Two grounds show that no choice of timestamp works, because the marker is not shaped to answer the question being asked of it.
+
+**GROUND 1 (`specification-drift`): the plan's anchor argument answered the wrong question, and all three of its iterations were wrong in different ways.** Iteration 1 anchored on the oldest contributing record and justified it by claiming that this made the cumulative mode mean what the consecutive mode means. Executed, `stall_walk.run` over a seeded session returns `first_match_ts` of `2026-01-01T10:00:00Z` for a three-VETO run, `(0, None, None)` after a PASS, and `2026-01-01T10:04:00Z` for the next three, while `count_session_signature_totals` holds 6 across the same PASS. The consecutive mode's suppression expires because its run resets; the cumulative mode's cannot, because it has no reset by construction. The equivalence claim was false.
+
+Iteration 2 switched to the newest contributing record. Traced against the skill's step order, that anchor is defeated by the audit that writes the marker: `/qor-audit` runs the escalator at Step 0.5 and appends the audit's own history record at Step Z, so a recurring signature is newer than the marker within the same cycle and re-escalates on every subsequent audit, which is the behaviour the issue was filed to stop.
+
+Iteration 3 returned to the oldest anchor, removed the equivalence claim, and asserted that the marker's bare-timestamp format admits exactly two anchors of which one is acceptable. Ground 2 shows that neither is.
+
+**GROUND 2 (`coverage-gap`): a suppressed winner masks every other over-threshold signature, and the plan's stated limitation asserts the opposite.** The plan's limitations say that a second signature crossing the threshold "escalates on its own and needs its own decline". Measured, with two signatures each at the threshold of three and a marker written when only the first had crossed:
+
+```
+OVER_THRESHOLD: [('31501b86', 3), ('51b783fe', 3)]
+WINNER: 31501b86 anchor 2026-01-01T10:00:00Z
+MARKER: 2026-01-01T10:05:00Z -> WINNER SUPPRESSED: True
+MASKED_SIGNATURES: ['51b783fe'] -- never declined, at threshold, not reported
+CHECK_RETURNS: None
+```
+
+`check_session_total` selects one winner by `(-count, signature)` and returns a recommendation for that winner alone. Under the plan's D3 a suppressed winner returns None; it does not fall through to the next over-threshold signature. So one decline silences an unrelated signature that the operator never saw. The independent reviewer found this by reading and attributed it to the hash-ordered tie-break; executed, the tie-break is a way in rather than the cause, and the defect holds whichever signature sorts first.
+
+**THE ROOT CAUSE, WHICH NEITHER THE ISSUE NOR THE PLAN NAMED.** `orchestration_override._write_suppression_marker` writes one file per session, `.qor/session/<sid>/escalation_suppressed`, containing a bare timestamp. No signature, no count. The question `check_session_total` needs answered is "was THIS signature declined, and has its evidence grown since", and the marker can express neither half. The plan's claim that only two anchors exist is true and irrelevant: both are approximations of a per-signature fact that a session-scoped timestamp cannot carry. Supplying a better timestamp cannot fix a missing field.
+
+**A DOCUMENTED ERROR FOUND ON THE WAY, NOT INTRODUCED BY THIS PLAN.** `doctrine-governance-enforcement.md` section 10.5 states that `_suppression_active` checks the marker against the run's `first_match_ts` and that "if the marker is newer, the escalation is suppressed for the remainder of the session". The second half is false for the consecutive mode, by the same execution recorded in Ground 1: a reset advances `first_match_ts` past the marker and the escalation re-fires. The doctrine describes a suppression that is more durable than the code provides, and the vetoed plan cited that sentence as the promise it was fulfilling. The doctrine needs its own correction whether or not this phase proceeds.
+
+**WHAT SURVIVES.** The defect in GH #447 is real and unchanged: the marker is never read in cumulative mode and an operator cannot decline that escalation even once. The measurement discipline held -- every claim in the plan that could be executed was executed, and the two that could not be, the anchor equivalence and the second-signature limitation, are exactly the two that were false. The research artifact's six findings stand. `count_session_signature_totals` needs no change under any design.
+
+**THE CANDIDATE REPLACEMENT, NOT YET A PLAN.** Drop timestamp comparison for this mode. Record the decline per signature with the count at decline time, and suppress a signature only while its total has not grown past that count. This re-arms exactly when new evidence arrives, never masks a signature the operator did not decline, and removes the anchor question rather than answering it. `check` keeps the existing bare marker untouched. The open question that makes this a scope change rather than a hotfix is where the writer lives: `orchestration_override.record` is what the skills call on decline and it receives `session_id`, `skill`, `recommended_skill` and `reason`, none of which carries the signature, so either that signature reaches it through a new parameter or the skill prose calls a second recorder.
+
+**One further caution for whoever writes that plan.** Measured across all 188 session histories, exactly one real session has ever met the K=3 cumulative threshold, `2026-08-12T0214-799d77` with a single signature at exactly three, and none has ever exceeded it. Every scenario that discriminates these designs -- a count climbing after a decline, two signatures over threshold at once -- is absent from the corpus. The next plan will be pinned by tests and by a stated contract, and it should say so rather than implying that history chose for it.
+
+**CORRECTION, ADDED AFTER THE VERDICT. THIS ENTRY'S ROOT-CAUSE ANALYSIS IS WRONG AND ITS VERDICT STANDS.** The independent reviewer returned a second pass refuting the paragraph above titled "the root cause, which neither the issue nor the plan named", and the refutation has been confirmed by execution. Both blocking grounds are unaffected; the plan was defective as written. What is wrong is this entry's account of WHY, and its consequent claim that the repair is a scope change.
+
+The claim that a bare session-scoped timestamp cannot express "was this signature declined, and has its evidence grown since" is false. `_suppression_active` accepts any string, so the caller may pass ANY element of a signature's contributing-timestamp list rather than only an endpoint. The oldest and newest anchors this entry treated as exhaustive are the two ends of a one-parameter family. The reviewer's third anchor is the K-window floor, the oldest member of the most recent `ESCALATION_THRESHOLD` occurrences.
+
+Measured, seeding one signature to three occurrences and writing the marker at a decline:
+
+```
+N=3  anchor=10:00:00Z  suppressed=True   count_at_marker=3
+N=4  anchor=10:01:00Z  suppressed=True   count_at_marker=3
+N=5  anchor=10:02:00Z  suppressed=True   count_at_marker=3
+N=6  anchor=10:11:00Z  suppressed=False  count_at_marker=3
+N=7  anchor=10:12:00Z  suppressed=False  count_at_marker=3
+```
+
+It re-arms at `N = n0 + K` rather than never. It survives the Step 0.5 against Step Z ordering that killed the newest anchor, because the declining audit's own append takes the count to `n0 + 1` and suppression holds through `n0 + K - 1`. And the count at decline time is recoverable today as the number of contributing timestamps older than the marker -- stable at 3 across every row above -- so the field this entry called missing is derivable from data the function already reads. The sentence "supplying a better timestamp cannot fix a missing field" is the exact shape of claim this cluster has been vetoing since entry #743: a structural impossibility asserted without being tested.
+
+Ground 2 is likewise repairable inside the original scope and does not need a per-signature marker. It is caused by `check_session_total` returning `None` when the single winner is suppressed instead of considering the next over-threshold signature. Measured on the same two-signature fixture that produced Ground 2:
+
+```
+OVER: [('31501b86', 3), ('51b783fe', 3)]
+winner-only (plan D3): None
+filter-then-select   : 51b783fe
+   31501b86 suppressed: True
+   51b783fe suppressed: False
+```
+
+Filtering suppressed signatures before selecting the winner reports the signature the operator never declined and keeps the declined one silent. That is a change to one selection step, not a new record.
+
+The correction is disclosed here rather than folded into the next plan because this entry told the operator that the scope had changed from supplying an argument to adding a field, and that statement was acted on. It had not.
+
+**Required next action**: a Phase 266 iteration 4 plan inside the original hotfix scope, combining the K-window anchor with filter-then-select, and carrying tests that discriminate the anchors -- the reviewer's second blocking finding is that no test in the vetoed plan's T1 through T6 tells permanent suppression apart from re-arming suppression, because at `N = K` the two anchors are the same timestamp. Any iteration 4 must include a case at `N = n0 + K` where they differ.
+
+---
+
+### Entry #751: GATE TRIBUNAL -- Phase 266 session-total suppression, iteration 9 (PASS)
+
+**Timestamp**: 2026-09-06T17:15:00Z
+**Phase**: GATE (Phase 266)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `f54578217434`
+**Plan**: docs/plan-qor-phase266-session-total-suppression.md (iteration 9)
+**Session**: 2026-09-06T1618-e0f4fb
+**Mode**: adversarial -- an independent architecture reviewer held Read/Grep/Glob only for the entire review and disclosed that limit beside every finding; the Judge executed every probe quoted in the plan
+
+**Content Hash**: `b298d64650c544dc3ba46d254157ffec040c5bf3c08c3c05fc10bcb4f8fec0a4`
+**Previous Hash**: `9fcb91ef47980ec2db8b2ea04e31dcdacaefb3d819f35a920d4d5fbab0137422`
+**Chain Hash (Merkle seal)**: `2c043a58efa125545538b36165c4f5976630a7488820b132f0a987c0e21f57ae`
+
+**Decision**: **Verdict**: **PASS** -- iteration 9. Attempt 2 of 5 recorded against this scope; entry #750 vetoed iteration 3, and iterations 4 through 9 were revised under a single continuous adversarial review rather than resubmitted as separate attempts.
+
+**WHAT IS BEING PASSED, AND WHAT IS NOT.** This verdict is on the document and the design. It is not a verdict on a green run. The independent reviewer held Read, Grep and Glob only for the whole review and said so beside every finding, so the following are verified by reading or by tool: the K-window arithmetic, including that `[-K]` on a length-n list indexes `t[N-K+1]` and matches the plan's measured table; all four blocks of the inclusive-comparison table; that the new keyword's default leaves `cycle_count_escalator.py:49`, `:77` and `tests/test_session_id_path_safety.py:38` unaffected; that filter-then-select is what repairs masking; the structural `ts` guarantee at `audit.schema.json:7,10` with `audit_history.py:86`; the T3 and T4 discrimination matrix; a blast radius of five files with `count_session_signature_totals`'s sole production consumer at `cycle_count_escalator.py:71`; the count of 188 session histories; and every line citation checked. NOT verified, because the reviewer could not execute: the zero-and-zero same-second corpus measurement, the probe outputs quoted in D1 and D3, that T1 through T8 pass, and that the implementation will match the plan.
+
+**THE DESIGN.** `check_session_total` never reads the operator-decline marker because it passes `None` where a timestamp belongs, and `_suppression_active` short-circuits on `None`. The repair has three parts. The anchor is the K-window floor, `stamps[sig][-K]`, the oldest member of the most recent `ESCALATION_THRESHOLD` occurrences, so a decline suppresses that signature for `K - 1` further occurrences and then re-arms. Suppressed signatures are filtered out of the over-threshold list BEFORE the winner is selected, so a suppressed winner can no longer mask a signature the operator never declined. And the comparison is inclusive for the cumulative mode only, `marker >= anchor` behind a defaulted keyword, so a decline sharing a whole second with a contributing record still suppresses.
+
+**WHY THIS TOOK NINE ITERATIONS, RECORDED BECAUSE THE PATTERN IS THE FINDING.** Every defect in this phase appeared in text written to correct the previous defect, and the reviewer caught each one by reading while the author was executing probes against the claim already fixed.
+
+Three were false impossibilities used to license not doing something. Iteration 3 asserted that the marker's bare-timestamp format admitted only two anchors; the interior of the timestamp list was available and the K-window floor lives there. Entry #750 asserted that supplying a better timestamp could not fix a missing field; the count at decline time is recoverable as the number of contributing timestamps older than the marker, and that entry has been amended to say so. Iteration 5 asserted that fixing the same-second collision required changing a marker resolution shared with `check`; the cumulative mode can simply ask for an inclusive comparison, which is what iteration 7 does. Each was refuted from reading, by a reviewer with no execution tool, and each was written immediately after a correction.
+
+Two were contradictions between prose and specification, in opposite directions. In iteration 5 the Affected Files row still specified the winner-then-suppress order that entry #750 had vetoed while D3 specified filter-then-select. In iteration 7 the D3 snippet omitted `inclusive=True` while the prose and the table both required it. The argument against the first applies unchanged to the second: a document that says two different things about what the code is, is worse than either version alone.
+
+Two were properties asserted with nothing establishing them. Iterations 1 through 3 carried six tests of which none discriminated the chosen anchor from the rejected ones, because at `N = K` the K-window floor and the oldest contributing record are the same timestamp. Iteration 4's replacement then claimed a bracketing that holds only if the marker is seeded strictly between the `n0`-th and `(n0+1)`-th record; seeding it after every record leaves T3 green under all three anchors, silently. And iteration 5's accessor promised an ascending list while appending in file order, which `audit_history.read` documents as untrustworthy and which `stall_walk.py:48` already sorts around.
+
+**THE LAST FINDING IS THE ONE MOST WORTH KEEPING.** `_suppression_active` carries no docstring and this phase gives it two comparison semantics behind a flag. GH #447 exists because `check_session_total`'s docstring promised behaviour its body did not have. Adding a mode switch to an undocumented helper is that same defect one level down, with nothing written to be wrong. Iteration 9 gives the helper a docstring stating both semantics and what the anchor argument means under each.
+
+**CARRIED INTO IMPLEMENTATION AS OBLIGATIONS, NOT SUGGESTIONS.** T8 is red today for T1's reason, that the marker is never read at all, and red again only if the anchor and the filter land WITHOUT the inclusive flag. Only the second red exercises the flag, so a final all-green run does not establish that T8 tests anything; the failure must be observed at the intermediate commit. No artifact records that, which is why it is written into the plan's limitations as a discipline the implementer owes. The same-second guard is precautionary rather than corrective: measured across the 188 real session histories there are zero same-second pairs and zero same-second K-tuples, so nothing in this repository's history exercises T8 at all.
+
+**Scope boundaries reaffirmed.** GH #448, the missing `validate_session_id` at the head of `check_session_total`, is not fixed here; this phase adds a validating helper call AFTER the unvalidated read and must not be recorded as closing it. The interpolated-reason defect in `orchestration_override.record` that defeats signature collapse remains on GH #447's tail or moves to its own issue. `doctrine-governance-enforcement.md` section 10.5 is rewritten to describe both modes, so that line 278's "Same suppression marker applies" resolves to a description covering the mode it points from.
+
+**Required next action**: `/qor-implement` against iteration 9, tests first, with the intermediate-commit observation of T8 performed and reported rather than assumed.
+
+---
+
+### Entry #752: SESSION SEAL -- Phase 266 session-total suppression (v0.169.2)
+
+**Timestamp**: 2026-09-06T17:35:00Z
+**Phase**: SEAL (Phase 266)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `b1a143f98aea`
+**Plan**: docs/plan-qor-phase266-session-total-suppression.md (iteration 9)
+**Session**: 2026-09-06T1618-e0f4fb
+**Closes**: GH #447
+
+**Content Hash**: `aba63753952ae0b2c2830a294ad377e97b83525b321ee41b562e3a0e6606ff23`
+**Previous Hash**: `2c043a58efa125545538b36165c4f5976630a7488820b132f0a987c0e21f57ae`
+**Chain Hash (Merkle seal)**: `2d987e684467738a012cbaf8400a15846bf9a8b486e352d02c3b7eb37f22059d`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 9. Full suite green: **3262 passed, 6 skipped, 4 deselected, 0 failed**, exit 0, in 5m14s. The three new-behaviour test files were run three consecutive times at 30 passed each to establish determinism before the seal.
+
+**WHAT SHIPPED.** `cycle_count_escalator.check_session_total` documented that it honoured the operator-decline suppression marker and never read it: it passed `None` where an anchor timestamp belongs, and `_suppression_active` returns `False` unconditionally on `None`. An operator could not decline a cumulative escalation even once. Closes GH #447.
+
+Three behavioural changes. The anchor is the K-window floor, `stamps[sig][-ESCALATION_THRESHOLD]`, so a decline silences one signature until it recurs `K` further times and then re-arms. Suppressed signatures are filtered out of the candidate list BEFORE a winner is selected, so a declined signature no longer masks an over-threshold signature the operator never saw. And `_suppression_active` gains an `inclusive` keyword, defaulted so `check` is untouched, letting the cumulative mode compare `marker >= anchor` and survive a decline that shares a whole second with its anchor record. `stall_walk.session_signature_timestamps` is new and establishes its ascending order by sorting rather than inheriting it from `audit_history.read`, which returns file order. Doctrine section 10.5 is rewritten to describe both modes so that the Phase 69 paragraph's "Same suppression marker applies" resolves to a description covering the mode it points from.
+
+**THE TWO DISCIPLINES THE PLAN DEMANDED WERE PERFORMED, NOT ASSUMED.** Entry #751 required both, because a final green run establishes neither.
+
+T8's discriminating red was observed at the intermediate commit. With the anchor and the filter landed but `inclusive` not yet passed, T8 failed alone while T1, T3 and T5 were green -- so T8 fails because of the flag, not because the marker is unread, which is its other and uninformative red.
+
+The T3 and T4 bracketing was demonstrated by substituting the rejected anchors into the working tree and running the suite. `stamps[sig][0]`, the oldest anchor of iterations 1 and 3, reddens T4 and only T4. `stamps[sig][-1]`, the newest anchor of iteration 2, reddens T3. The K-window floor passes both. No single-endpoint anchor satisfies both tests, which is the claim nine plan iterations argued over and the one the independent reviewer said it could not verify without an execution tool.
+
+**THE PLAN WAS WRONG ABOUT T4 AND THE TEST RUN CAUGHT IT.** Iteration 9 predicted T1, T3, T4, T5, T6 and T8 red before the fix. T4 was green: today's behaviour, never suppressing, coincides with T4's expectation that the escalation fires. That is exactly the two-different-reds structure the reviewer identified in T8's table row, sitting undetected in the row immediately above it, and neither author nor reviewer saw it. The anchor-substitution probe above is what actually establishes T4's discrimination, and it was only run because the observed reds disagreed with the plan's prediction.
+
+**AND THE ONE THING THAT BROKE THE BUILD WAS NONE OF IT.** The first full-suite run returned `1 failed, 3261 passed`. The failure was `test_plan_schema_ci_commands.py::test_pre_phase_38_plans_grandfathered`: the plan document carried a section titled "Verification commands" where every plan from Phase 38 onward must carry "## CI Commands". Nine iterations of adversarial review across anchor semantics, test discrimination, control flow and doctrine cross-references, and the defect that failed CI was a heading, caught by a lint that runs against every plan in `docs/` and that neither author nor reviewer thought to run against the plan under review. The other four plan documents authored this session all carry the heading correctly.
+
+**PROCESS RECORD, CARRIED FORWARD.** This phase took nine plan iterations and one VETO at entry #750, whose own root-cause analysis then had to be amended. Every defect appeared in text written to correct the previous defect. Three were false impossibilities used to license inaction, each refuted from reading by a reviewer holding Read, Grep and Glob only: that the marker's format admitted just two anchors, that a better timestamp could not supply a missing field, and that fixing the same-second collision required a resolution change shared with `check`. Two were contradictions between prose and specification in opposite directions, the Affected Files table specifying the vetoed design in one iteration and the D3 snippet omitting the inclusive flag in another. Two were properties asserted with nothing establishing them, a test suite where no test discriminated the chosen anchor and an accessor promising ascending order while appending in file order.
+
+**Scope boundaries held.** GH #448, the missing `validate_session_id` at the head of `check_session_total`, is NOT closed by this phase: the new `_suppression_active` call validates, but only after the unvalidated read that #448 describes. GH #446, the remediation gate's missing iteration versioning, remains open. The interpolated-reason defect in `orchestration_override.record` that prevents signature collapse under `collapsed_severity` remains unfixed and unfiled separately.
+
+**Version**: 0.169.1 -> 0.169.2 per the plan's declared `hotfix` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

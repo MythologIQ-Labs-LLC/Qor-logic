@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-06T1618-e0f4fb",
+  "plan_path": "docs/plan-qor-phase266-session-total-suppression.md",
+  "plan_hash": "aba63753952ae0b2c2830a294ad377e97b83525b321ee41b562e3a0e6606ff23",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "1be9b5b9c7135337fe84dacc14eb2d7331f7b049ab029c9867dca7754dd0ec99",
+  "head_commit": "d07daac3759891d6c327bd181600039bb60cd20d",
+  "captured_ts": "2026-09-06T17:12:03.633330Z"
+}
