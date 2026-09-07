@@ -444,7 +444,7 @@ def _report_sequence(
     """Emit sequence breaks and numbering warnings; return the error count.
 
     Kept out of ``verify`` deliberately. ``verify`` is a pre-existing Section 4
-    violation at 97 lines; Phase 218 must not enlarge it, and this reporting is
+    length violation; Phase 218 must not enlarge it, and this reporting is
     separable on its own merits.
     """
     errors = 0

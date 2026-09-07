@@ -204,3 +204,186 @@ def test_is_available_mcp_servers_list_empty(tmp_path):
     qplat.apply_profile("claude-code-solo", marker=marker)
     # mcp-servers defaults to []
     assert qplat.is_available("mcp-servers", marker=marker) is False
+
+
+# ----- Phase 269 (GH #429): absent is not the same as unreadable -----
+
+def _declared(marker):
+    return json.loads(marker.read_text(encoding="utf-8"))["declared"]
+
+
+def test_current_returns_none_on_a_corrupt_marker(tmp_path):
+    """A truncated write is the motivating shape in GH #429."""
+    marker = tmp_path / "platform.json"
+    marker.write_text('{"declared": {"gh_cli": true', encoding="utf-8")
+    assert qplat.current(marker=marker) is None
+
+
+def test_current_returns_none_on_utf16_bytes(tmp_path):
+    """PowerShell Out-File writes UTF-16LE; the decode fails before json does."""
+    marker = tmp_path / "platform.json"
+    marker.write_bytes(json.dumps({"declared": {}}).encode("utf-16"))
+    assert qplat.current(marker=marker) is None
+
+
+def test_current_returns_none_on_non_dict_json(tmp_path):
+    """Valid JSON that is not an object reaches no exception handler at all."""
+    for body in ("[]", "123", '"text"'):
+        marker = tmp_path / "platform.json"
+        marker.write_text(body, encoding="utf-8")
+        assert qplat.current(marker=marker) is None, body
+
+
+def test_current_returns_none_on_a_permission_error(tmp_path, monkeypatch):
+    """current() is total by contract: every caller sits in a gate-writing or
+    capability-gating path where a raise means no artifact can be written.
+
+    The three-way classification is not lost, it is available to callers that
+    can act on it via _read_marker; see the test below.
+
+    Monkeypatches the read rather than using chmod: on Windows os.chmod(path, 0)
+    does not make a file unreadable to its owner, so a real-permissions fixture
+    would exercise nothing on this workspace.
+    """
+    marker = tmp_path / "platform.json"
+    marker.write_text("{}", encoding="utf-8")
+
+    def _denied(self, *a, **kw):
+        raise PermissionError(13, "Permission denied")
+
+    monkeypatch.setattr(type(marker), "read_text", _denied)
+    assert qplat.current(marker=marker) is None
+
+
+def test_set_capability_refuses_to_overwrite_an_unreadable_marker(tmp_path):
+    """The data-loss defect: `current() or {defaults}` then write.
+
+    detect.md:30 and capabilities.md:85 both state that user declarations are
+    never overwritten, so synthesising defaults over an unreadable marker
+    contradicts a shipped contract.
+    """
+    marker = tmp_path / "platform.json"
+    qplat.apply_profile("claude-code-solo", marker=marker)
+    before = marker.read_bytes()
+    marker.write_text('{"declared": {"gh_cli": true, "docker"', encoding="utf-8")
+
+    with pytest.raises(qplat.PlatformMarkerError):
+        qplat.set_capability("codex-plugin", True, marker=marker)
+
+    # The corrupt bytes are still there: nothing was written over them.
+    assert marker.read_text(encoding="utf-8") == '{"declared": {"gh_cli": true, "docker"'
+    assert before  # the fixture really did have prior state
+
+
+def test_platform_marker_error_is_not_an_oserror_or_valueerror():
+    """Base class is load-bearing.
+
+    An OSError subclass would collide with the reader's "any other OSError
+    propagates" contract; a ValueError subclass becomes catchable by the
+    _parse_bool guard in the CLI `set` handler on any reorder.
+    """
+    assert issubclass(qplat.PlatformMarkerError, Exception)
+    assert not issubclass(qplat.PlatformMarkerError, OSError)
+    assert not issubclass(qplat.PlatformMarkerError, ValueError)
+
+
+def test_set_capability_still_creates_a_marker_when_absent(tmp_path):
+    """Refusing on unreadable must not break first run."""
+    marker = tmp_path / "platform.json"
+    qplat.set_capability("codex-plugin", True, marker=marker)
+    assert _declared(marker)["codex-plugin"] is True
+
+
+def test_is_available_is_false_on_a_corrupt_marker(tmp_path):
+    marker = tmp_path / "platform.json"
+    marker.write_text("[]", encoding="utf-8")
+    assert qplat.is_available("codex-plugin", marker=marker) is False
+
+
+def test_cli_get_distinguishes_absent_from_unreadable(tmp_path, monkeypatch, capsys):
+    """'(no platform marker)' is actively false for a file sitting on disk."""
+    marker = tmp_path / "platform.json"
+    monkeypatch.setattr(qplat, "MARKER_PATH", marker)
+
+    monkeypatch.setattr("sys.argv", ["qor_platform.py", "get"])
+    assert qplat.main() == 1
+    assert "no platform marker" in capsys.readouterr().out
+
+    marker.write_text("{oops", encoding="utf-8")
+    monkeypatch.setattr("sys.argv", ["qor_platform.py", "get"])
+    rc = qplat.main()
+    out = capsys.readouterr()
+    assert rc != 0
+    assert "no platform marker" not in (out.out + out.err)
+    assert "cannot be read" in (out.out + out.err)
+
+
+def test_cli_check_distinguishes_unavailable_from_unreadable(tmp_path, monkeypatch, capsys):
+    """A script branching on the exit code must be able to tell them apart."""
+    marker = tmp_path / "platform.json"
+    monkeypatch.setattr(qplat, "MARKER_PATH", marker)
+
+    qplat.apply_profile("claude-code-solo", marker=marker)
+    monkeypatch.setattr("sys.argv", ["qor_platform.py", "check", "codex-plugin"])
+    assert qplat.main() == 1  # genuinely not available
+
+    marker.write_text("{oops", encoding="utf-8")
+    monkeypatch.setattr("sys.argv", ["qor_platform.py", "check", "codex-plugin"])
+    assert qplat.main() == 2  # cannot tell
+    assert "cannot be read" in "".join(capsys.readouterr())
+
+
+def test_cli_set_reports_an_unreadable_marker_without_a_traceback(tmp_path, monkeypatch, capsys):
+    """set_capability sits outside the _parse_bool try, so the error escapes main()."""
+    marker = tmp_path / "platform.json"
+    monkeypatch.setattr(qplat, "MARKER_PATH", marker)
+    marker.write_text("{oops", encoding="utf-8")
+
+    monkeypatch.setattr("sys.argv", ["qor_platform.py", "set", "codex-plugin", "true"])
+    rc = qplat.main()  # must not raise
+    assert rc == 2
+    assert "cannot be read" in capsys.readouterr().err
+
+
+def test_current_returns_none_on_pathologically_nested_json(tmp_path):
+    """Fourth instance of the enumerated-handler class, found by applying the
+    enumerate-the-exits method to the third reader in this change.
+
+    json.loads is recursive, so depth alone raises RecursionError, which
+    `except json.JSONDecodeError` does not catch. Content that cannot be parsed
+    is 'the bytes are not our state' whatever the reason, so it degrades.
+    """
+    marker = tmp_path / "platform.json"
+    marker.write_bytes(b'{"a":' * 5000 + b"1" + b"}" * 5000)
+    assert qplat.current(marker=marker) is None
+
+
+def test_read_marker_still_propagates_permission_errors(tmp_path, monkeypatch):
+    """Widening the PARSE handler must not swallow the READ classification.
+
+    Asserted at _read_marker, where the three-way split lives. current() is
+    deliberately total and must NOT surface this; the surfaces that can act on
+    it -- set_capability, CLI get, CLI check -- call _read_marker directly.
+    """
+    marker = tmp_path / "platform.json"
+    marker.write_text("{}", encoding="utf-8")
+
+    def _denied(self, *a, **kw):
+        raise PermissionError(13, "Permission denied")
+
+    monkeypatch.setattr(type(marker), "read_text", _denied)
+    with pytest.raises(PermissionError):
+        qplat._read_marker(marker)
+
+
+def test_diagnosis_surfaces_still_see_a_permission_error(tmp_path, monkeypatch):
+    """Loudness stays where an operator can act on it."""
+    marker = tmp_path / "platform.json"
+    marker.write_text("{}", encoding="utf-8")
+
+    def _denied(self, *a, **kw):
+        raise PermissionError(13, "Permission denied")
+
+    monkeypatch.setattr(type(marker), "read_text", _denied)
+    with pytest.raises(PermissionError):
+        qplat.set_capability("codex-plugin", True, marker=marker)

@@ -144,11 +144,70 @@ def _atomic_write_json(path: Path, data: dict) -> None:
     os.replace(tmp, path)
 
 
+class PlatformMarkerError(Exception):
+    """The marker exists but cannot be read as platform state.
+
+    Phase 269 (GH #429). Derives from Exception and deliberately NOT from
+    OSError, which would collide with _read_marker's "any other OSError
+    propagates" contract, nor from ValueError, which would become catchable by
+    the _parse_bool guard in the CLI `set` handler on any reordering there.
+    """
+
+
+def _read_marker(marker: Path) -> tuple[dict | None, str]:
+    """Return (state, status) where status is 'ok', 'absent' or 'unreadable'.
+
+    Phase 269 (GH #429). The distinction that matters is not the exception type
+    but "the bytes are not our state" versus "we could not read the bytes".
+    Discard the first; never let the second masquerade as absence at a surface
+    that writes or diagnoses.
+
+    One read, so no caller re-stats the file and races itself.
+    """
+    try:
+        raw = marker.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return None, "absent"
+    except UnicodeDecodeError:
+        # A Windows operator hand-editing the marker does not necessarily write
+        # UTF-8: Out-File on stock PowerShell 5.1 emits UTF-16LE, and
+        # Set-Content emits the ANSI codepage, which fails to decode whenever
+        # the content is not pure ASCII. A UTF-8 BOM fails at json instead.
+        return None, "unreadable"
+    # Any other OSError propagates: unreadable-for-permissions is not absence.
+    # The READ above classifies deliberately, so it enumerates. The PARSE below
+    # does not: content that cannot be parsed is "not our state" whatever the
+    # reason, so it is total over content. json.loads is recursive, so depth
+    # alone raises RecursionError, which an enumeration of JSONDecodeError
+    # misses -- the same class that escaped two readers in ai_provenance.
+    try:
+        data = json.loads(raw)
+    except Exception:
+        return None, "unreadable"
+    if not isinstance(data, dict):
+        # Valid JSON that is not an object reaches no exception handler at all,
+        # which is why this lives in the reader rather than in each caller.
+        return None, "unreadable"
+    return data, "ok"
+
+
 def current(marker: Path | None = None) -> dict | None:
-    marker = marker or MARKER_PATH
-    if not marker.exists():
+    """Platform state, or None if it cannot be obtained for any reason.
+
+    Total by contract. Every caller of this shim sits in a gate-writing or
+    capability-gating path that has a correct degraded answer, and a raise here
+    means no gate artifact can be written at all -- the same consequence that
+    made an enumeration unusable in ai_provenance._read_system_version.
+
+    The three-way classification is not lost. Callers that can act on the
+    difference -- set_capability, and the CLI get and check handlers -- call
+    _read_marker directly, so an operator diagnosing a permission-broken marker
+    still gets a true answer from the surfaces they would use.
+    """
+    try:
+        return _read_marker(marker or MARKER_PATH)[0]
+    except OSError:
         return None
-    return json.loads(marker.read_text(encoding="utf-8"))
 
 
 def _now_iso() -> str:
@@ -174,7 +233,16 @@ def apply_profile(name: str, marker: Path | None = None) -> dict:
 
 def set_capability(name: str, value, marker: Path | None = None) -> dict:
     marker = marker or MARKER_PATH
-    state = current(marker) or {
+    state, status = _read_marker(marker)
+    if status == "unreadable":
+        # detect.md and capabilities.md both state that user declarations are
+        # never overwritten, and apply/clear are the only documented resets.
+        # Synthesising defaults here would discard every declared capability.
+        raise PlatformMarkerError(
+            f"{marker} exists but cannot be read as platform state; "
+            f"refusing to overwrite. Inspect it, or run `clear` to reset."
+        )
+    state = state or {
         "version": "1",
         "detected": {"host": detect_host(), "gh_cli": detect_gh_cli()},
         "declared": {},
@@ -253,10 +321,19 @@ def main() -> int:
         return 0
 
     if args.cmd == "get":
-        state = current()
-        if state is None:
+        state, status = _read_marker(MARKER_PATH)
+        if status == "absent":
             print("(no platform marker)")
             return 1
+        if status == "unreadable":
+            # This is the surface an operator uses to diagnose the corruption,
+            # so it must not report the file as missing.
+            print(
+                f"ERROR: {MARKER_PATH} exists but cannot be read as platform "
+                f"state. Inspect it, or run `clear` to reset.",
+                file=sys.stderr,
+            )
+            return 2
         print(json.dumps(state, indent=2))
         return 0
 
@@ -284,11 +361,25 @@ def main() -> int:
             parsed = _parse_bool(args.value)
         except ValueError:
             parsed = args.value  # keep string
-        state = set_capability(args.capability, parsed)
+        try:
+            state = set_capability(args.capability, parsed)
+        except PlatformMarkerError as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            return 2
         print(json.dumps(state, indent=2))
         return 0
 
     if args.cmd == "check":
+        _, status = _read_marker(MARKER_PATH)
+        if status == "unreadable":
+            # Exit 2 so a caller can tell "not available" from "cannot tell".
+            # Safe for if-style consumers, which treat every nonzero alike.
+            print(
+                f"ERROR: {MARKER_PATH} exists but cannot be read as platform "
+                f"state, so {args.capability} cannot be determined.",
+                file=sys.stderr,
+            )
+            return 2
         available = is_available(args.capability)
         print(f"{args.capability}: {'available' if available else 'not available'}")
         return 0 if available else 1

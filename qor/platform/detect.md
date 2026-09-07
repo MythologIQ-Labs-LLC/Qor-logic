@@ -27,7 +27,7 @@ python qor/scripts/qor_platform.py apply claude-code-with-codex
 python qor/scripts/qor_platform.py set codex-plugin true
 ```
 
-User declarations are **never overwritten** by auto-detect; the detected + declared fields are stored side-by-side.
+User declarations are **never overwritten** by auto-detect; the detected + declared fields are stored side-by-side. `set` upholds this even when the marker is unreadable: rather than synthesising defaults over state it cannot read, it fails and directs you to `clear`.
 
 ## Re-detection triggers
 
@@ -64,7 +64,9 @@ else:
 
 - `True` if the capability is in `detected` and truthy
 - `True` if the capability is in `declared` and truthy (non-empty list counts as truthy)
-- `False` if the capability is not present in either, or if `.qor/platform.json` is absent
+- `False` if the capability is not present in either, if `.qor/platform.json` is absent, or if it exists but cannot be read as platform state
+
+`qor_platform.py check <capability>` exits 0 when available, 1 when not available, and 2 when the marker exists but cannot be read, so a script can distinguish "not available" from "cannot tell". `get` and `set` use the same exit 2 for an unreadable marker.
 
 ## Profiles
 

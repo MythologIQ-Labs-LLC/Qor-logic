@@ -22169,5 +22169,104 @@ The reviewer's own account of why the earlier rounds could not have found them i
 
 ---
 
+### Entry #758: GATE TRIBUNAL -- Phase 269 unverified external state, iteration 6 (PASS)
+
+**Timestamp**: 2026-09-07T17:35:00Z
+**Phase**: GATE (Phase 269)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `48f1e2574d4f`
+**Plan**: docs/plan-qor-phase269-unverified-external-state.md (iteration 6)
+**Session**: 2026-09-07T1643-325626
+**Mode**: adversarial -- an independent architecture reviewer held Read/Grep/Glob only and executed nothing
+**Reviews**: GH #427, GH #429, GH #445
+
+**Content Hash**: `bf326344bc4420a74cbe92554900f698b6950a05425d663c529956936e156324`
+**Previous Hash**: `4e2781e59a5f320860866ef652dc4e705c92f711b0fac4d867dcc1afb1be9bd5`
+**Chain Hash (Merkle seal)**: `a9794054c11b1dafb70117bfeac0cbbbff0b90441174f6c4547032414c866071`
+
+**Decision**: **Verdict**: **PASS** -- iteration 6, on `docs/plan-qor-phase269-unverified-external-state.md`. Six iterations, three VETOes, no code written at any point before this entry.
+
+**WHAT THE VERDICT COVERS.** That D1 establishes the pyproject is ours before trusting anything in it, falling through to metadata on every failure to establish that; that D2 separates "the bytes are not our state" from "we could not read the bytes" and protects the data at the write path rather than in an exception tuple; that D3 deletes a drifted figure and builds no guard. And that the test table's red-before column is honestly marked.
+
+**THE AUDIT FOUND DEFECTS THAT WOULD HAVE SHIPPED WORSE BEHAVIOUR THAN THE BUGS.** Iteration 1's D1 parsed the foreign file before deciding it was foreign, so a malformed pyproject at the computed path would have raised out of `build_manifest` and made every gate artifact unwritable in exactly the installed environment the phase exists to protect. Iteration 1's D2 returned `None` for a corrupt marker, which `set_capability` turns into synthesised defaults and a write: demonstrated by execution, a marker declaring three capabilities was rewritten to one, silently, against a bolded never-overwritten invariant in two shipped files. Both are one error -- the plan checked that `None` was an accepted value and never asked what each caller DOES with it. Consistency, not reach.
+
+A direction taken between iterations, narrowing D2 to `JSONDecodeError` alone, was also wrong and was corrected by the reviewer before it reached code: `UnicodeDecodeError` is the same kind of failure and excluding it would have left GH #429 unfixed in its likeliest Windows shape.
+
+**THE MISS THE REVIEWER FOUND IN ITSELF IS THE MOST USEFUL THING HERE.** For two rounds the reviewer certified that it had tried to break D1's fall-through ordering and could not, while `except (OSError, tomllib.TOMLDecodeError)` sat in the line it was examining and `UnicodeDecodeError` escaped it. Its own account: "I checked the fix against my own specification of the bug rather than against the file's failure surface." Its round-one enumeration of the failure modes became the standard of completeness, and it had already held the argument that finds the gap, having applied the encoding argument one round earlier to a file this repo writes itself while never applying it to a file authored by a stranger. The tell was visible in every iteration: `_PYPROJECT.open("rb")` -- a parser that takes bytes owns the decode, and a library that owns the decode can fail at the decode.
+
+It was not found by re-reading. It fell out when a question about whether the version warning fires on every path forced an exhaustive enumeration of how the function can terminate, including by raising. The method changed from "is this claim true" to "what are all the ways out of this function." That technique is the transferable output of this phase.
+
+**LIMITS OF THE VERDICT, IN THE REVIEWER'S TERMS.** The reviewer held Read, Grep and Glob only and executed nothing across six iterations. Asked directly whether the document is clean or has merely stopped yielding grounds, it answered: the second, and record it that way. Its reasoning: a statement that it could not break something is a statement about its attention on that pass, not a property of the code; this review produced four such passes and three contained a certification a later pass contradicted or narrowed.
+
+Every measurement in this phase is the author's and unwitnessed: the data-loss demonstration, the `tomllib` encoding behaviour, the PowerShell encoding table, the non-dict-JSON results, the metadata-versus-pyproject divergence. The reviewer verified by reading that the code paths make each result plausible and in two cases predicted the result before it was run, which is not the same as verification.
+
+Two of its listed gaps were closed by author execution and are recorded as such rather than left open: that CI installs editable, which underpins the whole monkeypatching rationale and which the reviewer notes it could have read and did not; and the metadata-versus-pyproject divergence itself.
+
+**ONE SEVERITY RESTS ON AN UNVERIFIED ASSERTION.** The reviewer characterised the provenance-schema description as seal-blocking on the grounds that this repository aborts a seal on a definition diverging from what it describes. It never opened the `doc_integrity` implementation and does not know whether that rule reaches a JSON Schema `description` field or only Markdown prose. The author did not check either. The edit stays in scope because a description contradicting the code it describes should be fixed regardless of whether a gate catches it, but the priority attached to it is an assertion, not a read rule.
+
+**ONE CONCERN IS OPEN, NOT CLOSED.** The installed-environment witness is confirmed first-hand by the author, who imported the installed module and read the file it resolves to, and is unverified by the reviewer. What is open is not whether the file is there but how typical that placement is, since shipping `pyproject.toml` to the site-packages root is unusual packaging. The defect does not depend on the answer: `_REPO_ROOT` provably resolves to site-packages under an install, so whatever sits at that path is read regardless of what put it there.
+
+**THE FINDINGS THE REVIEWER WOULD DEFEND WITHOUT QUALIFICATION**, produced by re-reading its own six rounds looking specifically for claims stated with more confidence than the evidence supported: the parse-outside-the-guard ordering, the `set_capability` data loss, the non-dict coercion, the correction of the `JSONDecodeError`-only narrowing, the deleted no-file test, the D3 vacuity argument, and the `check` handler. It separately named what it got wrong: the `Set-Content` default encoding, the `tomllib` timing it flagged as unverified, inconsistent numbering of its own grounds, a base-class requirement it raised and then withdrew from its own clear-the-veto list, and a normalisation equivalence it asserted and never checked, which the author measured before it could ship as a code comment.
+
+**A DIFF-COMPLETENESS ASSURANCE THAT FAILED TWICE, IN ITS OWN WORDS.** "'Nothing else changed' rests on my reading the new text against my memory of the old, not on a diff. Iterations were overwritten in place, so if the earlier text is not recoverable, nobody can diff it." It then demonstrated the failure twice in one session: two targeted reads returned stale content and it stated conclusions from both, catching each only on a full re-read. This is why the plan was brought back for complete re-audits rather than targeted confirmations, and it is the argument for binding an audit to `target_content_hash`, which this artifact does.
+
+**THE DEFECT CLASS RECURRED THREE TIMES IN THIS PHASE'S OWN DOCUMENTS.** A count in prose restating an enumeration that sits inches away and cannot re-derive it: "four" against three marked rows, then "eight probes" against seven listed names, in the very paragraph recording that a claim had been measured rather than believed. Each was cured by deletion rather than correction, because a corrected copy is still a copy. The reviewer's observation is the one worth carrying: the brief's sweep covers docstrings in `qor/` and `tests/`, and every instance actually committed has been in plan prose, a corpus that sweep does not reach. The surface where this defect recurs in practice is plan authoring, not code. That does not reopen the no-lint decision for the codebase.
+
+**AN UNFIXED PROCESS WEAKNESS, NAMED RATHER THAN SOLVED.** Accepted corrections failing to land on first application recurred throughout: the `Set-Content` clause survived two rounds after being agreed, the `PlatformMarkerError` base class survived three iterations after being raised, and the audit-trail completion was outstanding through two verdicts. Every instance was caught, and every one was caught by re-reading rather than by anything structural. `target_content_hash` addresses the amendment half. Nothing in the current process addresses the "agreed but never edited" half.
+
+**ORDERING.** This entry and the audit gate artifact are written before implementation begins, which is the correction to Phase 268, where a phase sealed with no audit artifact and no tribunal entry and the omission was found by the post-seal suite rather than by any pre-seal gate.
+
+**Required next action**: implement against iteration 6, tests first.
+
+---
+
+### Entry #759: SESSION SEAL -- Phase 269 unverified external state (v0.169.5)
+
+**Timestamp**: 2026-09-07T18:05:00Z
+**Phase**: SEAL (Phase 269)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `cd7028b42c13`
+**Plan**: docs/plan-qor-phase269-unverified-external-state.md (iteration 7)
+**Session**: 2026-09-07T1643-325626
+**Closes**: GH #427, GH #429, GH #445
+
+**Content Hash**: `64ee97135e347bd266634fea6d62e69cfa8ef80e8bfe22985421b364c26bf8bf`
+**Previous Hash**: `a9794054c11b1dafb70117bfeac0cbbbff0b90441174f6c4547032414c866071`
+**Chain Hash (Merkle seal)**: `c0eed58288a63b7dbc110ea89c6a3a8aa9579716c73c16ad2981695ea043c9aa`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 7. Full suite green; the two changed test files run twice consecutively at 85 passed each; plan-to-source parity verified at the seal.
+
+**THE CYCLE RAN IN ORDER, WHICH IS THE CORRECTION TO PHASE 268.** Research, plan, audit, implement, substantiate. No code existed before the audit verdict, and entry #758 with its gate artifact was written before implementation began rather than after the seal. Phase 268 sealed with no audit artifact and no tribunal entry, and that omission was found by the post-seal suite rather than by any pre-seal gate.
+
+**WHAT SHIPPED.** Three readers trusted external state without checking it, each handling the absent case correctly while mishandling the malformed or foreign one. `_read_system_version` read a version from whatever `pyproject.toml` sat at a computed path, which under an installed package is the site-packages root, so an unrelated project's file supplied the version stamped on every gate artifact; it now establishes the file is ours by PEP 503 name comparison before trusting anything in it, then falls back to distribution metadata. `qor_platform.current` raised on a marker that existed but did not parse; a single `_read_marker` now classifies absent, unreadable and ok in one read. A drifted line-count claim was deleted rather than corrected, and no lint was built. GH #427, #429, #445.
+
+**FIVE INSTANCES OF ONE CLASS, THREE FOUND AFTER THE DESIGN PASSED REVIEW.** An enumerated exception handler on a reader whose caller cannot handle failure: `UnicodeDecodeError` escaping the decode `tomllib` owns; `RecursionError` escaping its recursive-descent parse; `UnicodeDecodeError` escaping `PackageNotFoundError`; `RecursionError` escaping `except json.JSONDecodeError`; and `current` propagating `OSError` into a gate write. Each was measured, not argued. A permission-denied marker was demonstrated to stop `build_manifest` outright, which is the same consequence the plan had already called decisive for the first reader while retaining it on the second.
+
+`importlib.metadata.version` additionally RETURNS `None` for a damaged `.dist-info`, which no exception handling reaches. `_read_system_version` is annotated `-> str` and the provenance schema requires a non-empty string, so that path emitted a schema-invalid artifact rather than a visible failure. The reviewer's own account is the lesson: it reasoned about what the call could raise and never asked what it could return, and half an enumeration is what makes a defect quiet instead of loud.
+
+**WHAT CLOSES THE CLASS IS A RULE, NOT FIVE PATCHES.** Every call into external state is wrapped in `except Exception`; none of our own logic sits inside a handler, so our bugs stay loud while a stranger's file cannot stop a gate write. Enumeration cannot implement a total contract because it predicts an open set. Where a call must produce more than one outcome, as the marker read must, enumeration is correct, and the test is whether the unenumerated remainder lands in the right bucket. `current` is total; `_read_marker` keeps the three-way split; the surfaces that can act on the difference call it directly.
+
+**THE DURABLE FINDING IS BROADER THAN ANY INSTANCE.** These readers were written as if their callers could handle failure, while their actual callers are gate-writing paths that cannot. The rule states that as a coding convention, but a convention only covers readers someone remembers to apply it to. It belongs in the record as a property to check whenever a reader is added.
+
+**FIVE METHODS, AND ONLY ONE FOUND MORE THAN ONE DEFECT.** Reading found the first. Answering a confidence question with a specific residual instead of a number found the second, which the reviewer nominated and which the author then measured. Enumerating return values rather than raises found the schema-invalid path. Applying the rule uniformly found the third and fourth. Tracing callers rather than reading functions found the fifth. The transferable technique, in the reviewer's words, is that a question forced it to enumerate every way a function can terminate instead of checking whether a claim was true, and the defect fell out of the list.
+
+**THE AUDIT'S LIMITS, RECORDED AS THE REVIEWER STATED THEM.** It held Read, Grep and Glob only and executed nothing across seven verdicts. Asked whether the document was clean or had merely stopped yielding grounds, it answered the second and asked that it be recorded that way: a statement that it could not break something is a statement about its attention on that pass, not a property of the code. It certified D1's fall-through ordering as unbreakable in two rounds while the first escape sat in the line it was examining.
+
+It has read none of the implementation. Every measurement in this phase is the author's and unwitnessed. The red-before column was judged from test descriptions, not from runs. The severity behind the schema-description edit remains its assertion: neither party opened the `doc_integrity` implementation to confirm that a JSON Schema description falls under the rule that aborts a seal. The packaging concern behind the installed-environment witness is open on generality, not existence.
+
+Its diff-completeness assurance failed twice in one session: two targeted reads returned stale content and it stated conclusions from both, catching each only on a full re-read. That is why amendments were brought back for complete re-audits, and why this phase binds its audit artifact to `target_content_hash`.
+
+**THE DOCUMENT'S OWN DEFECT RECURRED THREE TIMES AND WAS CURED BY DELETION EACH TIME.** A count in prose restating an enumeration inches away: "four" against three marked rows, then "eight probes" against seven listed names in the paragraph recording that a claim had been measured rather than believed. The third was structural: the plan stated its design twice, and the superseded copy was the authoritative-looking code block. That was fixed by regenerating the blocks from source programmatically rather than transcribing them, and verified with `plan_code_parity`, which has existed since Phase 268 and caught a genuinely stale block for the first time here.
+
+**AN UNFIXED PROCESS WEAKNESS, CARRIED FORWARD.** Accepted corrections failing to land on first application recurred throughout: one clause survived two rounds after agreement, a base-class requirement survived three iterations after being raised, and an audit-trail completion was outstanding through two verdicts. Every instance was caught by re-reading rather than by anything structural. A reviewer who specifies wording makes their own follow-up mechanically checkable; one who describes an intent does not.
+
+**Scope boundaries.** `create_shadow_issue.py` reads a different marker with the same unguarded shape; same class, out of scope, unfiled. D3 removes one instance and guards nothing, and GH #445 closes on that basis rather than on a claim of class coverage.
+
+**Version**: 0.169.4 -> 0.169.5 per the plan's declared `hotfix` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)
