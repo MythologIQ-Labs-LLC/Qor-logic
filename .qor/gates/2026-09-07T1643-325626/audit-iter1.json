@@ -5,6 +5,6 @@
   "target": "docs/plan-qor-phase269-unverified-external-state.md",
   "verdict": "PASS",
   "risk_grade": "L2",
-  "target_content_hash": "bf326344bc4420a74cbe92554900f698b6950a05425d663c529956936e156324",
+  "target_content_hash": "935c5d8d87596fcedd19f329d8401bbceb86f0ccfb97cf241edf58d76b348463",
   "violations": []
 }

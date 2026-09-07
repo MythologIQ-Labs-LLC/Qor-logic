@@ -1,7 +1,7 @@
 {
   "session": "2026-09-07T1643-325626",
   "plan_path": "docs/plan-qor-phase269-unverified-external-state.md",
-  "plan_hash": "64ee97135e347bd266634fea6d62e69cfa8ef80e8bfe22985421b364c26bf8bf",
+  "plan_hash": "935c5d8d87596fcedd19f329d8401bbceb86f0ccfb97cf241edf58d76b348463",
   "audit_path": ".agent/staging/AUDIT_REPORT.md",
   "audit_hash": "21bb3e3704d2c82cc1ecba977446424fff76d8da7313ce053f43de7b03688248",
   "head_commit": "67bfca0931c69c398bdb2a05266ad9582fa1b6b4",

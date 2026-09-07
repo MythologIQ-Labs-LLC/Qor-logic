@@ -345,16 +345,25 @@ def test_cli_set_reports_an_unreadable_marker_without_a_traceback(tmp_path, monk
     assert "cannot be read" in capsys.readouterr().err
 
 
-def test_current_returns_none_on_pathologically_nested_json(tmp_path):
+def test_current_returns_none_on_a_non_jsondecodeerror_parse_failure(tmp_path, monkeypatch):
     """Fourth instance of the enumerated-handler class, found by applying the
     enumerate-the-exits method to the third reader in this change.
 
-    json.loads is recursive, so depth alone raises RecursionError, which
-    `except json.JSONDecodeError` does not catch. Content that cannot be parsed
-    is 'the bytes are not our state' whatever the reason, so it degrades.
+    json.loads is recursive, so nesting depth alone raises RecursionError,
+    which `except json.JSONDecodeError` does not catch. The contract under test
+    is that content which cannot be parsed is "not our state" WHATEVER the
+    reason, so the failure is injected rather than provoked with real nesting:
+    the depth at which json actually recurses is interpreter- and
+    platform-dependent (CPython 3.12 parses inputs that 3.11 rejects), and
+    asserting a specific depth would test the runtime rather than this code.
     """
     marker = tmp_path / "platform.json"
-    marker.write_bytes(b'{"a":' * 5000 + b"1" + b"}" * 5000)
+    marker.write_text('{"a": 1}', encoding="utf-8")
+
+    def _recurse(*a, **kw):
+        raise RecursionError("maximum recursion depth exceeded")
+
+    monkeypatch.setattr(qplat.json, "loads", _recurse)
     assert qplat.current(marker=marker) is None
 
 

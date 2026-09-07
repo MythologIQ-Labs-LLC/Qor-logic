@@ -30,7 +30,7 @@ Implementation was carried out against iteration 6, which had a PASS. Three thin
 
 **The second reader had the same defect, plus one nobody predicted.** `importlib.metadata.version` was guarded by `PackageNotFoundError` alone. Measured against damaged `.dist-info` directories: an undecodable `METADATA` raises `UnicodeDecodeError` and escapes; and in three of four damaged states the call RETURNS `None` rather than raising. `_read_system_version` is annotated `-> str` and the provenance schema requires a non-empty string, so a damaged install produced a schema-invalid gate artifact rather than a visible failure. Enumerating exits means enumerating return values, not only raises.
 
-**The third reader had it too.** `_read_marker`'s `except json.JSONDecodeError` misses `RecursionError`, measured at nesting depth 5000. Its parse step is now total over content, while its read step still enumerates deliberately, because that step classifies three ways (absent, unreadable, propagate) rather than promising totality. The two differ for a stated reason.
+**The third reader had it too.** `_read_marker`'s `except json.JSONDecodeError` misses `RecursionError`, measured at nesting depth 5000 on CPython 3.11. The test injects the failure rather than provoking it: CPython 3.12 parses inputs 3.11 rejects, so asserting a depth would test the runtime rather than this code, which CI proved by failing on 3.12 and 3.13 while 3.11 and Windows passed. Its parse step is now total over content, while its read step still enumerates deliberately, because that step classifies three ways (absent, unreadable, propagate) rather than promising totality. The two differ for a stated reason.
 
 **And the rule was not applied to `current()` itself.** It propagated every `OSError` except `FileNotFoundError`. `ai_provenance._detect_host` calls `current()` outside its import guard, so `build_manifest` raised and no gate artifact could be written -- measured, a permission-denied marker killed the write. That is the identical consequence this section cites as decisive for D1, retained in D2 with the difference in judgement defended nowhere. `current()` is now total by contract; `_read_marker` keeps the three-way classification, and the surfaces that can act on it (`set_capability`, CLI `get`, CLI `check`) call it directly, so an operator diagnosing a permission-broken marker still gets a true answer.
 
@@ -272,7 +272,7 @@ Metadata is monkeypatched in every row that can reach it. CI installs editable, 
 | `test_version_is_unknown_when_neither_source_answers` | the terminal fallback | yes |
 | `test_version_does_not_warn_when_explicitly_passed` | a caller's explicit value is not second-guessed | no |
 | `test_platform_marker_error_is_not_an_oserror_or_valueerror` | the base class is load-bearing | yes |
-| `test_current_returns_none_on_pathologically_nested_json` | the fourth instance, in the third reader | yes |
+| `test_current_returns_none_on_a_non_jsondecodeerror_parse_failure` | the fourth instance, in the third reader | yes |
 | `test_read_marker_still_propagates_permission_errors` | widening the parse must not swallow the read classification | no |
 | `test_diagnosis_surfaces_still_see_a_permission_error` | loudness stays where an operator can act on it | no |
 | `test_build_manifest_survives_a_permission_denied_platform_marker` | a marker we cannot read must not kill every gate write | yes |

@@ -22181,9 +22181,9 @@ The reviewer's own account of why the earlier rounds could not have found them i
 **Mode**: adversarial -- an independent architecture reviewer held Read/Grep/Glob only and executed nothing
 **Reviews**: GH #427, GH #429, GH #445
 
-**Content Hash**: `bf326344bc4420a74cbe92554900f698b6950a05425d663c529956936e156324`
+**Content Hash**: `935c5d8d87596fcedd19f329d8401bbceb86f0ccfb97cf241edf58d76b348463`
 **Previous Hash**: `4e2781e59a5f320860866ef652dc4e705c92f711b0fac4d867dcc1afb1be9bd5`
-**Chain Hash (Merkle seal)**: `a9794054c11b1dafb70117bfeac0cbbbff0b90441174f6c4547032414c866071`
+**Chain Hash (Merkle seal)**: `4bb116945d1c847b1a3d492e679c0bd483c72ae0492528b8d8483e52ebdc873b`
 
 **Decision**: **Verdict**: **PASS** -- iteration 6, on `docs/plan-qor-phase269-unverified-external-state.md`. Six iterations, three VETOes, no code written at any point before this entry.
 
@@ -22232,9 +22232,9 @@ Two of its listed gaps were closed by author execution and are recorded as such 
 **Session**: 2026-09-07T1643-325626
 **Closes**: GH #427, GH #429, GH #445
 
-**Content Hash**: `64ee97135e347bd266634fea6d62e69cfa8ef80e8bfe22985421b364c26bf8bf`
-**Previous Hash**: `a9794054c11b1dafb70117bfeac0cbbbff0b90441174f6c4547032414c866071`
-**Chain Hash (Merkle seal)**: `c0eed58288a63b7dbc110ea89c6a3a8aa9579716c73c16ad2981695ea043c9aa`
+**Content Hash**: `935c5d8d87596fcedd19f329d8401bbceb86f0ccfb97cf241edf58d76b348463`
+**Previous Hash**: `4bb116945d1c847b1a3d492e679c0bd483c72ae0492528b8d8483e52ebdc873b`
+**Chain Hash (Merkle seal)**: `dd28e11e265c0fcac67c5b6aef060731e94bbdedc8597b01d7b74c7d6c9c0a74`
 
 **Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 7. Full suite green; the two changed test files run twice consecutively at 85 passed each; plan-to-source parity verified at the seal.
 

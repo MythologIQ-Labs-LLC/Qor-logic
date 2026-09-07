@@ -3,8 +3,8 @@
   "session_id": "2026-09-07T1643-325626",
   "ts": "2026-09-07T18:04:20Z",
   "verdict": "PASS",
-  "merkle_seal": "c0eed58288a63b7dbc110ea89c6a3a8aa9579716c73c16ad2981695ea043c9aa",
-  "content_hash": "64ee97135e347bd266634fea6d62e69cfa8ef80e8bfe22985421b364c26bf8bf",
+  "merkle_seal": "dd28e11e265c0fcac67c5b6aef060731e94bbdedc8597b01d7b74c7d6c9c0a74",
+  "content_hash": "935c5d8d87596fcedd19f329d8401bbceb86f0ccfb97cf241edf58d76b348463",
   "ledger_entry": 759,
   "boundary_scope": "structural+identity",
   "reality_check": {
