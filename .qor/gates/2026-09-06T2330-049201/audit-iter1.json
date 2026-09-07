@@ -5,7 +5,7 @@
   "target": "docs/plan-qor-phase268-self-reference-detector.md",
   "verdict": "PASS",
   "risk_grade": "L2",
-  "ledger_entry": 757,
+  "ledger_entry": 756,
   "report_path": ".agent/staging/AUDIT_REPORT.md",
   "findings_categories": [],
   "iteration": 20

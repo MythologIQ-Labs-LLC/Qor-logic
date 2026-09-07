@@ -22090,7 +22090,43 @@ GH #441's body is empty, two characters, so its title is the whole specification
 
 ---
 
-### Entry #756: SESSION SEAL -- Phase 268 self-reference detector (v0.169.4)
+### Entry #756: GATE TRIBUNAL -- Phase 268 self-reference detector, iteration 20 (PASS, recorded late)
+
+**Timestamp**: 2026-09-07T03:10:00Z
+**Phase**: GATE (Phase 268)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `d88dd208ddd6`
+**Plan**: docs/plan-qor-phase268-self-reference-detector.md (iteration 20)
+**Session**: 2026-09-06T2330-049201
+**Mode**: adversarial -- an independent architecture reviewer held Read/Grep/Glob only and executed nothing
+**Note**: placed in cycle order at the verdict it records; the entry was WRITTEN after the seal at #757, see Decision
+
+**Content Hash**: `eb460e80f0f3e5b7c116a4eee87bca31b2385a9b045dab6a1ca3bcd499a7bdec`
+**Previous Hash**: `7f6f032a8d996c1b2150f9de1aba086cd6dee46d4e472b14c3ab67c90f9e8da6`
+**Chain Hash (Merkle seal)**: `b9f3c83ff46c2510766f2fdbf048dde5f57e69fa6d595ed0c397bd3428ca550e`
+
+**Decision**: **Verdict**: **PASS** -- iteration 20. **This entry is written AFTER the seal it authorises, which is a defect and not a formality.**
+
+**WHY IT IS LATE.** The verdict was given before Phase 268 sealed. The reviewer passed the document as a whole, the Judge reported that to the operator, and the operator authorised the seal on that basis. What did not happen is the recording: no audit gate artifact was emitted for the session and no tribunal entry was appended, so the ledger ran from entry #755 straight to the seal and showed a phase sealed with no audit verdict of any kind between them.
+
+The omission was found by `test_provenance_iteration_scope.py::test_live_repository_sessions_still_verify` on the post-seal suite, reporting `2026-09-06T2330-049201/audit.json: artifact missing`. It was not found by the Judge, by the reviewer, or by any of the five seal gates checked immediately after the commit -- the ledger chain, the seal artifacts, the intent lock, the plan-to-source parity check and the seal-entry binding all passed a tree whose audit record did not exist. Every one of those verifies a property of what IS present; none asks whether something required is absent.
+
+That is the same defect class this phase spent twenty iterations documenting, arriving one level up: a check confirms the locus it was pointed at rather than the class of thing that can go wrong. The gates confirmed that each artifact present was well-formed and correctly bound. No gate asked whether the set was complete.
+
+**WHAT THE VERDICT WAS.** PASS on `docs/plan-qor-phase268-self-reference-detector.md` at iteration 20, from an independent architecture reviewer that held Read, Grep and Glob only for the entire review and executed nothing. Its limits, restated here because they belong with the verdict rather than beside it:
+
+No figure in the phase was verified by the reviewer. The tracked-file counts, the test results, the character checks and the body-comparison result are the Judge's and unwitnessed. The document is not established as clean -- twenty iterations produced roughly twenty grounds, several created by the repair for the one before and one authored by the reviewer itself; it stopped finding grounds rather than demonstrating none remain. And consistency and reach are different properties: the reviewer audited the reach of the owner skip because it was asked to, and nothing else in this control has had a reach audit.
+
+**WHAT IT COVERS.** That the detector change is correct and matches the plan -- exact-name comparison, owner qualification, leftmost-longest capture, monotone widening of the separator -- and that the tests exist, match the plan's table, and pin three properties that would fail silently under plausible alternative implementations: a prefix comparison, a name-only comparison, and a slash-only separator.
+
+**RELATIONSHIP TO THE ORDERING VIOLATION AT ENTRY #757.** These are two separate defects and the second is not excused by the first. Entry #757 records that implementation preceded this verdict. This entry records that the verdict itself was never written down until a test found it missing. A phase can be out of order and still leave a complete record; this one did neither.
+
+**Required next action**: none for the verdict, which stands. The process finding is that the seal ceremony verifies the artifacts it finds and never checks the set for completeness, so a missing gate artifact reaches the post-seal suite rather than the pre-seal gates. That belongs to its own phase and is filed rather than fixed here.
+
+---
+
+### Entry #757: SESSION SEAL -- Phase 268 self-reference detector (v0.169.4)
 
 **Timestamp**: 2026-09-07T03:20:00Z
 **Phase**: SEAL (Phase 268)
@@ -22102,8 +22138,8 @@ GH #441's body is empty, two characters, so its title is the whole specification
 **Partially closes**: GH #431
 
 **Content Hash**: `eb460e80f0f3e5b7c116a4eee87bca31b2385a9b045dab6a1ca3bcd499a7bdec`
-**Previous Hash**: `7f6f032a8d996c1b2150f9de1aba086cd6dee46d4e472b14c3ab67c90f9e8da6`
-**Chain Hash (Merkle seal)**: `b9f3c83ff46c2510766f2fdbf048dde5f57e69fa6d595ed0c397bd3428ca550e`
+**Previous Hash**: `b9f3c83ff46c2510766f2fdbf048dde5f57e69fa6d595ed0c397bd3428ca550e`
+**Chain Hash (Merkle seal)**: `4e2781e59a5f320860866ef652dc4e705c92f711b0fac4d867dcc1afb1be9bd5`
 
 **Decision**: **Verdict**: **SUBSTANTIATED**, with a recorded governance violation. Reality matches the blueprint at iteration 20. Full suite green at 3278 passed, 6 skipped, 4 deselected, 0 failed; the boundary suites 35 passed; the new-behaviour file run three consecutive times at 13 passed each.
 
@@ -22113,7 +22149,7 @@ The mechanism matters more than the fact. The reviewer asked for the tracked-fil
 
 The concrete cost was not procedural. Once the change exists, the red-before column cannot be witnessed by anyone but its author. Seven tests in this phase claim a red-before state and all seven were verified by the author reverting the specific mechanism; the reviewer took every one on trust and said so on each verdict. That evidence was destroyed by the ordering, not withheld.
 
-**WHAT SHIPPED.** `publication_boundary_lint._CROSS_ISSUE_RE` matched any `Repo#123` shape and reported it as a cross-repository reference, including references to the repository being scanned. Measured on the live GitHub surface, 5 of 17 cross-repo issue-shape findings named this repository itself. Those cannot be remediated -- naming one's own issue is what a cross-reference is for -- so the detector reported findings nobody could clear, which is the failure `doctrine-publication-boundary.md:93-95` records for this exact control before Phase 208. The doctrine permits self-references outright at `:31`. Part of GH #431; that issue stays open with the twelve genuine findings.
+**WHAT SHIPPED.** `publication_boundary_lint._CROSS_ISSUE_RE` matched any repository-qualified issue reference -- a name, `#`, and a number -- and reported it as a cross-repository reference, including references to the repository being scanned. Measured on the live GitHub surface, 5 of 17 cross-repo issue-shape findings named this repository itself. Those cannot be remediated -- naming one's own issue is what a cross-reference is for -- so the detector reported findings nobody could clear, which is the failure `doctrine-publication-boundary.md:93-95` records for this exact control before Phase 208. The doctrine permits self-references outright at `:31`. Part of GH #431; that issue stays open with the twelve genuine findings.
 
 The skip compares by exact name and by owner. Exactness matters because the capture is greedy and takes a sibling repository's full name, so a prefix comparison would silently stop reporting one whose name extends this one's. The owner check matters because a foreign repository can share this one's name, and the separator accepts a backslash and surrounding whitespace as well as a forward slash because this project is Windows-primary and an unrecognised separator makes the owner lookup return nothing, which the code reads as "ours" and skips. Every way of failing to see an owner fails toward silence, so the pattern is deliberately generous: over-reporting is resolvable per line with a marker, under-reporting is not visible at all.
 
@@ -22130,42 +22166,6 @@ The reviewer's own account of why the earlier rounds could not have found them i
 **Scope boundaries.** GH #431 remains open with the twelve genuine cross-repo findings and the identity-term findings, whose anonymisation `doctrine-publication-boundary.md:82-83` reserves for a human operator. The workflow-visible count moves from 17 to 12 and the nightly job stays red at both, so this phase claims no gate-state improvement. An owner separated from the repository name by a line break is not seen, since the detector scans one line at a time; stated in the plan as inherent rather than introduced.
 
 **Version**: 0.169.3 -> 0.169.4 per the plan's declared `hotfix` change class.
-
----
-
-### Entry #757: GATE TRIBUNAL -- Phase 268 self-reference detector, iteration 20 (PASS, recorded late)
-
-**Timestamp**: 2026-09-07T03:30:00Z
-**Phase**: GATE (Phase 268)
-**Author**: Judge
-**Risk Grade**: L2
-**Entry ID**: `d88dd208ddd6`
-**Plan**: docs/plan-qor-phase268-self-reference-detector.md (iteration 20)
-**Session**: 2026-09-06T2330-049201
-**Mode**: adversarial -- an independent architecture reviewer held Read/Grep/Glob only and executed nothing
-**Note**: appended after entry #756, the seal it authorises; see Decision
-
-**Content Hash**: `eb460e80f0f3e5b7c116a4eee87bca31b2385a9b045dab6a1ca3bcd499a7bdec`
-**Previous Hash**: `b9f3c83ff46c2510766f2fdbf048dde5f57e69fa6d595ed0c397bd3428ca550e`
-**Chain Hash (Merkle seal)**: `4e2781e59a5f320860866ef652dc4e705c92f711b0fac4d867dcc1afb1be9bd5`
-
-**Decision**: **Verdict**: **PASS** -- iteration 20. **This entry is written AFTER the seal it authorises, which is a defect and not a formality.**
-
-**WHY IT IS LATE.** The verdict was given before Phase 268 sealed. The reviewer passed the document as a whole, the Judge reported that to the operator, and the operator authorised the seal on that basis. What did not happen is the recording: no audit gate artifact was emitted for the session and no tribunal entry was appended, so the ledger ran from entry #755 straight to entry #756 and showed a phase sealed with no audit verdict of any kind between them.
-
-The omission was found by `test_provenance_iteration_scope.py::test_live_repository_sessions_still_verify` on the post-seal suite, reporting `2026-09-06T2330-049201/audit.json: artifact missing`. It was not found by the Judge, by the reviewer, or by any of the five seal gates checked immediately after the commit -- the ledger chain, the seal artifacts, the intent lock, the plan-to-source parity check and the seal-entry binding all passed a tree whose audit record did not exist. Every one of those verifies a property of what IS present; none asks whether something required is absent.
-
-That is the same defect class this phase spent twenty iterations documenting, arriving one level up: a check confirms the locus it was pointed at rather than the class of thing that can go wrong. The gates confirmed that each artifact present was well-formed and correctly bound. No gate asked whether the set was complete.
-
-**WHAT THE VERDICT WAS.** PASS on `docs/plan-qor-phase268-self-reference-detector.md` at iteration 20, from an independent architecture reviewer that held Read, Grep and Glob only for the entire review and executed nothing. Its limits, restated here because they belong with the verdict rather than beside it:
-
-No figure in the phase was verified by the reviewer. The tracked-file counts, the test results, the character checks and the body-comparison result are the Judge's and unwitnessed. The document is not established as clean -- twenty iterations produced roughly twenty grounds, several created by the repair for the one before and one authored by the reviewer itself; it stopped finding grounds rather than demonstrating none remain. And consistency and reach are different properties: the reviewer audited the reach of the owner skip because it was asked to, and nothing else in this control has had a reach audit.
-
-**WHAT IT COVERS.** That the detector change is correct and matches the plan -- exact-name comparison, owner qualification, leftmost-longest capture, monotone widening of the separator -- and that the tests exist, match the plan's table, and pin three properties that would fail silently under plausible alternative implementations: a prefix comparison, a name-only comparison, and a slash-only separator.
-
-**RELATIONSHIP TO THE ORDERING VIOLATION AT ENTRY #756.** These are two separate defects and the second is not excused by the first. Entry #756 records that implementation preceded this verdict. This entry records that the verdict itself was never written down until a test found it missing. A phase can be out of order and still leave a complete record; this one did neither.
-
-**Required next action**: none for the verdict, which stands. The process finding is that the seal ceremony verifies the artifacts it finds and never checks the set for completeness, so a missing gate artifact reaches the post-seal suite rather than the pre-seal gates. That belongs to its own phase and is filed rather than fixed here.
 
 ---
 
