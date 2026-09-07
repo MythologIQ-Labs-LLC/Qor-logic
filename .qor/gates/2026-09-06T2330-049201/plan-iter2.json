@@ -1,0 +1,32 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T2330-049201",
+  "ts": "2026-09-06T23:55:00Z",
+  "plan_path": "docs/plan-qor-phase268-self-reference-detector.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #431",
+  "phases": [
+    "Write T1-T4 with boundary-lint markers and synthetic foreign identifiers; confirm T1, T2, T4 red and T3 green-before",
+    "Derive _SELF_REPO_NAME and skip it in the issue-shape loop",
+    "Re-measure the tracked-file lint and the structural-only surface scan"
+  ],
+  "ci_commands": [
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest tests/test_publication_boundary_lint.py tests/test_github_surface.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "A foreign repository sharing this one name is treated as self and skipped; no corpus instance exists",
+      "The nightly job stays red at 12 findings as it is red at 17; the benefit is that all 12 are actionable, not a gate-state change",
+      "The issue-shape regex requires an uppercase initial, so an all-lowercase foreign repo shape is missed today; pre-existing and not fixed here",
+      "The plan and its gate artifacts carry issue shapes as detector specification and are marked accordingly; the tracked surface measures 0 findings with those markers in place"
+    ],
+    "non_goals": [
+      "Anonymising the remaining GitHub-surface findings; deferred to the operator and tracked by GH #431",
+      "The identity-term half of GH #431",
+      "Bare repository-name references in prose, which are undetected violations rather than permitted text and belong to GH #431"
+    ]
+  }
+}

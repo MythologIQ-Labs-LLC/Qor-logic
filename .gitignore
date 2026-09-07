@@ -42,3 +42,4 @@ build/
 # instructions live in the tracked root CLAUDE.md; a `.claude/` copy is the
 # operator's machine, not the project's, and publishing it leaks their setup.
 .claude/
+.qor/*.bak

@@ -10,6 +10,22 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.169.4] - 2026-09-07
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 268 (hotfix; self-reference detector)**: `publication_boundary_lint._CROSS_ISSUE_RE` matched any repository-qualified issue reference -- a name, `#`, and a number -- and reported it as a cross-repository reference, including references to the repository being scanned. Measured on the live GitHub surface, 5 of 17 cross-repo issue-shape findings named this repository itself. Those cannot be remediated -- naming one's own issue is what a cross-reference is for -- so the detector reported findings nobody could clear, which is the failure `doctrine-publication-boundary.md:93-95` records for this exact control before Phase 208, and the doctrine permits self-references outright. Part of GH #431, which stays open with the twelve genuine findings.
+
+  The skip compares by exact name and by owner. Exactness matters because the capture is greedy and takes a sibling repository's full name, so a prefix comparison would silently stop reporting one whose name extends this one's. The owner check matters because a foreign repository can share this one's name, and the separator accepts a backslash and surrounding whitespace as well as a forward slash: this project is Windows-primary, and an unrecognised separator makes the owner lookup return nothing, which the code reads as "ours" and skips. Every way of failing to see an owner fails toward silence, so the pattern is deliberately generous -- over-reporting is resolvable per line with a marker, under-reporting is not visible at all.
+
+  Two of the three defects exist only because the operator reframed the question. Twelve rounds of adversarial review examined the plan's internal consistency and found twelve grounds, every one in prose and none in the change. Observing that a four-line change can have massive reach, and that process should scale to reach rather than to diff size, turned the question into what the change stops catching -- one command, which surfaced the owner blind spot immediately; auditing that fix surfaced the separator gap. Both fail toward silence on a control that gates CI fail-closed. Consistency and reach are different properties, and only one was being tested.
+
+  **This phase carries a recorded governance violation.** Implementation preceded the audit verdict, on a reviewer's request for a measurement obtainable only by implementing. The operator ruled that implementation requires a passing audit with rare if any exceptions and granted none; the seal records rather than excuses it. The cost was evidential: the red-before state of seven tests is not observable once the change exists, and the reviewer took all seven on the author's word.
+
+### Added
+- **`qor/scripts/plan_code_parity.py`**: asserts that a plan's fenced code block appears verbatim in the source it describes. It exists because Phase 268 nearly sealed a plan whose `_OWNER_PREFIX_RE` held a character class of one forward slash where the source held backslash-or-slash -- a one-character divergence that disables the backslash guard and reddens a shipped test, and which passed a check asserting the identifier appeared in both places. An identifier-level check cannot detect that two definitions disagree. Run it at the seal: both the block and the source stay editable until the commit.
+
 ## [0.169.3] - 2026-09-06
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

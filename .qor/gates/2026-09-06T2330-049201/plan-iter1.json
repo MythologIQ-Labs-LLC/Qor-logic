@@ -1,0 +1,30 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-06T2330-049201",
+  "ts": "2026-09-06T23:35:00Z",
+  "plan_path": "docs/plan-qor-phase268-self-reference-detector.md",
+  "change_class": "hotfix",
+  "risk_grade": "L2",
+  "originating_remediation": "GH #431",
+  "phases": [
+    "Write T1-T4; confirm T1, T2, T4 red and T3 green-before",
+    "Derive _SELF_REPO_NAME and skip it in the issue-shape loop",
+    "Re-run the GitHub surface scan and confirm 35 -> 30"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_publication_boundary_lint.py tests/test_github_surface.py -q",
+    "python -m pytest -q"
+  ],
+  "boundaries": {
+    "limitations": [
+      "A foreign repository sharing this name is treated as self and skipped",
+      "The change lowers a reported count without remediating anything; GH #431 remains open with 30 findings",
+      "The tracked-file surface reports 0 findings today, so inertness there is measured against an empty set"
+    ],
+    "non_goals": [
+      "Anonymizing the remaining findings, which doctrine reserves for a human operator",
+      "The identity-term half of GH #431",
+      "Bare repository-name references, which the configured terms overlay deliberately does not list"
+    ]
+  }
+}

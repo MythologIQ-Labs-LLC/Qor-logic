@@ -18,6 +18,27 @@ from dataclasses import dataclass
 from pathlib import Path
 
 _SELF_REPO = "MythologIQ-Labs-LLC/Qor-logic"
+# Phase 268: owner and repository name, unpacked for the issue-shape detector.
+# Both are needed -- the name alone is not sufficient, because a FOREIGN
+# repository can share it. See the owner-prefix pattern below.
+_SELF_OWNER, _SELF_REPO_NAME = _SELF_REPO.split("/")
+# Phase 268: an owner written before the repository name is checked against
+# ours. Without it a FOREIGN repository sharing this one's name is skipped, and
+# this detector gates CI fail-closed, so a blind spot here under-reports a
+# doctrine violation silently.
+#
+# The separator accepts `\` and surrounding space as well as `/`: this project
+# is Windows-primary, backslash paths appear in prose and in pasted tool output
+# routinely, and an unmatched separator yields `None`, which this code reads as
+# "ours" and skips. Every way of failing to recognise an owner therefore fails
+# toward silence, so the pattern is deliberately generous -- over-reporting is
+# resolvable per line with a marker, under-reporting is not visible at all.
+#
+# `[\w.-]+` is anchored only by the separator, so `re.search` returns the
+# leftmost start that completes and the capture is always the WHOLE owner token,
+# never a suffix. That is what stops `Not-<our-owner>/` and `evil.<our-owner>/`
+# from being mistaken for ours; an `endswith` comparison would not.
+_OWNER_PREFIX_RE = re.compile(r"([\w.-]+)\s*[\\/]\s*$")
 
 _ABS_PATH_RE = re.compile(r"(?<![\w./-])(?:[A-Za-z]:[/\\]|/Users/|/home/)[\w./\\-]+")
 _GH_URL_RE = re.compile(r"github\.com/([\w.-]+/[\w.-]+)")
@@ -92,6 +113,20 @@ def scan_text(rel: str, text: str, terms: list[str]) -> list[str]:
             if m.group(1).lower() != _SELF_REPO.lower():
                 findings.append(f"[boundary] {rel}:{i}: foreign repository URL: {m.group(1)}")
         for m in _CROSS_ISSUE_RE.finditer(line):
+            # Phase 268 (part of GH #431): a reference to this repository is not
+            # a cross-repository reference. The doctrine permits them outright
+            # ("References to Qor-logic itself are permitted"), a bare `#123`
+            # already passed, and the sibling URL detector above already
+            # excludes self -- this loop was the one that did not. Comparison is
+            # by exact name, not prefix: a sibling repository whose name extends
+            # this one's is captured in full and must keep being reported. A
+            # matching name is then qualified by owner -- ours only when the
+            # owner is ours or absent -- so a foreign repository that happens to
+            # share this name is still reported.
+            if m.group(1).lower() == _SELF_REPO_NAME.lower():
+                owner = _OWNER_PREFIX_RE.search(line[: m.start()])
+                if owner is None or owner.group(1).lower() == _SELF_OWNER.lower():
+                    continue  # ours: bare, or owner-qualified with our owner
             findings.append(f"[boundary] {rel}:{i}: cross-repo issue shape: {m.group(0)}")
         for term in terms:
             if term.lower() in line.lower():
