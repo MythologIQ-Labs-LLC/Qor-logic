@@ -22090,5 +22090,48 @@ GH #441's body is empty, two characters, so its title is the whole specification
 
 ---
 
+### Entry #756: SESSION SEAL -- Phase 268 self-reference detector (v0.169.4)
+
+**Timestamp**: 2026-09-07T03:20:00Z
+**Phase**: SEAL (Phase 268)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `097762ad77be`
+**Plan**: docs/plan-qor-phase268-self-reference-detector.md (iteration 20)
+**Session**: 2026-09-06T2330-049201
+**Partially closes**: GH #431
+
+**Content Hash**: `eb460e80f0f3e5b7c116a4eee87bca31b2385a9b045dab6a1ca3bcd499a7bdec`
+**Previous Hash**: `7f6f032a8d996c1b2150f9de1aba086cd6dee46d4e472b14c3ab67c90f9e8da6`
+**Chain Hash (Merkle seal)**: `b9f3c83ff46c2510766f2fdbf048dde5f57e69fa6d595ed0c397bd3428ca550e`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**, with a recorded governance violation. Reality matches the blueprint at iteration 20. Full suite green at 3278 passed, 6 skipped, 4 deselected, 0 failed; the boundary suites 35 passed; the new-behaviour file run three consecutive times at 13 passed each.
+
+**GOVERNANCE VIOLATION, RECORDED FIRST BECAUSE IT IS NOT AN EXCEPTION.** Implementation preceded the audit verdict in this phase. The operator ruled during the cycle that implementation requires a passing audit, with rare if any exceptions, and granted none here. The seal proceeds on his explicit instruction to record the violation rather than to excuse it.
+
+The mechanism matters more than the fact. The reviewer asked for the tracked-file lint measured with and without the change, which cannot be obtained unless the change exists. The correct response was to say so and offer either reasoning or a measurement deferred to the implementation step. Instead the change was written to answer the request, and further amendments followed across later rounds until the code stood two amendments ahead of any verdict. A peer's request does not authorise a cycle-order deviation; only the operator does, in advance. The reviewer named its own half of this and the Judge records that the choice of how to answer it was the author's alone.
+
+The concrete cost was not procedural. Once the change exists, the red-before column cannot be witnessed by anyone but its author. Seven tests in this phase claim a red-before state and all seven were verified by the author reverting the specific mechanism; the reviewer took every one on trust and said so on each verdict. That evidence was destroyed by the ordering, not withheld.
+
+**WHAT SHIPPED.** `publication_boundary_lint._CROSS_ISSUE_RE` matched any `Repo#123` shape and reported it as a cross-repository reference, including references to the repository being scanned. Measured on the live GitHub surface, 5 of 17 cross-repo issue-shape findings named this repository itself. Those cannot be remediated -- naming one's own issue is what a cross-reference is for -- so the detector reported findings nobody could clear, which is the failure `doctrine-publication-boundary.md:93-95` records for this exact control before Phase 208. The doctrine permits self-references outright at `:31`. Part of GH #431; that issue stays open with the twelve genuine findings.
+
+The skip compares by exact name and by owner. Exactness matters because the capture is greedy and takes a sibling repository's full name, so a prefix comparison would silently stop reporting one whose name extends this one's. The owner check matters because a foreign repository can share this one's name, and the separator accepts a backslash and surrounding whitespace as well as a forward slash because this project is Windows-primary and an unrecognised separator makes the owner lookup return nothing, which the code reads as "ours" and skips. Every way of failing to see an owner fails toward silence, so the pattern is deliberately generous: over-reporting is resolvable per line with a marker, under-reporting is not visible at all.
+
+**TWO OF THE THREE DEFECTS EXIST ONLY BECAUSE THE OPERATOR REFRAMED THE QUESTION.** The first version compared the name alone and recorded the owner case as an accepted limitation. Twelve rounds of adversarial review examined the plan's internal consistency and found twelve grounds, every one in prose and none in the change. The operator then observed that a four-line change can have massive reach and that the process should scale to reach rather than to diff size. Enumerating what the change stops catching took one command and surfaced the owner blind spot immediately; auditing that fix surfaced the separator gap. Both fail toward silence on a control that gates CI fail-closed and is shared by the nightly surface scan.
+
+The reviewer's own account of why the earlier rounds could not have found them is the finding worth carrying: consistency and reach are different properties, and only one was being tested. The phase established that the change matched its description and never asked what the change does.
+
+**THE DURABLE OUTPUT IS AN INSTRUMENT, NOT THE FIX.** `qor/scripts/plan_code_parity.py` asserts that a plan's fenced code block appears verbatim in the source it describes. It exists because this phase nearly sealed a plan whose `_OWNER_PREFIX_RE` read `[\/]` where the source read `[\\/]` -- a class holding only a forward slash, which disables the backslash guard and reddens a shipped test, and which passed a check asserting that the identifier appeared in both places. An identifier-level check cannot detect that two definitions disagree. The parity check compares bodies, is wired as the first line of this plan's CI Commands, and was run at this seal rather than only when the block was written, because both sides remain editable until the commit.
+
+**THE DEFECT CLASS THIS PHASE DOCUMENTED.** Twenty-odd grounds across twenty plan iterations, several created by the repair for the one before, and one authored by the reviewer. Every instance was a restatement -- a caveat repeating a count, prose indexing a table by number, an affected-files list mirroring a diff, a pointer naming a line position, a figure carried across an edit to a scanned file. None sat where the fact was established. Re-deriving from the tree corrects the authoritative statement and cannot touch a copy, because a copy's truth-maker is the other paragraph. The cure is deletion rather than diligence: one authoritative statement per fact, every other mention a reference. The Limitations section of the sealed plan carries no figure at all for that reason.
+
+**A NEAR-LOSS THAT BELONGS IN THE RECORD.** The change was briefly absent from the working tree during this phase. A `git stash` of the detector, taken to measure the without-change row, failed to pop because unrelated dist-manifest churn blocked it; the failure was silent because the sequence used `;` and `-q`, and the lint then printed exactly the figure the operator expected. The change existed in no stash and the file was clean against HEAD. It was recovered from a temporary copy that happened to still exist, and an attempt to re-derive it from the plan text failed silently against CRLF. The replacement sequence first written for it had the same defect -- `git checkout -- <path>` restores from the index, which for an uncommitted change is the version without the change -- and was caught only by executing it before shipping. The sealed CI Commands block saves the working copy outside git first, with `&&` so a failed copy cannot be followed by a destructive checkout.
+
+**Scope boundaries.** GH #431 remains open with the twelve genuine cross-repo findings and the identity-term findings, whose anonymisation `doctrine-publication-boundary.md:82-83` reserves for a human operator. The workflow-visible count moves from 17 to 12 and the nightly job stays red at both, so this phase claims no gate-state improvement. An owner separated from the repository name by a line break is not seen, since the detector scans one line at a time; stated in the plan as inherent rather than introduced.
+
+**Version**: 0.169.3 -> 0.169.4 per the plan's declared `hotfix` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

@@ -1,0 +1,12 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-06T2330-049201",
+  "ts": "2026-09-07T03:20:00Z",
+  "ledger_entry": 756,
+  "version": "0.169.4",
+  "verdict": "PASS",
+  "merkle_seal": "b9f3c83ff46c2510766f2fdbf048dde5f57e69fa6d595ed0c397bd3428ca550e",
+  "plan_path": "docs/plan-qor-phase268-self-reference-detector.md",
+  "tests_passed": 3278,
+  "tests_failed": 0
+}

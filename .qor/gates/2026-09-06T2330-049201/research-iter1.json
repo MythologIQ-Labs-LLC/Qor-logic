@@ -1,0 +1,67 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-06T2330-049201",
+  "ts": "2026-09-06T23:32:00Z",
+  "brief_path": "GH #431 (partial)",
+  "questions": [
+    "Which of the 17 cross-repo issue-shape findings are genuine?",
+    "Does the shared detector back a fail-closed gate?",
+    "Does any test pin the current behaviour?"
+  ],
+  "findings": [
+    {
+      "id": "R-1",
+      "category": "defect-confirmed",
+      "statement": "5 of 17 cross-repo issue-shape findings name this repository itself; the detector matches the Repo-hash-number shape without excluding the scanned repository",
+      "evidence": "github_surface scan: five self-named findings across pr bodies 387, 386, 372, 371 and 370"
+    },
+    {
+      "id": "R-2",
+      "category": "inconsistency",
+      "statement": "The sibling URL detector already excludes self via _SELF_REPO at publication_boundary_lint.py:92; the issue-shape loop at :94-95 appends unconditionally",
+      "evidence": "source read; _SELF_REPO declared at :20"
+    },
+    {
+      "id": "R-3",
+      "category": "inconsistency",
+      "statement": "A bare hash-number reference already passes as a self-reference while the same reference in qualified form is flagged: one reference, two forms, opposite verdicts",
+      "evidence": "executed scan_text matrix over five shapes"
+    },
+    {
+      "id": "R-4",
+      "category": "blast-radius",
+      "statement": "scan_text backs two surfaces: the tracked-file lint that runs fail-closed in CI gate-chain-completeness, and the read-only GitHub scan. The tracked-file lint reported 0 findings before this phase authored any document",
+      "evidence": "publication_boundary_lint: 0 finding(s) on a clean tree"
+    },
+    {
+      "id": "R-5",
+      "category": "no-pinning-test",
+      "statement": "No test pins that a self-reference is flagged; the existing test uses a foreign-repo fixture and asserts a bare hash-number reference passes",
+      "evidence": "tests/test_publication_boundary_lint.py:51-54"
+    },
+    {
+      "id": "R-6",
+      "category": "policy-check",
+      "statement": "The operator terms overlay holds 17 terms and none is the sibling repository name, so naming it in prose is not a violation under configured policy; an earlier assumption to the contrary was wrong",
+      "evidence": "membership check against the gitignored overlay without printing it"
+    },
+    {
+      "id": "R-7",
+      "category": "detector-gap",
+      "statement": "The issue-shape regex requires an uppercase initial, so an all-lowercase repository name in the same shape is never matched. Pre-existing and not introduced here; stated because it bounds what a clean scan means",
+      "evidence": "executed: lowercase form clean, capitalized form flagged"
+    },
+    {
+      "id": "R-8",
+      "category": "self-demonstrating",
+      "statement": "A plan document quoting these findings trips the fail-closed lint 23 times. The doctrine grants a per-line exception marker and the detector own test file already uses it; the plan carries the same marker",
+      "evidence": "publication_boundary_lint run against the authored plan"
+    }
+  ],
+  "sources": [
+    "qor/scripts/publication_boundary_lint.py",
+    "qor/scripts/github_surface.py",
+    "qor/references/doctrine-publication-boundary.md",
+    "GH #431"
+  ]
+}

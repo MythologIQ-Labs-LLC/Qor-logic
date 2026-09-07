@@ -1,0 +1,67 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-06T2330-049201",
+  "ts": "2026-09-06T23:32:00Z",
+  "brief_path": "GH #431 (partial)",
+  "questions": [
+    "Which of the cross-repo issue-shape findings are genuine?",
+    "Does the shared detector back a fail-closed gate?",
+    "Does any test pin the current behaviour?"
+  ],
+  "findings": [
+    {
+      "id": "R-1",
+      "category": "defect-confirmed",
+      "statement": "5 of 17 cross-repo issue-shape findings name this repository itself; the detector matches the Repo-hash-number shape without excluding the scanned repository",
+      "evidence": "github_surface scan: five self-named findings across five pr bodies"
+    },
+    {
+      "id": "R-2",
+      "category": "inconsistency",
+      "statement": "The sibling URL detector already excludes self via _SELF_REPO at publication_boundary_lint.py:92; the issue-shape loop at :94-95 appends unconditionally",
+      "evidence": "source read; _SELF_REPO declared at :20"
+    },
+    {
+      "id": "R-3",
+      "category": "inconsistency",
+      "statement": "A bare hash-number reference already passes as a self-reference while the same reference in qualified form is flagged: one reference, two forms, opposite verdicts",
+      "evidence": "executed scan_text matrix over five shapes"
+    },
+    {
+      "id": "R-4",
+      "category": "blast-radius",
+      "statement": "scan_text backs the fail-closed tracked-file lint and the read-only GitHub scan. The tracked-file lint scans git ls-files plus --others --exclude-standard, so it covers this phase own uncommitted artifacts: 23 findings before markers, 0 with exit 0 after anonymisation and marking",
+      "evidence": "publication_boundary_lint measured at both points"
+    },
+    {
+      "id": "R-5",
+      "category": "no-pinning-test",
+      "statement": "No test pins that a self-reference is flagged; the existing test uses a foreign-repo fixture and asserts a bare hash-number reference passes",
+      "evidence": "tests/test_publication_boundary_lint.py:51-54"
+    },
+    {
+      "id": "R-6",
+      "category": "policy-correction",
+      "statement": "CORRECTED. An earlier form of this finding said that naming an outside repository in prose is not a violation because the operator terms overlay does not list it. That is wrong. The policy is doctrine-publication-boundary :5-7 and :20-23, which prohibit repository names outright; the overlay is a local detection aid that CI does not load. Absence from the overlay establishes non-detection, not permission, so those references are undetected violations belonging to GH #431",
+      "evidence": "doctrine :5-7, :20-23; ci.yml passes no --terms-file"
+    },
+    {
+      "id": "R-7",
+      "category": "detector-gap",
+      "statement": "The issue-shape regex requires an uppercase initial, so an all-lowercase repository name in the same shape is never matched. Pre-existing and not introduced here; stated because it bounds what a clean scan means",
+      "evidence": "executed: lowercase form clean, capitalized form flagged"
+    },
+    {
+      "id": "R-8",
+      "category": "self-demonstrating",
+      "statement": "A plan document quoting these findings trips the fail-closed lint 23 times. The doctrine grants a per-line exception for a specification describing the detector; the plan carries it, and an earlier draft misused it to park a real outside identifier rather than anonymise it",
+      "evidence": "publication_boundary_lint against the authored plan, before and after"
+    }
+  ],
+  "sources": [
+    "qor/scripts/publication_boundary_lint.py",
+    "qor/scripts/github_surface.py",
+    "qor/references/doctrine-publication-boundary.md",
+    "GH #431"
+  ]
+}
