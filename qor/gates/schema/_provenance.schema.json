@@ -15,7 +15,7 @@
     "version": {
       "type": "string",
       "minLength": 1,
-      "description": "Semver string of the Qor-logic system (read from pyproject.toml at manifest-build time)."
+      "description": "Semver string of the Qor-logic system, read at manifest-build time from pyproject.toml when it names this project, otherwise from installed distribution metadata."
     },
     "host": {
       "type": "string",

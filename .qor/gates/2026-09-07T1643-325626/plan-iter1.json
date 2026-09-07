@@ -1,0 +1,21 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-07T1643-325626",
+  "ts": "2026-09-07T16:47:49Z",
+  "plan_path": "docs/plan-qor-phase269-unverified-external-state.md",
+  "phases": [
+    "D1 identify pyproject by project.name before trusting it",
+    "D2 degrade to None on an unparseable platform marker",
+    "D3 delete the drifted figure, keep the normative clause"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_ai_provenance_helper.py tests/test_qor_platform.py tests/test_ledger_hash_docstring_claims.py -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.gate_provenance verify-committed",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto",
+    "python -m pytest -q"
+  ],
+  "change_class": "hotfix"
+}

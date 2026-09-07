@@ -12,7 +12,9 @@ Per ``qor/references/doctrine-eu-ai-act.md`` and ``qor/references/doctrine-ai-rm
 """
 from __future__ import annotations
 
+import importlib.metadata
 import os
+import re
 import sys
 import tomllib
 from dataclasses import dataclass
@@ -24,6 +26,7 @@ from typing import Any
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _PYPROJECT = _REPO_ROOT / "pyproject.toml"
+_PROJECT_NAME = "qor-logic"
 
 # Phases that have an operator decision gate (Art. 14 oversight surface).
 _OPERATOR_DECISION_PHASES: frozenset[str] = frozenset({"audit", "substantiate", "validate"})
@@ -50,12 +53,61 @@ class _ProvenanceContext:
     version: str
 
 
+def _canonical(name: str) -> str:
+    # PEP 503, applied to the UNTRUSTED name out of the foreign file. The
+    # metadata call below passes _PROJECT_NAME, already canonical, so this is
+    # the only side that normalises: its job is to stop us rejecting a spelling
+    # that metadata itself would have resolved.
+    return re.sub(r"[-_.]+", "-", name).lower()
+
+
 def _read_system_version() -> str:
-    if not _PYPROJECT.exists():
+    """Resolve this project's version, from the only sources that can know it.
+
+    Phase 269 (GH #427): _REPO_ROOT resolves to site-packages under an installed
+    package, so _PYPROJECT may be a FOREIGN project's file that merely sits at
+    the path we computed. EVERY failure to establish the file as ours falls
+    through to metadata: nothing about a stranger's file, not even an exception,
+    may escape a provenance helper, because build_manifest calls this on every
+    gate artifact and a raise here means no gate can be written at all.
+
+    Order is load-bearing. pyproject is authoritative in a source checkout;
+    metadata reports the last install and would under-report a working tree.
+    """
+    # One rule, applied to both readers: every call into external state is
+    # wrapped in `except Exception`, and none of our own logic sits inside a
+    # handler. Enumerating exceptions is the wrong tool for a total contract
+    # because it predicts an open set -- three escapes were found that way
+    # here (UnicodeDecodeError from the decode tomllib owns, RecursionError
+    # from its recursive-descent parse, MemoryError on an oversized file).
+    # Any Exception from the call means we could not read a stranger's file.
+    try:
+        with _PYPROJECT.open("rb") as fh:
+            data = tomllib.load(fh)
+    except Exception:
+        data = None
+
+    # Outside every handler from here down, so our own bugs stay loud.
+    if isinstance(data, dict):
+        project = data.get("project", {})
+        if isinstance(project, dict) and _canonical(str(project.get("name", ""))) == _PROJECT_NAME:
+            version = project.get("version")
+            if isinstance(version, str) and version:
+                return version
+            # Ours, but dynamic = ["version"]. The name selects the SOURCE, not
+            # the RESULT; metadata knows what this file does not state.
+    try:
+        version = importlib.metadata.version(_PROJECT_NAME)
+    except Exception:
+        # Same rule as above. metadata parses METADATA out of a .dist-info,
+        # so a damaged install raises past PackageNotFoundError; an undecodable
+        # METADATA gives UnicodeDecodeError. Any Exception here means we could
+        # not obtain a version, which is what a total function needs.
         return "unknown"
-    with _PYPROJECT.open("rb") as fh:
-        data = tomllib.load(fh)
-    return str(data.get("project", {}).get("version", "unknown"))
+    # version() returns None for a .dist-info with no METADATA, or one with no
+    # Version field. The schema requires a non-empty string, so a None here
+    # would emit an invalid gate artifact rather than an ugly one.
+    return version if isinstance(version, str) and version else "unknown"
 
 
 def _detect_host() -> str:
@@ -133,6 +185,8 @@ def build_manifest(
 
     if system_version is None:
         system_version = _read_system_version()
+        if system_version == "unknown":
+            _warn_once("version", "version fell back to 'unknown' (no project manifest or installed distribution found)")
 
     return {
         "system": "Qor-logic",

@@ -82,4 +82,4 @@ The platform module re-runs auto-detect (host, gh-cli) when:
 - Host env changed since last detection
 - Explicit `python qor/scripts/qor_platform.py detect` invocation
 
-User-declared fields (`codex-plugin`, `agent-teams`, `mcp-servers`) are **never** overwritten by auto-detect; they persist until explicitly changed.
+User-declared fields (`codex-plugin`, `agent-teams`, `mcp-servers`) are **never** overwritten by auto-detect; they persist until explicitly changed. If the marker exists but cannot be read, `set` refuses rather than overwriting it with defaults; `clear` removes it and `apply` replaces it, and neither reads it first.

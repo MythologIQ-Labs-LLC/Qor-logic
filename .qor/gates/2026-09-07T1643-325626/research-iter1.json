@@ -1,0 +1,36 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-07T1643-325626",
+  "ts": "2026-09-07T16:47:49Z",
+  "questions": [
+    "Does ai_provenance stamp a foreign package's version, and in which environments?",
+    "Is importlib.metadata a sufficient replacement for the pyproject read?",
+    "Does qor_platform.current degrade or raise on a malformed marker?",
+    "How many docstring line-count claims exist, and does the count justify a lint?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #427",
+      "finding": "_REPO_ROOT resolves to site-packages when installed, so _PYPROJECT may be a foreign project's file at a computed path",
+      "evidence": "installed copy returns 0.15.1 from an unrelated package's pyproject"
+    },
+    {
+      "issue": "GH #427",
+      "finding": "importlib.metadata alone is insufficient: it reports the last install, not the working tree",
+      "evidence": "metadata 0.109.5 vs pyproject 0.169.4 in this checkout"
+    },
+    {
+      "issue": "GH #429",
+      "finding": "current() handles the absent marker and raises JSONDecodeError on a malformed one",
+      "evidence": "a marker containing '{' raises; absent returns None"
+    },
+    {
+      "issue": "GH #445",
+      "finding": "exactly one drifted docstring line-count claim exists, so the issue's own criterion selects the cheap fix",
+      "evidence": "AST sweep of qor/ and tests/: verify claimed 97, measured 123; only other hit is a threshold statement"
+    }
+  ],
+  "sources": [
+    "docs/research-brief-unverified-external-state-2026-09-07.md"
+  ]
+}

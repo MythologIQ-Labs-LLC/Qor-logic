@@ -10,6 +10,23 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.169.5] - 2026-09-07
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 269 (hotfix; unverified external state)**: three readers trusted external state without checking it, and each handled the absent case correctly while mishandling the malformed or foreign one. `ai_provenance._read_system_version` read `project.version` from whatever `pyproject.toml` sat at a computed path; under an installed package that path is the site-packages root, so an unrelated project's file supplied the version stamped on every gate artifact. It now establishes the file is ours by PEP 503 name comparison before trusting anything in it, then falls back to installed distribution metadata. Order is load-bearing: pyproject is authoritative in a source checkout, metadata reports the last install and would under-report a working tree. `version` also joins the `_warn_once` convention that `host` and `model_family` already had, since the fix makes `"unknown"` more reachable. GH #427.
+
+- `qor_platform.current` raised `JSONDecodeError` on a marker that existed but did not parse, so a truncated write aborted a governed cycle rather than degrading. A single `_read_marker` now classifies absent, unreadable and ok in one read, and `current` is total: every one of its callers sits in a gate-writing or capability-gating path where a raise means no artifact can be written at all. Loudness moves to where it can be acted on -- `set_capability` refuses to overwrite an unreadable marker rather than synthesising defaults over it, which is what `detect.md` and `capabilities.md` have always promised, and the CLI `get`, `set` and `check` handlers report the difference, with `check` exiting 2 so a script can distinguish "not available" from "cannot tell". GH #429.
+
+- A docstring in `ledger_hash.py` asserted a line count for a neighbouring function that had drifted by 26 lines. The figure is deleted and the normative clause kept. An AST sweep of `qor/` and `tests/` found one instance, so no lint was built: a detector whose expected result is "found nothing" has two indistinguishable green states unless something proves it can find something, and that machinery is more than a single instance earns. GH #445.
+
+- Five instances of one defect class surfaced during this phase, three of them after the design had passed adversarial review: an enumerated exception handler on a reader whose caller cannot handle failure. `UnicodeDecodeError` escaping `tomllib`'s decode, `RecursionError` escaping its recursive-descent parse, `UnicodeDecodeError` escaping `PackageNotFoundError`, `RecursionError` escaping `json.JSONDecodeError`, and `current` propagating `OSError` into a gate write. `importlib.metadata.version` additionally RETURNS `None` for a damaged `.dist-info`, which no exception handling reaches and which produced a schema-invalid artifact rather than a visible failure.
+
+  What closes the class is a rule rather than the five patches: every call into external state is wrapped in `except Exception`, and none of our own logic sits inside a handler, so our bugs stay loud while a stranger's file cannot stop a gate write. Enumeration cannot implement a total contract, because it predicts an open set. Where a call must produce more than one outcome, as the marker read must, enumeration is correct and the test is whether the unenumerated remainder lands in the right bucket.
+
+  The durable finding is broader than any instance: these readers were written as if their callers could handle failure, while their actual callers are gate-writing paths that cannot. That is a property to check whenever a reader is added, not only a convention to follow.
+
 ## [0.169.4] - 2026-09-07
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
