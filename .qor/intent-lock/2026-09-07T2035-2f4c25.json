@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-07T2035-2f4c25",
+  "plan_path": "docs/plan-qor-phase270-post-anchor-weaker-than-verify.md",
+  "plan_hash": "6c8fb834435e007a760999325f699686900e0181a7728adf990bb9131d258c87",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "3bbeb0f07b4cb98d592942ae1ac263e9acb3d84883631ebfec29b8509182a3a5",
+  "head_commit": "8c6d37cb3ac30c85d844dbbf6bd742a5912b8ba8",
+  "captured_ts": "2026-09-08T00:29:07.797931Z"
+}

@@ -10,6 +10,26 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.170.0] - 2026-09-07
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 270 (feature; the gate mode was weaker than the mode it replaced)**: `verify_post_anchor` is the mode both governance gates consume -- `/qor-substantiate` Step 7.7 via `seal_entry_check`, and the skill-entry preflight via `governance_health` -- and it was materially weaker than `verify()` in four ways, three of them filed as issues and one nobody had established. Each was measured against a fixture rather than argued.
+
+  A ledger whose entries are each internally self-consistent but wrongly linked classified every entry `ok` and exited 0, while `verify()` exited 1 and named the breaks. A duplicate entry number was reported only while it was the ledger's high-water mark, which in an append-only ledger is a one-entry window: the originating incident that guard was built for exited 0. And an entry `verify()` reports as TAINTED was selected as the clean anchor that certified everything before it. GH #443, GH #425, GH #430.
+
+  The fourth gap: `verify()` disposes of an entry whose hashes do not resolve through four rungs, and the post-anchor mode reimplemented only the last two. Measured before the change on this repository's ledger, 735 of 757 entries were reported and all 22 omitted were migration-attested -- positively verified by `verify()` and invisible to the gate. Both modes now walk one ladder, so those entries are verified rather than absent.
+
+- **The boundary is now asserted rather than inferred.** `boundary_entry = max(ok_entries)` derived the boundary from the very entries it judged, so any failure was downgraded the moment something valid followed it. Resolution order is now an explicit argument, then a boundary declared in `.qorlogic/config.json`, then auto-detection permitted only when a strict evaluation would raise nothing at all, then a fail-closed refusal that names every condition it refuses over. `verify_post_anchor` accepts `repo_root`, and `seal_entry_check` and `governance_health` forward the root they already held, so a declaration is reachable from the gates -- `--boundary` reaches only the CLI and never could be.
+
+  A linkage break is a property of an adjacent pair in file order, so it is disclosed only when BOTH members sit at or below an asserted boundary. The canonical re-anchor shape produces no break at all, so a straddling break means an entry was removed at the re-anchor point.
+
+### Changed
+- **Consumer-visible.** A re-anchored ledger carrying genuine unattested pre-anchor damage passed with no operator action and now must declare a boundary in `.qorlogic/config.json`, committed. That removes the automatic tolerance GH #55 was filed for. The refusal names the declaration, the file, the entries at issue, and what a declaration at the recommended value would disclose BY KIND -- because a scalar boundary cannot separate "I disclose these math failures" from "I disclose this fork", and a tool that recommended a number without saying what it buries would replace automatic fork tolerance with fork tolerance the tool recommends.
+
+  Five test fixtures were load-bearing on the old weakness and are corrected rather than accommodated. One, named `test_fully_valid_ledger_is_ok`, ran on a ledger `verify()` rejects with a linkage break: its OK verdict came entirely from the post-anchor mode being weaker, so a test named for validity was testing the defect.
+
 ## [0.169.5] - 2026-09-07
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

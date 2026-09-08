@@ -146,7 +146,7 @@ def _ledger_damage(base: Path, text: str) -> tuple[str | None, str | None]:
             # is at release; only a genuine post-anchor failure is real damage.
             with contextlib.redirect_stdout(io.StringIO()), \
                     contextlib.redirect_stderr(io.StringIO()):
-                rc_post = _verify_post_anchor(base / _LEDGER)
+                rc_post = _verify_post_anchor(base / _LEDGER, repo_root=base)
             if rc_post != 0:
                 return "ledger chain verification failed", None
             return None, (
@@ -161,10 +161,12 @@ def _verify_ledger_chain(ledger_path: Path) -> int:
     return ledger_hash.verify(ledger_path)
 
 
-def _verify_post_anchor(ledger_path: Path) -> int:
+def _verify_post_anchor(ledger_path: Path, repo_root: Path | None = None) -> int:
     from qor.scripts import ledger_hash
 
-    return ledger_hash.verify_post_anchor(ledger_path)
+    # Phase 270: the caller holds the root; pass it so a declared boundary is
+    # visible to the skill-entry preflight.
+    return ledger_hash.verify_post_anchor(ledger_path, repo_root=repo_root)
 
 
 def _damage_reason(base: Path, rel_path: str, text: str) -> tuple[str | None, str | None]:

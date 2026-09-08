@@ -1,0 +1,22 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-07T2035-2f4c25",
+  "ts": "2026-09-07T21:24:24Z",
+  "plan_path": "docs/plan-qor-phase270-post-anchor-weaker-than-verify.md",
+  "phases": [
+    "D1 share the whole unresolvable-entry ladder, the fourth gap",
+    "D2 boundary is operator-pinned or strict, generalising to every failure type",
+    "D3 linkage breaks stay boundary-free as verify() has them",
+    "D4 decide the four governance_health fixtures that encode the weakness"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_post_anchor_verify.py tests/test_governance_health_post_anchor_tolerance.py tests/test_ledger_hash_duplicate_entry.py -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.gate_provenance verify-committed",
+    "python -m pytest -q"
+  ],
+  "change_class": "feature"
+}

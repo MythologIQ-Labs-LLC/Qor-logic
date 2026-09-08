@@ -1,0 +1,10 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-07T2035-2f4c25",
+  "ts": "2026-09-07T21:45:45Z",
+  "target": "docs/plan-qor-phase270-post-anchor-weaker-than-verify.md",
+  "verdict": "PASS",
+  "risk_grade": "L2",
+  "target_content_hash": "6c8fb834435e007a760999325f699686900e0181a7728adf990bb9131d258c87",
+  "violations": []
+}

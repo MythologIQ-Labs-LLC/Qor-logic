@@ -1,0 +1,42 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-07T2035-2f4c25",
+  "ts": "2026-09-07T21:06:06Z",
+  "questions": [
+    "Does verify_post_anchor run a linkage check, and what passes without one?",
+    "Why is the duplicate check unreachable once a ledger grows?",
+    "Is the tainted-anchor defect independent of the linkage gap or a consequence of it?",
+    "What would strengthening cost on this repository's own ledger?",
+    "Which consumers would a stricter check affect?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #443",
+      "finding": "verify_post_anchor performs no linkage pass; an entry chaining from the wrong predecessor satisfies its own arithmetic and classifies ok",
+      "evidence": "4-entry fixture: verify() exit 1 naming both breaks, verify_post_anchor exit 0 'post-anchor clean'"
+    },
+    {
+      "issue": "GH #425",
+      "finding": "the duplicate check fires only when n >= boundary, and boundary is max(ok_entries), so the window is one entry",
+      "evidence": "same fork: exit 1 as high-water mark, exit 0 after two appends, downgraded to tolerated pre-boundary residual"
+    },
+    {
+      "issue": "GH #430",
+      "finding": "the tainted-anchor defect is a consequence of the linkage gap, not independent: the entry classifies ok because no linkage check runs, then becomes the boundary",
+      "evidence": "fixture: verify() reports TAINTED Entry #4, verify_post_anchor reports OK Entry #4 and boundary=#4"
+    },
+    {
+      "issue": "reach",
+      "finding": "strengthening is safe to make strict on this repository",
+      "evidence": "real ledger at 757 entries: 0 duplicate numbers, 0 sequence breaks, both modes exit 0"
+    },
+    {
+      "issue": "reach",
+      "finding": "four consumers, two of them governance gates; ledger_upgrade validates rewritten ledgers with this function and could reject an upgrade that previously succeeded",
+      "evidence": "seal_entry_check.py:149, governance_health.py:149, cli.py:70, ledger_upgrade.py:71"
+    }
+  ],
+  "sources": [
+    "docs/research-brief-post-anchor-weaker-2026-09-07.md"
+  ]
+}
