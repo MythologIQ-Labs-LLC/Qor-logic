@@ -10,6 +10,25 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.170.2] - 2026-09-08
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 273 (hotfix; a loader that failed three ways and a contract nothing tested)**: `create_shadow_issue.load_marker` guarded only the absent case. A truncated marker raised `JSONDecodeError`, non-UTF-8 bytes raised `UnicodeDecodeError`, and valid-but-non-object JSON returned cleanly and failed later at the first subscript. It now names which fault occurred and points at the one command that regenerates the marker. GH #454.
+
+  The worst mode was not in the report and survives an object-type guard: a marker whose `event_ids` is a JSON string yields a set of CHARACTERS, matches no event, and `main` prints "No matching unaddressed events" and returns 0. **A breached governance threshold reported success.** Missing required keys are the same shape one frame later. The fields guarded are the ones this module dereferences, not the writer's full payload, so the guard cannot drift as that payload grows.
+
+  This exits rather than degrading, which is the opposite of the remedy two earlier phases applied to other readers. Those sit in gate-writing paths with an established degraded value; this one already exits when the marker is absent, and its caller opens an issue rather than writing a gate artifact, so a degraded value would move the failure further from its cause.
+
+- The GH #268 no-raw-diagnostics contract now has assertions at the surfaces it names. It was pinned one layer below them: the only guard ran in-process against a function that returns the reason rather than printing it, so the CLI, the JSON payload and the nightly summary held the contract by construction. GH #444.
+
+  The fixture mattered more than the assertions. The obvious one -- an unparseable ledger -- is rejected before either verifier call, so the tokens can never appear and deleting the suppression entirely would leave its output byte-identical. The tests use a tolerated ledger instead, where a raw bleed contradicts an `OK` verdict, and a companion test asserts that removing the suppression DOES produce the tokens on that same fixture. Assertions cover both streams, because every one of those messages is emitted to stderr.
+
+  The JSON assertion is scoped to the governance-health check's own summary rather than the whole payload: `status_json` prints its own `FAIL <check-id>` vocabulary for any failing check, and the ledger-chain check runs the raw verifier directly, so a raw entry failure legitimately becomes that check's summary.
+
+- Filed while measuring: `validate_event_id` ships, passes its own tests, and is called from no production path, while the one place its discriminator is needed reproduces the same silent-success mode one type-level down.
+
 ## [0.170.1] - 2026-09-08
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

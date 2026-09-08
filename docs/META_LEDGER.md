@@ -22465,5 +22465,88 @@ Its constraint set is preserved verbatim as that phase's starting research rathe
 
 ---
 
+### Entry #764: GATE TRIBUNAL -- Phase 273 loader faults and contract tests, iteration 3 (PASS)
+
+**Timestamp**: 2026-09-08T08:50:00Z
+**Phase**: GATE (Phase 273)
+**Author**: Judge
+**Risk Grade**: L1
+**Entry ID**: `1292b9935b8e`
+**Plan**: docs/plan-qor-phase273-loader-and-contract-tests.md (iteration 3)
+**Session**: 2026-09-08T0834-43f15b
+**Mode**: adversarial -- one review round by design; reviewer held Read/Grep/Glob only
+**Reviews**: GH #454, GH #444
+
+**Content Hash**: `e5efd0d7ced5996bec1ec7426296e6ecd1212e48ec57e87b27664f86db61fea7`
+**Previous Hash**: `079ef24fe3a059caf1752ad85f776154d9230a90ae6a65f632ae3577057865e7`
+**Chain Hash (Merkle seal)**: `19a71591d9361dab84e060524c0ab7b1f2ad2a9f492809a389c0ed5f0c891da1`
+
+**Decision**: **Verdict**: **PASS** -- iteration 3. One review round by design, per the operator's ruling that audit depth scales to structural reach. Neither change alters what a gate decides.
+
+**WHAT THE VERDICT COVERS.** That `create_shadow_issue.load_marker` distinguishes each way a marker can be unusable and names which occurred (GH #454), and that the no-raw-diagnostics contract is pinned at the surfaces it names with a fixture capable of failing (GH #444).
+
+**THE FILED DEFECT WAS ONE OF THREE, AND THE ONE NOT FILED WAS THE WORST.** Measured: a truncated marker raises `JSONDecodeError`, non-UTF-8 bytes raise `UnicodeDecodeError`, and non-dict JSON returns a list with no error at all. The plan's first iteration guarded those three.
+
+Audit found a fourth that survives an `isinstance(data, dict)` guard. A marker whose `event_ids` is a JSON string yields a set of CHARACTERS at `create_shadow_issue.py:206`, matches no event, and `main` prints "No matching unaddressed events. Nothing to do." and returns 0. **A breached governance threshold reports success.** Measured end to end. That is strictly worse than any of the three tracebacks, and it is the plan's own stated rule -- name the case that returns cleanly and fails later, away from its cause -- applied to the case satisfying it hardest, which the author wrote the rule for and then missed. Missing required keys are the same shape one frame later.
+
+**THE REMEDY IS THE OPPOSITE OF THE TWO PHASES BEFORE IT, AND THE REASON IS RECORDED.** Those made readers total, with a broad catch degrading to a safe value, because their callers sit in gate-writing paths where a raise means no artifact can be written. This loader has neither property: its absent case already exits, so no established degraded value exists, and its caller creates a shadow issue rather than writing a gate artifact. Returning a degraded value here would push the failure one frame further from its cause, which is the defect rather than the cure. It exits, naming the fault, with the same remedy each time -- the marker is a cache one command regenerates.
+
+The fields guarded are the ones this reader dereferences, not the writer's full payload, so the guard cannot drift as that payload grows. The typing is asymmetric by consequence rather than symmetry: a wrong-typed `event_ids` decomposes into a character set and produces a wrong governance verdict, while the other two interpolate into an issue body and produce a visibly odd line nobody acts on. Stated in the plan so a later reader does not correct the asymmetry into schema ownership.
+
+**THE TEST HALF WOULD HAVE BEEN VACUOUS AT EVERY SURFACE.** The plan named the existing damaged-workspace fixture as one that would emit the tokens. Measured: `_ledger_damage` rejects it at the malformed-ledger check before either verifier call, returning `('malformed ledger: no recognizable header or entries', None)`. The only code that can print `FAIL` or `TAINTED` is never reached, so deleting both suppression blocks would leave that fixture byte-identical. Every one of those rows was marked green-before, which was the tell the author did not read.
+
+The assertions were also on the wrong stream. All three error classes are emitted to stderr, and the docstring recording the contract says the verifier calls suppress stderr too. A stdout-only assertion could not observe the bleed the phase exists to pin.
+
+Both are corrected: the tolerated fixture is used instead, because a bleed there contradicts an OK verdict rather than accompanying a DAMAGED one, and every row asserts over both streams. A row was added asserting the fixture CAN bleed when the suppression is removed, on the same fixture as the rows it licenses.
+
+**ONE BINDING CONSTRAINT THE AUTHOR MISREAD AS SOMETHING ELSE.** The reviewer's fourth ground concerned scoping the JSON-payload assertion; the author answered the round-trip question instead and reported it closed. A payload-wide assertion would be red for two correct reasons: `status_json` prints its own `FAIL <check-id>` vocabulary for any failing check, and the ledger-chain check runs the raw verifier directly, so a raw entry failure legitimately becomes that check's summary. Suppression is a governance-health concern only. The assertion is now scoped to that one check's summary and driven with an explicit single-check registry, since the default ladder shells out to git.
+
+**A VALIDATOR THAT SHIPS, PASSES ITS OWN TESTS, AND IS CALLED FROM NO PRODUCTION PATH.** `validate_event_id` encodes exactly the discriminator needed one type-level below this phase's fix: `event_ids` as a list of wrong-typed elements reproduces the same silent success, and it cannot be separated from the legitimate stale-ids case by outcome, because a shipped test pins exit 0 for that case. The reviewer declined to fold it into scope and it is filed instead. That the discriminator sat unused while the bug it discriminates was live is the more interesting half.
+
+**LIMITS.** The reviewer held Read, Grep and Glob only and executed nothing; it re-derived the two measured grounds from control flow and reached the same conclusions. It did not verify whether anything imports the stale duplicate under the build tree; the author checked and nothing does.
+
+**Required next action**: implement against iteration 3, tests first.
+
+---
+
+### Entry #765: SESSION SEAL -- Phase 273 loader faults and contract tests (v0.170.2)
+
+**Timestamp**: 2026-09-08T09:05:00Z
+**Phase**: SEAL (Phase 273)
+**Author**: Governor
+**Risk Grade**: L1
+**Entry ID**: `66ea938fd191`
+**Plan**: docs/plan-qor-phase273-loader-and-contract-tests.md (iteration 3)
+**Session**: 2026-09-08T0834-43f15b
+**Closes**: GH #454, GH #444
+
+**Content Hash**: `e5efd0d7ced5996bec1ec7426296e6ecd1212e48ec57e87b27664f86db61fea7`
+**Previous Hash**: `19a71591d9361dab84e060524c0ab7b1f2ad2a9f492809a389c0ed5f0c891da1`
+**Chain Hash (Merkle seal)**: `c9f95cb7661a6d138c7b6c7f257948f074c81b86d0714ba3aa67414214ae1d1c`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 3. Full suite green at 3335 passed, 6 skipped, 4 deselected, 0 failed; the two changed test modules run twice at 38 passed each, byte-identical; ruff clean.
+
+**THE CYCLE RAN IN ORDER**, with the audit recorded at entry #764 before any code existed. Four phases running.
+
+**ONE REVIEW ROUND, AND IT CAUGHT TWO VACUOUS TEST FAMILIES AND A SILENT-SUCCESS BUG.** The second phase under the operator's ruling that audit depth scales to structural reach. Neither change alters what a gate decides.
+
+**THE FILED DEFECT WAS ONE OF THREE, AND THE UNFILED ONE WAS THE WORST.** `create_shadow_issue.load_marker` guarded absence and nothing else. Measured: truncated raises `JSONDecodeError`, non-UTF-8 raises `UnicodeDecodeError`, non-dict JSON returns a list with no error. Audit found a fourth surviving an object-type guard: a marker whose `event_ids` is a JSON string yields a set of characters, matches nothing, and `main` returns 0. **A breached governance threshold reported success** -- strictly worse than any traceback, and it is the plan's own stated rule, name the case that returns cleanly and fails later, applied to the case satisfying it hardest. The author wrote that rule and missed that case.
+
+**THE REMEDY IS DELIBERATELY THE OPPOSITE OF THE TWO PHASES BEFORE IT.** Those made readers total because their callers sit in gate-writing paths where a raise means no artifact. This one already exits when the marker is absent and its caller opens an issue, so a degraded value would move the failure one frame further from its cause. It exits naming the fault, with one remedy: the marker is a cache one command regenerates. The fields guarded are those this module dereferences rather than the writer's payload, so the guard cannot drift as that payload grows, and the typing is asymmetric by consequence -- a wrong-typed `event_ids` produces a wrong verdict, the others produce a visibly odd line nobody acts on.
+
+**THE TEST HALF WOULD HAVE BEEN VACUOUS AT EVERY SURFACE.** The plan named an existing damaged-workspace fixture as one that would emit the tokens. Measured: it is rejected at the malformed-ledger check before either verifier runs, so deleting both suppression blocks would leave its output byte-identical. Every one of those rows was marked green-before, which was the tell the author did not read -- two phases after being taught that exact trap.
+
+Corrected to the tolerated fixture, where a bleed contradicts an OK verdict rather than accompanying a DAMAGED one, with a companion row asserting the fixture DOES bleed when suppression is removed, on the same fixture as the rows it licenses. Assertions cover both streams, because every such message goes to stderr and a stdout-only assertion could not observe them.
+
+**A BINDING CONSTRAINT THE AUTHOR MISREAD AS A DIFFERENT QUESTION.** The reviewer's fourth ground concerned scoping the JSON assertion; the author answered the round-trip question and reported it closed. Payload-wide would be red for two correct reasons that are not bleeds: `status_json` prints its own failure vocabulary for any failing check, and the ledger-chain check runs the raw verifier directly. Now scoped to one check's summary, with an explicit registry so the default ladder's git-shelling checks do not couple in.
+
+**A VALIDATOR THAT SHIPS, PASSES ITS TESTS, AND HAS NO PRODUCTION CALLER.** `validate_event_id` encodes the discriminator needed one type-level below this fix, where the same silent success recurs and cannot be separated from a legitimate case by outcome. Filed rather than folded in. That it sat unused while the bug it discriminates was live is the more interesting half.
+
+**LIMITS.** The reviewer executed nothing and re-derived both measured grounds from control flow, reaching the same conclusions. It did not check whether anything imports the stale duplicate under the build tree; the author did, and nothing does.
+
+**Version**: 0.170.1 -> 0.170.2 per the plan's declared `hotfix` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

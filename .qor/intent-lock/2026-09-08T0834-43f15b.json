@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-08T0834-43f15b",
+  "plan_path": "docs/plan-qor-phase273-loader-and-contract-tests.md",
+  "plan_hash": "e5efd0d7ced5996bec1ec7426296e6ecd1212e48ec57e87b27664f86db61fea7",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "87be6a37b73c5840804b1347270a0c4f25de0a3c2bd62ba0d00f2cc3ed269bd4",
+  "head_commit": "db9e6189e63d9d03cdf1144c9234ffd388749300",
+  "captured_ts": "2026-09-08T08:59:29.188449Z"
+}

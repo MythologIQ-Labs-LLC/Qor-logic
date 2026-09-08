@@ -1,0 +1,15 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-08T0834-43f15b",
+  "verdict": "PASS",
+  "merkle_seal": "c9f95cb7661a6d138c7b6c7f257948f074c81b86d0714ba3aa67414214ae1d1c",
+  "content_hash": "e5efd0d7ced5996bec1ec7426296e6ecd1212e48ec57e87b27664f86db61fea7",
+  "ledger_entry": 765,
+  "boundary_scope": "structural+identity",
+  "reality_check": {
+    "audit_rounds": 1,
+    "vacuous_test_families_caught": 2,
+    "silent_success_bug_found_in_audit": true
+  },
+  "ts": "2026-09-08T08:59:29Z"
+}

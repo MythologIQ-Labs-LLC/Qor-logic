@@ -1,0 +1,29 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-08T0834-43f15b",
+  "ts": "2026-09-08T08:35:55Z",
+  "questions": [
+    "How many ways does create_shadow_issue.load_marker fail on a bad marker?",
+    "Is the no-raw-diagnostics contract asserted at any surface it names?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #454",
+      "finding": "three failure modes, not one: truncated raises JSONDecodeError, non-UTF8 raises UnicodeDecodeError, and non-dict JSON returns a list with no error at all",
+      "evidence": "executed against three synthetic markers"
+    },
+    {
+      "issue": "GH #454",
+      "finding": "the GH #429 remedy does not transfer: this loader's absent case already exits, so there is no established degraded value, and its caller is not a gate-writing path",
+      "evidence": "load_marker raises SystemExit when the marker is missing"
+    },
+    {
+      "issue": "GH #444",
+      "finding": "the CLI test asserts only returncode; stdout appears solely inside assertion messages, so the contract holds by construction at all three named surfaces",
+      "evidence": "tests/test_cli_governance_health.py:37 and :45"
+    }
+  ],
+  "sources": [
+    "docs/plan-qor-phase273-loader-and-contract-tests.md"
+  ]
+}

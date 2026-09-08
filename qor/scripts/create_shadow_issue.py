@@ -50,10 +50,58 @@ def ensure_gh_auth() -> None:
         raise SystemExit(f"ERROR: gh not authenticated. Run 'gh auth login'.\n{result.stderr}")
 
 
+_REGEN = "remove it and re-run check_shadow_threshold.py."
+
+
 def load_marker() -> dict:
+    """Load the remediate-pending marker, or exit naming what is wrong with it.
+
+    Phase 273 (GH #454): the absent case was guarded and nothing else, so a
+    truncated write raised JSONDecodeError, non-UTF-8 bytes raised
+    UnicodeDecodeError, and valid-but-non-object JSON returned cleanly and
+    failed later at the first subscript.
+
+    Worst was a dict whose `event_ids` is a string: `set("evt-1")` is a set of
+    CHARACTERS, so nothing matched and main returned 0 -- a breached governance
+    threshold reporting success. That survives an isinstance(dict) guard, which
+    is why the shape is checked and not just the type of the payload.
+
+    This EXITS rather than degrading, which is the opposite of the remedy two
+    earlier phases applied to other readers. Those sit in gate-writing paths
+    with an established degraded value; this one already exits when the marker
+    is absent, and its caller opens an issue rather than writing a gate
+    artifact. Returning a degraded value here would move the failure one frame
+    further from its cause -- the defect, not the cure.
+
+    The fields checked are the ones this module dereferences, not the writer's
+    full payload, so the guard cannot drift as that payload grows. Typing is
+    asymmetric by consequence: a wrong-typed `event_ids` produces a wrong
+    governance verdict, while `threshold` and `breach_ts` interpolate into an
+    issue body and produce a visibly odd line nobody acts on.
+    """
     if not MARKER_PATH.exists():
         raise SystemExit(f"No marker at {MARKER_PATH}. Run check_shadow_threshold.py first.")
-    return json.loads(MARKER_PATH.read_text(encoding="utf-8"))
+    try:
+        raw = MARKER_PATH.read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        raise SystemExit(f"Marker at {MARKER_PATH} is not UTF-8 ({exc}); {_REGEN}")
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"Marker at {MARKER_PATH} is not readable JSON ({exc}); {_REGEN}")
+    if not isinstance(data, dict):
+        raise SystemExit(
+            f"Marker at {MARKER_PATH} parsed as {type(data).__name__}, expected an object; {_REGEN}"
+        )
+    missing = [k for k in ("event_ids", "threshold", "breach_ts") if k not in data]
+    if missing:
+        raise SystemExit(f"Marker at {MARKER_PATH} is missing {', '.join(missing)}; {_REGEN}")
+    if not isinstance(data["event_ids"], list):
+        raise SystemExit(
+            f"Marker at {MARKER_PATH} has event_ids as {type(data['event_ids']).__name__}, "
+            f"expected a list; {_REGEN}"
+        )
+    return data
 
 
 def build_body(events: list[dict], marker: dict) -> str:
