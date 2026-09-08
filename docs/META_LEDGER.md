@@ -22686,5 +22686,74 @@ Corrected to the tolerated fixture, where a bleed contradicts an OK verdict rath
 
 ---
 
+### Entry #770: GATE TRIBUNAL -- Phase 278 event id validation, iteration 4 (PASS)
+
+**Timestamp**: 2026-09-08T20:15:00Z
+**Phase**: GATE (Phase 278)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `d87bf0238a6a`
+**Plan**: docs/plan-qor-phase278-event-id-validation.md (iteration 4)
+**Session**: 2026-09-08T1956-274e42
+
+**Content Hash**: `24e0ee4bfb262d2f886f6a74f16b667a8aeca8a408753846d975c25549963e40`
+**Previous Hash**: `4a5cfac958dc3fd86c70117297d504430efb93fae9ebf36eb58eac3411a17cd1`
+**Chain Hash (Merkle seal)**: `a4f9c2e80f0c1600782dd6b70007d62170eaf9f29a98b63684a0b9bb02aa735c`
+
+**Decision**: **Verdict**: **PASS**. Four review rounds against a plan whose subject is a guard that exists and is never reached.
+
+**THE PLAN'S STRUCTURAL PREMISE WAS FALSE.** It asserted two entry points build the event id set; there are four. It would have guarded one and shipped reading as though the flag were covered while two thirds of its usage stayed open -- and its own rationale for guarding the one it found indicted the two it had not.
+
+**ONE OF THOSE SITES IS DESTRUCTIVE.** `--flip-only` deletes the breach marker unconditionally, discarding the count it just printed, so a malformed id flips nothing, destroys the breach record, and returns 0. Validation narrows the trigger and does not remove it: a well-formed id matching no event does the same. Filed as GH #472 and explicitly not claimed.
+
+**THE COST WAS MEASURED OVER THE WRONG POPULATION.** All 151 live ids match the regex, but on the flag paths validation runs on split elements. A trailing comma yields an empty element and surrounding whitespace yields two failing ones, so the change described as free would have converted working invocations into aborts. The claim appeared in the sentence that made it not free.
+
+**THE FIX WOULD HAVE REOPENED ITS OWN DEFECT.** Normalization and validation are different concerns and the rule between them is what closes the hole: an argument naming no ids must be an error, or the normalizer produces an empty target set that matches nothing and exits 0.
+
+**A TEST ROW COULD NOT SEE THE PROPERTY IT NAMED.** Asserting only the exit code passes with the guard placed after the destructive unlink -- malformed id, marker already gone, still rc 2. Placement is load-bearing, and the row now asserts the marker survives. That is the same shape as the presence-only row the previous phase removed: green while the thing it names stays broken.
+
+**THE MECHANISM WAS ASSUMED WHERE IT HAD BEEN MEASURED ONE FRAME OVER.** The marker convention was measured and honoured; the flag convention was assumed. A raise there would have sat three lines below an existing usage-code return for the same class of fault.
+
+**AND THE CORRECTION REPRODUCED THE FINDING.** Iteration 2 named exception types in the six rows where the finding was raised and omitted them from the four rows it added while expanding scope. Three separate restatement drifts occurred across the phase, each a property corrected in cells and left wrong in the sentence generalizing over them.
+
+**Required next action**: implement against iteration 4, tests first, guard placed before the unlink.
+
+---
+
+### Entry #771: SESSION SEAL -- Phase 278 event id validation (v0.171.2)
+
+**Timestamp**: 2026-09-08T20:55:00Z
+**Phase**: SEAL (Phase 278)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `0ffe8abcbf27`
+**Plan**: docs/plan-qor-phase278-event-id-validation.md (iteration 4)
+**Session**: 2026-09-08T1956-274e42
+**Closes**: GH #459
+
+**Content Hash**: `24e0ee4bfb262d2f886f6a74f16b667a8aeca8a408753846d975c25549963e40`
+**Previous Hash**: `a4f9c2e80f0c1600782dd6b70007d62170eaf9f29a98b63684a0b9bb02aa735c`
+**Chain Hash (Merkle seal)**: `ddcaad6614f4483fc062fcefafbd72d9be00890835ca2ea18c80bf3b6bbbbb7d`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 4. Full suite 3418 passed, 6 skipped, 0 failed; the two changed suites run twice at 60 passed each; ruff clean.
+
+**THE CYCLE RAN IN ORDER**, audit at entry #770 and the intent lock captured before any implementation code existed.
+
+**A VALIDATOR THAT SHIPPED, PASSED ITS TESTS, AND GUARDED NOTHING.** `validate_event_id` had its own regex, its own tests, and zero production call sites. Four places built the set of event ids to act on and none validated, so a malformed id matched no event, the selection came back empty, and the process reported "Nothing to do" and exited 0 on a breached governance threshold. Phase 273 had guarded the marker's `event_ids` type; four element shapes passed that guard and reached the silent success.
+
+**ALL THREE FLAG SITES, NOT ONE.** Guarding a subset was the plan's first veto and would have shipped as though the flag were covered.
+
+**THE NORMALIZER IS THREE RULES, NOT TWO.** Split, strip, drop empties, require non-empty, validate. Dropping empties keeps the trailing-comma invocation working, which is current behaviour; requiring non-empty stops `--events ","` becoming an empty target set that exits 0. Conflating them reintroduces the defect through the fix.
+
+**THE TWO FAILURE MODES DIFFER CORRECTLY.** The marker exits 1 as a data fault carrying the regeneration hint every sibling guard uses; the flag sites return 2 as a usage error. Measuring each site's local convention independently arrived at the conventional split.
+
+**THE VALIDATOR IS NOW TOTAL.** It raised `TypeError` on a non-string while promising `ValueError`, so wiring it unchanged would have turned a silent exit-0 into an unhandled traceback for the integer case -- the case a machine-generated marker produces.
+
+**IMPLEMENTATION FOUND ITS OWN REGRESSION.** A new helper shadowed Phase 273's `_marker` with a different signature and broke six of its tests. Caught by running the whole file rather than the new rows, and renamed. Three further signature assumptions -- `append_event`, the event schema, and `main` taking no argv -- were each caught by a failing test rather than by reading, which is the same root cause as every veto in this phase at a smaller scale.
+
+**Version**: 0.171.1 -> 0.171.2 per the plan's declared `hotfix` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

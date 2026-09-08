@@ -507,3 +507,147 @@ def test_load_marker_still_exits_when_absent(tmp_path, monkeypatch):
     with pytest.raises(SystemExit) as exc:
         _csi.load_marker()
     assert "No marker at" in str(exc.value)
+
+
+# ----- Phase 278 (GH #459): the validator that guarded nothing is wired -----
+#
+# validate_event_id shipped, was tested, and was called from nowhere. Four sites
+# build the set of ids to act on; a malformed id matches no event, the selection
+# is empty, and the process exits 0 on a breached governance threshold.
+#
+# Phase 273 guarded event_ids' TYPE. These guard its ELEMENTS.
+
+
+def _marker_with_ids(tmp_path, event_ids):
+    from qor.scripts import create_shadow_issue as csi
+    p = tmp_path / "remediate-pending"
+    p.write_text(json.dumps({
+        "event_ids": event_ids, "threshold": 10,
+        "breach_ts": "2026-01-01T00:00:00Z", "severity_sum": 15,
+        "event_count": 1, "next_action": "Run /qor-remediate",
+    }), encoding="utf-8")
+    csi.MARKER_PATH = p
+    return csi
+
+
+@pytest.mark.parametrize("ids,why", [
+    (["evt-1"], "non-hash string -- passes Phase 273's list check"),
+    ([12345], "integer -- the TypeError case"),
+    (["a" * 32], "truncated hash"),
+    (["A" * 64], "uppercase; the regex is lowercase-only"),
+])
+def test_marker_with_malformed_event_ids_exits_with_systemexit(tmp_path, monkeypatch, ids, why):
+    """SystemExit, matching every sibling guard in load_marker -- not ValueError,
+    which would be an unhandled traceback one line below a clean message."""
+    from qor.scripts import create_shadow_issue as _csi
+    monkeypatch.setattr(_csi, "MARKER_PATH", _csi.MARKER_PATH, raising=False)
+    csi = _marker_with_ids(tmp_path, ids)
+    with pytest.raises(SystemExit) as exc:
+        csi.load_marker()
+    assert "event id" in str(exc.value).lower(), why
+
+
+def test_marker_rejection_message_names_the_regen_command(tmp_path, monkeypatch):
+    """Every other guard here points at the one command that rebuilds the marker."""
+    from qor.scripts import create_shadow_issue as _csi
+    monkeypatch.setattr(_csi, "MARKER_PATH", _csi.MARKER_PATH, raising=False)
+    csi = _marker_with_ids(tmp_path, ["evt-1"])
+    with pytest.raises(SystemExit) as exc:
+        csi.load_marker()
+    assert "check_shadow_threshold" in str(exc.value)
+
+
+def test_marker_with_generated_valid_ids_is_accepted(tmp_path, monkeypatch):
+    """Asserted over GENERATED ids, never a live count: PROCESS_SHADOW_GENOME.md
+    is appended to by routine governance operation, so a test reading it goes red
+    on the next shadow event."""
+    import hashlib
+    from qor.scripts import create_shadow_issue as _csi
+    monkeypatch.setattr(_csi, "MARKER_PATH", _csi.MARKER_PATH, raising=False)
+    generated = [hashlib.sha256(f"event-{i}".encode()).hexdigest() for i in range(3)]
+    csi = _marker_with_ids(tmp_path, generated)
+    assert csi.load_marker()["event_ids"] == generated
+
+
+def _run_main(monkeypatch, argv):
+    """create_shadow_issue.main() reads sys.argv directly and takes no argv
+    parameter, so the CLI must be driven through sys.argv rather than a call
+    argument."""
+    import sys as _sys
+    from qor.scripts import create_shadow_issue as csi
+    monkeypatch.setattr(_sys, "argv", ["create_shadow_issue.py", *argv])
+    return csi.main()
+
+
+def _log_with_event(tmp_path, monkeypatch):
+    """A shadow log holding one real, unaddressed event."""
+    from qor.scripts import create_shadow_issue as csi
+    from qor.scripts import shadow_process
+    log = tmp_path / "PROCESS_SHADOW_GENOME.md"
+    ev = make_event()
+    del ev["id"]
+    ev["addressed"] = False
+    eid = shadow_process.append_event(ev, log_path=log)
+    return csi, log, eid
+
+
+@pytest.mark.parametrize("flag", ["--mark-resolved", "--flip-only"])
+def test_events_flag_with_a_malformed_id_returns_two(tmp_path, monkeypatch, flag):
+    """rc == 2, the measured convention for an argument fault at these sites."""
+    csi, log, _ = _log_with_event(tmp_path, monkeypatch)
+    argv = [flag, "--events", "evt-1", "--log", str(log)]
+    if flag == "--flip-only":
+        argv = ["--flip-only", "https://i/1", "--events", "evt-1", "--log", str(log)]
+    assert _run_main(monkeypatch, argv) == 2
+
+
+def test_flip_only_with_a_malformed_id_leaves_the_marker_intact(tmp_path, monkeypatch):
+    """The load-bearing property is PLACEMENT, not the exit code.
+
+    A test asserting only rc == 2 passes with the guard sitting AFTER the
+    unconditional unlink at :243-244 -- malformed id, breach marker already
+    destroyed, still rc 2. This pins that the guard runs first. It does NOT
+    assert the unlink defect is fixed; a well-formed id matching no event still
+    deletes the marker (GH #472).
+    """
+    csi, log, _ = _log_with_event(tmp_path, monkeypatch)
+    marker = tmp_path / "remediate-pending"
+    marker.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(csi, "MARKER_PATH", marker, raising=False)
+
+    rc = _run_main(monkeypatch, ["--flip-only", "https://i/1", "--events", "evt-1", "--log", str(log)])
+
+    assert rc == 2
+    assert marker.exists(), "the guard must run before the unconditional unlink"
+
+
+def test_events_with_a_trailing_comma_is_still_accepted(tmp_path, monkeypatch):
+    """Characterization test: this works today and must keep working. A trailing
+    comma is an artifact of the separator, not an id the operator named."""
+    csi, log, eid = _log_with_event(tmp_path, monkeypatch)
+    assert _run_main(monkeypatch, ["--mark-resolved", "--events", eid + ",", "--log", str(log)]) == 0
+
+
+def test_events_with_surrounding_whitespace_is_accepted(tmp_path, monkeypatch):
+    """Red before: ' <id> ' marks 0 events today because the space is not stripped."""
+    from qor.scripts import shadow_process
+    csi, log, eid = _log_with_event(tmp_path, monkeypatch)
+    assert _run_main(monkeypatch, ["--mark-resolved", "--events", f" {eid} ", "--log", str(log)]) == 0
+    assert shadow_process.read_events(log)[0]["addressed"] is True
+
+
+def test_events_naming_no_ids_returns_two(tmp_path, monkeypatch):
+    """','   normalizes to an empty set. Without the require-non-empty rule that
+    becomes a silent empty selection exiting 0 -- this phase's own defect,
+    reintroduced through its fix."""
+    csi, log, _ = _log_with_event(tmp_path, monkeypatch)
+    assert _run_main(monkeypatch, ["--mark-resolved", "--events", ",", "--log", str(log)]) == 2
+
+
+def test_a_valid_id_matching_no_event_still_exits_zero(tmp_path, monkeypatch):
+    """An empty result is not an error. The defect is malformed input reported as
+    success, not an empty result reported as success."""
+    import hashlib
+    csi, log, _ = _log_with_event(tmp_path, monkeypatch)
+    absent = hashlib.sha256(b"no-such-event").hexdigest()
+    assert _run_main(monkeypatch, ["--mark-resolved", "--events", absent, "--log", str(log)]) == 0

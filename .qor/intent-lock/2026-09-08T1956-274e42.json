@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-08T1956-274e42",
+  "plan_path": "docs/plan-qor-phase278-event-id-validation.md",
+  "plan_hash": "24e0ee4bfb262d2f886f6a74f16b667a8aeca8a408753846d975c25549963e40",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "f3e611d44723280f6de36b634f9878467be97f0dcfe823acce4d4a9980114e77",
+  "head_commit": "87330d82af7adfefffe34808fa679ad425fae63c",
+  "captured_ts": "2026-09-08T20:16:04.554946Z"
+}

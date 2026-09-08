@@ -1,0 +1,37 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-08T1956-274e42",
+  "ts": "2026-09-08T20:16:03Z",
+  "questions": [
+    "Is validate_event_id called from any production path?",
+    "What reaches the empty-selection exit-0?",
+    "Does wiring it break working invocations?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #459",
+      "finding": "validate_event_id and _EVENT_ID_RE have zero production call sites repo-wide",
+      "evidence": "grep across qor/, dist/, skills/; only the definition, two tests, docs prose, untracked build/lib"
+    },
+    {
+      "issue": "GH #459",
+      "finding": "four target_ids sites build the id set and none validates; malformed ids yield an empty selection and exit 0",
+      "evidence": ":230 --mark-resolved, :239 --flip-only, :250 issue path, :254 marker; empty-selection return 0 at :261-263"
+    },
+    {
+      "issue": "GH #472",
+      "finding": "--flip-only unlinks the breach marker unconditionally, discarding the flipped count",
+      "evidence": ":243-244; measured marker deleted with 0 flipped and rc 0"
+    },
+    {
+      "issue": "GH #459",
+      "finding": "validation runs on split elements, not ids; a trailing comma and surrounding whitespace fail",
+      "evidence": "151/151 ids conform, but '<id>,' yields an empty element and ' <id> , <id> ' yields two failing ones"
+    }
+  ],
+  "sources": [
+    "docs/research-brief-event-id-validation-2026-09-08.md",
+    "qor/scripts/create_shadow_issue.py",
+    "qor/scripts/collect_shadow_genomes.py"
+  ]
+}

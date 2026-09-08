@@ -1,0 +1,24 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-08T1956-274e42",
+  "ts": "2026-09-08T20:16:04Z",
+  "plan_path": "docs/plan-qor-phase278-event-id-validation.md",
+  "change_class": "hotfix",
+  "phases": [
+    "D1 four sites + placement",
+    "D2 normalize/require/validate",
+    "D3 exit shape per site",
+    "D4 validator made total",
+    "D5 exclusions"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_shadow.py tests/test_security_fixes.py -q",
+    "python -m pytest tests/ -q -k 'shadow_issue or event_id'",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto",
+    "python -m qor.scripts.governance_health --profile skill-entry",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest -q"
+  ]
+}

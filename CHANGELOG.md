@@ -10,6 +10,24 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.171.2] - 2026-09-08
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 278 (hotfix; the validator that guarded nothing gets called)**: `create_shadow_issue.validate_event_id` shipped with its own regex, its own tests, and **zero production call sites**. Four places built the set of event ids to act on and none validated, so a malformed id matched no event, the selection came back empty, and the process printed "No matching unaddressed events. Nothing to do." and **exited 0 on a breached governance threshold**. GH #459.
+
+  Phase 273 had guarded the marker's `event_ids` *type*; this guards its *elements*. Measured, four shapes passed that type check and reached the silent success: a list of non-hash strings, a list containing an integer, a truncated hash, and an uppercase hash.
+
+- The `--events` flag is validated at **all three** of its sites, not one. An earlier draft of this work described the module as having two entry points; it has four (`--mark-resolved`, `--flip-only`, the issue-creation path, and the marker). Guarding a subset would have shipped reading as though the flag were covered while two thirds of its usage stayed open.
+
+- `validate_event_id` is now total. `_EVENT_ID_RE.match(12345)` raised `TypeError` while the docstring promised `ValueError`, so a caller obeying the documented contract would not have caught an integer id -- which is exactly what a hand-edited or machine-generated marker yields. Wiring an untotal validator would have converted a silent exit-0 into an unhandled traceback: a different failure, not a fixed one.
+
+### Changed
+- `--events` values are normalized before validation, as three ordered rules: split, strip, drop empties, **require non-empty**, then validate each survivor. The middle rule is load-bearing -- without it `--events ","` normalizes to an empty target set that matches nothing and exits 0, reintroducing this phase's own defect through its fix. A trailing comma and surrounding whitespace both keep working; `--events ","` is now an error.
+
+- The two failure modes differ by the conventional split rather than by accident: the marker path raises `SystemExit` (exit 1, a data fault) carrying the same regeneration hint as every sibling guard, while the three `--events` sites `print` and `return 2` (a usage error, argparse's own convention).
+
 ## [0.171.1] - 2026-09-08
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
