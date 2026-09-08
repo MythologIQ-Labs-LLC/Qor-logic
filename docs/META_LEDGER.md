@@ -22548,5 +22548,74 @@ Corrected to the tolerated fixture, where a bleed contradicts an OK verdict rath
 
 ---
 
+### Entry #766: GATE TRIBUNAL -- Phase 275 one verdict definition, iteration 6 (PASS)
+
+**Timestamp**: 2026-09-08T13:45:00Z
+**Phase**: GATE (Phase 275)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `c280bbcd1d9c`
+**Plan**: docs/plan-qor-phase275-one-verdict-definition.md (iteration 6)
+**Session**: 2026-09-08T1303-1f0903
+
+**Content Hash**: `957e3b74def0a1e421c715b5b7b9fb01f8a5e006ff9cc981be25a6c8fba6db1e`
+**Previous Hash**: `c9f95cb7661a6d138c7b6c7f257948f074c81b86d0714ba3aa67414214ae1d1c`
+**Chain Hash (Merkle seal)**: `e7cae597da7455c38429226dd2e41481d1ec72e4d58ec7d8b1d48d5b4cde5233`
+
+**Decision**: **Verdict**: **PASS**. Six review rounds, nineteen findings, every one reproduced by the author before acceptance.
+
+**THE FIRST FIX LEFT THE REPORTED DEFECT OPEN, AND SO DID THE SECOND.** Iteration 1's value pattern could not read `## VERDICT: PASS (L1)`, so a qualified line was invisible rather than conflicting and a readable PASS elsewhere still won uncontested -- GH #424 unchanged in form. Iteration 2 fixed the reader and left the guard case-anchored, so `verdict: VETO` in lowercase was invisible to both and `is_pass` returned True on a VETO report. The remedy was not a stricter rule but a wider one: a value pattern tolerating a trailing parenthetical turns the invisible line into a conflicting one, and a label probe strictly wider than the reader at every position means no readable verdict can escape the guard. Fuzzed over 60,000 inputs for a line the reader accepts and the guard misses: zero.
+
+**A CARVE-OUT ON THE SAME FIELD, TWICE, ONE ROUND APART.** Iteration 1 excluded the target field's parsing in one unmeasured clause; measured, 62 of 84 reports would still have aborted, changing which finding code printed and nothing else. Iteration 3 fixed that parsing and left the field's SELECTION first-match, in no clause at all, though the plan's own argument against first-match was written one section above. Zero of 204 reports carry more than one distinct target, so closing it cost nothing.
+
+**THE FIX FOR THAT REPRODUCED IT.** Adding agreement-required to the target field left the caller's message untouched, so a report with two disagreeing target lines would be reported as having none -- the exact unactionable message the verdict half had already been given a third branch to avoid. The planned test pinned the refusal and not the message, so it would have gone green on the wrong one.
+
+**THREE COUNTS MEASURED AT A UNIT THAT FLATTERED THEM.** A first pass found 72 of 96 files carrying conflicting verdicts, which would have pointed the design away from fail-closed; it counted the ledger and fixtures, which aggregate entries by design. At one audit report the count is zero. "59 reconcile cleanly" counted parses, not agreements. And a discrimination claim was measured over 62 and asserted over 204 -- which understated the truth: 103 pairable, 99 agree, 4 disagree.
+
+**THE MEASUREMENT SCRIPT CONTAINED THE DEFECT IT WAS MEASURING.** Its session regex captured surrounding backticks, exactly the backtick-capture fault the section it fed exists to document, written two paragraphs above. It misfiled two disagreements as unrecoverable artifacts and produced the flattering "0 disagreeing". Diffing against the reviewer's independent count row by row surfaced it.
+
+**THE ROOT CAUSE IS AN EMITTER, NOT A READER.** Two templates instruct both verdict forms in the same report and have drifted from each other (GH #464). The claim that nothing emits these forms came from grepping the wrong directory. Convergence is deferred deliberately: 204 historical reports exist in both forms and these gates must read them permanently, so it removes no branch from this phase.
+
+**Required next action**: implement against iteration 6, tests first.
+
+---
+
+### Entry #767: SESSION SEAL -- Phase 275 one verdict definition (v0.171.0)
+
+**Timestamp**: 2026-09-08T14:15:00Z
+**Phase**: SEAL (Phase 275)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `e7a63bf9d299`
+**Plan**: docs/plan-qor-phase275-one-verdict-definition.md (iteration 6)
+**Session**: 2026-09-08T1303-1f0903
+**Closes**: GH #424, GH #462
+
+**Content Hash**: `957e3b74def0a1e421c715b5b7b9fb01f8a5e006ff9cc981be25a6c8fba6db1e`
+**Previous Hash**: `e7cae597da7455c38429226dd2e41481d1ec72e4d58ec7d8b1d48d5b4cde5233`
+**Chain Hash (Merkle seal)**: `85717284753ec502b7b922cf08bb3408ac3f4ab83f50054ef9877ab9483f346e`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 6. Full suite green at 3394 passed, 6 skipped, 4 deselected, 0 failed; the phase's four test modules run twice at 94 passed each; ruff clean; every seal-ladder gate exit 0.
+
+**THE CYCLE RAN IN ORDER**, with the audit recorded at entry #766 before any implementation code existed.
+
+**TWO GATES READ THE SAME FILE AND DISAGREED ABOUT IT 44% OF THE TIME.** `intent_lock` and `verdict_reconcile` both parse `.agent/staging/AUDIT_REPORT.md`, each with its own regex and no shared definition. Measured over 204 historical versions of that file: of the 189 reports the lock accepted, the reconciler flagged 84 as not-PASS. Demonstrated on Phase 262's own report and its own matching artifact, both recording PASS, where the reconciler returns `verdict-not-pass` and its wired ABORT would have blocked a phase that sealed regardless. One fails open, one fails closed, and neither was wrong about the other -- there was no single answer to what the verdict is.
+
+**THE LOCK COULD BE AUTHORIZED BY A VETO.** `_audit_has_pass` accepted a PASS-shaped line anywhere with no relation to the verdict asserted, so a report quoting the canonical form while carrying a VETO satisfied it. Now agreement-required: every verdict-labeled line must be readable and state the same value. Zero of 204 reports carry disagreeing verdicts, so this refuses nothing ever written.
+
+**TWO PROPERTIES MAKE IT A FIX RATHER THAN A NARROWER HOLE.** The value pattern captures whatever word is present instead of enumerating known verdicts, because an enumeration silently ignores an unrecognized one -- `## VERDICT: PASS` beside `**Verdict**: BLOCKED` would read as uncontested. And the label probe is deliberately wider than the reader, so a verdict line whose value does not parse is reported rather than dropped; a dropped line cannot conflict, which is precisely how the original defect worked. This is `ledger_dialect.any_hash_label_present` (GH #363) applied to a second field.
+
+**AGREEMENT-REQUIRED ON BOTH FIELDS.** The target field kept first-match selection, a fail-open in the direction this reconciler exists to prevent: its staging directory is not session-scoped, so a stale report survives indefinitely and a superseded target line above the real one would silently win.
+
+**WHAT #462 ACTUALLY CLOSES, STATED RATHER THAN ROUNDED.** Of the 84, 59 parse to a usable target after this change; 25 still refuse because they name no usable target at all -- 22 carry no target field in any form and 3 name prose. Refusing those is the reconciler working. A close implying 84 of 84 would have been the overclaim iteration 1 was vetoed for.
+
+**AN UNPLANNED FIX AND A PRE-EXISTING WARNING.** The new cross-package import broke `intent_lock`'s standalone-script property, which its own tests pin by running it by path; the fallback loads the sibling source directly, and registering it in `sys.modules` before execution is required or the dataclass decorator cannot resolve its annotations. A pre-existing SyntaxWarning in a docstring of a file this phase edits was fixed in passing and is disclosed as unplanned rather than folded in silently.
+
+**FOUR DEFECTS FILED RATHER THAN FOLDED IN.** GH #463: the reconciler's wired ABORT produced no observable effect across a continuous run of sealed phases, so nothing distinguishes a gate that passed from one that never ran -- and fixing the parser makes that silence permanently invisible, which is why it stays open. GH #464: the two drifted emitters that are the root cause. GH #465: two gate artifacts recording a gate-artifact path as their target, one as an absolute local path that pins a contributor's directory layout into history. GH #461 earlier in the session.
+
+**Version**: 0.170.2 -> 0.171.0 per the plan's declared `feature` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

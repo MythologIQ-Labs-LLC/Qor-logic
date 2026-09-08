@@ -10,6 +10,29 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.171.0] - 2026-09-08
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 275 (feature; one definition of the audit verdict)**: `qor/scripts/verdict_dialect.py`, a shared owner of the `**Verdict**` and `**Target**` fields in `.agent/staging/AUDIT_REPORT.md`, consumed by both gates that read that file. Follows `ledger_dialect.py` (GH #282), which does the same job for the ledger's hash markup. GH #424, GH #462.
+
+### Fixed
+- **The intent lock could be authorized by a report whose verdict was VETO.** `_audit_has_pass` accepted a PASS-shaped line anywhere in the file, with no relation to the verdict being asserted, so a report that quoted the canonical form while carrying a VETO satisfied it. Verdict reading is now agreement-required: every verdict-labeled line must be readable and state the same value. Measured over 204 historical audit reports, zero carry disagreeing verdicts, so this refuses nothing that has ever been written. GH #424.
+
+  Two properties make it a fix rather than a narrower hole. The value pattern captures whatever word is present instead of an enumeration of known verdicts, because an enumeration silently ignores an unrecognized one and lets a `PASS` elsewhere win uncontested. And the label probe is deliberately wider than the value reader at every position, so a verdict line whose value does not parse is reported as unreadable rather than dropped -- the same reason `ledger_dialect.any_hash_label_present` exists (GH #363). A dropped line cannot conflict, which is exactly how the original defect worked.
+
+- **`verdict_reconcile` refused 44% of valid audit reports.** Its patterns matched neither form reports are actually written in -- `## VERDICT: PASS`, or a bolded value `**Verdict**: **PASS**` -- nor a target carrying backticks or a trailing qualifier. It reported `verdict-not-pass` on 84 of the 189 reports the intent lock accepted, and `report-unreadable` on 62 of those, on input where both records said PASS. Both halves now read through the shared dialect. GH #462.
+
+  The residual is stated rather than rounded away: of the 84, 59 parse to a usable target after this change and 25 still refuse because they name no usable target at all -- 22 carry no `**Target**` field in any form and 3 name prose. Refusing those is the reconciler working, not failing to parse.
+
+- **Agreement-required applies to the target field too.** It kept first-match selection, which is a fail-open in the direction this module exists to prevent: `.agent/staging/` is not session-scoped, so a stale report survives indefinitely and a superseded target line above the real one would silently win. Zero of 204 reports carry more than one distinct target, so closing it costs nothing. A contested field now reports `target-conflict` naming the disagreeing lines, rather than claiming the field is absent.
+
+- `intent_lock` remains runnable as a bare script. It is executed by path in its own tests and by operators, where `qor` resolves to whatever is installed rather than to this tree, so the new cross-package import falls back to loading the sibling source directly instead of requiring a reinstall to run the gate.
+
+### Changed
+- Refusals now say which of the three ways a report failed: a verdict field whose value does not parse, a report stating more than one verdict, or a genuine non-PASS. Previously a self-contradicting report was reported as "audit not PASS" -- true, and giving the operator no way to see that the file disagrees with itself or where.
+
 ## [0.170.2] - 2026-09-08
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

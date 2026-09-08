@@ -144,3 +144,101 @@ def test_path_separators_do_not_cause_a_false_mismatch(tmp_path: Path):
 
     assert findings == [], f"identical paths must not mismatch: {findings}"
 
+
+
+# ----- Phase 275 (GH #462): the reconciler could not read real reports -----
+#
+# `_VERDICT_RE` was `^\*\*Verdict\*\*:\s*(\w+)\s*$` and `_TARGET_RE` was
+# `^\*\*Target\*\*:\s*(\S+)\s*$`. Neither matched the forms audit reports are
+# written in, so this gate reported `verdict-not-pass` on 84 of the 189 reports
+# the intent lock accepted, and `report-unreadable` on 62 of those. Both are
+# fail-closed, so nothing broke loudly; the wired `|| ABORT` simply refused
+# valid work, which is why it went unnoticed (GH #463).
+
+
+def _raw_report(tmp_path: Path, body: str) -> Path:
+    p = tmp_path / "AUDIT_REPORT.md"
+    p.write_text(body, encoding="utf-8")
+    return p
+
+
+def test_reconcile_accepts_a_heading_form_pass_report(tmp_path: Path):
+    """`## VERDICT: PASS` -- accepted by intent_lock since GH #263, invisible
+    here until now."""
+    report = _raw_report(tmp_path, f"# Audit\n\n## VERDICT: PASS\n**Target**: {PLAN}\n")
+    artifact = _artifact(tmp_path, target=PLAN)
+    assert verdict_reconcile.reconcile(report, artifact, plan_digest=DIGEST) == []
+
+
+def test_reconcile_accepts_a_bolded_value_pass_report(tmp_path: Path):
+    r"""The Phase 262 shape: `**Verdict**: **PASS**`. `(\w+)` never reached the
+    value through the asterisks, so a PASS report read as verdict None."""
+    report = _raw_report(
+        tmp_path, f"# Audit\n\n**Verdict**: **PASS**\n**Target**: {PLAN}\n")
+    artifact = _artifact(tmp_path, target=PLAN)
+    assert verdict_reconcile.reconcile(report, artifact, plan_digest=DIGEST) == []
+
+
+def test_reconcile_reads_a_backticked_target(tmp_path: Path):
+    """29 reports write the path in backticks. Tolerating a qualifier alone
+    makes the line match but captures the backticks, turning
+    `report-unreadable` into `target-mismatch` -- a different code and the same
+    refusal."""
+    report = _raw_report(
+        tmp_path, f"# Audit\n\n**Verdict**: PASS\n**Target**: `{PLAN}`\n")
+    artifact = _artifact(tmp_path, target=PLAN)
+    assert verdict_reconcile.reconcile(report, artifact, plan_digest=DIGEST) == []
+
+
+def test_reconcile_reads_a_qualified_target(tmp_path: Path):
+    report = _raw_report(
+        tmp_path, f"# Audit\n\n**Verdict**: PASS\n**Target**: {PLAN} (GH #410, #405)\n")
+    artifact = _artifact(tmp_path, target=PLAN)
+    assert verdict_reconcile.reconcile(report, artifact, plan_digest=DIGEST) == []
+
+
+def test_reconcile_still_flags_a_genuine_veto_report(tmp_path: Path):
+    """The fix must not relax the gate."""
+    report = _report(tmp_path, target=PLAN, verdict="VETO")
+    artifact = _artifact(tmp_path, target=PLAN)
+    codes = [f.code for f in verdict_reconcile.reconcile(report, artifact, plan_digest=DIGEST)]
+    assert codes == ["verdict-not-pass"]
+
+
+def test_reconcile_still_reports_a_missing_target_field(tmp_path: Path):
+    """22 of the 84 name no target in any form; refusing them is correct."""
+    report = _raw_report(tmp_path, "# Audit\n\n**Verdict**: PASS\n**Risk grade**: L3\n")
+    artifact = _artifact(tmp_path, target=PLAN)
+    codes = [f.code for f in verdict_reconcile.reconcile(report, artifact, plan_digest=DIGEST)]
+    assert codes == ["report-unreadable"]
+
+
+def test_reconcile_flags_a_conflicted_verdict_report(tmp_path: Path):
+    """Agreement-required reaches the reconciler too: a report quoting the
+    canonical form while carrying a VETO is refused here as well as at the
+    lock."""
+    report = _raw_report(
+        tmp_path,
+        f"# Audit\n\n## VERDICT: PASS\n**Target**: {PLAN}\n\n**Verdict**: VETO\n")
+    artifact = _artifact(tmp_path, target=PLAN)
+    codes = [f.code for f in verdict_reconcile.reconcile(report, artifact, plan_digest=DIGEST)]
+    assert codes == ["verdict-conflict"]
+
+
+def test_disagreeing_targets_report_target_conflict_not_missing(tmp_path: Path):
+    """A contested field must not be reported as an absent one.
+
+    This is the defect the three-branch verdict message exists to prevent,
+    arriving on the field added one iteration later: `Field.value` is None on a
+    conflict, so the untouched `is None` branch would have said "no **Target**
+    line" about a report containing two of them.
+    """
+    report = _raw_report(
+        tmp_path,
+        f"# Audit\n\n**Verdict**: PASS\n**Target**: docs/plan-old.md\n"
+        f"**Target**: {PLAN}\n")
+    artifact = _artifact(tmp_path, target=PLAN)
+    findings = verdict_reconcile.reconcile(report, artifact, plan_digest=DIGEST)
+    codes = [f.code for f in findings]
+    assert codes == ["target-conflict"], codes
+    assert "docs/plan-old.md" in findings[0].detail

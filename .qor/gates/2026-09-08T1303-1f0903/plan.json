@@ -1,0 +1,23 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-08T1303-1f0903",
+  "ts": "2026-09-08T14:19:29Z",
+  "plan_path": "docs/plan-qor-phase275-one-verdict-definition.md",
+  "change_class": "feature",
+  "phases": [
+    "D1 shared dialect",
+    "D2 agreement-required on both fields",
+    "D3 both call sites",
+    "D4 measured closure",
+    "D5 exclusions"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_verdict_dialect.py tests/test_verdict_reconciliation.py tests/test_intent_lock_anchored_pass_check.py tests/test_security_fixes.py -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto",
+    "python -m qor.scripts.governance_health --profile skill-entry",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest -q"
+  ]
+}

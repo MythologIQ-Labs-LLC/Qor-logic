@@ -1,0 +1,42 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-08T1303-1f0903",
+  "ts": "2026-09-08T14:19:15Z",
+  "questions": [
+    "Why do intent_lock and verdict_reconcile disagree about the same report's verdict?",
+    "What forms are audit report verdict and target fields actually written in?",
+    "What rule closes GH #424 without refusing reports that have been written?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #424",
+      "finding": "the PASS predicate accepts a PASS-shaped line anywhere, unrelated to the verdict asserted; a VETO report quoting the canonical form authorizes capture",
+      "evidence": "reproduced against the current tree, both bare and qualified VETO forms"
+    },
+    {
+      "issue": "GH #462",
+      "finding": "verdict_reconcile matches neither the heading form nor a bolded value nor a backticked or qualified target; it flags 84 of the 189 reports intent_lock accepts",
+      "evidence": "measured over 204 historical versions of AUDIT_REPORT.md; demonstrated on Phase 262's own report and matching artifact, both PASS"
+    },
+    {
+      "issue": "GH #424",
+      "finding": "0 of 204 reports carry disagreeing verdict values, so agreement-required refuses nothing that has ever been written",
+      "evidence": "measured at the audit-report unit; an earlier pass over all *.md gave 72 of 96 and was wrong, counting the ledger and fixtures"
+    },
+    {
+      "issue": "GH #464",
+      "finding": "two template files each instruct both verdict forms in one report and have drifted from each other; this is the root cause of the split",
+      "evidence": "qor/references/ql-audit-templates.md and the qor-audit skill copy, 130 vs 203 lines"
+    },
+    {
+      "issue": "GH #463",
+      "finding": "verdict_reconcile's wired ABORT produced no observable effect across a continuous run of phases that sealed anyway",
+      "evidence": "23 of the 40 most recent reports produce a finding; all those phases reached a seal"
+    }
+  ],
+  "sources": [
+    "docs/research-brief-verdict-definition-2026-09-08.md",
+    "docs/META_LEDGER.md",
+    ".agent/staging/AUDIT_REPORT.md"
+  ]
+}

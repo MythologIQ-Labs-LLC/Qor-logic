@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-08T1303-1f0903",
+  "plan_path": "docs/plan-qor-phase275-one-verdict-definition.md",
+  "plan_hash": "957e3b74def0a1e421c715b5b7b9fb01f8a5e006ff9cc981be25a6c8fba6db1e",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "9a15c3c57fdfdea02f60fa9a69ea60aaf11f964cc38f6ea96f7565d9c60557f5",
+  "head_commit": "69b8d1187d57f7c69d7124d61a9ea59df23a4387",
+  "captured_ts": "2026-09-08T13:51:42.930566Z"
+}

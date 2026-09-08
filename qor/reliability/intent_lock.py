@@ -16,11 +16,30 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
 import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+try:
+    from qor.scripts import verdict_dialect
+except ImportError:  # pragma: no cover - taken only outside an installed tree
+    # This module is executed as a bare script by path, both by its own tests
+    # and by operators (`python qor/reliability/intent_lock.py capture ...`).
+    # In that mode `qor` resolves to whatever is installed in site-packages,
+    # which may predate this file. Extending sys.path does not help: `qor` is
+    # already in sys.modules by then, so the retry finds the same stale package.
+    # Load the sibling source directly instead, so the gate runs from the tree
+    # it lives in rather than requiring a reinstall.
+    import importlib.util
+
+    _dialect_path = Path(__file__).resolve().parents[1] / "scripts" / "verdict_dialect.py"
+    _spec = importlib.util.spec_from_file_location("_qor_verdict_dialect", _dialect_path)
+    verdict_dialect = importlib.util.module_from_spec(_spec)
+    # Register before exec: @dataclass resolves annotations through
+    # sys.modules[cls.__module__], which is None for an unregistered module.
+    sys.modules[_spec.name] = verdict_dialect
+    _spec.loader.exec_module(verdict_dialect)
 
 
 def _sha256_bytes(b: bytes) -> str:
@@ -58,34 +77,45 @@ def _head_commit(repo: Path) -> str:
 def _audit_has_pass(audit_path: Path) -> bool:
     """Return True if the audit file declares a canonical PASS verdict line.
 
-    Phase 53 (LOW-4): anchored multiline regex. Accepts ``Verdict: PASS`` or
-    ``VERDICT: PASS`` (or ``-`` separator) on its own line. Rejects substring
-    occurrences of "PASS" inside narrative prose ("If the test does not PASS,
-    then ...") that the prior loose regex incorrectly admitted. Phase 183
-    (GH #263): markdown-heading forms (``## VERDICT: PASS``) are accepted --
-    headings are structural declarations that cannot appear inside a prose
-    sentence, so the anti-prose anchors are preserved.
+    Phase 53 (LOW-4): anchored multiline regex, rejecting substring "PASS"
+    inside narrative prose. Phase 183 (GH #263): markdown-heading forms
+    accepted. Phase 275 (GH #424): the decision moved to ``verdict_dialect``,
+    shared with ``verdict_reconcile`` so the two gates reading this same file
+    stop disagreeing about what a PASS is.
+
+    The behaviour change is that a PASS-shaped line no longer authorizes on its
+    own. Every verdict-labeled line in the report must be readable and state the
+    same value. A report quoting the canonical form while carrying a VETO used
+    to authorize `capture`; it now refuses.
     """
     body = audit_path.read_text(encoding="utf-8", errors="replace")
-    return bool(
-        re.search(
-            r"^(?:#{1,6}[ \t]*)?\**(?:Verdict|VERDICT)\**\s*[:\-]\s*\**PASS\**\s*$",
-            body,
-            re.MULTILINE,
-        )
-    )
+    return verdict_dialect.is_pass(verdict_dialect.read_verdict(body))
 
 
 def _verdict_hint(audit_path: Path) -> str:
-    """Phase 183 (GH #263): distinguish 'verdict present but non-canonical'
-    from 'genuinely not PASS' in the error MESSAGE only -- the loose probe
-    never influences the verdict decision."""
+    """Say which of the three ways a report failed to declare a PASS.
+
+    Phase 183 (GH #263) distinguished 'non-canonical' from 'not PASS'. Phase 275
+    adds the third: a report stating two different verdicts is neither, and
+    reporting it as "audit not PASS" is true but unactionable -- the operator
+    cannot see that the file contradicts itself, or where.
+    """
     body = audit_path.read_text(encoding="utf-8", errors="replace")
-    if re.search(r"verdict[^\n]*pass", body, re.IGNORECASE):
+    verdict = verdict_dialect.read_verdict(body)
+    if verdict.unreadable:
+        bad = verdict_dialect.unreadable_lines(verdict)
         return (
             "ERROR: audit verdict line found but not in a canonical form; "
             "expected 'Verdict: PASS' (bold or #-heading forms accepted) "
-            "on its own line"
+            "on its own line; unreadable: "
+            + "; ".join(line.strip() for line in bad[:3])
+        )
+    if verdict.conflict:
+        return (
+            "ERROR: audit states more than one verdict: "
+            + ", ".join(sorted(set(verdict.values)))
+            + "; lines: "
+            + "; ".join(line.strip() for line in verdict.lines[:4])
         )
     return "ERROR: audit not PASS"
 
