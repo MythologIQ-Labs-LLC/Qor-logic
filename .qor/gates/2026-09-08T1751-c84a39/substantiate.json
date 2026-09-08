@@ -1,0 +1,18 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-08T1751-c84a39",
+  "ts": "2026-09-08T18:30:44Z",
+  "verdict": "PASS",
+  "merkle_seal": "4a5cfac958dc3fd86c70117297d504430efb93fae9ebf36eb58eac3411a17cd1",
+  "content_hash": "4d18433df7dfc9ecbf3474c2abdddf7ee109e6fd29ff8a2ed8bad1f678038ad2",
+  "ledger_entry": 769,
+  "boundary_scope": "structural",
+  "reality_check": {
+    "audit_rounds": 4,
+    "modules_fixed": 2,
+    "module_deliberately_excluded": 1,
+    "mismatched_states_found": 187,
+    "suite_passed": 3411,
+    "disclosed_local_failure": "GH #470"
+  }
+}

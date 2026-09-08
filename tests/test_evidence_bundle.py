@@ -128,3 +128,60 @@ def test_main_final_line_json_and_exit_codes(tmp_path, capsys):
     assert payload["query"] == {"session_id": _SID, "phase_num": 168}
     rc = eb.main(["--phase", "999", "--repo-root", str(root)])
     assert rc == 1
+
+
+# ----- Phase 277 (GH #467): the hash fields read through ledger_dialect -----
+#
+# The content_hash pattern accepted only an inline-backtick value with no field
+# suffix, reading 168 of 235 seal blocks. Its sibling chain_hash pattern already
+# tolerated a suffix -- two fields in one dict following two conventions.
+#
+# The substitution is a RESTRUCTURE, not a pattern swap: _FIELD_RES is consumed
+# by a generic `found.group(1)` loop, and CONTENT_HASH_RE has three capture
+# groups (one per value form). Dropping it into that dict calls .group(1) on it,
+# which yields None for two of the three forms -- leaving chain_hash at 219 of
+# 235, exactly where it started, while appearing to have been fixed.
+
+
+def _seal(body: str) -> str:
+    return "### Entry #1: SESSION SEAL -- test\n\n**Session**: 2026-09-08T0000-aaaaaa\n" + body
+
+
+def test_seal_block_reads_a_suffixed_content_hash_label():
+    """`**Content Hash (session seal)**:` -- 59 of the 67 gains take this form."""
+    blocks = eb._seal_blocks(_seal(
+        "**Content Hash (session seal)**: `" + "a" * 64 + "`\n"
+        "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n"))
+
+    assert blocks[0]["content_hash"] == "a" * 64
+
+
+def test_seal_block_reads_a_non_backtick_content_hash_value():
+    """The remaining 8 gains: a plain label whose value is not backticked."""
+    blocks = eb._seal_blocks(_seal(
+        "**Content Hash**: SHA256(plan.md) = " + "c" * 64 + "\n"
+        "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n"))
+
+    assert blocks[0]["content_hash"] == "c" * 64
+
+
+def test_seal_block_chain_hash_gains_coverage_not_just_content():
+    """The .group(1) trap: a naive substitution leaves chain_hash at exactly its
+    old coverage while content_hash appears to improve, so the fix looks done
+    and is not. Asserted on a chain value form the old pattern could not read."""
+    blocks = eb._seal_blocks(_seal(
+        "**Content Hash**: `" + "a" * 64 + "`\n"
+        "**Chain Hash (Merkle seal)**: SHA256(entry) = " + "d" * 64 + "\n"))
+
+    assert blocks[0]["chain_hash"] == "d" * 64
+
+
+def test_seal_block_still_reads_the_plain_backticked_forms():
+    """No regression on the 168 blocks that already worked."""
+    blocks = eb._seal_blocks(_seal(
+        "**Content Hash**: `" + "a" * 64 + "`\n"
+        "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n"))
+
+    assert blocks[0]["content_hash"] == "a" * 64
+    assert blocks[0]["chain_hash"] == "b" * 64
+    assert blocks[0]["session_id"] == "2026-09-08T0000-aaaaaa"

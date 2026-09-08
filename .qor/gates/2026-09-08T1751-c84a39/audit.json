@@ -1,0 +1,10 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-08T1751-c84a39",
+  "ts": "2026-09-08T18:32:01Z",
+  "target": "docs/plan-qor-phase277-content-hash-consolidation.md",
+  "verdict": "PASS",
+  "risk_grade": "L2",
+  "target_content_hash": "4d18433df7dfc9ecbf3474c2abdddf7ee109e6fd29ff8a2ed8bad1f678038ad2",
+  "violations": []
+}

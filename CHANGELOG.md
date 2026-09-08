@@ -10,6 +10,22 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.171.1] - 2026-09-08
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 277 (hotfix; gate_provenance attests pairs that never coexisted)**: `latest_seal_hashes` promised the hash pair of "the last ledger entry that carries both canonical hash markers" and took two independent whole-file last matches instead. Nothing tied them to the same entry, and `if not content or not chain` could not detect a mismatch because both lists are non-empty. It now reads one entry, through `ledger_dialect`. GH #467.
+
+  **The defect was realized, not latent.** Replaying the ledger at each of its historical states, the two hashes came from different entries at **187 of 640**, spanning entries #127 to #631. `ci_attest` HMACs `content|chain` and CI runs `attest-latest` on every push, so those attestations bound two entries that never coexisted -- not failing, just meaningless, with nothing reporting it. The most reachable trigger needs no unusual markup at all: a ledger truncated after a new entry's content hash but before its chain hash returns the new entry's content paired with the previous entry's chain.
+
+  Reading one entry makes the pair coherent by construction and makes the value form irrelevant. Strictly more available, measured across all 765 states: returns nothing where the old code returned a pair **0** times, returns a pair where the old code skipped **100** times. No gate verdict moves either way -- the skip path exits 0.
+
+- `evidence_bundle` reads the ledger's hash fields through the same owner, taking its seal-block coverage from 168 to 235 for content hashes and 219 to 235 for chain hashes. This is a restructure rather than a pattern swap: the field dictionary is consumed by a generic `.group(1)` loop, and the dialect's patterns carry three capture groups, so a naive substitution would have left the chain field at exactly its previous coverage while appearing fixed.
+
+### Changed
+- `ledger_commitment` is **deliberately excluded** from that consolidation, and now says so at the line that holds the invariant. Its citation pattern accepts `Plan` and `Brief` as well as `Artifact`, so widening its hash pattern would admit 45 session-seal digests as commitments to plans they do not describe -- the recorded value matches the cited file's live hash **0 of 45 times**, against 99 of 147 for the plain form. Stale commitments would go from 74 to 116, making 42 artifacts newly stale in a gate that hard-aborts the seal. A comment at the pattern and a regression test now guard it; the module's existing note covers the adjacent kind-filter case, which is why the narrowness read as accidental.
+
 ## [0.171.0] - 2026-09-08
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

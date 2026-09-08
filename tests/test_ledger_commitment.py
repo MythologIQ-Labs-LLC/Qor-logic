@@ -161,3 +161,60 @@ def test_gate_tribunal_plan_citation_is_not_a_commitment(tmp_path):
         "a tribunal Plan citation must not overwrite the real commitment"
     )
     assert lc.stale_commitments(tmp_path, [rel], ledger_path=ledger) == []
+
+
+# ----- Phase 277 (GH #467): the narrow **Content Hash** pattern is deliberate -----
+#
+# Phase 277 proposed consolidating this module onto ledger_dialect, on the
+# reasoning that its narrow pattern was an accident. It is not. _ARTIFACT_RE
+# accepts Plan and Brief as well as Artifact (491 entries in the live ledger),
+# so widening the hash pattern admits SESSION SEAL entries whose
+# **Content Hash (session seal)** is the seal digest, NOT the cited plan's hash.
+#
+# Measured before the proposal was withdrawn: across the 45 suffixed seal
+# entries citing an on-disk plan, the recorded value equals that plan's live
+# hash 0 times; across the 147 plain-label seals it matches 99 times. Widening
+# would take on-disk stale commitments from 74 to 116 -- 42 artifacts newly
+# stale -- in a gate that hard-ABORTs the seal.
+#
+# The module's existing comment covers the KIND filter, not this pattern. This
+# test guards the line itself, because a comment two definitions away did not
+# stop the proposal and a failing test would have.
+
+
+def test_a_suffixed_session_seal_hash_is_not_a_commitment(tmp_path):
+    """A **Content Hash (session seal)** value must never become a commitment.
+
+    It binds the seal digest; the entry's **Plan** cites a different file.
+    Treating the two as a commitment compares a plan's bytes against a seal's
+    digest -- a false stale reading in an ABORT gate.
+    """
+    ledger = tmp_path / "META_LEDGER.md"
+    ledger.write_text(
+        "### Entry #1: SESSION SEAL -- phase X\n\n"
+        "**Plan**: docs/plan-qor-phaseX.md\n"
+        "**Content Hash (session seal)**: `" + _A + "`\n\n",
+        encoding="utf-8",
+    )
+
+    commitments = lc.latest_commitments(ledger)
+
+    assert "docs/plan-qor-phaseX.md" not in commitments, (
+        "the suffixed session-seal digest is not a commitment to the cited plan; "
+        "admitting it would compare the plan's bytes against the seal's digest"
+    )
+
+
+def test_a_plain_content_hash_in_a_committing_entry_is_still_a_commitment(tmp_path):
+    """The control: the narrowness must not be over-read as 'commit nothing'."""
+    ledger = tmp_path / "META_LEDGER.md"
+    ledger.write_text(
+        "### Entry #1: IMPLEMENTATION -- phase X\n\n"
+        "**Plan**: docs/plan-qor-phaseX.md\n"
+        "**Content Hash**: `" + _A + "`\n\n",
+        encoding="utf-8",
+    )
+
+    commitments = lc.latest_commitments(ledger)
+
+    assert commitments.get("docs/plan-qor-phaseX.md") == _A

@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-08T1751-c84a39",
+  "plan_path": "docs/plan-qor-phase277-content-hash-consolidation.md",
+  "plan_hash": "4d18433df7dfc9ecbf3474c2abdddf7ee109e6fd29ff8a2ed8bad1f678038ad2",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "00610e3368d7c21897937c0a14bf9693d72507a6fe17ba631112dc79a9d73a18",
+  "head_commit": "382372efe3a4e1209aece71a062064558280def4",
+  "captured_ts": "2026-09-08T18:32:01.678267Z"
+}

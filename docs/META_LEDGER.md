@@ -22617,5 +22617,74 @@ Corrected to the tolerated fixture, where a bleed contradicts an OK verdict rath
 
 ---
 
+### Entry #768: GATE TRIBUNAL -- Phase 277 gate_provenance pair coherence, iteration 4 (PASS)
+
+**Timestamp**: 2026-09-08T18:12:00Z
+**Phase**: GATE (Phase 277)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `ee26daf43c2b`
+**Plan**: docs/plan-qor-phase277-content-hash-consolidation.md (iteration 4)
+**Session**: 2026-09-08T1751-c84a39
+
+**Content Hash**: `4d18433df7dfc9ecbf3474c2abdddf7ee109e6fd29ff8a2ed8bad1f678038ad2`
+**Previous Hash**: `85717284753ec502b7b922cf08bb3408ac3f4ab83f50054ef9877ab9483f346e`
+**Chain Hash (Merkle seal)**: `542eaefa3d734dfb3efae675cf2d1ef224d4a4da8318752393b1911722938299`
+
+**Decision**: **Verdict**: **PASS**. Four review rounds. The plan that emerged is not the plan that was filed.
+
+**THE FILED REMEDY WOULD HAVE BROKEN A SEAL GATE.** GH #467 asks that three modules stop re-deriving the ledger's hash fields and import their owner. For `ledger_commitment` that is wrong. Its citation pattern accepts `Plan` and `Brief` as well as `Artifact`, so 491 entries qualify rather than the 1 the plan measured, and widening the hash pattern admits 45 SESSION SEAL entries whose `**Content Hash (session seal)**` binds the seal digest and not the plan they cite. Measured: that value equals the cited file's live hash 0 of 45 times, against 99 of 147 for the plain form. Stale commitments would go 74 to 116, making 42 artifacts newly stale in a gate that hard-ABORTs the seal.
+
+**THE PLAN RECORDED THE WRONG DIAGNOSIS OF ITS OWN ERROR.** It said the module documented the hazard and the author ignored it. The note is bound to the kind filter, not to the pattern being changed; the invariant was undocumented at the line that holds it. Those route to different countermeasures, and the shadow-genome entry inherits whichever is written, so the phase now adds the comment at that line as well as the test.
+
+**A FIX THAT WOULD HAVE LOOKED DONE AND WAS NOT.** `evidence_bundle`'s field dictionary is consumed by a generic `.group(1)` loop and the dialect's patterns carry three capture groups. A pattern swap leaves the chain field at 219 of 235 -- exactly where it started -- while the content field appears to improve. Caught at the site the plan's own warning covers, two sections earlier.
+
+**FOUR NUMBERS AND A GENERALIZATION, ALL WRONG IN THE FLATTERING DIRECTION.** 108 counted entries the gate filters out before reading; the control was 147 not 148; the whole-ledger gap was applied to modules that do not scan the whole ledger, making one planned test unwritable; and "prose cannot displace the field" was generalized from three cases sharing one ordering, the untested ordering being the one that fails.
+
+**A PLANNED TEST WOULD HAVE ABORTED THE SEAL.** It asserted a property of a fixture without invoking the unit -- presence-only, which the seal gate refuses. Removed.
+
+**THE RESEARCH BRIEF ASSERTED WHAT THE PLAN REFUTED.** It had been updated twice, which made it read as maintained while still carrying the retracted claim, the wrong denominators, and a "latent" framing the plan disproves with 187 realized cases -- and it never mentioned the phase's headline defect at all. Rewritten with a revision note rather than patched, because partial maintenance is less visible than staleness and therefore worse.
+
+**Required next action**: implement against iteration 4, tests first, holding the fixture constraint literally.
+
+---
+
+### Entry #769: SESSION SEAL -- Phase 277 gate_provenance pair coherence (v0.171.1)
+
+**Timestamp**: 2026-09-08T18:40:00Z
+**Phase**: SEAL (Phase 277)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `2176a654dec3`
+**Plan**: docs/plan-qor-phase277-content-hash-consolidation.md (iteration 4)
+**Session**: 2026-09-08T1751-c84a39
+**Closes**: none (GH #467 partially addressed)
+
+**Content Hash**: `4d18433df7dfc9ecbf3474c2abdddf7ee109e6fd29ff8a2ed8bad1f678038ad2`
+**Previous Hash**: `542eaefa3d734dfb3efae675cf2d1ef224d4a4da8318752393b1911722938299`
+**Chain Hash (Merkle seal)**: `4a5cfac958dc3fd86c70117297d504430efb93fae9ebf36eb58eac3411a17cd1`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 4.
+
+**THE CYCLE RAN IN ORDER**, with the audit recorded at entry #768 and the intent lock captured before any implementation code existed -- corrected from the previous phase, where the lock was captured after.
+
+**A GATE ATTESTED PAIRS THAT NEVER COEXISTED, 187 TIMES.** `gate_provenance.latest_seal_hashes` promised the hash pair of the last entry carrying both canonical markers and took two independent whole-file last matches. Replaying the ledger at each historical state, the two came from different entries at 187 of 640, spanning #127 to #631. `ci_attest` HMACs the pair and CI runs it on every push, so those attestations bound unrelated entries -- not failing, merely meaningless. The most reachable trigger is an interrupted append, needing no unusual markup. It now reads one entry, which makes the pair coherent by construction and the value form irrelevant. Measured across all 765 states: returns nothing where the old code returned a pair 0 times, returns a pair where it skipped 100 times, and no gate verdict moves because the skip path exits 0.
+
+**COVERAGE, MEASURED AT THE UNIT EACH MODULE ACTUALLY READS.** `evidence_bundle` goes 168 to 235 on content hashes and 219 to 235 on chain hashes across seal blocks. The whole-ledger 160-of-741 figure applies only to `gate_provenance`; applying it to all three was an iteration-2 error corrected here.
+
+**ONE MODULE IS DELIBERATELY LEFT NARROW, AND NOW SAYS SO.** `ledger_commitment` keeps its pattern, gains a comment at that pattern and two tests. The comment is the durable half: the module's existing note covers the adjacent kind-filter case, which is exactly why the narrowness read as accidental to a reader who did not check what the note was bound to.
+
+**AN UNRELATED FAILURE FOUND AND DISCLOSED, NOT PAPERED OVER.** The full suite reports one failure, `test_changelog_tag_coverage`, and it is a true positive: six sealed versions (v0.169.3 through v0.170.2) have a CHANGELOG section and no git tag anywhere. It is invisible in CI because the test exempts sections above the highest existing tag and the only newer tag is unpushed -- which is also why it accumulated to six. Filed as GH #470. This phase does not create those tags; that is a release-integrity decision.
+
+**A CORRECTION TO THE OPERATOR RECORD.** Four tags were reported twice as "local-only, awaiting a publish decision". Only one existed. `git ls-remote --tags origin <tag>` returning empty was read as "exists locally but unpushed" when it equally means "does not exist anywhere", and local existence was never checked.
+
+**THE INTENT LOCK CAUGHT ITS OWN AUTHOR AND IS DISCLOSED.** The plan was edited after the lock was captured -- the reviewer's final round asked for line citations to be replaced with symbol citations, precisely because this phase inserts a comment that moves every line below it. Those edits were audited: the reviewer re-opened the plan and re-confirmed PASS on them. But the lock had been captured against the pre-edit text and correctly reported DRIFT, and the audit gate artifact still carried the pre-edit digest. Resolved by writing `audit-iter2.json` with the current digest and re-capturing, both recorded here rather than done silently: a re-captured lock is only honest when the reason is written down, since re-capturing is otherwise indistinguishable from defeating the gate.
+
+**A FABRICATED VALUE REACHED A GATE ARTIFACT AND IS DISCLOSED RATHER THAN QUIETLY REPLACED.** The first substantiate artifact was written with the Merkle seal and content hash truncated to 16 characters and zero-padded to 64 -- values that look like hashes and are not. `substantiate-iter2.json` carries the real ones, verified equal to the entry above and to the cited plan's digest, and `substantiate.json` is the corrected copy. `substantiate-iter1.json` remains committed as immutable evidence and **its two hash fields are fabricated**; anyone reading it should treat them as such. In a phase about hashes meaning what they claim, padding a prefix to the right length is the exact failure being fixed, committed by the author while fixing it.
+
+**Version**: 0.171.0 -> 0.171.1 per the plan's declared `hotfix` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

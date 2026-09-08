@@ -1,0 +1,38 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-08T1751-c84a39",
+  "ts": "2026-09-08T18:12:48Z",
+  "questions": [
+    "Do the three narrow readers of the ledger's hash fields differ from the owner harmfully?",
+    "Is consolidating each of them safe?",
+    "Does importing ledger_dialect inherit GH #428's over-reading?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #467",
+      "finding": "gate_provenance.latest_seal_hashes takes two independent whole-file last matches; at 187 of 640 historical states the content and chain hashes came from different entries, and CI HMACs the pair on every push",
+      "evidence": "replayed the ledger at every historical state; span entry #127-#631"
+    },
+    {
+      "issue": "GH #467",
+      "finding": "ledger_commitment must NOT be consolidated: its citation pattern accepts Plan|Brief|Artifact (491 entries), so widening the hash pattern admits 45 suffixed session-seal digests as false commitments into a hard ABORT gate",
+      "evidence": "suffixed form equals the cited file's live hash 0 of 45 times; plain form 99 of 147; stale commitments 74 -> 116"
+    },
+    {
+      "issue": "GH #467",
+      "finding": "evidence_bundle needs a restructure not a pattern swap: its field dict is consumed by a generic .group(1) loop and CONTENT_HASH_RE has 3 groups, giving the chain field zero gain while appearing fixed",
+      "evidence": "235 seal blocks: chain narrow 219, hash_value 235, .group(1) 219"
+    },
+    {
+      "issue": "GH #428",
+      "finding": "the dialect does not inherit prose-hex capture for the before/after orderings; the BETWEEN ordering does fail, but no corpus entry exhibits it",
+      "evidence": "3 constructed orderings; 0 disagreements across 640 entries carrying an inline value"
+    }
+  ],
+  "sources": [
+    "docs/research-brief-content-hash-consolidation-2026-09-08.md",
+    "docs/META_LEDGER.md",
+    "qor/scripts/ledger_commitment.py",
+    "qor/scripts/gate_provenance.py"
+  ]
+}
