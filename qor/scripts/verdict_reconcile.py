@@ -14,13 +14,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-_TARGET_RE = re.compile(r"^\*\*Target\*\*:\s*(\S+)\s*$", re.MULTILINE)
-_VERDICT_RE = re.compile(r"^\*\*Verdict\*\*:\s*(\w+)\s*$", re.MULTILINE)
+from qor.scripts import verdict_dialect
 
 
 @dataclass(frozen=True)
@@ -32,7 +30,7 @@ class Finding:
 
 
 def _normalize(target: str | None) -> str | None:
-    """Compare paths by separator-independent form.
+    r"""Compare paths by separator-independent form.
 
     A gate artifact written on Windows records `docs\plan-x.md` while the
     report carries `docs/plan-x.md`. Comparing raw strings reports
@@ -42,15 +40,27 @@ def _normalize(target: str | None) -> str | None:
     return target.replace("\\", "/") if target is not None else None
 
 
-def _read_report(report_path: Path) -> tuple[str | None, str | None]:
+def _read_report(report_path: Path):
+    """Return the report's `**Target**` and `**Verdict**` fields.
+
+    Phase 275 (GH #462): both are read through ``verdict_dialect``, shared with
+    ``intent_lock``. The previous patterns here could not match either form
+    audit reports are actually written in -- ``## VERDICT: PASS`` or a bolded
+    value ``**Verdict**: **PASS**`` -- nor a target carrying backticks or a
+    trailing qualifier, so this reconciler reported `verdict-not-pass` on 84 of
+    the 189 reports the intent lock accepted, and `report-unreadable` on 62 of
+    those, both on valid input.
+
+    Returns the dialect's records rather than bare strings so the caller can
+    tell a field that is absent from one that is contested; reporting a
+    contested field as missing is the unactionable message this phase exists to
+    remove, and it would otherwise reappear here.
+    """
     try:
         body = Path(report_path).read_text(encoding="utf-8", errors="replace")
     except OSError:
-        return None, None
-    target = _TARGET_RE.search(body)
-    verdict = _VERDICT_RE.search(body)
-    return (target.group(1) if target else None,
-            verdict.group(1) if verdict else None)
+        body = ""
+    return verdict_dialect.read_target(body), verdict_dialect.read_verdict(body)
 
 
 def _read_artifact(artifact_path: Path) -> dict | None:
@@ -80,19 +90,36 @@ def reconcile(
         return [Finding("artifact-missing",
                         f"no readable audit gate artifact at {artifact_path}")]
 
-    report_target, report_verdict = _read_report(report_path)
-    if report_target is None:
+    target, verdict = _read_report(report_path)
+    if target.conflict:
+        findings.append(Finding(
+            "target-conflict",
+            f"report states more than one **Target** in {report_path}: "
+            + "; ".join(line.strip() for line in target.lines[:4])))
+    elif target.value is None:
         findings.append(Finding("report-unreadable",
                                 f"no **Target** line in {report_path}"))
-    elif _normalize(report_target) != _normalize(artifact.get("target")):
+    elif _normalize(target.value) != _normalize(artifact.get("target")):
         findings.append(Finding(
             "target-mismatch",
-            f"report names {report_target!r}; artifact names "
+            f"report names {target.value!r}; artifact names "
             f"{artifact.get('target')!r}"))
 
-    if report_verdict != "PASS":
+    if verdict.conflict:
+        findings.append(Finding(
+            "verdict-conflict",
+            "report states more than one verdict: "
+            + ", ".join(sorted(set(verdict.values)))))
+    elif verdict.unreadable:
+        findings.append(Finding(
+            "verdict-unreadable",
+            "report names a verdict field whose value does not parse: "
+            + "; ".join(
+                line.strip()
+                for line in verdict_dialect.unreadable_lines(verdict)[:3])))
+    elif verdict.value != "PASS":
         findings.append(Finding("verdict-not-pass",
-                                f"report verdict is {report_verdict!r}"))
+                                f"report verdict is {verdict.value!r}"))
 
     recorded = artifact.get("target_content_hash")
     if plan_digest is not None and recorded is not None and plan_digest != recorded:

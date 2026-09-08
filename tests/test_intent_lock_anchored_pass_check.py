@@ -146,3 +146,60 @@ def test_capture_error_hints_at_format_when_verdict_present(tmp_path, capsys, mo
                            "--plan", str(plan), "--audit", str(audit)])
     err = capsys.readouterr().err
     assert rc == 1 and "audit not PASS" in err and "canonical form" not in err
+
+
+# ----- Phase 275 (GH #424): agreement-required at the gate -----
+
+
+def test_capture_refuses_a_conflicted_audit(tmp_path, capsys):
+    """The reported defect, end to end.
+
+    A VETO report that states the canonical form on its own line used to
+    satisfy `_audit_has_pass` and authorize `capture`. The hint must name the
+    conflict rather than saying "audit not PASS", which is true but leaves the
+    operator unable to see that the file contradicts itself.
+    """
+    plan = tmp_path / "plan.md"
+    plan.write_text("# plan\n", encoding="utf-8")
+    audit = tmp_path / "AUDIT_REPORT.md"
+    audit.write_text("## VERDICT: PASS\n\n**Verdict**: VETO\n", encoding="utf-8")
+
+    rc = intent_lock.main(["capture", "--session", "2026-07-13T0000-t3st01",
+                           "--plan", str(plan), "--audit", str(audit)])
+    err = capsys.readouterr().err
+
+    assert rc == 1
+    assert "more than one verdict" in err
+    assert "PASS" in err and "VETO" in err
+
+
+def test_capture_refuses_a_qualified_veto_that_used_to_vanish(tmp_path, capsys):
+    """A bare `([A-Z]+)$` value pattern cannot read `VETO (finding 3
+    unresolved)`, so the line disappears and the PASS above it wins
+    uncontested. The trailing-qualifier group makes it conflict instead."""
+    plan = tmp_path / "plan.md"
+    plan.write_text("# plan\n", encoding="utf-8")
+    audit = tmp_path / "AUDIT_REPORT.md"
+    audit.write_text(
+        "## VERDICT: PASS\n\n**Verdict**: VETO (finding 3 unresolved)\n",
+        encoding="utf-8")
+
+    rc = intent_lock.main(["capture", "--session", "2026-07-13T0000-t3st01",
+                           "--plan", str(plan), "--audit", str(audit)])
+    assert rc == 1
+    assert "more than one verdict" in capsys.readouterr().err
+
+
+def test_capture_refuses_a_lowercase_label_carrying_a_veto(tmp_path, capsys):
+    """The guard must be wider than the reader: a lowercase label matches
+    neither the value pattern nor a case-anchored probe, so the line is
+    invisible to both and the gate returns True on a VETO report."""
+    plan = tmp_path / "plan.md"
+    plan.write_text("# plan\n", encoding="utf-8")
+    audit = tmp_path / "AUDIT_REPORT.md"
+    audit.write_text("## VERDICT: PASS\n\nverdict: VETO\n", encoding="utf-8")
+
+    rc = intent_lock.main(["capture", "--session", "2026-07-13T0000-t3st01",
+                           "--plan", str(plan), "--audit", str(audit)])
+    assert rc == 1
+    assert "canonical form" in capsys.readouterr().err
