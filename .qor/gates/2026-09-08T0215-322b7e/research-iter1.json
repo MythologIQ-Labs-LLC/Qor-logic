@@ -1,0 +1,35 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-08T0215-322b7e",
+  "ts": "2026-09-08T02:17:07Z",
+  "questions": [
+    "Does a VETO report authorize intent-lock capture?",
+    "Does advance rewrite every Last Reviewed marker, and which one does check read?",
+    "Does a schema-valid change_class exist that cannot compute a version?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #424",
+      "finding": "a VETO report that quotes the canonical PASS form returns True from _audit_has_pass, authorizing capture",
+      "evidence": "executed against a synthetic VETO report containing an illustrative heading verdict"
+    },
+    {
+      "issue": "GH #426",
+      "finding": "advance_last_reviewed sub()s with no count so every marker is restamped; check reads the FIRST via .search()",
+      "evidence": "_ADVANCE_RE.sub has no count; _last_reviewed uses .search"
+    },
+    {
+      "issue": "GH #426",
+      "finding": "this repository has exactly one matching marker, so the fix is latent here and live for the consumer",
+      "evidence": "_ADVANCE_RE matches 1 marker in docs/GOVERNANCE_INDEX.md"
+    },
+    {
+      "issue": "GH #433",
+      "finding": "the plan schema accepts change_class 'governance' and _compute_new raises ValueError on it",
+      "evidence": "enum is hotfix/feature/breaking/governance; _compute_new('governance') raises"
+    }
+  ],
+  "sources": [
+    "docs/plan-qor-phase272-three-bounded-gate-defects.md"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-08T0215-322b7e",
+  "plan_path": "docs/plan-qor-phase272-three-bounded-gate-defects.md",
+  "plan_hash": "0c4b551a2fea7b93a59f90b9b0588d232b5b9ee154c7a224ec660c4055425238",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "37e3ba628e6740abbe4e88e310d6a65a5b193897ae03f939330c9314b4e42008",
+  "head_commit": "e8249c2fe94411b957d3dc7b20012d3f8f3d19b9",
+  "captured_ts": "2026-09-08T02:41:40.689677Z"
+}

@@ -106,3 +106,72 @@ def test_bump_version_raises_on_downgrade(tmp_path, monkeypatch):
     monkeypatch.setattr(gh, "_list_tags", lambda: ["v0.5.0"])
     with pytest.raises(gh.InterdictionError):
         gh.bump_version("hotfix", pyproject_path=py)
+
+
+# ----- Phase 272 (GH #433): two messages, and the guard they describe -----
+
+def test_parse_change_class_error_names_every_accepted_class(tmp_path):
+    """The error listed three classes while the regex accepts four, so a plan
+    declaring the fourth was told the class does not exist."""
+    from qor.scripts import governance_helpers as gh
+
+    plan = tmp_path / "plan.md"
+    plan.write_text("# Plan\n\nchange_class: governance\n", encoding="utf-8")  # not bold: rejected
+    try:
+        gh.parse_change_class(plan)
+    except ValueError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("expected a rejection for the non-bold form")
+
+    for accepted in ("hotfix", "feature", "breaking", "governance"):
+        assert accepted in message, f"{accepted} is accepted by the regex but absent from the error"
+
+
+def test_compute_new_names_governance_as_non_release():
+    """`unknown change_class` was wrong for a value the schema declares valid.
+    The refusal now says why, so a caller that arrived here wrongly is told
+    what to do rather than that its class does not exist."""
+    from qor.scripts import governance_helpers as gh
+
+    try:
+        gh._compute_new(0, 170, 0, "governance")
+    except ValueError as exc:
+        message = str(exc).lower()
+    else:
+        raise AssertionError("governance must not compute a version")
+
+    assert "non-release" in message
+    assert "unknown" not in message
+
+
+def test_every_declared_class_is_classified_and_computes_iff_release():
+    """The partition, not the instance.
+
+    Asserts what GH #282 established -- every declared class is classified, and
+    computes a version if and only if it is a release class -- rather than the
+    rejected proposition that every class can compute one. Goes red if a fifth
+    class is added to the schema without being classified, which today would
+    silently ship as version-not-applicable with no version and no tag.
+    """
+    from qor.scripts import governance_helpers as gh
+    from qor.scripts import validate_gate_artifact as vga
+    from qor.scripts import version_applicability as va
+
+    enum = vga.load_schema("plan")["properties"]["change_class"]["enum"]
+    assert enum, "the schema must declare a change_class enum"
+
+    for change_class in enum:
+        assert change_class in (va.RELEASE_CLASSES | va.NON_RELEASE_CLASSES), (
+            f"{change_class!r} is declared in the schema but classified by neither set; "
+            "it would be silently treated as version-not-applicable"
+        )
+        if va.is_release_class(change_class):
+            assert isinstance(gh._compute_new(0, 1, 0, change_class), tuple)
+        else:
+            try:
+                gh._compute_new(0, 1, 0, change_class)
+            except ValueError:
+                pass
+            else:
+                raise AssertionError(f"{change_class!r} is non-release and must not compute a version")

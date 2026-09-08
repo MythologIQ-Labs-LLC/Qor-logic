@@ -1,0 +1,21 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-08T0215-322b7e",
+  "ts": "2026-09-08T02:29:29Z",
+  "plan_path": "docs/plan-qor-phase272-three-bounded-gate-defects.md",
+  "phases": [
+    "D2 advance only the marker check reads (GH #426)",
+    "D3 two misleading messages; the governance guard is preserved (GH #433)",
+    "D1 deferred to its own phase with its constraint set preserved (GH #424)"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_governance_index.py tests/test_governance_helpers.py tests/test_version_applicability.py tests/test_intent_lock_anchored_pass_check.py -q",
+    "python -m qor.scripts.governance_health --profile skill-entry",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.gate_provenance verify-committed",
+    "python -m pytest -q"
+  ],
+  "change_class": "hotfix"
+}

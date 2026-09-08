@@ -1,0 +1,1 @@
+{"artifact_filename":"audit-iter1.json","phase":"audit","risk_grade":"L1","session_id":"2026-09-08T0215-322b7e","target":"docs/plan-qor-phase272-three-bounded-gate-defects.md","target_content_hash":"0c4b551a2fea7b93a59f90b9b0588d232b5b9ee154c7a224ec660c4055425238","ts":"2026-09-08T02:32:12Z","verdict":"PASS","violations":[]}

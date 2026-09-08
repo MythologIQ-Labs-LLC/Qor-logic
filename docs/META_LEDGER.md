@@ -22370,5 +22370,100 @@ Testing the predecessor rather than adopting it found a defect in it. Its `repo_
 
 ---
 
+### Entry #762: GATE TRIBUNAL -- Phase 272 two bounded defects, iteration 3 (PASS)
+
+**Timestamp**: 2026-09-08T02:35:00Z
+**Phase**: GATE (Phase 272)
+**Author**: Judge
+**Risk Grade**: L1
+**Entry ID**: `a6b9fae5234a`
+**Plan**: docs/plan-qor-phase272-three-bounded-gate-defects.md (iteration 3)
+**Session**: 2026-09-08T0215-322b7e
+**Mode**: adversarial -- one review round by design; reviewer held Read/Grep/Glob only
+**Reviews**: GH #426, GH #433 (GH #424 deferred)
+
+**Content Hash**: `0c4b551a2fea7b93a59f90b9b0588d232b5b9ee154c7a224ec660c4055425238`
+**Previous Hash**: `6f7ba288241d6cd81161c68b5284d3cf6c5ea8ae7361713c93b738b89eff3734`
+**Chain Hash (Merkle seal)**: `d4d8cc3bf2de0c26fe73878facb01d1b188ab1c30f7c95f885c2174bf17fcb55`
+
+**Decision**: **Verdict**: **PASS** -- iteration 3. One review round by design: the operator ruled that audit depth should scale to structural reach, and this batch changes what no gate decides. A third defect was scoped in, shown not to be bounded, and deferred.
+
+**WHAT THE VERDICT COVERS.** That `governance_index.advance_last_reviewed` rewrites the one marker `check` reads rather than every marker (GH #426), and that two misleading messages in `governance_helpers` are corrected without altering the guard they describe (GH #433).
+
+**THE SECOND ISSUE'S PREMISE WAS FALSE AND THE PLAN INVERTED ITS FIX BEFORE AUDIT CAUGHT IT.** GH #433 reports that a plan declaring `change_class: governance` validates and then dies at the version bump. `_compute_new` raising on that class is the GUARD, not the defect: `governance` is the declared non-release class, `is_release_class` returns False for it, the schema's own description says so, and four sealed plans in this repository declare it and survived -- the ledger records one as "version-not-applicable; no version bump or tag". The plan's first iteration proposed mapping it to a patch bump, which would have put two contradicting definitions of the class inside the module the version gate delegates to, across three callers rather than the one the plan named.
+
+Worse than the code change was the test drafted with it. Iterating the schema enum to assert every class can compute a version pins exactly the proposition an earlier phase rejected, and would have made correct behaviour a failure for whoever adds a second non-release class. It was sold in the plan as future-proofing.
+
+The author took the issue's framing without checking whether the crash was reachable on the live route. That is the same error as the phase before this one, where a reproduction was built on a shape the current template no longer emits.
+
+**WHAT SHIPS FOR GH #433 IS LESS THAN IT ASKED.** No version mapping. Two message defects the investigation found instead: `parse_change_class` tells an operator the canonical form is one of three classes while its regex accepts four, so a plan declaring the fourth is told the class does not exist; and `_compute_new` reports `unknown change_class` for a value the schema declares valid, where the caller needs to hear that the class is non-release and must not reach a bump. Neither changes behaviour.
+
+**THE DEFERRED THIRD DEFECT COST MORE THAN THE TWO THAT SHIPPED.** GH #424 -- a VETO audit report that quotes the canonical PASS form authorizes an intent-lock capture -- was scoped here as bounded. Three findings, each verified by execution, established it is not:
+
+The drafted predicate enumerated verdict words, so a report reading a verdict value outside that list alongside a quoted canonical PASS authorizes. That is the reported hole, narrower. It is the third consecutive phase in which an enumeration stood where a rule belonged.
+
+The proposed factoring inverted the gate. Returning collected verdicts instead of a boolean makes the refusal test at the single call site truthy for a VETO-only report, so a VETO would have written the lock. The predicate is the thing that decides whether a seal may proceed.
+
+The refusal would have diagnosed the wrong fault. The existing hint function discriminates on a loose probe that a conflicting report matches on its quoted line, so the operator would be told their canonical formatting is non-canonical. That function exists only because an undiagnosable refusal cost a live rejection in an earlier phase; the change would have re-opened that wound one function later, in the same edit citing the widening as the thing not to break. It was never in the plan's affected files.
+
+Its constraint set is preserved verbatim as the next phase's starting research rather than re-derived: one module-level collector both functions reach; the new branch prepended before the loose probe, since an appended one is unreachable for the case it serves; the existing failure substring retained, because a shipped test pins it; the loose probe kept and narrowed rather than deleted; and the branch keyed on the collector being non-empty, because a shipped test asserts the canonical-form message is ABSENT for a report with no verdict, and a looser key breaks it.
+
+**A RESIDUAL RECORDED RATHER THAN FIXED.** Class membership decides release status, so any value not recognised is silently treated as version-not-applicable: a fifth schema class added without being classified would ship with no version and no tag and nothing would notice. Making that raise is a behaviour change and would break this batch's scope line. The new partition test -- every declared class is in exactly one of the two sets, and computes a version if and only if it is a release class -- goes red the moment such a class is added. That is containment, not a fix, and it replaced an instance-shaped test that would have pinned only the one class by name.
+
+**THREE CARRY-OVERS, TWO OF WHICH WOULD HAVE FAILED CI.** The plan's first CI command named a test file that does not exist in this repository, so the block could not have passed. Its affected-files list named a test module containing no coverage of the function being changed, while the real coverage sits in two other modules. And its scope note still described three defects and flagged one as an exception, after the title said two and a section deferred that one -- a restatement that did not move when its subject did, which is the defect class this repository has recorded twice.
+
+**LIMITS OF THE VERDICT.** The reviewer held Read, Grep and Glob only and executed nothing. Every measurement is the author's. The reviewer confirmed by reading that the one-marker change breaks no existing test, because both fixtures that exercise the function write a single marker.
+
+**Required next action**: implement against iteration 3, tests first.
+
+---
+
+### Entry #763: SESSION SEAL -- Phase 272 two bounded defects (v0.170.1)
+
+**Timestamp**: 2026-09-08T02:50:00Z
+**Phase**: SEAL (Phase 272)
+**Author**: Governor
+**Risk Grade**: L1
+**Entry ID**: `c988c116c2c5`
+**Plan**: docs/plan-qor-phase272-three-bounded-gate-defects.md (iteration 3)
+**Session**: 2026-09-08T0215-322b7e
+**Closes**: GH #426, GH #433
+
+**Content Hash**: `0c4b551a2fea7b93a59f90b9b0588d232b5b9ee154c7a224ec660c4055425238`
+**Previous Hash**: `d4d8cc3bf2de0c26fe73878facb01d1b188ab1c30f7c95f885c2174bf17fcb55`
+**Chain Hash (Merkle seal)**: `079ef24fe3a059caf1752ad85f776154d9230a90ae6a65f632ae3577057865e7`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 3. Full suite green at 3324 passed, 6 skipped, 4 deselected, 0 failed; the two changed test modules run twice at 24 passed each; ruff clean.
+
+**THE CYCLE RAN IN ORDER**, and the audit was recorded at entry #762 before any code existed. Three phases running.
+
+**ONE REVIEW ROUND BY DESIGN.** The operator ruled that audit depth should scale to structural reach rather than to issue count. This batch changes what no gate decides -- one marker instead of all, and two message strings -- so it earned one round. The ruling was made after three consecutive phases spent four to seven iterations each, and it was applied here for the first time.
+
+**WHAT SHIPPED.** `governance_index.advance_last_reviewed` rewrote every `**Last Reviewed**:` marker rather than the current one, so an index carrying one stanza per cycle had them all restamped and asserted reviews that did not happen. It now writes the first marker, which is the one `_last_reviewed` reads with `.search()` to decide staleness: advance and check must agree about which stanza is current, and that consistency is the argument rather than layout convention. GH #426.
+
+Two misleading messages in `governance_helpers`. `parse_change_class` told operators the canonical form was one of three classes while its regex accepts four, so a plan declaring the fourth was told the class does not exist. `_compute_new` reported `unknown change_class` for a value the schema declares valid; it now names the class non-release and points at the routing the caller skipped. GH #433.
+
+**GH #433 CLOSED FOR LESS THAN IT ASKED, AND THE PLAN HAD IT BACKWARDS FIRST.** The issue reports that a plan declaring `change_class: governance` validates and then dies at the version bump. The raise is the GUARD: `governance` is the declared non-release class, `is_release_class` returns False for it, the schema's own description says so, and four sealed plans in this repository declare it and completed -- the ledger records one as version-not-applicable with no bump or tag.
+
+The first iteration proposed mapping it to a patch bump. That would have placed two contradicting definitions of the class inside the module the version gate delegates to, across three callers rather than the one the plan named. Worse was the test drafted with it: iterating the schema enum to assert every class can compute a version pins exactly the proposition an earlier phase rejected, and would have made correct behaviour a failure for whoever adds a second non-release class. It was described in the plan as future-proofing.
+
+The author took the issue's framing without checking whether the crash was reachable on the live route. That is the same error as the phase before, where a reproduction was built on a shape the current template no longer emits, and it is now twice in three phases.
+
+**THE TEST THAT REPLACED IT ASSERTS THE PARTITION, NOT THE INSTANCE.** Every declared class is in exactly one of the two sets, and computes a version if and only if it is a release class. An instance-shaped test would have pinned that `governance` refuses; this pins that non-release classes refuse, which is the rule. It also closes the issue's real residual: release status is set membership, so a class the classifier does not recognise is silently treated as version-not-applicable and would ship with no version and no tag. The partition test goes red the moment a fifth class is added unclassified. Making the classifier raise is a behaviour change and was kept out of a batch whose scope line is that nothing here changes a gate's decision.
+
+**THE DEFERRED DEFECT COST MORE THAN THE TWO THAT SHIPPED.** GH #424 -- a VETO report that quotes the canonical form authorizes an intent-lock capture -- was scoped here as bounded and removed once three findings showed it is not. The drafted predicate enumerated verdict words, so a report whose verdict is outside that list, alongside a quoted canonical PASS, authorizes: the reported hole, narrower, and the third consecutive phase in which an enumeration stood where a rule belonged. The proposed factoring returned collected verdicts instead of a boolean, which makes the refusal test truthy for a VETO-only report and would have let a VETO write the lock. And the refusal would have routed into a hint branch telling the operator their canonical formatting is non-canonical -- re-opening the incident that hint function exists to prevent, in the same edit citing the widening as the thing not to break.
+
+Its constraint set is preserved verbatim as that phase's starting research rather than re-derived.
+
+**THREE CARRY-OVERS THE AUDIT CAUGHT, TWO OF WHICH WOULD HAVE FAILED CI.** The plan's first CI command named a test file that does not exist here, so the block could not have passed. Its affected-files list named a module containing no coverage of the function being changed. And its scope note still described three defects after the title said two -- a restatement that did not move when its subject did.
+
+**A MISTAKE REPEATED FROM THE PHASE BEFORE LAST.** The changelog was written with a `### Notes` subsection, which the format lint rejects; the same error cost Phase 269 a cycle. It is now recorded as a reference rather than left to recall.
+
+**LIMITS.** The reviewer held Read, Grep and Glob only and executed nothing. Every measurement is the author's. The reviewer confirmed by reading that the one-marker change breaks no existing test, because both fixtures exercising that function write a single marker; and that this repository's own index carries exactly one matching marker, so the fix is latent here and live for the consumer that filed it.
+
+**Version**: 0.170.0 -> 0.170.1 per the plan's declared `hotfix` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)
