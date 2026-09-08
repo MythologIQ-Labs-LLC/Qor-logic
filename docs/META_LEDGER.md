@@ -22755,5 +22755,68 @@ Corrected to the tolerated fixture, where a bleed contradicts an OK verdict rath
 
 ---
 
+### Entry #772: GATE TRIBUNAL -- Phase 279 marker unlink condition, iteration 4 (PASS)
+
+**Timestamp**: 2026-09-08T22:10:00Z
+**Phase**: GATE (Phase 279)
+**Author**: Judge
+**Risk Grade**: L1
+**Entry ID**: `3e2c29daee78`
+**Plan**: docs/plan-qor-phase279-marker-unlink-condition.md (iteration 4)
+**Session**: 2026-09-08T2149-c86342
+
+**Content Hash**: `520dc11e70df5fc5a9bae22c41381599fe327549624fb1bc1d64e319fbcb0360`
+**Previous Hash**: `ddcaad6614f4483fc062fcefafbd72d9be00890835ca2ea18c80bf3b6bbbbb7d`
+**Chain Hash (Merkle seal)**: `c803905d6564b95ef4263e8648fe24a2f0a24b957aabd7ed50b4efc9a45b6e87`
+
+**Decision**: **Verdict**: **PASS**. Three VETOs on a two-line deletion, and the code was never the thing under attack -- the prose about it was.
+
+**THE CORE DECISION SURVIVED FOUR ROUNDS.** Removal rather than condition, with three alternatives refuted on measured grounds: `flipped > 0` deletes a live breach whenever a subset is flipped; requiring the flipped ids to cover the marker's fails on any event appended after the marker was written, where the superset holds while the true sum still breaches; and recomputing the sum here would make this module a second owner of a predicate `check_shadow_threshold` already owns.
+
+**THE PLAN MEASURED ONE BRANCH OF TWO AND MEASURED THE WRONG ONE.** It traced the case where every marker event is already addressed; the collector produces partial flips. The untraced branch splits: a residual below the threshold files an issue whose header contradicts its own numbers, and a residual still above it files a true breach issue where the old behaviour made the live breach invisible. The second is the case that justifies the phase, and the plan argued entirely from an asymmetry principle without ever naming it.
+
+**A TEST WAS HOLLOWED OUT BY THIS CHANGE AND NOBODY WOULD HAVE NOTICED.** Phase 278's placement test asserts the breach marker survives a malformed id, which witnessed that the validation guard ran before the unlink. Removing the unlink makes that assertion hold wherever the guard sits. The test keeps passing and stops discriminating -- the presence-only shape arriving through change rather than through bad authorship. Re-pinned on control flow, which survives changes to what happens afterwards.
+
+**AND THE REMEDY COULD HOLLOW OUT BY ITS OWN MECHANISM.** The surrounding file uses the permissive monkeypatch idiom eleven times, including inside the test being repaired; under it a later rename would create a dead attribute and the sentinel would never fire.
+
+**FOUR CLAIMS ASSERTED WITHOUT MEASUREMENT, THREE OF THEM INSIDE A REMEDY FOR THE PREVIOUS ONE.** The cell written to correct a row vetoed for asserting an unmeasured claim asserted a different unmeasured claim about the same test, one iteration later. Three of the four were drift in a hand-maintained number that a machine-written artifact already held correctly.
+
+**Required next action**: implement against iteration 4, tests first, sentinel with `raising=True`.
+
+---
+
+### Entry #773: SESSION SEAL -- Phase 279 marker unlink condition (v0.171.3)
+
+**Timestamp**: 2026-09-08T22:45:00Z
+**Phase**: SEAL (Phase 279)
+**Author**: Governor
+**Risk Grade**: L1
+**Entry ID**: `2ff43b950d1f`
+**Plan**: docs/plan-qor-phase279-marker-unlink-condition.md (iteration 4)
+**Session**: 2026-09-08T2149-c86342
+**Closes**: GH #472
+
+**Content Hash**: `520dc11e70df5fc5a9bae22c41381599fe327549624fb1bc1d64e319fbcb0360`
+**Previous Hash**: `c803905d6564b95ef4263e8648fe24a2f0a24b957aabd7ed50b4efc9a45b6e87`
+**Chain Hash (Merkle seal)**: `24bdb65019c7380c91c0b464cab412d6349a009ee4654fcf63cb9a79f1d25cfc`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 4.
+
+**THE CYCLE RAN IN ORDER**, audit at entry #772 and the intent lock captured before any implementation code existed.
+
+**A COMMAND DELETED A RECORD IT NEVER READ.** `--flip-only` removed the breach marker unconditionally, discarding the `flipped` count it had just printed, so a well-formed id matching no event destroyed the breach record and returned 0 -- leaving the next run to find nothing to do for a legitimate reason. The marker asserts that the unaddressed severity sum exceeds the threshold; this command never reads it, its ids come from a cross-repo sweep that never consulted this repository's sum, and its own sibling already declines to delete on explicit `--events`. Removal returns to `check_shadow_threshold`, which writes the marker and removes it when the breach clears.
+
+**NO CONDITION WAS SUBSTITUTED, AND THAT IS THE DESIGN.** Every condition available here is a proxy for a comparison this command lacks the inputs to make. Both candidates were refuted with constructed counterexamples rather than rejected on taste.
+
+**THE ACCEPTED COST IS FILED, NOT ABSORBED.** A partial flip whose residual falls below the threshold now files an issue whose header contradicts its own numbers. That contradiction is reachable on main today by three routes this phase does not touch, one of them a documented workflow, and it belongs to `build_body`'s inputs rather than to the marker lifecycle. Filed as GH #474 before the seal rather than promised to a future phase, and cited by number in Limitations.
+
+**TWO SHADOW GENOME ENTRIES RECORDED, AND THE SECOND IS NEW.** A `repeated_veto_pattern` for four unmeasured claims in one document, whose generalizable rule is not "check your numbers" but **stop restating numbers an artifact owns; cite the artifact** -- three of the four were drift in a value `audit-iterN.json`, a grep, or a test run already held correctly. And a `regression` recording that **a test can be correct when written and hollowed out by a later phase that never touches it**, with the detection rule and the control-flow remedy. Both carry `closure_enforcer` text naming what does and does not enforce their closure; neither claims a gate exists where none does.
+
+**ONE ERROR RAN AGAINST THIS PHASE'S INTEREST.** An entrance count was undercounted, making the change look like a larger contribution to the problem than it is. Every other error this session leaned the other way. The reviewer's note is recorded: the incentive to check runs the wrong way, so an error against your own interest is the one you will not catch, and an adversarial reviewer is structurally necessary for that class rather than merely useful.
+
+**Version**: 0.171.2 -> 0.171.3 per the plan's declared `hotfix` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

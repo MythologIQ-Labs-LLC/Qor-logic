@@ -10,6 +10,22 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.171.3] - 2026-09-08
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 279 (hotfix; the marker's writer owns its removal)**: `create_shadow_issue --flip-only` deleted the breach marker unconditionally, discarding the `flipped` count it had just printed. A well-formed id matching no event flipped nothing, **destroyed the breach record**, and returned 0 -- so the next run found nothing to do for a legitimate reason, indistinguishable from a clean state. GH #472.
+
+  The deletion is removed rather than conditioned. The marker asserts that the unaddressed severity sum exceeds the threshold; `--flip-only` never reads it, and its ids come from a cross-repo sweep that never consulted this repository's severity sum. `check_shadow_threshold` writes the marker and removes it when the breach clears -- that is the whole of its lifecycle, and it now has one owner again.
+
+  **No condition was substituted, because every one available is a proxy for a comparison the command cannot make.** `flipped > 0` deletes a live breach whenever a subset is flipped -- flipping 1 of 10 breach events leaves the breach standing. Requiring the flipped ids to cover the marker's fails on any event appended after the marker was written: the superset holds while the true sum still breaches.
+
+### Changed
+- A breach marker may now persist after its breach clears, until `qor-process-review-cycle` or `qor-shadow-process` next runs the writer. That is the accepted side of an asymmetry: **a marker persisting after a breach clears is noise; a marker deleted while the breach is real destroys the record of it.** In the case that justifies the change -- a partial flip leaving a residual still above the threshold -- the surviving marker files a true breach issue where the old behaviour made the live breach invisible.
+
+- A partial flip whose residual falls *below* the threshold now files an issue whose header contradicts its own numbers ("threshold breach" over a sum below the threshold). Accepted and filed as GH #474, not fixed here: the defect belongs to `build_body`'s inputs and is already reachable by three routes this phase does not touch, one of them a documented workflow.
+
 ## [0.171.2] - 2026-09-08
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

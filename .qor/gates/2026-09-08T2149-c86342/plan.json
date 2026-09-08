@@ -1,0 +1,23 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-08T2149-c86342",
+  "ts": "2026-09-08T22:12:06Z",
+  "plan_path": "docs/plan-qor-phase279-marker-unlink-condition.md",
+  "change_class": "hotfix",
+  "phases": [
+    "D1 removal",
+    "D2 why not a condition",
+    "D3 the cost, both branches",
+    "D4 the hollowed witness restored",
+    "D5 exclusions"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_shadow.py tests/test_collect.py -q",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto",
+    "python -m qor.scripts.governance_health --profile skill-entry",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest -q"
+  ]
+}
