@@ -1,0 +1,10 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-08T0834-43f15b",
+  "ts": "2026-09-08T08:47:24Z",
+  "target": "docs/plan-qor-phase273-loader-and-contract-tests.md",
+  "verdict": "PASS",
+  "risk_grade": "L1",
+  "target_content_hash": "e5efd0d7ced5996bec1ec7426296e6ecd1212e48ec57e87b27664f86db61fea7",
+  "violations": []
+}

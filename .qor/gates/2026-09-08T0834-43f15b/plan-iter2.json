@@ -1,0 +1,21 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-08T0834-43f15b",
+  "ts": "2026-09-08T08:42:48Z",
+  "plan_path": "docs/plan-qor-phase273-loader-and-contract-tests.md",
+  "phases": [
+    "D1 load_marker names six failure kinds, including the shape fault that returned success",
+    "D2 pin the no-raw-diagnostics contract with a fixture that can actually bleed"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_shadow.py tests/test_cli_governance_health.py tests/test_governance_health_post_anchor_tolerance.py -q",
+    "python -m qor.scripts.governance_health --profile skill-entry",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.gate_provenance verify-committed",
+    "python -m pytest -q"
+  ],
+  "change_class": "hotfix"
+}

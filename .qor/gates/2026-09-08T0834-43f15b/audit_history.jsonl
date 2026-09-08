@@ -1,0 +1,1 @@
+{"artifact_filename":"audit-iter1.json","phase":"audit","risk_grade":"L1","session_id":"2026-09-08T0834-43f15b","target":"docs/plan-qor-phase273-loader-and-contract-tests.md","target_content_hash":"e5efd0d7ced5996bec1ec7426296e6ecd1212e48ec57e87b27664f86db61fea7","ts":"2026-09-08T08:47:24Z","verdict":"PASS","violations":[]}

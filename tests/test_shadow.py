@@ -401,3 +401,109 @@ def test_escalation_events_not_dropped_during_sweep(tmp_path):
     escalations = shadow_process.read_events(upstream)
     assert len(escalations) > 0
     assert escalations[0]["event_type"] == "aged_high_severity_unremediated"
+
+
+# ----- Phase 273 (GH #454): load_marker names which fault occurred -----
+
+def _marker(tmp_path, body, *, encoding="utf-8"):
+    """Point create_shadow_issue at a marker with the given raw content."""
+    from qor.scripts import create_shadow_issue as csi
+
+    p = tmp_path / "remediate-pending"
+    if isinstance(body, bytes):
+        p.write_bytes(body)
+    else:
+        p.write_text(body, encoding=encoding)
+    csi.MARKER_PATH = p
+    return csi, p
+
+
+def test_load_marker_exits_on_a_truncated_marker(tmp_path, monkeypatch):
+    from qor.scripts import create_shadow_issue as _csi
+
+    monkeypatch.setattr(_csi, "MARKER_PATH", _csi.MARKER_PATH, raising=False)
+    csi, p = _marker(tmp_path, '{"event_ids": [')
+    with pytest.raises(SystemExit) as exc:
+        csi.load_marker()
+    assert "not readable JSON" in str(exc.value)
+    assert "check_shadow_threshold" in str(exc.value)
+
+
+def test_load_marker_exits_on_non_utf8_bytes(tmp_path, monkeypatch):
+    """PowerShell Out-File writes UTF-16; the decode fails before json does."""
+    from qor.scripts import create_shadow_issue as _csi
+
+    monkeypatch.setattr(_csi, "MARKER_PATH", _csi.MARKER_PATH, raising=False)
+    csi, p = _marker(tmp_path, '{"event_ids": []}'.encode("utf-16"))
+    with pytest.raises(SystemExit) as exc:
+        csi.load_marker()
+    assert "not UTF-8" in str(exc.value)
+
+
+def test_load_marker_exits_on_non_dict_json(tmp_path, monkeypatch):
+    """Valid JSON that is not an object returned cleanly and failed later."""
+    from qor.scripts import create_shadow_issue as _csi
+
+    monkeypatch.setattr(_csi, "MARKER_PATH", _csi.MARKER_PATH, raising=False)
+    csi, p = _marker(tmp_path, "[]")
+    with pytest.raises(SystemExit) as exc:
+        csi.load_marker()
+    assert "expected an object" in str(exc.value)
+
+
+def test_load_marker_exits_on_event_ids_as_a_string(tmp_path, monkeypatch):
+    """The silent-success mode.
+
+    `set("evt-1")` is a set of CHARACTERS, so nothing matches and main returned
+    0 on a breached threshold. This survives an isinstance(dict) guard, which is
+    why the shape check is not optional.
+    """
+    from qor.scripts import create_shadow_issue as _csi
+
+    monkeypatch.setattr(_csi, "MARKER_PATH", _csi.MARKER_PATH, raising=False)
+    csi, p = _marker(
+        tmp_path,
+        json.dumps({"event_ids": "evt-1", "threshold": 10, "breach_ts": "2026-01-01T00:00:00Z"}),
+    )
+    with pytest.raises(SystemExit) as exc:
+        csi.load_marker()
+    assert "event_ids" in str(exc.value)
+    assert "expected a list" in str(exc.value)
+
+
+def test_load_marker_exits_on_a_missing_required_key(tmp_path, monkeypatch):
+    """The same deferred shape one frame later: build_body subscripts these."""
+    from qor.scripts import create_shadow_issue as _csi
+
+    monkeypatch.setattr(_csi, "MARKER_PATH", _csi.MARKER_PATH, raising=False)
+    csi, p = _marker(tmp_path, json.dumps({"event_ids": []}))
+    with pytest.raises(SystemExit) as exc:
+        csi.load_marker()
+    message = str(exc.value)
+    assert "threshold" in message and "breach_ts" in message
+
+
+def test_load_marker_still_returns_a_valid_marker(tmp_path, monkeypatch):
+    """The good path is byte-identical; the writer's payload is admitted."""
+    from qor.scripts import create_shadow_issue as _csi
+
+    monkeypatch.setattr(_csi, "MARKER_PATH", _csi.MARKER_PATH, raising=False)
+    payload = {
+        "breach_ts": "2026-01-01T00:00:00Z",
+        "threshold": 10,
+        "severity_sum": 15,
+        "event_count": 1,
+        "event_ids": ["a" * 64],
+        "next_action": "Run /qor-remediate",
+    }
+    csi, p = _marker(tmp_path, json.dumps(payload))
+    assert csi.load_marker() == payload
+
+
+def test_load_marker_still_exits_when_absent(tmp_path, monkeypatch):
+    from qor.scripts import create_shadow_issue as _csi
+
+    monkeypatch.setattr(_csi, "MARKER_PATH", tmp_path / "nope", raising=False)
+    with pytest.raises(SystemExit) as exc:
+        _csi.load_marker()
+    assert "No marker at" in str(exc.value)
