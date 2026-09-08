@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-08T2149-c86342",
+  "plan_path": "docs/plan-qor-phase279-marker-unlink-condition.md",
+  "plan_hash": "520dc11e70df5fc5a9bae22c41381599fe327549624fb1bc1d64e319fbcb0360",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "cee437607219005e0de8d46c9b37e65430936707d6e147225697adf859d18fc9",
+  "head_commit": "a5e258cc2c1aa3cc05ac63261d1e8d45eaa9eed8",
+  "captured_ts": "2026-09-08T22:12:07.186763Z"
+}

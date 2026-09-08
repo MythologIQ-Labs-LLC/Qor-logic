@@ -1,0 +1,1 @@
+{"artifact_filename":"audit-iter1.json","phase":"audit","risk_grade":"L1","session_id":"2026-09-08T2149-c86342","target":"docs/plan-qor-phase279-marker-unlink-condition.md","target_content_hash":"520dc11e70df5fc5a9bae22c41381599fe327549624fb1bc1d64e319fbcb0360","ts":"2026-09-08T22:12:06Z","verdict":"PASS","violations":[]}

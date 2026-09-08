@@ -1,0 +1,38 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-08T2149-c86342",
+  "ts": "2026-09-08T22:12:05Z",
+  "questions": [
+    "When is deleting the breach marker correct?",
+    "Is --flip-only entitled to make that claim?",
+    "What does removing the deletion cost?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #472",
+      "finding": "--flip-only deletes the marker unconditionally, discarding the flipped count it printed",
+      "evidence": "create_shadow_issue.py:314-317; flipped read nowhere after :315"
+    },
+    {
+      "issue": "GH #472",
+      "finding": "the marker asserts the unaddressed severity sum exceeds the threshold; check_shadow_threshold is its sole writer and removes it exactly when the breach clears",
+      "evidence": "check_shadow_threshold.py:191 write, :209-211 remove, called at :228 and :258"
+    },
+    {
+      "issue": "GH #472",
+      "finding": "--flip-only cannot support that claim: it never reads the marker, its ids are unrelated to it, and its own sibling declines to delete on explicit --events",
+      "evidence": "collect_shadow_genomes.py has 0 MARKER_PATH refs; ids from by_repo[e['source_repo']]; sibling guard at create_shadow_issue.py:361"
+    },
+    {
+      "issue": "GH #474",
+      "finding": "a subset selection produces an issue header contradicting its own numbers, reachable today by three routes",
+      "evidence": ":329 synthesised marker, --mark-resolved workflow, /qor-remediate; build_body:175 vs :179"
+    }
+  ],
+  "sources": [
+    "docs/research-brief-marker-unlink-condition-2026-09-08.md",
+    "qor/scripts/create_shadow_issue.py",
+    "qor/scripts/check_shadow_threshold.py",
+    "qor/scripts/collect_shadow_genomes.py"
+  ]
+}

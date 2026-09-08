@@ -313,8 +313,31 @@ def main() -> int:
             return 2
         flipped = flip_events_only(log, target_ids, args.flip_only)
         print(f"Flipped {flipped} event(s) in {log}")
-        if MARKER_PATH.exists():
-            MARKER_PATH.unlink()
+        # Phase 279 (GH #472): this path does NOT remove the marker.
+        #
+        # It used to, unconditionally, discarding the `flipped` count printed
+        # above -- so a well-formed id matching no event flipped nothing,
+        # destroyed the breach record, and returned 0, leaving the next run to
+        # find nothing to do for a legitimate reason.
+        #
+        # The marker asserts that the unaddressed severity sum exceeds the
+        # threshold. Deleting it claims the breach is over, and this command
+        # cannot support that claim: it never reads the marker, and its ids come
+        # from a cross-repo sweep that never consulted this repository's
+        # severity sum. `check_shadow_threshold` writes the marker and removes
+        # it when the breach clears; that is the whole of its lifecycle.
+        #
+        # No condition was substituted, because every one available here is a
+        # proxy for a comparison this command lacks the inputs to make.
+        # `flipped > 0` deletes a live breach whenever a subset is flipped;
+        # requiring the flipped ids to cover `marker["event_ids"]` fails on any
+        # event appended after the marker was written -- the superset holds
+        # while the true sum still breaches.
+        #
+        # The sibling at the issue-creation path already declines to do this,
+        # removing the marker only `if MARKER_PATH.exists() and not args.events`.
+        # `--flip-only` requires `--events`, so under its own module's guard it
+        # should never have removed the marker.
         return 0
 
     if not args.skip_auth and not args.dry_run:

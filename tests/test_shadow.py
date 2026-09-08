@@ -604,21 +604,44 @@ def test_events_flag_with_a_malformed_id_returns_two(tmp_path, monkeypatch, flag
 def test_flip_only_with_a_malformed_id_leaves_the_marker_intact(tmp_path, monkeypatch):
     """The load-bearing property is PLACEMENT, not the exit code.
 
-    A test asserting only rc == 2 passes with the guard sitting AFTER the
-    unconditional unlink at :243-244 -- malformed id, breach marker already
-    destroyed, still rc 2. This pins that the guard runs first. It does NOT
-    assert the unlink defect is fixed; a well-formed id matching no event still
-    deletes the marker (GH #472).
+    Phase 278 wrote this against the unconditional unlink: a test asserting only
+    rc == 2 passed with the guard sitting after it, so the marker surviving was
+    the witness that the guard ran first.
+
+    Phase 279 (GH #472) removed that unlink, which HOLLOWED THIS TEST OUT --
+    marker.exists() now holds wherever the guard sits, because nothing on this
+    path deletes the marker at all. A correct test made vacuous by a later phase
+    that never touched it.
+
+    The witness is re-pinned on control flow, which survives changes to what
+    happens afterwards: flip_events_only is replaced by a sentinel that fails on
+    contact, so REACHING it fails the test. Guard-before-flip strictly implies
+    guard-before-anything-after-the-flip, so this pins a superset of what the
+    marker assertion pinned.
+
+    raising=True (the default) is required, not stylistic: with raising=False a
+    later rename of flip_events_only would create a dead attribute, the sentinel
+    would never fire, and this test would hollow out again by exactly the
+    mechanism it was rewritten to survive. pytest.fail raises an
+    OutcomeException deriving from BaseException, so the sentinel also survives
+    any future broad `except Exception` at the call site.
+
+    The marker assertion is kept as characterization, not as the witness.
     """
     csi, log, _ = _log_with_event(tmp_path, monkeypatch)
     marker = tmp_path / "remediate-pending"
     marker.write_text("{}", encoding="utf-8")
     monkeypatch.setattr(csi, "MARKER_PATH", marker, raising=False)
 
+    def _must_not_be_reached(*_a, **_k):
+        pytest.fail("the guard must short-circuit before flip_events_only")
+
+    monkeypatch.setattr(csi, "flip_events_only", _must_not_be_reached)
+
     rc = _run_main(monkeypatch, ["--flip-only", "https://i/1", "--events", "evt-1", "--log", str(log)])
 
     assert rc == 2
-    assert marker.exists(), "the guard must run before the unconditional unlink"
+    assert marker.exists()  # characterization: nothing on this path deletes it
 
 
 def test_events_with_a_trailing_comma_is_still_accepted(tmp_path, monkeypatch):
@@ -651,3 +674,67 @@ def test_a_valid_id_matching_no_event_still_exits_zero(tmp_path, monkeypatch):
     csi, log, _ = _log_with_event(tmp_path, monkeypatch)
     absent = hashlib.sha256(b"no-such-event").hexdigest()
     assert _run_main(monkeypatch, ["--mark-resolved", "--events", absent, "--log", str(log)]) == 0
+
+
+# ----- Phase 279 (GH #472): the marker's writer owns its removal -----
+#
+# --flip-only deleted the breach marker unconditionally, discarding the flipped
+# count it had just printed. A well-formed id matching no event flipped nothing,
+# destroyed the breach record, and returned 0 -- so the next run found nothing to
+# do for a legitimate reason, indistinguishable from a clean state.
+#
+# The deletion is removed rather than conditioned. The marker asserts that the
+# unaddressed severity sum exceeds the threshold; --flip-only never reads it, its
+# ids come from a cross-repo sweep unrelated to it, and every condition available
+# to it (flipped > 0, or the flipped ids covering the marker's) is a proxy for a
+# comparison it lacks the inputs to make.
+
+
+def _marker_and_event(tmp_path, monkeypatch):
+    """A real unaddressed event plus a breach marker naming it."""
+    csi, log, eid = _log_with_event(tmp_path, monkeypatch)
+    marker = tmp_path / "remediate-pending"
+    marker.write_text(json.dumps({
+        "event_ids": [eid], "threshold": 10, "breach_ts": "2026-01-01T00:00:00Z",
+        "severity_sum": 15, "event_count": 1, "next_action": "Run /qor-remediate",
+    }), encoding="utf-8")
+    monkeypatch.setattr(csi, "MARKER_PATH", marker)
+    return csi, log, eid, marker
+
+
+def test_flip_only_with_no_matching_events_leaves_the_marker(tmp_path, monkeypatch):
+    """The reported defect. A well-formed id matching no event flips nothing --
+    and must not destroy the record of a breach it knows nothing about."""
+    import hashlib
+    csi, log, _, marker = _marker_and_event(tmp_path, monkeypatch)
+    absent = hashlib.sha256(b"no-such-event").hexdigest()
+
+    rc = _run_main(monkeypatch, ["--flip-only", "https://i/1", "--events", absent, "--log", str(log)])
+
+    assert rc == 0
+    assert marker.exists(), "0 flipped must not delete the breach record"
+
+
+def test_flip_only_with_matching_events_also_leaves_the_marker(tmp_path, monkeypatch):
+    """Removal is unconditional in the other direction too: this command never
+    deletes the marker. Without this row the behaviour is half-specified and
+    invites reintroducing a `flipped > 0` condition -- which is wrong for the
+    same reason, since flipping 1 of 10 breach events leaves the breach standing."""
+    csi, log, eid, marker = _marker_and_event(tmp_path, monkeypatch)
+
+    rc = _run_main(monkeypatch, ["--flip-only", "https://i/1", "--events", eid, "--log", str(log)])
+
+    assert rc == 0
+    assert marker.exists(), "the writer owns removal; this command never does"
+
+
+def test_flip_only_still_flips_and_still_returns_zero(tmp_path, monkeypatch):
+    """No regression in what the command is for."""
+    csi, log, eid, _ = _marker_and_event(tmp_path, monkeypatch)
+
+    rc = _run_main(monkeypatch, ["--flip-only", "https://i/1", "--events", eid, "--log", str(log)])
+
+    assert rc == 0
+    after = shadow_process.read_events(log)[0]
+    assert after["addressed"] is True
+    assert after["issue_url"] == "https://i/1"
