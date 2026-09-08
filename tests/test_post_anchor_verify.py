@@ -231,3 +231,105 @@ def test_fully_unmarked_entry_remains_a_tolerated_skip(tmp_path, capsys):
     p = _write(tmp_path, body)
     rc = lh.verify_post_anchor(p, boundary_entry=1)
     assert rc == 0
+
+
+# ----- Phase 270 (GH #443, #425, #430): post-anchor shares verify()'s ladder -----
+
+import re as _re
+
+
+def _plain(num: int, body_text: str = "historical entry") -> str:
+    """An entry with no hash label at all: rung 4, a silent skip in both modes."""
+    return "### Entry #%d: TEST\n\n%s\n\n" % (num, body_text)
+
+
+def _body_of(entry_text: str) -> str:
+    """The body as ENTRY_RE.split yields it: everything after the header."""
+    return lh.ENTRY_RE.split(entry_text)[2]
+
+
+def _attestation(attested: dict, num: int = 900) -> str:
+    """A MIGRATION ATTESTATION entry, itself properly chained.
+
+    It sits above the markup cutoff, so it must carry real hash markup or rung 1
+    fails it. That is correct behaviour, and an earlier version of this fixture
+    omitted the markup and blamed the code.
+    """
+    lines = "\n".join("#%d=%s" % (n, d) for n, d in attested.items())
+    c, p, ch = _chain_genesis(b"attestation-entry")
+    return (
+        "### Entry #%d: MIGRATION ATTESTATION -- pre-convention band\n\n"
+        "**Content Hash**: `%s`\n\n**Previous Hash**: `%s`\n\n"
+        "**Chain Hash**: `%s`\n\n"
+        "**Attested Entries**:\n%s\n\n" % (num, c, p, ch, lines)
+    )
+
+
+def _entries_named(text: str) -> set:
+    return {int(m) for m in _re.findall(r"Entry #(\d+)", text)}
+
+
+def test_post_anchor_reports_what_verify_reports(tmp_path, capsys):
+    """The two modes must agree on which entries they can speak about.
+
+    Rung 4 is a silent skip in BOTH modes, so an unmarked pre-cutoff entry is
+    correctly absent from each. What was wrong before Phase 270 is that rungs 1
+    and 2 were absent from post-anchor only: measured on this repository, 735 of
+    757 entries reported, and all 22 omitted were migration-attested.
+    """
+    legacy = _plain(2)
+    digest = lh._legacy_body_digest(_body_of(legacy))
+    c, p, ch = _chain_genesis(b"p270-a")
+    led = _write(
+        tmp_path,
+        "# LEDGER\n\n" + _entry(1, c, p, ch) + legacy + _attestation({2: digest}),
+    )
+
+    lh.verify(led)
+    raw = capsys.readouterr()
+    lh.verify_post_anchor(led)
+    post = capsys.readouterr()
+
+    assert _entries_named(raw.out + raw.err) == _entries_named(post.out + post.err)
+
+
+def test_post_anchor_verifies_a_migration_attested_entry(tmp_path, capsys):
+    """Rung 2 reaches post-anchor: an attested pre-convention entry is
+    positively verified rather than omitted from the surface."""
+    legacy = _plain(2)
+    digest = lh._legacy_body_digest(_body_of(legacy))
+    c, p, ch = _chain_genesis(b"p270-b")
+    led = _write(
+        tmp_path,
+        "# LEDGER\n\n" + _entry(1, c, p, ch) + legacy + _attestation({2: digest}),
+    )
+    rc = lh.verify_post_anchor(led)
+    cap = capsys.readouterr()
+    assert "attested by migration entry" in (cap.out + cap.err)
+    assert rc == 0
+
+
+def test_post_anchor_fails_an_edited_attested_body(tmp_path, capsys):
+    """Attestation is stronger than a skip: an edited attested body fails."""
+    digest = lh._legacy_body_digest(_body_of(_plain(2)))
+    tampered = _plain(2, "historical entry, quietly edited")
+    c, p, ch = _chain_genesis(b"p270-c")
+    led = _write(
+        tmp_path,
+        "# LEDGER\n\n" + _entry(1, c, p, ch) + tampered + _attestation({2: digest}),
+    )
+    rc = lh.verify_post_anchor(led)
+    cap = capsys.readouterr()
+    assert rc != 0
+    assert "attestation digest mismatch" in (cap.out + cap.err)
+
+
+def test_post_anchor_fails_unmarked_entry_above_cutoff(tmp_path, capsys):
+    """Rung 1 reaches post-anchor: a modern entry with no markup is an error,
+    not a tolerated skip."""
+    c, p, ch = _chain_genesis(b"p270-d")
+    led = _write(tmp_path, "# LEDGER\n\n" + _entry(1, c, p, ch) + _plain(500))
+    rc = lh.verify_post_anchor(led)
+    cap = capsys.readouterr()
+    assert rc != 0
+    assert "missing canonical hash markup" in (cap.out + cap.err)

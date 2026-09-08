@@ -309,6 +309,61 @@ def _migration_attested(entries: list[tuple[int, str]]) -> dict[int, tuple[str, 
     return out
 
 
+def _dispose_unresolvable(
+    num: int,
+    body: str,
+    markup_required_cutoff: int,
+    migration_attested: dict[int, tuple[str, int]],
+) -> tuple[str, str, bool]:
+    """Dispose of an entry whose hashes do not resolve. Shared by both modes.
+
+    Phase 270 (GH #443, #425, #430): verify() disposed of these through four
+    rungs and verify_post_anchor reimplemented only the last two, so a modern
+    entry with no markup and a migration-attested entry were both invisible to
+    the gate that release actually consumes. Measured before the change on this
+    repository's ledger: 735 of 757 entries reported, and all 22 omitted were
+    migration-attested. A hand-reimplemented subset of a ladder is where this
+    phase's defects came from, so there is one ladder and both modes walk it.
+
+    Returns ``(status, message, to_stderr)`` where status is ``"ok"``,
+    ``"fail"`` or ``"skip"``. The caller owns printing and counting, because
+    the two modes disagree about what an error costs, not about what an entry is.
+    """
+    # Rung 1 (GAP-GOV-09): a modern entry MUST carry verifiable hash markup.
+    if num >= markup_required_cutoff:
+        return (
+            "fail",
+            f"FAIL Entry #{num}: missing canonical hash markup "
+            f"(required at/after entry #{markup_required_cutoff})",
+            True,
+        )
+    # Rung 2 (Phase 193, GH #278): the pre-convention band is digest-bound by a
+    # MIGRATION ATTESTATION entry, so an edited legacy body is a failure rather
+    # than a silent skip. This is stronger than a skip, which is why post-anchor
+    # omitting it was a loss and not a tolerance.
+    if num in migration_attested:
+        digest, attester = migration_attested[num]
+        if _legacy_body_digest(body) == digest:
+            return ("ok", f"OK   Entry #{num}: attested by migration entry #{attester}", False)
+        return (
+            "fail",
+            f"FAIL Entry #{num}: attestation digest mismatch "
+            f"(attested {digest} by entry #{attester})",
+            True,
+        )
+    # Rung 3 (GH #363): an entry that NAMES a hash field is making a claim, and
+    # a value the dialect cannot read is a broken claim regardless of number.
+    if _dialect.any_hash_label_present(body):
+        return (
+            "fail",
+            f"FAIL Entry #{num}: hash field labeled but its value "
+            f"matches no recognized form",
+            True,
+        )
+    # Rung 4: an entry with no hash label at all claims nothing.
+    return ("skip", "", False)
+
+
 def _legacy_body_digest(body: str) -> str:
     data = body.encode("utf-8").replace(b"\r\n", b"\n")
     return hashlib.sha256(data).hexdigest()[:12]
@@ -365,6 +420,50 @@ def _classify_entry(num: int, content_val: str, previous_val: str, recorded: str
 
 
 
+def _sequence_break_pairs(
+    entries: list[tuple[int, str]],
+    tolerated: frozenset[int] | set[int] = frozenset(),
+) -> list[tuple[tuple[int, int], str]]:
+    """``_sequence_breaks`` with the adjacent pair the break is a property OF.
+
+    Phase 270: a break belongs to a PAIR in file order, not to one entry. The
+    post-anchor mode must compare it against a boundary, and comparing only the
+    successor's number would fail the wrong entry -- the message says "an entry
+    may have been removed", so the successor is not the damaged link. Both
+    members are returned and the caller requires both to sit at or below an
+    asserted boundary before disclosing it.
+
+    ``_sequence_breaks`` delegates here so the two cannot drift: one traversal,
+    one set of tolerance semantics, and the message is produced once.
+    """
+    pairs: list[tuple[tuple[int, int], str]] = []
+    previous_chain: str | None = None
+    previous_num: int | None = None
+    for num, body in entries:
+        resolved = _resolve_recorded(body)
+        if resolved is None:
+            previous_chain = None
+            previous_num = None
+            continue
+        _content, previous_val, recorded = resolved
+        if num in tolerated:
+            previous_chain = None
+            previous_num = None
+            continue
+        if previous_chain is not None and previous_val != previous_chain:
+            pairs.append(
+                (
+                    (previous_num if previous_num is not None else num, num),
+                    f"BREAK Entry #{num}: previous_hash {previous_val[:16]} was not "
+                    f"produced by the preceding entry (chain {previous_chain[:16]}); "
+                    "an entry may have been removed",
+                )
+            )
+        previous_chain = recorded
+        previous_num = num
+    return pairs
+
+
 def _sequence_breaks(
     entries: list[tuple[int, str]],
     tolerated: frozenset[int] | set[int] = frozenset(),
@@ -379,34 +478,7 @@ def _sequence_breaks(
     Per-entry arithmetic cannot see a deletion: every survivor stays internally
     consistent. This is the assertion that can (GH #316).
     """
-    breaks: list[str] = []
-    previous_chain: str | None = None
-    for num, body in entries:
-        resolved = _resolve_recorded(body)
-        if resolved is None:
-            previous_chain = None
-            continue
-        _content, previous_val, recorded = resolved
-        if num in tolerated:
-            # Disclosed-irregular links (SG-ConcurrentLedgerRace-A residuals,
-            # migration/reconciliation attestations). Their previous_hash is
-            # known not to follow the preceding entry, so a BREAK here would
-            # re-report a condition the chain already accounts for.
-            #
-            # Continuity is UNKNOWN across such an entry, not merely irregular:
-            # its recorded chain hash is not what the next entry followed. Reset
-            # rather than carry it forward, so the successor is not judged
-            # against a predecessor the chain has already disclaimed.
-            previous_chain = None
-            continue
-        if previous_chain is not None and previous_val != previous_chain:
-            breaks.append(
-                f"BREAK Entry #{num}: previous_hash {previous_val[:16]} was not "
-                f"produced by the preceding entry (chain {previous_chain[:16]}); "
-                "an entry may have been removed"
-            )
-        previous_chain = recorded
-    return breaks
+    return [message for _pair, message in _sequence_break_pairs(entries, tolerated)]
 
 
 def _number_gaps(entries: list[tuple[int, str]]) -> list[int]:
@@ -612,9 +684,106 @@ def _find_placeholder_field(content: str, previous: str, chain: str) -> str | No
     return None
 
 
+def _declared_boundary(repo_root, ledger_md) -> int | None:
+    """The operator's declared post-anchor boundary, or None.
+
+    Phase 270: read through the one tolerant config reader, which never raises,
+    so a missing file, unreadable path, invalid JSON or non-object section all
+    read as "declared nothing" and compose with the fail-closed branch below
+    rather than with a tolerated pass.
+
+    `repo_root` is forwarded by callers that hold one. Callers that do not --
+    and on the path CI runs, `seal_entry_check --auto` is one -- get an ancestor
+    search from the ledger, so the declaration is found without every call site
+    changing. The declaration must be COMMITTED: `.qorlogic/` is not gitignored,
+    and a local-only config would pass on the operator's machine and fail in
+    their CI, which is the worst available shape.
+    """
+    from qor.scripts import qorlogic_config
+
+    roots = []
+    if repo_root is not None:
+        roots.append(Path(repo_root))
+    else:
+        here = Path(ledger_md).resolve().parent
+        for candidate in [here, *here.parents]:
+            roots.append(candidate)
+            if (candidate / ".qorlogic").is_dir():
+                break
+    for root in roots:
+        section = qorlogic_config.load_section(root, "ledger")
+        value = section.get("post_anchor_boundary") if isinstance(section, dict) else None
+        if isinstance(value, int) and value >= 0:
+            return value
+    return None
+
+
+def _post_anchor_refusal(
+    failing: list[int],
+    breaks: list[str],
+    duplicates: list[int],
+    reasons: dict[int, tuple[str, bool]] | None = None,
+) -> str:
+    """The message printed when no boundary can be resolved on a damaged ledger.
+
+    Phase 270: this is a contract, not a fit to a test. It names every condition
+    it refuses over and the entries involved, because a refusal that does not
+    name the fork is the support question this mode was already generating.
+
+    It enumerates BY KIND deliberately. A scalar boundary cannot separate "I
+    disclose these math failures" from "I disclose this fork", and an operator
+    clearing a red gate will declare the lowest number producing a clean band --
+    so a refusal that recommended a number without saying what it buries would
+    replace automatic fork tolerance with fork tolerance the tool recommends.
+    """
+    lines = ["FAIL post-anchor: no boundary declared and the ledger is not clean."]
+    reasons = reasons or {}
+    for n in failing[:8]:
+        # The ladder's own wording where it has one, so the refusal says WHY
+        # rather than only which. A refusal that names a condition without
+        # naming its kind is the support question this mode already generates.
+        known = reasons.get(n)
+        lines.append("  " + (known[0] if known else f"FAIL Entry #{n}: post-anchor verification failure"))
+    if len(failing) > 8:
+        lines.append(f"  ... and {len(failing) - 8} further entry failure(s)")
+    for message in breaks[:8]:
+        lines.append(f"  {message}")
+    for n in duplicates:
+        lines.append(f"  FAIL Entry #{n}: duplicate entry number (ledger fork)")
+    candidates = list(failing) + duplicates
+    for message in breaks:
+        found = re.search(r"Entry #(\d+)", message)
+        if found:
+            candidates.append(int(found.group(1)))
+    if candidates:
+        recommended = max(candidates)
+        would_bury = [n for n in duplicates if n <= recommended]
+        lines.append(
+            f"  Declaring post_anchor_boundary = {recommended} in .qorlogic/config.json "
+            f'under "ledger" would disclose everything at or below it.'
+        )
+        if would_bury or breaks:
+            lines.append(
+                "  That declaration would ALSO disclose "
+                + ", ".join(
+                    part
+                    for part in (
+                        f"{len(would_bury)} duplicate entry number(s)" if would_bury else "",
+                        f"{len(breaks)} linkage break(s)" if breaks else "",
+                    )
+                    if part
+                )
+                + " -- a fork is not the same as a math failure, and this "
+                "declaration would not distinguish them."
+            )
+        lines.append("  Commit the declaration: a local-only config passes here and fails in CI.")
+    return "\n".join(lines)
+
+
 def verify_post_anchor(
     ledger_md: Path,
     boundary_entry: int | None = None,
+    repo_root: Path | None = None,
 ) -> int:
     """Verify META_LEDGER.md post-anchor invariant. Returns exit code.
 
@@ -645,8 +814,20 @@ def verify_post_anchor(
         body = parts[i + 1] if i + 1 < len(parts) else ""
         entries.append((num, body))
 
+    # Phase 270: the same ladder verify() walks, not a subset of it.
+    migration_attested = _migration_attested(entries)
+    # `reconciled` is passed unconditionally, as verify() does. `grandfathered`
+    # is NOT: verify() gates it behind tolerate_known_grandfathered, which the
+    # CI invocation does not set, and a tolerated entry is a continuity RESET
+    # rather than message suppression -- passing it here would suppress breaks
+    # verify()'s default reports, reopening a weaker-than-verify gap inside the
+    # phase that closes them.
+    reconciled = _attested_reconciled(entries)
+    markup_required_cutoff = _dialect.MARKUP_COMPAT_BOUNDARY
+
     # First pass: classify each entry as ok/fail without auto-anchor detection.
     classifications: list[tuple[int, str]] = []  # [(entry_num, "ok"|"fail")]
+    ladder_messages: dict[int, tuple[str, bool]] = {}
     for num, body in entries:
         ch = CONTENT_HASH_RE.search(body)
         ph = PREV_HASH_RE.search(body)
@@ -654,15 +835,13 @@ def verify_post_anchor(
         if not (ch and ph and xh):
             seal_only = SESSION_SEAL_RE.search(body) if not xh else None
             if not (ch and ph and seal_only):
-                if _dialect.any_hash_label_present(body):
-                    # GH #363: a hash field is named but its value matches
-                    # none of the recognized forms -- e.g. a 64-character
-                    # non-hex fabrication the extraction regex cannot
-                    # capture. Fail rather than silently drop the entry from
-                    # the post-anchor surface; a fully unmarked (no label at
-                    # all) entry still falls through to the tolerated skip.
-                    classifications.append((num, "fail"))
-                continue  # unparseable: omitted from post-anchor surface
+                status, message, to_stderr = _dispose_unresolvable(
+                    num, body, markup_required_cutoff, migration_attested
+                )
+                if status != "skip":
+                    classifications.append((num, status))
+                    ladder_messages[num] = (message, to_stderr)
+                continue
             recorded = seal_only.group(1)
         else:
             recorded = _dialect.hash_value(xh)
@@ -678,42 +857,85 @@ def verify_post_anchor(
         else:
             classifications.append((num, "fail"))
 
-    # Auto-detect boundary: highest entry id that classified ok.
+    # Phase 270 (GH #443, #425, #430): a boundary must be asserted by someone.
+    # `max(ok_entries)` was derived from the very entries it judged, so ANY
+    # failure was downgraded the moment something valid followed it -- the
+    # one-entry detection window that let a fork print as a tolerated residual.
+    failing = [n for (n, status) in classifications if status == "fail"]
+    break_messages = _sequence_breaks(entries, reconciled)
+    duplicates = _duplicate_entry_numbers(entries)
+    boundary_pinned = boundary_entry is not None
     if boundary_entry is None:
-        ok_entries = [n for (n, status) in classifications if status == "ok"]
-        boundary_entry = max(ok_entries) if ok_entries else 0
+        boundary_entry = _declared_boundary(repo_root, ledger_md)
+        boundary_pinned = boundary_entry is not None
+    if boundary_entry is None:
+        # Auto-detection is permitted only when a strict evaluation would raise
+        # nothing at all. Derived from the error count rather than a list of
+        # failure kinds, so a kind added later is covered the day it is added.
+        if failing or break_messages or duplicates:
+            print(
+                _post_anchor_refusal(failing, break_messages, duplicates, ladder_messages),
+                file=sys.stderr,
+            )
+            return 1
+        boundary_entry = max((n for n, _ in entries), default=0)
 
     errors = 0
     for num, status in classifications:
+        ladder = ladder_messages.get(num)
         if status == "ok":
-            print(f"OK Entry #{num}: chain hash verified (post-anchor)")
+            # A ladder disposition carries its own wording (attested, etc.);
+            # anything else verified by chain arithmetic.
+            if ladder:
+                print(ladder[0])
+            else:
+                print(f"OK Entry #{num}: chain hash verified (post-anchor)")
         elif num <= boundary_entry:
             print(f"DISCLOSED_PRE_ANCHOR Entry #{num}: tolerated pre-boundary failure")
         else:
+            if ladder:
+                print(ladder[0], file=sys.stderr if ladder[1] else None)
+            else:
+                print(
+                    f"FAIL Entry #{num}: post-anchor verification failure",
+                    file=sys.stderr,
+                )
+            errors += 1
+
+    # Phase 270 (GH #425): a duplicate entry number is a fork, and the only
+    # thing that can excuse one is an operator's assertion. The old rule was
+    # `n >= boundary_entry` against a boundary that WAS max(ok_entries), so the
+    # condition could hold only while the duplicated number was itself the
+    # high-water mark -- a one-entry window in an append-only ledger. The
+    # originating incident (two branches allocating #597, four entries landing
+    # after) exited 0 through exactly that gap.
+    for n in duplicates:
+        if boundary_pinned and n <= boundary_entry:
             print(
-                f"FAIL Entry #{num}: post-anchor verification failure",
+                f"DISCLOSED_PRE_ANCHOR Entry #{n}: duplicate entry number "
+                "tolerated (declared pre-boundary residual)"
+            )
+        else:
+            print(
+                f"FAIL Entry #{n}: duplicate entry number (ledger fork)",
                 file=sys.stderr,
             )
             errors += 1
 
-    # GH #361: a ledger fork (two entries independently allocated the same
-    # #N, each individually valid by per-entry chain math) is invisible to
-    # the classification loop above -- both occurrences can classify "ok".
-    # This is the release-gate surface the issue's own repro targets, so the
-    # duplicate must be checked here explicitly, not only in verify().
-    for n in _duplicate_entry_numbers(entries):
-        if n >= boundary_entry:
-            print(
-                f"FAIL Entry #{n}: duplicate entry number (ledger fork) "
-                "at or after the post-anchor boundary",
-                file=sys.stderr,
-            )
-            errors += 1
+    # Phase 270 (GH #443): a linkage break is a property of an adjacent PAIR in
+    # file order, so it is not collapsed onto one entry number. It is disclosed
+    # only when BOTH members sit at or below an asserted boundary: a re-anchored
+    # consumer whose pre-anchor history had an entry removed has such a break by
+    # construction, and refusing it would make declaring worthless. A straddling
+    # break means an entry was removed AT the re-anchor point, which is not
+    # disclosed history. The canonical re-anchor shape produces no break at all,
+    # because the re-anchor entry records the disclosed predecessor's own hash.
+    for pair, message in _sequence_break_pairs(entries, reconciled):
+        if boundary_pinned and max(pair) <= boundary_entry:
+            print(f"DISCLOSED_PRE_ANCHOR {message}")
         else:
-            print(
-                f"DISCLOSED_PRE_ANCHOR Entry #{n}: duplicate entry number "
-                "tolerated (pre-boundary residual)"
-            )
+            print(message, file=sys.stderr)
+            errors += 1
 
     if errors == 0:
         print(f"post-anchor clean (boundary=#{boundary_entry})")

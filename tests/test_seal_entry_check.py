@@ -7,6 +7,7 @@ qor/references/doctrine-test-functionality.md).
 """
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -183,7 +184,19 @@ def test_check_tolerates_disclosed_pre_anchor_failure(tmp_path):
     ledger = tmp_path / "META_LEDGER.md"
     ledger.write_text("# Meta Ledger\n\n" + raw, encoding="utf-8")
 
-    result = seal_entry_check.check(ledger_path=ledger, phase_num=47)
+    # Phase 270: GH #88's tolerance is an operator ASSERTION now, not an
+    # inference from the entries being judged. check() already receives a
+    # repo_root and simply dropped it; forwarding makes the declaration
+    # reachable from the seal gate, which --boundary never was.
+    conf = tmp_path / ".qorlogic"
+    conf.mkdir(parents=True, exist_ok=True)
+    (conf / "config.json").write_text(
+        json.dumps({"ledger": {"post_anchor_boundary": 100}}), encoding="utf-8"
+    )
+
+    result = seal_entry_check.check(
+        ledger_path=ledger, phase_num=47, repo_root=tmp_path
+    )
 
     assert result.ok is True, result.errors
     assert result.errors == []

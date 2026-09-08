@@ -22268,5 +22268,107 @@ Its diff-completeness assurance failed twice in one session: two targeted reads 
 
 ---
 
+### Entry #760: GATE TRIBUNAL -- Phase 270 post-anchor weaker than verify, iteration 4 (PASS)
+
+**Timestamp**: 2026-09-07T21:50:00Z
+**Phase**: GATE (Phase 270)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `c2f1c50f7d36`
+**Plan**: docs/plan-qor-phase270-post-anchor-weaker-than-verify.md (iteration 4)
+**Session**: 2026-09-07T2035-2f4c25
+**Mode**: adversarial -- an independent architecture reviewer held Read/Grep/Glob only and executed nothing
+**Reviews**: GH #443, GH #425, GH #430
+
+**Content Hash**: `6c8fb834435e007a760999325f699686900e0181a7728adf990bb9131d258c87`
+**Previous Hash**: `dd28e11e265c0fcac67c5b6aef060731e94bbdedc8597b01d7b74c7d6c9c0a74`
+**Chain Hash (Merkle seal)**: `b2624956696354770687ac030fce654774dd3a8cf5e35e1b194e0b07b27e0571`
+
+**Decision**: **Verdict**: **PASS** -- iteration 4, on `docs/plan-qor-phase270-post-anchor-weaker-than-verify.md`, with four binding amendments applied before this entry was written. Four iterations, three VETOes, no code at any point.
+
+**WHAT THE VERDICT COVERS.** That `verify_post_anchor` shares `verify()`'s whole unresolvable-entry ladder rather than its last two rungs; that the boundary is resolved by explicit argument, then a committed declaration, then auto-detection permitted only when a strict evaluation would raise nothing, then a fail-closed refusal; that a linkage break is disclosed only when both members of the pair sit at or below an asserted boundary; and that the six fixtures encoding the current weakness are decided rather than discovered.
+
+**THREE VETOES, AND THE SAME DEFECT TWICE.** Iteration 1's design closed neither issue it claimed: `_sequence_breaks` resets continuity across an unresolvable entry, so it returned nothing on the tainted-anchor fixture. It also reproduced the very detection window the phase's own brief diagnosed -- routing linkage results into `max(ok_entries)` means one honest append after a fork moves the boundary past it. Measured DIRTY at the tail, CLEAN with a single valid entry appended. The brief carried an after-later-appends test row for duplicates and none for linkage: the lesson was applied to the smaller symptom.
+
+Iteration 3 then lost the same fork through a different mechanism. Its auto-detection gate read "no entry classifies as a failure", and a fork produces no failing classification because every entry is internally self-consistent. The same honest append defeated `max(ok_entries)` in iteration 1 and the resolution order in iteration 3. The reviewer's remedy is the one this repository keeps arriving at: derive the gate from whether a strict evaluation would raise anything, rather than enumerating failure kinds, so a fifth kind is covered on the day it is added. A three-item AND is a list, and the phase's own brief says the remedy for this class is a rule rather than a list.
+
+**AN ESCAPE HATCH THAT DID NOT EXIST.** Iteration 2 told a damaged consumer to pin `--boundary` and put that remedy in the failure message. The flag reaches only `qor/cli.py`; `seal_entry_check`, `governance_health` and `ledger_upgrade` all call the function with no way to forward one. A consumer would have received a permanently red seal gate on every push, a permanently damaged skill-entry preflight and a refused upgrade, with the named remedy reachable from none of them.
+
+**A PREDECESSOR THIS PHASE FAILED TO CONSULT.** `docs/plan-qor-phase263-declared-post-anchor-anchor.md` already specified the resolution order, the tolerant config reader, and the fail-closed branch. Two iterations were spent inventing it. It is cited as predecessor rather than superseded, because it measured the consumer-breakage question independently and rejected an approach this phase re-derived from scratch. Its declared-boundary-of-111 conclusion is superseded on one point only: it needed that declaration because it left ten attested entries classified as failures, and the shared ladder makes them attested-OK, so this repository needs no declaration at all.
+
+Testing the predecessor rather than adopting it found a defect in it. Its `repo_root`-defaults-to-the-ledger's-grandparent rule serves a ledger under `docs/` and overshoots for one written at a fixture root. Both governance callers already hold a root and drop it, so the root is forwarded where a caller has one, with an ancestor search as the fallback -- and the fallback, not the forwarding, is the production mechanism, because the CI path calls with no root at all.
+
+**A FOURTH GAP NOBODY HAD ESTABLISHED, AND A SECOND CORRECTION IT DELIVERS.** `verify()` disposes of an unresolvable entry through four rungs; the post-anchor mode reimplements the last two. Measured on this ledger: 735 of 757 entries reported, 22 omitted entirely, and all 22 migration-attested. Sharing the ladder upgrades them from invisible to positively verified. That is a correction this phase makes rather than a cost it pays, and it was found by the reviewer rather than by the author.
+
+**THE AUTHOR'S CLAIM THAT MOVED THE DESIGN WAS WRONG.** The brief asserted entries #1 through #10 were pre-convention skips. They are positively attested by entry #492, and `verify()` re-checks an LF-normalized body digest before printing them OK. That is stronger than a skip: edit an attested body and `verify()` fails. The correction came from the reviewer and redirected the whole design, because sharing only the classification helper would have delivered the taint propagation one issue needed and nothing for those ten.
+
+**A FIX THAT WAS NEVER WRITTEN TO THE FILE.** Iteration 4's central clause existed in the gate artifact and not in the plan. A scripted multi-edit raised before its single write, so every edit in it was lost, and a later successful script made the loss invisible: the visible diff contained exactly the edits that had landed. The reviewer found it by reading the file rather than the author's description of it, and the tell was that two artifacts which should agree did not. The seal binds the plan's bytes, so sealing as it stood would have bound a document specifying the behaviour three iterations were spent removing.
+
+**LIMITS OF THIS VERDICT.** The reviewer held Read, Grep and Glob only and executed nothing across five verdicts. Every measurement in this phase is the author's and unwitnessed: the ledger counts, the simulation rows, and every red-before claim in the test table. The reviewer re-traced each fixture that reaches the post-anchor mode and found none further at risk, by reading.
+
+It also states that its clean-space enumeration for the derived gate covers the failure kinds it could find and that an entry heading not matching the entry pattern is invisible to both modes and to any version of that gate -- not introduced here, not fixable here, and recorded so the next reader does not rediscover it.
+
+**AN ARTIFACT THIS PHASE DID NOT CREATE AND SHOULD NOT INHERIT SILENTLY.** Three unsealed plan drafts, phases 263 through 265, were untracked in the tree and were swept into an unrelated phase's seal commit by an all-files add. They sit on the main branch presenting as sealed work. A future reader can reasonably take their conclusions as sealed fact, and this phase supersedes one of them. Surfaced to the operator, not fixed here.
+
+**Required next action**: implement against iteration 4, tests first. This entry and the audit gate artifact precede implementation, which is the discipline the phase before this one established after sealing with no audit record at all.
+
+---
+
+### Entry #761: SESSION SEAL -- Phase 270 post-anchor weaker than verify (v0.170.0)
+
+**Timestamp**: 2026-09-07T22:20:00Z
+**Phase**: SEAL (Phase 270)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `0906e08868c7`
+**Plan**: docs/plan-qor-phase270-post-anchor-weaker-than-verify.md (iteration 4)
+**Session**: 2026-09-07T2035-2f4c25
+**Closes**: GH #443, GH #425, GH #430
+
+**Content Hash**: `6c8fb834435e007a760999325f699686900e0181a7728adf990bb9131d258c87`
+**Previous Hash**: `b2624956696354770687ac030fce654774dd3a8cf5e35e1b194e0b07b27e0571`
+**Chain Hash (Merkle seal)**: `6f7ba288241d6cd81161c68b5284d3cf6c5ea8ae7361713c93b738b89eff3734`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 4. Full suite green at 3319 passed, 6 skipped, 4 deselected, 0 failed; the affected suites run twice at 35 passed each; ruff clean across `qor/` and `tests/`.
+
+**THE CYCLE RAN IN ORDER.** Research, plan, audit, implement, substantiate. No code existed before the audit verdict, and entry #760 with its gate artifact was written before implementation began. That is now two phases running, after Phase 268 sealed with no audit record at all.
+
+**WHAT SHIPPED.** `verify_post_anchor` is the mode both governance gates consume, and it was weaker than `verify()` in four ways -- three filed, one nobody had established. Both modes now walk one unresolvable-entry ladder rather than a hand-reimplemented subset of it. The boundary is resolved by explicit argument, then a declaration in `.qorlogic/config.json`, then auto-detection permitted only when a strict evaluation would raise nothing at all, then a fail-closed refusal. `verify_post_anchor` accepts `repo_root`, and both governance callers forward the root they already held and dropped. GH #443, GH #425, GH #430.
+
+**THE DEFECTS ARE CLOSED BY MEASUREMENT, NOT BY ARGUMENT.**
+
+```
+                                  before   after
+#443 fork at the tail               rc=1    rc=1
+#443 fork + one honest append       rc=0    rc=1
+#425 duplicate after later appends  rc=0    rc=1
+```
+
+The middle row is the phase. That shape defeated the iteration-1 design through `max(ok_entries)` and the iteration-3 design through the resolution order, by two different mechanisms, after the brief had diagnosed the window and the plan had carried a test row for it on the duplicate side only.
+
+**THE FOURTH GAP DELIVERS A CORRECTION NOBODY ASKED FOR.** Measured before the change: 735 of 757 entries reported by the post-anchor mode, and all 22 omitted were migration-attested -- positively verified by `verify()` and invisible to the gate that release consumes. Sharing the ladder makes them verified rather than absent. That was found by the reviewer, not the author.
+
+**AN AUTHOR CLAIM THAT WAS WRONG AND MOVED THE DESIGN.** The brief asserted entries #1 through #10 were pre-convention skips. They are positively attested by entry #492, and `verify()` re-checks an LF-normalized body digest before printing them OK, which is stronger than a skip: edit an attested body and `verify()` fails. Correcting it redirected the phase, because sharing only the classification helper would have delivered one issue's taint propagation and nothing for those ten.
+
+**THREE VETOES, AND WHAT EACH COST.** Iteration 1 closed neither issue it claimed and rebuilt the detection window the brief diagnosed. Iteration 2 told a damaged consumer to pin `--boundary` and put that remedy in the failure message, when the flag reaches only the CLI and the three gates that go red cannot accept it. Iteration 3 lost the same fork again through the new resolution order, because "no entry classifies as a failure" is a per-entry term and a fork produces none. Iteration 4's central clause then existed in the gate artifact and not in the plan, because a scripted multi-edit raised before its single write and a later successful script made the loss invisible.
+
+**A PREDECESSOR THIS PHASE FAILED TO CONSULT.** `docs/plan-qor-phase263-declared-post-anchor-anchor.md` already specified the resolution order, the tolerant config reader and the fail-closed branch. Two iterations were spent inventing it. It is cited rather than superseded: it measured the consumer-breakage question independently and rejected an approach this phase re-derived from scratch. Its declared-boundary-of-111 conclusion is superseded on one point only, because the shared ladder makes the entries it was declaring for attested-OK, so this repository needs no declaration at all.
+
+Testing the predecessor rather than adopting it found a defect in it. Its `repo_root`-defaults-to-the-grandparent rule serves a ledger under `docs/` and overshoots one written at a fixture root. Both governance callers already held a root, so forwarding replaced inference -- and the ancestor fallback, not the forwarding, is the production mechanism, because the CI path calls with no root at all.
+
+**THE CONSUMER-VISIBLE BREAK, STATED RATHER THAN DISCOVERED.** A re-anchored ledger with genuine unattested pre-anchor damage passed with no operator action and must now declare a boundary, committed. The refusal names the declaration, the file, the entries and what a declaration at the recommended value would disclose BY KIND -- because a scalar cannot separate disclosed math failures from a disclosed fork, and an operator clearing a red gate would otherwise be handed the number that buries one.
+
+**FIVE FIXTURES WERE LOAD-BEARING ON THE DEFECT.** They are corrected rather than accommodated. One, named `test_fully_valid_ledger_is_ok`, ran on a ledger `verify()` rejects with a linkage break: its OK verdict came entirely from the post-anchor mode being weaker, so a test named for validity was testing the defect. Four others gave every entry an arbitrary previous_hash, which produced linkage breaks that were never what those tests were about.
+
+**AN AUTHOR CORRECTION DURING IMPLEMENTATION.** A test asserting that post-anchor "reports every entry" was wrong: rung 4 is a silent skip in both modes, so an unmarked pre-cutoff entry is correctly absent from each. It now asserts that the two modes agree on which entries they can speak about, which is the property that was actually violated. Ruff also caught an unfinished branch rather than a style defect: `boundary_pinned` was computed and never wired to the duplicate or linkage rules.
+
+**LIMITS OF THE AUDIT.** The reviewer held Read, Grep and Glob only and executed nothing across six verdicts. Every measurement in this phase is the author's and unwitnessed. It predicted the five fixtures that would break, by fixture arithmetic, and all five broke. It regards its clean-space enumeration as covering the failure kinds it could find, and notes that an entry heading not matching the entry pattern is invisible to both modes and to any version of the gate -- not introduced here and not fixable here.
+
+**AN ARTIFACT THIS PHASE INHERITED AND DID NOT CREATE.** Three unsealed plan drafts, phases 263 through 265, were untracked and were swept into an unrelated phase's seal commit by an all-files add. They sit on the main branch presenting as sealed work, and this phase supersedes a conclusion in one of them. Surfaced to the operator rather than fixed here, so the correction travels with the artifact.
+
+**Version**: 0.169.5 -> 0.170.0 per the plan's declared `feature` change class. `breaking` was considered and rejected: it maps to major+1, and whether this project is 1.0 is a release-positioning decision the operator owns rather than a consequence of one gate becoming stricter.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

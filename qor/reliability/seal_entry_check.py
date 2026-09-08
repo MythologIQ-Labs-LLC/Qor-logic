@@ -146,7 +146,9 @@ def check(ledger_path: Path, phase_num: int, repo_root: Path | None = None) -> S
                 )
 
     if not errors:
-        rc = ledger_hash.verify_post_anchor(Path(ledger_path))
+        # Phase 270: forward the root this function already receives, so a
+        # consumer's declared boundary is visible to the seal gate.
+        rc = ledger_hash.verify_post_anchor(Path(ledger_path), repo_root=repo_root)
         if rc != 0:
             errors.append(
                 f"full chain verification failed (ledger_hash.verify_post_anchor rc={rc})"

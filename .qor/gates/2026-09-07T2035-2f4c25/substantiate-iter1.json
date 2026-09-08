@@ -1,0 +1,17 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-07T2035-2f4c25",
+  "verdict": "PASS",
+  "merkle_seal": "6f7ba288241d6cd81161c68b5284d3cf6c5ea8ae7361713c93b738b89eff3734",
+  "content_hash": "6c8fb834435e007a760999325f699686900e0181a7728adf990bb9131d258c87",
+  "ledger_entry": 761,
+  "boundary_scope": "structural+identity",
+  "reality_check": {
+    "cycle_order": "audit recorded before code",
+    "audit_iterations": 4,
+    "vetoes": 3,
+    "gaps_closed": 4,
+    "attested_entries_recovered": 22
+  },
+  "ts": "2026-09-08T00:29:08Z"
+}
