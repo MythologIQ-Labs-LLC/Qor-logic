@@ -18,6 +18,8 @@ import re
 import subprocess
 from pathlib import Path
 
+from qor.scripts import ledger_dialect as _dialect
+
 _SEAL_BLOCK_RE = re.compile(
     r"^### Entry #(\d+): SESSION SEAL[^\n]*\n(.*?)(?=^### |\Z)",
     re.MULTILINE | re.DOTALL,
@@ -25,10 +27,22 @@ _SEAL_BLOCK_RE = re.compile(
 _FIELD_RES = {
     "session_id": re.compile(r"^\*\*Session\*\*:\s*`?([0-9A-Za-z._-]+)`?", re.MULTILINE),
     "phase_num": re.compile(r"Phase\s+(\d+)", re.IGNORECASE),
-    "content_hash": re.compile(r"^\*\*Content Hash\*\*:\s*`([0-9a-f]{64})`", re.MULTILINE),
-    "chain_hash": re.compile(r"^\*\*Chain Hash[^:]*\*\*:\s*`([0-9a-f]{64})`", re.MULTILINE),
     "timestamp": re.compile(r"^\*\*Timestamp\*\*:\s*(\S+)", re.MULTILINE),
     "version": re.compile(r"\(v(\d+\.\d+\.\d+)\)"),
+}
+
+# Phase 277 (GH #467): the hash fields read through their owner instead.
+#
+# They are kept OUT of _FIELD_RES deliberately. That dict is consumed by a
+# generic ``found.group(1)`` loop, and ``ledger_dialect``'s hash patterns carry
+# three capture groups -- one per accepted value form -- so ``.group(1)`` is
+# None for two of the three. Dropping them into the dict would leave chain_hash
+# at exactly its previous coverage (219 of 235 seal blocks) while content_hash
+# appeared to improve: a fix that looks done and is not. ``hash_value`` selects
+# the group that matched.
+_DIALECT_FIELD_RES = {
+    "content_hash": _dialect.CONTENT_HASH_RE,
+    "chain_hash": _dialect.CHAIN_HASH_RE,
 }
 
 
@@ -40,6 +54,8 @@ def _seal_blocks(ledger_text: str) -> list[dict]:
         for key, rx in _FIELD_RES.items():
             found = rx.search(body)
             block[key] = found.group(1) if found else None
+        for key, rx in _DIALECT_FIELD_RES.items():
+            block[key] = _dialect.hash_value(rx.search(body))
         if block["phase_num"] is not None:
             block["phase_num"] = int(block["phase_num"])
         out.append(block)

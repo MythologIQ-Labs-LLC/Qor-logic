@@ -33,6 +33,24 @@ _COMMITTING_KINDS = ("RESEARCH BRIEF", "IMPLEMENTATION", "SESSION SEAL", "AMENDM
 _ARTIFACT_RE = re.compile(
     r"^\*\*(?:Artifact|Plan|Brief)\*\*:\s*`?([\w./-]+\.md)`?", re.MULTILINE
 )
+# DELIBERATELY narrow, and narrower than ledger_dialect. Do not widen it.
+#
+# The plain **Content Hash** label is the only form whose value binds the
+# artifact this entry cites. A SESSION SEAL's **Content Hash (session seal)**
+# binds the seal digest, while its **Plan** cites a different file -- and
+# _ARTIFACT_RE above accepts Plan and Brief, not just Artifact, so a suffixed
+# value would be paired with a plan it does not describe.
+#
+# Measured over the live ledger (Phase 277, GH #467): across the 45 suffixed
+# seal entries citing an on-disk plan, the recorded value equals that plan's
+# live hash 0 times; across the 147 plain-label seals it matches 99 times.
+# Reading through the dialect would add 81 commitments, 45 of them false, and
+# take on-disk stale commitments from 74 to 116 -- 42 artifacts newly stale in
+# a gate that hard-ABORTs the seal.
+#
+# The kind-filter comment above states the adjacent case; this states the one
+# that lives on this line. Guarded by
+# test_a_suffixed_session_seal_hash_is_not_a_commitment.
 _CONTENT_RE = re.compile(r"^\*\*Content Hash\*\*:\s*`([0-9a-f]{64})`", re.MULTILINE)
 _SUPERSEDED_RE = re.compile(
     r"^\*\*Superseded Content Hash\*\*:\s*`?([^`\s]+)`?", re.MULTILINE

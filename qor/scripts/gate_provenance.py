@@ -32,11 +32,13 @@ import argparse
 import hashlib
 import hmac
 import json
+import re
 import secrets
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from qor import workdir as _workdir
+from qor.scripts import ledger_dialect
 from qor.scripts import session as _session
 
 _ALG = "HMAC-SHA256"
@@ -180,19 +182,45 @@ def verify_ci_attestation(
     return hmac.compare_digest(expected, attestation)
 
 
+_ENTRY_RE = re.compile(r"^### Entry #(\d+):", re.MULTILINE)
+
+
 def latest_seal_hashes(repo_root: Path) -> tuple[str, str] | None:
     """Return the (content_hash, chain_hash) of the last ledger entry that
-    carries both canonical hash markers, or None when none is found."""
-    import re
+    carries both canonical hash markers, or None when none is found.
+
+    Phase 277 (GH #467): this reads ONE entry. It previously took two
+    independent whole-file last matches, which the docstring above never
+    described: nothing tied ``content[-1]`` and ``chain[-1]`` to the same entry,
+    and ``if not content or not chain`` cannot detect a mismatch because both
+    lists are non-empty. Replaying the ledger at each of its historical states,
+    the two came from different entries at 187 of them, spanning entries #127
+    to #631, and ``ci_attest`` HMACs the pair on every CI push -- binding two
+    entries that never coexisted. The most reachable trigger is an interrupted
+    append, which needs no unusual markup at all.
+
+    Anchoring to the last entry makes the pair coherent by construction, and
+    reading through ``ledger_dialect`` makes the value form irrelevant -- the
+    previous patterns accepted only inline-backtick values with no field
+    suffix, missing 160 of 741 content hashes and 217 of 740 chain hashes.
+
+    Strictly more available, never less: measured across all 765 ledger states,
+    this returns None where the old code returned a pair 0 times, and returns a
+    pair where the old code returned None 100 times.
+    """
     ledger = Path(repo_root) / "docs" / "META_LEDGER.md"
     if not ledger.is_file():
         return None
     text = ledger.read_text(encoding="utf-8")
-    content = re.findall(r"\*\*Content Hash\*\*:\s*`([0-9a-f]{64})`", text)
-    chain = re.findall(r"\*\*Chain Hash \(Merkle seal\)\*\*:\s*`([0-9a-f]{64})`", text)
-    if not content or not chain:
+    starts = list(_ENTRY_RE.finditer(text))
+    if not starts:
         return None
-    return content[-1], chain[-1]
+    entry = text[starts[-1].start():]
+    content = ledger_dialect.hash_value(ledger_dialect.CONTENT_HASH_RE.search(entry))
+    chain = ledger_dialect.hash_value(ledger_dialect.CHAIN_HASH_RE.search(entry))
+    if content is None or chain is None:
+        return None
+    return content, chain
 
 
 @dataclass(frozen=True)

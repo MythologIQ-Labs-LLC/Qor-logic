@@ -160,8 +160,10 @@ def test_verify_ci_attestation_round_trip():
 def test_latest_seal_hashes_extracts_last_entry(tmp_path):
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs" / "META_LEDGER.md").write_text(
+        "### Entry #1: SESSION SEAL -- first\n\n"
         "**Content Hash**: `" + "a" * 64 + "`\n"
-        "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n"
+        "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n\n"
+        "### Entry #2: SESSION SEAL -- second\n\n"
         "**Content Hash**: `" + "c" * 64 + "`\n"
         "**Chain Hash (Merkle seal)**: `" + "d" * 64 + "`\n",
         encoding="utf-8",
@@ -179,6 +181,7 @@ def test_attest_latest_cli_skips_without_secret(tmp_path, monkeypatch, capsys):
     monkeypatch.delenv("QOR_CI_ATTEST_SECRET", raising=False)
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs" / "META_LEDGER.md").write_text(
+        "### Entry #1: SESSION SEAL -- only\n\n"
         "**Content Hash**: `" + "a" * 64 + "`\n"
         "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n",
         encoding="utf-8",
@@ -192,6 +195,7 @@ def test_attest_latest_cli_emits_under_secret(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("QOR_CI_ATTEST_SECRET", "s3cr3t")
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs" / "META_LEDGER.md").write_text(
+        "### Entry #1: SESSION SEAL -- only\n\n"
         "**Content Hash**: `" + "a" * 64 + "`\n"
         "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n",
         encoding="utf-8",
@@ -254,3 +258,84 @@ def test_verify_committed_grandfathers_below_phase_min(tmp_path, monkeypatch):
     _seed_sealed_repo(tmp_path, 100, "2026-06-10T1350-oldold", with_sidecars=False)
     res = gp.verify_committed(tmp_path, phase_min=158)
     assert res.ok is True  # phase 100 < 158 is grandfathered (no sidecar required)
+
+
+# ----- Phase 277 (GH #467): the pair must come from ONE entry -----
+#
+# latest_seal_hashes promised "the last ledger entry that carries BOTH canonical
+# hash markers" and took two independent whole-file last matches. Replaying the
+# ledger at every historical state, the two came from different entries at 187
+# of them, spanning #127-#631, and ci_attest HMACs the pair on every CI push.
+
+
+def _ledger(tmp_path, body: str):
+    (tmp_path / "docs").mkdir(exist_ok=True)
+    (tmp_path / "docs" / "META_LEDGER.md").write_text(body, encoding="utf-8")
+    return tmp_path
+
+
+def test_latest_seal_hashes_returns_a_pair_from_one_entry(tmp_path):
+    """The reported defect. Entry #2 carries only a chain hash, so a whole-file
+    last-match pairs entry #2's chain with entry #1's content -- a pair that
+    never coexisted in any entry."""
+    root = _ledger(tmp_path,
+        "### Entry #1: SESSION SEAL -- complete\n\n"
+        "**Content Hash**: `" + "a" * 64 + "`\n"
+        "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n\n"
+        "### Entry #2: AMENDMENT -- chain only\n\n"
+        "**Chain Hash (Merkle seal)**: `" + "d" * 64 + "`\n")
+
+    assert gp.latest_seal_hashes(root) is None, (
+        "entry #2 has no content hash, so there is no coherent pair to return; "
+        "returning ('a'*64, 'd'*64) would bind two unrelated entries")
+
+
+def test_latest_seal_hashes_never_crosses_entries(tmp_path):
+    """The interrupted-append shape: a ledger truncated after a new entry's
+    content hash but before its chain hash. Needs no unusual value form."""
+    root = _ledger(tmp_path,
+        "### Entry #1: SESSION SEAL -- complete\n\n"
+        "**Content Hash**: `" + "a" * 64 + "`\n"
+        "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n\n"
+        "### Entry #2: SESSION SEAL -- interrupted\n\n"
+        "**Content Hash**: `" + "c" * 64 + "`\n")
+
+    result = gp.latest_seal_hashes(root)
+    assert result != ("c" * 64, "b" * 64), "must not pair #2's content with #1's chain"
+    assert result is None
+
+
+def test_latest_seal_hashes_reads_a_suffixed_chain_hash_label(tmp_path):
+    """The pattern hardcoded '(Merkle seal)' as literal text, reading 523 of 740
+    chain hashes -- a gap of 217, the largest measured."""
+    root = _ledger(tmp_path,
+        "### Entry #1: SESSION SEAL -- suffixed\n\n"
+        "**Content Hash (session seal)**: `" + "a" * 64 + "`\n"
+        "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n")
+
+    assert gp.latest_seal_hashes(root) == ("a" * 64, "b" * 64)
+
+
+def test_latest_seal_hashes_falls_back_to_the_last_complete_heading(tmp_path):
+    """A half-written heading lacking its colon must not anchor the read to a
+    partial entry -- _ENTRY_RE requires the colon, so the last COMPLETE entry
+    wins. Load-bearing, not luck."""
+    root = _ledger(tmp_path,
+        "### Entry #1: SESSION SEAL -- complete\n\n"
+        "**Content Hash**: `" + "a" * 64 + "`\n"
+        "**Chain Hash (Merkle seal)**: `" + "b" * 64 + "`\n\n"
+        "### Entry #2 SESSION SEAL -- no colon yet\n")
+
+    assert gp.latest_seal_hashes(root) == ("a" * 64, "b" * 64)
+
+
+def test_attest_latest_still_skips_and_exits_zero(tmp_path, monkeypatch, capsys):
+    """The honest-skip path must survive: no gate verdict moves in either
+    direction, because main() prints SKIP and returns 0."""
+    monkeypatch.setenv("QOR_CI_ATTEST_SECRET", "s3cr3t")
+    root = _ledger(tmp_path, "### Entry #1: SESSION SEAL -- no hashes\n\nbody\n")
+
+    rc = gp.main(["attest-latest", "--repo-root", str(root)])
+
+    assert rc == 0
+    assert "SKIP" in capsys.readouterr().out

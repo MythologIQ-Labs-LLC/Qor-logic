@@ -1,0 +1,24 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-08T1751-c84a39",
+  "ts": "2026-09-08T18:12:49Z",
+  "plan_path": "docs/plan-qor-phase277-content-hash-consolidation.md",
+  "change_class": "hotfix",
+  "phases": [
+    "D1 the defect is realized",
+    "D2 fix selection and pattern",
+    "D3 evidence_bundle restructure",
+    "D4 ledger_commitment excluded",
+    "D5 exclusions"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_gate_provenance.py tests/test_evidence_bundle.py tests/test_ledger_commitment.py -q",
+    "python -m qor.scripts.gate_provenance verify-committed --phase-min 158",
+    "python -m qor.scripts.gate_provenance attest-latest",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest -q"
+  ]
+}
