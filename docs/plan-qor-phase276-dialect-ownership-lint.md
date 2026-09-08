@@ -6,6 +6,9 @@
 **Iteration**: 3 (iterations 1 and 2 VETOed)
 **Session**: 2026-09-08T1717-f54e4c
 
+**Status**: PARKED, NOT SEALED. Iteration 3's text was superseded by a fourth review round; the
+corrections are applied below and the full record is on GH #469. Nothing here is implemented.
+
 ## Scope note
 
 One new lint, no consumer behaviour changes. Advisory against a recorded baseline; it cannot fail an existing seal. The reviewer should attack the declaration surface and the baseline key hardest -- both were vetoed once, and the baseline key is still the piece carrying the most weight.
@@ -30,7 +33,7 @@ Decidable by AST. No pattern semantics, no subset reasoning.
 
 ## D1a: the owner declares label FORMS, because structure cannot decide aliasing
 
-Iteration 2 proposed a "component rule": the field name must open a bold label. Measured against every label shape actually present in the tree, **it is wrong on 4 of 7**:
+Iteration 2 proposed a "component rule": the field name must open a bold label. Measured against every label shape actually present in the tree, **it is wrong on 5 of 8**:
 
 | shape | site | correct | component rule |
 |---|---|---|---|
@@ -57,7 +60,7 @@ OWNS = {
 
 This also removes the substring rule's 2 false positives structurally rather than by regex trick: `Previous Chain Hash` scores as `Previous Hash` because it is *declared* as one.
 
-**Containment never implies aliasing.** A label containing an owned name but not declared as a form of it is reported as `undeclared-label` -- not silently ignored, or D2's third-silent-category defect returns one level down. Measured cost: 4 such labels across 2 modules, plus 2 corpus forms (`**Superseded Content Hash**` x5 and `**Superseded Content Hash (RETRACTED)**` x2 -- a suffixed form of a prefixed label, which is the corpus restating the case for declaring forms rather than names).
+**Containment never implies aliasing.** A label containing an owned name but not declared as a form of it is reported as `undeclared-label` -- not silently ignored, or D2's third-silent-category defect returns one level down. Measured cost, POST-declaration: 1 such label (`**Superseded Content Hash**`), the other three being declared aliases. The pre-declaration count is 4 across 2 modules, plus 2 corpus forms (`**Superseded Content Hash**` x5 and `**Superseded Content Hash (RETRACTED)**` x2 -- a suffixed form of a prefixed label, which is the corpus restating the case for declaring forms rather than names).
 
 ## D2: the declaration surface is three-valued
 
@@ -92,7 +95,7 @@ A failure of either is `false-declaration`, which fails. Both are decidable agai
 
 ## D3: the baseline
 
-The 14 reader findings plus the `undeclared-label` findings ship as a recorded baseline. A baseline entry reports and does not fail; anything else fails. A baseline entry that no longer applies is **stale and fails**, so the baseline can only shrink.
+The reader findings plus the `undeclared-label` findings ship as a recorded baseline. **The unit is a pattern site, not a pair**: 14 (module, field) pairs correspond to **24 pattern sites**, because `ledger_migrate` alone holds 5 Chain Hash, 4 Content Hash and 4 Previous Hash sites. The site discriminator changed the unit and an earlier draft left the pair count in place. The lint prints the entry count rather than this document restating it. A baseline entry reports and does not fail; anything else fails. A baseline entry that no longer applies is **stale and fails**, so the baseline can only shrink.
 
 **Keyed on `(module, document, field, kind, normalized-pattern)`.** Iteration 2 keyed on `(module, document, field, kind)`, which is line-blind: adding
 
@@ -127,6 +130,10 @@ The `meta_ledger_walker` rows are D2's acceptance test: if scoping works they va
 
 **Indirection.** `ledger_dialect` builds every pattern through `_field_re("Content Hash")`, so the field name never appears inside an `re.*` call literal and the owner is invisible to its own check. A violator evades with a one-line helper. The obvious mitigation -- also match bare field-name literals -- **was measured and rejected**: 14 hits of which 7 are noise (`TargetProfile`, `_HookTarget`, `SeedTarget`, `'Verdict'` in `sdk.py`, prose in an error string). Clean only for multi-word names; a rule that works for `Content Hash` but not `Target` has an unstated exception.
 
+**Unrelated label names, with a live instance.** `**Session Merkle Seal**` is a `Content Hash` label form: `ledger_migrate.py:41-43` compiles it as `content_merkle_fenced`, and `extract()` at :62-76 routes it to `content` on the `content_` name prefix, with a second site at :80. It contains **no owned field name**, so neither the component rule nor `undeclared-label` can see it -- and an alias table only covers it once someone declares it. An earlier draft called this gap hypothetical; it is not.
+
+Relatedly, `\*\*(?:META_LEDGER )?Content Hash[^\n*]*\*\*` (`ledger_migrate:79`) matches no declared form -- `"Content Hash"` is not preceded by `\*\*` and `"META_LEDGER Content Hash"` is not contiguous. Closing it needs a bounded pattern-structure pass that strips `(?:...)?` from the label region, which would cost D1's "no pattern semantics" claim -- load-bearing in its case against read-counts. Recorded as a third blind spot rather than closed.
+
 **Undeclared alias labels.** Until an owner declares a form, a module reading only that form is invisible. Three live alias forms exist today and all are declared in D1a, but the next one is invisible until someone declares it. `undeclared-label` narrows this: a *label* containing an owned name is caught even when undeclared. A wholly unrelated label name for the same field is not.
 
 Both are pinned by tests so the gaps are recorded rather than described.
@@ -142,7 +149,7 @@ Written first, red before the code. Each runs twice for determinism.
 | `test_a_declared_alias_label_is_a_read_of_its_field` | D1a; `**Previous Chain Hash**` -> Previous Hash | yes |
 | `test_a_declared_alias_is_not_a_read_of_a_field_it_merely_contains` | `**Previous Chain Hash**` is not a `Chain Hash` read | yes |
 | `test_an_undeclared_containing_label_is_reported_not_ignored` | `**Superseded Content Hash**` -> `undeclared-label` | yes |
-| `test_an_optional_prefix_group_is_matched_as_its_alias` | the fifth shape, `ledger_migrate:79` | yes |
+| ~~`test_an_optional_prefix_group_is_matched_as_its_alias`~~ | **withdrawn** -- asserts behaviour an alias table cannot produce; see D5 | -- |
 | `test_same_field_name_in_another_document_is_not_a_violation` | D2; the `meta_ledger_walker` case | yes |
 | `test_a_module_declaring_no_documents_fails` | silence is not compliance | yes |
 | `test_a_declaration_naming_a_document_without_the_field_fails` | D2; the false-declaration opt-out | yes |
@@ -203,5 +210,5 @@ python -m pytest -q
 - A declaration can still be wrong in the one way both cross-checks miss: a module carrying a document's path literal for an unrelated reason while parsing a field owned elsewhere.
 - A module can import the owner and still parse the field itself; the lint sees an import, not a use.
 - Defeatable by indirection, and by a wholly unrelated label for an owned field (D5).
-- The baseline records 14 reader entries plus the `undeclared-label` entries. If it grows, this lint has failed at its job, visibly in its own diff.
+- The baseline records 24 pattern-site entries (14 pairs) plus the `undeclared-label` entries. If it grows, this lint has failed at its job, visibly in its own diff.
 - Advisory: it cannot stop a seal.
