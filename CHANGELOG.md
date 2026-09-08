@@ -10,6 +10,21 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.170.1] - 2026-09-08
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 272 (hotfix; two bounded defects)**: `governance_index.advance_last_reviewed` rewrote EVERY `**Last Reviewed**:` marker rather than the current one, so an index carrying one stanza per cycle had them all restamped to the seal date and asserted reviews that did not happen. It now writes the first marker, which is the one `_last_reviewed` reads with `.search()` to decide staleness -- advance and check must agree about which stanza is current. GH #426.
+
+- Two misleading messages in `governance_helpers`. `parse_change_class` told operators the canonical form was one of three classes while its regex accepts four, so a plan declaring the fourth was told the class does not exist. And `_compute_new` reported `unknown change_class` for a value the schema declares valid; it now says the class is non-release and must not reach a version bump, naming the routing a caller should have taken. GH #433.
+
+- **GH #433 closes for less than it asked, and the reason is worth recording.** It reported that a plan declaring `change_class: governance` validates and then dies at the version bump. `_compute_new` raising on that class is the GUARD: `governance` is the declared non-release class, `is_release_class` returns False for it, and four sealed plans in this repository declare it and completed -- the ledger records one as "version-not-applicable; no version bump or tag". Mapping it to a patch bump was drafted and rejected: it would have placed two contradicting definitions of the class inside the module the version gate delegates to, across three callers. No version mapping ships.
+
+- A residual is recorded rather than fixed: release status is decided by set membership, so a change_class the classifier does not recognise is silently treated as version-not-applicable and would ship with no version and no tag. A new test asserts the partition -- every declared class is classified, and computes a version if and only if it is a release class -- and goes red the moment a fifth class is added without classification. Making the classifier raise is a behaviour change and is out of this batch's scope.
+
+- GH #424 was scoped into this batch as bounded and removed once the audit showed it is not. It changes what authorizes an intent-lock capture. Three findings, each verified: an enumerated verdict vocabulary fails open on any value outside the list; returning collected verdicts instead of a boolean would invert the gate so a VETO report authorizes a seal; and the refusal would have routed into a hint branch telling the operator their canonical formatting is non-canonical, re-opening the incident that hint function exists to prevent. Its constraint set is preserved as the next phase's starting research.
+
 ## [0.170.0] - 2026-09-07
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -126,3 +126,47 @@ def test_doctrine_marks_enforcement_shipped():
     assert "Phase 120" in doctrine
     assert "cross-check" in doctrine.lower()
     assert "/qor-substantiate" in doctrine
+
+
+# ----- Phase 272 (GH #426): advance writes the marker check reads -----
+
+def test_advance_rewrites_only_the_first_marker(tmp_path):
+    """`sub()` with no count restamped every marker, so an index carrying one
+    stanza per cycle had them all moved to the seal date."""
+    from qor.scripts import governance_index as gi
+
+    docs = tmp_path / "docs"
+    docs.mkdir(parents=True, exist_ok=True)
+    (docs / "GOVERNANCE_INDEX.md").write_text(
+        "# Index\n\n"
+        "**Last Reviewed**: 2026-08-23 (GATE -- current cycle)\n\n"
+        "**Last Reviewed**: 2026-07-01 (IMPLEMENT -- an earlier cycle)\n\n"
+        "**Last Reviewed**: 2026-06-02 (RESEARCH -- an earlier cycle)\n",
+        encoding="utf-8",
+    )
+    assert gi.advance_last_reviewed(tmp_path, "2026-09-08") is True
+
+    text = (docs / "GOVERNANCE_INDEX.md").read_text(encoding="utf-8")
+    assert "2026-09-08" in text
+    assert "2026-07-01" in text, "an earlier stanza was restamped"
+    assert "2026-06-02" in text, "an earlier stanza was restamped"
+    assert text.count("2026-09-08") == 1
+
+
+def test_advance_writes_the_marker_check_reads(tmp_path):
+    """The argument for first-match: `_last_reviewed` uses `.search()`, so the
+    staleness check reads the first marker. Advance must write that one or the
+    two disagree about which stanza is current."""
+    from qor.scripts import governance_index as gi
+
+    docs = tmp_path / "docs"
+    docs.mkdir(parents=True, exist_ok=True)
+    (docs / "GOVERNANCE_INDEX.md").write_text(
+        "# Index\n\n**Last Reviewed**: 2026-08-23 (current)\n\n"
+        "**Last Reviewed**: 2026-07-01 (earlier)\n",
+        encoding="utf-8",
+    )
+    gi.advance_last_reviewed(tmp_path, "2026-09-08")
+
+    text = (docs / "GOVERNANCE_INDEX.md").read_text(encoding="utf-8")
+    assert str(gi._last_reviewed(text)) == "2026-09-08"

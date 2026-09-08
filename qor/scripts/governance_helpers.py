@@ -73,7 +73,7 @@ def parse_change_class(plan_path: Path) -> str:
     if not m:
         raise ValueError(
             f"{plan_path} header missing canonical `**change_class**: "
-            f"<hotfix|feature|breaking>` (bold required per V-2)."
+            f"<hotfix|feature|breaking|governance>` (bold required per V-2)."
         )
     return m.group(1)
 
@@ -92,6 +92,17 @@ def _compute_new(major: int, minor: int, patch: int, change_class: str) -> tuple
         return major, minor + 1, 0
     if change_class == "breaking":
         return major + 1, 0, 0
+    # Phase 272 (GH #433): a declared non-release class reaching here is a
+    # ROUTING error, not an unknown value -- the caller skipped is_release_class.
+    # Saying "unknown" sent operators looking for a typo in a class the schema
+    # declares valid. The refusal itself is the guard and is unchanged.
+    from qor.scripts import version_applicability as _va
+
+    if change_class in _va.NON_RELEASE_CLASSES:
+        raise ValueError(
+            f"non-release change_class {change_class!r} must not reach a version "
+            "bump; route through version_applicability.is_release_class first"
+        )
     raise ValueError(f"unknown change_class: {change_class!r}")
 
 

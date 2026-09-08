@@ -106,14 +106,20 @@ _PHASE_TOKEN_RE = re.compile(r"phase\s*(\d+)", re.IGNORECASE)
 
 
 def advance_last_reviewed(base: Path, date_str: str, dry_run: bool = False) -> bool:
-    """Rewrite every `**Last Reviewed**: <date>` line to date_str. The only
+    """Rewrite the FIRST `**Last Reviewed**: <date>` line to date_str. The only
     index mutation. Returns True iff the file content changed (or, with
-    dry_run, WOULD change -- the write is suppressed; Phase 167, GH #250)."""
+    dry_run, WOULD change -- the write is suppressed; Phase 167, GH #250).
+
+    Phase 272 (GH #426): first, not every. `_last_reviewed` reads the first
+    marker with `.search()` to decide staleness, so advance must write the one
+    check reads or the two disagree about which stanza is current. Restamping
+    all of them also made an index carrying one stanza per cycle assert reviews
+    that did not happen."""
     index_path = Path(base) / _INDEX_REL
     if not index_path.is_file():
         return False
     text = index_path.read_text(encoding="utf-8", errors="replace")
-    new = _ADVANCE_RE.sub(rf"\g<1>{date_str}", text)
+    new = _ADVANCE_RE.sub(rf"\g<1>{date_str}", text, count=1)
     if new == text:
         return False
     if dry_run:

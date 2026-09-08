@@ -1,0 +1,10 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-08T0215-322b7e",
+  "ts": "2026-09-08T02:32:12Z",
+  "target": "docs/plan-qor-phase272-three-bounded-gate-defects.md",
+  "verdict": "PASS",
+  "risk_grade": "L1",
+  "target_content_hash": "0c4b551a2fea7b93a59f90b9b0588d232b5b9ee154c7a224ec660c4055425238",
+  "violations": []
+}
