@@ -24,9 +24,62 @@ _EVENT_ID_RE = re.compile(r'^[a-f0-9]{64}$')
 
 
 def validate_event_id(event_id: str) -> None:
-    """Validate event ID matches ^[a-f0-9]{64}$. Raises ValueError on invalid."""
+    """Validate event ID matches ^[a-f0-9]{64}$. Raises ValueError on invalid.
+
+    Phase 278 (GH #459): the type check is not decoration. ``_EVENT_ID_RE.match``
+    raises ``TypeError`` on a non-string, so an integer id -- exactly what a
+    hand-edited or machine-generated marker yields -- escaped this function as a
+    type its own docstring does not name, and a caller obeying the documented
+    contract would not catch it.
+    """
+    if not isinstance(event_id, str):
+        raise ValueError(
+            f"Invalid event ID: expected a string, got {type(event_id).__name__} "
+            f"({event_id!r})"
+        )
     if not _EVENT_ID_RE.match(event_id):
         raise ValueError(f"Invalid event ID: {event_id!r}")
+
+
+class EventIdArgumentError(ValueError):
+    """A ``--events`` argument that cannot be turned into a usable id set.
+
+    Carried as one dedicated exception so the helper below does not choose the
+    error *mechanism*: each argparse branch converts this to its own
+    ``print`` + ``return 2``, which is that site's measured convention. A helper
+    serving three branches must not impose a mechanism on callers whose
+    convention it does not know.
+    """
+
+
+def parse_events_argument(raw: str) -> set[str]:
+    """Turn a ``--events`` value into a validated set of event ids.
+
+    Three ordered rules, deliberately distinct (Phase 278; GH #459):
+
+    1. **normalize** -- split on ``,``, strip each element, drop empties. A
+       trailing comma is an artifact of the separator, not an id the operator
+       named, and ``--events "<id>,"`` works today.
+    2. **require non-empty** -- ``--events ","`` names no ids at all. Without
+       this rule normalization yields an empty target set, which matches no
+       event and exits 0: the silent success this function exists to prevent,
+       reintroduced through its own normalizer.
+    3. **validate** each survivor.
+
+    Conflating (1) and (2) is what makes the fix reopen the defect.
+    """
+    ids = {part.strip() for part in raw.split(",")}
+    ids.discard("")
+    if not ids:
+        raise EventIdArgumentError(
+            f"--events was given but names no event ids: {raw!r}"
+        )
+    for event_id in sorted(ids):
+        try:
+            validate_event_id(event_id)
+        except ValueError as exc:
+            raise EventIdArgumentError(str(exc)) from exc
+    return ids
 
 from qor.scripts import shadow_process
 
@@ -101,6 +154,19 @@ def load_marker() -> dict:
             f"Marker at {MARKER_PATH} has event_ids as {type(data['event_ids']).__name__}, "
             f"expected a list; {_REGEN}"
         )
+    # Phase 278 (GH #459): the type guard above was Phase 273's; it admits a
+    # LIST of malformed elements, which then match no event, empty the
+    # selection, and exit 0 on a breached threshold. SystemExit rather than the
+    # validator's ValueError, because that is this loader's contract -- "exit
+    # naming what is wrong with it" -- and a ValueError escaping here would be
+    # an unhandled traceback one line below a clean named message.
+    for event_id in data["event_ids"]:
+        try:
+            validate_event_id(event_id)
+        except ValueError as exc:
+            raise SystemExit(
+                f"Marker at {MARKER_PATH} has an unusable event id ({exc}); {_REGEN}"
+            ) from exc
     return data
 
 
@@ -227,7 +293,11 @@ def main() -> int:
         if not args.events:
             print("ERROR: --mark-resolved requires --events <ids>", file=sys.stderr)
             return 2
-        target_ids = set(args.events.split(","))
+        try:
+            target_ids = parse_events_argument(args.events)
+        except EventIdArgumentError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
         flipped = mark_resolved(log, target_ids)
         print(f"Marked {flipped} event(s) resolved in {log}")
         return 0
@@ -236,7 +306,11 @@ def main() -> int:
         if not args.events:
             print("ERROR: --flip-only requires --events <ids>", file=sys.stderr)
             return 2
-        target_ids = set(args.events.split(","))
+        try:
+            target_ids = parse_events_argument(args.events)
+        except EventIdArgumentError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
         flipped = flip_events_only(log, target_ids, args.flip_only)
         print(f"Flipped {flipped} event(s) in {log}")
         if MARKER_PATH.exists():
@@ -247,7 +321,11 @@ def main() -> int:
         ensure_gh_auth()
 
     if args.events:
-        target_ids = set(args.events.split(","))
+        try:
+            target_ids = parse_events_argument(args.events)
+        except EventIdArgumentError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
         marker = {"breach_ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "threshold": 10}
     else:
         marker = load_marker()
