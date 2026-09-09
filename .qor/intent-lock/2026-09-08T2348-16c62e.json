@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-08T2348-16c62e",
+  "plan_path": "docs/plan-qor-phase281-dialect-prose-over-read.md",
+  "plan_hash": "63e1e159b2e914022de1ee985ef309ac3a564431b86456d283e72755f42a6af4",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "b5d133c2484b1ac6f0838884e94c71ccd13532c1dc0e73585dd94c7719bdc279",
+  "head_commit": "d6ef221857b888a655e81e3e64d4cf3d4f8ce33a",
+  "captured_ts": "2026-09-09T01:14:19.115321Z"
+}

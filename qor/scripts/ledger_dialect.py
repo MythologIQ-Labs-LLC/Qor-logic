@@ -9,11 +9,19 @@ Recognizes three hash-value forms -- inline-backtick, ``SHA256(...) = <hex>``,
 and a fenced block whose content is a bare 64-hex line -- plus a separate
 ``**Phase**:`` line as a phase source when the entry header lacks ``Phase <N>``.
 
-The forms are additive: no rejection is relaxed. A value must still be a 64-char
-lowercase hex, still bounded to its own field span (the span stops at the next
-``**Field**`` marker, so prose hex and a later field's value are never
-captured), and the consumers still fail on content/chain mismatch, malformed
-hashes, post-boundary duplicate previous hashes, and tampering.
+The value forms are additive: no accepted value form is removed. What is
+narrowed is where a field is recognized. A label must begin its line, must be
+followed by a colon, and must reach its value through connective tissue only --
+whitespace, backticks and fences, a ``SHA256(...)`` formula, ``=``. A value must
+still be a 64-char lowercase hex, and the consumers still fail on content/chain
+mismatch, malformed hashes, post-boundary duplicate previous hashes, and
+tampering.
+
+A hash label written in prose is no longer read as a field when it appears
+mid-line, when no colon follows it, or when narrative text separates it from its
+value. Two cases remain captured and are not addressed here: a hash label inside
+a fenced or indented code block, and a field-shaped line whose value is a prose
+digest followed by trailing prose. See GH #428.
 """
 from __future__ import annotations
 
@@ -39,8 +47,26 @@ _HASH_VALUE = (
 )
 
 
+# A field label begins its line. A label quoted inside a sentence does not, and
+# before GH #428 such a label was read as a field (docs/META_LEDGER.md entry
+# #741). Deliberately whitespace-only: list and blockquote markers are excluded
+# because `> **Content Hash**: ...` is a defect when it quotes another entry's
+# field inside this one and legitimate when a whole entry is quoted, and nothing
+# available here can tell those apart.
+_FIELD_PREFIX = r"^[ \t]*"
+# Connective tissue between a label and its value: a colon, then only
+# whitespace, backticks and fences, a SHA256(...) formula, and ``=``. Narrative
+# text between the two no longer reaches a value, so prose cannot displace the
+# field's own digest.
+_HASH_CONNECTIVE = r":(?:[^\S\n]|\r?\n|`|=|SHA256\([^)\n]*\))*"
+
+
 def _field_re(name: str) -> re.Pattern:
-    return re.compile(rf"\*\*{name}{_FIELD_SUFFIX}\*\*{_HASH_SPAN}{_HASH_VALUE}")
+    return re.compile(
+        rf"{_FIELD_PREFIX}\*\*{name}{_FIELD_SUFFIX}\*\*{_FIELD_SUFFIX}"
+        rf"{_HASH_CONNECTIVE}{_HASH_VALUE}",
+        re.MULTILINE,
+    )
 
 
 CONTENT_HASH_RE = _field_re("Content Hash")

@@ -1,0 +1,35 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-08T2348-16c62e",
+  "ts": "2026-09-09T01:03:35Z",
+  "questions": [
+    "Is GH #428 reproducible against the current dialect?",
+    "Phase 277 concluded it was not except in an ordering the corpus lacks. Is that right?",
+    "If a hash label in prose is matched, does any entry read a wrong value today?",
+    "Can the label-to-value span be tightened without losing legitimate forms?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #428",
+      "finding": "Reproducible and live. docs/META_LEDGER.md entry #741 contains a backticked `**Previous Hash**` in narrative prose; PREV_HASH_RE matches it and hash_value returns the prose digest."
+    },
+    {
+      "issue": "GH #428",
+      "finding": "Harmless today only by ordering accident: entry #741 states its real field before the prose and readers take the first match. An entry whose narrative preceded its own field lines would return the prose digest."
+    },
+    {
+      "issue": "Phase 277 correction",
+      "finding": "Phase 277's probe measured entries carrying an inline value on a label line; a label quoted inside a sentence is not one of those, so its conclusion was broader than its measurement."
+    },
+    {
+      "issue": "span permissiveness",
+      "finding": "About 216 live entries put a code fence, a SHA256(...) formula or a bare newline between label and value, so the span cannot be tightened to 'value follows the colon'."
+    }
+  ],
+  "sources": [
+    "docs/research-brief-dialect-prose-over-read-2026-09-08.md",
+    "qor/scripts/ledger_dialect.py",
+    "docs/META_LEDGER.md",
+    "docs/plan-qor-phase277-content-hash-consolidation.md"
+  ]
+}
