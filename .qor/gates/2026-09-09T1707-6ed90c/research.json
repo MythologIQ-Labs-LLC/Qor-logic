@@ -1,0 +1,124 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-09T1707-6ed90c",
+  "ts": "2026-09-09T17:12:07Z",
+  "questions": [
+    "What is the actual exit-code contract of nightly-health.yml and its boundary step?",
+    "Are the boundary findings advisory or enforcing by design?",
+    "What is the composition of the current 18 github_surface findings?",
+    "Which writer produced the absolute-path audit.json target, and can it still emit one?",
+    "Do prior unsealed sibling plans already hold a mechanism for any of this?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "claim": "The boundary step is documented reports-only in three places and returns 1 on findings into a bare run: with no suppression, so it fails the job.",
+      "evidence": [
+        "qor/scripts/github_surface.py:13",
+        "qor/scripts/github_surface.py:130",
+        ".github/workflows/nightly-health.yml:48",
+        ".github/workflows/nightly-health.yml:51",
+        "qor/references/doctrine-publication-boundary.md:82"
+      ],
+      "status": "DRIFT"
+    },
+    {
+      "id": "F2",
+      "claim": "The two genuinely enforcing steps both refuse to fail via set +e and captured exit code, so the lifecycle can read them; the advisory step is the only hard-failing step.",
+      "evidence": [
+        ".github/workflows/nightly-health.yml:57",
+        ".github/workflows/nightly-health.yml:74",
+        ".github/workflows/nightly-health.yml:79",
+        ".github/workflows/nightly-health.yml:97"
+      ],
+      "status": "DRIFT"
+    },
+    {
+      "id": "F3",
+      "claim": "Measured harm: status_json exits 1 today on governance-index/stale-tier1 with overall_ok false, and no health issue is open. Five consecutive job failures 2026-09-05 to 2026-09-09.",
+      "evidence": [
+        "python -m qor.scripts.status_json --repo-root . -> exit 1",
+        "gh run list --workflow=Nightly Health -> 5 consecutive failures"
+      ],
+      "status": "DRIFT"
+    },
+    {
+      "id": "F4",
+      "claim": "main() is three-valued (2 could-not-scan / 1 findings / 0 clean); continue-on-error would suppress 2 as well and must not be used.",
+      "evidence": [
+        "qor/scripts/github_surface.py:123",
+        "qor/scripts/github_surface.py:130",
+        ".github/workflows/oss-sast.yml:38"
+      ],
+      "status": "CONSTRAINT"
+    },
+    {
+      "id": "F5",
+      "claim": "The 18 findings are 5 detector-specification examples, 12 genuine outside-repository references, and 1 drive-letter path in an issue body. None is a code defect.",
+      "evidence": [
+        "nightly-health run log 2026-09-09",
+        "qor/references/doctrine-publication-boundary.md:82-83"
+      ],
+      "status": "MEASURED"
+    },
+    {
+      "id": "F6",
+      "claim": "The boundary-lint marker was applied to the tracked copy of a specification table and dropped on the pull-request body copy; scan_text applies it per line on both surfaces.",
+      "evidence": [
+        "qor/scripts/publication_boundary_lint.py:51",
+        "qor/scripts/publication_boundary_lint.py:108",
+        "docs/plan-qor-phase268-self-reference-detector.md:111-112",
+        "qor/references/doctrine-publication-boundary.md:69-71"
+      ],
+      "status": "DRIFT"
+    },
+    {
+      "id": "F7",
+      "claim": "GH #465 writer-side premise fails measurement: the artifacts are remediate-iter1.json, hold no top-level target, and contain no absolute path; git grep over tracked files returns nothing.",
+      "evidence": [
+        ".qor/gates/2026-08-17T2208-4a255f/remediate-iter1.json",
+        ".qor/gates/2026-08-17T2146-7136d4/remediate-iter1.json",
+        "git grep over tracked files: 0 hits"
+      ],
+      "status": "DRIFT (issue premise)"
+    },
+    {
+      "id": "F8",
+      "claim": "Phase 268 documented this defect accurately and scoped it out; no plan in the corpus holds a mechanism.",
+      "evidence": [
+        "docs/plan-qor-phase268-self-reference-detector.md:233-236"
+      ],
+      "status": "MATCH"
+    },
+    {
+      "id": "F9",
+      "claim": "No test pins that a step documented reports-only cannot fail the job.",
+      "evidence": [
+        "tests/test_nightly_health_wiring.py"
+      ],
+      "status": "GAP"
+    }
+  ],
+  "sources": [
+    ".github/workflows/nightly-health.yml",
+    "qor/scripts/github_surface.py",
+    "qor/scripts/publication_boundary_lint.py",
+    "qor/references/doctrine-publication-boundary.md",
+    "docs/plan-qor-phase268-self-reference-detector.md",
+    "tests/test_nightly_health_wiring.py"
+  ],
+  "brief_path": "docs/research-brief-nightly-health-advisory-gate-2026-09-09.md",
+  "targets": [
+    "GH #432",
+    "GH #431",
+    "GH #465"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-09T17:12:07Z"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-09T1707-6ed90c",
+  "ts": "2026-09-09T17:27:39Z",
+  "plan_path": "docs/plan-qor-phase283-nightly-health-advisory-gate.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: pin the advisory contract with an executing test -- extract the boundary step's shell body from the workflow and run it under bash against a stub scanner exiting 0, 1 and 2; assert the body exits 0 in all three cases and writes the expected boundary_rc.",
+    "Phase 2: make the step advisory and wire its result into the lifecycle -- id: boundary, set +e, capture boundary_rc and boundary_summary, move github.repository into env:, add boundary_rc == '2' to the create condition and != '2' to the close condition, carry the summary line into the issue body.",
+    "Phase 3: record the consumer contract in the doctrine -- one paragraph under Enforcement stating that a consumer suppresses exit 1, routes exit 2 into its own reporting path, and does not use continue-on-error."
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_nightly_health_wiring.py -q",
+    "python -m pytest tests/test_boundary_scope_disclosure.py tests/test_publication_boundary_lint.py tests/test_github_surface_boundary.py -q",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "boundaries": {
+    "limitations": [
+      "The step stops failing the job; it clears no finding. The eighteen live findings remain until an operator acts.",
+      "One workflow's consumption of one scanner's exit code changes, plus the doctrine paragraph that omission allowed."
+    ],
+    "non_goals": [
+      "Anonymizing the GitHub surface (GH #431, boundary half of GH #465) -- reserved to a human operator by doctrine-publication-boundary.md:82-83.",
+      "Editing published issue or pull-request bodies.",
+      "GH #465's audit-report pairing question; GH #439 shadow-threshold remediation (operator-deferred this cycle)."
+    ],
+    "exclusions": [
+      "No change to github_surface.py: its three-valued return is correct and the consumer was wrong.",
+      "No change to any detector, marker, or doctrine exception. No new dependency, no new script."
+    ]
+  },
+  "terms": [],
+  "feature_inventory_touches": [],
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-09T17:27:39Z"
+  }
+}

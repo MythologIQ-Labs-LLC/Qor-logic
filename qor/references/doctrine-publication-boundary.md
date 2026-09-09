@@ -96,6 +96,22 @@ is a control nobody enforces. CI runs the structural detectors only; the
 identity-term overlay at `.qor/private/boundary-terms.txt` is gitignored and
 verified locally.
 
+**What a consumer does with the exit code.** The scan returns three values and
+a consumer must not treat them alike. Exit 0 reports a completed scan with
+nothing found. Exit 1 reports a completed scan with findings awaiting a human,
+and a consumer suppresses it: a finding cannot gate, because the operator who
+must clear it is not the job. Exit 2 reports that the surface could not be read,
+and a consumer routes it into whatever reporting path it owns, because an
+unchecked surface is not a clean one. `continue-on-error` erases that
+distinction and must not be used. Exit 1 also carries an unhandled exception --
+`main`'s handler wraps only the fetch, and the scan itself lies outside it -- so
+a consumer needing the distinction keys on the scanner's completion line rather
+than on the exit code. Suppressing exit 1 leaves open how a consumer surfaces a
+*newly appeared* finding; the count of an item-windowed scan cannot answer that,
+no consumer here solves it yet, and one that needs to must baseline finding
+identities rather than their number.
+
+
 ## Agent obligations
 
 Every agent operating in this repository MUST:

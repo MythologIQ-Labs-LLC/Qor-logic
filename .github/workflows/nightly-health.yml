@@ -48,9 +48,36 @@ jobs:
         # Reports only; a finding is for a human to anonymize. The identity-term
         # overlay is gitignored, so this applies the structural detectors and
         # says so in its summary rather than claiming an unqualified "clean".
-        run: python -m qor.scripts.github_surface --repo "${{ github.repository }}"
+        # Phase 283 (GH #432): reports only is now true of the mechanism as well
+        # as the prose. This step returned a non-zero exit into a bare `run:`,
+        # so a finding ended the job before the four steps below it -- including
+        # both halves of the issue lifecycle -- for five consecutive nights.
+        # Classification keys on the scanner's completion line, not its exit
+        # code: an unhandled exception also exits 1 and would read as findings.
+        id: boundary
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set +e
+          OUTPUT=$(python -m qor.scripts.github_surface --repo "$REPO" 2>&1)
+          RC=$?
+          if printf '%s\n' "$OUTPUT" | grep -q '^github_surface: [0-9][0-9]* finding(s) ('; then
+            SUMMARY=$(printf '%s\n' "$OUTPUT" | grep '^github_surface: ' | tail -1)
+          else
+            SUMMARY=$(printf '%s' "$OUTPUT" | tail -1)
+            RC=2
+          fi
+          set -e
+          printf '%s\n' "$OUTPUT"
+          printf 'boundary_rc=%s\n' "$RC" >> "$GITHUB_OUTPUT"
+          printf 'boundary_summary=%s\n' "$SUMMARY" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Publication boundary (advisory)"
+            echo '```'
+            printf '%s\n' "$OUTPUT"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Aggregate governance health
         id: health
         run: |
@@ -77,16 +104,28 @@ jobs:
           set -e
           echo "smoke_failed=$RC" >> "$GITHUB_OUTPUT"
       - name: Create or update health issue
-        if: steps.health.outputs.health_failed != '0' || steps.smoke.outputs.smoke_failed != '0'
+        # `!cancelled()` rather than `always()`: cancel-in-progress above means a
+        # superseded run is cancelled, and `always()` would fire the lifecycle on
+        # it with every output empty. Empty outputs from an earlier failure
+        # satisfy `!= '0'` and open an issue, which is the safe direction.
+        if: "!cancelled() && (steps.health.outputs.health_failed != '0' || steps.smoke.outputs.smoke_failed != '0' || steps.boundary.outputs.boundary_rc == '2')"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HEALTH_JSON: ${{ steps.health.outputs.health_json }}
+          HEALTH_FAILED: ${{ steps.health.outputs.health_failed }}
           SMOKE_FAILED: ${{ steps.smoke.outputs.smoke_failed }}
+          BOUNDARY_SUMMARY: ${{ steps.boundary.outputs.boundary_summary }}
         run: |
-          TITLE="Nightly governance health: drift detected"
-          EXISTING=$(gh issue list --search "Nightly governance health" --json number --limit 1 --state open | jq '.[0].number // empty')
           STAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          BODY=$(printf 'Nightly self-check failed as of %s.\n\nStatus payload:\n```json\n%s\n```\nPackaging smoke exit: %s\n\nRun `python -m qor.scripts.status_json --repo-root .` locally for detail.' "$STAMP" "$HEALTH_JSON" "$SMOKE_FAILED")
+          if [[ "$HEALTH_FAILED" == "0" && "$SMOKE_FAILED" == "0" ]]; then
+            TITLE="Nightly governance health: boundary scan did not complete"
+            OPENING="The publication-boundary scan could not read the GitHub surface as of $STAMP. The governance and packaging checks both passed."
+          else
+            TITLE="Nightly governance health: drift detected"
+            OPENING="Nightly self-check failed as of $STAMP."
+          fi
+          EXISTING=$(gh issue list --search "Nightly governance health" --json number --limit 1 --state open | jq '.[0].number // empty')
+          BODY=$(printf '%s\n\nStatus payload:\n```json\n%s\n```\nPackaging smoke exit: %s\nPublication boundary: %s\n\nRun `python -m qor.scripts.status_json --repo-root .` locally for detail.' "$OPENING" "$HEALTH_JSON" "$SMOKE_FAILED" "$BOUNDARY_SUMMARY")
           if [[ -n "$EXISTING" ]]; then
             gh issue comment "$EXISTING" --body "$BODY"
             echo "Commented on existing issue #$EXISTING" >> "$GITHUB_STEP_SUMMARY"
@@ -95,13 +134,19 @@ jobs:
             echo "Created new health issue" >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Close resolved health issue
-        if: steps.health.outputs.health_failed == '0' && steps.smoke.outputs.smoke_failed == '0'
+        # The boundary codes are enumerated, not negated. `!= '2'` was fail-open:
+        # a crash exits 1, a missing interpreter 127/137, a skipped step yields
+        # the empty string, and every one of those would have closed the issue.
+        # These codes and the create step's `== '2'` partition the scanner's
+        # three outcomes, so no run falls between the two conditions.
+        if: "!cancelled() && steps.health.outputs.health_failed == '0' && steps.smoke.outputs.smoke_failed == '0' && (steps.boundary.outputs.boundary_rc == '0' || steps.boundary.outputs.boundary_rc == '1')"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BOUNDARY_SUMMARY: ${{ steps.boundary.outputs.boundary_summary }}
         run: |
           EXISTING=$(gh issue list --search "Nightly governance health" --json number --limit 1 --state open | jq '.[0].number // empty')
           if [[ -n "$EXISTING" ]]; then
-            gh issue close "$EXISTING" --comment "Resolved as of $(date -u +%Y-%m-%dT%H:%M:%SZ). All nightly checks green."
+            gh issue close "$EXISTING" --comment "Resolved as of $(date -u +%Y-%m-%dT%H:%M:%SZ). Governance and packaging checks passed; publication boundary: ${BOUNDARY_SUMMARY}."
             echo "Closed resolved health issue #$EXISTING" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "No open health issues to close." >> "$GITHUB_STEP_SUMMARY"
