@@ -19,14 +19,25 @@ from qor.scripts.publication_boundary_lint import _GH_URL_RE, _SELF_REPO
 REPO = Path(__file__).resolve().parents[1]
 PRIVATE_MAPPING = REPO / ".qor" / "private" / "upstream-issues.json"
 
-# Closed with a destination or a live enforcer. Excludes the three declared
-# permanent skips, whose emitters keep firing by design -- that distinction is
-# the point of the phase, so the test must not blur it.
+# Closed with a destination or a live enforcer. Excludes the declared permanent
+# skips, whose emitters keep firing by design -- that distinction is the point
+# of the phase, so the test must not blur it.
+#
+# Phase 283 removed ("gate_skipped_prerequisite_absent",
+# "instruction_hygiene_lint"). It qualified for neither set. The module has
+# never existed in this repository, while /qor-substantiate Step 4.6.11 and the
+# qor-guard-instructions skill both document the control as fail-closed, so the
+# gate records a disclosed skip at every seal and the emitter is live -- it was
+# not closed with a destination or an enforcer. Nor is it a permanent skip: the
+# other declarations there are inapplicable by construction (no SQL migrations,
+# no Surface column, no agent-teams host) and render as `cannot-automate:`,
+# which would be false for a control that simply has not been built. It belongs
+# in neither set until the module ships or the control is withdrawn, and while
+# it sits in neither, the event stays honestly unaddressed.
 CLOSED_SIGNATURES = {
     ("degradation", "concurrent-edit-during-audit"),
     ("degradation", "delegated-review-delivery-failure"),
     ("gate_skipped_prerequisite_absent", "intent_lock"),
-    ("gate_skipped_prerequisite_absent", "instruction_hygiene_lint"),
     ("capability_shortfall", "qor-namespace-resolution"),
     ("hallucination", "invented-artifact-path"),
     ("regression", "details:816f0c38a2d1"),
@@ -93,7 +104,7 @@ def test_every_deferred_reference_resolves_in_the_private_mapping():
 
 
 def test_closed_residue_signatures_do_not_reappear_unaddressed():
-    """The seven non-permanent closures stay closed.
+    """The non-permanent closures stay closed.
 
     A signature reappearing here means either the closure was against a live
     emitter -- the misclassification tribunal ground V-3 caught for agent-teams

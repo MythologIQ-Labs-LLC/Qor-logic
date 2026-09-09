@@ -22898,6 +22898,173 @@ Corrected to the tolerated fixture, where a bleed contradicts an OK verdict rath
 
 **Version**: 0.171.4 -> 0.172.0 per the plan's declared `feature` change class.
 
+### Entry #776: RESEARCH BRIEF -- nightly-health advisory gate (GH #432, #431, #465)
+
+**Timestamp**: 2026-09-09T17:11:12Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Artifact**: docs/research-brief-nightly-health-advisory-gate-2026-09-09.md
+
+**Content Hash**: `b4f47a0167463f3493f879181493daa655a274ed9bafe9f88ed79d7336c81ff9`
+**Previous Hash**: `7513451d05db1e515189602112d53509d234c8cb13561c058b28ed51b65a31ce`
+**Chain Hash (Merkle seal)**: `d0017dfd1620c1c062907deee74bdc5bcaf567896ce5704b4e577b3b182dfc59`
+
+**Decision**: **RESEARCH COMPLETE.** Target: the nightly-health exit-code contract and the advisory posture of the GitHub-surface publication-boundary scan; GH #432, #431 and #465 investigated as one unit.
+
+**THE JOB HAS BEEN DEAD FIVE NIGHTS AND THE REDNESS READ AS THE CONTROL WORKING.** The boundary step is documented as reports-only in three independent places -- github_surface.py:13, nightly-health.yml:48, doctrine-publication-boundary.md:82 -- and github_surface.py:130 returns 1 on findings into a bare run: with no failure suppression. Every step after it has not executed since 2026-09-05: the governance aggregate, the packaging smoke, and both halves of the health-issue lifecycle.
+
+**THE INVERSION IS VISIBLE INSIDE ONE FILE.** The two steps whose verdicts genuinely gate both refuse to fail: nightly-health.yml:57 and :74 use set +e and capture $? precisely so the lifecycle at :79 and :97 can read them. The one step documented as advisory is the only step in the job that hard-fails.
+
+**MEASURED HARM, NOT PREDICTED HARM.** status_json --repo-root . exits 1 today with governance-index/stale-tier1 and overall_ok false. That drift should have opened a health issue. None is open. The self-test passes, so the verdict was trustworthy and simply never reached.
+
+**continue-on-error IS THE WRONG FIX.** main() is three-valued: 2 could-not-scan (:123), 1 findings (:130), 0 clean. Suppressing the step wholesale converts 'the boundary was never checked' into silence, trading a loud wrong failure for a quiet wrong success. The fix must keep 2 fatal.
+
+**NONE OF THE EIGHTEEN FINDINGS IS A CODE DEFECT.** Five are the detector's own specification examples in one pull-request body; twelve are genuine outside-repository references reserved to an operator by doctrine-publication-boundary.md:82-83; one is a drive-letter path inside an issue body. The detector is correct in all eighteen cases.
+
+**THE EXCEPTION MECHANISM EXISTS AND WAS DROPPED ON ONE SURFACE.** The tracked plan file carries boundary-lint: ok=detector-specification on every affected line of its specification table. The same table, copied into the pull-request body that shipped it, carries none. Five findings clear with an edit to that body and no code change.
+
+**GH #465's WRITER-SIDE PREMISE DOES NOT SURVIVE MEASUREMENT.** Both cited files are remediate-iter1.json, not audit.json; neither holds a top-level target; neither contains an absolute path, and git grep for the drive-letter prefix over tracked files returns nothing. The path exists only in the issue's own body. No writer needs changing. The audit-report pairing half of that issue is untouched and stays open.
+
+**PHASE 268 SAW THIS AND DECLINED IT.** Its plan states the return value, the missing suppression, and that the step fails at either count, then scopes it out as no gate-state improvement. The description was accurate; what it did not carry is that the same step ends the job, so the cost was not a red control but a silent one. No plan in the corpus holds a mechanism.
+
+**NO TEST PINS THE ADVISORY CONTRACT.** test_nightly_health_wiring.py pins ordering, the permission ceiling, the lifecycle idioms and the script-injection surface, and not that a step documented reports-only cannot fail the job. That absence is why the contradiction shipped and stayed, and it is the red test the next phase writes first.
+
+Findings are advisory. Recommendation: one code phase for GH #432 (non-fatal on 1, fatal on 2, findings carried into the health-issue body), then an operator anonymization pass for GH #431 and the boundary half of GH #465.
+
+### Entry #777: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-09T17:38:26Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: VETO
+**Target**: docs/plan-qor-phase283-nightly-health-advisory-gate.md
+
+**Content Hash**: `701133fa86ed80ed0b358dbd8a437c851515eae065aebd8bfb3546e1d9b6b482`
+**Previous Hash**: `d0017dfd1620c1c062907deee74bdc5bcaf567896ce5704b4e577b3b182dfc59`
+**Chain Hash (Merkle seal)**: `9c1a0d4892bcdf4a3cb5067a25adbbc399d32e465c315af4ee6220260b19bff3`
+
+**Decision**: **Verdict**: **VETO**. Fifteen violations; three independently defeat a Definition-of-Done item.
+
+**THE PLAN'S RED TESTS CANNOT BE RED FOR THE REASON CLAIMED.** Phase 1 extracts the boundary step by `id`, and the pre-change step at nightly-health.yml:42-53 has none -- only health (:55) and smoke (:72) carry one. All four tests fail with step-not-found under one shared cause, discriminating nothing, and D4's claimed observation is unobtainable by the described mechanism. The Judge's own feasibility prototype ran against the health step, which already had the property the target lacks, and so could not surface this.
+
+**THE FIX WOULD SUBSTITUTE A SILENT CONTROL FOR A LOUD BROKEN ONE.** On the steady-state night -- health green, smoke green, findings present -- the create step does not run, so the promised advisory line is written nowhere, and the close step fires with the comment 'All nightly checks green' while the findings stand. A new violation taking 18 to 19 would reach no one. LD-3 rejected 'exit 1 opens an issue' for sound reasons and did not answer the question that rejection raises; 'Open Questions: None' foreclosed it.
+
+**THE CLOSE CONDITION IS FAIL-OPEN.** An uncaught exception exits 1 (verified by execution: main()'s except covers only the fetcher, and scan_surface at :125 sits outside it); a missing interpreter exits 127/137; a skipped step yields the empty string. Every one satisfies != '2' and closes an open issue. The plan's own test asserted the fail-open form, which would have locked the defect in.
+
+**EXIT 2 CANNOT DELIVER IN ITS DOMINANT CAUSE.** It arises only when gh itself fails; the create step then calls gh issue create with the same token seconds later and fails too, producing no issue -- the behaviour the plan exists to repair.
+
+**TWO CURRENT-STATE CLAIMS ARE FALSE AND WOULD SURVIVE A REDESIGN.** LD-2 asserts the advisory step is the only step that can fail the job; :31, :35, :39 and :41 all can, and the self-test carries the identical job-killing shape the plan leaves in place. A cited test, test_no_step_output_is_interpolated_into_a_run_body, does not exist: the wiring file defines two tests and the assertion lives inside one of them.
+
+**REMEDIATION IS PROVEN, NOT SUGGESTED.** Classifying on the scanner's own final line separates clean, findings, crash and could-not-read correctly where the exit code conflates the first two; measured across all four stubbed modes. The delta-against-baseline idiom for the steady-state gap exists one phase old at .qor/dialect-ownership-baseline.json, constrained by permissions: contents: read, which forbids a tracked baseline the job updates.
+
+Mode: adversarial. audit_risk_score reported option_b_required false; an independent reviewer was dispatched regardless because the Judge authored the plan. It produced three of the blocking findings, two of which the solo passes had missed entirely. Every finding was re-verified against the files before entering this verdict.
+
+**Required next action**: Governor amends plan text, re-runs /qor-audit.
+
+### Entry #778: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-09T18:26:25Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase283-nightly-health-advisory-gate.md
+
+**Content Hash**: `85e68c44d929b857e3722ff2ce79de612353e12257691cd736a5cbfaad74de97`
+**Previous Hash**: `9c1a0d4892bcdf4a3cb5067a25adbbc399d32e465c315af4ee6220260b19bff3`
+**Chain Hash (Merkle seal)**: `aa00cebca9e45e857f0fcff19cbab11fee8ab70a6b5dbf989779317026a89d7b`
+
+**Decision**: **Verdict**: **PASS** at iteration 3. The plan that entered this tribunal is not the plan that was vetoed at entry #777.
+
+**THE SCOPE WAS SPLIT ON EVIDENCE, NOT ON FATIGUE.** Iteration 2's detection design died on a fact neither design anticipated: github_surface fetches a 200-item window per kind, and this repository holds 229 issues and 250 pull requests, so the scanned set slides with ordinary activity and any count over it churns. A count is also not an identity -- one finding anonymized and one appearing the same day leaves it unmoved. The surviving design baselines identities, which is what Phase 282 already implements and what an earlier iteration cited while storing a count instead. The operator split the phase rather than let a third design ride on a verified repair.
+
+**TWO REVIEWERS, ONE CARRYING HISTORY AND ONE FROM FRESH CONTEXT, CONVERGED ON THE SAME REGRESSION.** Reducing scope deleted the test covering the create condition's boundary disjunct and orphaned the only new reporting path the plan had; deleting the clause would have left the suite green. Independent convergence is why that fix is trusted rather than the fixer.
+
+**A FALSE LIMITATION SURVIVED FOUR ROUNDS BECAUSE IT UNDERSTATED.** The plan claimed no finding reaches a person, while its own drafted YAML writes the count into the issue body and the close comment. Understatement reads as safe, which is precisely why nobody checked it. A limitation that is wrong in the conservative direction is still wrong, and this one would have misled the follow-on phase about what exists.
+
+**FOUR OF THIS SESSION'S OWN FINDINGS WERE MEASUREMENTS THAT WERE RIGHT-SHAPED AND WRONG-SUBJECTED.** A feasibility prototype run against the one step that already had the id the target lacked. A baseline storing a count where the cited precedent stores identities. A grep matching five lines in a nine-step job, blind by construction to the five steps it did not match. Highest issue and pull-request numbers cited as evidence about list lengths in a shared number space. Every one was executed, reported honestly with its output, and useless for the claim attached to it.
+
+**THE LAST FINDING CAME AFTER BOTH REVIEWS CLEARED THE PLAN.** Nothing asserted that the create and close conditions partition the scanner's three outcomes. Two tests each checking one side cannot see a gap between them: a workflow creating on {2} and closing on {0} satisfied both while leaving a findings night unhandled and an open issue permanent. Only an assertion about the pair catches it.
+
+**RESIDUALS ARE DECLARED, NOT DISCOVERED LATER.** A rising count on a green night with no open issue reaches nobody. An exit 2 caused by gh being unavailable cannot file an issue because the create step needs the same gh. The two lifecycle steps can still fail the job. Each is in the plan's own text with its reason.
+
+Every citation in the five Locked Decisions was re-executed by the Judge and independently re-derived by a reviewer without shell access. **Required next action**: /qor-implement.
+
+### Entry #779: IMPLEMENTATION
+
+**Timestamp**: 2026-09-09T18:49:06Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase283-nightly-health-advisory-gate.md
+
+**Content Hash**: `136f712fda7820d563b629cf73b5b33f350b587c53877f84cf25d4e5405413c6`
+**Previous Hash**: `aa00cebca9e45e857f0fcff19cbab11fee8ab70a6b5dbf989779317026a89d7b`
+**Chain Hash (Merkle seal)**: `b751a01f9c1fb81b40c875cac5f1de3f6dba18447a9158037f763d2692e31a0d`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Phase 283 repairs GH #432: the nightly-health publication-boundary step no longer ends the job, and the issue lifecycle distinguishes a scan that found things from one that could not run.
+
+**FOUR SEPARATE CAUSES OF A RED THAT MEANT NOTHING.** The Phase 1 harness executes the step's own shell body against a stubbed scanner, and getting that honest took four corrections, each of which had produced a red that looked like the defect. The Actions expression in the pre-change body is a bad substitution to bash, so the body aborted before the scanner ran. PATH joined with os.pathsep gives a semicolon on Windows, which bash does not split on. That corrupted value made the launcher resolve bash to the WSL stub, which has no distribution installed. And Git Bash accepts a drive-letter path as an argument while refusing to match one as a PATH entry, so the stub never shadowed the interpreter and the live scanner ran instead. Every one of the four was a green-looking red, which is the exact failure the audit vetoed twice.
+
+**RED-BEFORE WAS VERIFIED BY REVERTING, NOT ASSERTED.** With the workflow stashed to HEAD, 12 of the phase's tests fail and 5 pass; restoring the change makes all 17 pass, twice consecutively. Two of the Phase 2 tests are green-before guards rather than red-first drivers -- the step-output binding check and the step-ordering check -- and the plan wrongly predicted the first would be red. At HEAD there is no boundary output reference at all, so there was nothing for it to fail on.
+
+**THE BOUNDARY LINT CAUGHT TWO PATHS THIS PHASE INTRODUCED.** A hardcoded Git install path in the bash resolver and a drive-letter example in a docstring. Both were removed rather than marked: the doctrine's exception is for detector fixtures and specifications, and neither of these was either. The resolver now derives candidates from `git --exec-path`.
+
+**A TEST RUN DIRTIES SEVEN TRACKED MANIFESTS WITH A TIMESTAMP AND NOTHING ELSE.** The dist manifests were regenerated by the suite with only `generated_ts` moving; content and every hash identical. Reverted rather than carried, since a diff with no information in it is not this phase's to ship. Adjacent to GH #440 and left for it.
+
+**Files**: .github/workflows/nightly-health.yml, tests/test_nightly_health_wiring.py, tests/test_boundary_scope_disclosure.py, qor/references/doctrine-publication-boundary.md.
+
+**Suite**: 3473 passed, 6 skipped, 4 deselected. Boundary lint clean, ledger chain verified, self-test and packaging smoke pass. No commit, push, or PR: the Review Boundary is the operator's.
+
+### Entry #780: SESSION SEAL -- Phase 283 nightly-health advisory gate (v0.172.1)
+
+**Timestamp**: 2026-09-09T19:38:57Z
+**Phase**: SEAL (Phase 283)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `a63f2a01571f`
+**Plan**: docs/plan-qor-phase283-nightly-health-advisory-gate.md (iteration 3)
+**Session**: 2026-09-09T1707-6ed90c
+**Closes**: GH #432
+
+**Content Hash**: `136f712fda7820d563b629cf73b5b33f350b587c53877f84cf25d4e5405413c6`
+**Previous Hash**: `b751a01f9c1fb81b40c875cac5f1de3f6dba18447a9158037f763d2692e31a0d`
+**Chain Hash (Merkle seal)**: `bb55303f270608e33f62b62c54fddedc7935a6fa6224399995c51c1029b9b82b`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 3.
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**THE WATCHDOG HAD BEEN DEAD FIVE NIGHTS AND ITS REDNESS READ AS THE CONTROL WORKING.** The publication-boundary step is documented as reports-only in three independent places and returned a non-zero exit into a bare `run:`, so a finding ended the job before the governance aggregate, the packaging smoke, and both halves of the health-issue lifecycle. Every night from 2026-09-05 the run list showed a control objecting to a surface that needed cleaning, which was true, while the consequence -- nothing after it executed -- appeared nowhere. Measured on the same tree the same day, status_json exits 1 on a live governance-index staleness that should have opened an issue. None was open.
+
+**THE INVERSION WAS VISIBLE INSIDE ONE FILE.** The two steps whose verdicts genuinely gate both capture their exit code so they cannot fail the step, letting the lifecycle read them. The one step documented as advisory was the only step in the job that could fail it.
+
+**EXIT 1 IS NOT EXCLUSIVELY FINDINGS, AND THE FIRST FIX WOULD HAVE HIDDEN A CRASH.** main's handler wraps only the fetch; the scan itself lies outside it, so an unhandled exception exits 1. Suppressing exit 1 on the exit code alone would have converted a crashed scanner into an ordinary advisory night reporting nothing. Classification keys on the scanner's completion line instead, anchored to line start, which a finding cannot forge because findings begin with a bracketed marker.
+
+**THE CLOSE CONDITION WAS FAIL-OPEN AND ITS TEST ASSERTED THE DEFECT.** A crash (1), a missing interpreter (127/137) and a skipped step (empty) all satisfy `!= '2'` and would have closed an open issue. The close condition is now an enumerated allow-list, and a partition assertion checks that create and close leave no scanner outcome between them -- a gap two tests each checking one side cannot see.
+
+**FIFTEEN VIOLATIONS AT THE FIRST TRIBUNAL, THREE MORE AT THE SECOND.** Iteration 1 extracted the step by an id the step does not carry until iteration 2, so its four tests would have failed step-not-found rather than by observing the defect. Iteration 2 died on a fact neither design anticipated: the scanner fetches a 200-item window per kind against 229 issues and 250 pull requests, so the scanned set slides with ordinary activity and any count over it churns. A count is also not an identity. The operator split the phase rather than let a third design ride on a verified repair.
+
+**TWO REVIEWERS CONVERGED INDEPENDENTLY ON THE SAME REGRESSION.** Reducing scope deleted the test covering the create condition's boundary disjunct and orphaned the only new reporting path the plan had; the clause could have been deleted with the whole suite still green. One reviewer carried the history and one had none, and both found it.
+
+**A FALSE LIMITATION SURVIVED FOUR ROUNDS BECAUSE IT UNDERSTATED.** The plan claimed no finding reaches a person while its own drafted YAML writes the count into the issue body and the close comment. Understatement reads as safe, which is why nobody checked it.
+
+**FOUR MEASUREMENTS IN THIS SESSION WERE RIGHT-SHAPED AND WRONG-SUBJECTED.** A feasibility prototype run against the one step that already had the id the target lacked. A baseline storing a count where the cited precedent stores identities. A grep matching five lines in a nine-step job, blind by construction to the five it did not match. Highest issue and pull-request numbers cited as evidence about list lengths in a shared number space. Each was executed, reported honestly with its output, and useless for the claim attached to it.
+
+**FOUR CAUSES OF A RED THAT MEANT NOTHING, FOUND WHILE BUILDING THE HARNESS.** An Actions expression bash cannot parse; a PATH joined with os.pathsep; the corrupted value falling through to the WSL launcher, which has no distribution; and Git Bash refusing to match a drive-letter path as a PATH entry, so the stub never shadowed the interpreter. Every one produced a failing test that looked like the defect.
+
+**RED-BEFORE WAS VERIFIED BY REVERTING, NOT ASSERTED.** With the workflow stashed to HEAD, 12 of the phase's tests fail and 5 pass; restored, all 17 pass, twice consecutively. Two Phase 2 tests are green-before regression guards rather than red-first drivers, and the plan wrongly predicted one would be red.
+
+**DECLARED RESIDUALS, NOT DISCOVERED ONES.** A rising finding count on a green night with no open issue reaches nobody; the follow-on phase carries it. An exit 2 caused by gh being unavailable cannot file an issue, because the create step needs the same gh. The two lifecycle steps can still fail the job. Each is in the plan's own text with its reason.
+
+**GATE SKIP**: instruction_hygiene_lint (Step 4.6.11) -- module absent from this repository; Phase 75 declarative-tolerance SKIP recorded with a severity-1 gate_skipped_prerequisite_absent event. data_api_acl_lint disclosed-skip: no SQL migrations.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Suite**: 3473 passed, 6 skipped, 4 deselected. Boundary lint clean. Version 0.172.0 -> 0.172.1 per the plan's declared hotfix change class.
+
 ---
 
 *Chain integrity: VALID*

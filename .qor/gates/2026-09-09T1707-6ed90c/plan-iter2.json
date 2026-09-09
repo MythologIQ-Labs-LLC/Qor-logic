@@ -1,0 +1,52 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-09T1707-6ed90c",
+  "ts": "2026-09-09T18:11:35Z",
+  "plan_path": "docs/plan-qor-phase283-nightly-health-advisory-gate.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: pin the advisory contract with an executing test -- extract the boundary step's shell body by step NAME (id does not exist until Phase 2) and run it under bash -e against a recording stub at exit 0, 1, 2 and a crash with no completion line; assert the body exits 0 in every case, writes the classified boundary_rc, and invoked the scanner module with --repo.",
+    "Phase 2: make the step advisory and stop the close path overstating -- id: boundary, set +e covering every fallible command, classification on the scanner's completion line rather than the exit code, printf-based GITHUB_OUTPUT writes, REPO through env:, !cancelled() on both lifecycle steps, close condition as an enumerated allow-list of '0' and '1', and a close comment that no longer claims all checks are green.",
+    "Phase 3: record the consumer contract in the doctrine -- one paragraph under Enforcement, drafted in the plan, stating that a consumer suppresses exit 1, routes exit 2 into its own reporting path, does not use continue-on-error, and keys on the completion line because exit 1 also carries an unhandled exception."
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_nightly_health_wiring.py -q",
+    "python -m pytest tests/test_boundary_scope_disclosure.py tests/test_publication_boundary_lint.py tests/test_github_surface_boundary.py -q",
+    "python -m qor.scripts.status_json --self-test",
+    "python -m pytest tests/test_packaging_install.py -v -m integration",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "boundaries": {
+    "limitations": [
+      "No finding is reported to a person by this plan; a completed scan with findings writes to the run step summary and nowhere else.",
+      "Strictly better than the present state, in which nothing after the boundary step runs at all, and not the whole repair.",
+      "No test executes Actions if: semantics; the end-to-end property is pinned in two halves (body by execution, conditions by parsing)."
+    ],
+    "non_goals": [
+      "Anonymizing the GitHub surface (GH #431, boundary half of GH #465) -- reserved to a human operator by doctrine-publication-boundary.md:82-83.",
+      "Editing published issue or pull-request bodies.",
+      "GH #465's audit-report pairing question; GH #439 shadow-threshold remediation (operator-deferred this cycle).",
+      "New-finding detection: deferred to a follow-on phase per LD-4 after two failed designs."
+    ],
+    "exclusions": [
+      "No change to github_surface.py: its return values are correct and the consumer was wrong.",
+      "The self-test step at nightly-health.yml:41 is deliberately excluded; its job-killing shape is correct there.",
+      "No new dependency, no new pinned action, no new tracked file, no permission change."
+    ]
+  },
+  "terms": [],
+  "feature_inventory_touches": [],
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-09T18:11:35Z"
+  }
+}

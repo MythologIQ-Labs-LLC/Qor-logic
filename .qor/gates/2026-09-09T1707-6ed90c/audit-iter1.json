@@ -1,0 +1,23 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-09T1707-6ed90c",
+  "ts": "2026-09-09T17:39:03Z",
+  "target": "docs/plan-qor-phase283-nightly-health-advisory-gate.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "test-failure",
+    "specification-drift",
+    "infrastructure-mismatch",
+    "coverage-gap"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.0",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "veto",
+    "ts": "2026-09-09T17:39:03Z"
+  }
+}

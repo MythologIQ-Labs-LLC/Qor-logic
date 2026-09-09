@@ -10,6 +10,28 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.172.1] - 2026-09-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 283 (hotfix; the nightly watchdog had been dead for five nights)**: the `nightly-health` publication-boundary step is documented as reports-only in three separate places -- `github_surface.py:13`, the workflow step comment, and `doctrine-publication-boundary.md:82` -- and returned a non-zero exit into a bare `run:`. A finding therefore failed the step, and a failed step ended the job before the governance aggregate, the packaging smoke, and both halves of the health-issue lifecycle. The job failed every night from 2026-09-05 to 2026-09-09 while `status_json` was exiting 1 on real drift that no issue ever reported. Closes GH #432.
+
+  The inversion was visible inside one file: the two steps whose verdicts genuinely gate both capture their exit code precisely so they cannot fail the step, and the one step documented as advisory was the only one that could.
+
+- **Classification now keys on the scanner's completion line, not its exit code.** `main`'s handler wraps only the fetch, so an unhandled exception anywhere else -- including inside the scan itself -- exits **1**, indistinguishable from findings. Suppressing exit 1 without that distinction would have made a crashed scanner read as an ordinary advisory night and report nothing. The completion line is matched anchored to line start, which a finding cannot forge because findings begin `[boundary] `.
+
+- **The close condition is an enumerated allow-list rather than a negation.** `!= '2'` was fail-open: a crash (1), a missing interpreter (127/137), and a skipped step (empty string) all satisfied it and would have closed an open health issue. Both lifecycle steps now carry `!cancelled()` rather than `always()`, because `cancel-in-progress` means a superseded run would otherwise fire the lifecycle with every output empty.
+
+### Changed
+- A boundary-only failure gets its own issue title and opening sentence instead of reusing the health-drift wording above a green payload, and the close comment no longer claims `All nightly checks green` while findings stand -- it now reports what the boundary actually said.
+- `qor/references/doctrine-publication-boundary.md` states what a consumer must do with each of the scan's three exit values. The doctrine described the scan as advisory and never said how to consume the exit code carrying that report, and that omission is what let a consumer read an advisory signal as a gate.
+
+### Added
+- `tests/test_nightly_health_wiring.py` gains a step-body extractor and tests that **execute** the boundary step's own shell against a stubbed scanner at each outcome, rather than pattern-matching the YAML for `set +e`. Verified red-before by reverting the workflow to HEAD: 12 fail, 5 pass; restored, all 17 pass.
+
+  Four separate causes of a red that meant nothing were found and fixed while building that harness: an Actions expression bash cannot parse, a PATH joined with `os.pathsep`, a resulting fall-through to the WSL launcher, and Git Bash refusing to match a drive-letter path as a PATH entry. Each produced a failing test that looked like the defect.
+
 ## [0.172.0] - 2026-09-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -2702,6 +2702,69 @@ For the consumer: when a finding arrives from an unexecuting reviewer, treat its
 
 ---
 
+## Entry: Phase 283 research -- a control documented as advisory and implemented as enforcing
+
+### What Happened
+
+The nightly governance job failed five consecutive nights. Each failure was legible: the publication-boundary step reported eighteen findings and exited non-zero, and the findings were real. Read from the run list, the job looked like a control doing its work on a surface that needed cleaning.
+
+The step is documented as reports-only in three independent places -- the module docstring, the workflow step comment, and the doctrine that governs it -- and returns 1 on findings, consumed by a bare `run:` with no failure suppression. So the step that must never fail the job was the only step in the job that could. The two steps whose verdicts genuinely gate, the governance aggregate and the packaging smoke, both capture their exit code deliberately so they cannot fail the step and the issue lifecycle downstream can read them.
+
+Nothing downstream ran on any of those nights. Measured on the same tree the same day, the governance aggregate exits 1 on a live staleness failure that should have opened a health issue. No health issue is open. The watchdog had something to say for five nights and the boundary noise stood where its voice belonged.
+
+The prior phase that touched this control had already written the mechanism down accurately -- the return value, the missing suppression, the conclusion that the job fails at either count -- and scoped it out with the note that it claimed no gate-state improvement. The description was correct and complete. What it did not carry was that the same step ends the job, so the cost of leaving it was not a permanently red control but a permanently silent one.
+
+### Pattern to Avoid
+
+Reading a red control as evidence that the control is working. Redness confirms that something ran and objected; it says nothing about whether the objection was routed to the boundary it was meant for. Here every finding was true, the detector was correct in all eighteen cases, and the aggregate effect was to disable the only automated check in the repository.
+
+The shape is narrower than "a bug in a control" and worth naming on its own. A control whose prose says advisory and whose exit code says enforcing does not fail where its documentation is read. It fails at the consumer, which was written by someone who trusted the prose, and the failure surfaces as the control being loud rather than as the consumer being dead. Three correct statements of intent and one contradicting mechanism produce a system that is wrong in exactly the place nobody rereads.
+
+The second-order error is the more expensive one: a documented-and-declined defect inherits the scoping note's framing on every later read. "No gate-state improvement" is a true sentence about the boundary count and a misleading one about the job, and it was the sentence the backlog carried forward.
+
+### Pattern ID
+
+Advisory-in-prose, enforcing-in-mechanism. Countermeasure, two parts.
+
+For the author: when a control's documentation asserts it cannot gate, that assertion is a property with a consumer, and the consumer is a test -- not a comment. A step commented "reports only" and a step that cannot fail the job are different artifacts, and only the second one survives the next edit.
+
+For the reader triaging a red control: establish what stopped running before deciding the redness is the finding. A failing step in a multi-step job has two effects, and the visible one is rarely the costly one.
+
+---
+
+## Entry: Phase 283 -- a feasibility proof run against the one specimen that already had the missing property
+
+**Verdict ID**: Entry #777, GATE TRIBUNAL, VETO (15 violations)
+**Failure Mode**: HALLUCINATION (unverified mechanism claim) + specification-drift
+
+### What Failed
+
+A plan proposed testing a workflow step by extracting its shell body from the YAML and executing it against a stubbed scanner. The design was sound and the author knew better than to assert it worked, so the mechanism was prototyped before the audit: extract a step body by `id`, run it under `bash -e` with a stub on `PATH`, observe the captured exit code. It worked at all three exit codes and was reported as proven by execution.
+
+The prototype ran against the `health` step. The step the plan actually targets has no `id:` -- only `health` and `smoke` carry one, and the plan itself adds `id: boundary` in a later phase than the one whose tests depend on it. So at the phase where the four tests are supposed to go red against the defect, all four fail with step-not-found instead, under a single shared cause that discriminates none of the four properties. The Definition-of-Done item claiming an observation against the pre-change workflow was unobtainable by the mechanism described.
+
+An independent reviewer found it in the first pass. The author had verified the mechanism and not the anchor.
+
+### Pattern to Avoid
+
+Proving a mechanism against a convenient specimen rather than the target one. The prototype answered "can a step body be extracted by id and executed" -- which was never in doubt once the idiom was found in the file. The unasked question was "does the target step have an id", and the specimen was chosen precisely because it did, since a step with an id is what makes the prototype easy to write.
+
+This is distinct from not measuring. The measurement happened, was correct, was reported honestly with its output, and was worthless for the claim it was attached to. A green result on the wrong subject reads exactly like a green result on the right one, and it carries more conviction than an unmeasured assertion because there is a transcript behind it.
+
+The selection pressure is what makes it recurrent: a prototype is written against whatever specimen makes the prototype run today. That is the same criterion that guarantees the specimen is unrepresentative -- the target is difficult in some way, and the difficulty is usually the property under test.
+
+### Remediation Attempted
+
+None; the plan was vetoed before implementation. Extraction must anchor on the step `name`, which exists today, or `id: boundary` must be added in the phase whose tests require it.
+
+### Pattern ID
+
+Convenient-specimen proof. Countermeasure: name the target artifact in the prototype before choosing the specimen, and if they differ, state what the substitution assumes. Here that sentence would have been "the health step has an id and I am assuming the boundary step does too", which does not survive being written down.
+
+Sibling of the unsized-finding family: both produce a true statement whose subject is not the one the reader will apply it to.
+
+---
+
 ---
 
 *Shadow integrity: ACTIVE*

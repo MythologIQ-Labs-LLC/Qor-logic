@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-09T1707-6ed90c",
+  "plan_path": "docs/plan-qor-phase283-nightly-health-advisory-gate.md",
+  "plan_hash": "136f712fda7820d563b629cf73b5b33f350b587c53877f84cf25d4e5405413c6",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "85e68c44d929b857e3722ff2ce79de612353e12257691cd736a5cbfaad74de97",
+  "head_commit": "93060833ce1cf13df16a6a75dd4aa8ed0b818203",
+  "captured_ts": "2026-09-09T18:26:59.299047Z"
+}
