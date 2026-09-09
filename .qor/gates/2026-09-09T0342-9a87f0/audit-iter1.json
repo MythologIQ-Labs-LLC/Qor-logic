@@ -1,0 +1,10 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-09T0342-9a87f0",
+  "ts": "2026-09-09T04:57:43Z",
+  "target": "docs/plan-qor-phase282-dialect-ownership-lint.md",
+  "verdict": "PASS",
+  "risk_grade": "L2",
+  "target_content_hash": "d3238590b65873f818f80de1763de803c5b89ccb759a06036c0c007dfb60953c",
+  "violations": []
+}

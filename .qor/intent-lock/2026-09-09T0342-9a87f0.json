@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-09T0342-9a87f0",
+  "plan_path": "docs/plan-qor-phase282-dialect-ownership-lint.md",
+  "plan_hash": "d3238590b65873f818f80de1763de803c5b89ccb759a06036c0c007dfb60953c",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "1e09fc48e83b278dbf58e2f0195e3a1078532ddbc91002eed4048e40f9345384",
+  "head_commit": "d3784c992598a286ede0b3fbd9cf786219195e02",
+  "captured_ts": "2026-09-09T04:58:52.241534Z"
+}

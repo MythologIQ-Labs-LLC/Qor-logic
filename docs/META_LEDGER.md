@@ -22859,5 +22859,44 @@ Corrected to the tolerated fixture, where a bleed contradicts an OK verdict rath
 
 ---
 
+### Entry #775: SESSION SEAL -- Phase 282 dialect ownership lint (v0.172.0)
+
+**Timestamp**: 2026-09-09T05:05:00Z
+**Phase**: SEAL (Phase 282)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `4d25ebf8b0cb`
+**Plan**: docs/plan-qor-phase282-dialect-ownership-lint.md (iteration 9)
+**Session**: 2026-09-09T0342-9a87f0
+**Closes**: GH #469
+
+**Content Hash**: `d3238590b65873f818f80de1763de803c5b89ccb759a06036c0c007dfb60953c`
+**Previous Hash**: `d3f24ca388094c65caecc87f45edc22bde94619a3e7ee9624a8a8f3fa12a9541`
+**Chain Hash (Merkle seal)**: `7513451d05db1e515189602112d53509d234c8cb13561c058b28ed51b65a31ce`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 9.
+
+**THE DEFECT FOUR PHASES FIXED BY HAND NOW HAS A DETECTOR.** A document field parsed by more than one module, each with its own regex, diverging silently -- found by hand each time, up to five months late. The property is that a module parsing a field owned by a declared dialect must import that dialect, and it is decidable by AST plus bounded normalization over two enumerated constructs.
+
+**THE DESIGN WAS INHERITED, THE MEASUREMENTS WERE NOT.** Phase 276 audited this through four rounds and parked it. Its property, declaration surface and baseline key are adopted unchanged; its figures were stale by three phases and every one was re-taken.
+
+**THE RULE'S ORDERING IS THE RULE.** Longest-form-wins is a containment tiebreaker applied WITHIN one expansion, never a selector across the expansion set. Applied across it, `(?:Previous )?Chain Hash` reports Previous Hash alone and silently drops the Chain Hash read -- the exact silence the rule exists to prevent. A version of the plan stating the four steps without the order states nothing, and the reviewer found that the plan did not say which.
+
+**A CLAIM THIS MODULE MADE ABOUT ITSELF WAS RETRACTED.** D1 asserted "no pattern semantics, no subset reasoning" and used that to reject the read-count alternative. It is false for 10 of 28 owned-name label regions, and the rejection was re-founded on its own measured ground rather than left inheriting a withdrawn premise.
+
+**FOUR DETECTOR RULES PRODUCED FOUR ANSWERS BEFORE ONE WAS VALIDATED.** 19/8/5, 15/9/6, 35/14/7 and an inherited 14/24/9. Each was reported with confidence; three were wrong. The rule was then implemented, validated against all sixteen classification cases in the audit record, and measured ONCE. That figure is in the plan and nowhere else, and D3's table is declared canonical because the same measurement stated independently in two places is how two sections came to disagree about one set inside a single round.
+
+**EXECUTION FOUND WHAT THIRTEEN ROUNDS OF REVIEW DID NOT.** D2's cross-check (b) was specified two contradictory ways in the audited plan -- a path literal in the rule sentence, a stem in the evidence sentence -- and neither matched the tree: 2 of 6 modules under one, 5 of 6 under the other, against a claim of material in every live case. The gap was invisible in either sentence alone and visible only in their disagreement, and only a reader forced to pick one could notice there were two. Review reads sentences; execution has to choose.
+
+**A GENUINE FINDING WAS NEARLY RECORDED AS NOISE, IN THIS PHASE'S FAVOUR.** `ledger_emit.append(ledger_path, ...)` reads its argument, so no document declaration can be honest for it, and its `false-declaration` is a true positive. It was framed as a cost to be paid; the reviewer corrected it. Promotion rests on the false-positive record, so baselining a real finding as false would have contaminated the evidence that decision depends on.
+
+**A STALE MODULE LIST IS THE SAME DEFECT AS A STALE COUNT, AND NO GREP FOR A NUMBER FINDS IT.** A sentence naming the pre-Phase-277 module set survived seven iterations of sweeps because every sweep was numeric. So did a caveat that was accurate when written and made false by the work it describes -- and its sibling, which was cross-referenced to the first specifically so the two could not drift, and went stale in lockstep because of it. Coupling two statements protects against disagreement and does nothing about both being wrong.
+
+**MEASURED, AND CONFIRMED BY EXECUTION.** Baseline of 31 entries: 29 reads, 1 `undeclared-label`, 1 `false-declaration`. D3 set document scoping an acceptance test -- predicted 29, returned 29, with `meta_ledger_walker` absent from the artifact. The lint is advisory and cannot fail a seal; `test_live_tree_matches_the_recorded_baseline` is what makes it run.
+
+**Version**: 0.171.4 -> 0.172.0 per the plan's declared `feature` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)

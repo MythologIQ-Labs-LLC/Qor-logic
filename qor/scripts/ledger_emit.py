@@ -15,6 +15,12 @@ from pathlib import Path
 from qor.scripts.ledger_hash import assert_sealable_text, chain_hash
 import hashlib
 
+
+#: Documents this module parses owned dialect fields from (GH #469).
+#: Declaration only; no parser changes. Cross-checked, not trusted:
+#: the field must occur in the document AND the path must appear as a
+#: literal in this module.
+READS_DOCUMENTS = ("docs/META_LEDGER.md",)
 _TAIL_MARKER = "*Chain integrity: VALID*"
 _CHAIN_RE = re.compile(r"\*\*Chain Hash \(Merkle seal\)\*\*:\s*`([0-9a-f]{64})`")
 

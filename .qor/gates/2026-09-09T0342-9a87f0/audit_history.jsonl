@@ -1,0 +1,1 @@
+{"artifact_filename":"audit-iter1.json","phase":"audit","risk_grade":"L2","session_id":"2026-09-09T0342-9a87f0","target":"docs/plan-qor-phase282-dialect-ownership-lint.md","target_content_hash":"d3238590b65873f818f80de1763de803c5b89ccb759a06036c0c007dfb60953c","ts":"2026-09-09T04:57:43Z","verdict":"PASS","violations":[]}

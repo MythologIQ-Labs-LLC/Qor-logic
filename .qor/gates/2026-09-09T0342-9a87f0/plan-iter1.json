@@ -1,0 +1,25 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-09T0342-9a87f0",
+  "ts": "2026-09-09T04:57:43Z",
+  "plan_path": "docs/plan-qor-phase282-dialect-ownership-lint.md",
+  "change_class": "feature",
+  "phases": [
+    "D1 the property",
+    "D1n the classification rule",
+    "D1a declared label forms",
+    "D2 the declaration surface",
+    "D3 the baseline",
+    "D5 eight blind spots"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_dialect_ownership_lint.py -q",
+    "python -m qor.scripts.dialect_ownership_lint --repo-root .",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto",
+    "python -m qor.scripts.governance_health --profile skill-entry",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest -q"
+  ]
+}

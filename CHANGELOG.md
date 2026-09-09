@@ -10,6 +10,28 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.172.0] - 2026-09-09
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 282 (feature; a lint that detects the defect four phases fixed by hand)**: `qor/scripts/dialect_ownership_lint.py`. Four sealed phases had fixed the same defect by hand -- a document field parsed by more than one module, each with its own regex, diverging silently -- and nothing detected the next one. Closes GH #469.
+
+  The property: **a module that parses a field owned by a declared dialect must import that dialect.** Owners declare their label forms in `OWNS`, because structure cannot decide aliasing: `**Previous Chain Hash**` is a Previous Hash form while `**Superseded Content Hash**` is a distinct field, and the two are structurally identical. Consumers declare `READS_DOCUMENTS`, cross-checked rather than trusted.
+
+  Classification is one rule in four steps: normalize the label region to a fixpoint over **two** enumerated constructs, discard any expansion still carrying one, classify each surviving expansion independently with longest-form-wins applied *within* it, then union the findings. The ordering is load-bearing -- applied across the expansion set instead of within one, longest-form-wins silently drops a read.
+
+  Advisory against a recorded baseline of **31 entries**; it cannot fail a seal. What makes it run is `test_live_tree_matches_the_recorded_baseline`, which executes it against the real tree on every suite run.
+
+### Changed
+- `ledger_dialect` and `verdict_dialect` declare `OWNS`; six consumer modules declare `READS_DOCUMENTS`. Declaration-only -- no parser changes, and nothing that runs today changes its verdict.
+
+- **GH #467 becomes closable on disposition rather than by work.** Phase 277 fixed 2 of its 3 modules; the third, `ledger_commitment._CONTENT_RE`, is deliberately narrow -- widening it takes on-disk stale commitments from 74 to 116 in a gate that hard-ABORTs the seal -- and is guarded by a test. It belongs in the baseline with that reason.
+
+- **GH #468 and GH #477 are not covered and stay open.** #477 is a live instance of this lint's own stated limitation: `reconcile.py` imports the owner and still reads `group(1) or group(2)` from a three-group value, so the lint passes it. The lint sees an import, not a use.
+
+- `ledger_emit` carries a `false-declaration` baseline row, and it is a **true positive**: `append(ledger_path, ...)` reads its argument, so no document declaration can be honest for it. Recorded as a gap in the declaration surface rather than as detector noise, because promotion rests on the false-positive record and baselining a genuine finding as false would contaminate it.
+
 ## [0.171.4] - 2026-09-08
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
