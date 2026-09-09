@@ -74,6 +74,17 @@ PREV_HASH_RE = _field_re("Previous Hash")
 CHAIN_HASH_RE = _field_re("Chain Hash")
 
 
+#: The label FORMS this module owns, per document (GH #469). Structure cannot
+#: decide aliasing: `**Previous Chain Hash**` is a Previous Hash form while
+#: `**Superseded Content Hash**` is a distinct field, and the two are
+#: structurally identical. So the owner declares, rather than a rule inferring.
+OWNS = {
+    ("docs/META_LEDGER.md", "Content Hash"): ("Content Hash", "META_LEDGER Content Hash"),
+    ("docs/META_LEDGER.md", "Previous Hash"): ("Previous Hash", "Previous Chain Hash"),
+    ("docs/META_LEDGER.md", "Chain Hash"): ("Chain Hash", "Session Seal"),
+}
+
+
 def _label_re(name: str) -> re.Pattern:
     return re.compile(rf"\*\*{name}{_FIELD_SUFFIX}\*\*")
 

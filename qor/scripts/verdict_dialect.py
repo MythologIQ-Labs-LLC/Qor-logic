@@ -147,3 +147,11 @@ def is_pass(verdict: Verdict) -> bool:
 def unreadable_lines(verdict: Verdict) -> tuple[str, ...]:
     """The labeled lines whose value did not parse, for error messages."""
     return tuple(line for line in verdict.lines if not VALUE_RE.match(line))
+
+
+#: The label forms this module owns, per document (GH #469). Note the document
+#: is a PATH: D2's cross-check tests the field against the declared string.
+OWNS = {
+    (".agent/staging/AUDIT_REPORT.md", "Verdict"): ("Verdict",),
+    (".agent/staging/AUDIT_REPORT.md", "Target"): ("Target",),
+}

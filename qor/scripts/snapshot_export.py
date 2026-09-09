@@ -25,6 +25,12 @@ import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
 
+
+#: Documents this module parses owned dialect fields from (GH #469).
+#: Declaration only; no parser changes. Cross-checked, not trusted:
+#: the field must occur in the document AND the path must appear as a
+#: literal in this module.
+READS_DOCUMENTS = ("docs/META_LEDGER.md",)
 SCHEMA_VERSION = "1"
 
 _SESSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{4}-[0-9a-f]{6}$")

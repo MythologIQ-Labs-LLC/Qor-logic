@@ -1,0 +1,29 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-09T0342-9a87f0",
+  "ts": "2026-09-09T04:57:43Z",
+  "questions": [
+    "Is the parked Phase 276 design still accurate against the current tree?",
+    "What does the ownership property measure now that Phases 277, 279 and 281 have landed?",
+    "Can the cluster #467/#468/#477 be closed by this, or only prevented?"
+  ],
+  "findings": [
+    {
+      "issue": "GH #469",
+      "finding": "Design sound and four-round audited; only its measurements are stale. 14/24/9 becomes 8/19/5 under its own rule."
+    },
+    {
+      "issue": "GH #467",
+      "finding": "Phase 277 fixed 2 of 3 modules; the third is deliberately narrow with a guarding test, so it is a baseline entry rather than pending work."
+    },
+    {
+      "issue": "GH #477",
+      "finding": "A live instance of the design's own 'imports the owner but still parses the field' limitation. This lint cannot see it."
+    }
+  ],
+  "sources": [
+    "docs/research-brief-dialect-ownership-remeasure-2026-09-09.md",
+    "docs/research-brief-dialect-ownership-2026-09-08.md",
+    "qor/scripts/ledger_dialect.py"
+  ]
+}

@@ -17,6 +17,12 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+
+#: Documents this module parses owned dialect fields from (GH #469).
+#: Declaration only; no parser changes. Cross-checked, not trusted:
+#: the field must occur in the document AND the path must appear as a
+#: literal in this module.
+READS_DOCUMENTS = ("docs/META_LEDGER.md",)
 _ENTRY_HEADING = re.compile(r"^### Entry #(\d+):\s*(.+?)\s*$", re.MULTILINE)
 _VERDICT = re.compile(r"^\*\*Verdict\*\*\s*:\s*([A-Z]+)\b", re.MULTILINE)
 _TARGET = re.compile(r"^\*\*Target\*\*\s*:\s*`?([^`\n]+?)`?\s*$", re.MULTILINE)

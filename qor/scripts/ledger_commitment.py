@@ -22,6 +22,12 @@ from pathlib import Path
 
 from qor.scripts import ledger_hash
 
+
+#: Documents this module parses owned dialect fields from (GH #469).
+#: Declaration only; no parser changes. Cross-checked, not trusted:
+#: the field must occur in the document AND the path must appear as a
+#: literal in this module.
+READS_DOCUMENTS = ("docs/META_LEDGER.md",)
 _ENTRY_RE = re.compile(r"^### Entry #(\d+):\s*([A-Z][A-Z ]*)", re.MULTILINE)
 
 # Which entry kinds' **Content Hash** actually binds the artifact they cite.

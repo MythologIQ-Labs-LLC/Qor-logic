@@ -24,6 +24,12 @@ import hashlib
 import re
 from pathlib import Path
 
+
+#: Documents this module parses owned dialect fields from (GH #469).
+#: Declaration only; no parser changes. Cross-checked, not trusted:
+#: the field must occur in the document AND the path must appear as a
+#: literal in this module.
+READS_DOCUMENTS = ("docs/META_LEDGER.md",)
 ENTRY_RE = re.compile(r"^### Entry #(\d+):(.*)$", re.MULTILINE)
 
 _HEX = r"[0-9a-f]{64}"
