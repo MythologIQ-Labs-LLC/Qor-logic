@@ -1,0 +1,1 @@
+{"artifact_filename":"audit-iter1.json","phase":"audit","risk_grade":"L1","session_id":"2026-09-08T2348-16c62e","target":"docs/plan-qor-phase281-dialect-prose-over-read.md","target_content_hash":"63e1e159b2e914022de1ee985ef309ac3a564431b86456d283e72755f42a6af4","ts":"2026-09-09T01:03:35Z","verdict":"PASS","violations":[]}

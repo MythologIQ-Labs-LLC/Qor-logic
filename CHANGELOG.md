@@ -10,6 +10,26 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.171.4] - 2026-09-08
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 281 (hotfix; a hash label written in prose is not a field)**: `ledger_dialect` admitted arbitrary text between a hash label and its value, so a label quoted inside a sentence was read as a field and narrative text could displace an entry's real digest. `docs/META_LEDGER.md` entry #741 contains the live instance: a sentence describing three other entries' `**Previous Hash**` resolved as that entry's own. GH #428.
+
+  It was harmless only by ordering accident. Entry #741 states its real field before the prose, and readers take the first match, so the correct value was returned. An entry whose narrative discussed a hash *before* its own field lines would have returned the prose digest -- the ordering the research brief named as unprotected.
+
+  `_field_re` now requires the label to begin its line and to reach its value through connective tissue only: a colon, then whitespace, backticks and fences, a `SHA256(...)` formula, and `=`. Measured across 4,705 `*.md` files plus 1,637 `.qor/**/*.json`: **134,766 field matches before, 134,749 after, with zero gains**. All 17 losses are that one sentence. Across 59 ledger files and 901 entries there are **0 resolvability flips and 0 changes to any resolved value** -- no entry reads differently.
+
+  `_HASH_VALUE` is unchanged. Its three value forms and three capture groups are the contract `hash_value` depends on, and its third form's requirement that a bare hex sit alone on its line is itself an existing defence against inline prose hex.
+
+### Changed
+- The `ledger_dialect` module docstring stated "The forms are additive: no rejection is relaxed" and "prose hex and a later field's value are never captured". The first is falsified by this change, which adds placement constraints; the second was already false, entry #741 being the counterexample. Both are corrected, and the two residuals this change does **not** close are now named there.
+
+- **GH #428 is narrowed, not closed.** Two shapes remain and no reachable narrowing of this grammar reaches them: a hash label inside a fenced or indented code block, where the label genuinely begins its line and the contents are valid connective grammar; and a field-shaped line whose value is a prose digest followed by trailing prose, which is byte-identical to a real field up to and including its value. Neither occurs in this repository -- 0 of 107 fenced blocks carry both a label and a digest.
+
+- A field written inside a markdown table row, a list item, or a blockquote no longer resolves, as does a field on line 1 of a file carrying a UTF-8 BOM. Measured: **0 occurrences of each** in this repository. List and blockquote markers are deliberately excluded rather than accommodated, because `> **Content Hash**: ...` is a defect when it quotes another entry's field inside your own and legitimate when a whole entry is quoted, and nothing available at that level distinguishes them.
+
 ## [0.171.3] - 2026-09-08
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

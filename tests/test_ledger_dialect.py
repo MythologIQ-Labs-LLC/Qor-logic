@@ -143,3 +143,169 @@ def test_tampered_content_breaks_plan_binding(tmp_path):
     ledger.write_text("# Meta Ledger\n\n" + entry + "\n", encoding="utf-8")
     res = sec.check(ledger, phase_num=1, repo_root=tmp_path)
     assert not res.ok
+
+
+# --- GH #428: a hash label written in prose is not a field -------------------
+#
+# Shape names (S1, S4, ...) match the table in
+# docs/plan-qor-phase281-dialect-prose-over-read.md.
+
+_PROSE = "1" * 64          # a digest that appears only in narrative text
+_FIELD = "2" * 64          # the digest an entry actually records
+
+
+def _read(name: str, text: str):
+    """Resolve one hash field the way every consumer does."""
+    pattern = {
+        "content": ld.CONTENT_HASH_RE,
+        "previous": ld.PREV_HASH_RE,
+        "chain": ld.CHAIN_HASH_RE,
+    }[name]
+    return ld.hash_value(pattern.search(text))
+
+
+def test_prose_quoted_label_is_not_read_as_a_field():
+    """S1: entry #741 verbatim -- a label quoted inside a sentence."""
+    body = (
+        "Entries #109, #111 and #113 carry an identical `**Previous Hash**` of\n"
+        f"`{_PROSE}` at lines 4076, 4121 and 4166.\n"
+    )
+    assert _read("previous", body) is None
+
+
+def test_prose_mention_does_not_displace_the_entrys_own_field():
+    """S4: narrative names a hash before the entry's own field lines.
+
+    The reported defect. Before the fix the reader returns the narrative
+    digest; the entry's real field is never reached.
+    """
+    body = (
+        f"We saw **Previous Hash**: `{_PROSE}` in the superseded entry.\n"
+        "\n"
+        f"**Previous Hash**: `{_FIELD}`\n"
+    )
+    assert _read("previous", body) == _FIELD
+
+
+def test_prose_label_with_colon_is_not_a_field():
+    """S2, S3, S5: a label written mid-line, with a colon after it."""
+    s2 = f"Entry #109 records **Previous Hash**: `{_PROSE}` at line 4076.\n"
+    s3 = f"The seal wrote **Chain Hash (Merkle seal)**: `{_PROSE}` before the fix.\n"
+    s5 = f"- the stale **Previous Hash**: `{_PROSE}` recorded at #109\n"
+    assert _read("previous", s2) is None
+    assert _read("chain", s3) is None
+    assert _read("previous", s5) is None
+
+
+def test_prose_hex_between_label_and_value_is_rejected():
+    """S6: narrative text between a label and its value.
+
+    Rejected rather than guessed: an ambiguous line yields no value.
+    """
+    body = f"**Content Hash**: mentions `{_PROSE}` then `{_FIELD}`\n"
+    assert _read("content", body) is None
+
+
+def test_label_without_a_colon_is_not_a_field():
+    """S16: line-start label, no colon. Isolates the colon constraint.
+
+    S1 does not isolate it -- S1 is closed by the anchor, the colon and the
+    connective independently, so it establishes the necessity of none of them.
+    """
+    body = f"**Previous Hash** `{_PROSE}` is stale, not ours.\n"
+    assert _read("previous", body) is None
+
+
+def test_every_legitimate_connective_form_still_matches():
+    """The six field forms that occur in this repository must all survive.
+
+    Over-tightening is the failure mode of this change, and a suite that only
+    proved the defect gone would pass for a pattern matching nothing.
+    """
+    forms = {
+        "plain": f"**Content Hash**: `{_FIELD}`\n",
+        "value on next line": f"**Content Hash**:\n`{_FIELD}`\n",
+        "fenced formula": (
+            "**Chain Hash**:\n```\nSHA256(content_hash + previous_hash)\n"
+            f"= `{_FIELD}`\n```\n"
+        ),
+        "bare hex alone on its line": (
+            f"**Chain Hash**:\n```\nSHA256(x)\n{_FIELD}\n```\n"
+        ),
+        "qualifier inside markers": f"**Content Hash (session seal)**: `{_FIELD}`\n",
+        "qualifier outside markers": f"**Chain Hash** (Merkle seal): `{_FIELD}`\n",
+    }
+    for label, text in forms.items():
+        field = "chain" if "Chain" in text else "content"
+        assert _read(field, text) == _FIELD, f"{label} stopped resolving"
+
+
+def test_hash_value_still_reads_all_three_capture_groups():
+    """``hash_value`` depends on _HASH_VALUE exposing three groups.
+
+    A single-group value pattern raises IndexError in every consumer, and is
+    also looser than production, whose third form requires a bare hex alone on
+    its line precisely to avoid capturing inline prose hex.
+    """
+    for text in (
+        f"**Content Hash**: `{_FIELD}`\n",
+        f"**Content Hash**: SHA256(plan.md) = {_FIELD}\n",
+        f"**Content Hash**:\n```\nSHA256(plan.md)\n{_FIELD}\n```\n",
+    ):
+        match = ld.CONTENT_HASH_RE.search(text)
+        assert match is not None
+        assert len(match.groups()) == 3
+        assert ld.hash_value(match) == _FIELD
+
+
+def test_live_ledger_gains_no_matches_and_loses_only_prose():
+    """The change must not make anything newly resolve, anywhere.
+
+    Counts are computed from the file under test, never hardcoded, so this
+    stays green as the ledger grows.
+
+    The gains half is the one that matters. A draft of this change was
+    reported as a net loss and was in fact a net gain of six: it made seven
+    unbackticked pre-boundary values resolve, moving those entries out of the
+    migration-attestation rung into full chain math while the exit code stayed
+    0. No rc-based check could have seen it.
+
+    The loss half derives its expectation from the prose shape itself. It is
+    NOT computed as ``old - new``, which is an identity that holds for any
+    pattern whatsoever -- including one that matches nothing.
+    """
+    import re
+
+    ledger = Path(__file__).resolve().parents[1] / "docs" / "META_LEDGER.md"
+    text = ledger.read_text(encoding="utf-8")
+
+    permissive = r"(?:(?!\n\s*\*\*[A-Z])[\s\S])*?"
+    gains = 0
+    losses = 0
+    expected_losses = 0
+    for name in ("Content Hash", "Previous Hash", "Chain Hash"):
+        old = re.compile(
+            r"\*\*" + name + ld._FIELD_SUFFIX + r"\*\*" + permissive + ld._HASH_VALUE
+        )
+        new = {
+            "Content Hash": ld.CONTENT_HASH_RE,
+            "Previous Hash": ld.PREV_HASH_RE,
+            "Chain Hash": ld.CHAIN_HASH_RE,
+        }[name]
+        old_at = {m.start() for m in old.finditer(text)}
+        new_at = {m.start() for m in new.finditer(text)}
+        gains += len(new_at - old_at)
+        losses += len(old_at - new_at)
+        # Derived independently: a label with non-whitespace before it on its
+        # own line is the prose-quoted shape, and nothing else in this ledger
+        # stops resolving.
+        for start in old_at:
+            line_start = text.rfind("\n", 0, start) + 1
+            if text[line_start:start].strip():
+                expected_losses += 1
+
+    assert gains == 0, f"{gains} field(s) newly resolve; the change must only narrow"
+    assert losses == expected_losses, (
+        f"lost {losses} match(es) but only {expected_losses} prose-quoted "
+        "label(s) exist; something legitimate stopped resolving"
+    )

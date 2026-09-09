@@ -1,0 +1,24 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-08T2348-16c62e",
+  "ts": "2026-09-09T01:03:35Z",
+  "plan_path": "docs/plan-qor-phase281-dialect-prose-over-read.md",
+  "change_class": "hotfix",
+  "phases": [
+    "D1 two terms, three separable effects",
+    "D1b _HASH_VALUE preserved exactly",
+    "D1c the module docstring is part of this change",
+    "D2 the cost, measured",
+    "D3 the label probe is not touched",
+    "D4 what this does NOT do"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/ -q -k \"dialect or ledger_hash or seal_entry or evidence_bundle or reconcile\"",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m qor.reliability.seal_entry_check --ledger docs/META_LEDGER.md --auto",
+    "python -m qor.scripts.governance_health --profile skill-entry",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest -q"
+  ]
+}

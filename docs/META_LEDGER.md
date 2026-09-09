@@ -22818,5 +22818,46 @@ Corrected to the tolerated fixture, where a bleed contradicts an OK verdict rath
 
 ---
 
+### Entry #774: SESSION SEAL -- Phase 281 dialect prose over-read (v0.171.4)
+
+**Timestamp**: 2026-09-09T00:55:00Z
+**Phase**: SEAL (Phase 281)
+**Author**: Governor
+**Risk Grade**: L1
+**Entry ID**: `ee053e7c1f96`
+**Plan**: docs/plan-qor-phase281-dialect-prose-over-read.md (iteration 9)
+**Session**: 2026-09-08T2348-16c62e
+**Closes**: none (GH #428 narrowed, not closed)
+
+**Content Hash**: `63e1e159b2e914022de1ee985ef309ac3a564431b86456d283e72755f42a6af4`
+**Previous Hash**: `24bdb65019c7380c91c0b464cab412d6349a009ee4654fcf63cb9a79f1d25cfc`
+**Chain Hash (Merkle seal)**: `d3f24ca388094c65caecc87f45edc22bde94619a3e7ee9624a8a8f3fa12a9541`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint at iteration 9.
+
+**A DEFECT LIVE IN THIS LEDGER, HELD OFF BY ACCIDENT.** `ledger_dialect` admitted arbitrary text between a hash label and its value, so entry #741's sentence describing three other entries' `**Previous Hash**` resolved as that entry's own field. It returned the correct value anyway because entry #741 states its real field first and readers take the first match. The protection was the order two paragraphs happened to be written in. An entry whose narrative preceded its field lines would have returned the prose digest.
+
+**A PRIOR PHASE'S CONCLUSION WAS BROADER THAN ITS MEASUREMENT.** Phase 277 placed GH #428 out of scope as not reproducible except in an ordering the corpus lacks. Its probe measured entries carrying an inline value on a label line; a label quoted inside a sentence is not one of those, so the instance was invisible to it. The finding was sound and the generalization was not.
+
+**THE FIX IS TWO REGEX TERMS WITH THREE SEPARABLE EFFECTS**, each isolated by a shape only it closes: the anchor by S2 and S4, the colon by S16, the connective by S6. `_HASH_VALUE` is untouched; its three capture groups are the contract `hash_value` depends on.
+
+**NINE ITERATIONS, AND THE REGEX WAS SETTLED AT FOUR.** Iteration 1 asserted joint necessity without measuring it. Iteration 2 deleted the anchor on a measurement of one shape, S1, which is over-determined and isolates nothing, and shipped a variant strictly worse than its predecessor at the reported defect. Iteration 3 restored the anchor but widened it to admit list, diff and blockquote markers, on evidence that was fixtures written for the purpose rather than forms occurring in the corpus. Every one of those claims was wrong in the direction that made the change look finished.
+
+**THE MEASUREMENT THAT MATTERED WAS THE ONE NOT TAKEN.** A draft reported a net loss of one and was in fact a net gain of six: it made seven unbackticked pre-boundary values resolve, moving entries #2 through #10 out of the migration-attestation rung into full chain math while the exit code stayed 0. Losses were counted and gains were not. The corpus test now asserts gains are zero, and that assertion is the only check that would have caught it.
+
+**A CORPUS DELTA MEASURES REGRESSION RISK, NOT SUFFICIENCY.** The shapes exposing the sufficiency defect match under both patterns, so they are neither a gain nor a loss. `-17 / 0` was correct throughout and said nothing about whether the fix worked.
+
+**THE MODULE ASSERTED A GUARANTEE IT DID NOT PROVIDE.** The docstring read "no rejection is relaxed" and "prose hex ... never captured" -- the first falsified by this change, the second false since GH #282, with entry #741 as the standing counterexample. No iteration of the plan had a documentation deliverable until the reviewer named it, and `hotfix` exempts this phase from the CHANGELOG currency rule, so nothing downstream would have caught it.
+
+**THE ISSUE IS NARROWED, NOT CLOSED.** Two shapes remain and no reachable narrowing of this grammar reaches them: a hash label inside a fenced or indented code block, and a field-shaped line whose value is a prose digest with trailing prose. Neither occurs here; 0 of 107 fenced blocks carry both a label and a digest. Recorded in Limitations and on the issue rather than closed clean.
+
+**COST, MEASURED AT REPOSITORY SCALE.** 134,766 field matches before, 134,749 after, zero gains, across 4,705 `*.md` plus 1,637 `.qor/**/*.json`. All 17 losses are the entry #741 sentence and its backup copies. Across 59 ledger files and 901 entries: 0 resolvability flips, 0 changes to any resolved value.
+
+**ONE PLAN PREDICTION DID NOT SURVIVE EXECUTION.** The Tests table marked the corpus test green-before; it is red before. The audited plan is left unamended because the audit binds it by hash, and the correction is recorded in `implement.json` instead.
+
+**Version**: 0.171.3 -> 0.171.4 per the plan's declared `hotfix` change class.
+
+---
+
 *Chain integrity: VALID*
 *Session: SEALED* (Phase 194; v0.133.0; unify governance-path resolution + ledger-dialect handling -- local checkpoint pending operator publication of #282)
