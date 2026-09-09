@@ -63,7 +63,14 @@ CLASS_TAIL = re.compile(r"\[\^[^\]]*\][*+]")
 #: ``Previous Hash(?:\s*\([^)]+\))?`` never expands. That region did resolve
 #: before, but only because CLASS_TAIL happened to run first -- an ordering
 #: accident a refactor of step 1 would silently undo.
-OPT_GROUP = re.compile(r"\(\?:((?:\[[^\]]*\]|\\\(|\\\)|[^()])*)\)\?")
+#: The single-character branch excludes `[` and `]` so the alternatives are
+#: DISJOINT. With a bare `[^()]` there, `[]` is matchable both as one character
+#: class and as two single characters, and a star over ambiguous alternatives
+#: backtracks exponentially: measured 0.0002s at 10 repetitions of `[]` and
+#: 1.34s at 22, roughly x4 per two. Flagged by CodeQL as a high-severity
+#: inefficient regular expression. Disjoint alternatives are flat, and agree
+#: with the ambiguous form on every label region in the corpus.
+OPT_GROUP = re.compile(r"\(\?:((?:\[[^\]]*\]|\\\(|\\\)|[^()\[\]])*)\)\?")
 #: One literal qualifier, e.g. ``Content Hash (session seal)``.
 LITERAL_QUALIFIER = re.compile(r"\s*\((?:[^()]|\\\(|\\\))*\)\s*$")
 #: Any surviving regex construct disqualifies an expansion at step 2.

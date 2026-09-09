@@ -207,6 +207,28 @@ def test_a_helper_built_pattern_is_not_claimed_as_checked(tmp_path):
     assert _kinds(_scan_one(tmp_path, body), "read") == []
 
 
+def test_optional_group_expansion_does_not_backtrack_exponentially():
+    """The two constructs' alternatives must stay DISJOINT.
+
+    With a bare `[^()]` as the single-character branch, `[]` is matchable both
+    as one character class and as two single characters, and a star over
+    ambiguous alternatives backtracks exponentially. Measured on the ambiguous
+    form: 0.0002s at 10 repetitions, 1.34s at 22, roughly x4 per two. CodeQL
+    rates it high severity.
+
+    The bound is deliberately loose. The disjoint form runs in microseconds and
+    the ambiguous one needs minutes at this size, so a 2-second ceiling has a
+    margin of several orders of magnitude and is not a timing race.
+    """
+    import time
+
+    evil = "(?:" + "[]" * 30 + "!"
+    start = time.perf_counter()
+    lint.OPT_GROUP.search(evil)
+    elapsed = time.perf_counter() - start
+    assert elapsed < 2.0, f"OPT_GROUP took {elapsed:.1f}s; alternatives are ambiguous again"
+
+
 # --- D2: the declaration surface --------------------------------------------
 
 def test_same_field_name_in_another_document_is_not_a_violation(tmp_path):

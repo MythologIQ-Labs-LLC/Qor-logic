@@ -23,6 +23,9 @@ _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
 
   Advisory against a recorded baseline of **31 entries**; it cannot fail a seal. What makes it run is `test_live_tree_matches_the_recorded_baseline`, which executes it against the real tree on every suite run.
 
+### Fixed
+- **`OPT_GROUP` backtracked exponentially on ambiguous alternatives.** Its single-character branch was `[^()]`, which matches `[` and `]`, so `[]` was matchable both as one character class and as two single characters. Measured: 0.0002s at 10 repetitions of `[]`, 1.34s at 22. Flagged high severity by CodeQL after the seal; the alternatives are now disjoint and a regression test pins the property.
+
 ### Changed
 - `ledger_dialect` and `verdict_dialect` declare `OWNS`; six consumer modules declare `READS_DOCUMENTS`. Declaration-only -- no parser changes, and nothing that runs today changes its verdict.
 
