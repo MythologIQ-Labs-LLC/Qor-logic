@@ -2765,6 +2765,40 @@ Sibling of the unsized-finding family: both produce a true statement whose subje
 
 ---
 
+## Entry: Phase 284 -- six correct measurements in one session, each attached to the wrong subject
+
+**Verdict ID**: Entry #782, GATE TRIBUNAL, VETO (6 violations)
+**Failure Mode**: HALLUCINATION (verified-adjacent claim) + specification-drift
+
+### What Failed
+
+Across one session the same error occurred six times, and its uniformity is the finding rather than any individual instance.
+
+A feasibility prototype for extracting a workflow step's body ran against the one step in the file that already carried the `id` the target step lacked. A baseline stored a count where the precedent it cited stores identities. A grep enumerating the steps that can fail a job matched five lines in a nine-step file, structurally blind to the four it did not match, and the count and the prose agreed with each other while both were wrong. The highest issue and pull-request numbers in a shared number space were cited as evidence about two list lengths. A predicate was verified against what `orchestration_override.record` writes into an event, never against what its callers pass in, so it matched only the records the author had hand-written and would have missed every one the wired path produces. And a compensating signal was confirmed to be *visible* to a classifier without checking whether that classifier could *act* on it -- it could not, four groups of one against a two-event rule.
+
+Every one was executed. Every one returned real output, reported honestly, with the command shown. Not one of them measured the thing its claim depended on.
+
+Two independent reviewers, on consecutive phases, found what the author's own passes cleared. The author had explicitly warned the second reviewer about the pattern before it reviewed, and still could not see the two instances live in the plan it was warning about.
+
+### Pattern to Avoid
+
+Verifying the nearest available proxy for a claim rather than the claim. Each measurement was one inferential step away from what was asserted: the function's parameter instead of its callers' arguments; a specimen that ran instead of the specimen under test; a pattern that matched instead of the population it was meant to enumerate; visibility instead of actionability; a count instead of an identity; a maximum instead of a length.
+
+What makes this class durable is that the transcript looks like diligence. An unverified assertion is recognisable and invites challenge; an assertion carrying a real command and real output does not. Re-running the measurement confirms it every time, because the measurement was never the flawed part. The subject was, and the subject is not visible in the output.
+
+The proxy is also never chosen at random. It is chosen because it is the thing that was easy to measure -- the step with an `id`, the number `gh` returns first, the function whose source was already open. That selection pressure is the same one that makes the proxy unrepresentative: the target is awkward in some specific way, and the awkwardness is usually the property under test.
+
+### Remediation Attempted
+
+None; the plan was vetoed before implementation. The narrower fix the plan failed to cite -- repairing the interpolated-reason defect recorded at the Phase 266 seal so override events collapse to one signature -- was measured during the audit and is strictly better on every axis.
+
+### Pattern ID
+
+Proxy-subject verification. Countermeasure: state the claim as a sentence, underline its subject, and confirm the command's output is *about that subject* before the result is allowed to support it. "The predicate matches what the writer emits" has `what the writer emits` as its subject, which is a call site, not a function body.
+
+Second-order, and the more expensive half: `audit_risk_score` returned `option_b_required: false` for both phases in this session and was wrong both times. Independent review found four of six violations here and three of the blocking findings in the phase before. On this session's evidence the risk score is not a reliable gate for dispatching independent review, and treating a `false` as permission to audit solo is how five of these six survived to the plan stage.
+
 ---
+
 
 *Shadow integrity: ACTIVE*

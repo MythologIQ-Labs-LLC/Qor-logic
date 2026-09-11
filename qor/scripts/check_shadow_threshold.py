@@ -158,10 +158,30 @@ def collapsed_severity(events: list[dict]) -> int:
     A genuinely new gate skipping, or a new capability falling short, still adds
     its severity, which is what keeps the threshold a signal rather than merely
     quieter.
+
+    Phase 285: an event a live escalation names is skipped, because the
+    escalation carries that condition's debt forward at the higher severity and
+    counting both counts one condition twice. Escalations are themselves severity
+    5 and ``existing_escalations`` holds source ids, so an escalation escalates in
+    turn; unfiltered, the sum rose by 40 every ninety days without limit. The skip
+    is read-side: nothing is written and no event is closed, so resolving an
+    escalation through the attested path returns its original to the count rather
+    than erasing it. It must run before ``seen.add`` -- after it, a superseded
+    event claims its signature slot and a live sibling sharing that signature is
+    silently dropped, which is an under-count.
     """
+    superseded = {
+        event.get("source_entry_id")
+        for event in events
+        if event.get("event_type") == ESCALATION_EVENT
+        and event.get("source_entry_id")
+        and not event.get("addressed")
+    }
     seen: set[tuple] = set()
     total = 0
     for event in events:
+        if event.get("id") in superseded:
+            continue
         if event.get("addressed"):
             continue
         if _pending_discount_applies(event):

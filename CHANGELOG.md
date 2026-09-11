@@ -10,6 +10,25 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.172.2] - 2026-09-11
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 285 (hotfix; the process-debt threshold was unbounded, not merely high)**: at `STALE_DAYS` a severity 1-2 event is closed as stale and a severity >= 3 event is not -- instead a severity-5 escalation naming it is appended while the original stays open, so one condition contributes twice. The escalation is itself severity 5 and `existing_escalations` holds source ids rather than escalation ids, so an escalation escalates in turn; `main` persists what `sweep` returns, making the live system an iterated map.
+
+  Iterated and persisted between rounds, the threshold reads **55 / 95 / 135 / 175** at ninety-day intervals -- rising 40 per quarter without limit. `collapsed_severity` now skips an event that a live escalation names, holding the quantity at a constant **40**. That is what makes any threshold constant meaningful: no number bounds a quantity that only rises.
+
+- **The skip runs before `seen.add(sig)`, and the placement is load-bearing.** After it, a superseded event claims its signature slot and a live sibling sharing that signature contributes nothing -- measured at 8 against 5 on a three-event fixture. An under-count, which `check_shadow_threshold`'s own docstring calls the more dangerous direction.
+
+### Changed
+- The filter is read-side. No event is written, mutated or closed, no `addressed` flag is touched, and `check_shadow_threshold` still enumerates every unaddressed event for the issue a breach generates -- the sum changes, the inventory does not. Resolving an escalation through the attested path therefore returns its original to the count rather than erasing it.
+
+  The writer-side alternative, stamping the original `addressed` with reason `escalated`, was rejected on its own terms: `escalated` is not a member of the `addressed_reason` enum, so it fails schema validation outright.
+
+### Added
+- `tests/test_escalation_supersedes.py` -- seven tests driving `collapsed_severity` and `sweep` directly. The acceptance test chains four ninety-day sweeps **in memory**; persisting between rounds as `main` does would have appended thirty-two synthetic escalations to `docs/PROCESS_SHADOW_GENOME.md`, and the plan described that destructive form until review caught it.
+
 ## [0.172.1] - 2026-09-09
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
