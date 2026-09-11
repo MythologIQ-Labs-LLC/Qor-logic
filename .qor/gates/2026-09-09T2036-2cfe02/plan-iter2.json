@@ -1,0 +1,45 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-09T2036-2cfe02",
+  "ts": "2026-09-09T21:25:20Z",
+  "plan_path": "docs/plan-qor-phase284-threshold-self-counting.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: pin the collapse behavior -- NEW tests/test_check_shadow_threshold_override_collapse.py building event lists from the shape orchestration_override.record actually writes and calling collapsed_severity, with a negative control for differing routes, a guard for the digest branch, a test importing cycle_count_escalator so the fixture cannot drift from the producer, and a live-log acceptance test.",
+    "Phase 2: resolve a fourth collapsing key -- _signature resolves details.get('recommended_skill') after pattern, and its docstring records why beside the Phase 253/254 history it already carries."
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_check_shadow_threshold_override_collapse.py -q",
+    "python -m pytest tests/test_signature_discrimination.py tests/test_remediation_closure_states.py tests/test_shadow_residue_disposition.py -q",
+    "python -m qor.scripts.check_shadow_threshold",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "boundaries": {
+    "limitations": [
+      "Threshold 47 -> 41 and further declines stop raising it; the constant is unchanged and the residual 41 across 25 signatures is genuine debt."
+    ],
+    "non_goals": [
+      "The codex-plugin cluster; emission stopped 2026-07-13 and its events age out via stale-expiry.",
+      "Making repeated deferral more visible: collapse counts a recurring condition once, as it does for every other."
+    ],
+    "exclusions": [
+      "No change to collapsed_severity arithmetic, stale-expiry, escalation, the threshold constant, permanent_skips, or orchestration_override.record.",
+      "No retroactive edit of any recorded event. Nothing is removed from the sum."
+    ]
+  },
+  "terms": [],
+  "feature_inventory_touches": [],
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-09T21:25:20Z"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-09T2036-2cfe02",
+  "plan_path": "docs/plan-qor-phase285-escalation-double-count.md",
+  "plan_hash": "ae3b80d95a0ce119aff9af532f0b700b1d834e08387f595d397cec2bf04903ad",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "6f701a2980d83766dd5cb6094a0f67b6c4b6199cdbf602923d77d32d7d80d7a8",
+  "head_commit": "e78c1e642bb9814e7fb48261f1c588e39fceffea",
+  "captured_ts": "2026-09-11T15:07:09.069778Z"
+}

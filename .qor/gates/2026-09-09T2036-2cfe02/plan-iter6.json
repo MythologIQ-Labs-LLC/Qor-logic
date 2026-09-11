@@ -1,0 +1,45 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-09T2036-2cfe02",
+  "ts": "2026-09-10T15:45:51Z",
+  "plan_path": "docs/plan-qor-phase285-escalation-double-count.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: pin the double-count, the chain, and the signature-slot placement -- NEW tests/test_escalation_supersedes.py: escalated original not counted beside its escalation, unescalated control, orphan escalation, closed escalation returning its original, superseded event not claiming its signature slot, two-generation chain counting only its live tip, and an in-memory iterated four-round projection.",
+    "Phase 2: skip superseded originals in collapsed_severity, checked before seen.add(sig). Read-side only; no addressed flag written, no event mutated."
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_escalation_supersedes.py -q",
+    "python -m pytest tests/test_signature_discrimination.py tests/test_remediation_closure_states.py tests/test_shadow_residue_disposition.py tests/test_remediate.py -q",
+    "python -m qor.scripts.check_shadow_threshold",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "boundaries": {
+    "limitations": [
+      "Bounds the measure; does not clear the breach. Current quantity rises without limit (55/95/135/175 at 90-day intervals); this holds it constant at 40.",
+      "Forty rather than 25 because eight escalations report on five conditions; the payload collapsing key is measured and deferred per LD-5."
+    ],
+    "non_goals": [
+      "No recalibration of THRESHOLD: no constant bounds a quantity rising 40 per quarter."
+    ],
+    "exclusions": [
+      "No change to the escalation rule, stale-expiry, _signature, THRESHOLD, STALE_DAYS, or orchestration_override.",
+      "No event written, mutated or closed; read-side filter only, no addressed flag touched."
+    ]
+  },
+  "terms": [],
+  "feature_inventory_touches": [],
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-10T15:45:51Z"
+  }
+}

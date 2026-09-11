@@ -1,0 +1,96 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-09T2036-2cfe02",
+  "ts": "2026-09-09T20:40:14Z",
+  "questions": [
+    "Do the codex-cluster figures hold on re-measurement in this session?",
+    "What does the canonical detector report versus the raw sum, and why?",
+    "What are the classifier's grouping key and capability-shortfall rule at source?",
+    "What does the classifier actually produce against the live log?",
+    "Does the codex disclosure have two owners?",
+    "Does the corpus already implement cross-session recurrence detection?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "claim": "Cluster figures unchanged: 29 events, 29 distinct sessions, all qor-audit, all sev 2; 40% of backlog, 43% of raw severity.",
+      "evidence": [
+        "live shadow log, this session"
+      ],
+      "status": "MATCH"
+    },
+    {
+      "id": "F2",
+      "claim": "Those shares do not describe the gate. check_shadow_threshold sums via collapsed_severity: raw 134 -> collapsed 47. The codex cluster contributes 2 of 47.",
+      "evidence": [
+        "qor/scripts/check_shadow_threshold.py:88",
+        "measured: collapsed_severity(codex)=2"
+      ],
+      "status": "DRIFT - retracts the proposal premise"
+    },
+    {
+      "id": "F3",
+      "claim": "Cross-session collapse already exists: _signature keys on (event_type, gate|capability|pattern), session absent by construction.",
+      "evidence": [
+        "qor/scripts/check_shadow_threshold.py:90-115",
+        "codex signature = ('capability_shortfall','codex-plugin')"
+      ],
+      "status": "DRIFT - proposal would duplicate"
+    },
+    {
+      "id": "F4",
+      "claim": "No dominant class: 47 spreads across 29 signatures, max contribution 3.",
+      "evidence": [
+        "per-signature collapse measured this session"
+      ],
+      "status": "MEASURED"
+    },
+    {
+      "id": "F5",
+      "claim": "Classifier gap confirmed: 59 groups, 10 classifications, 18 events classified, 29 codex groups of size 1, 0 codex classified.",
+      "evidence": [
+        "remediate_read_context.py:27",
+        "remediate_pattern_match.py:38-40"
+      ],
+      "status": "MATCH - but small consequence"
+    },
+    {
+      "id": "F6",
+      "claim": "Last session's pending flip bought no discount: _pending_discount_applies needs closure_enforcer on the event; mark_addressed_pending does not propagate it.",
+      "evidence": [
+        "qor/scripts/check_shadow_threshold.py:120-143",
+        "measured: closure_enforcer is None on a flipped event"
+      ],
+      "status": "DRIFT"
+    },
+    {
+      "id": "F7",
+      "claim": "The disclosure has two owners: qor-audit Step 1.a and the environment adapter probe the same capability. Real as log-volume hygiene, not as a threshold finding.",
+      "evidence": [
+        "qor/skills governance qor-audit Step 1.a",
+        "qor-enterprise-environment-adapter"
+      ],
+      "status": "MATCH"
+    }
+  ],
+  "sources": [
+    "qor/scripts/check_shadow_threshold.py",
+    "qor/scripts/remediate_read_context.py",
+    "qor/scripts/remediate_pattern_match.py",
+    "qor/scripts/remediate_mark_addressed.py",
+    ".qor/gates/2026-09-09T1940-cdb23b/remediate.json"
+  ],
+  "brief_path": "docs/research-brief-shadow-threshold-composition-2026-09-09.md",
+  "targets": [
+    "GH #439",
+    "commit 710aaf82"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-09T20:40:14Z"
+  }
+}

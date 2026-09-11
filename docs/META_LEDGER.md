@@ -23065,6 +23065,199 @@ Every citation in the five Locked Decisions was re-executed by the Judge and ind
 
 **Suite**: 3473 passed, 6 skipped, 4 deselected. Boundary lint clean. Version 0.172.0 -> 0.172.1 per the plan's declared hotfix change class.
 
+### Entry #781: RESEARCH BRIEF -- shadow-threshold composition (retraction)
+
+**Timestamp**: 2026-09-09T20:39:56Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Artifact**: docs/research-brief-shadow-threshold-composition-2026-09-09.md
+**Session**: 2026-09-09T2036-2cfe02
+
+**Content Hash**: `3bd432c54eb72b812752a63ea301fdf95fa46856aa7a7ee8c3a6facd1cca2bb4`
+**Previous Hash**: `bb55303f270608e33f62b62c54fddedc7935a6fa6224399995c51c1029b9b82b`
+**Chain Hash (Merkle seal)**: `2d4faaef53dabec1dfcda0049f624f3dcb3763d081299077beeaf682049ee93b`
+
+**Decision**: **RESEARCH COMPLETE, AND IT RETRACTS THE PHASE IT WAS MEANT TO GROUND.**
+
+**THE THRESHOLD IS NOT DOMINATED BY THE CODEX CLUSTER.** The remediation proposal committed at 710aaf82 claims it is, citing 40 percent of the backlog and 43 percent of severity. Both figures are correct about the raw log and wrong about the number that fires the gate. check_shadow_threshold sums via collapsed_severity: raw 134, collapsed 47. Under that collapse the 29 codex events contribute 2 of 47.
+
+**THE MECHANISM THE PROPOSAL WANTED TO ADD ALREADY EXISTS.** check_shadow_threshold._signature keys on (event_type, gate|capability|pattern) with session absent by construction, so all 29 occurrences already share one signature. Its own docstring records the Phase 253/254 calibration history. The precedent was cited in the prior analysis and its substance was never read -- the same shape as baselining a count where the cited precedent baselines identities.
+
+**THERE IS NO DOMINANT CLASS.** The 47 spreads across 29 distinct signatures, maximum contribution 3. The deferral loop is not a measurement artifact; there are 29 real unaddressed signatures and nobody has worked them.
+
+**THE CLASSIFIER GAP IS REAL AND SMALL.** 59 groups, 10 classifications, 18 events classified, 29 codex groups of size one, zero codex events classified. Confirmed exactly as described. What does not follow is the consequence: a class worth 2 of 47 does not explain four deferrals.
+
+**LAST SESSION'S PENDING FLIP CHANGED NO NUMBER.** _pending_discount_applies requires closure_enforcer on the event; mark_addressed_pending does not propagate the proposal's enforcer, so the discount is refused for all 29.
+
+**A MEASUREMENT CAN BE CORRECT, REPRODUCED, AND ATTACHED TO THE WRONG DENOMINATOR.** The 40/43 figures were re-derived three times across two sessions. Every re-measurement confirmed the cluster and none tested the claim built on it, because raw sum and collapsed sum describe the same events.
+
+**Required next action**: do not implement the proposal as written; correct the committed artifact; put threshold calibration to the operator.
+
+### Entry #782: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-09T21:13:32Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: VETO
+**Target**: docs/plan-qor-phase284-threshold-self-counting.md
+**Session**: 2026-09-09T2036-2cfe02
+
+**Content Hash**: `37b3eb259725149c0171beb92b9598580e121f1892655722aad260df8021787b`
+**Previous Hash**: `2d4faaef53dabec1dfcda0049f624f3dcb3763d081299077beeaf682049ee93b`
+**Chain Hash (Merkle seal)**: `4cb22890325eccf47021f6f7c0b21343090893dedc3859a35d15085ffca53228`
+
+**Decision**: **Verdict**: **VETO**. Six violations. The defect is real; the remedy is wrong three independent ways, and a narrower fix for the same 8 points was recorded as a known open defect three phases ago and neither cited nor superseded.
+
+**THE RULE WOULD CLEAR EXACTLY THE RECORDS ITS AUTHOR WROTE BY HAND.** The predicate matches 'qor-remediate'; cycle_count_escalator.py:79 and :152 emit '/qor-remediate' with a leading slash and /qor-plan passes it verbatim into record(). The four live events carry the bare form only because they were hand-authored through the enterprise orchestrator this session and last. So the fix clears the past and misses every future decline -- the inverse of what D1 and LD-1 claim.
+
+**THE TESTS TARGET A FUNCTION THE CHANGE DOES NOT TOUCH.** The filter sits at the sweep call site at :88; the tests call collapsed_severity at :146, which sums whatever list it is handed. The primary test is red before and red after, and Phase 2 cannot green it. Same shape as the Phase 283 iteration-1 defect, two phases later.
+
+**THE COMPENSATING SIGNAL CANNOT FIRE.** LD-3 rests on the records staying visible to the remediate classifier. They are visible and unclassifiable: four groups of one against a >= 2 rule, keyed on (event_type, skill, session_id). gate-loop has never fired on them and cannot. doctrine-governance-enforcement.md:289 states the shadow-event path IS the long-term signal, so the plan removes the only one while asserting a replacement that does not work.
+
+**PHASE 3 NAMES A SECTION THAT DOES NOT EXIST.** The threshold is documented in the qor-shadow-process skill, not in doctrine-governance-enforcement.md, whose Section 10 covers a different escalation mechanism entirely.
+
+**THE ALTERNATIVE WAS ALREADY FILED AND IS BETTER.** META_LEDGER:21964, the Phase 266 seal: the interpolated-reason defect in orchestration_override.record prevents signature collapse under collapsed_severity, unfixed and unfiled. That is the mechanism producing the 8 -- _signature falls back to a digest over details whose free-text reason differs per event, so one condition yields four signatures. Measured: repairing it takes the override contribution 8 to 2 and the threshold 47 to 41 while keeping every record in the sum. The plan's route deletes the signal to reach 39.
+
+**SIXTH MEASUREMENT THIS SESSION CORRECTLY EXECUTED AND WRONGLY SUBJECTED.** The Judge verified what record() writes and not what its callers pass; verified that the classifier sees these events and not whether it can act on them. An independent reviewer found V1, V3, V4 and V6, all of which the Judge's own passes cleared. audit_risk_score returned option_b_required false for both phases in this session and was wrong both times.
+
+**Required next action**: Governor amends plan text, re-runs /qor-audit, starting from the Phase 266 note.
+
+### Entry #783: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-09T21:31:24Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: VETO
+**Target**: docs/plan-qor-phase284-threshold-self-counting.md (iteration 2)
+**Session**: 2026-09-09T2036-2cfe02
+
+**Content Hash**: `37b3eb259725149c0171beb92b9598580e121f1892655722aad260df8021787b`
+**Previous Hash**: `4cb22890325eccf47021f6f7c0b21343090893dedc3859a35d15085ffca53228`
+**Chain Hash (Merkle seal)**: `ec57936a898285eef8d2ff3b18ae82d590606c6b4cb04e27298412d235db7dce`
+
+**Decision**: **Verdict**: **VETO** at iteration 2, and the phase is stopped rather than re-planned.
+
+**THE KEY CARRIES ZERO BITS.** Iteration 2 resolved `recommended_skill` as a fourth collapsing key in `_signature`. That value is hardcoded at cycle_count_escalator.py:79 and :152 and nowhere else, so keying on it is keying on event_type alone -- the Phase 253 direction the docstring iteration 2 cited warns against verbatim. The plan argued from the SHAPE of the edit (it adds a key rather than removing the requirement for one) where the standard is about EVIDENCE.
+
+**THE FOUR RECORDS ARE NOT ONE CONDITION.** Three are threshold-route deferrals from qor-enterprise-prompt-router; the fourth is qor-enterprise-auto-dev granting one attempt past the five-attempt loop cap -- a different escalation entirely. Their reasons differ because the conditions differ, so the digest fallback was working correctly and the 'defect' was partly the mechanism doing its job. The Judge read those four reasons early in the session, noted the loop-cap grant, and then asserted in BOTH iterations that all four decline this threshold's route.
+
+**THE LOOP THE PHASE IS NAMED FOR HAS NO WIRED EMITTER.** check_shadow_threshold constructs no EscalationRecommendation and calls orchestration_override.record nowhere; the only callers are /qor-plan Step 2c and /qor-audit Step 0.5, both for cycle-count escalation. The three deferral records exist only because orchestrators hand-authored them for a route with no escalator behind it. Both iterations were designed against four records that represent nothing the system produces. That is a premise defect, not an implementation defect.
+
+**NO CORRECT CHANGE MOVES TODAY'S NUMBER.** The only per-event distinguishing content is free-text `reason`; separating the deferrals from the loop-cap grant reader-side means parsing prose, which is the closing-on-prose failure this repository rejects everywhere else. The writer-side fix (persist escalation_reason and signature, both carried on EscalationRecommendation and discarded at record():45) is real and worth doing on the cycle-count path, and reaches no existing event.
+
+**THE NUMBER MOVES THREE OTHER WAYS, NONE OF THEM A COUNTING CHANGE.** Work the events through remediate_mark_addressed with a real closure_enforcer -- which this session's own PROCESS_SHADOW_GENOME record already directs; wait for stale expiry on 2026-11-10 and 2026-12-08; or recalibrate the constant, which is the operator decision the research brief recommended and the one actually being asked for.
+
+**SEVENTH MEASUREMENT ATTACHED TO THE WRONG SUBJECT.** Two vetoes on a scope of one predicate, each revealing the previous premise was wrong. Independent review found six violations at iteration 1 and the blocking one at iteration 2; audit_risk_score returned option_b_required false for all four audits this session.
+
+**Required next action**: stop the phase. The operator decides between working the events, waiting for expiry, and recalibrating the constant.
+
+### Entry #784: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-10T16:44:54Z
+**Phase**: GATE
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: PASS
+**Target**: docs/plan-qor-phase285-escalation-double-count.md
+**Session**: 2026-09-09T2036-2cfe02
+
+**Content Hash**: `6f701a2980d83766dd5cb6094a0f67b6c4b6199cdbf602923d77d32d7d80d7a8`
+**Previous Hash**: `ec57936a898285eef8d2ff3b18ae82d590606c6b4cb04e27298412d235db7dce`
+**Chain Hash (Merkle seal)**: `c5bebc148132ffd35719f8266638540caea534b602f158c1d3dbf6df96a61889`
+
+**Decision**: **Verdict**: **PASS**. Five review rounds; not one finding against the mechanism.
+
+**THE THRESHOLD IS UNBOUNDED, NOT MERELY HIGH.** Escalations are severity 5, existing_escalations holds source ids rather than escalation ids, and main persists what sweep returns, so an escalation escalates. Iterated and persisted between rounds the quantity reads 55, 95, 135, 175 at ninety-day intervals -- 40 per quarter, without limit. That answers whether THRESHOLD can be recalibrated: no constant bounds it, and the operator's request for recalibration is met by removing the ratchet rather than by choosing a number.
+
+**AN EARLIER PROJECTION OF THIS PHASE'S OWN EVIDENCE WAS WRONG IN ITS OWN FAVOUR'S OPPOSITE DIRECTION.** A single sweep call from today's log reported the quantity settling at 55. Generation two cannot appear in a projection whose input holds no generation one, so the flat series was the absence of iteration, not the presence of a ceiling. The remedy was being undersold while the defect was being misdescribed.
+
+**THE FILTER WRITES NOTHING AND HIDES NOTHING.** collapsed_severity skips a superseded original while its escalation is live; no addressed flag is touched, no event is mutated, and check_shadow_threshold.py:234 still enumerates every unaddressed event for the issue a breach generates. The sum changes; the inventory does not.
+
+**THE WRITER-SIDE VARIANT IS SCHEMA-INVALID.** addressed_reason is a closed enum of issue_created, remediated, stale, deferred_upstream and null, so reason=escalated fails validation outright. An earlier draft argued instead from permanent_skips, glossing its guard as severity >= 3 events are defects; that guard scopes by event type, not severity, and the eight events in question are four repeated_veto_pattern and four degradation, neither of which the earlier draft named. The borrowed argument was replaced with one that stands on its own ground.
+
+**NINETEEN FINDINGS, NONE AGAINST THE MECHANISM.** Retracted figures reprinted as fact forty lines below their retraction; an orphaned deliverable clause; an acceptance test that as written would have appended thirty-two synthetic events to an append-only governance artifact; an unspecified loop placement whose late form silently under-counts a live sibling, 8 to 5, in the direction the module's own docstring calls the more dangerous one. Every one landed on the description, not the design.
+
+**ONE REVIEWER CLAIM DID NOT SURVIVE MEASUREMENT.** The writer-side variant was said to be unbounded under iteration; applying the marking inside the sweep branch where it would live, it reads 40 at every round. The reviewer accepted the correction.
+
+**RESIDUALS DECLARED.** Forty rather than 25, because eight escalations report on five conditions and the payload collapsing key was deferred after two defects were found in its draft. The breach is not cleared; forty is real debt. LD-3's final text is the one section not independently read in its current form.
+
+**Required next action**: /qor-implement.
+
+### Entry #785: IMPLEMENTATION
+
+**Timestamp**: 2026-09-11T15:19:51Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase285-escalation-double-count.md
+**Session**: 2026-09-09T2036-2cfe02
+
+**Content Hash**: `ae3b80d95a0ce119aff9af532f0b700b1d834e08387f595d397cec2bf04903ad`
+**Previous Hash**: `c5bebc148132ffd35719f8266638540caea534b602f158c1d3dbf6df96a61889`
+**Chain Hash (Merkle seal)**: `730ca79283acdcac985ac4c825906179126870c059221d508b271d9f67496edc`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Eight lines and a docstring paragraph in collapsed_severity: a live escalation supersedes the original it names, so one condition contributes once at the escalation's severity.
+
+**THE DEFECT REPRODUCED ITSELF IN A TEST.** test_the_iterated_projection_is_constant chains four ninety-day sweeps in memory and observed 55, 95, 135, 175 before the change -- the unbounded series, produced by the system rather than asserted about it. Two further tests were red for their stated reasons: 8 == 5 for an original beside its escalation, and 13 == 5 for a two-generation chain.
+
+**FOUR TESTS ARE GUARDS, NOT DRIVERS, AND THE PLAN MISDESCRIBES ONE.** test_a_superseded_event_does_not_claim_its_signature_slot is green before the change, not red as Phase 1 claims. It fails only under the wrong placement of the skip -- after seen.add(sig), where a superseded event claims its signature slot and a live sibling sharing it is silently dropped, 8 to 5. It is a placement guard and the plan should have said so.
+
+**THE ACCEPTANCE TEST DID NOT TOUCH THE GENOME.** Zero ESCALATION_EVENT rows and zero escalation-sweep sessions in the live log after the run. The plan's earlier text described persisting between rounds as main does, which would have appended thirty-two synthetic events to an append-only governance artifact; review caught it and the test iterates in memory.
+
+**THE SESSION MARKER WENT STALE MID-CYCLE AND NEARLY ORPHANED THE GATE CHAIN.** This cycle spanned a day boundary, so session.current() returned None while the marker's content was still correct and only its mtime had aged past SESSION_TTL. A call to get_or_create would have minted a new id and detached every artifact of this phase. The marker was refreshed in place with the same id. Nothing warns about this and it is not filed.
+
+**Files**: qor/scripts/check_shadow_threshold.py, tests/test_escalation_supersedes.py.
+
+**Suite**: 3480 passed, 6 skipped, 4 deselected. Phase tests green twice for determinism; 55 neighbouring contract tests green; live sum unchanged at 47 today, correctly, because no escalation exists yet.
+
+### Entry #786: SESSION SEAL -- Phase 285 escalation double-count (v0.172.2)
+
+**Timestamp**: 2026-09-11T15:21:36Z
+**Phase**: SEAL (Phase 285)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `dd12b5b78eba`
+**Plan**: docs/plan-qor-phase285-escalation-double-count.md
+**Session**: 2026-09-09T2036-2cfe02
+**Closes**: none (GH #439 stays open; the breach is bounded, not cleared)
+
+**Content Hash**: `ae3b80d95a0ce119aff9af532f0b700b1d834e08387f595d397cec2bf04903ad`
+**Previous Hash**: `730ca79283acdcac985ac4c825906179126870c059221d508b271d9f67496edc`
+**Chain Hash (Merkle seal)**: `c68b8e0982794463d18d7c1b7a64ea75c0328b31a63a68eb60dac46da3fa7fa4`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**THE THRESHOLD WAS UNBOUNDED AND NOBODY HAD MEASURED IT AS SUCH.** Severity 1-2 events age out at STALE_DAYS; severity >= 3 do not. A severity-5 escalation naming the original is appended while the original stays open, so one condition contributes twice -- and the escalation is itself severity 5 while existing_escalations holds source ids rather than escalation ids, so an escalation escalates in turn. main persists what sweep returns, making the live system an iterated map. Iterated: 55, 95, 135, 175 at ninety-day intervals, rising 40 per quarter without limit. The operator asked for recalibration; no constant bounds that, so the answer was to remove the ratchet rather than choose a number.
+
+**A MEASUREMENT OF THIS PHASE'S OWN EVIDENCE WAS WRONG AGAINST ITS OWN INTEREST.** An earlier projection called sweep once against today's log and reported the quantity settling at 55. Generation two cannot appear in a projection whose input holds no generation one, so the flat series was the absence of iteration, not the presence of a ceiling. The defect was being understated and the remedy undersold in the same sentence.
+
+**THE FIX WRITES NOTHING AND HIDES NOTHING.** collapsed_severity skips an event a live escalation names. No addressed flag is touched, no event is closed, and check_shadow_threshold.py:234 still enumerates every unaddressed event for the issue a breach generates. The sum changes; the inventory does not. Resolving an escalation through the attested path returns its original to the count rather than erasing it.
+
+**THE PLACEMENT IS THE RULE.** The skip runs before seen.add(sig). After it, a superseded event claims its signature slot and a live sibling sharing that signature contributes nothing -- measured at 8 against 5. An under-count, the direction this module's own docstring calls the more dangerous one, and the plan left the placement unspecified until review named a reachable case through the live degradation cluster.
+
+**THE WRITER-SIDE ALTERNATIVE IS SCHEMA-INVALID.** addressed_reason is a closed enum of issue_created, remediated, stale, deferred_upstream and null; reason=escalated fails validation outright. An earlier draft argued instead from permanent_skips, glossing its guard as severity >= 3 events are defects. That guard scopes by event type, not severity, and the eight events are four repeated_veto_pattern and four degradation, neither type named in the draft. A borrowed argument was replaced with one that stands on its own ground.
+
+**TWO PHASES DIED BEFORE THIS ONE AND BOTH DEATHS WERE EARNED.** Phase 284 iteration 1 excluded override records from the sum, keyed on a string no wired caller emits, and tested a function the change did not touch. Iteration 2 keyed on a compile-time constant, which is collapse by event type -- the direction the docstring warns against -- and flattened a loop-cap grant into three threshold deferrals it had already read and distinguished. The phase was stopped rather than re-planned when review established that the loop it was named for has no wired emitter at all.
+
+**NINETEEN FINDINGS ACROSS FIVE ROUNDS, NONE AGAINST A MECHANISM.** Every one landed on the description: retracted figures reprinted as fact forty lines below their retraction, an orphaned deliverable clause, wrong event-type names, an unspecified loop placement, and an acceptance test that as written would have appended thirty-two synthetic escalations to an append-only governance artifact. audit_risk_score returned option_b_required false at every round and was wrong every time.
+
+**ONE REVIEWER CLAIM DID NOT SURVIVE MEASUREMENT.** The writer-side variant was said to be unbounded under iteration; applying the marking inside the sweep branch where it would live, it reads 40 at every round. The reviewer accepted the correction. Recording it because a verdict that notes only where review was right is a worse record than one that says where it was not.
+
+**THE SESSION MARKER WENT STALE MID-CYCLE.** This cycle spanned a day boundary, so session.current() returned None while the marker's content was still correct and only its mtime had aged past SESSION_TTL. A call to get_or_create would have minted a new id and silently detached every gate artifact of this phase. Refreshed in place with the same id. Nothing warns about this; it is not filed.
+
+**GATE SKIP**: instruction_hygiene_lint (Step 4.6.11) -- module absent from this repository; Phase 75 declarative-tolerance SKIP with a severity-1 event. data_api_acl_lint disclosed-skip: no SQL migrations.
+
+**RESIDUALS DECLARED.** Forty rather than 25, because eight escalations will report on five conditions while the escalation payload carries no collapsing key; measured and deferred after two defects were found in the draft of that change. The breach is not cleared: forty is genuine debt and the gate is correct to keep firing on it. One test the plan calls red-before is green-before -- it guards the placement, not the defect.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Suite**: 3480 passed, 6 skipped, 4 deselected. Zero escalation rows in the live genome after the run. Version 0.172.1 -> 0.172.2 per the plan's declared hotfix change class.
+
 ---
 
 *Chain integrity: VALID*

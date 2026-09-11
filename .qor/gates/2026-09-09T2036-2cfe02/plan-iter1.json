@@ -1,0 +1,47 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-09T2036-2cfe02",
+  "ts": "2026-09-09T21:02:06Z",
+  "plan_path": "docs/plan-qor-phase284-threshold-self-counting.md",
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: pin the self-counting behavior -- new tests/test_check_shadow_threshold.py building event sets and calling collapsed_severity, with a negative control for a different route and one for an override carrying no recommended_skill.",
+    "Phase 2: exclude the self-referential records from the sum -- _OWN_ROUTE constant, _declines_own_route predicate, filter at the threshold read, and :199's next_action rewritten to consume the constant so the route has one owner.",
+    "Phase 3: record the rule in doctrine-governance-enforcement.md, with a test binding the doctrine's exclusion paragraph to the module constant."
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_check_shadow_threshold.py -q",
+    "python -m pytest tests/test_remediate.py tests/test_shadow_residue_disposition.py tests/test_permanent_skips.py -q",
+    "python -m qor.scripts.check_shadow_threshold",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "boundaries": {
+    "limitations": [
+      "Removes 8 of 47. The residual 39 across 25 signatures is genuine debt and the gate is correct to keep firing on it.",
+      "Does not lower the threshold constant, work the debt, or make the gate quiet."
+    ],
+    "non_goals": [
+      "The codex-plugin cluster: emission stopped 2026-07-13 and its 29 events age out via stale-expiry around 2026-10-02.",
+      "The remediation proposal at 710aaf82 is retracted by research brief #781, not implemented."
+    ],
+    "exclusions": [
+      "No change to _signature, collapsed_severity, stale-expiry, escalation, the threshold constant, or permanent_skips.",
+      "No retroactive edit of any recorded event; the four override records keep their severity and stay unaddressed."
+    ]
+  },
+  "terms": [],
+  "feature_inventory_touches": [],
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.1",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-09T21:02:06Z"
+  }
+}
