@@ -10,6 +10,17 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.173.0] - 2026-09-12
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Added
+- **Phase 286 (feature; the filing path reports what it is about to publish)**: `create_shadow_issue` composed a GitHub issue body from shadow events and handed it to `gh` with nothing inspecting it. A new advisory control -- `qor/scripts/advisory_filing_control.py` -- scans the composed title and body, prints what it found, records a calibration line, and files regardless.
+
+  It is advisory by construction rather than by intention. `inspect` never raises: its whole body is wrapped and any internal failure yields an empty report carrying a `control-error` class, because a control whose purpose is to observe must not become the reason a report cannot be filed. Identity is anchored on the directory the events were read from, so the repository whose events composed the body and the repository whose identity is matched against it cannot diverge. The record is a gitignored JSONL line rather than a shadow event, because `gate_override` is the one event type carrying a raising override-friction escalator and recording there would have let the control refuse a filing at the third occurrence.
+
+  Research measured the path first: it has filed once, cleanly, and an advisory scan of the live 591-line body reports zero findings. The seven-of-seven leak rate that justified three earlier blocking designs measures hand-filed reports, a channel this path is not. The control is therefore preventive, and blocking is deferred until this phase supplies a refusal rate to calibrate it against.
+
 ## [0.172.2] - 2026-09-11
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

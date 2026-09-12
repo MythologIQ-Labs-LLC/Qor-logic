@@ -23258,6 +23258,313 @@ Every citation in the five Locked Decisions was re-executed by the Judge and ind
 
 **Suite**: 3480 passed, 6 skipped, 4 deselected. Zero escalation rows in the live genome after the run. Version 0.172.1 -> 0.172.2 per the plan's declared hotfix change class.
 
+### Entry #787: RESEARCH BRIEF -- gate execution evidence (GH #463)
+
+**Timestamp**: 2026-09-11T16:07:20Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Artifact**: docs/research-brief-gate-execution-evidence-2026-09-11.md
+**Session**: 2026-09-11T1528-574cf5
+
+**Content Hash**: `54f59dc6827622d8bff0859639a682194d6bce9678b45bf99b93171edfdd8fe4`
+**Previous Hash**: `c68b8e0982794463d18d7c1b7a64ea75c0328b31a63a68eb60dac46da3fa7fa4`
+**Chain Hash (Merkle seal)**: `e2bec80419c2ec21a81b95d5ae7c2575853ad8e7afa27cf2b3fb349713b4b65b`
+
+**Decision**: **RESEARCH COMPLETE.** GH #463 -- whether a wired ABORT gate produced any effect.
+
+**THE CLAIM HOLDS AND ITS EVIDENCE HAS ALREADY ERODED.** Re-derived on correctly paired sealed phases -- each seal commit supplying both its own report and its own session's artifact -- verdict_reconcile finds a finding on 3 of 38, not the 84 of 189 the issue cites. Phase 275 fixed the parser in between. #463 predicted this in its own text: fixing the parser makes the gate stop mis-firing and makes its silence permanently invisible.
+
+**TWO EARLIER PAIRINGS WERE WRONG AND ARE RECORDED AS SUCH.** Matching each report to the lexically last artifact gave 8 of 60; reconciling forty sessions' artifacts against one report gave a meaningless 39 of 40. Only pairing by the gate directory each seal commit adds is sound.
+
+**THE GATE SURFACE IS PROSE BY ROUGHLY TEN TO ONE.** 119 statements across 32 SKILL.md files say a condition ABORTs, VETOes or must not proceed. Twelve sit on a line carrying a runnable command; eleven of those express the gate as || ABORT, prose in shell position. Executed as shell it fails closed by accident of syntax -- a passing check short-circuits to 0, a failing one reaches a non-existent command and yields 127 -- so its correctness is conditional on a behaviour the repository cannot check.
+
+**TWENTY-NINE TESTS VERIFY WIRING; NONE VERIFY EXECUTION.** The wiring suites assert that a step's text is present and that removing it breaks the assertion. They are the mechanised form of 'the gate is declared' and cannot distinguish it from 'the gate ran'.
+
+**NO ARTIFACT RECORDS EXECUTION.** Provenance sidecars carry an HMAC over a payload the agent wrote -- tamper-evidence, not execution evidence. Across 22 gate schemas no field records which checks ran. An agent that skipped every gate and wrote plausible artifacts would pass gate_chain_completeness, seal_entry_check and provenance verification alike.
+
+**THE ANSWER EXISTS AND PRODUCES NOTHING, BY DESIGN.** Phase 242 shipped a governed-procedure execution-evidence contract: schema, evaluator, two test files. Zero artifacts of that kind exist and no skill, script or workflow calls it. Its plan scopes the producer half to execution hosts and trusted wrappers. No such host exists here, so the contract has a consumer and no producer. The gap is a boundary nobody stands on, not a forgotten wire -- which is why this is not #459's shape.
+
+**Required next action**: the operator decides whether this repository becomes the execution host for its own cycles. Until that is answered #463 cannot be closed, and closing it by further parser work would make the property less observable rather than more true.
+
+### Entry #788: RESEARCH BRIEF -- upstream report channel
+
+**Timestamp**: 2026-09-11T16:22:14Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L2
+**Artifact**: docs/research-brief-upstream-report-channel-2026-09-11.md
+**Session**: 2026-09-11T1619-fe7c2d
+
+**Content Hash**: `66d81e2039af5a4b1f13aa8cb241a77725f46a65c1c184a3c3b2d13899eef8fb`
+**Previous Hash**: `e2bec80419c2ec21a81b95d5ae7c2575853ad8e7afa27cf2b3fb349713b4b65b`
+**Chain Hash (Merkle seal)**: `41cd01a6b1edc1cee8b5f6b33cd274f532348a4eb3aac0c96bd170b6584a929d`
+
+**Decision**: **RESEARCH COMPLETE.** The consumer-to-upstream issue-reporting channel: its leak rate, the mechanisms that already automate it, and whether it can carry execution evidence.
+
+**SEVEN OF SEVEN.** Every upstream report in this tracker from a consuming repository -- #356, #357, #358, #359, #364, #365, #366 -- named that consumer in prose until today's anonymization pass. A 100 percent leak rate on a channel with no control at the point of filing. The reports are technically excellent; the identity travels because the context is what makes them credible.
+
+**TWO AUTOMATED PATHS ALREADY EXIST AND NEITHER CHECKS THE BOUNDARY.** create_shadow_issue files GitHub issues from shadow events; collect_shadow_genomes pools events across a configured fleet and files them to a meta repository. Boundary references in each: zero. Event details carry gate names, skill names and free-text reasons written during a consumer's cycle, and nothing inspects them before they become an issue body.
+
+**THE FLEET PATH IS BUILT AND UNCONFIGURED HERE**, so the seven reports were filed by hand. That makes the leak rate the failure rate of a careful human working in the repository whose doctrine they wrote. Automating the current shape would reproduce the defect at machine speed rather than introduce it.
+
+**THE CONVENTION EXISTS AND IS APPLIED TO ONE FIELD.** Thirty-five events carry an issue_url of the form companion-line#N -- a deliberate neutral placeholder -- while the bodies those same cycles produced named the consumer. Nothing in the boundary doctrine documents either choice. An undocumented convention applied by hand to one of two fields looks like policy from inside and is invisible from outside.
+
+**THIS CORRECTS THE PRIOR BRIEF.** Entry #787 concluded no execution host exists for Phase 242's producer half. The premise was wrong: the hosts exist and are the consuming repositories. What is missing is not a host but a channel with a defined shape.
+
+**REPOS_CONFIG IS A REGISTRY OF THE PROHIBITED IDENTITIES.** It requires path and name per repository; path is a local filesystem path, the exact shape the boundary detector exists to catch, feeding a collector that files upstream unchecked.
+
+**ONE CITATION TO CORRECT BEFORE USE.** GH #459 says validate_event_id is called from no production path; it is called at create_shadow_issue.py:79 and :165. Its second clause may still hold and may be the real finding.
+
+**Required next action**: /qor-plan, scoped so the skill's first contract is anonymization rather than report shape, and so the two existing filing paths are in scope rather than left as unguarded doors beside a new one.
+
+### Entry #789: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-11T19:45:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Verdict**: VETO
+
+**Content Hash**: `89cf7a56bf00ae6aba82c7e8939f2c1138b0a454ec9b5428bfe7afdf2a7b0457`
+**Previous Hash**: `41cd01a6b1edc1cee8b5f6b33cd274f532348a4eb3aac0c96bd170b6584a929d`
+**Chain Hash (Merkle seal)**: `4d9fbab7f751fe4ce9592676ad46f9a371e19af68806cc1f1c71540cb908b932`
+
+**Decision**: **Target**: `docs/plan-qor-phase286-upstream-filing-guard.md`
+**Report**: `.agent/staging/AUDIT_REPORT.md`
+**Findings categories**: specification-drift, coverage-gap, test-failure
+
+**Decision**: VETO. The ten Locked Decisions are mutually consistent; the sections
+beneath them are not. Phase 2, Phase 3 and the Definition of Done were written
+against earlier versions of decisions amended in later iterations and were never
+re-derived. Thirteen findings, all plan-text grounds. Eight are summarised
+below; V9-V13 arrived from the fresh-context reviewer after this entry's first
+draft and are recorded in full in the report. They include a deliverable that
+claims a property the design cannot deliver on the self-file path, a
+false-positive figure stated for the matcher the plan rejected rather than the
+one it ships, and two measurement tables built on different corpora while both
+are labelled as the live log.
+
+V1. LD-10 locks an operator escape -- a flag, a printed finding set, a
+gate_override event -- with no implementation surface: absent from the guard
+signature, Affected Files, the call-site table, and all six deliverables. Two
+tests assert it. LD-8's choice of substring matching is justified solely by that
+escape, so the matcher rationale cites a mechanism the deliverable does not
+contain.
+
+V2. LD-6 computes the collector union with each configured name inside its
+derived group, which LD-7 exists to forbid; and states the union covers all
+configured repos while Phase 2 states enabled repos only. One of the two is a
+third-party leak: a disabled repository contributes no group, an enabled
+repository's event text names it, and the body files clean.
+
+V3. The Phase 3 doctrine paragraph asserts detectors run before a report leaves,
+which LD-9 denies by scoping the guarded surface to what is passed to gh; a test
+binds behaviour to that paragraph.
+
+V4. A Definition-of-Done row names a test that does not exist and asserts the
+opposite of the one that does.
+
+V5. A figure corrected in LD-8 as corpus-dependent is restated bare in three
+places, one of them a deliverable claim.
+
+V6. Affected Files declares two functions and one exception; the plan specifies
+five types besides.
+
+V7. Every group test constructs its groups by hand, so the suite verifies group
+consumption and never group construction. V2's leak would ship with all
+thirty-four tests green.
+
+V8. A test asserts that a report body containing an argv flag's name does not
+file. No call path connects an out-of-band flag to a body string, so the
+assertion cannot fail -- a passing test over an unreachable branch, which is the
+defect class the plan itself documents.
+
+**Mode**: two independent reviews, one carrying the authoring history and one
+fresh-context given only the artifact. Both returned VETO independently and
+converged on V1 and V2. `audit_risk_score` reported option_b_required false for
+the fifth consecutive phase this session and was overridden with written
+justification.
+
+**Provenance**: fifteen authoring iterations preceded this audit. Three of the
+eight findings sit in artifacts added during the last four of them to close
+earlier findings.
+
+**Required next action**: /qor-plan. Re-derive Phase 2, Phase 3 and the
+Definition of Done against the ten decisions as they stand; give LD-10 an
+implementation surface or withdraw it; add a test that drives the collector's
+group construction. The cycle-count escalator reports no consecutive
+same-signature streak and no session-total recurrence, so the route is not
+/qor-remediate.
+
+### Entry #790: RESEARCH BRIEF -- advisory filing control
+
+**Timestamp**: 2026-09-11T22:30:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+
+**Content Hash**: `1225b61fe6d4ca1a142007a02488e6822ca969e877e30ffaa19148c8d3aeb31a`
+**Previous Hash**: `4d9fbab7f751fe4ce9592676ad46f9a371e19af68806cc1f1c71540cb908b932`
+**Chain Hash (Merkle seal)**: `07047ad67566ff7b7edb4d9344fa371d6425d2c78ee75fc156c1bfde79f1f39c`
+
+**Decision**: **Target**: an advisory-first boundary control on the outbound filing path
+**Brief**: `docs/research-brief-advisory-filing-control-2026-09-11.md`
+
+**Decision**: The justification carrying three vetoed plan iterations belongs to a
+different channel than the one they guard. Six findings, all DRIFT.
+
+1. The guarded path has run. GH #439's title matches
+`create_shadow_issue.py:366`'s generator byte for byte. Its recorded leak rate is
+0 of 1, and that filing was self-destined.
+
+2. The seven-of-seven rate measures HAND-FILED reports. The fleet collector has
+never run; 35 events carry anonymized `companion-line#N` placeholders rather than
+URLs this tracker issued. That figure justified every iteration of the filing
+guard and describes a channel `create_shadow_issue` is not.
+
+3. An advisory control reports ZERO findings against the live 591-line body with
+all 17 operator overlay terms active. The over-refusal residue that dominated
+three planning rounds is a property of hypothetical consumers whose checkout name
+collides with this repository's vocabulary, not of the path that runs.
+
+4. The identity anchor must be the event source. `read_all_events` reads
+module-level constants derived from `root()`, so anchoring identity on a git
+toplevel -- which resolves from the process directory and short-circuits
+`$QOR_ROOT` -- lets terms come from one repository while events come from
+another, silently disarming the guard. Deriving identity from the log's own
+directory makes divergence impossible.
+
+5. Advisory is already this repository's idiom: fourteen `|| true` lints in the
+audit ladder, WARN-only steps at substantiate 4.6.6/4.6.7/4.6.9, and Phase 283's
+nightly-health split.
+
+6. `merge_velocity_check --override` raises `ValueError`: it calls `append_event`
+with neither `attribution=` nor `log_path=`. The escape of a fail-closed seal
+gate cannot run. A vetoed plan cited it as the precedent for a logged escape.
+Out of scope here; belongs in its own issue.
+
+**Recommendations**: ship advisory, no escape and no override friction; anchor
+identity on the log's directory; state the preventive framing rather than
+inheriting a rate the path did not earn; make the advisory record the deliverable,
+since a control that warns into a void produces no calibration.
+
+**Required next action**: /qor-plan for the advisory slice.
+
+### Entry #791: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-12T00:05:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Content Hash**: `494717d0f2b7acac2149df1abd6a171fefd1256834a292273625a7edad92e8ec`
+**Previous Hash**: `07047ad67566ff7b7edb4d9344fa371d6425d2c78ee75fc156c1bfde79f1f39c`
+**Chain Hash (Merkle seal)**: `494a2a7fe8b99f1fb7f29143849111c9e81192e0e005f625643bdee61d728bbd`
+
+**Decision**: **Target**: `docs/plan-qor-phase286-advisory-filing-control.md`
+**Report**: `.agent/staging/AUDIT_REPORT.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+The advisory control reports what a filing is about to publish, records it beside
+the log the events were read from, and files regardless. Every binding pass was
+executed rather than reasoned about.
+
+Test Functionality was given extra weight and made mechanical: four tests that
+could not fail have shipped across this plan's history, all authored by the same
+agent that audited them. All eighteen descriptors now state a condition under
+which they fail, checked by pattern rather than by reading.
+
+Infrastructure Alignment found one gap and it was corrected before this verdict
+was issued: the advisory record path was cited three times and declared NEW
+nowhere, and `.qor/advisory/` matched no `.gitignore` rule, so the record would
+have become a tracked surface. Phase 2 now declares both. Recorded rather than
+silently fixed.
+
+Independent review was NOT dispatched for this pass, and the reasoning is in the
+report. Five independent review cycles have already run on this lineage; the most
+recent returned three blocking findings against this artifact -- an advisory
+control that could block through override friction, an unguarded control whose
+callees raise, and a break in an existing test -- all fixed here. SG-007
+author-momentum applies and is named rather than waved past.
+
+**Required next action**: /qor-implement. Phase 1 first, red before Phase 2 makes
+it green.
+
+### Entry #792: SESSION SEAL -- Phase 286 advisory filing control (v0.173.0)
+
+**Timestamp**: 2026-09-12T19:40:00Z
+**Phase**: SEAL (Phase 286)
+**Author**: Governor
+**Risk Grade**: L1
+
+**Content Hash**: `494717d0f2b7acac2149df1abd6a171fefd1256834a292273625a7edad92e8ec`
+**Previous Hash**: `494a2a7fe8b99f1fb7f29143849111c9e81192e0e005f625643bdee61d728bbd`
+**Chain Hash (Merkle seal)**: `c20d08de0438928e545ea0eee1f776046dbc4c5a736d7ecc7fdf183e203c4f77`
+
+**Decision**: **Plan**: docs/plan-qor-phase286-advisory-filing-control.md
+**Session**: 2026-09-11T2225-9740d2
+**Closes**: none (GH #457's outbound half is advanced, not closed; blocking is deferred)
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**THE JUSTIFICATION BELONGED TO A DIFFERENT CHANNEL THAN THE ONE BEING GUARDED.**
+Seven of seven upstream reports leaked their consumer's identity, and that figure
+carried three blocking designs through fifteen authoring iterations, five
+independent reviews and three VETOs. It measures HAND-FILED reports. The guarded
+path, create_shadow_issue, has filed once -- GH #439, whose title matches its
+generator byte for byte -- and was clean. An advisory scan of the live 591-line
+body, with all seventeen operator overlay terms active, reports zero findings.
+Every reviewer checked whether the rate was true; none checked what it was about.
+
+**THE CONTROL IS ADVISORY BY CONSTRUCTION, NOT BY INTENTION.** inspect never
+raises: the whole body is wrapped and any internal failure yields an empty report
+carrying a control-error class, because a control that observes must not become
+the reason a report cannot be filed. A blocking predecessor declared the same
+posture and was refuted on it four separate ways -- git absent, a non-UTF-8
+overlay, an unwritable record, a schema mismatch -- each of which would have
+prevented gh from running.
+
+**THE RECORD IS NOT A SHADOW EVENT, AND THAT IS THE SHARPEST FINDING OF THE
+PHASE.** A draft appended gate_override. That is the ONE event type carrying a
+raising override-friction escalator, so the advisory control would have refused a
+filing at the third occurrence -- through the exact mechanism its own non_goals
+forbade, reintroduced by the choice of event type. Forty such events already sit
+in the live log. It would also have corrupted the population override_friction
+reads to detect operator gate bypass. The record is a gitignored JSONL line
+beside the log instead.
+
+**IDENTITY IS ANCHORED ON THE EVENT SOURCE.** read_all_events reads constants
+derived from root(); a prior design anchored identity on a git toplevel that
+resolves from the process directory and short-circuits $QOR_ROOT, letting terms
+come from one repository while the body was composed from another's events and
+every term dropped as self-reference. The anchor is now the log path's own
+grandparent, so divergence is impossible rather than patched.
+
+**A RED TEST FOUND WHAT FIVE REVIEW ROUNDS DID NOT.** origin_pair swallowed
+git-unavailable as though it were no-remote-configured, so a scan that had lost
+two of its three derived terms was indistinguishable from a clean one. Git
+absence now surfaces as control-error; a missing remote still returns None,
+because the directory name still identifies the checkout. It is the first defect
+this phase found by running something rather than by reading it.
+
+**FOUR TESTS THAT COULD NOT FAIL SHIPPED ACROSS THE BLOCKING DESIGN'S HISTORY**,
+every one written while closing a different finding. The Test Functionality pass
+is now mechanical: each descriptor must name the implementation that would make
+it fail, checked by pattern rather than by reading -- and that check caught its
+own false positives before it was trusted.
+
+**SKIP RECORDED**: instruction_hygiene_lint (module absent; Phase 75
+declarative-tolerance, disclosed as a gate_skipped_prerequisite_absent event per
+SG-HalfSealedClaim-A). data_api_acl_lint disclosed-skip: no SQL migrations.
+
+**Suite**: 3501 passed, 6 skipped, exit 0. Boundary lint 0 findings. Chain
+verified.
+
 ---
 
 *Chain integrity: VALID*

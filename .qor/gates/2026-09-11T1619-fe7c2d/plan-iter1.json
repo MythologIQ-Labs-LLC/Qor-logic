@@ -1,0 +1,46 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-11T1619-fe7c2d",
+  "ts": "2026-09-11T16:26:42Z",
+  "plan_path": "docs/plan-qor-phase286-upstream-filing-guard.md",
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "phases": [
+    "Phase 1: pin the refusal -- NEW tests/test_upstream_filing_guard.py; seven tests calling the guard directly with explicit terms, including a title-only case, an unconfigured-overlay case, and a both-doors routing test.",
+    "Phase 2: NEW qor/scripts/upstream_filing_guard.py (guard + UpstreamReportRefused); create_shadow_issue.create_issue and collect_shadow_genomes' gh call site both invoke it before filing. The guard refuses; it never rewrites.",
+    "Phase 3: doctrine paragraph stating the boundary has an outbound face, bound to the guard's refusal condition by a test."
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_upstream_filing_guard.py -q",
+    "python -m pytest tests/test_shadow.py tests/test_publication_boundary_lint.py tests/test_boundary_scope_disclosure.py -q",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m pytest -q"
+  ],
+  "open_questions": [],
+  "boundaries": {
+    "limitations": [
+      "Guards the two existing filing paths only; cannot reach a report typed into the GitHub web UI by hand.",
+      "Does not author or shape reports -- the reporting skill is a later phase."
+    ],
+    "non_goals": [
+      "No execution evidence; Phase 242's contract rides this channel but is not built here.",
+      "No change to detectors, overlay format, or _SELF_REPO."
+    ],
+    "exclusions": [
+      "No retroactive scan of filed issues; github_surface remains the control for what is published.",
+      "No change to what either script reports, only to whether it may file."
+    ]
+  },
+  "terms": [],
+  "feature_inventory_touches": [],
+  "high_risk_target": false,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.2",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-11T16:26:42Z"
+  }
+}

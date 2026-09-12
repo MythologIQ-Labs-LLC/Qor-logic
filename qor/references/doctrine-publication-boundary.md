@@ -34,6 +34,30 @@ Generic, operator-configured interfaces that can target a repository are
 permitted when Qor-logic does not name, assume, privilege, or depend on a
 specific outside repository.
 
+### Outbound filing (Phase 286)
+
+Enforcement also reaches outbound. A report filed from one repository into
+another crosses the boundary at the moment it is transmitted, and that is the
+only moment at which the reporter still knows which details identify them. The
+tracked-file lint and the scheduled surface scan both act after the fact, so a
+filing path inspects what it passes to `gh`.
+
+It derives the reporter's identity from the directory the reported events were
+read from, so the repository whose events composed the body and the repository
+whose identity is matched against it cannot diverge. Naming the destination is
+permitted; naming the origin is what is reported.
+
+The first form of this control is **advisory**: it reports and records without
+refusing, because the refusal rate has never been measured on the path it guards
+and an unmeasured control cannot be calibrated. It is also advisory about its own
+failures -- any internal error yields an empty report carrying a `control-error`
+class rather than preventing a filing.
+
+A suppression marker in outbound text is disclosed as unscanned rather than
+honoured. That marker records a maintainer's exception in a tracked file and
+carries no authority over text arriving from elsewhere, so the control counts the
+lines it skipped and says so.
+
 ## Lessons-learned exception
 
 The only exception is an intentional lesson-learned record under

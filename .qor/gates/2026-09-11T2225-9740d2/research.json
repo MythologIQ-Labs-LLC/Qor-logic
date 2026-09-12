@@ -1,0 +1,62 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-11T2225-9740d2",
+  "ts": "2026-09-11T22:29:13Z",
+  "questions": [
+    "What does 'advisory' mean mechanically here, and is there a precedent shape?",
+    "What must the identity anchor be, given the root divergence that vetoed the blocking design?",
+    "What would an advisory control actually report against the live corpus?",
+    "Has the guarded filing path ever run, and did it leak?",
+    "Is merge_velocity_check's override, cited as the escape precedent, functional?"
+  ],
+  "findings": [
+    {
+      "claim": "The guarded path has run in production and filed GH #439; recorded leak rate 0 of 1, self-destined.",
+      "evidence": "create_shadow_issue.py:366 title generator matches the live issue title byte for byte",
+      "status": "DRIFT"
+    },
+    {
+      "claim": "The 7-of-7 leak rate measures hand-filed reports, not the guarded path.",
+      "evidence": "fleet collector never ran; 35 events carry anonymized companion-line#N placeholders",
+      "status": "DRIFT"
+    },
+    {
+      "claim": "An advisory control reports 0 findings on the live 591-line body with all 17 overlay terms active.",
+      "evidence": "scan_text over build_body(74 unaddressed events) with origin==destination",
+      "status": "DRIFT"
+    },
+    {
+      "claim": "Identity must anchor on the log's own directory, not a root function.",
+      "evidence": "shadow_process.py:26 + workdir.py:42 derive events from root(); workdir.py:14-24 resolves git root from cwd and short-circuits $QOR_ROOT",
+      "status": "DRIFT"
+    },
+    {
+      "claim": "Advisory is this repository's existing idiom.",
+      "evidence": "14 '|| true' lints in the qor-audit ladder; WARN-only substantiate steps 4.6.6/4.6.7/4.6.9; Phase 283 split",
+      "status": "MATCH"
+    },
+    {
+      "claim": "merge_velocity_check --override raises ValueError and cannot run.",
+      "evidence": "merge_velocity_check.py:251 calls append_event with neither attribution= nor log_path=; shadow_process.py:122 raises",
+      "status": "DRIFT"
+    }
+  ],
+  "sources": [
+    "qor/scripts/create_shadow_issue.py:366",
+    "qor/scripts/shadow_process.py:26",
+    "qor/scripts/shadow_process.py:122",
+    "qor/workdir.py:14-24",
+    "qor/workdir.py:42",
+    "qor/scripts/merge_velocity_check.py:251",
+    "qor/references/doctrine-publication-boundary.md:31"
+  ],
+  "brief_path": "docs/research-brief-advisory-filing-control-2026-09-11.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.2",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-11T22:29:13Z"
+  }
+}
