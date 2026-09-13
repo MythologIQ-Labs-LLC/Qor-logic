@@ -119,6 +119,44 @@ def latest_commitments(ledger_path: Path) -> dict[str, str]:
     return commitments
 
 
+@dataclass(frozen=True)
+class ScopedResult:
+    """Findings plus the size of what produced them.
+
+    Phase 287 (GH #461). This gate's checked set is supplied by the party it
+    audits -- the implement artifact's ``files_touched`` -- and measured, about
+    half of all sealed phases named no plan or brief at all. An empty set
+    returned an empty findings list, which read exactly like a thorough pass.
+    The count travels with the result so the two can be told apart, and
+    ``passes`` is false on an examination of nothing.
+    """
+
+    findings: list["StaleCommitment"]
+    examined: int
+
+    @property
+    def passes(self) -> bool:
+        return self.examined > 0 and not self.findings
+
+
+def stale_commitments_scoped(
+    repo_root: Path,
+    touched: list[str],
+    *,
+    ledger_path: Path | None = None,
+) -> ScopedResult:
+    """``stale_commitments`` with its scope attached (Phase 287; GH #461)."""
+    citable = [f for f in touched if _is_citable(f)]
+    findings = stale_commitments(repo_root, touched, ledger_path=ledger_path)
+    return ScopedResult(findings=findings, examined=len(citable))
+
+
+def _is_citable(path: str) -> bool:
+    """Artifacts this gate can hold a commitment for: plans and research briefs."""
+    name = path.replace("\\", "/").rsplit("/", 1)[-1]
+    return name.startswith("plan-") or name.startswith("research-brief")
+
+
 def stale_commitments(
     repo_root: Path,
     touched: list[str],

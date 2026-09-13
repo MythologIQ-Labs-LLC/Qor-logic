@@ -23565,6 +23565,152 @@ SG-HalfSealedClaim-A). data_api_acl_lint disclosed-skip: no SQL migrations.
 **Suite**: 3501 passed, 6 skipped, exit 0. Boundary lint 0 findings. Chain
 verified.
 
+### Entry #793: RESEARCH BRIEF -- verifier scope disclosure
+
+**Timestamp**: 2026-09-13T01:55:00Z
+**Phase**: RESEARCH
+**Author**: Analyst
+**Risk Grade**: L1
+
+**Content Hash**: `74ded261d1569ab69366b579b5be810d6b44cb204a1c0dc7a5d92354c63a055b`
+**Previous Hash**: `c20d08de0438928e545ea0eee1f776046dbc4c5a736d7ecc7fdf183e203c4f77`
+**Chain Hash (Merkle seal)**: `3ef8288cd61ffac83feabb6e8c65a8c0e78599e8377ce9956c55067103fa46fc`
+
+**Decision**: **Target**: the six issues labelled `reliability`
+**Brief**: `docs/research-brief-verifier-scope-disclosure-2026-09-13.md`
+
+**Decision**: The cluster is three, not six, and this brief corrects a scope this
+session proposed one message earlier.
+
+The labelling pass grouped six issues under one root cause and offered a phase
+closing all six. Measured, three share a property and three do not. #487, #461
+and #476 are verifiers reporting success over a scope that is empty,
+author-supplied or partial, without the result saying so. #463 is the
+execution-evidence design boundary Phase 242 left open deliberately; #486 is a
+one-line defect; #455 is an error-handling property. Acting on the six-as-one
+framing would have produced a deliverable that could not cover half its scope.
+
+Measured: plan_grep_lint examines 0 citations on every recent plan and exits 0,
+because `_LD_HEADING_RE` matches `## Locked Decisions` and not `### LD-<n>`.
+`stale_commitments([])` returns `[]`, and 105 of 204 implement artifacts name no
+plan or brief, so half of all sealed phases ran that gate over source and tests
+only. The install-sync gate compares 32 SKILL.md files and not 26
+references/*.md -- 55 percent of the installed markdown surface, silently.
+
+The countermeasure already exists. Phase 219 (GH #309 gap 2) established that a
+green result must carry its own scope, implemented it on
+`publication_boundary_lint`, wrote it into doctrine at line 114, and pinned it
+with a dedicated test file. One verifier has it; these three do not, and nothing
+prevents the next from shipping without it. #487 shows disclosure alone is not
+enough -- it prints its count of zero and still exits zero -- so the deliverable
+is disclosure plus a floor.
+
+**Required next action**: /qor-plan, scoped to #487, #461, #476, carrying #486
+as a one-line fix.
+
+### Entry #794: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-13T02:10:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Content Hash**: `9c9cfce6ebf51933030bf4bdaa5d2f784bd21c4d8cd0a2ff5d6ae83d717b6355`
+**Previous Hash**: `3ef8288cd61ffac83feabb6e8c65a8c0e78599e8377ce9956c55067103fa46fc`
+**Chain Hash (Merkle seal)**: `091cc0fd3a231c4d7815380c7d6523ad77401d752f420988a9d7663eae77d1e6`
+
+**Decision**: **Target**: `docs/plan-qor-phase287-verifier-scope-disclosure.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+Binding gates executed: prompt-injection rc=0; prose_test_lint --enforce rc=0;
+pre-audit ladder rc=0 across text-consistency, test-lint, dod-check,
+iteration-status and feature-tdd; publication boundary 0 findings; 3 of 3
+evidence statements resolve against the tree.
+
+Test Functionality: ten descriptors, each stating the implementation that would
+make it fail. A pattern check flagged one, `test_a_populated_touched_set_still_
+passes_when_nothing_is_stale`, as lacking a red condition; read directly it
+states one as "fails if the floor is implemented as ..." rather than with the
+literal word. The checker was narrow, the descriptor is not deficient, and no
+amendment was made. Recorded because an earlier draft of this entry claimed an
+amendment that did not happen.
+
+The scope is three verifiers plus one carried one-line fix, decomposed by
+mechanism in research brief #793 after this session's own labelling pass had
+proposed a six-issue scope that measurement refuted.
+
+Noted for the record: `plan_grep_lint` reports `0 citation(s) truth-checked`
+against this plan, which is the defect this plan fixes, observed on the artifact
+proposing the fix.
+
+**Required next action**: /qor-implement.
+
+### Entry #795: SESSION SEAL -- Phase 287 verifier scope disclosure (v0.174.0)
+
+**Timestamp**: 2026-09-13T03:20:00Z
+**Phase**: SEAL (Phase 287)
+**Author**: Governor
+**Risk Grade**: L1
+
+**Content Hash**: `79c87a6ab4318018ae227022112dafda48e3265ac13ff72ad6e1b93a3bb1f514`
+**Previous Hash**: `091cc0fd3a231c4d7815380c7d6523ad77401d752f420988a9d7663eae77d1e6`
+**Chain Hash (Merkle seal)**: `0c4d0f7e280e791d55c52d620c2e2aefa174e7a020f0bfae6dba8a3687480057`
+
+**Decision**: **Plan**: docs/plan-qor-phase287-verifier-scope-disclosure.md
+**Session**: 2026-09-13T0150-73103b
+**Closes**: GH #487, GH #461, GH #476, GH #486
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**THREE GATES REPORTED SUCCESS OVER A SCOPE THEY NEVER DISCLOSED.**
+plan_grep_lint examined zero citations on every plan written to the house
+convention: _LD_HEADING_RE matched `## Locked Decisions` and not the `### LD-<n>`
+subheadings plans actually use, and the block ended at the next heading of any
+level, so every decision body fell outside the scanned region. Citations examined
+went 0 to 8, 3 and 3 on phases 286, 285 and 283. ledger_commitment returned an
+empty findings list for an empty checked set, which read exactly like a thorough
+pass, while 105 of 204 sealed phases named no plan or brief in the artifact that
+supplies its scope. The install-sync gate compared 32 SKILL.md files and not 26
+under references -- 55 percent of the installed markdown surface, silently -- and
+now compares 58.
+
+**THE COUNTERMEASURE ALREADY EXISTED AND WAS NEVER GENERALISED.** Phase 219
+established that a green result carries its own scope, implemented it on
+publication_boundary_lint, wrote it into doctrine and pinned it with a dedicated
+test file. One verifier had it. Three open defects were instances of the gap.
+
+**DISCLOSURE IS UNIVERSAL; THE FLOOR IS NOT, AND AN EXISTING TEST PROVED IT.**
+The plan specified that an examination of zero fails everywhere. Implemented,
+that over-flagged every plan of pure design reasoning, and
+test_plan_grep_lint_citation_evidence caught it. Measured, the floor was also
+unreachable for the defect it targeted: once the regex is repaired, any citation
+at all -- even a bare file:line -- yields a non-zero count, so zero can only mean
+the plan cites nothing. The floor was removed from plan_grep_lint and kept for
+ledger_commitment, where an empty set is the audited party having named nothing.
+The distinction is now in the doctrine rather than in a decision's intent.
+
+**THE REPAIRED LINT FLAGGED THE PLAN THAT REPAIRED IT.** Two citations went stale
+because the fix moved the lines they cited; both were pinned to git show HEAD --
+the pre-change state they describe. That is the property working on its first
+run, against its own author.
+
+**Scope correction upstream of the plan**: a labelling pass proposed six issues
+under one root cause and offered a phase closing all six. Research decomposed it
+to three sharing a mechanism and three not, before a plan was written against the
+larger claim.
+
+**Suite**: 3506 passed pre-correction with 3 real failures, all addressed: the
+over-flagging floor, an unused import, and the pre-seal version skew that this
+entry resolves. Boundary lint 0 findings.
+
+**Carried**: GH #486 -- merge_velocity_check --override called append_event with
+neither attribution nor log_path and raised ValueError, so the documented escape
+from a fail-closed seal gate could never complete.
+
 ---
 
 *Chain integrity: VALID*

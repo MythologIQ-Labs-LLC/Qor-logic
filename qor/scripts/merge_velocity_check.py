@@ -248,6 +248,8 @@ def main(argv: list[str] | None = None) -> int:
     if a.stabilization_capacity != "exceeded":
         return 0
     if args.override:
+        # Phase 287 (GH #486): append_event requires attribution= or log_path=;
+        # without one it raised ValueError and this escape could never complete.
         shadow_process.append_event({
             "ts": shadow_process.now_iso(),
             "skill": "qor-substantiate",
@@ -261,7 +263,7 @@ def main(argv: list[str] | None = None) -> int:
             },
             "addressed": False, "issue_url": None, "addressed_ts": None,
             "addressed_reason": None, "source_entry_id": None,
-        })
+        }, attribution="LOCAL")
         print("merge_velocity_check: OVERRIDE (exceeded grade accepted; gate_override logged)")
         return 0
     print("merge_velocity_check: ABORT (stabilization capacity exceeded)")
