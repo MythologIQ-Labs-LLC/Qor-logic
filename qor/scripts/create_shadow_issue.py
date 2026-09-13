@@ -82,6 +82,7 @@ def parse_events_argument(raw: str) -> set[str]:
     return ids
 
 from qor.scripts import shadow_process
+from qor.scripts import advisory_filing_control as advisory
 
 from qor import workdir as _workdir
 
@@ -205,6 +206,23 @@ def build_body(events: list[dict], marker: dict) -> str:
 
 
 def create_issue(repo: str, title: str, body: str) -> str:
+    # Phase 286: advisory only. `inspect` never raises and the filing proceeds
+    # whatever it finds; the report is operator-local and the record carries
+    # classes rather than matched text.
+    report = advisory.inspect(
+        title, body,
+        log_path=shadow_process.LOG_PATH,
+        destination=repo,
+    )
+    rendered = report.render()
+    if rendered:
+        print(rendered, file=sys.stderr)
+    advisory.record(
+        report,
+        anchor=shadow_process.LOG_PATH.parent.parent,
+        destination=repo,
+    )
+
     result = subprocess.run(
         [
             "gh", "issue", "create",

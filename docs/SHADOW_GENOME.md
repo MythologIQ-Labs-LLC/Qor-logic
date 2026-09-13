@@ -2801,4 +2801,48 @@ Second-order, and the more expensive half: `audit_risk_score` returned `option_b
 ---
 
 
+## Entry #32: THE DOCUMENT DRIFTED FROM ITS OWN DECISIONS
+
+**Phase**: 286 (upstream filing guard)
+**Verdict**: VETO, 8 findings, categories specification-drift / coverage-gap / test-failure
+**Date**: 2026-09-11
+
+### What Happened
+
+A plan went through fifteen authoring iterations under an independent reviewer
+that returned blocking findings every round. The design converged: two reviewers,
+one holding the authoring history and one reading the artifact cold, agreed the
+ten Locked Decisions are mutually consistent. The plan was vetoed anyway, because
+Phase 2, Phase 3 and the Definition of Done had been written against earlier
+versions of decisions later amended, and were never re-derived.
+
+Three of the eight findings sit inside artifacts added during the last four
+iterations specifically to close earlier findings. One is a locked decision with
+no implementation surface at all. One is a test that cannot fail, written to
+guard against a different instance of tests that cannot fail.
+
+### Pattern ID
+
+Decision-downstream drift. A plan's Locked Decisions are amended in place while
+the implementable sections beneath them -- signatures, Affected Files, call-site
+tables, the Definition of Done, the test list -- keep citing the superseded form.
+Each amendment is locally correct and locally reviewed, so no round catches it;
+the contradiction is only visible reading the document whole.
+
+Countermeasure: after amending any Locked Decision, re-read every downstream
+section that names the mechanism it changed, before the next round begins.
+
+Second-order: an iteration count is not a maturity signal. Fifteen rounds of
+correct local fixes produced a document contradicting itself in six places. The
+durable framing is the reviewer's -- "the design is consistent, the document is
+not" -- and the two are worth auditing separately, because a design round and a
+re-derivation round are different work at different cost.
+
+Third-order: `audit_risk_score` returned `option_b_required: false` for the fifth
+consecutive phase this session and was overridden. Independent review supplied
+the two findings the solo audit missed, one of which converted a documentation
+inconsistency into a third-party leak that ships with every test green.
+
+---
+
 *Shadow integrity: ACTIVE*

@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-11T2225-9740d2",
+  "plan_path": "docs/plan-qor-phase286-advisory-filing-control.md",
+  "plan_hash": "494717d0f2b7acac2149df1abd6a171fefd1256834a292273625a7edad92e8ec",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "1b1ebc22d674a4433a6d51b1b2d56ad253522d0cdb0a1fba5d293bd8ebc367d8",
+  "head_commit": "af5e65f9591bcb005b586ee966f472a1d67dda8e",
+  "captured_ts": "2026-09-12T23:10:04.943271Z"
+}

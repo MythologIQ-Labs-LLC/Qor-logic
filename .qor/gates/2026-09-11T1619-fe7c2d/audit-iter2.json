@@ -1,0 +1,22 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-11T1619-fe7c2d",
+  "ts": "2026-09-11T19:45:26Z",
+  "target": "docs/plan-qor-phase286-upstream-filing-guard.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "specification-drift",
+    "coverage-gap",
+    "test-failure"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.2",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "veto",
+    "ts": "2026-09-11T19:45:26Z"
+  }
+}

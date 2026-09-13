@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-11T2225-9740d2",
+  "ts": "2026-09-12T23:04:10Z",
+  "target": "docs/plan-qor-phase286-advisory-filing-control.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "findings_categories": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.2",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-09-12T23:04:10Z"
+  }
+}

@@ -43,3 +43,4 @@ build/
 # operator's machine, not the project's, and publishing it leaks their setup.
 .claude/
 .qor/*.bak
+.qor/advisory/

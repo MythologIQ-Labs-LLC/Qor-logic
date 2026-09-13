@@ -1,0 +1,101 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-11T1619-fe7c2d",
+  "ts": "2026-09-11T16:22:30Z",
+  "questions": [
+    "What is the measured failure rate of the live upstream reporting channel?",
+    "What mechanisms already automate it, and do they apply any boundary control?",
+    "What identity would the automated path carry?",
+    "Does an anonymisation convention already exist, and where is it applied?",
+    "Can the channel carry Phase 242 execution evidence, and does a producer exist?"
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "claim": "7 of 7 upstream consumer reports in this tracker named the consumer in prose until today. 100% leak rate.",
+      "evidence": [
+        "#356",
+        "#357",
+        "#358",
+        "#359",
+        "#364",
+        "#365",
+        "#366"
+      ],
+      "status": "DRIFT"
+    },
+    {
+      "id": "F2",
+      "claim": "create_shadow_issue and collect_shadow_genomes both file issues and contain zero boundary references.",
+      "evidence": [
+        "qor/scripts/create_shadow_issue.py",
+        "qor/scripts/collect_shadow_genomes.py"
+      ],
+      "status": "DRIFT"
+    },
+    {
+      "id": "F3",
+      "claim": "~/.qor/repos.json is absent on this host, so the fleet collector is unwired and the seven reports were filed by hand -- the leak rate is a careful human's, not a machine's.",
+      "evidence": [
+        "filesystem check"
+      ],
+      "status": "MEASURED"
+    },
+    {
+      "id": "F4",
+      "claim": "repos_config requires path and name per repo; path is a local filesystem path matching the boundary detector's absolute-path shape.",
+      "evidence": [
+        "qor/gates/schema/repos_config.schema.json"
+      ],
+      "status": "DRIFT"
+    },
+    {
+      "id": "F5",
+      "claim": "35 events carry issue_url of form companion-line#N, a neutral placeholder; the bodies of the same cycles named the consumer. The convention is applied to one field and documented nowhere.",
+      "evidence": [
+        "live shadow log",
+        "doctrine-publication-boundary.md"
+      ],
+      "status": "DRIFT"
+    },
+    {
+      "id": "F6",
+      "claim": "Entry #787's premise was wrong: execution hosts exist and are the consuming repositories. What is missing is a channel with a defined shape.",
+      "evidence": [
+        "docs/plan-qor-phase242-governed-procedure-evidence.md:30"
+      ],
+      "status": "DRIFT - corrects #787"
+    },
+    {
+      "id": "F7",
+      "claim": "GH #459's first clause is false today: validate_event_id is called at create_shadow_issue.py:79 and :165.",
+      "evidence": [
+        "grep"
+      ],
+      "status": "DRIFT - correct before citing"
+    }
+  ],
+  "sources": [
+    "qor/scripts/create_shadow_issue.py",
+    "qor/scripts/collect_shadow_genomes.py",
+    "qor/gates/schema/repos_config.schema.json",
+    "qor/compliance/procedure_evidence.py",
+    "docs/plan-qor-phase242-governed-procedure-evidence.md",
+    "qor/references/doctrine-publication-boundary.md"
+  ],
+  "brief_path": "docs/research-brief-upstream-report-channel-2026-09-11.md",
+  "targets": [
+    "GH #463",
+    "GH #457",
+    "GH #459",
+    "Phase 242"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.172.2",
+    "host": "claude-code",
+    "model_family": "opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-11T16:22:30Z"
+  }
+}

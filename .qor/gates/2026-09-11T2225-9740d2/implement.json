@@ -1,0 +1,26 @@
+{
+  "phase": "implement",
+  "session_id": "2026-09-11T2225-9740d2",
+  "ts": "2026-09-12T23:11:59Z",
+  "files_touched": [
+    "tests/test_advisory_filing_control.py",
+    "qor/scripts/advisory_filing_control.py",
+    "qor/scripts/create_shadow_issue.py",
+    "qor/references/doctrine-publication-boundary.md",
+    ".gitignore",
+    "docs/SYSTEM_STATE.md",
+    "CHANGELOG.md",
+    "pyproject.toml"
+  ],
+  "tests_added": 21,
+  "plan_path": "docs/plan-qor-phase286-advisory-filing-control.md",
+  "notes": "Phase 1 red first, then Phase 2 green. origin_pair was swallowing git-unavailable as no-remote-configured, so a scan that lost two of three derived terms looked clean; a red test caught it and git absence now surfaces as control-error. tests/test_shadow.py passes unchanged, confirming the failure wrap dissolves the subprocess-patch interaction. Seal-ceremony surfaces (SYSTEM_STATE, CHANGELOG, pyproject) included.",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.173.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-12T23:11:59Z"
+  }
+}

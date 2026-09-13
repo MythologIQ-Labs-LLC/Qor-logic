@@ -1,0 +1,24 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-11T2225-9740d2",
+  "ts": "2026-09-12T23:19:56Z",
+  "verdict": "PASS",
+  "merkle_seal": "c20d08de0438928e545ea0eee1f776046dbc4c5a736d7ecc7fdf183e203c4f77",
+  "plan_path": "docs/plan-qor-phase286-advisory-filing-control.md",
+  "seal_entry": 792,
+  "version": "0.173.0",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "matches": 5
+  },
+  "notes": "Suite 3501 passed / 6 skipped / exit 0 (baseline 3480 plus 21 new). publication_boundary_lint 0 findings. Chain verified through #792; seal_entry_check post-anchor clean; intent_lock VERIFIED. SKIPs disclosed: instruction_hygiene_lint (module absent, Phase 75, gate_skipped_prerequisite_absent emitted); data_api_acl_lint (no SQL migrations).",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.173.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-09-12T23:19:56Z"
+  }
+}

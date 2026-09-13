@@ -1,0 +1,52 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-11T2225-9740d2",
+  "ts": "2026-09-12T23:12:24Z",
+  "plan_path": "docs/plan-qor-phase286-advisory-filing-control.md",
+  "phases": [
+    "Phase 1: pin the behaviour (tests/test_advisory_filing_control.py, 15 tests)",
+    "Phase 2: the control, and the path wired to it (qor/scripts/advisory_filing_control.py; create_shadow_issue calls inspect before gh)",
+    "Phase 3: record the advisory posture (doctrine-publication-boundary.md, Required treatment)"
+  ],
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "boundaries": {
+    "limitations": [
+      "advisory only on create_shadow_issue; four other body-composing sites untouched; web UI untouched; undeclared product names not caught"
+    ],
+    "non_goals": [
+      "no refusal",
+      "no acknowledge flag",
+      "no override friction",
+      "no execution evidence",
+      "no reporting skill",
+      "no change to scan_text or the detectors"
+    ],
+    "exclusions": [
+      "no retroactive scan of already-filed issues"
+    ]
+  },
+  "ci_commands": [
+    "python -m pytest tests/test_advisory_filing_control.py -q",
+    "python -m pytest tests/test_shadow.py tests/test_publication_boundary_lint.py tests/test_boundary_scope_disclosure.py -q",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m qor.scripts.ledger_hash verify docs/META_LEDGER.md",
+    "python -m pytest -q"
+  ],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "terms": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.173.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-12T23:12:24Z"
+  }
+}
