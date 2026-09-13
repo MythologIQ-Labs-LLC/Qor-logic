@@ -1,0 +1,36 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-13T0150-73103b",
+  "ts": "2026-09-13T02:32:27Z",
+  "plan_path": "docs/plan-qor-phase287-verifier-scope-disclosure.md",
+  "phases": [
+    "Phase 1: pin the behaviour (tests/test_verifier_scope.py)",
+    "Phase 2: the fixes (plan_evidence, ledger_commitment, install-sync, merge_velocity_check)",
+    "Phase 3: state that the rule is general (doctrine-verification-closure-integrity.md)"
+  ],
+  "change_class": "feature",
+  "doc_tier": "standard",
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_verifier_scope.py -q",
+    "python -m pytest tests/test_install_sync_with_source.py tests/test_plan_grep_lint.py tests/test_ledger_commitment.py -q",
+    "python -m qor.scripts.plan_grep_lint --plan docs/plan-qor-phase287-verifier-scope-disclosure.md --repo-root .",
+    "python -m qor.scripts.publication_boundary_lint",
+    "python -m pytest -q"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-13T02:32:27Z"
+  }
+}

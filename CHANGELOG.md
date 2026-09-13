@@ -10,6 +10,23 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.174.0] - 2026-09-13
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 287 (feature; a verifier reports what it examined, and examining nothing is not a pass)**: three gates reported success over a scope that was empty, partial, or supplied by the party they audit, and nothing in the result said so.
+
+  `plan_grep_lint`'s citation truth-checker examined **zero** citations on every plan written to the house convention — `_LD_HEADING_RE` matched `## Locked Decisions` but not the `### LD-<n>` subheadings plans actually use, so every decision body fell outside the scanned region. It now examines them: 0 becomes 8, 3 and 3 on the three most recent phases. A plan carrying Locked Decisions and no examined citation now exits non-zero, because a faithful report of zero was still a clean exit.
+
+  `ledger_commitment.stale_commitments` returned an empty findings list for an empty checked set, which read exactly like a thorough pass; its scope comes from the implement artifact's `files_touched`, and 105 of 204 sealed phases named no plan or brief at all. `stale_commitments_scoped` carries the examined count and does not pass on nothing.
+
+  The install-sync gate compared `SKILL.md` only — 32 files against 26 under `references/`, so 55 percent of the installed markdown surface, silently. It now compares 58.
+
+  Phase 219 established this property for the publication-boundary lint and it was never generalised; `doctrine-verification-closure-integrity.md` now states it as a general rule rather than one module's habit.
+
+- **GH #486 (carried)**: `merge_velocity_check --override` called `append_event` with neither `attribution=` nor `log_path=` and raised `ValueError`, so the documented escape from a fail-closed seal gate could never complete.
+
 ## [0.173.0] - 2026-09-12
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

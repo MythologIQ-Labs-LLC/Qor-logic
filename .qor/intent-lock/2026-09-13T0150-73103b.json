@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-13T0150-73103b",
+  "plan_path": "docs/plan-qor-phase287-verifier-scope-disclosure.md",
+  "plan_hash": "79c87a6ab4318018ae227022112dafda48e3265ac13ff72ad6e1b93a3bb1f514",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "1b1ebc22d674a4433a6d51b1b2d56ad253522d0cdb0a1fba5d293bd8ebc367d8",
+  "head_commit": "814433151072c56243e0827e57a3b89a9b88bbc5",
+  "captured_ts": "2026-09-13T02:42:27.361453Z"
+}

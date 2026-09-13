@@ -33,13 +33,32 @@ def _source_skills() -> list[Path]:
     return sorted(SOURCE_SKILLS_ROOT.rglob("SKILL.md"))
 
 
+def _source_files() -> list[Path]:
+    """Every markdown file dist installs, not only the skill entry points.
+
+    Phase 287 (GH #476). This gate globbed SKILL.md alone -- 32 files against 26
+    under references/ -- so it covered 55 percent of the installed markdown
+    surface and reported no shortfall. The uncovered half is the
+    progressive-disclosure surface this repository's doctrine directs new prose
+    into, which makes it the material most likely to be edited and least likely
+    to be checked.
+    """
+    refs = [p for p in SOURCE_SKILLS_ROOT.rglob("*.md")
+            if "references" in p.parts and p.name != "SKILL.md"]
+    return sorted(_source_skills() + refs)
+
+
 def _variant_counterpart(variant: str, source: Path) -> Path:
     rel = source.relative_to(SOURCE_SKILLS_ROOT)
     # Source layout: qor/skills/<category>/<skill-name>/SKILL.md
     # Variant layout: qor/dist/variants/<variant>/skills/<skill-name>/SKILL.md
     # The <category> dimension is flattened away by dist_compile.
-    skill_dir = rel.parent.name
-    return VARIANTS_ROOT / variant / "skills" / skill_dir / "SKILL.md"
+    if source.name == "SKILL.md":
+        skill_dir = rel.parent.name
+        return VARIANTS_ROOT / variant / "skills" / skill_dir / "SKILL.md"
+    # references/<file>.md: the skill dir is the grandparent of the file.
+    skill_dir = rel.parent.parent.name
+    return VARIANTS_ROOT / variant / "skills" / skill_dir / "references" / source.name
 
 
 def _check_variant(variant: str) -> list[str]:

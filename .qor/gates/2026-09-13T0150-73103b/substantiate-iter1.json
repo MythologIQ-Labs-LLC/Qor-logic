@@ -1,0 +1,23 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-13T0150-73103b",
+  "ts": "2026-09-13T02:32:10Z",
+  "verdict": "PASS",
+  "merkle_seal": "0c4d0f7e280e791d55c52d620c2e2aefa174e7a020f0bfae6dba8a3687480057",
+  "plan_path": "docs/plan-qor-phase287-verifier-scope-disclosure.md",
+  "seal_entry": 795,
+  "version": "0.174.0",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "matches": 4
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-09-13T02:32:10Z"
+  }
+}

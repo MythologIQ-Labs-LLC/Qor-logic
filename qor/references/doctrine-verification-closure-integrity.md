@@ -40,6 +40,34 @@ The four qa.json pillars draw on consolidated existing surfaces, not parallel to
 - **security** (#167): see the SAST Backend section above.
 - **regression** (#155/#40): the FEATURE_INDEX tally.
 
+## Scope disclosure and the zero floor (Phase 287; #487, #461, #476)
+
+A verifier reports the size of what it examined, and an examination of nothing is
+not a pass.
+
+An unqualified clean result from a narrow scope and from a thorough one are
+indistinguishable to the reader, so the scope travels with the result.
+
+Disclosure is universal; the floor is not. A floor belongs where an empty scope
+means the examiner failed to look, and not where it means there was nothing to
+look at. `ledger_commitment`'s checked set is declared by the party it audits, so
+an empty set is that party having named nothing and the gate does not pass on it.
+`plan_grep_lint`'s zero, once its block regex was repaired, means the plan cites
+no infrastructure -- a legitimate state for a decision of pure design reasoning --
+so it discloses and does not fail. A floor drafted there over-flagged every such
+plan, and was unreachable for the defect it was meant to catch: any citation at
+all, even a bare `file:line`, yields a non-zero count. The protection against that
+defect returning is a regression test asserting a known plan examines more than
+none.
+
+Phase 219 established the first half for the publication-boundary lint, whose
+`BoundaryResult` carries the detector scope that produced its findings. The rule
+is general and holds for any gate whose scope can be empty, partial, or supplied
+by the party it audits -- three conditions that each produced an open defect:
+a citation checker whose block regex matched no plan, a stale-commitment gate
+whose checked set comes from the implement artifact its own author wrote, and a
+sync gate covering 32 of 58 installed markdown files in silence.
+
 ## Prose-Behavior Test Lint (#170)
 
 `qor.scripts.prose_test_lint` scans `tests/*.py` source (AST) and flags tests whose only assertion is substring membership in a SKILL.md — the presence-not-behavior anti-pattern that shipped in #56/#58/#83 and that the plan-text `plan_test_lint` could not catch. Enforces the `doctrine-test-functionality.md` acceptance question at the test-source level.

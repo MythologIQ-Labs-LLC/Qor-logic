@@ -1,0 +1,58 @@
+{
+  "phase": "research",
+  "session_id": "2026-09-13T0150-73103b",
+  "ts": "2026-09-13T01:52:21Z",
+  "questions": [
+    "Do the six reliability-labelled issues share one root cause?",
+    "What closes the ones that do?",
+    "Does a countermeasure already exist in this repository?"
+  ],
+  "findings": [
+    {
+      "claim": "The cluster is three, not six: #487/#461/#476 share a scope property; #463/#486/#455 do not.",
+      "evidence": "decomposed by mechanism, not by symptom",
+      "status": "DRIFT -- corrects this session's own labelling"
+    },
+    {
+      "claim": "plan_grep_lint examines 0 citations on every recent plan and exits 0.",
+      "evidence": "plan_evidence.py:32 _LD_HEADING_RE does not match '### LD-<n>'",
+      "status": "DRIFT"
+    },
+    {
+      "claim": "ledger_commitment's checked set is author-declared and it passes on an empty set.",
+      "evidence": "105 of 204 implement artifacts name a plan or brief; stale_commitments([]) -> []",
+      "status": "DRIFT"
+    },
+    {
+      "claim": "The install-sync gate covers 55 percent of the installed markdown surface, silently.",
+      "evidence": "32 SKILL.md compared, 26 references/*.md not",
+      "status": "DRIFT"
+    },
+    {
+      "claim": "The countermeasure exists and was never generalised.",
+      "evidence": "Phase 219: BoundaryResult.scope at publication_boundary_lint.py:147, doctrine line 114, tests/test_boundary_scope_disclosure.py",
+      "status": "DRIFT"
+    },
+    {
+      "claim": "Disclosure alone is insufficient; a floor is the second half.",
+      "evidence": "#487 prints its count of 0 and still exits 0",
+      "status": "DRIFT"
+    }
+  ],
+  "sources": [
+    "qor/scripts/plan_evidence.py:32",
+    "qor/scripts/publication_boundary_lint.py:147",
+    "qor/references/doctrine-publication-boundary.md:114",
+    "tests/test_boundary_scope_disclosure.py",
+    "qor/scripts/merge_velocity_check.py:251"
+  ],
+  "brief_path": "docs/research-brief-verifier-scope-disclosure-2026-09-13.md",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.173.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-13T01:52:21Z"
+  }
+}

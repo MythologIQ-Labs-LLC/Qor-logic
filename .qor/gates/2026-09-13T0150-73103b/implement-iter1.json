@@ -1,0 +1,30 @@
+{
+  "phase": "implement",
+  "session_id": "2026-09-13T0150-73103b",
+  "ts": "2026-09-13T02:21:02Z",
+  "tests_added": 9,
+  "plan_path": "docs/plan-qor-phase287-verifier-scope-disclosure.md",
+  "files_touched": [
+    "tests/test_verifier_scope.py",
+    "qor/scripts/plan_evidence.py",
+    "qor/scripts/plan_grep_lint.py",
+    "qor/scripts/ledger_commitment.py",
+    "tests/test_install_sync_with_source.py",
+    "qor/scripts/merge_velocity_check.py",
+    "docs/plan-qor-phase287-verifier-scope-disclosure.md",
+    "docs/research-brief-verifier-scope-disclosure-2026-09-13.md",
+    "qor/references/doctrine-verification-closure-integrity.md",
+    "docs/SYSTEM_STATE.md",
+    "CHANGELOG.md",
+    "pyproject.toml"
+  ],
+  "notes": "Citations examined per plan went 0 -> 8/3/3 on phases 286/285/283. Install-sync compared files 32 -> 58. The repaired lint immediately flagged two stale citations in the plan that repaired it, because the fix moved the lines it cited; both pinned to `git show HEAD`. Two self-inflicted detours: a bash heredoc turned a regex \\b into a literal backspace byte, and VelocityAssessment's fields were guessed rather than read.",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.173.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-13T02:21:02Z"
+  }
+}
