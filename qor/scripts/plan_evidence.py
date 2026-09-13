@@ -29,7 +29,13 @@ _PATH_EXT = r"py|tsx|ts|sql|rs|go|json|js|md|toml|yml|yaml"
 _FILE_LINE_RE = re.compile(r"\b[\w./-]+\.(?:" + _PATH_EXT + r"):\d+\b")
 # The check runs ONLY inside these regions so plans that don't use the
 # Locked-Decision discipline produce zero findings (no over-flag).
-_LD_HEADING_RE = re.compile(r"^#+\s.*(locked decision|citation inventory)", re.IGNORECASE)
+# Phase 287 (GH #487): plans write their decisions as `### LD-<n>: <title>` beneath
+# `## Locked Decisions`, and `_ANY_HEADING_RE` ends a block at the next heading of
+# ANY level -- the first `### LD-1`. So every decision body fell outside the scanned
+# region and the truth-checker examined nothing, silently, on every plan written to
+# the house convention. The LD subheading is a block heading in its own right.
+_LD_HEADING_RE = re.compile(
+    r"^#+\s.*(locked decision|citation inventory)|^#+\s+LD-\d+", re.IGNORECASE)
 _ANY_HEADING_RE = re.compile(r"^#+\s")
 
 

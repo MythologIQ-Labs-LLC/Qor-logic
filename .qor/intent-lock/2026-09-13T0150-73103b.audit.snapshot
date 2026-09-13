@@ -1,0 +1,136 @@
+# AUDIT REPORT
+
+**Target**: `docs/plan-qor-phase286-advisory-filing-control.md`
+**Session**: 2026-09-11T2225-9740d2
+**Branch**: `phase/286-upstream-filing-guard`
+**Auditor**: The Qor-logic Judge
+**Date**: 2026-09-12
+
+---
+
+## VERDICT: PASS
+
+**Risk Grade**: L1
+
+No violation mandating rejection was found.
+
+## Mode note, stated because the auditor is also the author
+
+`audit_risk_score` returned `option_b_required: false`. Independent review was
+**not** dispatched for this pass, and the justification is recorded rather than
+assumed.
+
+This design lineage has already had five independent review cycles: a continuing
+reviewer across fifteen authoring iterations of the blocking design, and four
+fresh-context architectural reviews. The most recent returned three blocking
+findings against this very plan -- an advisory control that could block through
+override friction, an unguarded control whose callees raise, and a consequent
+break in an existing test -- all of which are fixed in the artifact under audit.
+
+A sixth review has low marginal value against a 486-line plan whose design is now
+well characterised, and the operator has observed that the cycle is generating
+findings faster than it closes work. That observation is itself evidence about
+where the marginal value lies.
+
+The countervailing risk is real and is named: SG-007 author-momentum applies, the
+author wrote this plan, and a solo audit is the weaker instrument. The mitigation
+is that every binding pass below was executed rather than reasoned about, and one
+finding was caught and corrected mid-audit (see Pre-verdict correction).
+
+## Mechanical gates
+
+| Gate | Result |
+|---|---|
+| Step 0 prior-phase artifact (`research`) | found, valid |
+| Step 0.3 plan-iteration status lint | rc=0 |
+| Step 0.4 unchanged-plan short-circuit | no prior audit this session; proceeds |
+| Step 0.5 cycle-count escalation | none (consecutive and session-total) |
+| Step 0.6 pre-audit lint ladder | `plan_text_consistency`, `plan_test_lint`, `dod_check`, `plan_iteration_status`, `plan_feature_tdd`, `plan_grep_lint` all rc=0 |
+| Prompt Injection Pass (ABORT gate) | rc=0 |
+| `prose_test_lint --enforce` (VETO gate) | rc=0 |
+| Publication boundary scan of the plan | 0 findings |
+
+## Passes
+
+**Security L3 / OWASP.** No auth, credential, or secret surface. A03: no new
+subprocess call takes user input; `origin_pair` invokes git with a fixed argv
+list. A04 fail-open is the *declared* posture rather than a defect: LD-9 makes
+the control fail open by construction and says so, which is the correct direction
+for an observer that must not become a gate. No violation.
+
+**Ghost UI / Live-Progress.** No UI surface. Not applicable.
+
+**Section 4 Razor.** One new module: a frozen dataclass and four functions. No
+function in the specification approaches forty lines; no nesting beyond the wrap.
+Within limits.
+
+**Test Functionality.** Eighteen named tests. Each states a condition under which
+it fails, verified mechanically rather than read: zero descriptors lack one. No
+presence-only assertion. The advisory property is pinned by two tests that fail
+under any blocking implementation, and the failure-transparency property by one
+parametrised over four raising callees.
+
+This pass was given extra weight: four tests that could not fail have shipped
+across this plan's history, every one written by the author. The red-condition
+check is the countermeasure, and it is now mechanical.
+
+**Dependency Audit.** `dataclasses` and `pathlib` from the standard library. No
+new third-party dependency.
+
+**Macro-Level Architecture.** One new module in `qor/scripts/`, reached by one
+caller. No cyclic dependency; `advisory_filing_control` imports
+`publication_boundary_lint` and not the reverse. `_ALLOW_RE` is imported rather
+than restated, which is a deliberate coupling recorded in LD-8 rather than an
+accident.
+
+**Feature Test Coverage.** `feature_inventory_touches` declared empty; the plan
+touches `qor/scripts/`, `tests/` and `qor/references/` only. Exempt.
+
+**Infrastructure Alignment.** Five evidence statements, all resolving against the
+current tree at the line and text cited. No referenced event type: the record is
+a JSONL line rather than a shadow event, which is the fix for the prior round's
+blocking finding. One filesystem-path gap found and corrected before the verdict.
+
+**Filter-Stage Ordering.** The control's pipeline is: count marker-bearing lines,
+drop derived terms on a destination match, scan survivors, record, file. Each
+stage's precondition is satisfied by the one before it, and the order is a
+topological sort of that dependency. The prior design's load-bearing precedence
+contract dissolves here, because nothing is gated: marker handling is disclosure,
+not suppression, so no stage can fail open into another.
+
+**Orphan Detection.** `advisory_filing_control` is reached by
+`create_shadow_issue.create_issue`. Connected.
+
+## Pre-verdict correction
+
+The Infrastructure Alignment Pass found that
+`<anchor>/.qor/advisory/filing-observations.jsonl` was cited three times and
+declared NEW nowhere in Affected Files, and that `.qor/advisory/` is not matched
+by any `.gitignore` rule, so the record would have become a tracked surface
+churning every commit.
+
+The plan was amended before this verdict was issued: Phase 2's Affected Files now
+declares `.gitignore` with the reason, and LD-7 names the path as new. This is
+recorded rather than silently fixed, because a verdict that conceals what it
+corrected is worth less than the correction.
+
+## Process Pattern Advisory
+
+<!-- qor:veto-pattern-advisory -->
+No repeated-VETO pattern detected in the last 2 sealed phases.
+
+The blocking predecessor of this plan was vetoed three times and the advisory
+design once. Those verdicts were against different artifacts under a different
+scope, and the cycle-count escalator reports no consecutive same-signature streak
+and no session-total recurrence. The route is `/qor-implement`, not
+`/qor-remediate`.
+
+## Required next action
+
+**`/qor-implement`.** Per `qor/gates/chain.md`, a PASS verdict admits
+implementation. Phase 1 is written first and must be red before Phase 2 makes it
+green.
+
+---
+
+_Verdict binding._
