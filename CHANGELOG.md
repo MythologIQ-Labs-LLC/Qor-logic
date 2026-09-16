@@ -10,6 +10,15 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.174.1] - 2026-09-16
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 290 (GH #482; ancestor-reachability is not CI-success)**: `/qor-substantiate` Step 9.7 pushed the seal tag once `git merge-base --is-ancestor "$SEAL_COMMIT" origin/main` succeeded -- proof the seal commit is merged, not proof a CI run exists for that exact SHA. GitHub runs the `CI` workflow only on pushed branch heads; a commit stacked on the phase branch after Step 9.5.5's tag but before the Step 9.6 push moves the CI-covered head past the seal commit. The ancestor check still passed once that head merged, so the tag pushed -- and `release.yml`'s own `release_ci_gate` (Phase 163) then refused the publish, in a separate workflow run the seal ceremony never opens. Observed live on `v0.172.1`.
+
+  `qor/scripts/tag_ci_gate.py` closes the gap by composing the ancestor result with the already-tested `release_ci_gate.evaluate` for the tagged SHA; Step 9.7 now runs the same `gh api .../workflows/ci.yml/runs?head_sha=$SEAL_COMMIT` call `release.yml` makes before pushing the tag, holding it local on a missing or non-green run instead of pushing one `release.yml` will refuse anyway.
+
 ## [0.174.0] - 2026-09-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

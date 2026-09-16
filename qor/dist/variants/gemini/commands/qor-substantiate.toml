@@ -615,14 +615,16 @@ Template: `references/qor-substantiate-templates.md`.
 
 ### Step 9.7: Post-merge seal-tag push (Phase 86 wiring; GH #98)
 
-The tag stays local until the seal commit is on `origin/main`. Push it only after the seal commit reaches `origin/main`, gated on the same reachability check `release.yml` uses:
+Push only once the seal commit is merged AND has its own green CI run (GH #482):
 
 ```bash
 git fetch origin main
-if git merge-base --is-ancestor "$SEAL_COMMIT" origin/main; then
+if git merge-base --is-ancestor "$SEAL_COMMIT" origin/main && \\
+   gh api "repos/{owner}/{repo}/actions/workflows/ci.yml/runs?head_sha=${SEAL_COMMIT}" \\
+     | python -m qor.scripts.tag_ci_gate --sha "$SEAL_COMMIT" --on-main; then
   git push origin "$SEAL_TAG"
 else
-  echo "Seal commit not on origin/main yet; tag $SEAL_TAG held local. Push after merge: git push origin $SEAL_TAG"
+  echo "Tag held local (GH #482)."
 fi
 ```
 

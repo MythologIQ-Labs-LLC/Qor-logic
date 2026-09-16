@@ -23711,6 +23711,63 @@ entry resolves. Boundary lint 0 findings.
 neither attribution nor log_path and raised ValueError, so the documented escape
 from a fail-closed seal gate could never complete.
 
+### Entry #796: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-16T04:40:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Content Hash**: `69e0eac7838f73046aed236357f737562fa405475a96270f15c41dec08df3f33`
+**Previous Hash**: `0c4d0f7e280e791d55c52d620c2e2aefa174e7a020f0bfae6dba8a3687480057`
+**Chain Hash (Merkle seal)**: `f9c46e73d7bfa716651b7b170df09a75395422b102588fabc355e24c4a7791e8`
+
+**Decision**: **Target**: `docs/plan-qor-phase290-tag-push-ci-gate.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+Binding gates executed: prompt_injection_canaries --mask-code-blocks --strict rc=0; prose_test_lint --enforce rc=0 (69 exempted, 0 unexplained); publication_boundary_lint 0 findings; plan_grep_lint 0 citations (plan has no Locked Decisions block, matching the phase163 precedent this plan's template follows -- nothing to truth-check, not a gap); substantiate_gates ladder unchanged (10 gates, order verified); audit_risk_score: option_b_required=false (no author-momentum signal) -- solo audit stands.
+
+GH #482's own "Scope note" fixes the plan's boundary: the interaction between two individually-correct controls (Step 9.5.5 tag-by-exact-SHA, Step 9.7 ancestor-only reachability) is the defect, not either control. The fix composes rather than replaces: `qor.scripts.tag_ci_gate.evaluate` delegates to the already-tested `release_ci_gate.evaluate` for the CI half and takes the caller's own `git merge-base` result for the ancestor half, so neither check is duplicated or re-implemented.
+
+TDD verified directly: `tests/test_tag_ci_gate.py` (8 cases) and `tests/test_substantiate_tag_ci_gate_wiring.py` (3 cases, anchored-prose with strip-and-fail negatives per doctrine-test-functionality.md) were confirmed red before the implementation existed, green after, re-run twice for determinism. Full suite: 3523 passed / 4 skipped / 4 deselected, run twice, deterministic.
+
+One real regression caught and fixed pre-audit, not merely disclosed: the Step 9.7 prose addition pushed `SKILL.md` past `test_ladder_rewrite_left_usable_slack`'s 2700 B floor (file was already within 2 B of the floor pre-change). Trimmed by moving rationale to `references/release-and-tag-timing.md` (progressive disclosure, per that file's own stated contract) and compacting the bash block from nested if/else to a single `&&`-gated push; final size 37223 B, 2713 B slack. `qor.cli compile` was run and `check_variant_drift` confirms 406 files, no drift; the regenerated `manifest.json` files were reverted (excluded from drift comparison by `check_variant_drift.py`'s own `_DRIFT_EXCLUDE`, and pre-existing on `main` independent of this phase -- out of this hotfix's scope, flagged below rather than silently folded in).
+
+**Governance/planning drift found, not this phase's to fix**: `qor/dist/*/manifest.json` on `main` records `sha256` values for several unrelated variant files (verified: `agents/agent-architect.md` among them) that do not match those files' actual committed content -- `manifest.json` is excluded from `check_variant_drift`'s comparison by design, so nothing currently catches this. Pre-existing, unrelated to GH #482, not touched by this seal.
+
+**Required next action**: /qor-implement (already complete; proceeding directly to seal).
+
+### Entry #797: SESSION SEAL -- Phase 290 tag-push CI gate (v0.174.1)
+
+**Timestamp**: 2026-09-16T04:55:00Z
+**Phase**: SEAL (Phase 290)
+**Author**: Governor
+**Risk Grade**: L1
+
+**Content Hash**: `cb4e768d93ee0f4e27053fc2e142b5c01af1533a8e7a47a66938390e54f5bb54`
+**Previous Hash**: `f9c46e73d7bfa716651b7b170df09a75395422b102588fabc355e24c4a7791e8`
+**Chain Hash (Merkle seal)**: `d3577bb25844d5fd0bb9e205ed1dc47fa9ecc270f857a62cc5baa8ea54ca61f6`
+
+**Decision**: **Plan**: docs/plan-qor-phase290-tag-push-ci-gate.md
+**Session**: 2026-09-16T0428-bbad95
+**Closes**: GH #482
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, PW.7.1
+
+**ANCESTOR-REACHABILITY IS NOT CI-SUCCESS.** Step 9.7 pushed the seal tag once `git merge-base --is-ancestor "$SEAL_COMMIT" origin/main` succeeded -- proof the seal commit is merged, not proof a CI run exists for that exact SHA. GitHub runs the `CI` workflow only on pushed branch heads; a commit stacked on the phase branch after Step 9.5.5's tag but before the Step 9.6 push moves the CI-covered head past the seal commit. The ancestor check still passed once that head merged, so the tag pushed -- and `release.yml`'s own `release_ci_gate` (Phase 163) then refused the publish, in a separate workflow run the seal ceremony never opens. Observed live on `v0.172.1`.
+
+**THE FIX COMPOSES, NOT REPLACES.** `qor/scripts/tag_ci_gate.py` (`evaluate`, `main`) takes the caller's own ancestor-check result and delegates the CI-success half to the already-tested `release_ci_gate.evaluate` for the tagged SHA -- neither check is duplicated. Step 9.7 now runs the same `gh api .../workflows/ci.yml/runs?head_sha=$SEAL_COMMIT` call `release.yml` makes, piped to `tag_ci_gate --on-main`, before pushing the tag: a missing or non-green run holds the tag local instead of pushing one `release.yml` will refuse anyway.
+
+**THE FIX ALMOST BROKE ITS OWN FILE'S BUDGET.** `SKILL.md` was already within 2 B of `test_ladder_rewrite_left_usable_slack`'s 2700 B floor before this phase touched it. The first draft of Step 9.7's addition pushed it 134 B over. Trimmed by moving rationale into `references/release-and-tag-timing.md` (the file whose own stated contract is to carry the history and the why, per GH #92 progressive disclosure) and compacting the bash block from a nested if/else to one `&&`-gated push; final size 37223 B, 2713 B slack.
+
+**Suite**: 3523 passed / 4 skipped / 4 deselected, run twice for determinism. `tests/test_tag_ci_gate.py` (8 cases) and `tests/test_substantiate_tag_ci_gate_wiring.py` (3 cases, anchored-prose with strip-and-fail negatives) confirmed red before the implementation existed. `check_variant_drift`: 406 files, no drift. Boundary lint 0 findings. ruff clean.
+
+**Carried, not this phase's to fix**: `qor/dist/*/manifest.json` on `main` records `sha256` values for unrelated variant files (verified: `agents/agent-architect.md`) that do not match those files' actual committed content. `check_variant_drift.py` excludes `manifest.json` from its comparison by design, so nothing currently catches this. Pre-existing, unrelated to GH #482; this phase's own `qor.cli compile` run reproduced it and reverted the manifest churn rather than folding an unrelated fix into a hotfix PR.
+
 ---
 
 *Chain integrity: VALID*
