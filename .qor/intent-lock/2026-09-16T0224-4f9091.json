@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-16T0224-4f9091",
+  "plan_path": "docs/plan-qor-phase288-session-marker-staleness.md",
+  "plan_hash": "d2391ab8ae72bf9f180d2b69e7c3ab3b7f76853e96df230e6a5b47488aa243b3",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "75d7208f12ea6b3bec23c53640e4c29a410810d0220ccdf527e47dfdc54e9872",
+  "head_commit": "f3e069bf7bc98fb35b7401de61de41c4c5f9ef13",
+  "captured_ts": "2026-09-16T02:30:14.462542Z"
+}

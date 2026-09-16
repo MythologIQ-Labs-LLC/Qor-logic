@@ -23711,6 +23711,69 @@ entry resolves. Boundary lint 0 findings.
 neither attribution nor log_path and raised ValueError, so the documented escape
 from a fail-closed seal gate could never complete.
 
+### Entry #796: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-16T02:30:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Content Hash**: `c19d96e2603af2d7a27b3dfc22feb30a0ffd9d49095f25fddbcb50890b6befe6`
+**Previous Hash**: `0c4d0f7e280e791d55c52d620c2e2aefa174e7a020f0bfae6dba8a3687480057`
+**Chain Hash (Merkle seal)**: `edc93a9fb0d24bc6aff8a4ca81ce75ebf987261c0f8fc6c82493be025836b8b9`
+
+**Decision**: **Target**: `docs/plan-qor-phase288-session-marker-staleness.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+Pre-audit lint ladder (module-form fallback; `qor-logic` CLI package not installed in this execution environment, per Phase 90/75 declarative tolerance -- `python -m qor.scripts.<module>` used instead): plan_test_lint rc=0; plan_enumeration_lint rc=0; plan_grep_lint 7 of 7 citations truth-checked, 0 warnings (fixed 3 malformed file:line citations in LD-2/LD-3/LD-4 that lacked a paired grep-evidence statement, and one stale line-number citation -- gate_chain.py's `from qor.scripts import session` is at line 15, not 20 -- before re-running clean); plan_text_consistency_lint rc=0; delivery_branch_lint rc=0; workspace_fragility_check reports medium/narrow_scope (pre-existing 56 uncommitted gate-artifact dirs from prior sessions, not introduced by this phase); plan_signature_widening_caller_lint rc=0; plan_data_round_trip_lint rc=0; plan_live_progress_lint rc=0; plan_feature_tdd_lint rc=0; sg_closure_lint 40 entries, 0 uncited; publication_boundary_lint 0 findings; plan_iteration_status_lint rc=0; prompt_injection_canaries rc=0.
+
+version_applicability.validate: release-class hotfix, target v0.174.1 exceeds current highest tag v0.172.2. Noted, out of this phase's scope: `git ls-remote --tags origin` shows no `v0.173.0`/`v0.174.0` tag on origin even though `pyproject.toml` already reads `0.174.0` (Phase 286/287's own target versions per Entries #792/#795) -- the last two sealed phases' tags were not pushed to origin. This does not block this phase's own bump (0.174.0 -> 0.174.1 exceeds the highest tag that does exist either way) and is not this hotfix's scope; flagged for the operator/next session.
+
+audit_risk_score reported `option_b_required: true` (scope-narrowing-prose-in-multi-entrypoint-file: the plan narrows scope within `session.py`, a multi-entrypoint file) -- SG-007 author-momentum risk, Option B independent review mandatory. Dispatched an architect-reviewer subagent with only the plan content and repo access (no plan-authoring conversation context), per `qor/skills/governance/qor-audit/references/adversarial-mode.md` Option B protocol. Declared toolset: Bash (shell/grep/git/find/ls), Read, Grep; no network/`gh` access. Independently re-verified all four Locked Decisions' grep citations byte-for-byte against `session.py`, `gate_chain.py`, and `workdir.py` on this branch; confirmed the substantiate.json-as-seal-artifact model against `evidence_bundle.py`, `tests/test_gate_chain_completeness.py`, and the substantiate SKILL.md; confirmed the new test file is collected under `pytest.ini_options` `testpaths`; confirmed the Feature Inventory Touches empty-declaration precedent against Phase 287's own plan; found all 7 Phase 1 test descriptions behavioral (none presence-only); found no filter-stage inversion, no new dependency, no OWASP/security violation, file well under the 250-line Razor cap. Two non-blocking L1 findings: (1) GH #483 could not be checked against the live issue tracker from the subagent's declared toolset (no network/`gh`) -- independently resolved here instead: this session read GH #483 directly via the GitHub API before writing the plan and confirmed the defect it describes (session marker mtime staleness silently orphaning gate artifacts) matches session.py's actual current behavior; (2) exact post-implementation nesting depth should be re-checked against the literal diff at `/qor-implement` time rather than the plan's prose description alone. Verdict: PASS, risk grade L1.
+
+**Required next action**: /qor-implement.
+
+### Entry #797: SESSION SEAL -- Phase 288 session marker staleness (v0.174.1)
+
+**Timestamp**: 2026-09-16T02:33:06Z
+**Phase**: SEAL (Phase 288)
+**Author**: Governor
+**Risk Grade**: L1
+**Entry ID**: `c3bb0e91d566`
+**Plan**: docs/plan-qor-phase288-session-marker-staleness.md
+**Session**: 2026-09-16T0224-4f9091
+**Closes**: GH #483
+
+**Content Hash**: `d2391ab8ae72bf9f180d2b69e7c3ab3b7f76853e96df230e6a5b47488aa243b3`
+**Previous Hash**: `edc93a9fb0d24bc6aff8a4ca81ce75ebf987261c0f8fc6c82493be025836b8b9`
+**Chain Hash (Merkle seal)**: `c5f1a0a13831a9e9e486411d1faaefd306c7b048e49806f5c5034a59df7ac978`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**THE SESSION MARKER'S OWN LEDGER HISTORY WAS THE EVIDENCE.** Entries #785 and #786 (Phases 283 and 285) each separately recorded, in prose, the exact live failure this phase closes: "session.current() returned None while the marker's content was still correct and only its mtime had aged past SESSION_TTL... Nothing warns about this and it is not filed." It was filed, as GH #483, and this phase is that filing closed.
+
+**`_marker_fresh` COLLAPSED TWO DIFFERENT CONDITIONS INTO ONE BOOLEAN.** A marker file that never existed and a marker file that exists, names a valid session id, and is merely more than 24h old both returned the same `False`. `current()` returned `None` for both; `get_or_create()` minted and wrote a new id for both. The second condition can occur mid-phase on a cycle spanning a day boundary, and when it does the marker's own gate directory can still hold unsealed research/plan/audit/implement artifacts that a silent rotation would detach.
+
+**THE FIX DISTINGUISHES THE MARKER'S STATE FROM WHETHER ITS SESSION IS STILL LIVE.** `_marker_state` returns `absent`/`stale`/`fresh` in place of the collapsed boolean. A new `_has_unsealed_gate_artifacts` check answers the second, independent question: does this session's `.qor/gates/<sid>/` directory exist, hold at least one earlier-phase artifact, and lack `substantiate.json`. Only when a stale marker's own session is still live does `get_or_create` reuse it (refreshing the mtime) instead of rotating; `current()` mirrors this. A stale marker whose session is sealed, or has no gate directory at all, rotates exactly as before -- the fix narrows the affected case rather than loosening the TTL.
+
+**OPTION B WAS MANDATORY AND WAS NOT SKIPPED.** `audit_risk_score` flagged `option_b_required: true` (the plan narrows scope within `session.py`, a multi-entrypoint file) at audit time. An architect-reviewer subagent, given only the plan content and independent repository access, re-verified every Locked-Decision citation byte-for-byte, confirmed the cyclic-import claim (`gate_chain.py` imports `session`, so the reverse would cycle), found all seven Phase 1 tests behavioral rather than presence-only, and returned PASS at L1. Full audit narrative: Entry #796.
+
+**A REAL, INDEPENDENT DEFECT SURFACED ALONG THE WAY AND WAS NOT THIS PHASE'S TO FIX.** `git ls-remote --tags origin` shows no `v0.173.0` or `v0.174.0` tag on origin, even though `pyproject.toml` already read `0.174.0` (Phases 286 and 287's own sealed target versions). The last two phases' seal tags were never pushed. This phase's own bump (0.174.0 -> 0.174.1) is unaffected either way -- `bump_version` reads the current version from `pyproject.toml`, not from the highest tag -- but the gap is real and is left for the operator or the next session that owns release/tag infrastructure, not absorbed into this hotfix's scope.
+
+**GATE SKIP**: instruction_hygiene_lint (Step 4.6.11) -- module absent from this repository; Phase 75 declarative-tolerance SKIP with a severity-1 event, consistent with every prior phase's own recorded skip of this row. install_drift_check (Step 4.6.13) disclosed 29 skills whose locally-installed copy differs from this repository's source (no `~/.claude/skills/` install present in this execution environment) -- disclosure, not ABORT, per its own `disclose` policy; not this phase's scope to remediate a host install. data_api_acl_lint disclosed-skip: no SQL migrations.
+
+**DOCUMENTATION CURRENCY CAUGHT A REAL STALE CLAIM.** `docs/lifecycle.md`'s session-model section stated unconditionally that a stale marker is reissued "on next read" -- true before this phase, false after. Corrected in the same commit rather than left to warn on every future session.py change.
+
+**Files**: qor/scripts/session.py, tests/test_session_marker_staleness.py, docs/lifecycle.md, docs/plan-qor-phase288-session-marker-staleness.md.
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+**Suite**: 3517 passed, 4 skipped, 4 deselected (2 environment-only failures pre-exist unchanged on main: package metadata absent because `qor-logic` is not `pip install -e`'d in this execution environment, not a regression). New suite run twice for determinism, both green. Version 0.174.0 -> 0.174.1 per the plan's declared hotfix change class.
+
 ---
 
 *Chain integrity: VALID*
