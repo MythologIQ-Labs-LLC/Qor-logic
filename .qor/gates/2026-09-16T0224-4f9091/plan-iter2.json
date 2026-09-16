@@ -1,0 +1,39 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-16T0224-4f9091",
+  "ts": "2026-09-16T02:31:08Z",
+  "plan_path": "docs/plan-qor-phase288-session-marker-staleness.md",
+  "phases": [
+    "pin the behavior (tests)",
+    "the fix"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_session_marker_staleness.py -q",
+    "python -m pytest tests/test_session_rotation.py tests/test_session_marker_path_unified.py tests/test_session_id_path_safety.py -q",
+    "python -m qor.scripts.publication_boundary_lint --repo-root .",
+    "python -m pytest -q"
+  ],
+  "doc_tier": "standard",
+  "terms": [],
+  "change_class": "hotfix",
+  "boundaries": {
+    "limitations": [
+      "Only qor/scripts/session.py changes. No caller of session.current()/session.get_or_create() changes its call signature."
+    ],
+    "non_goals": [
+      "No change to SESSION_TTL itself, no TTL-refresh-on-write, no change to gate_chain_completeness post-seal check."
+    ],
+    "exclusions": [
+      "No change to rotate() or end_session(); both already act on an explicit caller decision."
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-16T02:31:08Z"
+  }
+}

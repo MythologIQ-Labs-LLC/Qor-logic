@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.174.1] - 2026-09-16
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 288 (hotfix; a stale session marker is not the same as an absent one)**: `session.py`'s `current()`/`get_or_create()` collapsed a marker that never existed with one that exists, names a valid session id, and is merely older than the 24h `SESSION_TTL` — both were treated identically, so a session whose gate directory still held unsealed, in-flight phase artifacts could be silently rotated out from under them the moment its marker's mtime alone aged past a day. The two are now distinguished, and a stale-but-still-live session is reused (with its marker refreshed) instead of rotated; a stale marker whose session is sealed or has no gate directory still rotates exactly as before. Closes GH #483.
+
 ## [0.174.0] - 2026-09-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

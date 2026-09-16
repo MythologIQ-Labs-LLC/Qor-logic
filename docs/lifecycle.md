@@ -65,7 +65,7 @@ The seal sequence under `/qor-substantiate` is:
 A **session** is the unit of a single phase invocation. Format: `<YYYY-MM-DDTHHMM>-<6hex>` (e.g., `2026-04-18T1200-a3f9c2`), stored in `.qor/session/current`.
 
 - Session IDs are created or refreshed by `qor/scripts/session.py::get_or_create()`.
-- After 24h of inactivity, the marker is considered stale and a new ID is issued on next read.
+- After 24h of inactivity, the marker is considered stale. A new ID is issued on next read only if the stale marker's own session has no live, unsealed gate directory (its `.qor/gates/<sid>/` is absent, or already sealed via `substantiate.json`); otherwise the existing id is reused and the marker's mtime is refreshed, so a long-running phase does not lose its gate artifacts to the clock (GH #483; Phase 288).
 - Every gate artifact carries the session_id. Gate-chain checks use it to locate the prior phase's artifact.
 - **Session rotation** (Phase 30 wiring): `/qor-substantiate` Step Z calls `session.rotate()` after writing the substantiate artifact, so the next `/qor-plan` starts with a clean `.qor/gates/<new_sid>/` directory. Prior session directories are preserved for archaeology (not pruned). See [governance-enforcement §7](../qor/references/doctrine-governance-enforcement.md).
 
