@@ -10,6 +10,15 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.174.1] - 2026-09-16
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 289 (hotfix; escalations of one condition no longer count separately)**: an escalation's collapsing key was derived from its own volatile `aged_entry_id`/`age_days` details, so every escalation of a recurring condition got a unique key and none of them collapsed — eight escalations of five conditions reported eight, not five.
+
+  Each new escalation now stores the root disclosed event's own signature (`origin_signature`) at creation time, and `_signature` reads it back as `(ESCALATION_EVENT, origin_signature)` for any escalation carrying one. Multiple escalations of the same root condition now collapse to one severity contribution, while an escalation's signature can never equal a live plain event's own signature (their leading tuple element always differs), and an escalation-of-an-escalation resolves to the same root at any generation depth — no growing or wrapped key.
+
 ## [0.174.0] - 2026-09-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
