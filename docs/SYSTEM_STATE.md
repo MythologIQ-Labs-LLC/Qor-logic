@@ -1,8 +1,8 @@
 # Qor-logic System State
 
-**Snapshot**: 2026-09-13
+**Snapshot**: 2026-09-16
 **Chain Status**: ACTIVE. Phase 168 (feature, v0.116.0) made gate depth scale with declared risk; Phase 169 (feature, v0.117.0) inverted the evidence posture (reconstruction over ceremony + schema freeze); Phase 170 (feature, v0.118.0) closed the perspective-reset umbrella (all six recommendations from research entry #378 shipped, Phases 164-170); this entry (Phase 172, feature, v0.119.0) establishes and retroactively enforces the publication boundary: no tracked or published surface identifies a repository outside Qor-logic. (PyPI is a continuous 0.109.0->0.118.1 line as of 2026-07-04.)
-**Phase**: Phase 287 (feature; a verifier reports what it examined, and examining nothing is not a pass; v0.174.0). Three gates reported success over a scope that was empty, partial, or supplied by the party they audit, and nothing in the result said so.
+**Phase**: Phase 289 (feature; a verifier reports what it examined, and examining nothing is not a pass; v0.174.0). Three gates reported success over a scope that was empty, partial, or supplied by the party they audit, and nothing in the result said so.
 
 `plan_grep_lint` examined zero citations on every plan written to the house convention, because `_LD_HEADING_RE` matched `## Locked Decisions` and not the `### LD-<n>` subheadings plans actually use, so every decision body fell outside the scanned region. Citations examined went 0 to 8, 3 and 3 on phases 286, 285 and 283. A plan carrying Locked Decisions and no examined citation now exits non-zero: this lint printed its count of zero faithfully and still exited clean, which is disclosure without protection.
 

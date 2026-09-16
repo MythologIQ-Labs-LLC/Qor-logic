@@ -23711,6 +23711,63 @@ entry resolves. Boundary lint 0 findings.
 neither attribution nor log_path and raised ValueError, so the documented escape
 from a fail-closed seal gate could never complete.
 
+### Entry #796: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-16T03:33:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Entry ID**: `6653d0989765`
+**Verdict**: PASS
+
+**Content Hash**: `f22cbc0b73433e326836131eab36e595d164bf42cc6ac41065627c9d203fe2ab`
+**Previous Hash**: `0c4d0f7e280e791d55c52d620c2e2aefa174e7a020f0bfae6dba8a3687480057`
+**Chain Hash (Merkle seal)**: `27eb4dd15d21150b814d069370903aa992cce95cb797af7c48d985a73b8802b3`
+
+**Decision**: **Target**: `docs/plan-qor-phase289-escalation-origin-signature.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+Binding gates executed: prompt-injection rc=0; version-applicability rc=0; prose_test_lint --enforce rc=0 (69 pre-existing exemptions, 0 new unexplained finding); pre-audit ladder rc=0 across plan-iteration-status, plan-grep-lint (0 findings after in-place citation-pairing correction), plan-text-consistency, ci-coverage, workspace-fragility, plan-signature-widening-caller, plan-data-round-trip, dod-check (0 findings after adding the Definition of Done section), sg-closure and publication-boundary (0 findings). `audit_risk_score` reported `option_b_required: false` (no author-momentum signal); solo audit, `capability_shortfall("codex-plugin")` logged per Step 1.a.
+
+GH #484: escalation payloads carried no collapsing key, so escalations of one condition counted separately. The plan adds `_origin_signature`/rewrites `_signature` so an escalation's signature is `(ESCALATION_EVENT, origin_signature)` -- collapsing same-root escalations to one severity contribution while never colliding with a live plain event's own signature (leading element always differs) and staying generation-invariant across any depth of escalation-of-escalation (the root is read back from a stored value, never recomputed from an escalation's own volatile details). Both defects the issue names as already-tried-and-reverted (discarding event_type; a growing `escalated:`-prefixed key) are guarded by dedicated negative-control tests.
+
+Section 4 Razor: `sweep` (~50 lines) and the file (284 lines pre-change) are already over the house limits before this plan; the plan adds one line to `sweep` and three small new functions, growing neither the function's control flow nor the file's structure in a way this bugfix's own scope caused or must repay. Not a Razor ground for VETO.
+
+**Required next action**: /qor-implement.
+
+### Entry #797: SESSION SEAL -- Phase 289 escalation origin signature (v0.174.1)
+
+**Timestamp**: 2026-09-16T03:40:00Z
+**Phase**: SEAL (Phase 289)
+**Author**: Governor
+**Risk Grade**: L1
+**Entry ID**: `06aece1e5171`
+
+**Content Hash**: `05cbb33c90f9ad001ff1d4943bdc4cc4597991cbbc871d41a3c1a4571bdd8239`
+**Previous Hash**: `27eb4dd15d21150b814d069370903aa992cce95cb797af7c48d985a73b8802b3`
+**Chain Hash (Merkle seal)**: `3903f84df1d8c26bda81c8c71ddb18b3cebd828ca346bb46a6429b1d4d7df0c1`
+
+**Decision**: **Plan**: docs/plan-qor-phase289-escalation-origin-signature.md
+**Session**: 2026-09-16T0321-901b4c
+**Closes**: GH #484
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**EIGHT ESCALATIONS OF FIVE CONDITIONS REPORTED EIGHT, NOT FIVE.** `_signature` resolved `details.get("gate") or details.get("capability") or details.get("pattern")`, falling back to a digest of the full `details` blob when none was present. An escalation's own `details` is always `{aged_entry_id, aged_skill, age_days}` -- none of the three -- and `aged_entry_id` is unique per source event, so the digest branch made every escalation's signature unique regardless of how many shared the same underlying condition.
+
+**THE FIX HAD ALREADY FAILED TWICE, BY THE ISSUE'S OWN ACCOUNT, BEFORE THIS PLAN WAS WRITTEN.** GH #484 records a draft drawn into Phase 285 and removed after review found two defects: a key built from the origin's second tuple element alone re-merged `gate_override` and `gate_skipped_prerequisite_absent` escalations sharing one gate, and a key that prefixed a growing `escalated:` string on each escalation-of-escalation never stabilized. Both are guarded here by dedicated negative-control tests (`test_escalations_of_different_root_event_types_sharing_a_key_do_not_collapse`, `test_a_three_generation_chain_collapses_with_a_fresh_single_generation_escalation_of_the_same_root`), not merely asserted fixed.
+
+**THE ROOT IS STORED, NEVER RECOMPUTED.** `_origin_signature` reads a prior escalation's stored root back unchanged rather than deriving a new one from that escalation's own `aged_entry_id`, so any depth of escalation-of-escalation resolves to the same tuple. `_signature` wraps that root as `(ESCALATION_EVENT, origin_signature)` rather than returning it bare, so an escalation's signature can never equal a live plain event's own -- the leading element always differs -- which is exactly the property `test_a_superseded_event_does_not_claim_its_signature_slot` re-pins under the new shape (an escalated original plus a live sibling sharing its gate still total 8, not 5).
+
+**ZERO LIVE ESCALATIONS EXIST, SO THIS SHIPS WITHOUT A MIGRATION.** `sp.read_all_events()` confirmed zero `aged_high_severity_unremediated` events in the live genome before this change; the new field reaches every escalation that will ever exist, and `_signature`/`_origin_signature` both fall back to pre-Phase-289 behavior for any escalation lacking a stored origin (legacy shape), so no backfill is needed or attempted.
+
+**Suite**: 3518 passed, 4 skipped, 4 deselected, run twice for determinism. 6 new tests confirmed red before the fix, green after. ruff clean on the changed files and the full tree. Boundary lint 0 findings.
+
+**Carried**: this phase's own hotfix version target (0.174.0 -> 0.174.1) is nominally identical to Phase 288's declared target while Phase 288 (`Qor-logic#490`) remains open/unmerged; both branches based their bump on the `main` they each forked from, so this is ordinary merge-order reconciliation for whichever lands second, not a defect of either phase.
+
 ---
 
 *Chain integrity: VALID*

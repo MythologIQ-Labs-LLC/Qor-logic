@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-16T0321-901b4c",
+  "plan_path": "docs/plan-qor-phase289-escalation-origin-signature.md",
+  "plan_hash": "a91812e2b2bb9ddbd160d3fdfbc0300107efe582c2a3d3831cc3ff8442fccc56",
+  "audit_path": ".agent/staging/phase289-AUDIT_REPORT.md",
+  "audit_hash": "ffb98abf62a2f3b727c02c176977a4c7c71d14d79011a89a00f440db47d55ffc",
+  "head_commit": "f3e069bf7bc98fb35b7401de61de41c4c5f9ef13",
+  "captured_ts": "2026-09-16T03:33:36.746399Z"
+}
