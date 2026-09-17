@@ -6,7 +6,7 @@ import pytest
 
 import hashlib
 
-from qor.scripts.ledger_emit import LedgerEntry, append, render
+from qor.scripts.ledger_emit import LedgerEntry, append, hash_block, render
 from qor.scripts.ledger_hash import _resolve_recorded, chain_hash, verify
 
 TAIL = "\n---\n\n*Chain integrity: VALID*\n*Session: SEALED* (test)\n"
@@ -77,3 +77,23 @@ def test_append_preserves_tail_marker(tmp_path):
     text = ledger.read_text(encoding="utf-8")
     assert text.rstrip().endswith("*Session: SEALED* (test)")
     assert text.index("Entry #2") < text.index("*Chain integrity: VALID*")
+
+
+def test_hash_block_is_the_canonical_three_line_markup():
+    c = hashlib.sha256(b"c").hexdigest()
+    p = hashlib.sha256(b"p").hexdigest()
+    x = hashlib.sha256(b"x").hexdigest()
+    block = hash_block(c, p, x)
+    assert block == (
+        f"**Content Hash**: `{c}`\n"
+        f"**Previous Hash**: `{p}`\n"
+        f"**Chain Hash (Merkle seal)**: `{x}`\n"
+    )
+
+
+def test_render_composes_its_hash_lines_from_hash_block():
+    c = hashlib.sha256(b"c").hexdigest()
+    p = hashlib.sha256(b"p").hexdigest()
+    x = hashlib.sha256(b"x").hexdigest()
+    text = render(_entry(2), content=c, previous=p, chain=x)
+    assert hash_block(c, p, x).rstrip("\n") in text
