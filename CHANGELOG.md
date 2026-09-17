@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.174.1] - 2026-09-17
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 291 (hotfix; GH #477)**: `reconcile.py`'s duplicate-previous-hash detector (`detect_residual`) and its chain-hash-recovery walk (`_recorded_chain_hash`) indexed `ledger_dialect`'s owned capture-group layout directly (`match.group(1) or match.group(2)`), silently dropping the third recognized hash-value form — a bare 64-hex digest alone on its own line. An entry recording its `Previous Hash` in that form resolved to `None` at the detector, collapsing it into a shared bucket with every other unreadable entry; one recording its `Chain Hash` that way made the reconciler treat it as hash-less. Both call sites now read through the published `ledger_dialect.hash_value` accessor, matching `ledger_hash.py`'s existing behavior at its own equivalent call sites. Latent: no live `META_LEDGER.md` entry uses the bare-line form today.
+
 ## [0.174.0] - 2026-09-13
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

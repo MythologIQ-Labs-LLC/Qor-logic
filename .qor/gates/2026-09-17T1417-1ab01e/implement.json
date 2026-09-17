@@ -1,0 +1,24 @@
+{
+  "phase": "implement",
+  "session_id": "2026-09-17T1417-1ab01e",
+  "ts": "2026-09-17T14:32:00Z",
+  "tests_added": 2,
+  "plan_path": "docs/plan-qor-phase291-reconcile-dialect-accessor.md",
+  "files_touched": [
+    "qor/scripts/reconcile.py",
+    "tests/test_reconcile.py",
+    "docs/plan-qor-phase291-reconcile-dialect-accessor.md",
+    "CHANGELOG.md",
+    "pyproject.toml",
+    "docs/META_LEDGER.md"
+  ],
+  "notes": "Both reconcile.py call sites now route through ledger_dialect.hash_value instead of indexing match.group(1) or match.group(2), matching ledger_hash.py's existing pattern. Two red-then-green regression tests cover the previously-dropped bare-line (third) hash-value form.",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-17T14:27:43Z"
+  }
+}

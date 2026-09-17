@@ -23711,6 +23711,55 @@ entry resolves. Boundary lint 0 findings.
 neither attribution nor log_path and raised ValueError, so the documented escape
 from a fail-closed seal gate could never complete.
 
+### Entry #796: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-17T14:30:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Content Hash**: `529b2e55374f7a9afaf0865da631529c67d08b3135e40b6616c358365e3ce586`
+**Previous Hash**: `0c4d0f7e280e791d55c52d620c2e2aefa174e7a020f0bfae6dba8a3687480057`
+**Chain Hash (Merkle seal)**: `4ea40c256a07475c8572bd521225697131ae9c628b292633e89401473ccf86e6`
+
+**Decision**: **Target**: `docs/plan-qor-phase291-reconcile-dialect-accessor.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+Mechanical gates: audit_risk_score option_b_required=false (no author-momentum signal); plan_test_lint rc=0; dod_check rc=0 (0 findings); plan_iteration_status_lint rc=0; plan_feature_tdd_lint rc=0; prompt_injection_canaries rc=0; prose_test_lint --enforce rc=0 (69 pre-existing exemptions, none new); publication boundary scan of the plan by direct read, 0 findings (references only GH #477 and in-repo symbols/paths).
+
+Two-line accessor-routing fix: reconcile.py's detect_residual (:44) and _recorded_chain_hash (:73) indexed ledger_dialect's owned capture-group layout directly (match.group(1) or match.group(2)), silently dropping the third recognized hash-value form (a bare 64-hex alone on its own line). Both now call the published accessor ledger_dialect.hash_value(match), matching ledger_hash.py's existing behavior at its equivalent call sites. Latent defect (no live ledger entry uses the bare-line form today), reachable because ledger_dialect explicitly supports it and nothing constrains emitters to avoid it.
+
+Two new regression tests confirmed red against the pre-fix code (bare-line form resolved to None at both call sites) and green after, run three times for determinism. Full suite 3491 passed / 26 skipped / 4 deselected / 1 pre-existing unrelated failure (confirmed identical on unmodified origin/main via git stash). ruff clean. check_variant_drift: 406 files, no drift.
+
+**Required next action**: /qor-implement (already executed this session).
+
+### Entry #797: SESSION SEAL -- Phase 291 reconcile dialect accessor (v0.174.1)
+
+**Timestamp**: 2026-09-17T14:35:00Z
+**Phase**: SEAL (Phase 291)
+**Author**: Governor
+**Risk Grade**: L1
+
+**Content Hash**: `67cc29a8bad57011c61220fbe4a3ab73c623485f23dfb96c2c73b020655b823a`
+**Previous Hash**: `4ea40c256a07475c8572bd521225697131ae9c628b292633e89401473ccf86e6`
+**Chain Hash (Merkle seal)**: `0276081cfb81bb86717c9c326355c8254370739982e0c56adc3e527fcf849b3e`
+
+**Decision**: **Plan**: docs/plan-qor-phase291-reconcile-dialect-accessor.md
+**Session**: 2026-09-17T1417-1ab01e
+**Closes**: GH #477
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+reconcile.py's detect_residual and _recorded_chain_hash now read hash values through the published ledger_dialect.hash_value accessor instead of indexing match.group(1) or match.group(2) directly, so the third recognized value form (a bare 64-hex digest alone on its own line) is no longer silently dropped. This closes the last consumer of ledger_dialect's owned capture-group layout that was bypassing the accessor; ledger_hash.py already read it correctly.
+
+**Tests**: two new regression tests in tests/test_reconcile.py, each confirmed red against the pre-fix code and green after, re-run three times for determinism. Full suite: 3491 passed / 26 skipped / 4 deselected / 1 pre-existing unrelated failure (test_plan_grep_evidence_parse.py, confirmed identical on unmodified origin/main). ruff clean. check_variant_drift: 406 files, no drift.
+
+**Version**: 0.174.0 -> 0.174.1 (hotfix per plan-declared change_class).
+
+**Disclosed, out of this phase's scope**: this phase's own hotfix version bump target (0.174.0 -> 0.174.1) is nominally identical to PRs #490 (Phase 288), #491 (Phase 289), and #492 (Phase 290)'s declared targets; all four branches forked from the same main (f3e069b) independently. Ordinary merge-order reconciliation applies to whichever lands last, per the pattern PR #491 already disclosed for #490/#491.
+
 ---
 
 *Chain integrity: VALID*
