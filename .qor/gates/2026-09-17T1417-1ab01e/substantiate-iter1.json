@@ -1,0 +1,23 @@
+{
+  "phase": "substantiate",
+  "session_id": "2026-09-17T1417-1ab01e",
+  "ts": "2026-09-17T14:36:00Z",
+  "verdict": "PASS",
+  "merkle_seal": "0276081cfb81bb86717c9c326355c8254370739982e0c56adc3e527fcf849b3e",
+  "plan_path": "docs/plan-qor-phase291-reconcile-dialect-accessor.md",
+  "seal_entry": 797,
+  "version": "0.174.1",
+  "reality_check": {
+    "missing": [],
+    "unplanned": [],
+    "matches": 1
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.1",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-09-17T14:27:57Z"
+  }
+}
