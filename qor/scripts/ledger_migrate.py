@@ -24,6 +24,8 @@ import hashlib
 import re
 from pathlib import Path
 
+from qor.scripts import ledger_emit
+
 
 #: Documents this module parses owned dialect fields from (GH #469).
 #: Declaration only; no parser changes. Cross-checked, not trusted:
@@ -109,11 +111,8 @@ def strip_hash_blocks(body: str) -> str:
 
 
 def canonical_block(content: str, prev: str, chain: str) -> str:
-    return (
-        f"**Content Hash**: `{content}`\n"
-        f"**Previous Hash**: `{prev}`\n"
-        f"**Chain Hash (Merkle seal)**: `{chain}`\n"
-    )
+    """Delegates to ledger_emit.hash_block, the one owned writer (GH #468)."""
+    return ledger_emit.hash_block(content, prev, chain)
 
 
 def _inject(body: str, tail: str) -> str:
