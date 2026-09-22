@@ -1,6 +1,6 @@
 # Governance Index
 
-**Last Reviewed**: 2026-09-13
+**Last Reviewed**: 2026-09-22
 
 A single authoritative map of every governance artifact in Qor-logic, organized
 into six freshness tiers with explicit drift contracts. A stale entry here is
@@ -46,6 +46,8 @@ Stable; changes are explicit doctrine events. Drift signal: rules contradict eac
 | Portable governance engine boundary ADR | `docs/ADR_PORTABLE_GOVERNANCE_ENGINE_BOUNDARY.md` |
 | Downstream enforcement boundary | `qor/references/downstream-enforcement-boundary.md` |
 | Roadmap capability ADR | `docs/ADR_QOR_ROADMAP.md` |
+| Two-gap assurance boundary ADR | `docs/ADR_TWO_GAP_ASSURANCE_BOUNDARY.md` |
+| Shadow Spectrum architecture ADR | `docs/ADR_SHADOW_SPECTRUM_ARCHITECTURE.md` |
 | Snapshot contract | `qor/references/snapshot-contract.md` |
 
 ## Tier 3 — Active Initiative
