@@ -1,7 +1,7 @@
 # Plan: Phase 288 - Governed Development Lifecycle Foundation
 
 **Issue:** GH #497, with QA/environment semantics from GH #502
-**change_class:** feature
+**change_class**: feature
 **Status:** implementation slice prepared; formal `/qor-audit` required before promotion
 
 ## Problem contract
@@ -81,6 +81,18 @@ This phase should be reviewed for:
 - duplicate ownership with existing QA evidence machinery;
 - documentation freshness and Governance Index consistency;
 - terminology that would make current historical evidence false retroactively.
+
+## CI Commands
+
+```bash
+python -m pytest tests/test_plan_schema_ci_commands.py tests/test_skill_doctrine.py tests/test_readme_doctrine_inventory.py -v
+python -m pytest tests/ -v
+python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .
+python -m ruff check qor/ tests/
+python -m qor.scripts.publication_boundary_lint --repo-root .
+```
+
+These commands verify the plan contract, doctrine inventory, full behavioral suite, generated seal-artifact currency, Python lint, and publication boundary. Formal `/qor-audit` remains a separate required governance verdict and is not replaced by CI.
 
 ## Acceptance criteria
 
