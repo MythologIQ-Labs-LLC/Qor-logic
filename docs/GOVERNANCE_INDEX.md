@@ -58,8 +58,7 @@ Live until close; ages out at substantiate. Drift signal: shipped feature still 
 
 | Artifact | Path | Opened |
 |----------|------|--------|
-| #497 lifecycle completion | `qor/references/doctrine-governed-development-lifecycle.md` | 2026-09-22 |
-| #502 human QA and environments | `qor/references/doctrine-development-environments-and-qa.md` | 2026-09-22 |
+| Phase 288 lifecycle foundation | `docs/plan-qor-phase288-lifecycle-foundation.md` | 2026-09-22 |
 
 ## Tier 4 — Per-Plan Artifact
 
