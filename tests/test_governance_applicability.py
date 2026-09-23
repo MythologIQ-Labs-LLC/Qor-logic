@@ -267,3 +267,6 @@ def test_invalid_source_metadata_fails_closed():
 
     with pytest.raises(ValueError, match="superseded_by"):
         _source("bad-supersession", rule=rule, freshness_state="superseded")
+
+    with pytest.raises(ValueError, match="decision_token"):
+        _source("incomplete-conflict-metadata", rule=rule, rule_key="mutation-authority")
