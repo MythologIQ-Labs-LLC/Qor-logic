@@ -35,6 +35,20 @@ class LedgerEntry:
     body: str = ""
 
 
+def hash_block(content: str, previous: str, chain: str) -> str:
+    """The canonical three-line hash-triple markup (GH #468's owned primitive).
+
+    The one writer for the block every other emitter in this package
+    (``ledger_migrate.canonical_block``, ``reconcile.append_reconciliation_entry``)
+    used to hand-roll independently. Parser contract: ``_resolve_recorded``.
+    """
+    return (
+        f"**Content Hash**: `{content}`\n"
+        f"**Previous Hash**: `{previous}`\n"
+        f"**Chain Hash (Merkle seal)**: `{chain}`\n"
+    )
+
+
 def render(entry: LedgerEntry, *, content: str, previous: str, chain: str) -> str:
     """Render the canonical entry markup (parser contract: _resolve_recorded)."""
     lines = [f"### Entry #{entry.number}: {entry.title}", ""]
@@ -42,9 +56,7 @@ def render(entry: LedgerEntry, *, content: str, previous: str, chain: str) -> st
         lines.append(f"**{key}**: {value}")
     lines += [
         "",
-        f"**Content Hash**: `{content}`",
-        f"**Previous Hash**: `{previous}`",
-        f"**Chain Hash (Merkle seal)**: `{chain}`",
+        *hash_block(content, previous, chain).rstrip("\n").split("\n"),
         "",
         f"**Decision**: {entry.body}",
         "",

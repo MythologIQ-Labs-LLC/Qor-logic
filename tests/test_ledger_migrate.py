@@ -153,3 +153,11 @@ def test_migrated_ledger_becomes_verifiable(tmp_path):
         f"migration must make entries verifiable (before={ok_before}, after={ok_after})"
     )
     assert ok_after == 3
+
+
+def test_canonical_block_delegates_to_ledger_emit_hash_block():
+    """GH #468: the hash triple has one owned writer, ledger_emit.hash_block."""
+    from qor.scripts import ledger_emit
+
+    with mock.patch.object(ledger_emit, "hash_block", return_value="SENTINEL\n"):
+        assert lm.canonical_block("c", "p", "x") == "SENTINEL\n"

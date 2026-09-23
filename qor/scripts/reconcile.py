@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from qor.scripts import entry_id, ledger_dialect, ledger_fragment
+from qor.scripts import entry_id, ledger_dialect, ledger_emit, ledger_fragment
 from qor.scripts.ledger_hash import (
     CHAIN_HASH_RE,
     ENTRY_RE,
@@ -132,9 +132,7 @@ def append_reconciliation_entry(
         f"**Proposal ID**: `{proposal.get('proposal_id')}`\n"
         f"**Entry ID**: `{eid}`\n\n"
         f"**Scope**: {scope}\n\n"
-        f"**Content Hash**: `{content}`\n"
-        f"**Previous Hash**: `{previous}`\n"
-        f"**Chain Hash (Merkle seal)**: `{chain}`\n"
+        + ledger_emit.hash_block(content, previous, chain)
     )
     if not dry_run:
         path.write_text(text + entry, encoding="utf-8")

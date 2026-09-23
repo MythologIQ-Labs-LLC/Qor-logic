@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import textwrap
 from pathlib import Path
+from unittest import mock
 
 from qor.scripts import reconcile
 from qor.scripts.ledger_hash import chain_hash
@@ -105,6 +106,18 @@ def test_reconciliation_entry_chain_hash_is_consistent(tmp_path):
     result = reconcile.append_reconciliation_entry(led, proposal, ts=TS)
     # The new entry is a normal forward link: chain_hash(content, prev) == recorded.
     assert chain_hash(result["content_hash"], result["previous_hash"]) == result["chain_hash"]
+
+
+def test_append_reconciliation_entry_delegates_hash_lines_to_ledger_emit(tmp_path):
+    """GH #468: the RECONCILIATION entry's hash triple has one owned writer,
+    ledger_emit.hash_block, not an independent inline copy."""
+    from qor.scripts import ledger_emit
+
+    led = _write(tmp_path, _corpus_ledger())
+    proposal = reconcile.build_proposal(led, ts=TS)
+    with mock.patch.object(ledger_emit, "hash_block", return_value="SENTINEL\n"):
+        reconcile.append_reconciliation_entry(led, proposal, ts=TS)
+    assert "SENTINEL" in led.read_text(encoding="utf-8")
 
 
 def test_build_proposal_empty_when_no_residual(tmp_path):
