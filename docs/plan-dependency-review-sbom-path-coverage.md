@@ -6,7 +6,7 @@
 
 **Issue**: GH #511
 
-**Current base**: `eb1ed647c92ac2da5948e7f2a69a534c34fa897c`
+**Current base**: `c12c7d2ef34d83b4a2c44bdb8fe5f8403f648e86`
 
 ## Problem Contract
 
