@@ -1,0 +1,26 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-23T1628-c67a6a",
+  "ts": "2026-09-23T16:30:03Z",
+  "plan_path": "docs/plan-shadow-escalation-origin-signature-current.md",
+  "phases": [
+    "Authorized scope: preserve GH #484 implementation and tests"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_escalation_origin_signature.py tests/test_escalation_supersedes.py -q",
+    "python -m pytest tests/ -q",
+    "ruff check qor/scripts/check_shadow_threshold.py tests/test_escalation_origin_signature.py tests/test_escalation_supersedes.py",
+    "python -m qor.scripts.check_variant_drift",
+    "python -m qor.scripts.publication_boundary_lint"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.2",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-23T16:30:03Z"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-23T1628-c67a6a",
+  "plan_path": "docs/plan-shadow-escalation-origin-signature-current.md",
+  "plan_hash": "bfec0225d22a22784785e6dec0da8ccdc42ea9a438f2ecbbd2f166271f3649c7",
+  "audit_path": ".agent/staging/phase292-AUDIT_REPORT.md",
+  "audit_hash": "f13209b0c346813c1cb88ebae9fcc145b9297feec04bae60f19224b2bdafb139",
+  "head_commit": "182316cc45804f88ca5287131e3508c92c24bb38",
+  "captured_ts": "2026-09-23T16:35:34.005932Z"
+}
