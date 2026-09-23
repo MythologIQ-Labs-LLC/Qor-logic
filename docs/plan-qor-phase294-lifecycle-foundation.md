@@ -54,7 +54,9 @@ The candidate full lifecycle is:
 
 `UNDERSTAND -> DECIDE -> AUTHORIZE -> EXECUTE -> PROVE -> QA / ACCEPT -> PROMOTE -> OBSERVE -> ADAPT`
 
-These are semantic stages, not one-to-one skill names.
+This is a **claim progression and semantic ordering of assurance claims**, not a mandatory runtime execution sequence, universal gate order, or one-to-one mapping to skills. Profiles/applicability may lawfully omit, collapse, repeat, or interleave stages where appropriate, but an omitted, deferred, collapsed, or inapplicable stage must never be represented as PASS merely because work advanced.
+
+The current operational skill/gate and QA ordering remains authoritative unless and until a separately audited enforcement change modifies it. This doctrine-only phase therefore does not establish `PROVE -> QA / ACCEPT` as a universal runtime order or introduce any new gate.
 
 ### LD-3: QA is distinct from automated verification
 
