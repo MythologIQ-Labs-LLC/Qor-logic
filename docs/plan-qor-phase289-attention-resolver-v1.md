@@ -47,14 +47,22 @@ The output packet records considered-but-excluded sources with stable reason/rul
 
 Equivalent inputs produce equivalent ordered output independent of input collection ordering.
 
+### LD-7: authority ordering is closed and mechanically decidable
+
+V1 must not derive authority ordering from strings, source-list position, retrieval rank, semantic similarity, or implementation accident. Implementation recon must first bind `authority_class` to an existing canonical repository ordering if one exists. If no such ordering exists, V1 introduces the smallest closed ordered enum needed by the three pilots and documents that enum as part of the resolver contract.
+
+The same comparison function must be used for both authority-ceiling enforcement and equal-precedence conflict detection. An unknown, unsupported, or otherwise incomparable authority class is not coerced into the ordering: its resolution is fail-visible `ambiguous` and requires escalation/canonical-state repair before it can contribute required authority.
+
+A governance source whose authority class exceeds the operation's explicit authority ceiling cannot resolve to `required`, regardless of relevance or applicability matches. This rule is mechanically testable and is not a prose-only expectation.
+
 ## Candidate contracts
 
 - `OperationDescriptor`: operation type, lifecycle state, artifact/subsystem, change/risk class, environment relevance, authority ceiling, mutation class, external visibility.
-- `GovernanceSource`: stable id, source class, precedence/authority class, applicability predicates, freshness/supersession state, required/advisory posture.
+- `GovernanceSource`: stable id, source class, canonical authority class, applicability predicates, freshness/supersession state, required/advisory posture.
 - `Resolution`: disposition, matched rule ids, rationale, authority class.
 - `GovernancePacket`: operation identity, required/advisory/optional sources, exclusions, stale/superseded records, unresolved ambiguity.
 
-Exact Python representation is implementation detail subject to audit and repository convention recon.
+Exact Python representation is implementation detail subject to audit and repository convention recon, except that authority ordering must satisfy LD-7.
 
 ## Pilot workflows
 
@@ -67,6 +75,9 @@ Exact Python representation is implementation detail subject to audit and reposi
 Behavioral tests must prove:
 
 - no source can raise the operation authority ceiling;
+- authority comparison uses the canonical/closed ordering rather than lexical or input-order comparison;
+- unknown or incomparable authority classes become `ambiguous`, never silently coerced;
+- equal-precedence conflict detection uses the same authority comparison semantics as ceiling enforcement;
 - semantic/relevance labels alone cannot create `required` status;
 - exclusions retain stable rationale;
 - stale and superseded sources cannot masquerade as current required context;
@@ -90,6 +101,7 @@ Formal `/qor-audit` remains required before implementation.
 - [x] Bounded V1 architecture survives adversarial review on GH #501.
 - [x] Minimal typed operation/source/output contracts are specified for audit.
 - [x] Authority-preservation and ambiguity behavior are locked.
+- [x] Authority ordering/comparison is mechanically decidable and fail-visible for unknown classes.
 - [x] Negative-evidence/exclusion behavior is locked.
 - [x] Three representative pilots are specified.
 - [ ] Formal `/qor-audit` PASS on this implementation plan.
