@@ -238,6 +238,29 @@ def test_same_precedence_conflict_is_ambiguous_not_best_effort_ranked():
     assert _resolution(packet, "deny-source").disposition == "ambiguous"
 
 
+def test_same_decision_but_different_obligation_strength_is_ambiguous():
+    rule = ApplicabilityRule("implementation", operation_types=("implement",))
+    required = _source(
+        "required-source",
+        rule=rule,
+        posture="required",
+        rule_key="mutation-authority",
+        decision_token="allow",
+    )
+    advisory = _source(
+        "advisory-source",
+        rule=rule,
+        posture="advisory",
+        rule_key="mutation-authority",
+        decision_token="allow",
+    )
+
+    packet = resolve_packet(_operation(), (required, advisory))
+
+    assert _resolution(packet, "required-source").disposition == "ambiguous"
+    assert _resolution(packet, "advisory-source").disposition == "ambiguous"
+
+
 def test_output_is_deterministic_independent_of_source_input_order():
     rule = ApplicabilityRule("implementation", operation_types=("implement",))
     a = _source("a-source", rule=rule, posture="advisory")
