@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-23T0645-a3ddc4",
+  "plan_path": "docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md",
+  "plan_hash": "10b4a49d03d08f937aa4fd598e2269d4f77fc1ca165157b9e56645980f25edbe",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "1c64b691f588f0e82a3b17754e389842eeb16ee32fafbe97aa4a6e77c9a5d815",
+  "head_commit": "27d6328d7f9dee7999f741f7ad100041acf6cbd6",
+  "captured_ts": "2026-09-23T06:52:25.485767Z"
+}

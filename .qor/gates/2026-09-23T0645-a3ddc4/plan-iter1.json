@@ -1,0 +1,34 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-23T0645-a3ddc4",
+  "ts": "2026-09-23T07:35:00Z",
+  "plan_path": "docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md",
+  "phases": [
+    "Phase 1: recompose reconcile.py dialect accessor fix on current main"
+  ],
+  "change_class": "hotfix",
+  "doc_tier": "standard",
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_reconcile.py -q",
+    "python -m pytest tests/ -q",
+    "ruff check qor/scripts/reconcile.py tests/test_reconcile.py",
+    "python -m qor.scripts.check_variant_drift",
+    "python -m qor.scripts.publication_boundary_lint"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.2",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-23T06:52:05Z"
+  }
+}
