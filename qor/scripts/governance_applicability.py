@@ -102,6 +102,8 @@ class GovernanceSource:
             raise ValueError(f"invalid freshness_state: {self.freshness_state}")
         if self.freshness_state == "superseded" and not self.superseded_by:
             raise ValueError("superseded source must name superseded_by")
+        if self.rule_key and not self.decision_token:
+            raise ValueError("conflict-ranked source must declare decision_token")
 
 
 @dataclass(frozen=True)
