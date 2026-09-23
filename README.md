@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-32-blue" alt="Skills: 32">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
-  <img src="https://img.shields.io/badge/Doctrines-40-blue" alt="Doctrines: 40">
+  <img src="https://img.shields.io/badge/Doctrines-42-blue" alt="Doctrines: 42">
   <img src="https://img.shields.io/badge/Ledger-799%20entries%20sealed-green" alt="Ledger: 799 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
@@ -407,6 +407,7 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 | [negative-constraints](qor/references/doctrine-negative-constraints.md) | NR-001/NR-002 rules binding on every execution of fabrication-risk skills |
 | [definition-of-done](qor/references/doctrine-definition-of-done.md) | Per-deliverable D1-D4 acceptance criteria |
 | [dependency-admission](qor/references/doctrine-dependency-admission.md) | Dependency admission + cooling-period supply-chain control |
+| [development-environments-and-qa](qor/references/doctrine-development-environments-and-qa.md) | Environment classes, fidelity limits, human QA evidence, and QA debt semantics |
 | [documentation-integrity](qor/references/doctrine-documentation-integrity.md) | Tiered doc topology + glossary + check surface + documentation currency |
 | [eu-ai-act](qor/references/doctrine-eu-ai-act.md) | EU AI Act Art. 9 / 13 / 14 / 50 risk-management + transparency mapping |
 | [feature-inventory](qor/references/doctrine-feature-inventory.md) | FEATURE_INDEX artifact format + seal-time verification |
@@ -414,6 +415,7 @@ Each doctrine under `qor/references/` carries a single rule or convention cited 
 | [execution-continuity](qor/references/doctrine-execution-continuity.md) | Provider-neutral continuation, exact-revision receipts, `inconclusive` routing |
 | [governance-enforcement](qor/references/doctrine-governance-enforcement.md) | Branch / version / tag / push / session-rotation / PR-citation protocol |
 | [governance-index](qor/references/doctrine-governance-index.md) | Hierarchical governance index + self-policing enforcement |
+| [governed-development-lifecycle](qor/references/doctrine-governed-development-lifecycle.md) | Full lifecycle versus inner implementation loop, typed outcomes, authority, assurance, promotion, observation, and adaptation semantics |
 | [hook-contract](qor/references/doctrine-hook-contract.md) | Non-authoritative `gate_written` observer-hook contract |
 | [host-repo-posture](qor/references/doctrine-host-repo-posture.md) | Host-repo posture + capability checks for non-Python archetypes |
 | [ideation-readiness](qor/references/doctrine-ideation-readiness.md) | Governed ideation-readiness contract for `/qor-ideate` |
