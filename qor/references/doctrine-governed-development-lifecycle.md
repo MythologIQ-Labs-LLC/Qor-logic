@@ -36,7 +36,11 @@ UNDERSTAND
   -> ADAPT
 ```
 
-These are semantic stages, not necessarily one skill each.
+This line is a **claim progression and semantic ordering of assurance claims**, not a mandatory runtime execution sequence, universal gate order, or one-skill-per-stage pipeline. It describes how claims generally become stronger and more externally consequential as evidence and authority accumulate.
+
+Profiles and applicability rules may lawfully omit, collapse, repeat, or interleave stages when the governed operation does not require each one independently. An omitted, collapsed, deferred, or inapplicable stage must never be represented as PASS merely because the workflow advanced.
+
+The existing operational skill/gate ordering remains authoritative until a separately audited enforcement change explicitly modifies it. In particular, this doctrine does not by itself require `PROVE -> QA / ACCEPT` as runtime ordering, reorder existing QA evidence, or create a new admission gate.
 
 ### Stage meanings
 
