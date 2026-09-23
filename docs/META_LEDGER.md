@@ -23819,6 +23819,63 @@ reconcile.py's detect_residual and _recorded_chain_hash now read hash values thr
 
 **Version**: 0.174.1 -> 0.174.2 (hotfix per plan-declared change_class).
 
+### Entry #800: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-23T16:40:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Entry ID**: `f678b5c5f390`
+**Verdict**: PASS
+
+**Content Hash**: `8bcc1c886325aba4b30094f75f7b22d85351bc91ee7a8a500d5062942c21f086`
+**Previous Hash**: `0e485fcaccf36769bb664299b6c70395d304760391a0c0ba3998226561c38fea`
+**Chain Hash (Merkle seal)**: `febcdba499cd1f789c506fe992cfdfe00f4bf1ec6ecfd17fe6c5cacbc25f2880`
+
+**Decision**: **Target**: `docs/plan-shadow-escalation-origin-signature-current.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+Formal current-base audit of `Qor-logic` PR #507 (branch `fix/484-escalation-origin-current`, head `182316cc`, based on `eb1ed647` after PR #506 landed), closing GH #484. This is the third time this identical code+test diff has been sealed: Phase 289 (PR #491, base `f3e069b`) collided with Phase 290 (PR #492) landing first; a same-day recomposition (PR #510, base `d37c192c`) was closed as a duplicate of already-open PR #507 the same day; #507 itself then sat `NEEDS_BOUNDED_REMEDIATION` across three reconciliation comments (2026-09-23 06:47/08:09/16:26) awaiting exactly this audit.
+
+Binding gates executed: prompt-injection rc=0; version-applicability rc=0 (hotfix `0.174.2` -> `0.174.3`, current base -- Phase 291's own slot was independently claimed by PR #506/GH #477, a different fix, confirmed via fresh ledger-tail read, not assumed); prose_test_lint --enforce rc=0; pre-audit ladder rc=0. `plan_grep_lint` reports 0 citations examined -- the plan's Locked Decisions are design rationale for already-implemented, already-twice-reviewed code, not new infrastructure claims. `audit_risk_score` reported `option_b_required: false`; solo audit.
+
+GH #484: escalation payloads carried no collapsing key, so escalations of one condition counted separately. `_origin_signature`/rewritten `_signature` give an escalation the signature `(ESCALATION_EVENT, origin_signature)` -- collapsing same-root escalations to one severity contribution, never colliding with a live plain event's own signature, and staying generation-invariant. Design unchanged since its first PASS audit (Phase 289); independently re-tested fresh against current `main` this session: 71 passed, 1 skipped on the targeted set, 3530 passed on the full suite.
+
+**Three collisions, zero design defects.** Every prior audit of this diff (Phase 289, the closed-duplicate Phase 291/#510) reached PASS on identical grounds. The repeated work was entirely attributable to independent phase/ledger/version numbering choices made by concurrent turns forking `main` at different points, not to any flaw in the fix itself or in any single turn's execution.
+
+**Required next action**: /qor-substantiate on this exact revision (already in progress this session).
+
+### Entry #801: SESSION SEAL -- Phase 292 escalation origin signature promotion (v0.174.3)
+
+**Timestamp**: 2026-09-23T16:45:00Z
+**Phase**: SEAL (Phase 292)
+**Author**: Governor
+**Risk Grade**: L1
+**Entry ID**: `57e6ebb487cc`
+
+**Content Hash**: `3b367173729db6a643d80042743d20d71240ad7ce59cf27dcc903bcea065fee7`
+**Previous Hash**: `febcdba499cd1f789c506fe992cfdfe00f4bf1ec6ecfd17fe6c5cacbc25f2880`
+**Chain Hash (Merkle seal)**: `49e0a556ffa8f1af9b589671b3f6d7b055ca250e35b1531b4e6aea77a926765a`
+
+**Decision**: **Plan**: docs/plan-shadow-escalation-origin-signature-current.md
+**Session**: 2026-09-23T1628-c67a6a
+**Closes**: GH #484
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**THE THIRD SEAL OF THE SAME FIX, AND THE ONE THAT SHOULD STICK.** GH #484's escalation-collapsing-key defect was fixed once (Phase 289, PR #491), fixed again identically after a base collision (closed-duplicate PR #510), and now sealed a third time on PR #507 -- the branch three separate reconciliation comments (2026-09-23, 06:47/08:09/16:26) named as the actual promotion vehicle, left unfinished each time because the formal current-base audit this entry performs had not yet been run. Nothing about the design changed across any of the three: `_origin_signature` stores a disclosed event's root signature at escalation-creation time, `_signature` wraps it as `(ESCALATION_EVENT, origin_signature)` so it collapses same-root escalations without ever colliding with a live plain event's own signature, and the root is read back unchanged at any generation depth rather than recomputed.
+
+**COLLISION IS THE PATTERN HERE, NOT THE EXCEPTION.** Phase 289 forked `f3e069b`; Phase 290 (PR #492, GH #482) landed first and took ledger #796/#797 and version `0.174.1`. A second attempt forked `d37c192c` and would have taken #796/#797 and `0.174.1` again, colliding with #492 a second time, had it not been closed as a duplicate of the already-open #507 first. #507 itself then sat through a base advance to `eb1ed647` when PR #506 (GH #477, an unrelated fix) independently claimed a second "Phase 291" and `0.174.2`. This seal is Phase 292, ledger #800/#801, version `0.174.3` -- computed fresh against the ledger tail and `pyproject.toml` at this exact moment, not carried from any prior turn's notes, specifically to not repeat the pattern a fourth time.
+
+**ZERO LIVE ESCALATIONS, STILL.** `sp.read_all_events()` against the current genome shows zero `aged_high_severity_unremediated` events; the new field reaches every escalation that will ever exist without a backfill.
+
+**Suite**: 3530 passed, 4 skipped, 4 deselected on `eb1ed647`/`182316cc`. 6 tests (unchanged since Phase 289) confirmed green fresh. ruff clean. Boundary lint 0 findings.
+
+**Carried, not this phase's to fix**: `Qor-logic` PR #490 (Phase 288) remains open against its own stale `f3e069b`-based `0.174.1` target -- unrelated to this seal and not compounded by it. This phase's own tag `v0.174.3` is created locally per Step 9.7, not pushed.
+
 ---
 
 *Chain integrity: VALID*

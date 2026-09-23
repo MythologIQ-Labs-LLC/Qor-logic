@@ -51,6 +51,7 @@ def _escalation_of(source: dict, eid: str, *, addressed: bool = False):
             "aged_entry_id": source["id"],
             "aged_skill": source["skill"],
             "age_days": 90,
+            "origin_signature": list(cst._origin_signature(source)),
         },
         "addressed": addressed,
         "issue_url": None,

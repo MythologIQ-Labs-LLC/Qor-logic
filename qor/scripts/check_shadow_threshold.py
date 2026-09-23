@@ -71,6 +71,7 @@ def sweep(events: list[dict], now: datetime) -> tuple[list[dict], list[dict], in
                     "aged_entry_id": e["id"],
                     "aged_skill": e["skill"],
                     "age_days": age.days,
+                    "origin_signature": list(_origin_signature(e)),
                 },
                 "addressed": False,
                 "issue_url": None,
@@ -90,7 +91,7 @@ def sweep(events: list[dict], now: datetime) -> tuple[list[dict], list[dict], in
 
 
 
-def _signature(event: dict) -> tuple:
+def _base_signature(event: dict) -> tuple:
     """The identity a recurring disclosed event shares across occurrences.
 
     Phase 254: collapse requires positive evidence that two events describe the
@@ -105,6 +106,11 @@ def _signature(event: dict) -> tuple:
 
     ``gate`` resolves before the digest, so an event whose details carry a
     varying field such as ``phase`` still collapses.
+
+    This is the event's own signature, ignoring any escalation ancestry --
+    the value ``_signature`` used to compute for every event before Phase
+    289 (GH #484). ``_origin_signature``/``_signature`` build on this rather
+    than replace it.
     """
     import hashlib
     import json
@@ -115,6 +121,43 @@ def _signature(event: dict) -> tuple:
         blob = json.dumps(details, sort_keys=True, default=str).encode("utf-8")
         key = "details:" + hashlib.sha256(blob).hexdigest()[:12]
     return (event.get("event_type"), key)
+
+
+def _origin_signature(event: dict) -> tuple:
+    """The root condition signature an escalation of any generation carries.
+
+    Phase 289 (GH #484): a non-escalation event's origin is its own
+    ``_base_signature``. An escalation stores its root's signature in
+    ``details["origin_signature"]`` at creation time (see ``sweep``), so
+    reading it back here -- rather than recomputing from the escalation's
+    own volatile ``aged_entry_id``/``age_days`` details -- makes any depth of
+    escalation-of-escalation resolve to the same root, with no wrapping or
+    string growth across generations.
+    """
+    details = event.get("details") or {}
+    if event.get("event_type") == ESCALATION_EVENT and "origin_signature" in details:
+        origin_event_type, origin_key = details["origin_signature"]
+        return (origin_event_type, origin_key)
+    return _base_signature(event)
+
+
+def _signature(event: dict) -> tuple:
+    """The identity ``collapsed_severity`` groups events by.
+
+    Phase 289 (GH #484): an escalation's signature is
+    ``(ESCALATION_EVENT, origin_signature)`` -- distinct escalations of the
+    same root condition now collapse together, while the leading
+    ``ESCALATION_EVENT`` element guarantees this can never equal a live
+    plain event's own ``_base_signature`` (whose first element is always
+    that event's own, non-escalation, ``event_type``). An escalation with no
+    stored origin (legacy shape) falls back to ``_base_signature``,
+    unchanged from pre-Phase-289 behavior.
+    """
+    if event.get("event_type") == ESCALATION_EVENT:
+        details = event.get("details") or {}
+        if "origin_signature" in details:
+            return (ESCALATION_EVENT, _origin_signature(event))
+    return _base_signature(event)
 
 
 def _pending_discount_applies(event: dict) -> bool:
