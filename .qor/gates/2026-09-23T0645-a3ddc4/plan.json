@@ -1,0 +1,32 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-23T0645-a3ddc4",
+  "ts": "2026-09-23T06:50:00Z",
+  "plan_path": "docs/plan-qor-phase510-reconcile-dialect-accessor.md",
+  "phases": [
+    "Phase 1: route reconcile.py through ledger_dialect.hash_value"
+  ],
+  "change_class": "hotfix",
+  "doc_tier": "minimal",
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_reconcile.py -q",
+    "python -m pytest tests/ -q",
+    "ruff check qor/ tests/"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.2",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-23T06:45:50Z"
+  }
+}

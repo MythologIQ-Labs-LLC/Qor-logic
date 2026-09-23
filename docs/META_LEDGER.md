@@ -23768,6 +23768,57 @@ One real regression caught and fixed pre-audit, not merely disclosed: the Step 9
 
 **Carried, not this phase's to fix**: `qor/dist/*/manifest.json` on `main` records `sha256` values for unrelated variant files (verified: `agents/agent-architect.md`) that do not match those files' actual committed content. `check_variant_drift.py` excludes `manifest.json` from its comparison by design, so nothing currently catches this. Pre-existing, unrelated to GH #482; this phase's own `qor.cli compile` run reproduced it and reverted the manifest churn rather than folding an unrelated fix into a hotfix PR.
 
+### Entry #798: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-23T07:10:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Content Hash**: `c32af10b3361e0f4e0348d3c3f1856c3b87444c835507d652864401afab92d19`
+**Previous Hash**: `d3577bb25844d5fd0bb9e205ed1dc47fa9ecc270f857a62cc5baa8ea54ca61f6`
+**Chain Hash (Merkle seal)**: `ecf6e92e19fa3e3e8b54aa8391d14fb56ef5f29eeb7d38f3f167f9253209d2a8`
+
+**Decision**: **Target**: `docs/plan-qor-phase510-reconcile-dialect-accessor.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+Recomposition of PR #493's fix (GH #477) onto current main after PR #492 landed the 0.174.1 release slot #493 had independently claimed against a stale base. Per #493's reconciliation comment, this phase carries the same code fix and regression tests forward with fresh governance/CI evidence; no stale version/ledger/seal metadata reused.
+
+Mechanical gates: audit_risk_score option_b_required=false (no author-momentum signal; the diff was already independently reviewed on #493 with no defect found); plan_test_lint rc=0; dod_check rc=0; plan_iteration_status_lint rc=0; plan_feature_tdd_lint rc=0; prompt_injection_canaries rc=0; prose_test_lint --enforce rc=0; publication boundary scan of the plan by direct read, 0 findings.
+
+Two-line accessor-routing fix: reconcile.py's detect_residual (:44) and _recorded_chain_hash (:73) indexed ledger_dialect's owned capture-group layout directly (match.group(1) or match.group(2)), silently dropping the third recognized hash-value form (a bare 64-hex alone on its own line). Both now call the published accessor ledger_dialect.hash_value(match), matching ledger_hash.py's existing behavior at its equivalent call sites.
+
+Two regression tests confirmed red against the pre-fix code on current main and green after, run three times for determinism. Full suite 3524 passed / 4 skipped / 4 deselected / 1 pre-existing unrelated failure (test_changelog_tag_coverage.py, confirmed identical on an unmodified-main worktree). ruff clean.
+
+**Required next action**: /qor-implement (already executed this session).
+
+### Entry #799: SESSION SEAL -- Phase 510 reconcile dialect accessor (v0.174.2)
+
+**Timestamp**: 2026-09-23T07:15:00Z
+**Phase**: SEAL (Phase 510)
+**Author**: Governor
+**Risk Grade**: L1
+
+**Content Hash**: `94ca3406564c977c863f224663fc559bf13d8dbb1a4549f8f9eba33706318099`
+**Previous Hash**: `ecf6e92e19fa3e3e8b54aa8391d14fb56ef5f29eeb7d38f3f167f9253209d2a8`
+**Chain Hash (Merkle seal)**: `ecabcdc954537e6163c293a712c8a3a499f818c835740e6c80030a50b533eff4`
+
+**Decision**: **Plan**: docs/plan-qor-phase510-reconcile-dialect-accessor.md
+**Closes**: GH #477
+**Supersedes**: PR #493 (preserved as historical provenance, sealed against stale base)
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+reconcile.py's detect_residual and _recorded_chain_hash now read hash values through the published ledger_dialect.hash_value accessor instead of indexing match.group(1) or match.group(2) directly, so the third recognized value form (a bare 64-hex digest alone on its own line) is no longer silently dropped. This closes the last consumer of ledger_dialect's owned capture-group layout that was bypassing the accessor; ledger_hash.py already read it correctly.
+
+**Recomposition**: this phase carries PR #493's already-independently-reviewed fix (review 5259248289, no defect found) onto current main after PR #492 landed the 0.174.1 slot #493 had independently claimed. Fresh entry numbers, content/chain hashes, and version target computed against the current ledger tail; no metadata reused from #493.
+
+**Tests**: two regression tests in tests/test_reconcile.py, each confirmed red against the pre-fix code on current main and green after, re-run three times for determinism. Full suite: 3524 passed / 4 skipped / 4 deselected / 1 pre-existing unrelated failure (test_changelog_tag_coverage.py, orphan CHANGELOG sections 0.173.0/0.174.0 -- confirmed identical on an unmodified-main worktree; PR #492 pushing v0.174.1 raised the observed highest-tag ceiling and exposed a pre-existing tag-push gap this phase's diff does not touch). ruff clean.
+
+**Version**: 0.174.1 -> 0.174.2 (hotfix per plan-declared change_class).
+
 ---
 
 *Chain integrity: VALID*

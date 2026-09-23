@@ -177,3 +177,76 @@ def test_last_chain_hash_raises_when_no_entry_has_hashes(tmp_path):
     import pytest as _pytest
     with _pytest.raises(ValueError, match="no validly chain-hashed entry"):
         reconcile._last_chain_hash(text)
+
+
+# ----- GH #477: reconcile.py must read the third dialect value form -----
+#
+# ledger_dialect._HASH_VALUE recognises three forms (inline-backtick,
+# ``= <hex>``, and a bare 64-hex alone on its own line) and its accessor,
+# hash_value(match), is `match.group(1) or match.group(2) or match.group(3)`.
+# reconcile.py's two call sites read only `.group(1) or .group(2)`, so an
+# entry using the third form resolves to None at both sites instead of its
+# recorded hash.
+
+def _entry_bare_previous(num: int, content: str, previous: str, *, chain_override: str | None = None) -> str:
+    """Same shape as `_entry`, but **Previous Hash** uses the bare-line
+    (third) value form instead of backticks."""
+    chain = chain_override if chain_override is not None else chain_hash(content, previous)
+    return textwrap.dedent(
+        f"""
+
+        ### Entry #{num}: TEST
+
+        **Content Hash**: `{content}`
+
+        **Previous Hash**:
+        {previous}
+
+        **Chain Hash**: `{chain}`
+        """
+    )
+
+
+def _entry_bare_chain(num: int, content: str, previous: str) -> str:
+    """Same shape as `_entry`, but **Chain Hash** uses the bare-line (third)
+    value form instead of backticks."""
+    chain = chain_hash(content, previous)
+    return textwrap.dedent(
+        f"""
+
+        ### Entry #{num}: TEST
+
+        **Content Hash**: `{content}`
+
+        **Previous Hash**: `{previous}`
+
+        **Chain Hash**:
+        {chain}
+        """
+    )
+
+
+def test_detect_residual_groups_bare_line_previous_hash_with_backtick_form(tmp_path):
+    """Two entries share one previous hash: #30 writes it backticked, #31
+    writes the identical hash in the bare-line form. detect_residual must
+    read both as the SAME previous hash (one group of size 2), not drop the
+    bare-line one into a `None`-keyed bucket that would falsely pair it with
+    every other entry lacking a readable previous hash."""
+    shared_prev = _hex("shared-prev")
+    entries = (
+        _entry(30, _hex("c30"), shared_prev)
+        + _entry_bare_previous(31, _hex("c31"), shared_prev)
+    )
+    led = _write(tmp_path, "# META_LEDGER\n" + entries)
+    groups = reconcile.detect_residual(led.read_text(encoding="utf-8"))
+    assert None not in groups, "bare-line Previous Hash must not resolve to None"
+    assert groups.get(shared_prev) == [30, 31]
+
+
+def test_last_chain_hash_reads_bare_line_chain_hash_form(tmp_path):
+    """A ledger whose only entry records its Chain Hash in the bare-line
+    form must have that recorded hash returned, not the deferred-tail
+    fallback and not a raised ValueError."""
+    recorded = chain_hash(_hex("c1"), _hex("p1"))
+    text = "# META_LEDGER\n" + _entry_bare_chain(1, _hex("c1"), _hex("p1"))
+    assert reconcile._last_chain_hash(text) == recorded
