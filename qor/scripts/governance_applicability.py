@@ -80,8 +80,9 @@ class GovernanceSource:
 
     ``rule_key`` and ``decision_token`` provide a minimal, explicit conflict
     surface. Two current applicable sources at the same highest precedence for
-    the same non-empty rule key are ambiguous when their decision tokens differ.
-    An empty rule key means the source is additive and is not conflict-ranked.
+    the same non-empty rule key are ambiguous when their decision tokens or
+    obligation postures differ. An empty rule key means the source is additive
+    and is not conflict-ranked.
     """
 
     stable_id: str
@@ -230,7 +231,8 @@ def resolve_packet(
             )
 
         tokens = {candidate.source.decision_token for candidate in winners}
-        conflict = len(winners) > 1 and len(tokens) > 1
+        postures = {candidate.source.posture for candidate in winners}
+        conflict = len(winners) > 1 and (len(tokens) > 1 or len(postures) > 1)
         for candidate in winners:
             source = candidate.source
             if conflict:
