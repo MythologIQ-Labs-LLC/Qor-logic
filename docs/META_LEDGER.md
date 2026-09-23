@@ -23768,6 +23768,57 @@ One real regression caught and fixed pre-audit, not merely disclosed: the Step 9
 
 **Carried, not this phase's to fix**: `qor/dist/*/manifest.json` on `main` records `sha256` values for unrelated variant files (verified: `agents/agent-architect.md`) that do not match those files' actual committed content. `check_variant_drift.py` excludes `manifest.json` from its comparison by design, so nothing currently catches this. Pre-existing, unrelated to GH #482; this phase's own `qor.cli compile` run reproduced it and reverted the manifest churn rather than folding an unrelated fix into a hotfix PR.
 
+### Entry #798: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-23T07:40:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Verdict**: PASS
+
+**Content Hash**: `3de32dfb33acebd24b785bd43c28ef634ee1c8a926584da771890e2bcb90645c`
+**Previous Hash**: `d3577bb25844d5fd0bb9e205ed1dc47fa9ecc270f857a62cc5baa8ea54ca61f6`
+**Chain Hash (Merkle seal)**: `12a2600baccfee7f00c8c2eee3f940b26d6e05823e138ee994b185f8aefb832f`
+
+**Decision**: **Target**: `docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+Consolidation of two independently-created current-base recompositions of GH #477 after PR #492 (Phase 290) made historical PR #493 non-mergeable: the owner's own PR #506 (code + tests only, deliberately deferring governance evidence) and this session's parallel PR #508 (full ceremony, now closed as a duplicate lane). This entry adds the governance evidence PR #506's own plan explicitly required onto its branch, as new commits after the owner's own two commits; no history on the branch is rewritten.
+
+Mechanical gates: audit_risk_score option_b_required=false (no author-momentum signal; the code diff was already independently reviewed on #493 with no defect found); plan_test_lint rc=0; dod_check rc=0; plan_iteration_status_lint rc=0; plan_feature_tdd_lint rc=0; prompt_injection_canaries rc=0; prose_test_lint --enforce rc=0; publication boundary scan of the plan by direct read, 0 findings.
+
+LD-1 (dialect owner remains sole capture-group interpreter), LD-2 (preserve every accepted dialect form), LD-3 (historical #493 evidence is provenance, not promotion authority) all satisfied per the branch's own plan.
+
+Verification fresh on this branch's tip: tests/test_reconcile.py 10/10 pass. Full suite 3523 passed / 4 skipped / 4 deselected / 1 pre-existing unrelated failure (test_changelog_tag_coverage.py). ruff clean. check_variant_drift: 406 files, no drift.
+
+**Required next action**: /qor-implement (already executed; proceeding to seal).
+
+### Entry #799: SESSION SEAL -- Phase 291 recompose reconcile dialect accessor (v0.174.2)
+
+**Timestamp**: 2026-09-23T07:45:00Z
+**Phase**: SEAL (Phase 291)
+**Author**: Governor
+**Risk Grade**: L1
+
+**Content Hash**: `bfea17bf5dc060bcd886e6e4d70a782f7bf717c30aeef19ba9c7b8375b602197`
+**Previous Hash**: `12a2600baccfee7f00c8c2eee3f940b26d6e05823e138ee994b185f8aefb832f`
+**Chain Hash (Merkle seal)**: `0e485fcaccf36769bb664299b6c70395d304760391a0c0ba3998226561c38fea`
+
+**Decision**: **Plan**: docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md
+**Closes**: GH #477
+**Supersedes**: PR #493 (historical provenance); consolidates duplicate lane PR #508 (closed)
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+reconcile.py's detect_residual and _recorded_chain_hash now read hash values through the published ledger_dialect.hash_value accessor instead of indexing match.group(1) or match.group(2) directly, so the third recognized value form (a bare 64-hex digest alone on its own line) is no longer silently dropped.
+
+**Consolidation**: two independent current-base recompositions of GH #477 existed after PR #492 (Phase 290) superseded historical PR #493: this branch (owner's PR #506, code+tests only) and a parallel full-ceremony branch (this session's PR #508). This entry adds the governance evidence PR #506's own plan explicitly deferred, as new commits on top of the owner's own two commits; PR #508 is closed as the resulting duplicate lane rather than left open.
+
+**Tests**: two regression tests in tests/test_reconcile.py (byte-identical to #493's already-independently-reviewed revision), 10/10 pass on this branch's tip. Full suite: 3523 passed / 4 skipped / 4 deselected / 1 pre-existing unrelated failure (test_changelog_tag_coverage.py, orphan CHANGELOG sections 0.173.0/0.174.0, pre-existing on unmodified main). ruff clean.
+
+**Version**: 0.174.1 -> 0.174.2 (hotfix per plan-declared change_class).
+
 ---
 
 *Chain integrity: VALID*

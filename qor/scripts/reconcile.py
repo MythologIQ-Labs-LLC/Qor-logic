@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from qor.scripts import entry_id, ledger_fragment
+from qor.scripts import entry_id, ledger_dialect, ledger_fragment
 from qor.scripts.ledger_hash import (
     CHAIN_HASH_RE,
     ENTRY_RE,
@@ -41,7 +41,7 @@ def detect_residual(ledger_text: str) -> dict[str, list[int]]:
         ph = PREV_HASH_RE.search(body)
         if not ph:
             continue
-        by_prev.setdefault(ph.group(1) or ph.group(2), []).append(num)
+        by_prev.setdefault(ledger_dialect.hash_value(ph), []).append(num)
     return {prev: sorted(nums) for prev, nums in by_prev.items() if len(nums) >= 2}
 
 
@@ -70,7 +70,7 @@ def _recorded_chain_hash(body: str) -> str | None:
     """The entry's recorded chain hash / session seal, or None when absent."""
     xh = CHAIN_HASH_RE.search(body)
     if xh:
-        return xh.group(1) or xh.group(2)
+        return ledger_dialect.hash_value(xh)
     seal = SESSION_SEAL_RE.search(body)
     if seal:
         return seal.group(1)
