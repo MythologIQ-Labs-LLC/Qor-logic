@@ -21,9 +21,9 @@ TRACE or another runtime evidence format can strengthen provenance and execution
 
 Qor therefore needs explicit doctrine that bounds assurance claims and defines how production evidence feeds back into requirements, environment models, evaluators, and implementation.
 
-## Decision
+## Proposed decision
 
-Adopt a bounded-assurance model with two coupled loops.
+If adopted through the required governance process, Qor will use a bounded-assurance model with two coupled loops.
 
 The arrows below describe **claim progression and assurance relationships**, not a mandatory universal runtime sequence or new gate order. Profiles may lawfully omit, collapse, repeat, or interleave steps where the governing contract permits it. Omitted or inapplicable steps MUST NOT be represented as PASS merely because work advanced.
 
