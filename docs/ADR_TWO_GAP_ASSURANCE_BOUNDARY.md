@@ -1,9 +1,11 @@
 # ADR: Two-Gap Assurance Boundary and Outer Assurance-Revision Loop
 
-**Status:** Proposed; formal `/qor-audit` required before adoption
+**Status:** Proposed; bounded amendment prepared; formal `/qor-audit` required before adoption
 **Date:** 2026-09-22
+**Amended:** 2026-09-23
 **Scope:** Qor-logic lifecycle, assurance claims, evidence semantics, and production handoff
 **Umbrella:** GH #497
+**Architecture issue:** GH #498
 
 ## Context
 
@@ -22,16 +24,19 @@ Qor therefore needs explicit doctrine that bounds assurance claims and defines h
 
 ## Decision
 
-Adopt a bounded-assurance model with two coupled loops:
+Adopt a bounded-assurance model with two coupled loops.
 
 ### Inner governed change loop
 
 ```text
 frame -> plan -> audit -> authorize -> implement -> exercise -> observe -> verify
-      -> reconcile -> substantiate -> attest -> accept/promote as applicable
+      -> reconcile -> substantiate -> attest -> acceptance decision
+      -> separately authorized promotion action, where applicable
 ```
 
 The inner loop establishes claims only within a declared evidence envelope.
+
+Acceptance and promotion are separate authority states. An acceptance decision may establish that a result is acceptable for intended use, but it does not itself grant authority to merge, release, publish, deploy, or activate. Each promotion action requires whatever separate authority its owning system or policy requires.
 
 ### Outer assurance-revision loop
 
@@ -52,23 +57,36 @@ Qor MUST distinguish at least these claims:
 2. **Substantiation:** implementation, evidence, documentation, and governed promise reconcile.
 3. **Integrity attestation:** evidence/provenance/governance records are intact according to the active trust model.
 4. **Acceptance:** the result is acceptable to advance for the intended use under the responsible authority.
-5. **Operational observation:** production evidence has been examined against the expected envelope.
-6. **Current fitness:** available evidence remains sufficient now; this is not implied permanently by a historical PASS.
+5. **Promotion authorization:** the responsible authority permits a specific promotion action such as merge, release, publish, deploy, or activate.
+6. **Operational observation:** production evidence has been examined against the expected envelope.
+7. **Current fitness:** available evidence remains sufficient now; this is not implied permanently by a historical PASS.
+
+No claim inherits a stronger claim merely by adjacency. In particular, acceptance does not imply promotion authorization, and promotion does not imply current fitness indefinitely.
 
 ## Evidence envelope
 
-Material assurance claims SHOULD bind to the smallest practical set of:
+Evidence binding is proportional, but authority-bearing transitions require a minimum core envelope.
 
-- code/artifact revision;
-- requirement or acceptance-contract version;
-- evaluator/check set;
-- environment model or relevant evaluated conditions;
-- evidence sources;
-- time/freshness marker;
-- declared exclusions or untested conditions;
-- authority actor where required.
+### Mandatory core for authority-bearing transitions
 
-The exact representation is deferred to implementation planning. This ADR establishes the semantic requirement, not a mandatory universal schema.
+Any assurance claim used to authorize or justify a lifecycle authority transition MUST bind to:
+
+- the exact code, build, artifact, or governed subject revision;
+- the governing requirement, acceptance contract, or change-contract version;
+- the evaluator/check set used, or an explicit `not_applicable` value with rationale when no evaluator applies;
+- the relevant environment model or evaluated conditions, or an explicit `not_applicable` value with rationale;
+- the evidence sources that support the claim;
+- a time/freshness marker;
+- declared exclusions, limitations, or untested conditions, including an explicit `none_known` when appropriate;
+- the authority actor, role, or policy basis when the transition requires authority.
+
+A required field may be profile-specific in representation, but it may not disappear silently. `not_applicable` is a governed value, not omission.
+
+### Non-authority claims and enrichment
+
+Claims that do not advance authority SHOULD bind to the smallest practical subset needed to prevent overstatement. Profiles MAY add richer evidence metadata beyond the mandatory core when risk or domain needs justify it.
+
+The exact serialized representation remains an implementation concern. This ADR establishes the semantic minimum and does not require one universal heavyweight schema.
 
 ## Historical validity vs current fitness
 
@@ -84,14 +102,38 @@ production evidence P reveals an unmodeled condition
 M1 is revised to M2
         |
 old PASS remains part of truthful history
-but current fitness is no longer established until re-evaluated
+but current fitness becomes CURRENT_FITNESS_NOT_ESTABLISHED
+until the affected claim is re-evaluated
 ```
 
 Qor MUST NOT rewrite historical evidence merely because later evidence changes its present applicability.
 
+`CURRENT_FITNESS_NOT_ESTABLISHED` is a blocking assurance state, not a retroactive failure verdict. A dependent transition that requires current fitness MUST NOT proceed while that state applies.
+
+Unknown or inconclusive invalidation state MUST NOT collapse to current-fit.
+
+## Current-fitness invalidation contract
+
+The following core invalidation classes form the minimum vocabulary. Profiles may add classes, but they must not silently remove or rename these core meanings:
+
+- `REVISION_DRIFT`: the code, build, artifact, or governed base revision changed materially;
+- `CONTRACT_DRIFT`: the requirement, acceptance contract, problem contract, or change contract changed materially;
+- `EVALUATOR_DRIFT`: the evaluator, check set, policy set, threshold, or interpretation logic changed materially;
+- `ENVIRONMENT_DRIFT`: the relevant environment model, configuration, runtime conditions, or deployment assumptions changed materially;
+- `DEPENDENCY_DRIFT`: an external dependency, interface, upstream contract, threat model, or platform behavior changed materially;
+- `AUTHORITY_DRIFT`: the actor, role, permission, policy basis, or ownership needed for the claim changed materially;
+- `FRESHNESS_EXPIRED`: the claim exceeded its governed freshness window or review currency;
+- `CONTRADICTORY_EVIDENCE`: new operational, QA, security, compliance, stakeholder, or other material evidence contradicts assumptions supporting the claim.
+
+When an applicable invalidation class is triggered and the affected assurance claim has not yet been re-evaluated, current fitness becomes `CURRENT_FITNESS_NOT_ESTABLISHED`.
+
+Applicability may be resolved by governed profiles and attention/routing mechanisms, but a profile may not convert a material trigger into current-fit by omission. If applicability itself is unresolved, the result remains not established rather than silently fit.
+
+Re-establishing current fitness requires new evidence sufficient for the invalidated dimensions. It does not require rewriting unaffected historical evidence.
+
 ## Divergence classification
 
-Outer-loop evidence SHOULD classify the smallest supported cause before repair:
+Outer-loop evidence SHOULD classify the smallest supported cause or set of causes before repair:
 
 - requirement gap: `R` omitted or misstated stakeholder intent;
 - model gap: `M` omitted or misstated relevant world conditions;
@@ -100,6 +142,8 @@ Outer-loop evidence SHOULD classify the smallest supported cause before repair:
 - intent change: stakeholder intent changed after the prior contract;
 - world change: dependencies, environment, traffic, threat model, or other relevant conditions changed;
 - inconclusive: evidence does not yet support causal classification.
+
+Real incidents may be multi-causal. Classification should preserve supported multiple causes rather than force a false single-cause answer.
 
 Classification does not itself grant mutation authority. Existing Qor ownership and delegation rules remain authoritative.
 
@@ -147,7 +191,18 @@ TRACE is evidence infrastructure, not epistemic closure.
 
 Outer-loop divergence is expected to produce recurring evidence patterns. The Shadow Genome architecture is therefore a first-class consumer of this model, not an incidental logging mechanism.
 
-A separate ADR will evaluate whether one undifferentiated Shadow Genome remains sufficient or whether Qor needs a typed/spectral family of shadow observations for requirement, model, evaluator, implementation, operational, and governance drift.
+Shadow classification consumes assurance evidence; it does not create mutation, acceptance, or promotion authority. GH #499 remains downstream of this authority/applicability boundary.
+
+A separate ADR evaluates whether one undifferentiated Shadow Genome remains sufficient or whether Qor needs a typed/spectral family of shadow observations for requirement, model, evaluator, implementation, operational, and governance drift.
+
+## Freshness and QA interaction
+
+Governance freshness/supersession work under GH #500 and human-QA/environment evidence under GH #502 are cross-cutting consumers and enforcers of this assurance contract. They do not substitute for adoption or implementation of GH #498.
+
+- GH #500 may provide freshness and supersession signals that trigger `FRESHNESS_EXPIRED`, `CONTRACT_DRIFT`, or `AUTHORITY_DRIFT`.
+- GH #502 may provide QA/environment evidence that contributes to the evidence envelope or triggers `ENVIRONMENT_DRIFT` or `CONTRADICTORY_EVIDENCE`.
+
+Neither child architecture may silently redefine the core invalidation vocabulary or promotion authority defined here.
 
 ## Consequences
 
@@ -158,15 +213,17 @@ A separate ADR will evaluate whether one undifferentiated Shadow Genome remains 
 - provides a lawful route from production evidence back into governed development;
 - preserves truthful historical PASS records while allowing present fitness to change;
 - keeps Qor vendor-neutral at the production-control boundary;
+- separates acceptance from merge/release/publish/deploy/activate authority;
 - gives acceptance, rollback, observation, and revision a coherent architectural reason to exist.
 
 ### Costs
 
 - more lifecycle states require precise terminology;
-- evidence claims may need additional envelope metadata;
+- evidence claims need a mandatory core envelope when they carry authority;
 - production integrations need explicit adapter contracts;
 - some current documentation that uses `validate`, `complete`, `release`, or `PASS` broadly will require reconciliation;
-- review doctrine must distinguish historical integrity from current fitness.
+- review doctrine must distinguish historical integrity from current fitness;
+- profiles must resolve `not_applicable` explicitly rather than silently omitting required evidence dimensions.
 
 ## Rejected alternatives
 
@@ -182,21 +239,31 @@ Rejected. Qor should govern the contract and evidence, not replace specialized r
 
 Rejected. Provenance and integrity evidence do not prove requirement completeness or world-model fidelity.
 
+### Let acceptance imply promotion authority
+
+Rejected. Acceptance and merge/release/publish/deploy/activate are different claims owned by potentially different authorities.
+
+### Treat unknown invalidation state as current-fit
+
+Rejected. Unresolved applicability or contradictory evidence cannot lawfully advance a current-fitness-dependent transition.
+
 ### Invalidate or rewrite every historical PASS after a later failure
 
 Rejected. Later evidence may change current applicability without making the earlier bounded claim dishonest.
 
 ## Follow-on work
 
-This ADR requires follow-on planning for:
+After formal `/qor-audit` adoption, this ADR requires bounded implementation planning for:
 
 1. lifecycle state vocabulary and claim semantics;
-2. evidence envelope and invalidation doctrine;
-3. outer-loop adapter/handoff contract;
-4. recovery/rollback authority semantics;
-5. acceptance and current-fitness semantics;
-6. review documentation updates;
-7. Shadow Genome integration;
-8. Governance Index and supersession/freshness enforcement.
+2. evidence-envelope serialization and profile-specific applicability;
+3. current-fitness invalidation evaluation;
+4. outer-loop adapter/handoff contract;
+5. recovery/rollback authority semantics;
+6. acceptance and promotion-authorization semantics;
+7. review documentation updates;
+8. Shadow Genome integration after GH #499's authority boundaries are reconciled;
+9. Governance Index freshness/supersession integration under GH #500;
+10. human QA/environment evidence integration under GH #502.
 
 No implementation is authorized by this proposed ADR until formal `/qor-audit` and an accepted governed plan.
