@@ -12,6 +12,12 @@ The problem addressed here is practical: agentic implementation can move faster 
 
 > Automated verification establishes bounded technical confidence. Human QA establishes experiential acceptability in a representative environment. Neither substitutes for the other.
 
+## Existing `qa.json` compatibility boundary
+
+Qor already has an artifact named `qa.json`, built by `qor/scripts/qa_evidence.py`. Its current pillars are `regression`, `security`, `stability`, and `coverage`; they are technical verification evidence. The writer also records `human_oversight=ABSENT` in its AI-provenance manifest.
+
+Therefore, despite the historical artifact name, a current `qa.json` PASS does **not** by itself establish the human/experiential QA defined by this doctrine. It may contribute automated preflight and technical evidence to a later QA decision. Any future schema or naming change must preserve historical readability and requires a separately audited implementation slice.
+
 ## Environment classes
 
 Qor recognizes the following conceptual environment classes.
@@ -281,7 +287,7 @@ implementation complete
   -> promotion as separately authorized
 ```
 
-A project may place substantiation before or after the human QA activity based on evidence architecture, but the final promotion claim must reconcile both machine and required human evidence.
+Proof and QA evidence may iterate rather than occur as one rigid single pass. In particular, technical preflight may precede human QA, human QA may expose defects that return work to implementation, and final substantiation may need to reconcile the resulting evidence before promotion. The claim boundary is strict even when execution order loops: promotion cannot outrun either required technical proof or required human evidence.
 
 ## Shadow Genome integration
 
