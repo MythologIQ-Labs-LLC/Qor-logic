@@ -1,0 +1,18 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-23T0642-1965cf",
+  "ts": "2026-09-23T06:45:07Z",
+  "target": "docs/plan-qor-phase291-escalation-origin-signature.md",
+  "verdict": "PASS",
+  "report_path": ".agent/staging/phase291-AUDIT_REPORT.md",
+  "risk_grade": "L1",
+  "target_content_hash": "f40f6329a660aa68788b2163e8e461d8302253a18ad937f6d056b87c81b720e2",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.1",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "pass",
+    "ts": "2026-09-23T06:45:07Z"
+  }
+}

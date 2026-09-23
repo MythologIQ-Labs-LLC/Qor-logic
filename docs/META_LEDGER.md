@@ -23768,6 +23768,63 @@ One real regression caught and fixed pre-audit, not merely disclosed: the Step 9
 
 **Carried, not this phase's to fix**: `qor/dist/*/manifest.json` on `main` records `sha256` values for unrelated variant files (verified: `agents/agent-architect.md`) that do not match those files' actual committed content. `check_variant_drift.py` excludes `manifest.json` from its comparison by design, so nothing currently catches this. Pre-existing, unrelated to GH #482; this phase's own `qor.cli compile` run reproduced it and reverted the manifest churn rather than folding an unrelated fix into a hotfix PR.
 
+### Entry #798: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-23T06:55:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L1
+**Entry ID**: `3f3a32260707`
+**Verdict**: PASS
+
+**Content Hash**: `42679f8f478fe877039d694d0c7ff0347a3396502f776f3348b9304d1d667285`
+**Previous Hash**: `d3577bb25844d5fd0bb9e205ed1dc47fa9ecc270f857a62cc5baa8ea54ca61f6`
+**Chain Hash (Merkle seal)**: `4dc31042056a597d83b477811c90939a171aafefa107fdd1b549a9ff4ea9a6d3`
+
+**Decision**: **Target**: `docs/plan-qor-phase291-escalation-origin-signature.md`
+
+**Decision**: PASS. No violation mandating rejection.
+
+Recomposition of Phase 289 (PR `Qor-logic#491`, sealed Entries #796/#797 against stale base `f3e069b`), whose ledger/version/session metadata collided with Phase 290 (PR `Qor-logic#492`, merged first at `d37c192c`, also claiming Entries #796/#797 and version `0.174.1`). Per owner direction on PR #491 (comment `5790286173`), the old branch is preserved as historical evidence rather than force-merged; this reapplies the identical code+test diff against current `main`.
+
+Binding gates executed: prompt-injection rc=0; version-applicability rc=0 (hotfix bump `0.174.1` -> `0.174.2`, current base); prose_test_lint --enforce rc=0 (69 pre-existing exemptions, 0 new); pre-audit ladder rc=0 across plan-iteration-status, plan-grep-lint (0 findings, all citations re-verified fresh against `d37c192c`), plan-text-consistency, ci-coverage, workspace-fragility, plan-signature-widening-caller, plan-data-round-trip, dod-check, sg-closure and publication-boundary (0 findings). `audit_risk_score` reported `option_b_required: false`; solo audit, `capability_shortfall("codex-plugin")` logged per Step 1.a.
+
+GH #484: escalation payloads carried no collapsing key, so escalations of one condition counted separately. `_origin_signature`/rewritten `_signature` give an escalation the signature `(ESCALATION_EVENT, origin_signature)` -- collapsing same-root escalations to one severity contribution, never colliding with a live plain event's own signature, and staying generation-invariant across any depth of escalation-of-escalation. Design and code are byte-identical to Phase 289's own (`git diff f3e069b 1435d5cc -- qor/scripts/check_shadow_threshold.py tests/test_escalation_origin_signature.py tests/test_escalation_supersedes.py` applied clean via `git apply --check` against `d37c192c`), which itself already received independent exact-head technical review (PR #491 comment `5258796141`, no blocking finding) before the base-collision made that branch stale.
+
+**Merge-order collision, not a process defect**: Phase 289 and Phase 290 independently forked from `f3e069b`, both correctly computed their own next-available ledger numbers and version bump from that shared fork point, and Phase 290 happened to merge first. Neither phase's own execution was at fault; recomposing against current `main` (this phase) is the correct resolution.
+
+**Required next action**: /qor-implement (already satisfied -- code and tests are the verified-identical Phase 289 diff, re-tested fresh against `d37c192c`: 71 passed, 1 skipped on the targeted set).
+
+### Entry #799: SESSION SEAL -- Phase 291 escalation origin signature recomposition (v0.174.2)
+
+**Timestamp**: 2026-09-23T07:00:00Z
+**Phase**: SEAL (Phase 291)
+**Author**: Governor
+**Risk Grade**: L1
+**Entry ID**: `e0a3c7bc541e`
+
+**Content Hash**: `2e0c48358df7e2de8991d6fec1a2f32cc0df507f3781a4499ab3edc759c0313f`
+**Previous Hash**: `4dc31042056a597d83b477811c90939a171aafefa107fdd1b549a9ff4ea9a6d3`
+**Chain Hash (Merkle seal)**: `b6f86171dbf78faa35318214f6c41709051a01b64426a4c104b76855ea7b7bbf`
+
+**Decision**: **Plan**: docs/plan-qor-phase291-escalation-origin-signature.md
+**Session**: 2026-09-23T0642-1965cf
+**Closes**: GH #484
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, RV.2.1
+
+**A COLLISION, NOT A DEFECT.** Phase 289 sealed this exact fix (Entries #796/#797, `Qor-logic` PR #491) against base `f3e069b`. Phase 290 forked the same base, sealed its own #796/#797, and merged first at `d37c192c`. PR #491 stopped merging cleanly the moment #492 landed: its version bump (`0.174.1`) and ledger entries were already claimed on `main` by a different phase. Per owner direction (PR #491 comment `5790286173`), the old branch and PR are preserved as historical evidence rather than rebased or force-merged; this entry is a fresh seal of the identical design against current `main`.
+
+**NOTHING ABOUT THE FIX ITSELF CHANGED.** `git diff f3e069b 1435d5cc -- qor/scripts/check_shadow_threshold.py tests/test_escalation_origin_signature.py tests/test_escalation_supersedes.py`, applied via `git apply --check` against `d37c192c`, showed zero conflicts -- Phase 290 touched an unrelated file (`qor/scripts/tag_ci_gate.py` and its own seal ceremony). The escalation-origin-signature design (root signature stored at escalation-creation time, read back unchanged at any generation depth, wrapped in `(ESCALATION_EVENT, origin_signature)` so it never collides with a live plain event's own signature) is unchanged from Phase 289's own PASS audit and from the independent exact-head technical review PR #491 received (comment `5258796141`, no blocking finding) before the base collision made it stale.
+
+**ZERO LIVE ESCALATIONS EXIST, RE-CONFIRMED.** `sp.read_all_events()` against the current genome (unchanged by Phase 290) still shows zero `aged_high_severity_unremediated` events; the new field reaches every escalation that will ever exist without a backfill.
+
+**Suite**: 3528 passed, 4 skipped, 4 deselected on `d37c192c` (up from Phase 289's 3518 -- Phase 290's own tests), run twice for determinism. 6 new tests (unchanged from Phase 289) confirmed green fresh against current main. ruff clean. Boundary lint 0 findings.
+
+**Carried, not this phase's to fix**: `Qor-logic` PR #490 (Phase 288) remains open against its own stale `f3e069b`-based `0.174.1` target -- a separate, already-disclosed collision this phase does not compound or resolve. `git ls-remote --tags origin` still tops out at `v0.99.0`; this phase's own tag `v0.174.2` is created locally per Step 9.7, not pushed.
+
 ---
 
 *Chain integrity: VALID*

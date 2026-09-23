@@ -1,0 +1,25 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-23T0642-1965cf",
+  "ts": "2026-09-23T06:45:00Z",
+  "plan_path": "docs/plan-qor-phase291-escalation-origin-signature.md",
+  "phases": [
+    "Phase 1: pin the current (defective) and target behavior in tests",
+    "Phase 2: implement the origin-signature collapsing key"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_escalation_origin_signature.py tests/test_escalation_supersedes.py tests/test_signature_discrimination.py tests/test_shadow_residue_disposition.py tests/test_shadow.py -q",
+    "python -m pytest -q",
+    "ruff check qor/scripts/check_shadow_threshold.py tests/test_escalation_origin_signature.py tests/test_escalation_supersedes.py"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.1",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-23T06:45:00Z"
+  }
+}
