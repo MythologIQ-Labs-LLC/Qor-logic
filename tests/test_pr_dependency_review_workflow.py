@@ -51,7 +51,13 @@ def test_workflow_triggers_on_dependency_paths():
     assert on_block is not None, "workflow must declare an 'on' trigger block"
     pr_block = on_block.get("pull_request") or {}
     paths = pr_block.get("paths") or []
-    required_paths = {"pyproject.toml", "requirements-release.txt"}
+    required_paths = {
+        "pyproject.toml",
+        "requirements-release.in",
+        "requirements-release.txt",
+        "requirements-sbom.in",
+        "requirements-sbom.txt",
+    }
     assert required_paths.issubset(set(paths)), (
         f"on.pull_request.paths must include {required_paths}; got {paths!r}"
     )
