@@ -24,6 +24,16 @@ def validate_session_id(session_id: str) -> None:
 
 
 from qor import workdir as _workdir
+from qor.scripts.validate_gate_artifact import next_iteration_path
+
+
+def _atomic_write(target: Path, text: str) -> None:
+    with tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", dir=target.parent, delete=False, suffix=".tmp"
+    ) as tf:
+        tf.write(text)
+        tmp_path = tf.name
+    os.replace(tmp_path, target)
 
 
 def emit(
@@ -33,7 +43,16 @@ def emit(
 ) -> Path:
     """Write the proposal to .qor/gates/<session_id>/remediate.json.
 
-    Returns the path written. Adds a `ts` field to the payload.
+    Returns the singleton path written. Adds a `ts` field to the payload.
+
+    GH #446: a second remediation proposal in the same session no longer
+    destroys the first. Every call also writes an immutable versioned
+    copy (`remediate-iter<N>.json`, never re-targeting an existing
+    iteration) before refreshing the singleton, mirroring the pattern
+    `gate_chain.write_gate_artifact`/`validate_gate_artifact.write_artifact`
+    already use for the other gate phases. The singleton path and return
+    value are unchanged so existing consumers (`remediate_mark_addressed`'s
+    `remediate_gate_path` argument) keep working against a fixed name.
     """
     validate_session_id(session_id)
     root = base_dir if base_dir is not None else _workdir.root()
@@ -43,12 +62,9 @@ def emit(
 
     payload = dict(proposal)
     payload["ts"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    text = json.dumps(payload, indent=2, sort_keys=False) + "\n"
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", encoding="utf-8", dir=out_dir, delete=False, suffix=".tmp"
-    ) as tf:
-        json.dump(payload, tf, indent=2, sort_keys=False)
-        tf.write("\n")
-        tmp_path = tf.name
-    os.replace(tmp_path, out_path)
+    versioned_path = next_iteration_path("remediate", out_dir)
+    _atomic_write(versioned_path, text)
+    _atomic_write(out_path, text)
     return out_path
