@@ -29,6 +29,8 @@ Stable; changes are explicit doctrine events. Drift signal: rules contradict eac
 
 | Artifact | Path |
 |----------|------|
+| Governed development lifecycle | `qor/references/doctrine-governed-development-lifecycle.md` |
+| Development environments and QA | `qor/references/doctrine-development-environments-and-qa.md` |
 | Shadow-genome countermeasures | `qor/references/doctrine-shadow-genome-countermeasures.md` |
 | Governance enforcement | `qor/references/doctrine-governance-enforcement.md` |
 | Prompt resilience | `qor/references/doctrine-prompt-resilience.md` |
@@ -56,7 +58,7 @@ Live until close; ages out at substantiate. Drift signal: shipped feature still 
 
 | Artifact | Path | Opened |
 |----------|------|--------|
-| _none open_ | `.qor/session/` | n/a |
+| Phase 294 lifecycle foundation | `docs/plan-qor-phase294-lifecycle-foundation.md` | 2026-09-23 |
 
 ## Tier 4 — Per-Plan Artifact
 
