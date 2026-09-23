@@ -52,7 +52,7 @@ pointing at the pre-seal commit, producing off-by-one tags across v0.19.0–v0.2
 `create_seal_tag` without it raises `TypeError` (verified by
 `tests/test_seal_tag_timing.py::test_create_seal_tag_raises_without_commit`).
 
-## Step 9.6 / 9.7 — Push/merge options + post-merge tag push (Phase 13 / Phase 86 wiring; GH #98)
+## Step 9.6 / 9.7 — Push/merge options + post-merge tag push (Phase 13 / Phase 86 wiring; GH #98; Phase 290, GH #482)
 
 The annotated tag from Step 9.5.5 stays local until the seal commit is on
 `origin/main`. `release.yml` triggers on tag push and its `build-and-publish` job
@@ -69,6 +69,22 @@ mirrors `release.yml`'s own guard, so the tag push and the publish guard agree b
 construction. The four push/merge options are never replaced by a continuation
 menu — when work is sealable, the next decision is push/merge, not "what next
 phase".
+
+**GH #482 — ancestor-reachability is not CI-success.** `git merge-base
+--is-ancestor` proves the seal commit is *merged*; it does not prove a CI run
+exists for that exact SHA. GitHub runs the `CI` workflow only on pushed branch
+heads. If a commit lands on the phase branch after Step 9.5.5's tag but before
+the push/merge in Step 9.6, the branch head advances past the seal commit; CI
+runs for the new head, never for the seal commit itself. The ancestor check
+still passes once that head merges, so the tag pushed — but `release.yml`'s own
+`release_ci_gate` (Phase 163) then refuses the publish, in a separate workflow
+run the seal ceremony never opens. Step 9.7 now runs the same `gh api
+.../workflows/ci.yml/runs?head_sha=$SEAL_COMMIT` call `release.yml` makes,
+piped to `qor.scripts.tag_ci_gate` (which composes the ancestor result
+with the already-tested `qor.scripts.release_ci_gate.evaluate`), before
+pushing the tag. A missing or non-green CI run for the seal commit holds the
+tag local with the same disposition as the "not yet on `origin/main`" case,
+surfacing the gap at seal time instead of in an unread later run.
 
 ## Step 9.7 tag timing: the off-by-one this ordering closes
 

@@ -1,0 +1,32 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-16T0428-bbad95",
+  "ts": "2026-09-16T04:31:00Z",
+  "plan_path": "docs/plan-qor-phase290-tag-push-ci-gate.md",
+  "phases": [
+    "Phase 1: seal-tag push gate composes ancestor + tagged-SHA CI checks"
+  ],
+  "change_class": "hotfix",
+  "doc_tier": "minimal",
+  "terms": [],
+  "feature_inventory_touches": [],
+  "required_gate_artifacts": [
+    "plan",
+    "audit",
+    "implement",
+    "substantiate"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_tag_ci_gate.py tests/test_substantiate_tag_ci_gate_wiring.py tests/test_substantiate_tag_push_timing.py tests/test_release_ci_gate.py -v",
+    "python -m qor.cli compile",
+    "python -m pytest tests/ -q"
+  ],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.1",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-16T04:31:00Z"
+  }
+}
