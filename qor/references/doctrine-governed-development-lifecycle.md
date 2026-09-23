@@ -6,11 +6,11 @@
 
 Define the lifecycle semantics that sit above the current skill/gate chain without prematurely renaming skills or inventing new authority.
 
-The current Qor chain remains operationally authoritative:
+The current Qor phase chain remains operationally authoritative:
 
-`research -> plan -> audit -> implement -> substantiate -> validate -> release/remediate`
+`research -> plan -> audit -> implement -> substantiate -> validate -> remediate`
 
-This doctrine clarifies what that chain means inside a more complete governed-development lifecycle and establishes the inner implementation loop that prompted GH #497.
+`/qor-repo-release` is a downstream repo-level promotion skill, not a phase in that canonical chain. This doctrine clarifies what the chain means inside a more complete governed-development lifecycle and establishes the inner implementation loop that prompted GH #497.
 
 ## Core invariant
 
