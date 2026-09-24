@@ -1,140 +1,141 @@
 # AUDIT REPORT
 
-**Target**: `docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md`
-**Branch**: `phase/477-reconcile-dialect-accessor-current`
+**Tribunal Date**: 2026-09-24T03:21:58Z
+**Target**: `docs/plan-governance-applicability-v1.md`
+**Branch**: `phase/501-applicability-v1`
+**Evaluated revision**: `c355d708f2f4256579fe44b22655aa537b260c36`
+**Risk Grade**: L2
 **Auditor**: The Qor-logic Judge
-**Date**: 2026-09-23
 
 ---
 
-## VERDICT: PASS
+## VERDICT: VETO
 
-**Risk Grade**: L1
+The bounded V1 direction is sound, but the evaluated implementation does not yet satisfy the canonical #501 contract or Qor's binding Section 4 Razor.
 
-No violation mandating rejection was found.
+## Executive Summary
 
-## Mode note, stated because the auditor is also the author
+Three bounded defects mandate rejection of the current revision: the new resolver file is 257 lines against the 250-line Section 4 limit; the emitted governance packet is not self-describing enough to satisfy #501's reproducible-provenance contract; and unresolved freshness/supersession state cannot be represented even though #501 requires it to fail visibly. The pure/stdlib/no-retrieval boundary, local rule-domain precedence, ordinary conflict detection, negative evidence for standard exclusions, and three pilot shapes remain valid and should be preserved during remediation.
 
-`audit_risk_score --plan docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md`
-returned `option_b_required: false (no author-momentum risk signal)`.
-Independent review was not dispatched for this pass; the justification is
-recorded rather than assumed. This branch's own code diff
-(`qor/scripts/reconcile.py`, `tests/test_reconcile.py`) is byte-identical to
-superseded PR #493's revision, which was already independently reviewed
-with no defect found (review `5259248289`, exact head `eda5c4ef`). This
-audit formally evaluates the current-base plan (LD-1 through LD-3, D1-D6)
-that #493's own audit did not (and could not, since it predates this
-recomposition's LD framing) cover in these terms, per the branch's own
-Promotion Rule: "Merge only after this current-main recomposition has
-exact-head CI and the required current-base governance evidence."
+## Risk grade
 
-## Recomposition context
+L2. This change adds new business logic in `qor/scripts/governance_applicability.py`; the canonical architecture-plan rubric assigns new business logic to L2. No security/auth, encryption, PII, network, database, or external-state mutation surface is introduced.
 
-This is a consolidation, not a fresh independent implementation. Two
-current-base recomposition efforts were created independently and nearly
-simultaneously after PR #492 (Phase 290) made historical PR #493
-non-mergeable: this branch (`phase/477-reconcile-dialect-accessor-current`,
-opened by the repo owner as PR #506, code-and-tests only, explicitly
-deferring governance evidence) and a parallel full-ceremony branch
-(`phase/510-reconcile-dialect-accessor`, opened by this session as PR #508).
-Rather than leave two competing lanes for the same GH #477 fix -- the exact
-"false-ready duplicate lane" problem the owner's own reconciliation of #493
-named and avoided -- this session is closing PR #508 and adding the
-already-computed, already-verified governance ceremony (this audit, ledger
-entries, version bump, doc-currency regeneration, gate/intent-lock
-evidence) onto this branch instead, as new commits appended after the
-owner's own two commits. No history on this branch is rewritten.
+## Audit Results
 
-## Mechanical gates
+### Security Pass
 
-| Gate | Result |
-|---|---|
-| `audit_risk_score --plan <plan>` | `option_b_required: false` |
-| `plan_test_lint --plan <plan>` | rc=0 |
-| `dod_check --plan <plan>` | rc=0, 0 findings |
-| `plan_iteration_status_lint --plan <plan>` | rc=0 |
-| `plan_feature_tdd_lint --plan <plan>` | rc=0 |
-| `prompt_injection_canaries --files <plan>` | rc=0 |
-| `prose_test_lint --enforce` | rc=0 |
-| Publication boundary scan of the plan | 0 findings (manual read: plan references only GH #477, PR #493, in-repo symbols/paths; no outside-repository identity, path, or credential) |
+**Result: PASS.** The resolver is pure and stdlib-only. No auth, credential, secret, network, subprocess, deserialization, database, or external mutation surface is added.
 
-## Locked Decisions review (per the branch's own plan)
+### Ghost UI Pass
 
-- **LD-1** (dialect owner remains sole capture-group interpreter): satisfied
-  -- both call sites route through `ledger_dialect.hash_value(match)`.
-- **LD-2** (preserve every accepted dialect form): satisfied -- no existing
-  form's regex or acceptance changed; only the consumer-side read of an
-  already-supported form was corrected.
-- **LD-3** (historical PR #493 evidence is provenance, not promotion
-  authority): satisfied by construction -- this audit and the governance
-  evidence added on top of it are fresh, computed against this branch's
-  actual current-base tip, not replayed from #493.
+**Result: PASS / N/A.** No UI surface is changed.
 
-## Passes
+### Section 4 Razor Pass
 
-**Security L3 / OWASP.** No auth, credential, secret, or network surface
-touched. The change routes two existing regex-match objects through an
-already-published, already-tested accessor; no new input path, no new
-trust boundary. No violation.
+**Result: FAIL.**
 
-**Ghost UI.** N/A -- no UI surface in this plan.
+| Check | Limit | Evaluated revision | Status |
+|---|---:|---:|---|
+| Max file lines | 250 | `qor/scripts/governance_applicability.py`: 257 | **FAIL** |
 
-**Section 4 Simplicity Razor.**
+The current `/qor-audit` contract states that any Section 4 violation is a VETO.
 
-| Check | Limit | This change | Status |
+**Required next action:** `/qor-refactor`
+
+### Dependency Pass
+
+**Result: PASS.** No new dependency is introduced.
+
+### Orphan Pass
+
+**Result: PASS.** The resolver and tests are owned by GH #501 / PR #517 and are exercised by the repository test suite.
+
+### Macro-Level Architecture Pass
+
+**Result: FAIL.** The implementation is narrower than the minimum packet contract already locked in canonical GH #501.
+
+The #501 frozen-candidate decision requires the packet to identify at minimum:
+
+- operation classification inputs;
+- governance sources considered;
+- authoritative versions/freshness state;
+- matched applicability rules;
+- explicit exclusions;
+- unresolved ambiguity;
+- authority ceiling used.
+
+The evaluated implementation does not preserve that full evidence surface:
+
+- `GovernancePacket` contains only `operation_id` and `resolutions`, not the operation descriptor/classification inputs or authority ceiling;
+- `GovernanceSource` has no authoritative version/revision field;
+- `Resolution` does not preserve the source freshness state, except indirectly when the disposition itself is `stale` or `superseded`;
+- a current source's freshness and authoritative revision cannot be reconstructed from the packet alone.
+
+This makes the packet insufficiently self-describing for the reproducibility contract it claims to implement.
+
+**Required next action:** Governor: reconcile `docs/plan-governance-applicability-v1.md` to the later canonical GH #501 packet contract, then re-run `/qor-audit` after implementation matches the amended plan.
+
+### Freshness / fail-visible pass
+
+**Result: FAIL.** Canonical GH #501 states that #500 owns freshness/supersession truth, #501 consumes it, and #501 must fail visibly when that state is unresolved.
+
+The evaluated code declares only:
+
+`current | stale | superseded`
+
+There is no `unresolved`/unknown freshness value. A caller therefore cannot truthfully represent the very state #501 requires to remain fail-visible.
+
+In addition, `_match_source` terminalizes stale/superseded sources before `rule_key` precedence handling. For a conflict-ranked rule domain, the implementation must not let an applicable higher-precedence authority disappear from ranking in a way that leaves a lower-precedence source looking like an ordinary authoritative winner while the higher source is not currently fit. Exact stale/superseded/unresolved semantics should remain bounded to the #501 contract and must not duplicate #500's freshness computation.
+
+**Required next action:** bounded resolver remediation plus behavioral regression tests, then fresh `/qor-audit`.
+
+### Test Functionality Pass
+
+**Result: PARTIAL PASS.** Existing tests are behavioral: they invoke `resolve_packet` and assert returned dispositions/reasons. The three required pilot shapes are present. However, no test covers the missing unresolved-freshness state, packet provenance/classification-input retention, authoritative source revision retention, or high-precedence not-current decision-domain behavior identified above.
+
+## Findings
+
+| ID | Category | Location | Description |
 |---|---|---|---|
-| Max function lines | 40 | `detect_residual` and `_recorded_chain_hash` are unchanged in line count | OK |
-| Max file lines | 250 | `reconcile.py` is 127 lines pre- and post-change | OK |
-| Max nesting depth | 3 | Unchanged | OK |
-| Nested ternaries | 0 | 0 | OK |
+| V1 | razor-overage | `qor/scripts/governance_applicability.py` | 257 lines exceeds binding 250-line file limit. |
+| V2 | macro-architecture / specification-drift | `GovernancePacket`, `GovernanceSource`, `Resolution`, plan | Minimum reproducible packet provenance locked by #501 is not encoded. |
+| V3 | macro-architecture / coverage-gap | freshness resolution | Unresolved freshness cannot be represented/fail-visible; ranked not-current authority behavior lacks regression coverage. |
 
-**Dependency audit.** No new dependency. `ledger_dialect` is already an
-in-repo module, already imported by the sibling `ledger_hash.py` for the
-identical purpose.
+## Preserved strengths
 
-**Macro-level architecture.** Closes a layering violation: `ledger_dialect`
-owns the `_HASH_VALUE` capture-group layout, and `reconcile.py` was the one
-remaining consumer bypassing the published accessor.
+The remediation should preserve these parts of the evaluated revision:
 
-**Orphan detection.** No new production files beyond this phase's own
-governance artifacts. `qor/scripts/reconcile.py` is on the existing
-`reconcile` CLI's import path; `tests/test_reconcile.py` is collected by
-the existing pytest suite.
+- stdlib-only pure resolver;
+- no I/O, semantic retrieval, embeddings, or automatic source discovery;
+- caller-supplied authority-bearing operation facts;
+- no authority upgrade or gate waiver;
+- local `rule_key` precedence rather than a global winner-takes-all stack;
+- same-precedence token/posture conflict becomes ambiguity;
+- explicit negative evidence for considered-but-unmatched sources;
+- deterministic ordering;
+- ordinary implementation, deployment-sensitive, and governance/documentation pilots;
+- no #498/#499/#500 runtime integration or Qortara Logic migration.
 
-## Test Functionality
+## Documentation Drift
 
-Both regression tests invoke the unit under test and assert on its return
-value (D3 in the branch's own plan; independently reviewed on #493 with
-no defect found):
+<!-- qor:drift-section -->
 
-- The `detect_residual` test asserts the returned dict groups a
-  backtick-form and a bare-line-form `Previous Hash` under the same real
-  hash key, and that `None` is not a key.
-- The `_last_chain_hash` test asserts the return equals the
-  independently-computed `chain_hash(...)` for a bare-line-form `Chain
-  Hash` entry.
+The plan says the bounded V1 is the already-admitted #501 architecture, but it omits the later canonical #501 decisions requiring reproducible packet provenance and fail-visible unresolved freshness. That plan/current-owner drift must be reconciled before a PASS audit.
 
-## Verification (fresh on this branch's current tip)
+## Process Pattern Advisory
 
-- `python -m pytest tests/test_reconcile.py -q`: 10 passed.
-- `python -m pytest tests/ -q`: 3523 passed / 4 skipped / 4 deselected / 1
-  pre-existing unrelated failure
-  (`tests/test_changelog_tag_coverage.py::test_every_changelog_section_has_tag`,
-  orphan sections `0.173.0`/`0.174.0` -- confirmed pre-existing on
-  unmodified `main` in earlier session work on the parallel branch; PR #492
-  pushing `v0.174.1` exposed a pre-existing tag-push gap this phase's diff
-  does not touch).
-- `ruff check qor/scripts/reconcile.py tests/test_reconcile.py`: clean.
-- `python -m qor.scripts.check_variant_drift`: 406 files, no drift.
-- `qor-logic verify-ledger`: entries through #797 chain-verified clean on
-  the branch point before this session's append.
+No new repeated-VETO claim is asserted here because the canonical detector was not executed in this connector environment. This report does not fabricate its output.
 
-## Disclosed, out of this phase's scope
+## Protocol status
 
-Running the full suite regenerates `qor/dist/manifest.json` and its variant
-copies as an observed side effect of the local test run -- not caused by
-this phase's own edits. Discarded before staging; not part of this phase's
-diff.
+This report records the Judge VETO against the evaluated revision. `/qor-audit` Step Z gate/provenance emission has not been claimed or hand-authored. Release-class substantiation is independently serialized behind #515 and #516 and remains prohibited regardless of this VETO.
 
-**Required next action**: /qor-implement (already complete for the code
-change on #506; proceeding directly to seal for the governance evidence).
+## Required next actions
+
+1. `/qor-refactor` for the Section 4 file-size breach.
+2. Governor: amend the plan to restore the canonical #501 packet-provenance and unresolved-freshness requirements.
+3. Specialist: implement those bounded requirements and behavioral tests without broadening into #498/#499/#500 runtime wiring.
+4. Re-run exact-head CI/SAST/Citation Lint evidence and fresh `/qor-audit` on the remediated revision.
+
+No Qortara Logic migration is authorized.
