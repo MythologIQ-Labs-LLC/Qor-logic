@@ -29,7 +29,7 @@ Historical PR #493 implemented and tested this correction against an earlier bas
 - No version bump in this recomposition slice before current-base audit/substantiation.
 - No historical ledger, seal, gate-artifact, intent-lock, README badge, SYSTEM_STATE, or generated manifest replay from PR #493.
 - No narrowing of accepted ledger dialects.
-- No Qortara Logic migration.
+- No migration into a downstream composition repository.
 - No unrelated reconciliation refactor.
 
 ## Locked Decisions

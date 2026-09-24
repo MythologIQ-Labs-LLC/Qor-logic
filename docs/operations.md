@@ -315,3 +315,25 @@ suppresses. An unqualified "0 findings" therefore means different things in CI
 and locally, and the seal records which one it got.
 
 `/qor-substantiate` Step 4.6.14 runs the lint fail-closed AFTER staging.
+
+## Remediating sealed evidence (Phase 296)
+
+When the boundary lint flags a sealed plan, the plan cannot simply be edited:
+`intent_lock_committed` (CI) binds every walked sealed session's plan file and
+plan snapshot to its lock record. The procedure:
+
+1. Edit only the offending line; regenerate `.qor/intent-lock/<session>.plan.snapshot`
+   from the edited plan (LF bytes).
+2. Walked session: write `.qor/intent-lock/<session>.reattest-<k>.json` with exactly
+   `session`, `supersedes_plan_hash`, `plan_hash`, `reason`, and commit it with a
+   `ledger_emit.append` AMENDMENT whose line-leading `**Artifact**` names the record.
+   Unwalked session (its seal has no `**Session**` line): disclose the edit with an
+   AMENDMENT that has no `**Artifact**` line; no record.
+3. Stage exactly, never by glob (the directory is gitignored):
+   `git add -f -- <record> <snapshot>`; then `git diff --cached --name-only` must list
+   every path and `git diff --name-only -- <paths>` must print nothing.
+4. `python -m qor.reliability.intent_lock_committed --phase-min 231` exits 0, and the
+   identity-scope boundary lint reports 0 findings.
+
+Never quote removed text in the record's `reason` or the AMENDMENT body. Full rules
+and limits: `qor/references/doctrine-publication-boundary.md`.

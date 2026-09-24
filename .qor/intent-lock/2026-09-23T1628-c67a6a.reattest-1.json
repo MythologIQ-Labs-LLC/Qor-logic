@@ -1,0 +1,6 @@
+{
+  "session": "2026-09-23T1628-c67a6a",
+  "supersedes_plan_hash": "bfec0225d22a22784785e6dec0da8ccdc42ea9a438f2ecbbd2f166271f3649c7",
+  "plan_hash": "035d38b735d8e72cdf2e1d196718a6fe1e7f5d94d66f03134952f51b617fe5e2",
+  "reason": "Publication-boundary remediation (Phase 296): one non-goal line naming an outside repository anonymized; audit side unchanged."
+}

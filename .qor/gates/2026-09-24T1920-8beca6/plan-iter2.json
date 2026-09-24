@@ -1,0 +1,55 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-24T1920-8beca6",
+  "ts": "2026-09-24T19:44:23Z",
+  "plan_path": "docs/plan-qor-phase296-sealed-evidence-reattestation.md",
+  "phases": [
+    "Checker and commitment reader: re-attestation chain in intent_lock_committed; .json Artifact attribution in ledger_commitment",
+    "Doctrine and glossary: remediating sealed evidence via intent-lock re-attestation",
+    "Remediation: two sealed plans, two plan snapshots, one re-attestation record (walked session), two AMENDMENT entries, explicit force-add staging"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_intent_lock_committed.py tests/test_ledger_commitment.py -v",
+    "python -m pytest tests/ -q",
+    "python -m qor.reliability.intent_lock_committed --phase-min 231",
+    "python -m qor.scripts.publication_boundary_lint --repo-root .",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m ruff check qor/ tests/"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "feature",
+  "terms": [
+    {
+      "term": "intent-lock re-attestation",
+      "home": "qor/references/doctrine-publication-boundary.md"
+    }
+  ],
+  "originating_remediation": "remediate proposal .qor/gates/2026-09-24T1721-e14f14/remediate.json change 2",
+  "boundaries": {
+    "limitations": [
+      "Re-attestation supersedes only the plan side; audit snapshot and audit_hash never change",
+      "Lock records are hash-bound by nothing; a coordinated direct edit of record, snapshot and plan still passes intent_lock_committed, as before this phase",
+      "AMENDMENT review is by pull-request review, not machine-enforced"
+    ],
+    "non_goals": [
+      "binding lock records to a ledger commitment",
+      "widening publication_boundary_lint scanned suffixes",
+      "remediating .tpl, dotfile, or vendor content",
+      "rewriting git history",
+      "editing historical ledger entries or lock records"
+    ],
+    "exclusions": [
+      "identity terms in .tpl and .gitignore; lock-record binding gap (follow-ups)"
+    ]
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.3",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-24T19:44:23Z"
+  }
+}
