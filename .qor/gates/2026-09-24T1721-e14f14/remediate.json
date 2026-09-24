@@ -1,0 +1,43 @@
+{
+  "phase": "remediate",
+  "session_id": "2026-09-24T1721-e14f14",
+  "events_addressed": [
+    "ba79d041b47bfc106b6cf20fd2d24df5a2741e19766b08b3a200e965d6ab1466",
+    "bfa8ea437849ee4ad698a457818f70667f5da1958450259923010ca99ee08743",
+    "8237dc7b4be1d071a600dec08b2fb7edd58656fa1da9a7b4c084870b5c2f10b8",
+    "d425ed99a859585170ecb4e4ddc24e417fee21fa70800c3005da6f21d9e77468"
+  ],
+  "proposed_changes": [
+    {
+      "target": "qor/scripts/audit_risk_score.py; /qor-audit Step 1.a",
+      "change": "Add an author-momentum signal: option_b_required is true when the plan under audit has a prior VETO in the same session's audit history (the auditing agent is judging its own amendment). When codex-plugin and external_reviewer are both absent, define the fresh-context reviewer subagent as the Option B mechanism, so the shortfall has a declared substitute.",
+      "rationale": "3 of 4 VETO findings this session were caught only by an unrequired independent reviewer; the classifier returned false for all four iterations."
+    },
+    {
+      "target": "qor/references/doctrine-publication-boundary.md; qor/reliability/intent_lock_committed.py",
+      "change": "Prerequisite phase (own /qor-plan cycle, own branch off main): define governed re-attestation for sealed evidence -- how a boundary-remediated sealed plan and its intent-lock snapshot are re-bound (e.g. a ledger-recorded re-attestation that intent_lock_committed accepts) without editing historical ledger entries or silently rewriting lock records. Then remediate the two known sealed plans and snapshots under it.",
+      "rationale": "Obligation 5 and the intent-lock binding currently conflict with no resolution path; the identity-aware seal gate blocks every phase on an overlay host until this lands. Phase 294 resumes after it."
+    },
+    {
+      "target": "/qor-plan Step 2 (grounding)",
+      "change": "Before a plan edits any sealed artifact, enumerate every verifier that reads its bytes or hash (grep qor/ and tests/ for the path and for the record type storing its hash) and cite each.",
+      "rationale": "Iterations 1 and 3 each verified one binding and missed the next (Shadow Genome #33, #35)."
+    },
+    {
+      "target": "operator install (qor-logic install --host claude)",
+      "change": "Resync installed skill copies to repo source before the next governed cycle.",
+      "rationale": "Installed /qor-audit and /qor-substantiate diverge from repo; gates were missed or misnamed."
+    }
+  ],
+  "pattern": "capability-shortfall aggregation + session-total VETO escalation",
+  "proposal_kind": "gate",
+  "proposal_text": "Session 2026-09-24T1721-e14f14 audited the Phase 294 plan four times; all four were VETO (ledger #802-#805, Shadow Genome #33-#36) and cycle_count_escalator.check_session_total fired (signature 978ceefca32dc245, cycle_count 3). The event classifier sees only the aggregated codex-plugin capability_shortfall events (4, this session); the VETO streak is visible only in audit history. Both share one root cause and one blocker.\n\nROOT CAUSE 1 (solo-audit blind spot on self-authored amendments). Each iteration amended a Locked Decision the same agent then judged. audit_risk_score returned option_b_required: false every time. The solo Judge missed three of the four findings (iter 2 specification-drift, iter 3 intent-lock binding, iter 4 fail-closed gate scope); a voluntary fresh-context reviewer subagent found all three. The codex-plugin shortfall events are the same gap: no adversarial reviewer is configured, and the working substitute was an unrequired subagent.\n\nROOT CAUSE 2 (no governed path to remediate content inside sealed evidence). Two sealed plans on main and their tracked intent-lock plan snapshots carry an outside-repository identity term. doctrine-publication-boundary.md obligation 5 requires remediation; intent_lock_committed (CI, --phase-min 231) binds the Phase 292 plan's bytes to its intent-lock record, so any edit fails CI; the seal-time publication_boundary_lint (substantiate Step 4.6.14) is identity-aware and fail-closed, so every phase sealed on an overlay host now ABORTs. No doctrine or tool defines re-attestation. This blocks Phase 294 (PR #515) and any other phase until resolved.\n\nCONTRIBUTING (install drift). The installed skill copies differ from repo source: the installed /qor-audit omits gate_schema_freeze_lint, plan_enumeration_lint and publication_boundary_lint, which is why the boundary finding surfaced at seal rather than audit, and the installed /qor-substantiate names a gate this repo deliberately lacks (4.6.11).\n\nEvents are marked addressed_pending only. The addressed flip requires a PASS /qor-audit with reviews-remediate:<this gate path>, and must not be granted before the Change 1 enforcer exists.",
+  "addressed_event_ids": [
+    "ba79d041b47bfc106b6cf20fd2d24df5a2741e19766b08b3a200e965d6ab1466",
+    "bfa8ea437849ee4ad698a457818f70667f5da1958450259923010ca99ee08743",
+    "8237dc7b4be1d071a600dec08b2fb7edd58656fa1da9a7b4c084870b5c2f10b8",
+    "d425ed99a859585170ecb4e4ddc24e417fee21fa70800c3005da6f21d9e77468"
+  ],
+  "closure_enforcer": "/qor-audit Step 1.a",
+  "ts": "2026-09-24T19:04:16Z"
+}

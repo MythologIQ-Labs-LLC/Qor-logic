@@ -23876,6 +23876,84 @@ GH #484: escalation payloads carried no collapsing key, so escalations of one co
 
 **Carried, not this phase's to fix**: `Qor-logic` PR #490 (Phase 288) remains open against its own stale `f3e069b`-based `0.174.1` target -- unrelated to this seal and not compounded by it. This phase's own tag `v0.174.3` is created locally per Step 9.7, not pushed.
 
+### Entry #802: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-24T17:27:20Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `2c4468c38fca`
+**Verdict**: VETO
+
+**Content Hash**: `cb480803a52c391b0549dc828c4721439a582e19aa7d428b8fc08e88509cc8e8`
+**Previous Hash**: `49e0a556ffa8f1af9b589671b3f6d7b055ca250e35b1531b4e6aea77a926765a`
+**Chain Hash (Merkle seal)**: `1853ff6f13d9c50c4fc7cc315a26a1bf8512217580f3a1d06371ca6d54303c00`
+
+**Decision**: **Target**: `docs/plan-qor-phase294-lifecycle-foundation.md`
+
+**Decision**: VETO. Finding V1 (`infrastructure-mismatch`): LD-6, the amendment folding a publication-boundary cleanup of two sealed plans into Phase 294, asserts that SESSION SEAL entries #799 and #801 commit those plans' bytes and that Step 3 `ledger_commitment` would enforce the disclosing AMENDMENT. Measured: neither seal hash equals its plan's live hash; `latest_commitments` attributes neither file (`**Decision**: **Plan**:` on one line, `_ARTIFACT_RE` line-anchored); and the AMENDMENT shape specified lacks a line-leading `**Artifact**` field, so it would be unattributed as well. SG-CitationDrift-A. Shadow Genome entry #33.
+
+Session `2026-09-24T1721-e14f14`, branch `phase/294-lifecycle-foundation-current` head `0b38302d` (amendment uncommitted), base `main` `8968bb5f`. Mechanical ladder clean apart from WARN-only `ci_coverage_lint` and the boundary findings the amendment targets. Solo audit; `option_b_required: false`. The doctrine slice's semantic PASS (revision `68be0f73`) is not disturbed.
+
+**Required next action**: Governor amends LD-6 via /qor-plan with measured evidence, then /qor-audit.
+
+### Entry #803: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-24T17:41:07Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `6894abc4e4a6`
+**Verdict**: VETO
+
+**Content Hash**: `1fbc8898b3c4ccb30ac29997a6c4df947ece93a6d4f5217f40f2e645aa2e3a55`
+**Previous Hash**: `1853ff6f13d9c50c4fc7cc315a26a1bf8512217580f3a1d06371ca6d54303c00`
+**Chain Hash (Merkle seal)**: `b52d12a966dd4f9204eb043dad4f832b03f509a725faa4184d1dfad160ba8cb3`
+
+**Decision**: **Target**: `docs/plan-qor-phase294-lifecycle-foundation.md`
+
+**Decision**: VETO (iter 2). Iter-1 `infrastructure-mismatch` resolved: LD-6 now carries re-executable grep-evidence that no entry attributes either sealed plan and the specified `**Artifact**` field is attributed by `latest_commitments`. New Finding V1 (`specification-drift`): the specified AMENDMENT pairs `**Amends**: Entry #799/#801` with a `**Superseded Content Hash**` those entries never recorded, contradicting LD-6's own evidence and the ledger-commitment doctrine's field definitions; shape-only validation would admit the false provenance claim. Advisory A1: the decision body must not quote the removed line. Found by a voluntary Option B independent reviewer (fresh-context subagent) after the solo pass missed it; `option_b_required` was false. Shadow Genome entry #34.
+
+**Required next action**: Governor amends LD-6 via /qor-plan, then /qor-audit.
+
+### Entry #804: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-24T17:48:35Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `87c6a6e2828e`
+**Verdict**: VETO
+
+**Content Hash**: `1977f06a58f09e93779a1885fa388b3bc76190041de64e26902516c67926ebee`
+**Previous Hash**: `b52d12a966dd4f9204eb043dad4f832b03f509a725faa4184d1dfad160ba8cb3`
+**Chain Hash (Merkle seal)**: `10555023c37414b4e9044b20b7f660fe20c8a2113d781c13ffc25a957a5b2632`
+
+**Decision**: **Target**: `docs/plan-qor-phase294-lifecycle-foundation.md`
+
+**Decision**: VETO (iter 3). Iter-2 `specification-drift` resolved. New Finding V1 (`infrastructure-mismatch`): LD-6 edits `docs/plan-shadow-escalation-origin-signature-current.md`, whose bytes `intent_lock_committed` (CI, `--phase-min 231`) binds via entry #801's session `2026-09-23T1628-c67a6a` intent-lock record (`plan_hash` `bfec0225...`); the edit fails CI with `plan-referent-mismatch` and can only be repaired by rewriting sealed evidence. Advisory: tracked intent-lock plan snapshots carry the same term but are outside the lint's suffix set. Found by the voluntary Option B reviewer; verified by the Judge. Shadow Genome entry #35. Third VETO this session on a bounded scope.
+
+**Required next action**: operator direction, then Governor narrows Phase 294 scope via /qor-plan.
+
+### Entry #805: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-24T18:27:31Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `669760944dfb`
+**Verdict**: VETO
+
+**Content Hash**: `9edba6fc8a365accbc24f1b3471e2245a6fc5f64d09746beb79097af69ab9851`
+**Previous Hash**: `10555023c37414b4e9044b20b7f660fe20c8a2113d781c13ffc25a957a5b2632`
+**Chain Hash (Merkle seal)**: `2f0784f44d52978371edc34ab8ca867091ae8adaec8da674e1159cb44f340a27`
+
+**Decision**: **Target**: `docs/plan-qor-phase294-lifecycle-foundation.md`
+
+**Decision**: VETO (iter 4). Iter-3 finding resolved (sealed-plan edits removed from scope). New Finding V1 (`infrastructure-mismatch`): LD-6 gates substantiate Step 4.6.14 at `boundary_scope: structural`, but the ladder prescribes `publication_boundary_lint --repo-root . || ABORT`, which loads the identity overlay by default and exists to be the identity-aware fail-closed run CI cannot be; a structural result on an overlay host requires hiding the overlay. Phase 294 cannot lawfully seal while two pre-existing identity findings in sealed evidence remain, and those cannot be fixed in-phase (intent-lock binding, iter 3). Found by the voluntary Option B reviewer; verified by the Judge. Shadow Genome entry #36. Fourth VETO this session.
+
+**Required next action**: prerequisite governed phase to remediate identity findings in sealed evidence (re-attestation design), then resume Phase 294.
+
 ---
 
 *Chain integrity: VALID*

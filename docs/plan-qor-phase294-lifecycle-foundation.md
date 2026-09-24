@@ -76,6 +76,14 @@ This phase is doctrine-only.
 
 No current skill, schema, QA gate, release path, or policy is changed until the semantics survive formal audit.
 
+### LD-6: publication-boundary scope of this seal
+
+This phase's own tracked content carries no outside-repository identity term: the plan's last non-goal names the downstream composition target generically, and the audit report and gate artifacts are written without the term.
+
+Two sealed plans already on `main` (`docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md`, `docs/plan-shadow-escalation-origin-signature-current.md`) and their tracked intent-lock plan snapshots carry such a term. They are out of scope here. The Phase 292 plan's bytes are bound by `qor/reliability/intent_lock_committed.py` (CI: `git show 8968bb5f:.github/workflows/ci.yml | grep -n 'intent_lock_committed'` -> `run: python -m qor.reliability.intent_lock_committed --phase-min 231`) through its intent-lock record (`git show 8968bb5f:.qor/intent-lock/2026-09-23T1628-c67a6a.json | grep -n plan_hash` -> `"plan_hash": "bfec0225d22a22784785e6dec0da8ccdc42ea9a438f2ecbbd2f166271f3649c7"`), so removing the term from sealed evidence is a re-attestation design problem for its own phase (audit iter-3 VETO, Shadow Genome entry #35).
+
+At substantiate Step 4.6.14 the seal records `boundary_scope: structural` (the scope CI runs, since the identity overlay is gitignored) as the gating result. It also runs `structural+identity` locally and discloses that result in the SESSION SEAL entry: the two pre-existing sealed-plan findings, attributed to `main`, not introduced by this phase, and with no identity finding in any path this phase touches. The disclosure names the paths and does not quote the term.
+
 ## Evidence strategy
 
 This phase should be reviewed for:
@@ -128,7 +136,7 @@ These commands verify the plan contract, doctrine inventory, full behavioral sui
 - adding Shadow Spectrum schema fields;
 - implementing governed attention/applicability resolution;
 - changing current gate chain ordering;
-- migrating work into Qortara Logic.
+- migrating work into a downstream composition repository.
 
 ## Follow-on slices after PASS
 

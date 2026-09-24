@@ -1,0 +1,50 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-24T1721-e14f14",
+  "ts": "2026-09-24T17:44:55Z",
+  "plan_path": "docs/plan-qor-phase294-lifecycle-foundation.md",
+  "phases": [
+    "Add qor/references/doctrine-governed-development-lifecycle.md",
+    "Add qor/references/doctrine-development-environments-and-qa.md",
+    "Register both doctrines and the active initiative in docs/GOVERNANCE_INDEX.md",
+    "Reconcile README doctrine inventory and generated doctrine count",
+    "Publication-boundary cleanup of two sealed plans; no ledger amendment owed (LD-6, measured), disclosed via implement gate and phase ledger entries"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_plan_schema_ci_commands.py tests/test_skill_doctrine.py tests/test_readme_doctrine_inventory.py -v",
+    "python -m pytest tests/ -v",
+    "python -m qor.scripts.seal_artifacts --check --skip-tests --repo-root .",
+    "python -m ruff check qor/ tests/",
+    "python -m qor.scripts.publication_boundary_lint --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "change_class": "feature",
+  "originating_remediation": "GH #497; GH #502",
+  "boundaries": {
+    "limitations": [
+      "Doctrine-only; no runtime, schema, skill, or release-path change"
+    ],
+    "non_goals": [
+      "adding /qor-accept",
+      "renaming /qor-validate",
+      "introducing a deployment platform",
+      "requiring dedicated staging infrastructure for every consumer",
+      "adding Shadow Spectrum schema fields",
+      "implementing governed attention/applicability resolution",
+      "changing current gate chain ordering",
+      "migrating work into a downstream composition repository"
+    ],
+    "exclusions": []
+  },
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.174.3",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-24T17:44:55Z"
+  }
+}

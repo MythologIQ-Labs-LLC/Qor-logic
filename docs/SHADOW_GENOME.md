@@ -2845,4 +2845,84 @@ inconsistency into a third-party leak that ships with every test green.
 
 ---
 
+## Entry #33: VETO -- plan-qor-phase294-lifecycle-foundation (LD-6 amendment)
+
+**Date**: 2026-09-24
+**Verdict ID**: session 2026-09-24T1721-e14f14 audit-iter1
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+LD-6, added to fold a publication-boundary cleanup of two sealed plans into Phase 294, claimed the files are committed by their SESSION SEAL entries, that editing them makes those hashes stale, and that Step 3 `ledger_commitment` would enforce the disclosing AMENDMENT.
+
+### Why It Failed
+
+Measured, none of it holds. The seal content hashes (#799, #801) do not equal the plans' live hashes, and `latest_commitments` attributes neither file because both seals write `**Decision**: **Plan**:` on one line while `_ARTIFACT_RE` is line-anchored. The AMENDMENT shape LD-6 specified had no line-leading `**Artifact**` field, so it would have been unattributed too. The gate would have passed with or without the disclosure.
+
+### Pattern to Avoid
+
+A mechanism claim about the ledger written from the doctrine's description instead of from the parser. Before citing what a gate will check, run the gate's reader against the artifact (here `ledger_commitment.latest_commitments`) and paste its output as the grep-evidence. Related: SG-CitationDrift-A.
+
+---
+
+## Entry #34: VETO -- plan-qor-phase294-lifecycle-foundation (LD-6 iter 2)
+
+**Date**: 2026-09-24
+**Verdict ID**: session 2026-09-24T1721-e14f14 audit-iter2
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The iter-2 LD-6, having correctly measured that no ledger entry commits the two sealed plans, still specified an AMENDMENT naming #799/#801 in `**Amends**` with the pre-edit live hash as `**Superseded Content Hash**`.
+
+### Why It Failed
+
+The doctrine's field template was applied without re-reading its definitions against the measured state: `Amends` names the entry whose commitment is superseded, and there was none. The entry would have written a false provenance claim that only shape-validation guards. The solo Judge passed this; the voluntary independent reviewer caught it.
+
+### Pattern to Avoid
+
+Fixing a finding by filling in a template the finding just proved inapplicable. After correcting a factual premise, re-derive every field that depended on the old premise. Second-order: an author auditing their own same-day amendment should dispatch independent review even when `audit_risk_score` does not require it. Related: Entry #33, SG-AuthorAuditMomentum-A.
+
+---
+
+## Entry #35: VETO -- plan-qor-phase294-lifecycle-foundation (LD-6 iter 3)
+
+**Date**: 2026-09-24
+**Verdict ID**: session 2026-09-24T1721-e14f14 audit-iter3
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+LD-6 folded a one-line publication-boundary edit of two sealed plans into Phase 294 after checking only the ledger-commitment gate.
+
+### Why It Failed
+
+A sealed plan's bytes are bound by more than one verifier. `intent_lock_committed` (CI, phase >= 231) requires the Phase 292 plan to hash to its intent-lock record; editing it fails CI, and the tracked plan snapshots carry the same term as hash-bound evidence. Three consecutive iterations each verified one binding and missed the next.
+
+### Pattern to Avoid
+
+Before editing any sealed artifact, enumerate every verifier that reads it (grep qor/ and tests/ for the path and for the record type that stores its hash), not only the one the doctrine names. Remediating content inside sealed evidence is a re-attestation design problem, not a document edit, and does not belong folded into an unrelated phase. Related: Entries #33, #34.
+
+---
+
+## Entry #36: VETO -- plan-qor-phase294-lifecycle-foundation (LD-6 iter 4)
+
+**Date**: 2026-09-24
+**Verdict ID**: session 2026-09-24T1721-e14f14 audit-iter4
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+LD-6 proposed gating the seal's publication-boundary check at structural scope while disclosing the identity-scope result, to seal past pre-existing findings that could not be remediated in-phase.
+
+### Why It Failed
+
+The seal-time boundary run exists precisely to be the identity-aware fail-closed check CI cannot be; recording structural scope on a host that has the overlay requires hiding the overlay, which disables the control. The option was offered to the operator as legitimate before the ladder text was checked.
+
+### Pattern to Avoid
+
+Do not offer an operator a scope or mode choice for a fail-closed gate without first confirming the gate's documented purpose permits it; a disclosed bypass is still a bypass. When a phase is blocked by pre-existing debt that cannot be fixed in scope, the lawful route is a prerequisite phase, not a narrower gate. Related: Entries #33-#35.
+
+---
+
 *Shadow integrity: ACTIVE*
