@@ -1,140 +1,146 @@
 # AUDIT REPORT
 
-**Target**: `docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md`
-**Branch**: `phase/477-reconcile-dialect-accessor-current`
+**Tribunal Date**: 2026-09-24T03:16:06Z
+**Target**: `docs/plan-two-gap-assurance-admission.md`
+**Branch**: `phase/498-two-gap-assurance-admission`
+**Evaluated revision**: `3af4db474d1f8a469b470fb08e9329fb502af14b`
+**Risk Grade**: L1
 **Auditor**: The Qor-logic Judge
-**Date**: 2026-09-23
 
 ---
 
 ## VERDICT: PASS
 
-**Risk Grade**: L1
+No VETO-class defect was identified in the bounded documentation/admission slice at the evaluated revision.
 
-No violation mandating rejection was found.
+## Protocol status
 
-## Mode note, stated because the auditor is also the author
+This report records the Judge tribunal verdict for the evaluated revision. It does **not** claim that `/qor-audit` Step Z has completed. The canonical audit gate artifact and provenance sidecars must still be emitted through `gate_chain.write_gate_artifact(phase="audit", ..., skill="audit")` in a real Qor execution context before the audit gate chain is complete.
 
-`audit_risk_score --plan docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md`
-returned `option_b_required: false (no author-momentum risk signal)`.
-Independent review was not dispatched for this pass; the justification is
-recorded rather than assumed. This branch's own code diff
-(`qor/scripts/reconcile.py`, `tests/test_reconcile.py`) is byte-identical to
-superseded PR #493's revision, which was already independently reviewed
-with no defect found (review `5259248289`, exact head `eda5c4ef`). This
-audit formally evaluates the current-base plan (LD-1 through LD-3, D1-D6)
-that #493's own audit did not (and could not, since it predates this
-recomposition's LD framing) cover in these terms, per the branch's own
-Promotion Rule: "Merge only after this current-main recomposition has
-exact-head CI and the required current-base governance evidence."
+Because #515, #516, and #517 are all `change_class: feature` branches from the same `0.174.3` release state, release-class `/qor-substantiate` for this branch is intentionally serialized behind #515. This report may remain truthful historical evidence after #515 lands, but base-sensitive/current-fitness evidence must be refreshed after rebase before promotion.
 
-## Recomposition context
+## Audit mode / Option B
 
-This is a consolidation, not a fresh independent implementation. Two
-current-base recomposition efforts were created independently and nearly
-simultaneously after PR #492 (Phase 290) made historical PR #493
-non-mergeable: this branch (`phase/477-reconcile-dialect-accessor-current`,
-opened by the repo owner as PR #506, code-and-tests only, explicitly
-deferring governance evidence) and a parallel full-ceremony branch
-(`phase/510-reconcile-dialect-accessor`, opened by this session as PR #508).
-Rather than leave two competing lanes for the same GH #477 fix -- the exact
-"false-ready duplicate lane" problem the owner's own reconciliation of #493
-named and avoided -- this session is closing PR #508 and adding the
-already-computed, already-verified governance ceremony (this audit, ledger
-entries, version bump, doc-currency regeneration, gate/intent-lock
-evidence) onto this branch instead, as new commits appended after the
-owner's own two commits. No history on this branch is rewritten.
+The current `audit_risk_score` contract auto-mandates Option B when any configured author-momentum signal fires. Inspection of this plan against that deterministic contract produces no configured signal:
 
-## Mechanical gates
+- no `*.config.ts|js|yaml|toml` citation;
+- fewer than five `git show ... | grep` evidence statements (zero present);
+- no implementation signature widening target;
+- no struct-field/persistence-boundary change;
+- no scope-narrowing prose over a multi-entrypoint implementation file.
 
-| Gate | Result |
-|---|---|
-| `audit_risk_score --plan <plan>` | `option_b_required: false` |
-| `plan_test_lint --plan <plan>` | rc=0 |
-| `dod_check --plan <plan>` | rc=0, 0 findings |
-| `plan_iteration_status_lint --plan <plan>` | rc=0 |
-| `plan_feature_tdd_lint --plan <plan>` | rc=0 |
-| `prompt_injection_canaries --files <plan>` | rc=0 |
-| `prose_test_lint --enforce` | rc=0 |
-| Publication boundary scan of the plan | 0 findings (manual read: plan references only GH #477, PR #493, in-repo symbols/paths; no outside-repository identity, path, or credential) |
+Accordingly, `option_b_required` is false for this plan. Solo tribunal mode is permitted with the relationship disclosed. A requested independent review may provide additional evidence but is not treated as a universal prerequisite.
 
-## Locked Decisions review (per the branch's own plan)
+## Scope and evidence reviewed
 
-- **LD-1** (dialect owner remains sole capture-group interpreter): satisfied
-  -- both call sites route through `ledger_dialect.hash_value(match)`.
-- **LD-2** (preserve every accepted dialect form): satisfied -- no existing
-  form's regex or acceptance changed; only the consumer-side read of an
-  already-supported form was corrected.
-- **LD-3** (historical PR #493 evidence is provenance, not promotion
-  authority): satisfied by construction -- this audit and the governance
-  evidence added on top of it are fresh, computed against this branch's
-  actual current-base tip, not replayed from #493.
+The tribunal reviewed the exact two-file PR surface:
 
-## Passes
+- `docs/plan-two-gap-assurance-admission.md`
+- `docs/ADR_TWO_GAP_ASSURANCE_BOUNDARY.md`
 
-**Security L3 / OWASP.** No auth, credential, secret, or network surface
-touched. The change routes two existing regex-match objects through an
-already-published, already-tested accessor; no new input path, no new
-trust boundary. No violation.
+Hosted evidence on the evaluated revision:
 
-**Ghost UI.** N/A -- no UI surface in this plan.
+- CI: PASS
+- PR Citation Lint: PASS
 
-**Section 4 Simplicity Razor.**
+No runtime schema, gate, skill, dependency, executable code, deployment integration, Shadow writer, or Qortara Logic surface is modified by this slice.
 
-| Check | Limit | This change | Status |
-|---|---|---|---|
-| Max function lines | 40 | `detect_residual` and `_recorded_chain_hash` are unchanged in line count | OK |
-| Max file lines | 250 | `reconcile.py` is 127 lines pre- and post-change | OK |
-| Max nesting depth | 3 | Unchanged | OK |
-| Nested ternaries | 0 | 0 | OK |
+## Locked Decisions review
 
-**Dependency audit.** No new dependency. `ledger_dialect` is already an
-in-repo module, already imported by the sibling `ledger_hash.py` for the
-identical purpose.
+### LD-1: authority-bearing envelopes are mandatory
 
-**Macro-level architecture.** Closes a layering violation: `ledger_dialect`
-owns the `_HASH_VALUE` capture-group layout, and `reconcile.py` was the one
-remaining consumer bypassing the published accessor.
+**PASS.** The ADR now requires authority-bearing lifecycle transitions to bind exact revision/artifact, governing contract, evaluator/check set, relevant evaluated conditions/environment model, evidence, freshness, exclusions/limitations/N/A state, and responsible authority where applicable. Profile-specific omission requires explicit N/A plus rationale rather than silence.
 
-**Orphan detection.** No new production files beyond this phase's own
-governance artifacts. `qor/scripts/reconcile.py` is on the existing
-`reconcile` CLI's import path; `tests/test_reconcile.py` is collected by
-the existing pytest suite.
+This is proportional rather than universal ceremony because non-authority informational observations are permitted to carry a smaller practical envelope.
 
-## Test Functionality
+### LD-2: acceptance does not authorize promotion
 
-Both regression tests invoke the unit under test and assert on its return
-value (D3 in the branch's own plan; independently reviewed on #493 with
-no defect found):
+**PASS.** Acceptance is explicitly separated from promotability/promotion authorization, and merge/release/publish/deploy/activate remain distinct separately authorized actions. No successful assurance claim silently grants downstream mutation authority.
 
-- The `detect_residual` test asserts the returned dict groups a
-  backtick-form and a bare-line-form `Previous Hash` under the same real
-  hash key, and that `None` is not a key.
-- The `_last_chain_hash` test asserts the return equals the
-  independently-computed `chain_hash(...)` for a bare-line-form `Chain
-  Hash` entry.
+### LD-3: fitness invalidation has a minimum enforceable vocabulary
 
-## Verification (fresh on this branch's current tip)
+**PASS.** The minimum invalidation set covers revision/base drift, governing-contract drift, evaluator/check drift, environment-model drift, dependency/external-contract drift, authority drift, freshness expiry, and contradictory operational evidence.
 
-- `python -m pytest tests/test_reconcile.py -q`: 10 passed.
-- `python -m pytest tests/ -q`: 3523 passed / 4 skipped / 4 deselected / 1
-  pre-existing unrelated failure
-  (`tests/test_changelog_tag_coverage.py::test_every_changelog_section_has_tag`,
-  orphan sections `0.173.0`/`0.174.0` -- confirmed pre-existing on
-  unmodified `main` in earlier session work on the parallel branch; PR #492
-  pushing `v0.174.1` exposed a pre-existing tag-push gap this phase's diff
-  does not touch).
-- `ruff check qor/scripts/reconcile.py tests/test_reconcile.py`: clean.
-- `python -m qor.scripts.check_variant_drift`: 406 files, no drift.
-- `qor-logic verify-ledger`: entries through #797 chain-verified clean on
-  the branch point before this session's append.
+Unknown material invalidation state maps to `UNESTABLISHED`, preventing absence of evidence from becoming an optimistic current-fitness claim.
 
-## Disclosed, out of this phase's scope
+### LD-4: containment and remediation are separate authority domains
 
-Running the full suite regenerates `qor/dist/manifest.json` and its variant
-copies as an observed side effect of the local test run -- not caused by
-this phase's own edits. Discarded before staging; not part of this phase's
-diff.
+**PASS.** Immediate containment/rollback may precede full causal classification only under pre-existing recovery authority. Containment does not grant root-cause mutation authority, rollback success does not close the underlying defect, and remediation success does not itself prove operational recovery.
 
-**Required next action**: /qor-implement (already complete for the code
-change on #506; proceeding directly to seal for the governance evidence).
+### LD-5: no runtime enforcement in this slice
+
+**PASS.** The diff is documentation/admission only. No runtime implementation or migration authority is introduced.
+
+## Adversarial passes
+
+### Security / authority
+
+**PASS.** No credential, auth, network, execution, deployment, or data-plane surface changes. The ADR strengthens rather than expands authority by separating evidence, acceptance, promotability, containment, and remediation.
+
+### Macro-level architecture
+
+**PASS.** The proposal keeps Qor at the governance/evidence boundary and explicitly rejects turning core Qor into a deployment controller, observability platform, traffic manager, or feature-flag service. Outer-loop execution may remain external while Qor governs contracts, evidence, authority, invalidation, and lawful handoff.
+
+### Lifecycle compatibility
+
+**PASS.** The ADR's arrows are explicitly claim progression / assurance relationships, not a universal runtime gate order. This is compatible with the Phase 294 candidate doctrine rather than redefining the current operational skill chain.
+
+### Historical truth vs current fitness
+
+**PASS.** Historical PASS evidence remains immutable truthful history while current applicability may become unestablished after material invalidation. Later evidence does not rewrite earlier bounded truth.
+
+### Evidence-envelope proportionality
+
+**PASS.** The mandatory envelope applies to claims used to advance lifecycle authority. Informational observations are not forced through the same full envelope. This avoids converting a safety boundary into indiscriminate ceremony.
+
+### Recovery / remediation separation
+
+**PASS.** Detection/classification does not grant mutation authority. The handoff names lawful next-owner classes and remains non-mutating by default.
+
+### Shadow Genome boundary
+
+**PASS.** Shadow Genome is a downstream consumer of divergence evidence. Classification does not create authority and historical causal claims may not be silently rewritten.
+
+### Dependency pass
+
+**PASS / N/A.** No dependency change exists.
+
+### Ghost UI pass
+
+**PASS / N/A.** No UI surface exists.
+
+### Section 4 Razor pass
+
+**PASS / N/A for executable complexity.** The slice adds documentation only and no production function/file complexity surface subject to the code razor.
+
+### Orphan pass
+
+**PASS.** The plan is owned by GH #498 under #497; the ADR names GH #498 as owning issue and remains explicitly Proposed pending governed adoption.
+
+## Documentation Drift
+
+<!-- qor:drift-section -->
+
+Pre-adoption review found no contradiction requiring a VETO in this bounded slice. Broader reconciliation remains explicitly owned by #500 and is follow-on work, not silently claimed complete here.
+
+## Findings
+
+No VETO-class findings.
+
+One promotion-order constraint is recorded, not as a defect in this revision but as current-fitness discipline: this branch must not be release-class substantiated from the same `0.174.3` base as #515. After #515 lands, #516 must reconcile to the accepted base and refresh base-sensitive evidence before promotion.
+
+## Non-claims
+
+This PASS does not:
+
+- adopt the ADR merely because the report exists;
+- complete `/qor-audit` Step Z or create provenance sidecars;
+- authorize `/qor-substantiate` on the current pre-#515 base;
+- implement evidence-envelope or invalidation runtime enforcement;
+- close GH #498;
+- authorize Shadow Spectrum runtime changes;
+- authorize Qortara Logic migration.
+
+## Required next action
+
+Preserve this tribunal as revision-bound evidence. Do not release-class substantiate #516 yet. After #515 lawfully lands, reconcile/rebase #516 onto accepted `main`, re-run the base-sensitive audit/CI evidence required by Qor, then complete authentic `/qor-audit` Step Z and proceed to `/qor-substantiate` only if the refreshed revision remains PASS.
