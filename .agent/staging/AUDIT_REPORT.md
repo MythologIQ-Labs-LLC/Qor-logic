@@ -3,15 +3,17 @@
 **Date**: 2026-09-24
 **Target**: `docs/plan-qor-phase293-ledger-emit-hash-block.md`
 **Branch**: `phase/293-ledger-emit-hash-block`
-**Evaluated revision**: `ac035e943f1548c164e9520dc25c85cc2b7f9d3c`
+**Evaluated revision**: `a437a48e6bce9db80bd91340a749a212459e72a6`
 **Risk Grade**: L2
 **Auditor**: The Qor-logic Judge
 
 ---
 
-## VERDICT: VETO
+## VERDICT: PASS
 
-The production refactor is directionally correct and appears byte-preserving, but the test intended to enforce the central ownership invariant does not actually prove that `ledger_emit.render()` delegates to the new `hash_block()` primitive.
+No VETO-class defect remains in the bounded hash-block ownership slice at the evaluated revision.
+
+The prior tribunal VETO on revision `ac035e943f1548c164e9520dc25c85cc2b7f9d3c` was valid and remains preserved in Git history. It identified a vacuous `render()` wiring test that could not distinguish delegation to `ledger_emit.hash_block()` from a return to independently hand-rolled equivalent bytes. Revision `a437a48e6bce9db80bd91340a749a212459e72a6` remediates exactly that defect and no production behavior.
 
 ## Audit mode / Option B
 
@@ -19,15 +21,64 @@ The current deterministic `audit_risk_score` does not auto-mandate Option B for 
 
 - no `*.config.ts|js|yaml|toml` citation;
 - three `git show ... | grep` evidence statements, below the threshold of five;
-- no struct-field persistence widening;
-- no scope-narrowing multi-entrypoint signal;
-- the plan introduces a new internal helper rather than widening an existing public function signature across a caller cascade.
+- no configured struct-field persistence widening;
+- no configured scope-narrowing multi-entrypoint signal;
+- the plan adds an internal helper rather than widening an existing shared signature across a caller cascade.
 
-Solo tribunal is therefore permitted with the relationship disclosed.
+`option_b_required` is therefore false under the current contract. Solo tribunal mode is permitted with the relationship disclosed.
+
+## Remediation verification
+
+The remediation commit is signed and changes only `tests/test_ledger_emit.py`.
+
+The repaired test `test_render_delegates_its_hash_lines_to_hash_block` now monkeypatches the module-level `ledger_emit.hash_block` to return a sentinel and asserts the sentinel reaches `render()` output. This is the same behavioral wiring pattern already used for `ledger_migrate.canonical_block()` and `reconcile.append_reconciliation_entry()`.
+
+The implementation owner also performed the required negative control in a real checkout:
+
+- temporarily restored independent inline formatting inside `render()` while leaving `hash_block()` defined;
+- confirmed the prior containment test incorrectly stayed green;
+- confirmed the replacement sentinel test fails red against the hand-rolled implementation;
+- restored the actual delegating implementation;
+- confirmed the replacement test green twice for determinism.
+
+This closes the exact VETO ground rather than merely changing the assertion text.
+
+## Mechanical evidence on evaluated revision
+
+Local real-checkout evidence reported by the implementation owner:
+
+- targeted ledger/reconcile suites: 25 passed, run three times;
+- full suite: 3512 passed / 26 skipped / 4 deselected / 1 pre-existing unrelated failure;
+- `ruff` on touched ledger/test surface: clean;
+- `plan_grep_lint`: 3/3 citations verified, 0 findings;
+- variant drift: 406 files, no drift;
+- publication boundary: 0 findings.
+
+Hosted exact-head evidence:
+
+- CI: PASS;
+- OSS SAST: PASS;
+- PR Citation Lint: FAIL only because the PR does not yet carry a lawful current ledger-entry reference and 64-hex Merkle seal.
+
+The Citation Lint failure is downstream admission evidence, not a code/audit defect and is not waived by this PASS.
+
+## Locked Decisions review
+
+### LD-1: ownership is exactly the hash triple, not the full entry
+
+**PASS.** `ledger_emit.hash_block()` owns only the three canonical hash lines. No unrelated entry fields or separators are centralized.
+
+### LD-2: block-level primitive rather than forced full render
+
+**PASS.** `ledger_migrate.canonical_block()` delegates to `ledger_emit.hash_block()`. Reconciliation delegates only its trailing hash block, preserving its distinct heading/fields/Scope shape. `render()` itself composes through the same primitive.
+
+### LD-3: tests prove delegation rather than equivalent bytes
+
+**PASS after remediation.** All three consumers now have behavioral wiring evidence. The owner-path `render()` test no longer relies on string equivalence and has been proven red against the prohibited duplicate-writer behavior.
 
 ## Security / OWASP
 
-**PASS.** No auth, credential, secret, network, subprocess, unsafe-deserialization, DB, or external-mutation surface is introduced. The change is an internal ledger-format ownership refactor.
+**PASS.** No auth, credential, secret, network, subprocess, unsafe-deserialization, DB, or external-mutation surface is introduced. This remains an internal ledger-format ownership refactor.
 
 ## Ghost UI
 
@@ -35,68 +86,42 @@ Solo tribunal is therefore permitted with the relationship disclosed.
 
 ## Section 4 Simplicity Razor
 
-**PASS.** The touched production functions remain small and the new `hash_block()` helper is compact. No file-size, function-size, nesting, or nested-ternary breach was identified in the changed production surface.
+**PASS.** No touched production function/file exceeds the binding limits, and the remediation is test-only.
 
 ## Dependency audit
 
 **PASS.** No dependency added.
 
-## Macro architecture
+## Macro-level architecture
 
-**PASS with one evidence VETO below.** The desired dependency direction is coherent:
+**PASS.** The refactor establishes one writer for the hash-triple block without forcing heterogeneous ledger-entry producers through one full-entry shape. This reduces ownership duplication while preserving existing boundaries.
 
-- `ledger_emit.hash_block()` owns the three-line hash-triple markup;
-- `ledger_emit.render()` should compose through that owner;
-- `ledger_migrate.canonical_block()` delegates to that owner;
-- `reconcile.append_reconciliation_entry()` delegates only its trailing hash block while preserving its distinct entry shape.
+## Orphan detection
 
-No import cycle or broader entry-shape mutation is introduced by the evaluated diff.
+**PASS.** The primitive is used by `render`, migration, and reconciliation. Tests exercise the owner and both non-owner call sites.
 
-## Byte-preservation review
+## Test Functionality
 
-**PASS on static review.** `render()` converts `hash_block(...).rstrip("\n").split("\n")` back into the same three list elements previously emitted inline. `canonical_block()` returns the owned block unchanged. Reconciliation concatenates the same three-line block after the existing `Scope` field. No intended ledger bytes outside ownership/delegation change are introduced.
-
-## Test Functionality Pass
-
-**VETO.** The plan correctly states that black-box string equality cannot prove delegation to a shared primitive. The downstream tests honor that rule:
-
-- `test_canonical_block_delegates_to_ledger_emit_hash_block` monkeypatches `ledger_emit.hash_block` to return a sentinel and proves the sentinel flows through `canonical_block()`;
-- `test_append_reconciliation_entry_delegates_hash_lines_to_ledger_emit` does the same for reconciliation.
-
-But `test_render_composes_its_hash_lines_from_hash_block` does **not** prove the corresponding owner-path delegation. It computes the real `hash_block(c, p, x)` and merely asserts that those bytes appear in `render()` output.
-
-A regression that restores the old inline hash-triple formatting inside `render()` while leaving `hash_block()` defined would still pass that test. The repository would again have two independent writers while the test named to prevent that recurrence remained green.
-
-That is precisely the false-proof shape LD-3 says the wiring tests exist to prevent.
-
-**Required next action:** strengthen the `render()` test with a monkeypatch/sentinel or equivalently strong behavioral wiring proof, run the declared CI-equivalent tests in a real checkout, then re-run `/qor-audit`.
-
-## Findings
-
-| ID | Category | Location | Description |
-|---|---|---|---|
-| V1 | coverage-gap / macro-architecture | `tests/test_ledger_emit.py::test_render_composes_its_hash_lines_from_hash_block` | Test proves byte equality, not delegation; inline duplicate ownership could return without failing the test. |
-
-## Preserved strengths
-
-Remediation should preserve:
-
-- `hash_block(content, previous, chain)` as the owned block primitive;
-- byte-for-byte output compatibility;
-- no forced full-entry `render()` use in migration/reconciliation;
-- monkeypatch wiring tests already present for migration and reconciliation;
-- no expansion into #464 audit-template convergence, #467 reader ownership, or new writer-side linting.
+**PASS.** The central ownership invariant now has a behavioral negative control. A future return to independently hand-rolled bytes in any of the three protected call sites causes the corresponding sentinel-based wiring test to fail.
 
 ## Documentation Drift
 
 <!-- qor:drift-section -->
 
-The plan's LD-3 correctly explains why wiring evidence must distinguish delegation from equivalent duplicate output. The implementation's `render()` test falls short of that stated contract. This is implementation/test drift from the plan, not a need to broaden the plan.
+No blocking plan/implementation drift remains. The prior VETO identified a test that did not satisfy LD-3; the current revision now satisfies the plan's own stated evidence standard without broadening scope.
 
-## Protocol status
+## Non-claims
 
-This report records the Judge VETO against evaluated revision `ac035e943f1548c164e9520dc25c85cc2b7f9d3c`. `/qor-audit` Step Z gate/provenance emission is not claimed and must not be hand-authored. No ledger entry, Merkle seal, version bump, substantiation PASS, or merge authority is asserted.
+This PASS does not:
+
+- complete `/qor-audit` Step Z gate/provenance emission;
+- create or authorize a ledger entry or Merkle seal;
+- satisfy PR Citation Lint by declaration;
+- authorize `/qor-substantiate` ahead of the current #515 promotion lane;
+- authorize merge from stale or future-diverged base state;
+- close GH #468 until the implementation is lawfully promoted;
+- authorize Qortara Logic migration.
 
 ## Required next action
 
-Bounded test remediation in a real checkout, declared CI-equivalent verification, then fresh `/qor-audit`. Do not manufacture Citation Lint evidence before a PASS revision and authentic Step Z/substantiation.
+Freeze this remediated PASS revision as truthful current evidence while #515 owns the active promotion lane. After the accepted base changes, refresh base-sensitive evidence as required, complete authentic `/qor-audit` Step Z through the provenance-enforcing gate writer, then run `/qor-substantiate` only if the resulting revision remains lawful and PASS. Do not fabricate Citation Lint evidence.
