@@ -135,6 +135,48 @@ than on the exit code. Suppressing exit 1 leaves open how a consumer surfaces a
 no consumer here solves it yet, and one that needs to must baseline finding
 identities rather than their number.
 
+## Remediating sealed evidence (Phase 296)
+
+A sealed plan carries its session's intent-lock family with it: the lock
+record `.qor/intent-lock/<session>.json`, a plan snapshot, and an audit
+snapshot. For every sealed session that `qor.reliability.intent_lock_committed`
+walks (SESSION SEAL entries at or above `--phase-min`, 231 in CI), the plan
+file and both snapshots must hash to the record. Editing such a plan for this
+doctrine therefore needs a governed path, and rewriting the record would
+destroy the evidence it holds.
+
+That path is **intent-lock re-attestation**. The record stays byte-identical.
+A new tracked file `<session>.reattest-<k>.json` (`k` = 1, 2, ... contiguous)
+carries exactly four string fields -- `session`, `supersedes_plan_hash`,
+`plan_hash`, `reason` -- and a META_LEDGER `AMENDMENT` entry commits its bytes
+with a line-leading `**Artifact**` citation. The checker folds the chain into
+an effective plan hash and verifies the plan file and plan snapshot against
+it. The audit side never changes. An uncommitted, edited-after-commit,
+non-contiguous, non-chaining, or malformed record fails as
+`reattestation-invalid`, and so does a record for a session the checker does
+not walk.
+
+Neither the record's `reason` nor the AMENDMENT body quotes the removed text.
+Files under `.qor/intent-lock/` are gitignored, so the remediating phase stages
+them with an exact `git add -f` and confirms with `git diff --cached` that the
+edited bytes are staged; `seal_stage` only stages the sealing session's own
+family.
+
+A sealed session the checker does not walk -- for example one whose SESSION
+SEAL entry carries no `**Session**` line -- has nothing that verifies its lock
+family. Its plan and snapshot are edited directly and the change is disclosed
+by an `AMENDMENT` without an `**Artifact**` line, since no record exists to
+commit.
+
+Limits, stated plainly: the lock record itself is hash-bound by nothing, so a
+coordinated direct edit of record, snapshot, and plan still passes the checker,
+as it did before this path existed; re-attestation is the sanctioned and
+disclosed route, not a closure of that gap. AMENDMENT review happens in pull
+request review and is not machine-enforced. The walked set is keyed by phase
+number, so a later seal that reuses an earlier seal's phase number removes the
+earlier session from the walked set and makes its re-attestation records fail
+as unwalked; phase numbers must stay unique for this path to hold.
+
 
 ## Agent obligations
 

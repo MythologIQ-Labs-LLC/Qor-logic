@@ -218,3 +218,21 @@ def test_a_plain_content_hash_in_a_committing_entry_is_still_a_commitment(tmp_pa
     commitments = lc.latest_commitments(ledger)
 
     assert commitments.get("docs/plan-qor-phaseX.md") == _A
+
+
+# ----- Phase 296: re-attestation records are .json artifacts -----
+
+
+def test_json_artifact_in_a_committing_entry_is_attributed(tmp_path):
+    rel = ".qor/intent-lock/s.reattest-1.json"
+    digest = lc.content_hash(tmp_path / _artifact(tmp_path, rel, '{"session": "s"}' + chr(10)))
+    ledger = _ledger(tmp_path, _entry(1, "AMENDMENT", rel, digest))
+
+    assert lc.latest_commitments(ledger)[rel] == digest
+
+
+def test_json_citation_in_a_gate_tribunal_is_not_a_commitment(tmp_path):
+    rel = ".qor/intent-lock/s.reattest-1.json"
+    ledger = _ledger(tmp_path, _entry(1, "GATE TRIBUNAL", rel, _A))
+
+    assert rel not in lc.latest_commitments(ledger)
