@@ -2925,4 +2925,24 @@ Do not offer an operator a scope or mode choice for a fail-closed gate without f
 
 ---
 
+## Entry #37: VETO -- remediation proposal, session 2026-09-24T1721-e14f14
+
+**Date**: 2026-09-24
+**Verdict ID**: session 2026-09-24T1721-e14f14 audit-iter5 (reviews-remediate)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The remediation proposal declared `closure_enforcer: /qor-audit Step 1.a` and was submitted for the review whose PASS flips its events to addressed.
+
+### Why It Failed
+
+The value is not an accepted enforcer form (the validator requires a numeric Step reference), and the named gate does not implement the proposed signal; the proposal's own text said the flip must wait for that enforcer.
+
+### Pattern to Avoid
+
+Run `remediate_attestation._validate_closure_enforcer` on the enforcer before emitting, and name an enforcer that exists and exercises the pattern -- otherwise leave events pending and defer the review. Related: Entries #33-#36.
+
+---
+
 *Shadow integrity: ACTIVE*

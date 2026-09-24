@@ -23954,6 +23954,25 @@ Session `2026-09-24T1721-e14f14`, branch `phase/294-lifecycle-foundation-current
 
 **Required next action**: prerequisite governed phase to remediate identity findings in sealed evidence (re-attestation design), then resume Phase 294.
 
+### Entry #806: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-24T19:17:30Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `6ad180f932b6`
+**Verdict**: VETO
+
+**Content Hash**: `8641acc5473cf26bde150778e2b49ad5d68a34f964b35accbc01157cac9d00b2`
+**Previous Hash**: `2f0784f44d52978371edc34ab8ca867091ae8adaec8da674e1159cb44f340a27`
+**Chain Hash (Merkle seal)**: `48729470a430a43e465d863d19823ca3541e9a6dfa55abb299bbd54998446175`
+
+**Decision**: **Target**: `.qor/gates/2026-09-24T1721-e14f14/remediate.json` (reviews-remediate)
+
+**Decision**: VETO. The remediation proposal's root-cause analysis stands; its closure is defective. V1: `closure_enforcer: /qor-audit Step 1.a` is rejected by `remediate_attestation._validate_closure_enforcer` (none of the four accepted forms). V2: the named gate does not implement the proposed in-session prior-VETO signal (`audit_risk_score.score_plan` reads plan text only), and the proposal's own text forbids the flip before that enforcer exists. No events flipped; all four remain addressed_pending. Shadow Genome entry #37.
+
+**Required next action**: amend the proposal via /qor-remediate to defer closure to the enforcer test of the phase that implements Change 1.
+
 ---
 
 *Chain integrity: VALID*
