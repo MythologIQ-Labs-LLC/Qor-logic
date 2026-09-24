@@ -1,140 +1,102 @@
 # AUDIT REPORT
 
-**Target**: `docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md`
-**Branch**: `phase/477-reconcile-dialect-accessor-current`
+**Date**: 2026-09-24
+**Target**: `docs/plan-qor-phase293-ledger-emit-hash-block.md`
+**Branch**: `phase/293-ledger-emit-hash-block`
+**Evaluated revision**: `ac035e943f1548c164e9520dc25c85cc2b7f9d3c`
+**Risk Grade**: L2
 **Auditor**: The Qor-logic Judge
-**Date**: 2026-09-23
 
 ---
 
-## VERDICT: PASS
+## VERDICT: VETO
 
-**Risk Grade**: L1
+The production refactor is directionally correct and appears byte-preserving, but the test intended to enforce the central ownership invariant does not actually prove that `ledger_emit.render()` delegates to the new `hash_block()` primitive.
 
-No violation mandating rejection was found.
+## Audit mode / Option B
 
-## Mode note, stated because the auditor is also the author
+The current deterministic `audit_risk_score` does not auto-mandate Option B for this plan:
 
-`audit_risk_score --plan docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md`
-returned `option_b_required: false (no author-momentum risk signal)`.
-Independent review was not dispatched for this pass; the justification is
-recorded rather than assumed. This branch's own code diff
-(`qor/scripts/reconcile.py`, `tests/test_reconcile.py`) is byte-identical to
-superseded PR #493's revision, which was already independently reviewed
-with no defect found (review `5259248289`, exact head `eda5c4ef`). This
-audit formally evaluates the current-base plan (LD-1 through LD-3, D1-D6)
-that #493's own audit did not (and could not, since it predates this
-recomposition's LD framing) cover in these terms, per the branch's own
-Promotion Rule: "Merge only after this current-main recomposition has
-exact-head CI and the required current-base governance evidence."
+- no `*.config.ts|js|yaml|toml` citation;
+- three `git show ... | grep` evidence statements, below the threshold of five;
+- no struct-field persistence widening;
+- no scope-narrowing multi-entrypoint signal;
+- the plan introduces a new internal helper rather than widening an existing public function signature across a caller cascade.
 
-## Recomposition context
+Solo tribunal is therefore permitted with the relationship disclosed.
 
-This is a consolidation, not a fresh independent implementation. Two
-current-base recomposition efforts were created independently and nearly
-simultaneously after PR #492 (Phase 290) made historical PR #493
-non-mergeable: this branch (`phase/477-reconcile-dialect-accessor-current`,
-opened by the repo owner as PR #506, code-and-tests only, explicitly
-deferring governance evidence) and a parallel full-ceremony branch
-(`phase/510-reconcile-dialect-accessor`, opened by this session as PR #508).
-Rather than leave two competing lanes for the same GH #477 fix -- the exact
-"false-ready duplicate lane" problem the owner's own reconciliation of #493
-named and avoided -- this session is closing PR #508 and adding the
-already-computed, already-verified governance ceremony (this audit, ledger
-entries, version bump, doc-currency regeneration, gate/intent-lock
-evidence) onto this branch instead, as new commits appended after the
-owner's own two commits. No history on this branch is rewritten.
+## Security / OWASP
 
-## Mechanical gates
+**PASS.** No auth, credential, secret, network, subprocess, unsafe-deserialization, DB, or external-mutation surface is introduced. The change is an internal ledger-format ownership refactor.
 
-| Gate | Result |
-|---|---|
-| `audit_risk_score --plan <plan>` | `option_b_required: false` |
-| `plan_test_lint --plan <plan>` | rc=0 |
-| `dod_check --plan <plan>` | rc=0, 0 findings |
-| `plan_iteration_status_lint --plan <plan>` | rc=0 |
-| `plan_feature_tdd_lint --plan <plan>` | rc=0 |
-| `prompt_injection_canaries --files <plan>` | rc=0 |
-| `prose_test_lint --enforce` | rc=0 |
-| Publication boundary scan of the plan | 0 findings (manual read: plan references only GH #477, PR #493, in-repo symbols/paths; no outside-repository identity, path, or credential) |
+## Ghost UI
 
-## Locked Decisions review (per the branch's own plan)
+**PASS / N/A.** No UI surface.
 
-- **LD-1** (dialect owner remains sole capture-group interpreter): satisfied
-  -- both call sites route through `ledger_dialect.hash_value(match)`.
-- **LD-2** (preserve every accepted dialect form): satisfied -- no existing
-  form's regex or acceptance changed; only the consumer-side read of an
-  already-supported form was corrected.
-- **LD-3** (historical PR #493 evidence is provenance, not promotion
-  authority): satisfied by construction -- this audit and the governance
-  evidence added on top of it are fresh, computed against this branch's
-  actual current-base tip, not replayed from #493.
+## Section 4 Simplicity Razor
 
-## Passes
+**PASS.** The touched production functions remain small and the new `hash_block()` helper is compact. No file-size, function-size, nesting, or nested-ternary breach was identified in the changed production surface.
 
-**Security L3 / OWASP.** No auth, credential, secret, or network surface
-touched. The change routes two existing regex-match objects through an
-already-published, already-tested accessor; no new input path, no new
-trust boundary. No violation.
+## Dependency audit
 
-**Ghost UI.** N/A -- no UI surface in this plan.
+**PASS.** No dependency added.
 
-**Section 4 Simplicity Razor.**
+## Macro architecture
 
-| Check | Limit | This change | Status |
+**PASS with one evidence VETO below.** The desired dependency direction is coherent:
+
+- `ledger_emit.hash_block()` owns the three-line hash-triple markup;
+- `ledger_emit.render()` should compose through that owner;
+- `ledger_migrate.canonical_block()` delegates to that owner;
+- `reconcile.append_reconciliation_entry()` delegates only its trailing hash block while preserving its distinct entry shape.
+
+No import cycle or broader entry-shape mutation is introduced by the evaluated diff.
+
+## Byte-preservation review
+
+**PASS on static review.** `render()` converts `hash_block(...).rstrip("\n").split("\n")` back into the same three list elements previously emitted inline. `canonical_block()` returns the owned block unchanged. Reconciliation concatenates the same three-line block after the existing `Scope` field. No intended ledger bytes outside ownership/delegation change are introduced.
+
+## Test Functionality Pass
+
+**VETO.** The plan correctly states that black-box string equality cannot prove delegation to a shared primitive. The downstream tests honor that rule:
+
+- `test_canonical_block_delegates_to_ledger_emit_hash_block` monkeypatches `ledger_emit.hash_block` to return a sentinel and proves the sentinel flows through `canonical_block()`;
+- `test_append_reconciliation_entry_delegates_hash_lines_to_ledger_emit` does the same for reconciliation.
+
+But `test_render_composes_its_hash_lines_from_hash_block` does **not** prove the corresponding owner-path delegation. It computes the real `hash_block(c, p, x)` and merely asserts that those bytes appear in `render()` output.
+
+A regression that restores the old inline hash-triple formatting inside `render()` while leaving `hash_block()` defined would still pass that test. The repository would again have two independent writers while the test named to prevent that recurrence remained green.
+
+That is precisely the false-proof shape LD-3 says the wiring tests exist to prevent.
+
+**Required next action:** strengthen the `render()` test with a monkeypatch/sentinel or equivalently strong behavioral wiring proof, run the declared CI-equivalent tests in a real checkout, then re-run `/qor-audit`.
+
+## Findings
+
+| ID | Category | Location | Description |
 |---|---|---|---|
-| Max function lines | 40 | `detect_residual` and `_recorded_chain_hash` are unchanged in line count | OK |
-| Max file lines | 250 | `reconcile.py` is 127 lines pre- and post-change | OK |
-| Max nesting depth | 3 | Unchanged | OK |
-| Nested ternaries | 0 | 0 | OK |
+| V1 | coverage-gap / macro-architecture | `tests/test_ledger_emit.py::test_render_composes_its_hash_lines_from_hash_block` | Test proves byte equality, not delegation; inline duplicate ownership could return without failing the test. |
 
-**Dependency audit.** No new dependency. `ledger_dialect` is already an
-in-repo module, already imported by the sibling `ledger_hash.py` for the
-identical purpose.
+## Preserved strengths
 
-**Macro-level architecture.** Closes a layering violation: `ledger_dialect`
-owns the `_HASH_VALUE` capture-group layout, and `reconcile.py` was the one
-remaining consumer bypassing the published accessor.
+Remediation should preserve:
 
-**Orphan detection.** No new production files beyond this phase's own
-governance artifacts. `qor/scripts/reconcile.py` is on the existing
-`reconcile` CLI's import path; `tests/test_reconcile.py` is collected by
-the existing pytest suite.
+- `hash_block(content, previous, chain)` as the owned block primitive;
+- byte-for-byte output compatibility;
+- no forced full-entry `render()` use in migration/reconciliation;
+- monkeypatch wiring tests already present for migration and reconciliation;
+- no expansion into #464 audit-template convergence, #467 reader ownership, or new writer-side linting.
 
-## Test Functionality
+## Documentation Drift
 
-Both regression tests invoke the unit under test and assert on its return
-value (D3 in the branch's own plan; independently reviewed on #493 with
-no defect found):
+<!-- qor:drift-section -->
 
-- The `detect_residual` test asserts the returned dict groups a
-  backtick-form and a bare-line-form `Previous Hash` under the same real
-  hash key, and that `None` is not a key.
-- The `_last_chain_hash` test asserts the return equals the
-  independently-computed `chain_hash(...)` for a bare-line-form `Chain
-  Hash` entry.
+The plan's LD-3 correctly explains why wiring evidence must distinguish delegation from equivalent duplicate output. The implementation's `render()` test falls short of that stated contract. This is implementation/test drift from the plan, not a need to broaden the plan.
 
-## Verification (fresh on this branch's current tip)
+## Protocol status
 
-- `python -m pytest tests/test_reconcile.py -q`: 10 passed.
-- `python -m pytest tests/ -q`: 3523 passed / 4 skipped / 4 deselected / 1
-  pre-existing unrelated failure
-  (`tests/test_changelog_tag_coverage.py::test_every_changelog_section_has_tag`,
-  orphan sections `0.173.0`/`0.174.0` -- confirmed pre-existing on
-  unmodified `main` in earlier session work on the parallel branch; PR #492
-  pushing `v0.174.1` exposed a pre-existing tag-push gap this phase's diff
-  does not touch).
-- `ruff check qor/scripts/reconcile.py tests/test_reconcile.py`: clean.
-- `python -m qor.scripts.check_variant_drift`: 406 files, no drift.
-- `qor-logic verify-ledger`: entries through #797 chain-verified clean on
-  the branch point before this session's append.
+This report records the Judge VETO against evaluated revision `ac035e943f1548c164e9520dc25c85cc2b7f9d3c`. `/qor-audit` Step Z gate/provenance emission is not claimed and must not be hand-authored. No ledger entry, Merkle seal, version bump, substantiation PASS, or merge authority is asserted.
 
-## Disclosed, out of this phase's scope
+## Required next action
 
-Running the full suite regenerates `qor/dist/manifest.json` and its variant
-copies as an observed side effect of the local test run -- not caused by
-this phase's own edits. Discarded before staging; not part of this phase's
-diff.
-
-**Required next action**: /qor-implement (already complete for the code
-change on #506; proceeding directly to seal for the governance evidence).
+Bounded test remediation in a real checkout, declared CI-equivalent verification, then fresh `/qor-audit`. Do not manufacture Citation Lint evidence before a PASS revision and authentic Step Z/substantiation.
