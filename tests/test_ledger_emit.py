@@ -5,7 +5,9 @@ from __future__ import annotations
 import pytest
 
 import hashlib
+from unittest import mock
 
+from qor.scripts import ledger_emit
 from qor.scripts.ledger_emit import LedgerEntry, append, hash_block, render
 from qor.scripts.ledger_hash import _resolve_recorded, chain_hash, verify
 
@@ -91,9 +93,12 @@ def test_hash_block_is_the_canonical_three_line_markup():
     )
 
 
-def test_render_composes_its_hash_lines_from_hash_block():
-    c = hashlib.sha256(b"c").hexdigest()
-    p = hashlib.sha256(b"p").hexdigest()
-    x = hashlib.sha256(b"x").hexdigest()
-    text = render(_entry(2), content=c, previous=p, chain=x)
-    assert hash_block(c, p, x).rstrip("\n") in text
+def test_render_delegates_its_hash_lines_to_hash_block():
+    """GH #468 LD-3: black-box string equality cannot distinguish delegation
+    from independent duplication -- render() could hand-roll the same three
+    bytes again and a plain containment assertion would never notice. Prove
+    delegation instead: monkeypatch the module-level hash_block with a
+    sentinel and assert it reaches render()'s own output."""
+    with mock.patch.object(ledger_emit, "hash_block", return_value="SENTINEL\n"):
+        text = render(_entry(2), content="c", previous="p", chain="x")
+    assert "SENTINEL" in text
