@@ -24031,6 +24031,25 @@ VETO (iter 1). V1 (`infrastructure-mismatch`): the plan names the cooling-period
 
 **Required next action**: Governor: amend plan text, re-run `/qor-audit`.
 
+### Entry #810: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-25T23:55:40Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `32bf68a26d3e`
+**Verdict**: VETO
+
+**Content Hash**: `756393af8873906b2a27672d3bfa85fd52528f28e9d1c56dc0321af9ecaac36d`
+**Previous Hash**: `7ab4f7bcc7bd2e4d513a95442433c75da26530958083b1d5d5b50f7dd0084122`
+**Chain Hash (Merkle seal)**: `b9491d3a4d41d20e5654cd1740448d96a545480436e18d4ef14dd871b851062d`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+VETO (iter 2). Iter-1 grounds resolved: V1 closed by one hard-fail admission step per governed root lockfile via the lint's existing `--lockfile`; V2 closed by a regression that derives root `requirements-*.in/.txt` plus `pyproject.toml` and guards the derivation. All 19 grep citations re-executed at 15729311 and true; LD-6 reproduced from local git objects (`run_lint` on `requirements-sbom.txt` at #496 head ac568fdf: cyclonedx-bom 7.4.0, 10 days, violation). V1 (`coverage-gap`): D1 claims every governed lockfile is examined, but no existing or declared test invokes `dependency_admission_lint.main`; the new admission test asserts only that workflow text names each lockfile, so a CLI `--lockfile` regression would restore the iter-1 vacuous sbom pass with all tests green. Scope: Phase 3 doctrine edit and LD-7 residual stay within hotfix scope for GH #511 (threshold, override, severity, hard-fail unchanged; LD-7 discloses a pre-existing gap, no policy widening). Option B fresh-context reviewer (option_b_required true); codex-plugin and external reviewer unavailable, shortfalls logged. Session `2026-09-25T2336-813345`.
+
+**Required next action**: Governor: amend plan text, re-run `/qor-audit`.
+
 ---
 
 *Chain integrity: VALID*

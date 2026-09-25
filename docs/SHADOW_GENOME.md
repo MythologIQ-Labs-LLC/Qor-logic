@@ -2909,4 +2909,28 @@ None at audit time; returned to the Governor for plan amendment.
 
 ---
 
+## Entry #36: VETO -- plan-qor-phase298-dependency-review-sbom-path-coverage v2
+
+**Date**: 2026-09-25
+**Verdict ID**: session 2026-09-25T2336-813345 audit-iter2 (ledger #810)
+**Failure Mode**: VALIDATION_GAP
+
+### What Failed
+
+The amended plan closed the vacuous sbom admission pass by adding one workflow step per governed lockfile that passes `--lockfile`. Its deliverable says every governed lockfile is examined. The declared tests only check that the workflow text names each lockfile. No test, existing or planned, invokes the lint's CLI entry point, which is the code that turns `--lockfile` into the current read and the base `git show`. The only proof offered was a one-time manual run the plan itself called time-dependent.
+
+### Why It Failed
+
+The fix moved a security claim onto a code path that had never been exercised by tests. The plan proved the configuration half of the chain (workflow passes the argument) and substituted an observation for the behavioral half (the tool honours the argument).
+
+### Pattern to Avoid
+
+When a fix routes a control through an existing but untested entry point, the regression test must invoke that entry point with the new argument and assert on its output. A test that the configuration names the argument cannot fail when the tool ignores it. A manual observation is evidence for the plan, not a substitute for a deterministic test.
+
+### Remediation Attempted
+
+None at audit time; returned to the Governor for plan amendment.
+
+---
+
 *Shadow integrity: ACTIVE*
