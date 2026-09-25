@@ -105,7 +105,7 @@ Update `qor/references/doctrine-changelog.md` to state explicitly:
 
 The base doctrine already establishes that substantiation stamps `Unreleased` into a dated version section before later staging:
 
-`git show 15729311f9f4d55d5dad2db004b972415c39432c:qor/references/doctrine-changelog.md | grep -nE 'On `/qor-substantiate`|which renames'` -> `19:- **On `/qor-substantiate`**: Step 7.6 invokes \`qor/scripts/changelog_stamp.py\``, `20:  which renames \`## [Unreleased]\` to \`## [X.Y.Z] - YYYY-MM-DD\` and inserts`, `23:- **On `/qor-substantiate` Step 9.5**: the auto-stage list includes`.
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:qor/references/doctrine-changelog.md | grep -nE 'On `/qor-substantiate`|which renames'` -> `` 19:- **On `/qor-substantiate`**: Step 7.6 invokes `qor/scripts/changelog_stamp.py` ``, `` 20:  which renames `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` and inserts ``, `` 23:- **On `/qor-substantiate` Step 9.5**: the auto-stage list includes ``.
 
 The updated doctrine must distinguish that sealed/versioned state from the later remote publication transition and document the narrow exceptional-state record.
 
