@@ -23876,6 +23876,142 @@ GH #484: escalation payloads carried no collapsing key, so escalations of one co
 
 **Carried, not this phase's to fix**: `Qor-logic` PR #490 (Phase 288) remains open against its own stale `f3e069b`-based `0.174.1` target -- unrelated to this seal and not compounded by it. This phase's own tag `v0.174.3` is created locally per Step 9.7, not pushed.
 
+### Entry #802: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-24T19:39:39Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `d4c05e655f56`
+**Verdict**: VETO
+
+**Content Hash**: `e5d35c0c3b1b9ca59f5276fc921de9ff99f95ab2d595ccffe467c90ce36a1e97`
+**Previous Hash**: `49e0a556ffa8f1af9b589671b3f6d7b055ca250e35b1531b4e6aea77a926765a`
+**Chain Hash (Merkle seal)**: `eeeb0f5be3d0a2c76864d11693987146c29b2e5fbe320a387d9d06c6b9b69c99`
+
+**Decision**: **Target**: `docs/plan-qor-phase296-sealed-evidence-reattestation.md`
+
+**Decision**: VETO (iter 1). V1 (`specification-drift`): the stated tamper guarantee exceeds the design; the original intent-lock record is unbound, so a direct record+snapshot+plan edit still passes CI, and AMENDMENT entries are outside seal_entry_check. V2 (`infrastructure-mismatch`): `.qor/intent-lock/` is gitignored and seal_stage force-adds only the sealing session's family; the plan has no staging step for the re-attestation records and regenerated snapshots of other sessions. V3 (`specification-drift`): audit-hash supersession contradicts the declared limitation. Mandatory Option B reviewer; verified by the Judge. Session `2026-09-24T1920-8beca6`.
+
+**Required next action**: Governor amends via /qor-plan, then /qor-audit with Option B.
+
+### Entry #803: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-24T19:49:06Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `425aa6c4bc6a`
+**Verdict**: VETO
+
+**Content Hash**: `cbc60aba3d4b49409eb0d97600682788088b840201ec08dfbee4b653f99fbeee`
+**Previous Hash**: `eeeb0f5be3d0a2c76864d11693987146c29b2e5fbe320a387d9d06c6b9b69c99`
+**Chain Hash (Merkle seal)**: `cbdd9f9fe7e6fb9eabc288843dd5b5cb4a74125ac4ed226110c11d44a12af1ae`
+
+**Decision**: **Target**: `docs/plan-qor-phase296-sealed-evidence-reattestation.md`
+
+**Decision**: VETO (iter 2). Iter-1 V1-V3 and advisories resolved. V1 (`infrastructure-mismatch`): LD-5 names `intent_lock_committed` as enforcer for a session it never walks, and its `git ls-files` confirmation is vacuous because every affected lock file is already tracked. V2 (`specification-drift`): the Problem statement attributes lint findings to `.snapshot` files the lint does not scan. The mandatory Option B reviewer rated these non-blocking; the Judge holds a false behavioral claim in a Locked Decision to be a VETO ground. Four required fixes recorded. Session `2026-09-24T1920-8beca6`.
+
+**Required next action**: Governor amends via /qor-plan, then /qor-audit with Option B.
+
+### Entry #804: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-24T19:53:54Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `065705e86b6f`
+**Verdict**: PASS
+
+**Content Hash**: `07c76b07f185dd8a1faa54515fccf09d038a0a9a1716d445c15b4ee3b763842e`
+**Previous Hash**: `cbdd9f9fe7e6fb9eabc288843dd5b5cb4a74125ac4ed226110c11d44a12af1ae`
+**Chain Hash (Merkle seal)**: `0d42b8c5d4f60bc337c68069b9284492c02a50cae97a0f641ce95d3611f4ce52`
+
+**Decision**: **Target**: `docs/plan-qor-phase296-sealed-evidence-reattestation.md`
+
+**Decision**: PASS (iter 3). No violation mandating rejection. Governed re-attestation of sealed intent-lock evidence: append-only, closed-schema, contiguous, ledger-committed records supersede a walked session's plan hash; unwalked sessions are remediated by edit plus AMENDMENT disclosure; the pre-existing lock-record binding gap is disclosed, not closed. Iter-1 and iter-2 findings resolved. Mandatory Option B reviewer concurred (PASS); all nine grep-evidence statements reproduce at `8968bb5f`; `_ARTIFACT_RE` widening measured at 231 commitments before and after. Three implementation notes carried to /qor-implement. Session `2026-09-24T1920-8beca6`.
+
+**Required next action**: /qor-implement.
+
+### Entry #805: AMENDMENT -- intent-lock re-attestation for session 2026-09-23T1628-c67a6a
+
+**Artifact**: .qor/intent-lock/2026-09-23T1628-c67a6a.reattest-1.json
+**Amends**: Entry #801
+**Timestamp**: 2026-09-24T20:00:38Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Entry ID**: `7d7528530c27`
+
+**Content Hash**: `7045090728a1cd9e0a8c080a6912a8c5373a1bae5cce53dac5ac3d6a7dea50c7`
+**Previous Hash**: `0d42b8c5d4f60bc337c68069b9284492c02a50cae97a0f641ce95d3611f4ce52`
+**Chain Hash (Merkle seal)**: `e054d93455d47fd3997cf142da440ab02d26b33711787a6a0038c2ad57e04047`
+
+**Decision**: Phase 296 publication-boundary remediation. `docs/plan-shadow-escalation-origin-signature-current.md` had one non-goal line naming an outside repository; that line was anonymized and `.qor/intent-lock/2026-09-23T1628-c67a6a.plan.snapshot` was regenerated from the edited plan. The lock record `.qor/intent-lock/2026-09-23T1628-c67a6a.json` is unchanged; `.qor/intent-lock/2026-09-23T1628-c67a6a.reattest-1.json` supersedes its plan hash (`bfec0225d22a22784785e6dec0da8ccdc42ea9a438f2ecbbd2f166271f3649c7` -> `035d38b735d8e72cdf2e1d196718a6fe1e7f5d94d66f03134952f51b617fe5e2`) and this entry commits that record's bytes. The audit snapshot and audit hash are unchanged. Removed text is not quoted.
+
+### Entry #806: AMENDMENT -- publication-boundary edit disclosure for session 2026-09-23T0645-a3ddc4
+
+**Amends**: Entry #799
+**Timestamp**: 2026-09-24T20:00:38Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+
+**Content Hash**: `f20dfd54a3e523a1e3a3cab2b4f522ceb441ffba900bc465ca61c2779adb2f65`
+**Previous Hash**: `e054d93455d47fd3997cf142da440ab02d26b33711787a6a0038c2ad57e04047`
+**Chain Hash (Merkle seal)**: `f24a9d15f7b61de3acba6ceed631804b579e5de84a55ab0834e4113cb8fc0f2e`
+
+**Decision**: Phase 296 publication-boundary remediation. `docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md` had one non-goal line naming an outside repository; that line was anonymized and `.qor/intent-lock/2026-09-23T0645-a3ddc4.plan.snapshot` was regenerated from the edited plan. Seal #799 carries no Session line, so intent_lock_committed does not walk this session and nothing mechanically verifies its lock family; this entry discloses the edit instead of a re-attestation record. Recorded plan hash `10b4a49d03d08f937aa4fd598e2269d4f77fc1ca165157b9e56645980f25edbe`; current plan hash `7ab09c24517f41a39b547d7acc0c0faea0e2a970938a38c2f9b535ca3de1691f`. The lock record and audit snapshot are unchanged. Removed text is not quoted.
+
+### Entry #807: IMPLEMENTATION
+
+**Timestamp**: 2026-09-24T20:10:46Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `7b9e453d4301`
+**Plan**: docs/plan-qor-phase296-sealed-evidence-reattestation.md
+**Session**: 2026-09-24T1920-8beca6
+
+**Content Hash**: `af1e755739c3cb732dce8b0188c0eb4e7c258d07fd23a68c08dc187956dca81f`
+**Previous Hash**: `f24a9d15f7b61de3acba6ceed631804b579e5de84a55ab0834e4113cb8fc0f2e`
+**Chain Hash (Merkle seal)**: `ae182c802a0a0f977a45aefa596af56681c55f0a3690d90d3a65c37e4a9c4d5b`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Governed re-attestation of sealed intent-lock evidence.
+
+Checker: `intent_lock_committed` folds a contiguous, closed-schema chain of `<session>.reattest-<k>.json` records into an effective plan hash (`_effective_plan_hash`), each record required to be ledger-committed at its current bytes; the audit side is never superseded; malformed records and a malformed ledger become `reattestation-invalid` failures, not exceptions; records for sessions not walked at the invocation's phase_min fail. `ledger_commitment._ARTIFACT_RE` accepts `.json` (live commitments 231 -> 232, the new one being this phase's record). TDD: 14 of 16 new checker tests and 1 of 2 ledger-commitment tests red before implementation; the other three are guards that pin existing behavior. Green twice.
+
+Remediation: one non-goal line anonymized in each of the two sealed plans; both plan snapshots regenerated; re-attestation record for the walked Phase 292 session committed by AMENDMENT #805; the unwalked Phase 291 session's edit disclosed by AMENDMENT #806. Live `intent_lock_committed --phase-min 231` OK; operator-local `publication_boundary_lint` 0 findings at structural+identity. Staging confirmed both ways (all paths in the cached diff, none unstaged). Full suite 3547 passed, 6 skipped.
+
+Doctrine: `doctrine-publication-boundary.md` gains 'Remediating sealed evidence (Phase 296)', including the lock-record binding gap and the phase-number uniqueness dependency; glossary gains `intent-lock re-attestation`.
+
+### Entry #808: SESSION SEAL -- Phase 296 sealed-evidence re-attestation (v0.175.0)
+
+**Timestamp**: 2026-09-24T20:25:31Z
+**Phase**: SEAL (Phase 296)
+**Author**: Governor
+**Risk Grade**: L2
+**Entry ID**: `436ba95f1e60`
+
+**Content Hash**: `af1e755739c3cb732dce8b0188c0eb4e7c258d07fd23a68c08dc187956dca81f`
+**Previous Hash**: `ae182c802a0a0f977a45aefa596af56681c55f0a3690d90d3a65c37e4a9c4d5b`
+**Chain Hash (Merkle seal)**: `9ed9e217c551dd3afa38c26233af18133bfde4ca7733c193afa64787568448f9`
+
+**Decision**: **Plan**: docs/plan-qor-phase296-sealed-evidence-reattestation.md
+**Session**: 2026-09-24T1920-8beca6
+
+**Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.4, PS.2.1, PW.1.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+Governed re-attestation of sealed intent-lock evidence. `intent_lock_committed` folds a contiguous, closed-schema chain of `<session>.reattest-<k>.json` records into a walked session's effective plan hash; each record must be ledger-committed at its current bytes; the audit side is never superseded; malformed records and a malformed ledger become `reattestation-invalid` failures; records for unwalked sessions fail. `ledger_commitment._ARTIFACT_RE` accepts `.json`. Audit: VETO iter 1 (#802), VETO iter 2 (#803), PASS iter 3 (#804), mandatory Option B reviewer each round.
+
+Remediation (not quoted): one non-goal line anonymized in `docs/plan-shadow-escalation-origin-signature-current.md` and `docs/plan-qor-phase291-recompose-reconcile-dialect-accessor.md`; plan snapshots `.qor/intent-lock/2026-09-23T1628-c67a6a.plan.snapshot` and `.qor/intent-lock/2026-09-23T0645-a3ddc4.plan.snapshot` regenerated; `.qor/intent-lock/2026-09-23T1628-c67a6a.reattest-1.json` committed by AMENDMENT #805; the unwalked session's edit disclosed by AMENDMENT #806. No lock record and no historical entry edited.
+
+**Gates**: intent_lock verify, skill_admission, gate_skill_matrix, merge_velocity (healthy), skill_size_budget, ledger_commitment (13 touched), doc_integrity strict, governance_index enforce, feature_index_verify (27/27) all pass. data_api_acl SKIP (no SQL migrations); feature_index surface-lint SKIP (no Surface column). Disclosed: install_drift (installed skills differ from repo; known package-namespace collision); check_variant_drift shows 20 enterprise-pack differences identical on a clean main checkout, not introduced here. Boundary: pre-seal `publication_boundary_lint` 0 findings at structural+identity; Step 4.6.14 re-runs after staging. Suite: 3547 passed, 6 skipped.
+
+**Limits carried**: lock records remain hash-bound by nothing (a coordinated direct edit still passes, as before); AMENDMENT review is not machine-enforced; phase numbers must stay unique for a session to remain walked. Ledger entries #802-#807 on this branch share numbers with the open Phase 294 branch (PR #515); whichever merges second re-chains.
+
 ---
 
 *Chain integrity: VALID*

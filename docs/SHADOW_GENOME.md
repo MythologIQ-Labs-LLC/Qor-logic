@@ -2845,4 +2845,44 @@ inconsistency into a third-party leak that ships with every test green.
 
 ---
 
+## Entry #33: VETO -- plan-qor-phase296-sealed-evidence-reattestation v1
+
+**Date**: 2026-09-24
+**Verdict ID**: session 2026-09-24T1920-8beca6 audit-iter1
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The first plan for governed re-attestation of sealed intent-lock evidence claimed a tamper guarantee its design does not provide, had no staging path for files under a gitignored directory, and contradicted its own limitation on the audit hash.
+
+### Why It Failed
+
+The guarantee was stated for the new path without checking the old path it sits beside: the lock record itself is unbound, so a direct edit still passes. The staging gap came from checking which verifiers read the files but not which tool writes them into a commit. Found by the mandatory Option B reviewer.
+
+### Pattern to Avoid
+
+When a design adds a sanctioned path around a control, state the guarantee relative to the unsanctioned path that still exists. For any file a plan creates or edits, trace it through staging and ignore rules, not only through readers. Related: Entries #33-#37 (on the Phase 294 branch).
+
+---
+
+## Entry #34: VETO -- plan-qor-phase296-sealed-evidence-reattestation v2
+
+**Date**: 2026-09-24
+**Verdict ID**: session 2026-09-24T1920-8beca6 audit-iter2
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The staging decision named CI as the enforcer for a session CI never walks and verified staging with `git ls-files`, which reports already-tracked files as tracked regardless of staged content; the Problem statement attributed lint findings to files the lint does not scan.
+
+### Why It Failed
+
+A fix for "no staging step" was written as a staging command plus a comforting check, without asking what the check would output when staging was skipped.
+
+### Pattern to Avoid
+
+For every verification step a plan adds, state what it prints on the failure it guards against; if the answer is the same as on success, it is not a verification. Related: Entry #33.
+
+---
+
 *Shadow integrity: ACTIVE*
