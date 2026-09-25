@@ -38,7 +38,7 @@ PR #507 was first recomposed against `d37c192c...`; PR #506 subsequently landed 
 - No historical version bump, CHANGELOG release entry, ledger entry, seal, gate artifact, intent lock, README/SYSTEM_STATE seal metadata, or generated-manifest replay from PR #491.
 - No Shadow Spectrum schema change under #499 in this slice.
 - No threshold-policy redesign beyond the existing GH #484 defect.
-- No Qortara Logic migration.
+- No migration into a downstream composition repository.
 
 ## Locked Decisions
 

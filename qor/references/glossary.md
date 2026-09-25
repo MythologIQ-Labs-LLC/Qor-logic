@@ -1536,3 +1536,13 @@ referenced_by:
   - qor/gates/delegation-table.md
 introduced_in_plan: phase244-qor-harden
 ```
+
+```yaml
+term: intent-lock re-attestation
+definition: An append-only, ledger-committed record that supersedes a walked sealed session's recorded intent-lock plan hash, so a sealed plan and its plan snapshot can be corrected (for example for the publication boundary) without rewriting the lock record. Records are `.qor/intent-lock/<session>.reattest-<k>.json` with exactly `session`, `supersedes_plan_hash`, `plan_hash`, and `reason`, contiguous from 1, each committed by a META_LEDGER AMENDMENT whose line-leading Artifact citation names the record; the audit side is never superseded.
+home: qor/references/doctrine-publication-boundary.md
+referenced_by:
+  - qor/reliability/intent_lock_committed.py
+  - qor/references/doctrine-publication-boundary.md
+introduced_in_plan: phase296-sealed-evidence-reattestation
+```
