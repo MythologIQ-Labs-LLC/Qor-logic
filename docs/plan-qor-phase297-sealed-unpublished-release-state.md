@@ -29,7 +29,16 @@ The repository also carries historical untagged exceptions whose stronger public
 
 ### LD-1: exceptional release state is explicit data, not a test constant
 
-Add `docs/release-state.json` as the machine-readable record for versions whose tag/publication history differs from the ordinary release path. Each entry contains exactly:
+Add `docs/release-state.json` as the machine-readable record for versions whose tag/publication history differs from the ordinary release path. The root shape is closed and versioned:
+
+```json
+{
+  "schema_version": "1",
+  "exceptions": []
+}
+```
+
+The root object contains exactly `schema_version` and `exceptions`. `schema_version` is the string `"1"`; `exceptions` is a list. Each exception entry contains exactly:
 
 - `version`: strict `MAJOR.MINOR.PATCH`;
 - `state`: `sealed_unpublished` or `legacy_untagged`;
@@ -105,8 +114,8 @@ Create `qor/scripts/release_state.py` as the canonical closed-schema parser/vali
 Validation fails closed on:
 
 - invalid JSON or unreadable file;
-- wrong root shape or schema id;
-- non-list exceptions;
+- wrong root shape, extra root fields, or unsupported `schema_version`;
+- non-list `exceptions`;
 - non-object or extra-field entries;
 - non-SemVer versions;
 - unsupported states;
@@ -149,7 +158,7 @@ Empty. This is release-governance/test maintenance and introduces no `src/` or u
 - explicit exceptional disposition exempts only the named version;
 - local tag presence does not erase `sealed_unpublished` state;
 - accepted `sealed_unpublished` and `legacy_untagged` entries validate;
-- duplicate, malformed, unsupported, orphaned, empty-reason, extra-field, invalid-JSON, and unreadable release-state records fail closed.
+- wrong root shape, extra root fields, unsupported schema version, duplicate, malformed, unsupported, orphaned, empty-reason, extra-entry-field, invalid-JSON, and unreadable release-state records fail closed.
 
 ## Phase 2: Doctrine and user-facing release-state disclosure
 
