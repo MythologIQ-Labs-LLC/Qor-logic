@@ -33,16 +33,18 @@ Add `docs/release-state.json` as the machine-readable record for versions whose 
 
 ```json
 {
-  "schema_version": "1",
+  "schema": "qor.release-state/v1",
   "exceptions": []
 }
 ```
 
-The root object contains exactly `schema_version` and `exceptions`. `schema_version` is the string `"1"`; `exceptions` is a list. Each exception entry contains exactly:
+The root object contains exactly `schema` and `exceptions`. `schema` is exactly `qor.release-state/v1`; `exceptions` is a list. Each exception entry contains exactly:
 
 - `version`: strict `MAJOR.MINOR.PATCH`;
 - `state`: `sealed_unpublished` or `legacy_untagged`;
 - `reason`: non-empty explanatory text.
+
+This pins the same bounded grammar already exercised by the earlier technically-green implementation checkpoint `585741f05cbb1ac1dc9b0997dfb4cf249e42400d`; that checkpoint remains ancestry/reference only until the plan receives current `/qor-audit` PASS and the implementation is lawfully recomposed.
 
 The current base proves the historical exceptions are hard-coded in the test today:
 
@@ -114,7 +116,7 @@ Create `qor/scripts/release_state.py` as the canonical closed-schema parser/vali
 Validation fails closed on:
 
 - invalid JSON or unreadable file;
-- wrong root shape, extra root fields, or unsupported `schema_version`;
+- wrong root shape, extra root fields, or unsupported schema id;
 - non-list `exceptions`;
 - non-object or extra-field entries;
 - non-SemVer versions;
@@ -158,7 +160,7 @@ Empty. This is release-governance/test maintenance and introduces no `src/` or u
 - explicit exceptional disposition exempts only the named version;
 - local tag presence does not erase `sealed_unpublished` state;
 - accepted `sealed_unpublished` and `legacy_untagged` entries validate;
-- wrong root shape, extra root fields, unsupported schema version, duplicate, malformed, unsupported, orphaned, empty-reason, extra-entry-field, invalid-JSON, and unreadable release-state records fail closed.
+- wrong root shape, extra root fields, unsupported schema id, duplicate, malformed, unsupported, orphaned, empty-reason, extra-entry-field, invalid-JSON, and unreadable release-state records fail closed.
 
 ## Phase 2: Doctrine and user-facing release-state disclosure
 
