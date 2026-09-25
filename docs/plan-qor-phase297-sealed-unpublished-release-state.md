@@ -48,7 +48,7 @@ This pins the same bounded grammar already exercised by the earlier technically-
 
 The current base proves the historical exceptions are hard-coded in the test today:
 
-`git show 15729311f9f4d55d5dad2db004b972415c39432c:tests/test_changelog_tag_coverage.py | grep -nE '_GRANDFATHERED_UNTAGGED_SECTIONS|def _released_orphans|Versions above the highest existing git tag'` -> `29:_GRANDFATHERED_UNTAGGED_SECTIONS = frozenset({"0.69.0", "0.70.0", "0.71.0", "0.102.2"})`, `56:def _released_orphans(versions: set[str], tags: set[str]) -> set[str]:`, `59:    Versions above the highest existing git tag are pre-release entries (about to ship`.
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:tests/test_changelog_tag_coverage.py | grep -nE '_GRANDFATHERED_UNTAGGED_SECTIONS|def _released_orphans|Versions above the highest existing'` -> `29:_GRANDFATHERED_UNTAGGED_SECTIONS = frozenset({"0.69.0", "0.70.0", "0.71.0", "0.102.2"})`, `56:def _released_orphans(versions: set[str], tags: set[str]) -> set[str]:`, `59:    Versions above the highest existing tag are pre-release entries (about to ship`, `70:        for v in versions - tags - _GRANDFATHERED_UNTAGGED_SECTIONS`.
 
 The exceptional record is not a release registry and does not duplicate ordinary tagged releases.
 
