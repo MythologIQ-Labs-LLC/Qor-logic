@@ -2885,4 +2885,28 @@ For every verification step a plan adds, state what it prints on the failure it 
 
 ---
 
+## Entry #35: VETO -- plan-qor-phase298-dependency-review-sbom-path-coverage v1
+
+**Date**: 2026-09-25
+**Verdict ID**: session 2026-09-25T2336-813345 audit-iter1 (ledger #809)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+A trigger-path fix for PR Dependency Review. The plan named the hard-fail cooling-period check as a control the `requirements-sbom.txt` change bypassed. It also treated a run of the repaired workflow as the point to re-evaluate the blocked PR. The check's CLI reads only `requirements-release.txt`, so it would pass a sbom-only PR with nothing examined. The replacement regression test was again a hardcoded path subset, the same shape as the defect it closes.
+
+### Why It Failed
+
+The plan verified that the workflow would run on the path. It did not verify what each step does once it runs. Coverage was proven by enumerating today's file names, not by deriving them from the surface the deliverable claims to cover.
+
+### Pattern to Avoid
+
+When a fix makes a gate trigger on a new input, trace each step of that gate to confirm it reads the input. A step that runs but ignores the input is a vacuous pass and must be disclosed or fixed. A regression test for "every X" must fail when a new X appears, not only when a known X is removed.
+
+### Remediation Attempted
+
+None at audit time; returned to the Governor for plan amendment.
+
+---
+
 *Shadow integrity: ACTIVE*

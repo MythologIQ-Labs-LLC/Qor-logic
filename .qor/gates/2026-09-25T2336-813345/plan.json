@@ -1,0 +1,29 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-25T2336-813345",
+  "ts": "2026-09-25T23:37:52Z",
+  "plan_path": "docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md",
+  "phases": [
+    "Regression test: test_workflow_triggers_on_dependency_paths requires all five governed root dependency-bearing files plus .github/workflows/** self-coverage",
+    "Workflow trigger coverage: add requirements-release.in, requirements-sbom.in, requirements-sbom.txt to pr-dependency-review.yml pull_request.paths; job semantics unchanged"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_pr_dependency_review_workflow.py -q",
+    "python -m pytest tests/ -q",
+    "python -m qor.scripts.check_variant_drift",
+    "python -m qor.scripts.publication_boundary_lint"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "hotfix",
+  "originating_remediation": "GH #511",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-25T23:37:52Z"
+  }
+}

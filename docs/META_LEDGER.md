@@ -24012,6 +24012,25 @@ Remediation (not quoted): one non-goal line anonymized in `docs/plan-shadow-esca
 
 **Limits carried**: lock records remain hash-bound by nothing (a coordinated direct edit still passes, as before); AMENDMENT review is not machine-enforced; phase numbers must stay unique for a session to remain walked. Ledger entries #802-#807 on this branch share numbers with the open Phase 294 branch (PR #515); whichever merges second re-chains.
 
+### Entry #809: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-25T23:42:09Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `f6d4ba15e645`
+**Verdict**: VETO
+
+**Content Hash**: `757b11e7d2912ac14dc0b036b1839cd970182a6fec6e2cc3c8430246ec199a14`
+**Previous Hash**: `9ed9e217c551dd3afa38c26233af18133bfde4ca7733c193afa64787568448f9`
+**Chain Hash (Merkle seal)**: `7ab4f7bcc7bd2e4d513a95442433c75da26530958083b1d5d5b50f7dd0084122`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+VETO (iter 1). V1 (`infrastructure-mismatch`): the plan names the cooling-period check among the controls a sbom-only change bypassed and treats a run of the repaired workflow as the #496 re-evaluation point, but `dependency_admission_lint.main` reads only `requirements-release.txt` (`--lockfile` default, line 241), so a sbom-only PR passes that step vacuously; the plan neither discloses nor bounds the residual. V2 (`specification-drift`, self-application of GH #511): the replacement regression test is again a hardcoded enumerated subset, the defect shape #511 names, while D1 claims every governed root dependency file. Grep-evidence in LD-1/LD-2/LD-5 re-executed at 15729311 and true; plan_grep_lint flags it non-reproducible by grammar (advisory, iter 1). Solo mode: codex-plugin and external reviewer unavailable, shortfalls logged; option_b_required false. Session `2026-09-25T2336-813345`.
+
+**Required next action**: Governor: amend plan text, re-run `/qor-audit`.
+
 ---
 
 *Chain integrity: VALID*
