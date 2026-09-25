@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-24T1920-8beca6",
+  "plan_path": "docs/plan-qor-phase296-sealed-evidence-reattestation.md",
+  "plan_hash": "af1e755739c3cb732dce8b0188c0eb4e7c258d07fd23a68c08dc187956dca81f",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "07c76b07f185dd8a1faa54515fccf09d038a0a9a1716d445c15b4ee3b763842e",
+  "head_commit": "8968bb5f8f02bf6eac7f116dc1864a00d5cae4d9",
+  "captured_ts": "2026-09-24T19:54:10.919047Z"
+}

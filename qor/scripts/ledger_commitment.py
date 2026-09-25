@@ -37,7 +37,7 @@ _ENTRY_RE = re.compile(r"^### Entry #(\d+):\s*([A-Z][A-Z ]*)", re.MULTILINE)
 # this gate against its own phase.
 _COMMITTING_KINDS = ("RESEARCH BRIEF", "IMPLEMENTATION", "SESSION SEAL", "AMENDMENT")
 _ARTIFACT_RE = re.compile(
-    r"^\*\*(?:Artifact|Plan|Brief)\*\*:\s*`?([\w./-]+\.md)`?", re.MULTILINE
+    r"^\*\*(?:Artifact|Plan|Brief)\*\*:\s*`?([\w./-]+\.(?:md|json))`?", re.MULTILINE
 )
 # DELIBERATELY narrow, and narrower than ledger_dialect. Do not widen it.
 #
