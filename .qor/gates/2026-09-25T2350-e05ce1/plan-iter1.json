@@ -1,0 +1,42 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-25T2350-e05ce1",
+  "ts": "2026-09-25T23:52:03Z",
+  "plan_path": "docs/plan-qor-phase297-sealed-unpublished-release-state.md",
+  "phases": [
+    "Phase 1: Release-state contract and candidate coverage",
+    "Phase 2: Doctrine and user-facing release-state disclosure"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_changelog_tag_coverage.py tests/test_release_state.py -q",
+    "python -m pytest tests/test_changelog_format.py tests/test_changelog_stamp.py tests/test_substantiate_changelog_integration.py -q",
+    "python -m pytest tests/ -q",
+    "ruff check qor/ tests/"
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "hotfix",
+  "originating_remediation": "GH #520",
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "non_goals": [
+      "pushing any remote Git tag",
+      "publishing any package",
+      "modifying historical CHANGELOG sections",
+      "changing release workflow behavior",
+      "inferring remote publication through network access in unit tests",
+      "reconstructing uncertain historical publication state from incomplete evidence",
+      "changing semantic-version calculation",
+      "broad lifecycle redesign",
+      "unrelated repository cleanup"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-25T23:52:03Z"
+  }
+}
