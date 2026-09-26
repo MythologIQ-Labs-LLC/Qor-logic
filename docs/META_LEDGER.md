@@ -24012,6 +24012,25 @@ Remediation (not quoted): one non-goal line anonymized in `docs/plan-shadow-esca
 
 **Limits carried**: lock records remain hash-bound by nothing (a coordinated direct edit still passes, as before); AMENDMENT review is not machine-enforced; phase numbers must stay unique for a session to remain walked. Ledger entries #802-#807 on this branch share numbers with the open Phase 294 branch (PR #515); whichever merges second re-chains.
 
+### Entry #809: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-26T04:15:58Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `b6bd6cf04d06`
+**Verdict**: VETO
+
+**Content Hash**: `682050333b0eb45102f0402630be79839693d9935c6d25e0a7f3afc2c77dc36a`
+**Previous Hash**: `9ed9e217c551dd3afa38c26233af18133bfde4ca7733c193afa64787568448f9`
+**Chain Hash (Merkle seal)**: `f3400889d38bbc310184b636b631e0717c77586b4d04ad08b162b3b14b2793e2`
+
+**Decision**: **Target**: `docs/plan-qor-phase297-sealed-unpublished-release-state.md`
+
+**Decision**: VETO (iter 1). LD-4 inventory and LD-2 candidate rule are correct against base `15729311`, and all grep-evidence reproduces there. V1 (`specification-drift`): `version_applicability.validate` fails (target v0.175.1 <= current highest v0.175.1); the local-only seal tag `v0.175.1` (`af0ae68c`, unmerged Phase 298, not on remote) collides with this hotfix target, and the plan declares no release-target continuity. V2 (`specification-drift`, self-application of GH #520): the Problem names a local-only seal tag as a distinct state, but LD-2 treats every observed local tag as this branch's release history for forward coverage and the ceiling; the plan's CI command 1 fails in the audited checkout (`test_every_tag_has_changelog_section`: v0.175.1), so D4 is unattainable. Advisories: grep-evidence grammar (lint WARN, manual reproduce OK), branch-introduced absolute path in PROCESS_SHADOW_GENOME_UPSTREAM.md:75, test-only consumer of release_state, unreachable checkpoint 585741f0, pre-gate implementation checkpoint has no gate standing. Solo mode. Session `2026-09-25T2350-e05ce1`.
+
+**Required next action**: Governor amends via /qor-plan (record the operator's release-target continuity decision and the local-only tag rule), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*

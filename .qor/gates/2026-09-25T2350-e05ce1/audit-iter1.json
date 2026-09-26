@@ -1,0 +1,22 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-25T2350-e05ce1",
+  "ts": "2026-09-26T04:16:14Z",
+  "target": "docs/plan-qor-phase297-sealed-unpublished-release-state.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "specification-drift"
+  ],
+  "target_content_hash": "507de853d4dddc8988ec0974446cd4f6d932457db0f4581796bcae510e79bcb1",
+  "reviews_remediate_gate": null,
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.0",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "veto",
+    "ts": "2026-09-26T04:16:14Z"
+  }
+}

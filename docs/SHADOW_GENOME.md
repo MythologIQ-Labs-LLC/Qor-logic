@@ -2885,4 +2885,24 @@ For every verification step a plan adds, state what it prints on the failure it 
 
 ---
 
+## Entry #35: VETO -- plan-qor-phase297-sealed-unpublished-release-state v1
+
+**Date**: 2026-09-26
+**Verdict ID**: session 2026-09-25T2350-e05ce1 audit-iter1 (META_LEDGER Entry #809)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The plan for separating sealed versions from published releases was pinned to its base revision. It verified every citation there, but it did not account for a local-only seal tag from a parallel phase that already occupies its hotfix target. Version-applicability failed, and the plan's own first CI command failed in the checkout where it will be implemented. The plan names "local-only seal tag" as a state to distinguish, yet its coverage rule treats every observed local tag as this branch's release history.
+
+### Why It Failed
+
+The model was checked against a frozen base, not against the shared ref namespace the plan will be implemented and sealed in. Every substantiation creates a local tag, so parallel governed phases routinely leave tags that no branch-local CHANGELOG covers.
+
+### Pattern to Avoid
+
+A plan about release or tag state must be checked against the live tag set as well as its base, including local-only tags from unmerged phases. It must say what its rules do with a tag that no version section on this branch explains. Related: Entry #31.
+
+---
+
 *Shadow integrity: ACTIVE*
