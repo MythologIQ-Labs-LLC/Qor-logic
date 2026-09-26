@@ -6,7 +6,23 @@ import re
 
 import yaml
 
-_WORKFLOW = pathlib.Path(".github/workflows/pr-dependency-review.yml")
+_REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
+_WORKFLOW = _REPO_ROOT / ".github" / "workflows" / "pr-dependency-review.yml"
+_KNOWN_GOVERNED = {
+    "pyproject.toml",
+    "requirements-release.in",
+    "requirements-release.txt",
+    "requirements-sbom.in",
+    "requirements-sbom.txt",
+}
+
+
+def _governed_dependency_paths() -> set[str]:
+    """Phase 298 (GH #511): root dependency surface, derived at test time."""
+    names = {"pyproject.toml"}
+    for pattern in ("requirements-*.in", "requirements-*.txt"):
+        names.update(p.name for p in _REPO_ROOT.glob(pattern) if p.is_file())
+    return names
 
 
 def _load() -> dict:
@@ -51,9 +67,14 @@ def test_workflow_triggers_on_dependency_paths():
     assert on_block is not None, "workflow must declare an 'on' trigger block"
     pr_block = on_block.get("pull_request") or {}
     paths = pr_block.get("paths") or []
-    required_paths = {"pyproject.toml", "requirements-release.txt"}
-    assert required_paths.issubset(set(paths)), (
-        f"on.pull_request.paths must include {required_paths}; got {paths!r}"
+    governed = _governed_dependency_paths()
+    assert _KNOWN_GOVERNED.issubset(governed), (
+        f"derived governed set shrank; missing {_KNOWN_GOVERNED - governed}"
+    )
+    missing = governed - set(paths)
+    assert not missing, (
+        f"on.pull_request.paths must include every governed dependency path; "
+        f"missing {sorted(missing)}; got {paths!r}"
     )
     workflow_glob_present = any(p.startswith(".github/workflows/") for p in paths)
     assert workflow_glob_present, (
@@ -94,3 +115,29 @@ def test_workflow_fails_on_high_severity():
     assert with_kwargs.get("fail-on-severity") == "high", (
         f"fail-on-severity must be 'high'; got {with_kwargs.get('fail-on-severity')!r}"
     )
+
+
+def test_admission_lint_runs_for_every_governed_lockfile():
+    """Phase 298 (GH #511): one hard-fail admission step per governed lockfile."""
+    steps = _load()["jobs"]["dependency-review"]["steps"]
+    lint_steps = [s for s in steps if "dependency_admission_lint" in (s.get("run") or "")]
+    named: list[str] = []
+    for step in lint_steps:
+        run = step["run"]
+        m = re.search(r"--lockfile\s+\"?([^\s\"]+)", run)
+        assert m is not None, f"admission step must pass --lockfile: {run!r}"
+        named.append(m.group(1))
+        assert "--base" in run, f"admission step must pass --base: {run!r}"
+        assert "|| true" not in run and "set +e" not in run, (
+            f"admission step must stay hard-fail: {run!r}"
+        )
+        assert "if" not in step, f"admission step must not carry an if: guard: {step!r}"
+        assert not step.get("continue-on-error"), (
+            f"admission step must not set continue-on-error: {step!r}"
+        )
+    lockfiles = {p for p in _governed_dependency_paths() if p.endswith(".txt")}
+    for lockfile in sorted(lockfiles):
+        assert named.count(lockfile) == 1, (
+            f"governed lockfile {lockfile} must be named by exactly one admission "
+            f"step; named={named!r}"
+        )

@@ -24069,6 +24069,28 @@ PASS (iter 3). Iter-2 V1 (`coverage-gap`) resolved as written: LD-9/Phase 1 decl
 
 **Required next action**: `/qor-implement`.
 
+### Entry #812: IMPLEMENTATION
+
+**Timestamp**: 2026-09-26T01:31:12Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `0703e2a94506`
+**Plan**: docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md
+**Session**: 2026-09-25T2336-813345
+
+**Content Hash**: `13eb3f333b3eedfa1c56b92e9b458fda0bfca2f6906a30e05dc4fddc99aa99d0`
+**Previous Hash**: `2ef5a7395505e1aa1b238c9b4b21342a51f12fafd68f196ed2f1ee4aa9d559ea`
+**Chain Hash (Merkle seal)**: `78728b4d2925963c3b4fff4206da693a330a9d56fa7d84836e90cf29ecd00053`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Dependency Review root-path and per-lockfile admission coverage (GH #511).
+
+Workflow: `.github/workflows/pr-dependency-review.yml` adds `requirements-release.in`, `requirements-sbom.in` and `requirements-sbom.txt` to `on.pull_request.paths` and replaces the single admission step with one hard-fail step per governed root lockfile (`--base` plus `--lockfile requirements-release.txt` / `--lockfile requirements-sbom.txt`). Action pin, `fail-on-severity: high` and existing trigger paths unchanged. No `qor/` code changed.
+
+Tests: `tests/test_pr_dependency_review_workflow.py` derives the governed set from the repository root (`_governed_dependency_paths`, floor `_KNOWN_GOVERNED`) and adds `test_admission_lint_runs_for_every_governed_lockfile`; both targeted tests RED before the workflow edit (three missing paths; no step passes `--lockfile`), GREEN after. New `tests/test_dependency_admission_lint_cli.py` (regression coverage backfill, 2 tests) invokes `dependency_admission_lint.main` against a hermetic scratch repo; GREEN on first run, and each declared mutation (line 254 base read, line 248 current read, run with `python -B -m pytest`) turned `test_main_lockfile_arg_examines_named_lockfile` RED on the exact-recorder assertion; mutation reverted, `git diff --exit-code` clean. New files GREEN twice. Full suite 3553 passed, 3 skipped, 4 deselected; ruff clean; variant drift OK; publication_boundary_lint 0 findings; local per-lockfile admission loop against origin/main: no bumps.
+
+Doctrine: `doctrine-dependency-admission.md` names `requirements-sbom.txt`, adds the Phase 298 lockfile-coverage paragraph with the pyproject-pin residual (LD-7), and rewrites the stale manual/deferred enforcement wording in past tense.
+
 ---
 
 *Chain integrity: VALID*
