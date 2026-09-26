@@ -24050,6 +24050,25 @@ VETO (iter 2). Iter-1 grounds resolved: V1 closed by one hard-fail admission ste
 
 **Required next action**: Governor: amend plan text, re-run `/qor-audit`.
 
+### Entry #811: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-26T01:26:22Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `ae126f4c05a7`
+**Verdict**: PASS
+
+**Content Hash**: `749c0664602d38d3623bf1e8384f0c6a1e67971f4844f4f04da929085726cd99`
+**Previous Hash**: `b9491d3a4d41d20e5654cd1740448d96a545480436e18d4ef14dd871b851062d`
+**Chain Hash (Merkle seal)**: `2ef5a7395505e1aa1b238c9b4b21342a51f12fafd68f196ed2f1ee4aa9d559ea`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+PASS (iter 3). Iter-2 V1 (`coverage-gap`) resolved as written: LD-9/Phase 1 declare `tests/test_dependency_admission_lint_cli.py`, invoking `dependency_admission_lint.main` via argv against a hermetic scratch git repo (pinned clock, PyPI recorder, stubbed label query, `scratch_env()` git config). Judge reproduced the test design outside the repo: GREEN twice; each declared mutation (line 254 base read, line 248 current read) turns `test_main_lockfile_arg_examines_named_lockfile` RED on the exact-recorder assertion. Workflow tests prototyped: RED pre-fix, GREEN post-fix. Iter-1 closures intact. All 38 grep citations re-executed at 15729311, 0 mismatches; LD-6 reproduced from local objects. Scope stays hotfix (tests, workflow, doctrine wording; no `qor/` code; policy unchanged; target v0.175.1). Cycle-count and session-total escalators did not fire (distinct signatures). Advisories only: stale glossary/docstring WARN-only wording, legacy first-step heuristic test, job-level neutralizers unasserted, pre-existing workspace fragility. Option B fresh-context reviewer (option_b_required true); codex-plugin and external reviewer unavailable, shortfalls logged. Session `2026-09-25T2336-813345`.
+
+**Required next action**: `/qor-implement`.
+
 ---
 
 *Chain integrity: VALID*
