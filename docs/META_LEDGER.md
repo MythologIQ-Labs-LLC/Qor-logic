@@ -24091,6 +24091,37 @@ Tests: `tests/test_pr_dependency_review_workflow.py` derives the governed set fr
 
 Doctrine: `doctrine-dependency-admission.md` names `requirements-sbom.txt`, adds the Phase 298 lockfile-coverage paragraph with the pyproject-pin residual (LD-7), and rewrites the stale manual/deferred enforcement wording in past tense.
 
+### Entry #813: SESSION SEAL -- Phase 298 dependency-review sbom path coverage (v0.175.1)
+
+**Timestamp**: 2026-09-26T01:42:05Z
+**Phase**: SEAL (Phase 298)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `9d2c59f84f43`
+
+**Content Hash**: `6f4e701eb9cf07921d60f5f6d825b307d38089911c71dcedaf64b37c24c3347e`
+**Previous Hash**: `78728b4d2925963c3b4fff4206da693a330a9d56fa7d84836e90cf29ecd00053`
+**Chain Hash (Merkle seal)**: `f602f3a5fdd1e14c33bb3a3a8ace5e6b6abaf633bec1eeaf614d34fdd538659c`
+
+**Decision**: **Plan**: docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md
+**Session**: 2026-09-25T2336-813345
+
+**Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.3, PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+Dependency Review root-path and per-lockfile admission coverage (GH #511), hotfix, v0.175.0 -> v0.175.1. `.github/workflows/pr-dependency-review.yml` triggers on `requirements-release.in`, `requirements-sbom.in` and `requirements-sbom.txt` in addition to the existing paths, and runs one hard-fail admission step per governed root lockfile (`--lockfile requirements-release.txt`, `--lockfile requirements-sbom.txt`). `tests/test_pr_dependency_review_workflow.py` derives the governed set from the repository root; `tests/test_dependency_admission_lint_cli.py` (regression coverage backfill) invokes `dependency_admission_lint.main` against a hermetic scratch repo. `qor/references/doctrine-dependency-admission.md` names the SBOM lockfile, records the pyproject-pin residual, and corrects stale enforcement wording. No `qor/` code changed. Audit: VETO iter 1, VETO iter 2, PASS iter 3 (#811); implementation #812. CHANGELOG `[0.175.1]` Fixed note checked against the implementation diff: no overclaim.
+
+**Reality check**: 5 implement-gate files present and matching the plan; missing: none. Unplanned at seal: `docs/SYSTEM_STATE.md` (Step 6 phase narrative), CHANGELOG attribution line from `attribution.changelog_attribution_line()` (required by `test_changelog_post_cutoff_versions_have_attribution_line`).
+
+**Gates**: governance-health OK; gate check found+valid; version_applicability ok (target v0.175.1 > v0.172.2); ledger_commitment OK (5 touched); substantiate_gates (10 parsed); intent_lock VERIFIED; skill_admission ADMITTED; gate_skill_matrix 0 broken; session_id_lint 0; secret_scanner 0; dod_check 0; merge_velocity healthy; skill_size_budget 3 WARN, 0 EXCEEDED; doc_integrity strict (minimal tier) pass; governance_index enforce pass (Last Reviewed 2026-09-26); feature_index_verify 27/27. WARN: procedural_fidelity doc-surface-uncovered (doctrine change without architecture/lifecycle/operations update); doc currency same finding for the doctrine edit. SKIP: data_api_acl (no SQL migrations); feature_index surface-lint (no Surface column); continuity receipt (plan declares no execution_continuity); ac_close_guard (requires GitHub access, not used in this session). Disclosed: install_drift scope auto->global, drift 32, installed corpus digest `0c01555361d40d2330db862f9ff9c7646f223e756fc109ca1913a69b09801cff`. Boundary: pre-seal publication_boundary_lint 0 findings, scope structural (no identity overlay present); Step 4.6.14 re-runs after staging.
+
+**Suite (pre-append)**: 3552 passed, 3 skipped, 4 deselected, 1 failed: `tests/test_snapshot_export.py::test_healthy_repo_snapshot` asserts the latest seal entry version equals pyproject (0.175.1), which only this entry satisfies; the post-append run is recorded in the seal commit message.
+
+**Limits carried**: pins declared only in `pyproject.toml` are not examined by the CI admission lint; the governed lockfile set in the workflow is explicit, so a new root lockfile needs a workflow step (the regression fails until one is added).
+
 ---
 
 *Chain integrity: VALID*

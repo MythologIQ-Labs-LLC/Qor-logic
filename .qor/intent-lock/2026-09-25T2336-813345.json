@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-25T2336-813345",
+  "plan_path": "docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md",
+  "plan_hash": "6f4e701eb9cf07921d60f5f6d825b307d38089911c71dcedaf64b37c24c3347e",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "749c0664602d38d3623bf1e8384f0c6a1e67971f4844f4f04da929085726cd99",
+  "head_commit": "994817f87ff8b463482647a9060743d05fcef51d",
+  "captured_ts": "2026-09-26T01:28:33.125400Z"
+}
