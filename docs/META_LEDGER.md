@@ -24012,6 +24012,116 @@ Remediation (not quoted): one non-goal line anonymized in `docs/plan-shadow-esca
 
 **Limits carried**: lock records remain hash-bound by nothing (a coordinated direct edit still passes, as before); AMENDMENT review is not machine-enforced; phase numbers must stay unique for a session to remain walked. Ledger entries #802-#807 on this branch share numbers with the open Phase 294 branch (PR #515); whichever merges second re-chains.
 
+### Entry #809: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-25T23:42:09Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `f6d4ba15e645`
+**Verdict**: VETO
+
+**Content Hash**: `757b11e7d2912ac14dc0b036b1839cd970182a6fec6e2cc3c8430246ec199a14`
+**Previous Hash**: `9ed9e217c551dd3afa38c26233af18133bfde4ca7733c193afa64787568448f9`
+**Chain Hash (Merkle seal)**: `7ab4f7bcc7bd2e4d513a95442433c75da26530958083b1d5d5b50f7dd0084122`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+VETO (iter 1). V1 (`infrastructure-mismatch`): the plan names the cooling-period check among the controls a sbom-only change bypassed and treats a run of the repaired workflow as the #496 re-evaluation point, but `dependency_admission_lint.main` reads only `requirements-release.txt` (`--lockfile` default, line 241), so a sbom-only PR passes that step vacuously; the plan neither discloses nor bounds the residual. V2 (`specification-drift`, self-application of GH #511): the replacement regression test is again a hardcoded enumerated subset, the defect shape #511 names, while D1 claims every governed root dependency file. Grep-evidence in LD-1/LD-2/LD-5 re-executed at 15729311 and true; plan_grep_lint flags it non-reproducible by grammar (advisory, iter 1). Solo mode: codex-plugin and external reviewer unavailable, shortfalls logged; option_b_required false. Session `2026-09-25T2336-813345`.
+
+**Required next action**: Governor: amend plan text, re-run `/qor-audit`.
+
+### Entry #810: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-25T23:55:40Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `32bf68a26d3e`
+**Verdict**: VETO
+
+**Content Hash**: `756393af8873906b2a27672d3bfa85fd52528f28e9d1c56dc0321af9ecaac36d`
+**Previous Hash**: `7ab4f7bcc7bd2e4d513a95442433c75da26530958083b1d5d5b50f7dd0084122`
+**Chain Hash (Merkle seal)**: `b9491d3a4d41d20e5654cd1740448d96a545480436e18d4ef14dd871b851062d`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+VETO (iter 2). Iter-1 grounds resolved: V1 closed by one hard-fail admission step per governed root lockfile via the lint's existing `--lockfile`; V2 closed by a regression that derives root `requirements-*.in/.txt` plus `pyproject.toml` and guards the derivation. All 19 grep citations re-executed at 15729311 and true; LD-6 reproduced from local git objects (`run_lint` on `requirements-sbom.txt` at #496 head ac568fdf: cyclonedx-bom 7.4.0, 10 days, violation). V1 (`coverage-gap`): D1 claims every governed lockfile is examined, but no existing or declared test invokes `dependency_admission_lint.main`; the new admission test asserts only that workflow text names each lockfile, so a CLI `--lockfile` regression would restore the iter-1 vacuous sbom pass with all tests green. Scope: Phase 3 doctrine edit and LD-7 residual stay within hotfix scope for GH #511 (threshold, override, severity, hard-fail unchanged; LD-7 discloses a pre-existing gap, no policy widening). Option B fresh-context reviewer (option_b_required true); codex-plugin and external reviewer unavailable, shortfalls logged. Session `2026-09-25T2336-813345`.
+
+**Required next action**: Governor: amend plan text, re-run `/qor-audit`.
+
+### Entry #811: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-26T01:26:22Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `ae126f4c05a7`
+**Verdict**: PASS
+
+**Content Hash**: `749c0664602d38d3623bf1e8384f0c6a1e67971f4844f4f04da929085726cd99`
+**Previous Hash**: `b9491d3a4d41d20e5654cd1740448d96a545480436e18d4ef14dd871b851062d`
+**Chain Hash (Merkle seal)**: `2ef5a7395505e1aa1b238c9b4b21342a51f12fafd68f196ed2f1ee4aa9d559ea`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+PASS (iter 3). Iter-2 V1 (`coverage-gap`) resolved as written: LD-9/Phase 1 declare `tests/test_dependency_admission_lint_cli.py`, invoking `dependency_admission_lint.main` via argv against a hermetic scratch git repo (pinned clock, PyPI recorder, stubbed label query, `scratch_env()` git config). Judge reproduced the test design outside the repo: GREEN twice; each declared mutation (line 254 base read, line 248 current read) turns `test_main_lockfile_arg_examines_named_lockfile` RED on the exact-recorder assertion. Workflow tests prototyped: RED pre-fix, GREEN post-fix. Iter-1 closures intact. All 38 grep citations re-executed at 15729311, 0 mismatches; LD-6 reproduced from local objects. Scope stays hotfix (tests, workflow, doctrine wording; no `qor/` code; policy unchanged; target v0.175.1). Cycle-count and session-total escalators did not fire (distinct signatures). Advisories only: stale glossary/docstring WARN-only wording, legacy first-step heuristic test, job-level neutralizers unasserted, pre-existing workspace fragility. Option B fresh-context reviewer (option_b_required true); codex-plugin and external reviewer unavailable, shortfalls logged. Session `2026-09-25T2336-813345`.
+
+**Required next action**: `/qor-implement`.
+
+### Entry #812: IMPLEMENTATION
+
+**Timestamp**: 2026-09-26T01:31:12Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `0703e2a94506`
+**Plan**: docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md
+**Session**: 2026-09-25T2336-813345
+
+**Content Hash**: `13eb3f333b3eedfa1c56b92e9b458fda0bfca2f6906a30e05dc4fddc99aa99d0`
+**Previous Hash**: `2ef5a7395505e1aa1b238c9b4b21342a51f12fafd68f196ed2f1ee4aa9d559ea`
+**Chain Hash (Merkle seal)**: `78728b4d2925963c3b4fff4206da693a330a9d56fa7d84836e90cf29ecd00053`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Dependency Review root-path and per-lockfile admission coverage (GH #511).
+
+Workflow: `.github/workflows/pr-dependency-review.yml` adds `requirements-release.in`, `requirements-sbom.in` and `requirements-sbom.txt` to `on.pull_request.paths` and replaces the single admission step with one hard-fail step per governed root lockfile (`--base` plus `--lockfile requirements-release.txt` / `--lockfile requirements-sbom.txt`). Action pin, `fail-on-severity: high` and existing trigger paths unchanged. No `qor/` code changed.
+
+Tests: `tests/test_pr_dependency_review_workflow.py` derives the governed set from the repository root (`_governed_dependency_paths`, floor `_KNOWN_GOVERNED`) and adds `test_admission_lint_runs_for_every_governed_lockfile`; both targeted tests RED before the workflow edit (three missing paths; no step passes `--lockfile`), GREEN after. New `tests/test_dependency_admission_lint_cli.py` (regression coverage backfill, 2 tests) invokes `dependency_admission_lint.main` against a hermetic scratch repo; GREEN on first run, and each declared mutation (line 254 base read, line 248 current read, run with `python -B -m pytest`) turned `test_main_lockfile_arg_examines_named_lockfile` RED on the exact-recorder assertion; mutation reverted, `git diff --exit-code` clean. New files GREEN twice. Full suite 3553 passed, 3 skipped, 4 deselected; ruff clean; variant drift OK; publication_boundary_lint 0 findings; local per-lockfile admission loop against origin/main: no bumps.
+
+Doctrine: `doctrine-dependency-admission.md` names `requirements-sbom.txt`, adds the Phase 298 lockfile-coverage paragraph with the pyproject-pin residual (LD-7), and rewrites the stale manual/deferred enforcement wording in past tense.
+
+### Entry #813: SESSION SEAL -- Phase 298 dependency-review sbom path coverage (v0.175.1)
+
+**Timestamp**: 2026-09-26T01:42:05Z
+**Phase**: SEAL (Phase 298)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `9d2c59f84f43`
+
+**Content Hash**: `6f4e701eb9cf07921d60f5f6d825b307d38089911c71dcedaf64b37c24c3347e`
+**Previous Hash**: `78728b4d2925963c3b4fff4206da693a330a9d56fa7d84836e90cf29ecd00053`
+**Chain Hash (Merkle seal)**: `f602f3a5fdd1e14c33bb3a3a8ace5e6b6abaf633bec1eeaf614d34fdd538659c`
+
+**Decision**: **Plan**: docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md
+**Session**: 2026-09-25T2336-813345
+
+**Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.3, PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+Dependency Review root-path and per-lockfile admission coverage (GH #511), hotfix, v0.175.0 -> v0.175.1. `.github/workflows/pr-dependency-review.yml` triggers on `requirements-release.in`, `requirements-sbom.in` and `requirements-sbom.txt` in addition to the existing paths, and runs one hard-fail admission step per governed root lockfile (`--lockfile requirements-release.txt`, `--lockfile requirements-sbom.txt`). `tests/test_pr_dependency_review_workflow.py` derives the governed set from the repository root; `tests/test_dependency_admission_lint_cli.py` (regression coverage backfill) invokes `dependency_admission_lint.main` against a hermetic scratch repo. `qor/references/doctrine-dependency-admission.md` names the SBOM lockfile, records the pyproject-pin residual, and corrects stale enforcement wording. No `qor/` code changed. Audit: VETO iter 1, VETO iter 2, PASS iter 3 (#811); implementation #812. CHANGELOG `[0.175.1]` Fixed note checked against the implementation diff: no overclaim.
+
+**Reality check**: 5 implement-gate files present and matching the plan; missing: none. Unplanned at seal: `docs/SYSTEM_STATE.md` (Step 6 phase narrative), CHANGELOG attribution line from `attribution.changelog_attribution_line()` (required by `test_changelog_post_cutoff_versions_have_attribution_line`).
+
+**Gates**: governance-health OK; gate check found+valid; version_applicability ok (target v0.175.1 > v0.172.2); ledger_commitment OK (5 touched); substantiate_gates (10 parsed); intent_lock VERIFIED; skill_admission ADMITTED; gate_skill_matrix 0 broken; session_id_lint 0; secret_scanner 0; dod_check 0; merge_velocity healthy; skill_size_budget 3 WARN, 0 EXCEEDED; doc_integrity strict (minimal tier) pass; governance_index enforce pass (Last Reviewed 2026-09-26); feature_index_verify 27/27. WARN: procedural_fidelity doc-surface-uncovered (doctrine change without architecture/lifecycle/operations update); doc currency same finding for the doctrine edit. SKIP: data_api_acl (no SQL migrations); feature_index surface-lint (no Surface column); continuity receipt (plan declares no execution_continuity); ac_close_guard (requires GitHub access, not used in this session). Disclosed: install_drift scope auto->global, drift 32, installed corpus digest `0c01555361d40d2330db862f9ff9c7646f223e756fc109ca1913a69b09801cff`. Boundary: pre-seal publication_boundary_lint 0 findings, scope structural (no identity overlay present); Step 4.6.14 re-runs after staging.
+
+**Suite (pre-append)**: 3552 passed, 3 skipped, 4 deselected, 1 failed: `tests/test_snapshot_export.py::test_healthy_repo_snapshot` asserts the latest seal entry version equals pyproject (0.175.1), which only this entry satisfies; the post-append run is recorded in the seal commit message.
+
+**Limits carried**: pins declared only in `pyproject.toml` are not examined by the CI admission lint; the governed lockfile set in the workflow is explicit, so a new root lockfile needs a workflow step (the regression fails until one is added).
+
 ---
 
 *Chain integrity: VALID*

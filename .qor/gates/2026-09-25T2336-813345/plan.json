@@ -1,0 +1,35 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-25T2336-813345",
+  "ts": "2026-09-26T01:20:01Z",
+  "plan_path": "docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md",
+  "phases": [
+    "Regression tests: new tests/test_dependency_admission_lint_cli.py invokes dependency_admission_lint.main with argv against a hermetic scratch git repository (tests.support.git_fixture run_git/scratch_env; monkeypatched _now_utc, _fetch_pypi_upload_time recorder, _query_pr_labels; lint git show env pinned via scratch_env values) proving --lockfile routes to both the current read and the base git show read (sbom-only bump reported as violation with exit 1; default lockfile examines nothing, exit 0; regression coverage backfill with discriminating mutations at lines 248 and 254); test_pr_dependency_review_workflow.py resolves paths from __file__, derives the governed set (root requirements-*.in/.txt plus pyproject.toml, asserting the five known files are members), requires it in pull_request.paths plus .github/workflows/** self-coverage, and requires one hard-fail admission step (--base and --lockfile; no || true, set +e, continue-on-error, or if:) per governed root lockfile",
+    "Workflow coverage: add requirements-release.in, requirements-sbom.in, requirements-sbom.txt to pr-dependency-review.yml pull_request.paths; replace the single admission step with one step per governed lockfile (requirements-release.txt, requirements-sbom.txt) passing --lockfile; action pin, fail-on-severity high, and hard-fail unchanged",
+    "Doctrine scope note: doctrine-dependency-admission.md names requirements-sbom.txt as a governed lockfile, records the lockfile-only CI scope (pyproject pins not examined by the CLI entry point; declared residual), and corrects the stale manual/deferred enforcement wording"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_pr_dependency_review_workflow.py -q",
+    "python -m pytest tests/test_dependency_admission_lint_cli.py -q",
+    "python -m pytest tests/test_doctrine_dependency_admission.py -q",
+    "for f in requirements-*.txt; do python -m qor.scripts.dependency_admission_lint --base origin/main --lockfile \"$f\" || exit 1; done",
+    "python -m pytest tests/ -q",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m ruff check qor/ tests/",
+    "python -m qor.scripts.publication_boundary_lint --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "hotfix",
+  "originating_remediation": "GH #511",
+  "feature_inventory_touches": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "absent",
+    "ts": "2026-09-26T01:20:01Z"
+  }
+}

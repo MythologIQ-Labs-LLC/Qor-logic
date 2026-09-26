@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-25T2336-813345",
+  "ts": "2026-09-25T23:56:08Z",
+  "target": "docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "coverage-gap"
+  ],
+  "target_content_hash": "107fc0ff70d07bf122f5a28fee6ecbe596b64dcc4ee8e50a06a74d96afd2b529",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.0",
+    "host": "claude-code",
+    "model_family": "unknown",
+    "human_oversight": "veto",
+    "ts": "2026-09-25T23:56:08Z"
+  }
+}

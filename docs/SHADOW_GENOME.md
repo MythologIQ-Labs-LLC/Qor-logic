@@ -2885,4 +2885,52 @@ For every verification step a plan adds, state what it prints on the failure it 
 
 ---
 
+## Entry #35: VETO -- plan-qor-phase298-dependency-review-sbom-path-coverage v1
+
+**Date**: 2026-09-25
+**Verdict ID**: session 2026-09-25T2336-813345 audit-iter1 (ledger #809)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+A trigger-path fix for PR Dependency Review. The plan named the hard-fail cooling-period check as a control the `requirements-sbom.txt` change bypassed. It also treated a run of the repaired workflow as the point to re-evaluate the blocked PR. The check's CLI reads only `requirements-release.txt`, so it would pass a sbom-only PR with nothing examined. The replacement regression test was again a hardcoded path subset, the same shape as the defect it closes.
+
+### Why It Failed
+
+The plan verified that the workflow would run on the path. It did not verify what each step does once it runs. Coverage was proven by enumerating today's file names, not by deriving them from the surface the deliverable claims to cover.
+
+### Pattern to Avoid
+
+When a fix makes a gate trigger on a new input, trace each step of that gate to confirm it reads the input. A step that runs but ignores the input is a vacuous pass and must be disclosed or fixed. A regression test for "every X" must fail when a new X appears, not only when a known X is removed.
+
+### Remediation Attempted
+
+None at audit time; returned to the Governor for plan amendment.
+
+---
+
+## Entry #36: VETO -- plan-qor-phase298-dependency-review-sbom-path-coverage v2
+
+**Date**: 2026-09-25
+**Verdict ID**: session 2026-09-25T2336-813345 audit-iter2 (ledger #810)
+**Failure Mode**: VALIDATION_GAP
+
+### What Failed
+
+The amended plan closed the vacuous sbom admission pass by adding one workflow step per governed lockfile that passes `--lockfile`. Its deliverable says every governed lockfile is examined. The declared tests only check that the workflow text names each lockfile. No test, existing or planned, invokes the lint's CLI entry point, which is the code that turns `--lockfile` into the current read and the base `git show`. The only proof offered was a one-time manual run the plan itself called time-dependent.
+
+### Why It Failed
+
+The fix moved a security claim onto a code path that had never been exercised by tests. The plan proved the configuration half of the chain (workflow passes the argument) and substituted an observation for the behavioral half (the tool honours the argument).
+
+### Pattern to Avoid
+
+When a fix routes a control through an existing but untested entry point, the regression test must invoke that entry point with the new argument and assert on its output. A test that the configuration names the argument cannot fail when the tool ignores it. A manual observation is evidence for the plan, not a substitute for a deterministic test.
+
+### Remediation Attempted
+
+None at audit time; returned to the Governor for plan amendment.
+
+---
+
 *Shadow integrity: ACTIVE*

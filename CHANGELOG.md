@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.175.1] - 2026-09-26
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 298 (hotfix; dependency review covers every governed dependency file)**: the PR Dependency Review workflow did not trigger for `requirements-release.in`, `requirements-sbom.in` or `requirements-sbom.txt`, and its hard-fail cooling-period admission step examined only `requirements-release.txt`, so an SBOM-tool lockfile change could merge without either control running. The workflow now triggers on every repository-root dependency input and lockfile and runs one hard-fail admission step per governed lockfile (`--lockfile`). The regression derives the governed set from the repository root rather than a fixed list, and deterministic CLI tests prove the admission lint examines the named lockfile. Stated limit: pins declared only in `pyproject.toml` are still not checked by the admission lint (declared out of scope). No threshold, override or severity policy changed. Closes GH #511.
+
 ## [0.175.0] - 2026-09-24
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
