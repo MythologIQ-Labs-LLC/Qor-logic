@@ -24158,6 +24158,25 @@ Sealed/versioned != released/published (GH #520). `qor/scripts/release_state.py`
 
 **Required next action**: Governor amends via /qor-plan (correct the Provenance byte-identity claim; bind the clone proof to the committed seal revision with a guard that the clone's project version is 0.175.2), then /qor-audit.
 
+### Entry #816: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-27T23:53:17Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `322c3a8f8141`
+**Verdict**: PASS
+
+**Content Hash**: `d996618335b1f30261b03cc8ac9ce2b9f1aa9cc5220b580cd7414bd6c704a159`
+**Previous Hash**: `ac5aa546ad57d7218e9a50972a6c571be77ccfedce9d2ee327eaff09482b698b`
+**Chain Hash (Merkle seal)**: `9973efbef85e069c46172b59734c6e50b7484e61ebdc0882608aeee1221cb930`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+**Decision**: PASS (iter 2 on base 43ee76b). VETO #815 grounds resolved: V1 per-file byte-identity record recomputed with git diff --name-only 15729311..43ee76b for all 18 cited files and matches (10 identical, 5 changed, 3 absent; all changes via PR #521); V2 guarded post-seal clone proof reproduced in a scratch clone outside the repo: guard FAIL at implement state, uncommitted bump and unstamped bump; 1 failed (orphan 0.175.1) on a simulated seal without the entry; 4 passed twice with it; exit 1 when pytest is green with skips. Fresh audit: 51 evidence statements re-run at 43ee76b with 0 mismatches; Phase 1/2 tests prototyped (CLI GREEN x2, RED under both LD-9 mutations; workflow tests RED pre-fix, GREEN post-fix). Escalator not fired. Advisories A1-A4 (CI Commands pre-seal contract vs post-seal proof; proof after Merkle seal; empty Unreleased relies on seal-time population; workspace fragility). Option B fresh-context reviewer. Session `2026-09-27T2325-bf1a15`.
+
+**Required next action**: /qor-implement.
+
 ---
 
 *Chain integrity: VALID*
