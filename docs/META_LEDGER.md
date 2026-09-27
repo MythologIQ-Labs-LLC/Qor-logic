@@ -24012,6 +24012,133 @@ Remediation (not quoted): one non-goal line anonymized in `docs/plan-shadow-esca
 
 **Limits carried**: lock records remain hash-bound by nothing (a coordinated direct edit still passes, as before); AMENDMENT review is not machine-enforced; phase numbers must stay unique for a session to remain walked. Ledger entries #802-#807 on this branch share numbers with the open Phase 294 branch (PR #515); whichever merges second re-chains.
 
+### Entry #809: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-26T04:15:58Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `b6bd6cf04d06`
+**Verdict**: VETO
+
+**Content Hash**: `682050333b0eb45102f0402630be79839693d9935c6d25e0a7f3afc2c77dc36a`
+**Previous Hash**: `9ed9e217c551dd3afa38c26233af18133bfde4ca7733c193afa64787568448f9`
+**Chain Hash (Merkle seal)**: `f3400889d38bbc310184b636b631e0717c77586b4d04ad08b162b3b14b2793e2`
+
+**Decision**: **Target**: `docs/plan-qor-phase297-sealed-unpublished-release-state.md`
+
+**Decision**: VETO (iter 1). LD-4 inventory and LD-2 candidate rule are correct against base `15729311`, and all grep-evidence reproduces there. V1 (`specification-drift`): `version_applicability.validate` fails (target v0.175.1 <= current highest v0.175.1); the local-only seal tag `v0.175.1` (`af0ae68c`, unmerged Phase 298, not on remote) collides with this hotfix target, and the plan declares no release-target continuity. V2 (`specification-drift`, self-application of GH #520): the Problem names a local-only seal tag as a distinct state, but LD-2 treats every observed local tag as this branch's release history for forward coverage and the ceiling; the plan's CI command 1 fails in the audited checkout (`test_every_tag_has_changelog_section`: v0.175.1), so D4 is unattainable. Advisories: grep-evidence grammar (lint WARN, manual reproduce OK), branch-introduced absolute path in PROCESS_SHADOW_GENOME_UPSTREAM.md:75, test-only consumer of release_state, unreachable checkpoint 585741f0, pre-gate implementation checkpoint has no gate standing. Solo mode. Session `2026-09-25T2350-e05ce1`.
+
+**Required next action**: Governor amends via /qor-plan (record the operator's release-target continuity decision and the local-only tag rule), then /qor-audit.
+
+### Entry #810: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-27T22:42:49Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `2e6f21e8ea52`
+**Verdict**: VETO
+
+**Content Hash**: `2da2a34dc9a111e0faf93b34719db560bf446d858e1ee18fb6d7f7eaf4b27d3b`
+**Previous Hash**: `f3400889d38bbc310184b636b631e0717c77586b4d04ad08b162b3b14b2793e2`
+**Chain Hash (Merkle seal)**: `3a116d81bfb6d1c2946a5a36d59adb7531912590085e6d127c082a5e0b3f51fa`
+
+**Decision**: **Target**: `docs/plan-qor-phase297-sealed-unpublished-release-state.md`
+
+**Decision**: VETO (iter 2). Iteration-1 V1 and V2 resolved: version_applicability ok (v0.175.1 > v0.172.2; local v0.175.1 deleted, none on remote); reachable-tag rule prototyped on the live checkout (211 reachable of 214 SemVer tags; unreachable exactly 0.24.1, 0.25.0, 0.39.0; LD-4 entries leave no missing section and no orphan; shallow file:// clone detected). unreachable_tag is truthful (the three tags exist on origin off this line of history), closed, tested, and claims no publication. LD-10 reproduced exactly in a scratch clone (new id 6c2548c1..., one-line diff, boundary lint 0, chain verifies, suite green). V1 (`specification-drift`): LD-9 and Phase 1 step 1 restore every Phase 1 Affected File to base 15729311, which includes docs/META_LEDGER.md and docs/PROCESS_SHADOW_GENOME_UPSTREAM.md; as written this rewrites the append-only ledger, deletes seven shadow events, and removes the line-75 event LD-10 must edit (LD-10 step 1 then stops). Advisories: local/CI coverage split for reachable local-only tags; unreachable_tag not mechanically checked; implicit removal of Phase 42 regression tests; git fixture config isolation and Windows file URI; shallow-skip test mechanism unspecified. Option B fresh-context reviewer (audit_risk_score option_b_required). Session `2026-09-27T2225-1d09cf`.
+
+**Required next action**: Governor amends via /qor-plan (name the exact LD-9 restore set, excluding append-only governance records), then /qor-audit.
+
+### Entry #811: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-27T22:59:22Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `694d15497811`
+**Verdict**: PASS
+
+**Content Hash**: `58c11555a835c34a8b18483fced365ec5931898bfdc427d6aa1e841e8ae58d1a`
+**Previous Hash**: `3a116d81bfb6d1c2946a5a36d59adb7531912590085e6d127c082a5e0b3f51fa`
+**Chain Hash (Merkle seal)**: `34379d6c3047da169f6e8972e297b86742dd5f79cc5b86643302c1f65c407bb1`
+
+**Decision**: **Target**: `docs/plan-qor-phase297-sealed-unpublished-release-state.md`
+
+**Decision**: PASS (iter 3). Prior grounds resolved: #809 V1 (version_applicability ok, v0.175.1 > v0.172.2; no v0.175.x tag locally or on origin) and #809 V2 (reachable-tag rule re-prototyped: 211 of 214 SemVer tags reachable, unreachable exactly 0.24.1/0.25.0/0.39.0; LD-4 entries leave no missing section and no orphan; simulated 0.175.1 seal clean; shallow file:// clone detected); #810 V1 (LD-9 restore set executed in a scratch clone: exactly the five draft paths reset, post-check empty, append-only records untouched). All 29 evidence statements reproduce against 15729311. LD-10 reproduced end to end (new id 6c2548c1..., one changed line, boundary lint 0, AMENDMENT chain verifies, integrity invariants RED only on line-75 boundary then GREEN). Full suite on branch head 3566 passed, 3 skipped. Advisories: non-object entry test absent; no-tags degenerate behavior change unstated; LD-10 diff wording vs appended events; operations.md test-name reference. Option B fresh-context reviewer (audit_risk_score option_b_required). Session `2026-09-27T2225-1d09cf`.
+
+**Required next action**: /qor-implement.
+
+### Entry #812: AMENDMENT -- publication-boundary edit disclosure for shadow event of session 2026-09-25T2350-e05ce1
+
+**Timestamp**: 2026-09-27T23:03:46Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+
+**Content Hash**: `57ce71f7e522f3101a8b342f7e421599148f696169bb351ccf15cedf0e3c9c19`
+**Previous Hash**: `34379d6c3047da169f6e8972e297b86742dd5f79cc5b86643302c1f65c407bb1`
+**Chain Hash (Merkle seal)**: `da14adab9c5e34c27fa83ea85e20d02fe86dc75d71d9aacb80cc55e477fde274`
+
+**Decision**: Disclosed direct edit of one Process Shadow Genome event under operator decision OQ-1 (2026-09-27), executed as Phase 297 plan LD-10. File: `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`, line 75. Event: session `2026-09-25T2350-e05ce1`, type `gate_override`. Old id: `70f04c8458699f7e7c82c864f19d02ad7d77820cffba8c2517a38e76df454073`. New id: `6c2548c1e5116925fc5da35e5899c8905d6a679f7631ddcc2d0c1d7c99ccb437` (recomputed with `shadow_process.compute_id` and confirmed equal to the plan's precomputed value). Edited field: `details.reason`, where an absolute local path was replaced by the neutral token `<repo-root>`; no other field changed. Reason: the path violated the publication boundary, and `publication_boundary_lint` fails closed at seal (`/qor-substantiate` Step 4.6.14). Authority: operator decision OQ-1, dated 2026-09-27; it covers only this one event. No other byte of the file changed (the line was re-serialized in the append-path form, `id` first); no history was rewritten; the removed text is not quoted here.
+
+### Entry #813: IMPLEMENTATION
+
+**Timestamp**: 2026-09-27T23:06:27Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `4f4300c5162e`
+**Plan**: docs/plan-qor-phase297-sealed-unpublished-release-state.md
+**Session**: 2026-09-27T2225-1d09cf
+
+**Content Hash**: `2fb5a2bd102f3e1781af137da17acf12529e60f8be7da86755c10d3b9b579b28`
+**Previous Hash**: `da14adab9c5e34c27fa83ea85e20d02fe86dc75d71d9aacb80cc55e477fde274`
+**Chain Hash (Merkle seal)**: `97edc603b6c5fcb048591a5613db0445d1d4b324bfcdb5d60deae9bcde92d8cc`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Sealed/versioned != released/published (GH #520).
+
+LD-9: the pre-audit draft was reset first, exactly the named five paths (three `git rm`, two restored from 15729311); post-check empty; no append-only record touched.
+
+Module: `qor/scripts/release_state.py` owns the closed `qor.release-state/v1` validator (`load_release_state`, fail-closed `ReleaseStateError` on every LD-6 shape including non-object entries), the reachable-tag reader (`merged_semver_tags`: `git tag --merged HEAD`, strict SemVer; `ShallowHistoryError` on shallow history), and the pure `coverage_violations` (project version is the single implicit candidate; ceiling = max(project version, highest reachable tag); no-tag checkouts exempt nothing, disclosed in doctrine). `docs/release-state.json` carries the 13 LD-4 entries (4 legacy_untagged, 6 sealed_unpublished, 3 unreachable_tag). `tests/test_changelog_tag_coverage.py` consumes the module via `_reachable_tags()` with shallow and git-unavailable skips; the four base tests of the removed exemption are removed and their surviving behaviors re-asserted in `tests/test_release_state.py`; live test names unchanged, so `docs/operations.md` needs no edit.
+
+TDD: both release-state test files RED at collection (module absent) before implementation, then 29 passed twice. `tests/test_shadow_log_integrity.py` RED on exactly the upstream-log boundary check (1 failed, 5 passed), GREEN (6 passed) twice after LD-10.
+
+LD-10: one event edited per operator decision OQ-1 and disclosed by AMENDMENT #812 (old id 70f04c84..., new id 6c2548c1..., recomputed and equal to the plan value); one changed line.
+
+Doctrine: `qor/references/doctrine-changelog.md` gains the release-state section (lifecycle boundary, reachable-tag rule, record states, CI as authoritative enforcement point). CHANGELOG Unreleased carries one Fixed note.
+
+Verification: full suite 3579 passed, 3 skipped; ruff clean; `publication_boundary_lint` 0 findings; ledger chain verifies. Intent lock captured before implementation code.
+
+### Entry #814: SESSION SEAL -- Phase 297 sealed-unpublished release state (v0.175.1)
+
+**Timestamp**: 2026-09-27T23:12:05Z
+**Phase**: SEAL (Phase 297)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `bd67fb56ba74`
+**Plan**: docs/plan-qor-phase297-sealed-unpublished-release-state.md
+**Session**: 2026-09-27T2225-1d09cf
+
+**Content Hash**: `e05c042dd04df6215b7341003509c7255fdbc4cfad91a795fbf0c9914e3c2e80`
+**Previous Hash**: `97edc603b6c5fcb048591a5613db0445d1d4b324bfcdb5d60deae9bcde92d8cc`
+**Chain Hash (Merkle seal)**: `f7de1f9875f54169520a8646f609cfa828f87ea1454aca6d3215d83c6c6f727c`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.3, PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+Sealed/versioned != released/published (GH #520). `qor/scripts/release_state.py` owns the closed `qor.release-state/v1` validator (fail-closed `ReleaseStateError`), the reachable-tag reader (`git tag --merged HEAD`, strict SemVer, `ShallowHistoryError` on shallow history) and the pure `coverage_violations`. `docs/release-state.json` carries the 13 LD-4 dispositions (4 legacy_untagged, 6 sealed_unpublished, 3 unreachable_tag). `tests/test_changelog_tag_coverage.py` consumes the module; `tests/test_release_state.py` and `tests/test_shadow_log_integrity.py` are new. Doctrine: `qor/references/doctrine-changelog.md`. LD-10 shadow-event edit disclosed by AMENDMENT #812. Audit: VETO iter 1 (#809), VETO iter 2 (#810), PASS iter 3 (#811); implementation #813.
+
+**Version**: 0.175.0 -> 0.175.1 (hotfix). After the bump the release-state model holds: 0.175.1 is the single implicit candidate, 0.175.0 is covered by its `sealed_unpublished` entry, and the tag-coverage tests pass. No remote tag is created; the seal tag stays local.
+
+**CHANGELOG**: stamped `[0.175.1] - 2026-09-27` by `changelog_backends.stamp`. The stamp does not emit the `_Built via ..._` line and `tests/test_attribution_tiered_usage.py::test_changelog_post_cutoff_versions_have_attribution_line` requires it, so the line was inserted below the new header from `attribution.changelog_attribution_line()`. The Unreleased note describes only what was implemented.
+
+**Reality audit**: all planned files exist; no MISSING. `docs/SHADOW_GENOME.md` and appended `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` events come from the plan/audit sessions, not implementation. Section 4: release_state.py 121 lines; tests 208/100/40 lines.
+
+**Gates**: substantiate_gates (10 parsed), intent_lock verify, skill_admission, gate_skill_matrix (broken 0), session_id_lint, secret_scanner, merge_velocity (healthy), skill_size_budget (3 WARN, 0 EXCEEDED), ledger_commitment (9 touched), doc_integrity strict, governance_index enforce, feature_index_verify (27/27), version_applicability (v0.175.1 > v0.172.2) all pass. dod_check: no findings. procedural_fidelity WARN: doc-surface-uncovered (its genome append names no log and is swallowed). Doc currency WARN: release_state.py and doctrine-changelog.md without a system-tier doc update (plan: doc_tier minimal, operations.md unchanged). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 33 (every source skill reported missing). continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body. Boundary: pre-seal `publication_boundary_lint` 0 findings at scope structural (no identity overlay present); Step 4.6.14 re-runs after staging. Suite pre-seal: 3579 passed, 3 skipped.
+
 ---
 
 *Chain integrity: VALID*

@@ -2885,4 +2885,44 @@ For every verification step a plan adds, state what it prints on the failure it 
 
 ---
 
+## Entry #35: VETO -- plan-qor-phase297-sealed-unpublished-release-state v1
+
+**Date**: 2026-09-26
+**Verdict ID**: session 2026-09-25T2350-e05ce1 audit-iter1 (META_LEDGER Entry #809)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The plan for separating sealed versions from published releases was pinned to its base revision. It verified every citation there, but it did not account for a local-only seal tag from a parallel phase that already occupies its hotfix target. Version-applicability failed, and the plan's own first CI command failed in the checkout where it will be implemented. The plan names "local-only seal tag" as a state to distinguish, yet its coverage rule treats every observed local tag as this branch's release history.
+
+### Why It Failed
+
+The model was checked against a frozen base, not against the shared ref namespace the plan will be implemented and sealed in. Every substantiation creates a local tag, so parallel governed phases routinely leave tags that no branch-local CHANGELOG covers.
+
+### Pattern to Avoid
+
+A plan about release or tag state must be checked against the live tag set as well as its base, including local-only tags from unmerged phases. It must say what its rules do with a tag that no version section on this branch explains. Related: Entry #31.
+
+---
+
+## Entry #36: VETO -- plan-qor-phase297-sealed-unpublished-release-state v2
+
+**Date**: 2026-09-27
+**Verdict ID**: session 2026-09-27T2225-1d09cf audit (META_LEDGER Entry #810)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The plan told implementation to restore every Affected File to base content, to discard a pre-audit checkpoint. That list also held two append-only governance records: the META_LEDGER and the upstream process Shadow Genome log. The plan planned one appended AMENDMENT and one disclosed line edit in them. Run as written, the restore erases ledger entries made after base and deletes Shadow Genome events, including the event the plan's own remediation step must edit.
+
+### Why It Failed
+
+The restore rule was written for the five pre-audit draft files named in the prose. It was then worded over the whole Affected Files list after that list grew to include the append-only records.
+
+### Pattern to Avoid
+
+A restore, reset, or discard instruction must name its exact file set. Never cover it by a list reference that can hold append-only records (ledger, Shadow Genome logs, gate artifacts). When an Affected Files list gains an append-only record, re-read every instruction that quantifies over that list. Related: Entry #35.
+
+---
+
 *Shadow integrity: ACTIVE*
