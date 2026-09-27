@@ -24050,6 +24050,25 @@ Remediation (not quoted): one non-goal line anonymized in `docs/plan-shadow-esca
 
 **Required next action**: Governor amends via /qor-plan (name the exact LD-9 restore set, excluding append-only governance records), then /qor-audit.
 
+### Entry #811: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-27T22:59:22Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `694d15497811`
+**Verdict**: PASS
+
+**Content Hash**: `58c11555a835c34a8b18483fced365ec5931898bfdc427d6aa1e841e8ae58d1a`
+**Previous Hash**: `3a116d81bfb6d1c2946a5a36d59adb7531912590085e6d127c082a5e0b3f51fa`
+**Chain Hash (Merkle seal)**: `34379d6c3047da169f6e8972e297b86742dd5f79cc5b86643302c1f65c407bb1`
+
+**Decision**: **Target**: `docs/plan-qor-phase297-sealed-unpublished-release-state.md`
+
+**Decision**: PASS (iter 3). Prior grounds resolved: #809 V1 (version_applicability ok, v0.175.1 > v0.172.2; no v0.175.x tag locally or on origin) and #809 V2 (reachable-tag rule re-prototyped: 211 of 214 SemVer tags reachable, unreachable exactly 0.24.1/0.25.0/0.39.0; LD-4 entries leave no missing section and no orphan; simulated 0.175.1 seal clean; shallow file:// clone detected); #810 V1 (LD-9 restore set executed in a scratch clone: exactly the five draft paths reset, post-check empty, append-only records untouched). All 29 evidence statements reproduce against 15729311. LD-10 reproduced end to end (new id 6c2548c1..., one changed line, boundary lint 0, AMENDMENT chain verifies, integrity invariants RED only on line-75 boundary then GREEN). Full suite on branch head 3566 passed, 3 skipped. Advisories: non-object entry test absent; no-tags degenerate behavior change unstated; LD-10 diff wording vs appended events; operations.md test-name reference. Option B fresh-context reviewer (audit_risk_score option_b_required). Session `2026-09-27T2225-1d09cf`.
+
+**Required next action**: /qor-implement.
+
 ---
 
 *Chain integrity: VALID*
