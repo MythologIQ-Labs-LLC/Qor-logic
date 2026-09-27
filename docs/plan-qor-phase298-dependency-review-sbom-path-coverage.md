@@ -4,7 +4,7 @@
 
 **doc_tier**: minimal
 
-**iteration**: 1 (on branch `phase/298-dependency-review-sbom-path-coverage-current`)
+**iteration**: 2 (on branch `phase/298-dependency-review-sbom-path-coverage-current`; responds to VETO META_LEDGER #815)
 
 **Issue**: GH #511
 
@@ -12,7 +12,15 @@
 
 **Target version**: `0.175.2` (hotfix bump from `0.175.1`)
 
-**Provenance**: this plan recomposes Phase 298 on the new `main`. Its substance is the iteration-3 plan authored on the prior branch `phase/298-dependency-review-sbom-path-coverage` (PR #522, plan commit `cddc903`), which received audit PASS in META_LEDGER entry #811 of that branch after VETOs at entries #809 and #810 of that branch. Those entry numbers belong to that branch's ledger only; on `main` the same numbers are Phase 297 entries, and this branch's ledger continues from #814. That branch's audit, implementation (`357baf3`) and seal of `0.175.1` (`af0ae68c`, entries #809-#813 of that branch) are bound to base `15729311f9f4d55d5dad2db004b972415c39432c`. They are revision-bound ancestry only and are not audit, implementation or seal authority for this branch. This plan requires a fresh `/qor-audit` on this revision. Every citation below was re-run against the current base; each cited file is byte-identical between `15729311f9f4d55d5dad2db004b972415c39432c` and the current base, and every cited line number and text is unchanged.
+**Provenance**: this plan recomposes Phase 298 on the new `main`. Its substance is the iteration-3 plan authored on the prior branch `phase/298-dependency-review-sbom-path-coverage` (PR #522, plan commit `cddc903`), which received audit PASS in META_LEDGER entry #811 of that branch after VETOs at entries #809 and #810 of that branch. Those entry numbers belong to that branch's ledger only; on `main` the same numbers are Phase 297 entries, and this branch's ledger continues from #814. That branch's audit, implementation (`357baf3`) and seal of `0.175.1` (`af0ae68c`, entries #809-#813 of that branch) are bound to base `15729311f9f4d55d5dad2db004b972415c39432c`. They are revision-bound ancestry only and are not audit, implementation or seal authority for this branch. This plan requires a fresh `/qor-audit` on this revision.
+
+**Citation currency**: every `git show` evidence statement below cites the current base `43ee76b7ed561a308eaeab0844044c7642e02efd` and was re-executed against it for iteration 2 (51 statements: the 49 carried from iteration 1, all reproduced, plus 2 added in iteration 2; 0 mismatches), together with the no-match, prints-nothing, line-count, empty-diff, line-24134 and `merge-base --is-ancestor` claims. The evidence statements cite 18 files. Byte identity between `15729311f9f4d55d5dad2db004b972415c39432c` and the current base was computed per file with `git diff --name-only 15729311f9f4d55d5dad2db004b972415c39432c 43ee76b7ed561a308eaeab0844044c7642e02efd -- <path>` (empty output means byte-identical):
+
+- byte-identical (10): `.github/workflows/pr-dependency-review.yml`, `.github/workflows/release.yml`, `qor/references/doctrine-dependency-admission.md`, `qor/references/glossary.md` (first cited in iteration 2), `qor/scripts/_dep_admit_common.py`, `qor/scripts/dependency_admission_lint.py`, `qor/scripts/governance_helpers.py`, `tests/support/git_fixture.py`, `tests/test_dependency_admission_lint.py`, `tests/test_pr_dependency_review_workflow.py`;
+- changed by Phase 297 (5): `pyproject.toml`, `CHANGELOG.md`, `docs/META_LEDGER.md`, `qor/references/doctrine-changelog.md`, `tests/test_changelog_tag_coverage.py`;
+- absent at `15729311f9f4d55d5dad2db004b972415c39432c`, created by Phase 297 (3): `qor/scripts/release_state.py`, `docs/release-state.json`, `tests/test_release_state.py`.
+
+The 8 changed or new files carry LD-10 and LD-11. Their citations have no counterpart at the prior base and rest only on the re-execution at the current base. Iteration 1 of this plan cited the other 17 files, and it and its commit message `e055cd34` claimed every cited file was byte-identical to the prior base. That claim was false for these 8 files (VETO #815, V1). It is withdrawn here; the commit message is history and is not amended.
 
 ## Open Questions
 
@@ -226,7 +234,7 @@ Once the seal bumps the project version to `0.175.2`, `0.175.1` stops being the 
 
 `git show 43ee76b7ed561a308eaeab0844044c7642e02efd:qor/scripts/release_state.py | grep -nE 'if _semver\(v\) <= ceiling'` -> `119:        if _semver(v) <= ceiling`
 
-`0.175.1` has no release tag on the remote. Phase 297's seal states this: at `43ee76b7ed561a308eaeab0844044c7642e02efd`, line 24134 of `docs/META_LEDGER.md` is the Entry #814 `**Version**:` line, and it ends with the sentence "No remote tag is created; the seal tag stays local." (a `grep -n` for that sentence at that revision prints line 24134; the line carries inline code spans, so it is quoted in part here rather than as a full-line evidence statement). While authoring this plan, `git ls-remote --tags origin` listed no `v0.175.x` tag (observation, 2026-09-27; not a test expectation).
+`0.175.1` has no release tag on the remote. Phase 297's seal states this: at `43ee76b7ed561a308eaeab0844044c7642e02efd`, line 24134 of `docs/META_LEDGER.md` is the Entry #814 `**Version**:` line, and it ends with the sentence "No remote tag is created; the seal tag stays local." (a `grep -n` for that sentence at that revision prints line 24134; the line carries inline code spans, so it is quoted in part here rather than as a full-line evidence statement). While authoring iterations 1 and 2, `git ls-remote --tags origin` listed no `v0.173+` tag; the highest remote tag was `v0.172.2` (observation, 2026-09-27; not a test expectation).
 
 The record at the base covers `0.175.0` and no later version:
 
@@ -246,7 +254,12 @@ A local seal tag `v0.175.1` created by Phase 297's seal is reachable from `HEAD`
 
 `git show 43ee76b7ed561a308eaeab0844044c7642e02efd:qor/references/doctrine-changelog.md | grep -nE 'stays authoritative even if a local seal tag exists'` -> `83:  stays authoritative even if a local seal tag exists. Publishing the version`
 
-Because that local tag covers `0.175.1` locally, the plain local run of the tag-coverage suite cannot tell whether the entry is present. The proof therefore runs the real suite in a CI view: a scratch clone of the checkout from which every tag absent from the remote has been deleted (Phase 4). The suite consumes the live record:
+Because that local tag covers `0.175.1` locally, the plain local run of the tag-coverage suite cannot tell whether the entry is present. The proof therefore uses a CI view, in which every tag absent from the remote is ignored. It runs twice (Phase 4):
+
+- At `/qor-implement`, an in-memory simulation models the post-seal state (project version `0.175.2`) against the working tree. It does not depend on seal ordering.
+- After the seal, a post-seal verification runs the real suite in a scratch clone of the seal commit. `git clone` copies committed history only. `/qor-substantiate` bumps at Step 7.5 and stamps at Step 7.6, but commits at Step 9.5 and tags at Step 9.5.5. So the clone proof runs after Step 9.5.5 and before Step 9.6 (push/merge). A guard makes it fail unless the clone's `[project].version` is `0.175.2` and its CHANGELOG carries a dated `## [0.175.2] - ` section. Run any earlier, the clone holds the implement commit (`0.175.1`) and the guard fails, so the proof cannot pass vacuously. It also fails if pytest reports a skip.
+
+The suite consumes the live record:
 
 `git show 43ee76b7ed561a308eaeab0844044c7642e02efd:tests/test_changelog_tag_coverage.py | grep -nE 'exceptions = release_state.load_release_state\(RELEASE_STATE, versions\)'` -> `54:    exceptions = release_state.load_release_state(RELEASE_STATE, versions)`
 
@@ -303,11 +316,12 @@ Rewrite `test_workflow_triggers_on_dependency_paths`:
 
 Add `test_admission_lint_runs_for_every_governed_lockfile`:
 
-- collect the parsed workflow steps whose `run` invokes `dependency_admission_lint`;
+- walk every job under `jobs`, and collect each job's parsed steps whose `run` invokes `dependency_admission_lint`, keeping the owning job with each step;
 - extract each step's `--lockfile` argument;
 - assert every governed lockfile (members of `_governed_dependency_paths()` ending in `.txt`) is named by exactly one such step;
 - assert each such step's `run` contains `--base`, and contains neither `|| true` nor `set +e`;
-- assert each such step has no `if:` key and no truthy `continue-on-error`.
+- assert each such step has no `if:` key and no truthy `continue-on-error`;
+- assert each owning job has no `if:` key and no truthy `continue-on-error` (a job-level guard would neutralize its steps as surely as a step-level one).
 
 ### Unit Tests
 
@@ -315,7 +329,7 @@ Add `test_admission_lint_runs_for_every_governed_lockfile`:
 - `tests/test_dependency_admission_lint_cli.py::test_main_default_lockfile_does_not_examine_sbom_bump` - invokes `main` without `--lockfile` on the same fixture and asserts no entry is examined, `_No lockfile bumps detected._` is printed, and exit is 0.
 - TDD classification for the two CLI tests: regression coverage backfill. `main` already honours `--lockfile` at the base (LD-6 lines 248 and 254), so they are GREEN on first run. The implementer proves they discriminate by a local, uncommitted mutation: replace `args.lockfile` with `"requirements-release.txt"` at line 254, then separately at line 248, run the file with `python -B -m pytest` (both mutations change the file by the same byte count, so a stale bytecode cache could mask the second), and observe `test_main_lockfile_arg_examines_named_lockfile` FAIL each time. The implementer then reverts, confirms `git diff --exit-code qor/scripts/dependency_admission_lint.py`, and runs the file twice GREEN.
 - `tests/test_pr_dependency_review_workflow.py::test_workflow_triggers_on_dependency_paths` - parses the real workflow YAML and fails when any derived governed path, including a newly added root `requirements-*.in/.txt` file, is absent from `on.pull_request.paths`. RED against the pre-fix workflow (the three missing paths).
-- `tests/test_pr_dependency_review_workflow.py::test_admission_lint_runs_for_every_governed_lockfile` - parses the real workflow YAML and fails when any governed root lockfile has no hard-fail admission step naming it, or when a naming step is neutralized by `|| true`, `set +e`, `continue-on-error: true` or an `if:` guard. RED against the pre-fix workflow (no step passes `--lockfile`).
+- `tests/test_pr_dependency_review_workflow.py::test_admission_lint_runs_for_every_governed_lockfile` - parses the real workflow YAML and fails when any governed root lockfile has no hard-fail admission step naming it, or when a naming step, or the job that owns it, is neutralized by `|| true`, `set +e`, `continue-on-error: true` or an `if:` guard. RED against the pre-fix workflow (no step passes `--lockfile`).
 
 ## Phase 2: Workflow coverage
 
@@ -331,7 +345,11 @@ Add exactly these entries under `on.pull_request.paths`:
 - `requirements-sbom.in`
 - `requirements-sbom.txt`
 
-Replace the single admission step with two steps, each running `python -m qor.scripts.dependency_admission_lint --base "${{ github.event.pull_request.base.sha }}" --lockfile <name>`: one for `requirements-release.txt`, one for `requirements-sbom.txt`. Neither is wrapped in `|| true` or `set +e`, and neither carries `continue-on-error` or an `if:` guard. Preserve every existing trigger path, the action pin, `fail-on-severity: high`, and the checkout/setup/install steps unchanged.
+Replace the single admission step with two steps, each running `python -m qor.scripts.dependency_admission_lint --base "${{ github.event.pull_request.base.sha }}" --lockfile <name>`: one for `requirements-release.txt`, one for `requirements-sbom.txt`. Neither is wrapped in `|| true` or `set +e`, and neither carries `continue-on-error` or an `if:` guard. The owning `dependency-review` job stays unguarded. The pattern `continue-on-error|if:` has no match in the workflow at the base, whose only job is `dependency-review`:
+
+`git show 43ee76b7ed561a308eaeab0844044c7642e02efd:.github/workflows/pr-dependency-review.yml | grep -nE '^  [a-z-]+:$'` -> `22:  dependency-review:`
+
+Preserve every existing trigger path, the action pin, `fail-on-severity: high`, and the checkout/setup/install steps unchanged.
 
 ### Unit Tests
 
@@ -343,6 +361,7 @@ Replace the single admission step with two steps, each running `python -m qor.sc
 ### Affected Files
 
 - `qor/references/doctrine-dependency-admission.md` - name `requirements-sbom.txt` as a governed lockfile, record the lockfile-only scope of the CI step, and correct stale "manual"/"deferred" enforcement wording.
+- `qor/references/glossary.md` - correct the stale `dependency-admission-lint` definition (single lockfile, WARN-only).
 
 ### Changes
 
@@ -356,9 +375,15 @@ Correct two stale statements that contradict the Phase 107 hard-fail enforcement
 
 Rewrite the paragraph at line 43 in past tense: at Phase 103 the check was manual; Phase 105 added `qor/scripts/dependency_admission_lint.py`, and Phase 107 made it hard-fail in `pr-dependency-review.yml`. Rewrite the Authority clause ending at line 114 to state that automated enforcement of the 14-day threshold is operative in `pr-dependency-review.yml`, for the governed root lockfiles only. No threshold, override or policy wording changes.
 
+The glossary entry for `dependency-admission-lint` still describes the Phase 105 wiring. It says the lint walks one lockfile and is WARN-only:
+
+`git show 43ee76b7ed561a308eaeab0844044c7642e02efd:qor/references/glossary.md | grep -nE '^term: dependency-admission-lint$'` -> `922:term: dependency-admission-lint`
+
+Line 923 is that entry's `definition:`. It contains the phrases `walks the requirements-release.txt lockfile diff` and `Wired WARN-only in .github/workflows/pr-dependency-review.yml`; the line is long and is quoted in part here. Edit only that `definition:` value. Say the lint walks the lockfile named by `--lockfile` (default `requirements-release.txt`), and that `pr-dependency-review.yml` runs it hard-fail (Phase 107), once per governed root lockfile (Phase 298). Keep `term`, `home`, `referenced_by` and `introduced_in_plan` unchanged. The lint module docstring carries the same stale wording, but it is code and stays out of scope (non-goal).
+
 ### Unit Tests
 
-- None added. Documentation-only change; `tests/test_doctrine_dependency_admission.py` must stay green (threshold, override, workflow reference, SSDF assertions unchanged).
+- None added. Documentation-only change; `tests/test_doctrine_dependency_admission.py` must stay green (threshold, override, workflow reference, SSDF assertions unchanged), and `tests/test_dogfood_glossary_coverage.py`, which parses the real glossary, must stay green.
 
 ## Phase 4: Release-state continuity
 
@@ -374,16 +399,21 @@ Append the LD-11 entry as the last element of `exceptions`, with the same key or
 
 - None added. The record is data consumed by the existing suite. TDD classification: regression coverage backfill is not needed, because `tests/test_release_state.py::test_disposition_exempts_only_the_named_version` and `tests/test_release_state.py::test_sealed_unpublished_version_with_local_tag_is_clean` already prove the rule the entry relies on (LD-11).
 - At `/qor-implement`, `python -m pytest tests/test_release_state.py tests/test_changelog_tag_coverage.py -q` stays GREEN, which proves the record still validates with the new entry.
-- At `/qor-implement`, the CI-view simulation in `## CI Commands` models the post-seal state (project version `0.175.2`, remote tags only). On the current base, before the entry exists, it prints `{'0.175.1'} {'0.175.1'}` (observed while authoring this plan): the gap is RED. After the entry is appended it reports no orphans with the entry. With `0.175.1` removed from the loaded exceptions in memory, it reports exactly `{'0.175.1'}`. That shows the entry is what keeps coverage green.
-- At `/qor-substantiate`, after the version bump and seal tag, the CI-view tag-coverage run in `## CI Commands` passes on the sealed revision.
+- At `/qor-implement`, the CI-view simulation in `## CI Commands` models the post-seal state (project version `0.175.2`, remote tags only). On the current base, before the entry exists, it prints `{'0.175.1'} {'0.175.1'}` (observed while authoring iterations 1 and 2): the gap is RED. After the entry is appended it reports no orphans with the entry. With `0.175.1` removed from the loaded exceptions in memory, it reports exactly `{'0.175.1'}`. That shows the entry is what keeps coverage green.
+- Post-seal verification: the substantiating operator runs the guarded CI-view clone proof in `## CI Commands` after `/qor-substantiate` Step 9.5.5 (seal commit and local `v0.175.2` tag exist) and before Step 9.6 (push/merge). It must exit 0, which requires the guard to pass, pytest to pass, and no test to be skipped. It clones the seal commit, so it proves the committed bump, stamp and entry together. The operator records the observed output in the substantiation hand-off report. A non-zero exit blocks Step 9.6; the legal next action is `/qor-remediate`, and the seal is not pushed. Running it before the seal commit is not a substitute: the guard fails there by design.
+- Proof that the post-seal verification discriminates (observed while authoring iteration 2, in a scratch clone of this branch outside the repository, with `origin` set to the real remote; the seal commits were simulated there and never entered this repository):
+  - implement-state commit (this branch's head, `version = "0.175.1"`), no entry: exit 1, and the guard prints `CI-view guard FAIL: clone is not a sealed 0.175.2 (project version 0.175.1)`. The unguarded iteration-1 command reports `4 passed` on the same commit, which is the vacuous pass VETO #815 V2 found;
+  - a commit that bumps `version` to `0.175.2` without the `[0.175.2]` CHANGELOG stamp: exit 1, `CI-view guard FAIL: clone is not a sealed 0.175.2 (project version 0.175.2)`;
+  - simulated seal commit (`version = "0.175.2"`, `## [0.175.2] - ` section, local `v0.175.2` tag), no `0.175.1` entry: exit 1, `1 failed, 3 passed`, and `test_every_changelog_section_has_tag` reports orphan `0.175.1`;
+  - the same seal commit with the LD-11 entry added: exit 0, `4 passed`, and the same result on a second run.
 
 ## Definition of Done
 
 ### Deliverable: complete Dependency Review root-path and lockfile coverage
 
 - **D1**: every change to a governed root dependency file (derived per LD-2) triggers `PR Dependency Review`, and every governed root lockfile is examined by a hard-fail cooling-period admission step. "Examined" means the step names the lockfile via `--lockfile` and `main` diffs that lockfile against the same path at `--base` (LD-9). Pyproject pin examination in CI is a declared residual (LD-7).
-- **D2**: `.github/workflows/pr-dependency-review.yml` names `pyproject.toml`, `requirements-release.in`, `requirements-release.txt`, `requirements-sbom.in`, and `requirements-sbom.txt` under `pull_request.paths`, preserves `.github/workflows/**`, and carries one admission step per governed root lockfile passing `--base` and `--lockfile`; the action pin, `fail-on-severity: high`, and hard-fail posture are unchanged.
-- **D3**: Phase 298 follows canonical phase branch/plan resolution and receives truthful current-revision audit/substantiation evidence before promotion; no governance evidence is synthesized through the GitHub API. The doctrine records the sbom lockfile coverage and the pyproject residual, and no longer describes enforcement as manual or deferred.
+- **D2**: `.github/workflows/pr-dependency-review.yml` names `pyproject.toml`, `requirements-release.in`, `requirements-release.txt`, `requirements-sbom.in`, and `requirements-sbom.txt` under `pull_request.paths`, preserves `.github/workflows/**`, and carries one admission step per governed root lockfile passing `--base` and `--lockfile`, with no `if:` or `continue-on-error` on those steps or their job; the action pin, `fail-on-severity: high`, and hard-fail posture are unchanged.
+- **D3**: Phase 298 follows canonical phase branch/plan resolution and receives truthful current-revision audit/substantiation evidence before promotion; no governance evidence is synthesized through the GitHub API. The doctrine records the sbom lockfile coverage and the pyproject residual, and no longer describes enforcement as manual or deferred. The `dependency-admission-lint` glossary definition no longer describes the lint as WARN-only or limited to `requirements-release.txt`.
 - **D4**: `tests/test_pr_dependency_review_workflow.py::test_workflow_triggers_on_dependency_paths` and `tests/test_pr_dependency_review_workflow.py::test_admission_lint_runs_for_every_governed_lockfile` are RED before the workflow edit and GREEN afterward. `tests/test_dependency_admission_lint_cli.py::test_main_lockfile_arg_examines_named_lockfile` and `tests/test_dependency_admission_lint_cli.py::test_main_default_lockfile_does_not_examine_sbom_bump` are GREEN (regression coverage backfill), and each discriminating mutation in Phase 1 turns the first one RED. The full workflow test file passes on the implemented revision.
 
 ### Deliverable: release-state continuity for 0.175.1
@@ -391,7 +421,7 @@ Append the LD-11 entry as the last element of `exceptions`, with the same key or
 - **D1**: after the Phase 298 seal bumps the project version to `0.175.2`, the superseded `0.175.1` (sealed on `main` at META_LEDGER #814, with no remote tag) stays covered by a truthful `sealed_unpublished` disposition. PR #522's superseded candidate never reached `main` and gets no entry (LD-10).
 - **D2**: `docs/release-state.json` gains exactly one entry, `0.175.1` / `sealed_unpublished` with the LD-11 reason. No other entry and no code under `qor/` changes.
 - **D3**: the entry is recorded by `/qor-implement`, and the seal changes the version from `0.175.1` to `0.175.2` (hotfix). No tag is pushed and nothing is published.
-- **D4**: `tests/test_changelog_tag_coverage.py::test_every_changelog_section_has_tag` passes on the sealed revision in the CI view (only remote tags present). The CI-view simulation reports no orphans with the entry and `{'0.175.1'}` without it. `tests/test_release_state.py` stays GREEN.
+- **D4**: at `/qor-implement`, the CI-view simulation reports no orphans with the entry and `{'0.175.1'}` without it, and `tests/test_release_state.py` stays GREEN. After the seal commit and before push, the guarded post-seal clone proof passes on the seal commit: its guard confirms `[project].version` is `0.175.2` with a dated `[0.175.2]` CHANGELOG section, and `tests/test_changelog_tag_coverage.py::test_every_changelog_section_has_tag` passes in the CI view (remote tags only), with no skip.
 
 ## CI Commands
 
@@ -401,7 +431,7 @@ Append the LD-11 entry as the last element of `exceptions`, with the same key or
 - `for f in requirements-*.txt; do python -m qor.scripts.dependency_admission_lint --base origin/main --lockfile "$f" || exit 1; done` - runs each governed-lockfile admission step's command locally, over the same root `requirements-*.txt` set LD-2 derives. On a branch whose lockfiles equal `origin/main` the expected output is `_No lockfile bumps detected._` per lockfile; that local result is not admission evidence for #496 (LD-4).
 - `python -m pytest tests/test_release_state.py tests/test_changelog_tag_coverage.py -q` - verifies the release-state record validates with the new entry and local tag coverage holds.
 - `python -c "import subprocess; from pathlib import Path; from qor.scripts import release_state as rs; import tests.test_changelog_tag_coverage as t; remote = {l.rsplit('/', 1)[1] for l in subprocess.run(['git', 'ls-remote', '--tags', 'origin'], capture_output=True, text=True, check=True).stdout.split() if l.startswith('refs/tags/v') and not l.endswith('^{}')}; tags = {v for v in rs.merged_semver_tags(t.REPO) if 'v' + v in remote}; versions = t._changelog_versions() | {'0.175.2'}; ex = rs.load_release_state(t.RELEASE_STATE, versions); print(rs.coverage_violations(versions, tags, '0.175.2', ex).orphans, rs.coverage_violations(versions, tags, '0.175.2', {k: v for k, v in ex.items() if k != '0.175.1'}).orphans)"` - CI-view simulation of the post-seal state at `/qor-implement` (network: reads remote tag names only); expected output `set() {'0.175.1'}`.
-- `T=$(mktemp -d) && R=$(git ls-remote --tags origin | awk '{print $2}') && git clone -q --no-local . "$T/c" && git -C "$T/c" tag -l 'v*' | while read tg; do printf '%s\n' "$R" | grep -qx "refs/tags/$tg" || git -C "$T/c" tag -d "$tg" >/dev/null; done && (cd "$T/c" && PYTHONPATH=. python -m pytest tests/test_changelog_tag_coverage.py -q)` - runs the real tag-coverage suite in the CI view (remote tags only) on the sealed revision at `/qor-substantiate`, after the version bump.
+- `(T=$(mktemp -d) && R=$(git ls-remote --tags origin | awk '{print $2}') && git clone -q --no-local . "$T/c" && git -C "$T/c" tag -l 'v*' | while read tg; do printf '%s\n' "$R" | grep -qx "refs/tags/$tg" || git -C "$T/c" tag -d "$tg" >/dev/null; done && cd "$T/c" && python -c "import sys, tomllib; v = tomllib.load(open('pyproject.toml', 'rb'))['project']['version']; c = open('CHANGELOG.md', encoding='utf-8').read(); sys.exit(0 if v == '0.175.2' and '## [0.175.2] - ' in c else 'CI-view guard FAIL: clone is not a sealed 0.175.2 (project version ' + v + ')')" && PYTHONPATH=. python -m pytest tests/test_changelog_tag_coverage.py -q -rs -p no:cacheprovider > "$T/out" 2>&1; rc=$?; cat "$T/out" 2>/dev/null; [ "$rc" -eq 0 ] && ! grep -q skipped "$T/out")` - post-seal verification: after `/qor-substantiate` Step 9.5.5 and before Step 9.6, runs the real tag-coverage suite in the CI view (remote tags only) on a clone of the seal commit. It fails unless the clone is a sealed `0.175.2`, and it fails on any skip.
 - `python -m pytest tests/ -q` - verifies repository regression safety.
 - `python qor/scripts/check_variant_drift.py` - verifies installed/generated variant consistency.
 - `python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md` - verifies the ledger chain.
