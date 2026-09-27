@@ -7,7 +7,10 @@ on:
   pull_request:
     paths:
       - "pyproject.toml"
+      - "requirements-release.in"
       - "requirements-release.txt"
+      - "requirements-sbom.in"
+      - "requirements-sbom.txt"
       - ".github/workflows/**"
 
 permissions:
@@ -34,7 +37,14 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -e .
-      - name: Dependency admission cooling-period check (Phase 107; hard-fail)
+      # Phase 298 (GH #511): one hard-fail admission step per governed root lockfile.
+      - name: Dependency admission cooling-period check - requirements-release.txt (Phase 107; hard-fail)
         run: |
           python -m qor.scripts.dependency_admission_lint \
-            --base "${{ github.event.pull_request.base.sha }}"
+            --base "${{ github.event.pull_request.base.sha }}" \
+            --lockfile requirements-release.txt
+      - name: Dependency admission cooling-period check - requirements-sbom.txt (Phase 298; hard-fail)
+        run: |
+          python -m qor.scripts.dependency_admission_lint \
+            --base "${{ github.event.pull_request.base.sha }}" \
+            --lockfile requirements-sbom.txt

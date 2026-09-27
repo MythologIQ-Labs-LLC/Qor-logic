@@ -24177,6 +24177,32 @@ Sealed/versioned != released/published (GH #520). `qor/scripts/release_state.py`
 
 **Required next action**: /qor-implement.
 
+### Entry #817: IMPLEMENTATION
+
+**Timestamp**: 2026-09-27T23:58:03Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `7af5a894b801`
+**Plan**: docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md
+**Session**: 2026-09-27T2325-bf1a15
+
+**Content Hash**: `4ff65d490d89c3c1367c92396d2417934180e692e9629f83e3fdcce45527abfa`
+**Previous Hash**: `9973efbef85e069c46172b59734c6e50b7484e61ebdc0882608aeee1221cb930`
+**Chain Hash (Merkle seal)**: `3007cc17e21f8ea064ab4a089008d4b7a240142a95ac2d678262c86be5c4f616`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Dependency Review root-path and per-lockfile admission coverage (GH #511), re-done test-first on base 43ee76b7; the prior-branch implementation 357baf3 was reference only and nothing was copied from it.
+
+Workflow: `.github/workflows/pr-dependency-review.yml` `pull_request.paths` adds `requirements-release.in`, `requirements-sbom.in`, `requirements-sbom.txt` (existing paths, action pin, `fail-on-severity: high` unchanged). The single admission step is replaced by two unguarded hard-fail steps, each passing `--base` and `--lockfile` (`requirements-release.txt`, `requirements-sbom.txt`). No code under `qor/` changed (LD-3).
+
+Tests: `tests/test_pr_dependency_review_workflow.py` resolves the workflow from the repository root, derives the governed set (root `requirements-*.in/.txt` plus `pyproject.toml`, guarded by `_KNOWN_GOVERNED`), rewrites `test_workflow_triggers_on_dependency_paths` and adds `test_admission_lint_runs_for_every_governed_lockfile` (all jobs; step and job `if:`/`continue-on-error` guards). RED before the workflow edit: 2 failed, 6 passed (three missing paths; no step named a lockfile). New `tests/test_dependency_admission_lint_cli.py` (regression coverage backfill, LD-9): GREEN on first run; line-254 mutation RED (fetched cyclonedx-bom and sbom-anchor), line-248 mutation RED (fetched build), each under `python -B -m pytest`; reverted, `git diff --exit-code` clean. GREEN after: 8 passed, twice.
+
+Doctrine and glossary: `doctrine-dependency-admission.md` names `requirements-sbom.txt`, adds the Phase 298 lockfile-coverage paragraph with the pyproject-pin residual (LD-7), and corrects the stale manual/deferred wording; the `dependency-admission-lint` glossary definition no longer says WARN-only or release-lockfile-only.
+
+Release state (LD-11): `docs/release-state.json` gains one entry, `0.175.1` / `sealed_unpublished` (META_LEDGER #814). CI-view simulation printed `{'0.175.1'} {'0.175.1'}` before the entry and `set() {'0.175.1'}` after. Post-seal clone proof deferred to substantiate by plan. CHANGELOG Unreleased carries one Fixed note (advisory A3).
+
+Verification: full suite 3582 passed, 3 skipped; release-state and tag-coverage 29 passed; doctrine and glossary tests 11 passed; ruff clean; `publication_boundary_lint` 0 findings; variant drift none; ledger chain verifies. Intent lock captured before implementation code.
+
 ---
 
 *Chain integrity: VALID*

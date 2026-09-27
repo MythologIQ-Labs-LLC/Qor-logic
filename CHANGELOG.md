@@ -10,6 +10,9 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+### Fixed
+- **Phase 298 (hotfix; Dependency Review SBOM lockfile coverage, GH #511)**: a PR that changed only the SBOM toolchain lockfile never started `PR Dependency Review`, because the workflow's path filter named only `pyproject.toml`, `requirements-release.txt` and workflow files, and the cooling-period admission step examined only `requirements-release.txt`. The filter now names every governed root dependency file (`pyproject.toml` and each root `requirements-*.in` / `requirements-*.txt`), and the admission step runs once per governed root lockfile (`requirements-release.txt` and `requirements-sbom.txt`) with an explicit `--lockfile`, hard-fail as before. The regression test derives the governed set from the repository root instead of enumerating a subset. Threshold, override procedure and severity policy are unchanged; pyproject pins are still not examined by the CI admission step (declared residual). `docs/release-state.json` records `0.175.1` as `sealed_unpublished`. See `qor/references/doctrine-dependency-admission.md`.
+
 ## [0.175.1] - 2026-09-27
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

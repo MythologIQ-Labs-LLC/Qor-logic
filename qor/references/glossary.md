@@ -920,7 +920,7 @@ introduced_in_plan: phase84-audit-readiness-guards
 
 ```yaml
 term: dependency-admission-lint
-definition: 'Operator- and CI-invokable Python script (qor/scripts/dependency_admission_lint.py) that walks the requirements-release.txt lockfile diff against a base ref, queries the PyPI Warehouse JSON API for each new or version-bumped entry''s upload_time_iso_8601, and reports any admission younger than the 14-day cooling-period threshold absent a matching `**Dependency admission override**:` entry in docs/META_LEDGER.md. Exit codes 0/1/2 (clean / violations present / network failure). Wired WARN-only in .github/workflows/pr-dependency-review.yml. Phase 105 wiring; consumes the Phase 103 doctrine-dependency-admission contract.'
+definition: 'Operator- and CI-invokable Python script (qor/scripts/dependency_admission_lint.py) that walks the diff of the lockfile named by --lockfile (default requirements-release.txt) against a base ref, queries the PyPI Warehouse JSON API for each new or version-bumped entry''s upload_time_iso_8601, and reports any admission younger than the 14-day cooling-period threshold absent a matching `**Dependency admission override**:` entry in docs/META_LEDGER.md. Exit codes 0/1/2 (clean / violations present / network failure). Run hard-fail in .github/workflows/pr-dependency-review.yml (Phase 107), once per governed root lockfile (Phase 298). Phase 105 wiring; consumes the Phase 103 doctrine-dependency-admission contract.'
 home: qor/references/doctrine-dependency-admission.md
 referenced_by:
   - qor/scripts/dependency_admission_lint.py
