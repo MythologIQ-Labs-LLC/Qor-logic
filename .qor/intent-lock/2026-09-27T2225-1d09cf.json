@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-27T2225-1d09cf",
+  "plan_path": "docs/plan-qor-phase297-sealed-unpublished-release-state.md",
+  "plan_hash": "e05c042dd04df6215b7341003509c7255fdbc4cfad91a795fbf0c9914e3c2e80",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "58c11555a835c34a8b18483fced365ec5931898bfdc427d6aa1e841e8ae58d1a",
+  "head_commit": "e17033d0aeda642ee3cdef59f8ed0d4b6710ed35",
+  "captured_ts": "2026-09-27T23:02:36.257433Z"
+}

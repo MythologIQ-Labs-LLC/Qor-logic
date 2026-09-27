@@ -10,6 +10,10 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.175.1] - 2026-09-27
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
 ### Fixed
 - **Phase 297 (hotfix; release-state and tag-coverage hardening, GH #520)**: a sealed version is no longer treated as a published release. Tag coverage previously exempted every dated CHANGELOG version above the highest local tag and counted every local tag, so a stack of sealed-but-unpublished versions stayed implicit and a parallel phase's local seal tag could break an unrelated branch. Now only the `[project].version` is an implicit untagged candidate; every other dated version at or below the ceiling needs a tag reachable from `HEAD` or an explicit disposition in the new `docs/release-state.json` (`sealed_unpublished`, `legacy_untagged`, or `unreachable_tag`), and tags not reachable from `HEAD` take no part in coverage. A shallow checkout skips the check with a named reason; CI, with full history, is authoritative. No tag is pushed or backfilled and nothing is published by this change. See `qor/references/doctrine-changelog.md`.
 

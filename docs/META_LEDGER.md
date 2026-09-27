@@ -24109,6 +24109,36 @@ Doctrine: `qor/references/doctrine-changelog.md` gains the release-state section
 
 Verification: full suite 3579 passed, 3 skipped; ruff clean; `publication_boundary_lint` 0 findings; ledger chain verifies. Intent lock captured before implementation code.
 
+### Entry #814: SESSION SEAL -- Phase 297 sealed-unpublished release state (v0.175.1)
+
+**Timestamp**: 2026-09-27T23:12:05Z
+**Phase**: SEAL (Phase 297)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `bd67fb56ba74`
+**Plan**: docs/plan-qor-phase297-sealed-unpublished-release-state.md
+**Session**: 2026-09-27T2225-1d09cf
+
+**Content Hash**: `e05c042dd04df6215b7341003509c7255fdbc4cfad91a795fbf0c9914e3c2e80`
+**Previous Hash**: `97edc603b6c5fcb048591a5613db0445d1d4b324bfcdb5d60deae9bcde92d8cc`
+**Chain Hash (Merkle seal)**: `f7de1f9875f54169520a8646f609cfa828f87ea1454aca6d3215d83c6c6f727c`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.3, PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+Sealed/versioned != released/published (GH #520). `qor/scripts/release_state.py` owns the closed `qor.release-state/v1` validator (fail-closed `ReleaseStateError`), the reachable-tag reader (`git tag --merged HEAD`, strict SemVer, `ShallowHistoryError` on shallow history) and the pure `coverage_violations`. `docs/release-state.json` carries the 13 LD-4 dispositions (4 legacy_untagged, 6 sealed_unpublished, 3 unreachable_tag). `tests/test_changelog_tag_coverage.py` consumes the module; `tests/test_release_state.py` and `tests/test_shadow_log_integrity.py` are new. Doctrine: `qor/references/doctrine-changelog.md`. LD-10 shadow-event edit disclosed by AMENDMENT #812. Audit: VETO iter 1 (#809), VETO iter 2 (#810), PASS iter 3 (#811); implementation #813.
+
+**Version**: 0.175.0 -> 0.175.1 (hotfix). After the bump the release-state model holds: 0.175.1 is the single implicit candidate, 0.175.0 is covered by its `sealed_unpublished` entry, and the tag-coverage tests pass. No remote tag is created; the seal tag stays local.
+
+**CHANGELOG**: stamped `[0.175.1] - 2026-09-27` by `changelog_backends.stamp`. The stamp does not emit the `_Built via ..._` line and `tests/test_attribution_tiered_usage.py::test_changelog_post_cutoff_versions_have_attribution_line` requires it, so the line was inserted below the new header from `attribution.changelog_attribution_line()`. The Unreleased note describes only what was implemented.
+
+**Reality audit**: all planned files exist; no MISSING. `docs/SHADOW_GENOME.md` and appended `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` events come from the plan/audit sessions, not implementation. Section 4: release_state.py 121 lines; tests 208/100/40 lines.
+
+**Gates**: substantiate_gates (10 parsed), intent_lock verify, skill_admission, gate_skill_matrix (broken 0), session_id_lint, secret_scanner, merge_velocity (healthy), skill_size_budget (3 WARN, 0 EXCEEDED), ledger_commitment (9 touched), doc_integrity strict, governance_index enforce, feature_index_verify (27/27), version_applicability (v0.175.1 > v0.172.2) all pass. dod_check: no findings. procedural_fidelity WARN: doc-surface-uncovered (its genome append names no log and is swallowed). Doc currency WARN: release_state.py and doctrine-changelog.md without a system-tier doc update (plan: doc_tier minimal, operations.md unchanged). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 33 (every source skill reported missing). continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body. Boundary: pre-seal `publication_boundary_lint` 0 findings at scope structural (no identity overlay present); Step 4.6.14 re-runs after staging. Suite pre-seal: 3579 passed, 3 skipped.
+
 ---
 
 *Chain integrity: VALID*
