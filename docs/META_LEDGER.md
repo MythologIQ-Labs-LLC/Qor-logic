@@ -24031,6 +24031,25 @@ Remediation (not quoted): one non-goal line anonymized in `docs/plan-shadow-esca
 
 **Required next action**: Governor amends via /qor-plan (record the operator's release-target continuity decision and the local-only tag rule), then /qor-audit.
 
+### Entry #810: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-27T22:42:49Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `2e6f21e8ea52`
+**Verdict**: VETO
+
+**Content Hash**: `2da2a34dc9a111e0faf93b34719db560bf446d858e1ee18fb6d7f7eaf4b27d3b`
+**Previous Hash**: `f3400889d38bbc310184b636b631e0717c77586b4d04ad08b162b3b14b2793e2`
+**Chain Hash (Merkle seal)**: `3a116d81bfb6d1c2946a5a36d59adb7531912590085e6d127c082a5e0b3f51fa`
+
+**Decision**: **Target**: `docs/plan-qor-phase297-sealed-unpublished-release-state.md`
+
+**Decision**: VETO (iter 2). Iteration-1 V1 and V2 resolved: version_applicability ok (v0.175.1 > v0.172.2; local v0.175.1 deleted, none on remote); reachable-tag rule prototyped on the live checkout (211 reachable of 214 SemVer tags; unreachable exactly 0.24.1, 0.25.0, 0.39.0; LD-4 entries leave no missing section and no orphan; shallow file:// clone detected). unreachable_tag is truthful (the three tags exist on origin off this line of history), closed, tested, and claims no publication. LD-10 reproduced exactly in a scratch clone (new id 6c2548c1..., one-line diff, boundary lint 0, chain verifies, suite green). V1 (`specification-drift`): LD-9 and Phase 1 step 1 restore every Phase 1 Affected File to base 15729311, which includes docs/META_LEDGER.md and docs/PROCESS_SHADOW_GENOME_UPSTREAM.md; as written this rewrites the append-only ledger, deletes seven shadow events, and removes the line-75 event LD-10 must edit (LD-10 step 1 then stops). Advisories: local/CI coverage split for reachable local-only tags; unreachable_tag not mechanically checked; implicit removal of Phase 42 regression tests; git fixture config isolation and Windows file URI; shallow-skip test mechanism unspecified. Option B fresh-context reviewer (audit_risk_score option_b_required). Session `2026-09-27T2225-1d09cf`.
+
+**Required next action**: Governor amends via /qor-plan (name the exact LD-9 restore set, excluding append-only governance records), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*

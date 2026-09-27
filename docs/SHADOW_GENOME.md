@@ -2905,4 +2905,24 @@ A plan about release or tag state must be checked against the live tag set as we
 
 ---
 
+## Entry #36: VETO -- plan-qor-phase297-sealed-unpublished-release-state v2
+
+**Date**: 2026-09-27
+**Verdict ID**: session 2026-09-27T2225-1d09cf audit (META_LEDGER Entry #810)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The plan told implementation to restore every Affected File to base content, to discard a pre-audit checkpoint. That list also held two append-only governance records: the META_LEDGER and the upstream process Shadow Genome log. The plan planned one appended AMENDMENT and one disclosed line edit in them. Run as written, the restore erases ledger entries made after base and deletes Shadow Genome events, including the event the plan's own remediation step must edit.
+
+### Why It Failed
+
+The restore rule was written for the five pre-audit draft files named in the prose. It was then worded over the whole Affected Files list after that list grew to include the append-only records.
+
+### Pattern to Avoid
+
+A restore, reset, or discard instruction must name its exact file set. Never cover it by a list reference that can hold append-only records (ledger, Shadow Genome logs, gate artifacts). When an Affected Files list gains an append-only record, re-read every instruction that quantifies over that list. Related: Entry #35.
+
+---
+
 *Shadow integrity: ACTIVE*

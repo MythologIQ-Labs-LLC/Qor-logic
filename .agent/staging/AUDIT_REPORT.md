@@ -1,87 +1,121 @@
 # AUDIT REPORT
 
-**Target**: `docs/plan-qor-phase297-sealed-unpublished-release-state.md` (iter 1)
-**Branch**: `phase/297-sealed-unpublished-release-state` at `aa7ebedd` (base `main` `15729311`)
-**Session**: `2026-09-25T2350-e05ce1`
-**Auditor**: The Qor-logic Judge (solo mode)
-**Date**: 2026-09-26
-**Plan content hash**: `507de853d4dddc8988ec0974446cd4f6d932457db0f4581796bcae510e79bcb1`
+**Target**: `docs/plan-qor-phase297-sealed-unpublished-release-state.md` (iter 2)
+**Branch**: `phase/297-sealed-unpublished-release-state` at `07a50d20` (base `main` `15729311`)
+**Session**: `2026-09-27T2225-1d09cf` (prior session `2026-09-25T2350-e05ce1`, VETO #809)
+**Auditor**: The Qor-logic Judge (Option B fresh-context reviewer)
+**Date**: 2026-09-27
+**Plan content hash**: `421c615287e1e3092b48f970f880cea043eb5944daa193e4c9c753c7c3e88992`
 
 ---
 
 ## VERDICT: VETO
 
 **Risk Grade**: L2
-**Audit mode**: solo. `audit_risk_score` reports `option_b_required: false`. No codex plugin and no external reviewer configured; both capability shortfalls emitted.
+**Audit mode**: Option B. `audit_risk_score` reports `option_b_required: true` (flag `high-citation-surface`). This audit ran as a fresh-context reviewer with no plan-authoring or iteration-1 audit context; it received the plan, the iteration-1 report, and the brief only. Declared toolset: shell, git, repository file access, network through the proxy (used only for `git ls-remote --tags origin`). Every verification below was executed by this reviewer. No codex plugin and no external reviewer are configured; both capability shortfalls were emitted.
 
-The plan's LD-4 inventory and LD-2 candidate rule are correct against base `15729311`, and every cited line reproduces there. The plan is rejected because it does not hold in the repository it will be implemented and sealed in. A local-only seal tag `v0.175.1` exists in this checkout: it points to `af0ae68c` on the unmerged Phase 298 branch and is absent from the remote tag list. The Version-Applicability Pass fails mechanically, and the plan's own first CI command fails in the audited checkout. The plan also names "a local-only seal tag created during governed work" as a state its model must distinguish, but it defines no handling for a local-only tag whose version this branch never sealed.
+Iteration 1's V1 and V2 are resolved as written. LD-10's remediation mechanism is exact and was reproduced end to end in a scratch clone. The plan is rejected on one plan-internal contradiction. LD-9 instructs `/qor-implement` to restore every Phase 1 Affected File to its base `15729311` content. Phase 1 Affected Files include `docs/META_LEDGER.md` and `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`. Executed as written, that deletes append-only governance records and also deletes the event that LD-10 must edit.
 
 ## Mechanical ladder
 
 - Preflight `governance-health --profile skill-entry`: all OK.
-- Step 0: plan artifact found and valid (`plan-iter1.json`).
-- Step 0.3: rc 0.
-- Step 0.4: no prior audit with the same hash.
-- Step 0.5: no cycle-count or session-total escalation.
-- Step 0.6: all lints rc 0 except the three below.
-  - `plan_grep_lint`: 4 WARN `evidence-not-reproducible`. See A1.
-  - `ci_coverage_lint`: 5 WARN on workflow commands outside the plan's CI Commands.
-  - `publication_boundary_lint`: rc 1. See A2.
-- `workspace_fragility_check`: medium (`dirty_gate_artifact_count=61`).
-- Step 0.7: the plan declares no `spec_deltas`. Judge half: the contracted behavior that changes is the tag-coverage test rule and the doctrine. Both are in Affected Files, and no spec document governs them. No separate finding.
+- Step 0: plan artifact found and valid in the current session (`plan-iter1.json`).
+- Step 0.3 `plan_iteration_status_lint`: rc 0.
+- Step 0.4: no prior audit carries hash `421c6152...` in either session. No short-circuit.
+- Step 0.5: `cce.check` and `cce.check_session_total` return None for both `2026-09-27T2225-1d09cf` and `2026-09-25T2350-e05ce1`.
+- Step 0.6: all lints rc 0, with these exceptions:
+  - `plan_grep_lint`: 17 citations truth-checked, no WARN (iteration-1 A1 resolved).
+  - `ci_coverage_lint`: 10 WARN on workflow commands outside the plan's CI Commands.
+  - `workspace_fragility_check`: medium (`dirty_gate_artifact_count=62`).
+  - `publication_boundary_lint`: rc 1, one finding at `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md:75`. The plan targets it under LD-10.
+- Step 0.7: no `spec_deltas`. Judge half: the contracted behavior that changes is the tag-coverage rule and `doctrine-changelog.md`. Both are Affected Files, and no spec document governs them. No finding.
 - Step 3 mechanical checks:
   - `prompt_injection_canaries`: rc 0.
   - `prose_test_lint --enforce`: rc 0.
-  - `runtime_contract_walk`: 2 WARN. See A3.
-  - `version_applicability.validate`: **ok=False**. See V1.
+  - `runtime_contract_walk`: 1 WARN, no production caller of `qor.scripts.release_state`. LD-6 accepts this.
+  - `version_applicability.validate`: ok, "target v0.175.1 > current highest v0.172.2".
+
+## Citation re-run against `15729311`
+
+All 22 evidence statements reproduce byte-for-byte:
+
+- `tests/test_changelog_tag_coverage.py`: 29, 56, 59, 70, and 36.
+- `pyproject.toml`: 7.
+- `CHANGELOG.md`: 11, 13, 3083, 3072, and 2894.
+- `qor/references/doctrine-changelog.md`: 5 and 22.
+- `.github/workflows/ci.yml`: 31.
+- `git merge-base --is-ancestor` returns 1 for `v0.24.1`, `v0.25.0`, and `v0.39.0`.
+- `qor/scripts/shadow_process.py`: 40 and 129.
+- `qor/scripts/ledger_emit.py`: 70.
+
+All four CI jobs that run pytest check out with `fetch-depth: 0`.
+
+## Focus findings
+
+1. **V1 (iteration 1, version applicability): resolved.** `git tag -l 'v0.175*'` is empty. The worktree shares refs with the main checkout, and the operator deleted `v0.175.1` there. `git ls-remote --tags origin` (425 lines) has no `v0.173`-`v0.175` tag. `version_applicability.validate` is ok. `phase/298` (`af0ae68c`, version 0.175.1) is unmerged. LD-8 records the operator ordering, and it records that the substantiate guard still reads all local tags.
+2. **V2 (iteration 1, reachable-tag coverage, LD-7): resolved.** A scratch prototype of the LD-2/LD-7 computation was run on the live checkout:
+   - Reachable tags: 211. All SemVer tags: 214. Unreachable: exactly `0.24.1`, `0.25.0`, `0.39.0`.
+   - With the LD-4 entries: no missing section, no orphan.
+   - Without the three `unreachable_tag` entries: exactly those three orphans.
+   - Simulated seal (project 0.175.1, section and reachable tag v0.175.1): clean. Dropping the `0.175.0` entry makes `0.175.0` an orphan, as LD-4 states.
+   - A fixture repository with git 2.43 confirms the rule. `git tag --merged HEAD` excludes a side-branch tag. A `--depth 1` clone through a `file://` URL reports `--is-shallow-repository` true and lists no merged tags. The shallow guard is therefore necessary.
+3. **`unreachable_tag` state: truthful, minimal, closed, tested, in scope.**
+   - `git ls-remote` shows `v0.24.1`, `v0.25.0`, and `v0.39.0` exist on origin. Their peeled commits sit only on remote side branches. So "a tag exists off this line of history" is true.
+   - The state claims no publication, which is weaker than the truth. No publication claim is smuggled.
+   - `legacy_untagged` would be false for these versions, and widening inverse membership would reopen V2. A distinct state is the minimal truthful option.
+   - The enum is closed at three values. Each value has an accepted-load test, and an unsupported state is rejected (inverse coverage). The side-branch orphan-then-exempt fixture test exercises the new state.
+   - The versions are the forced consequence of the operator's reachable-only decision, so they are within GH #520 scope. See A2.
+4. **LD-10: exact and disclosed.** Verified in a scratch clone:
+   - Line 75 parses, and its id equals `compute_id` (`70f04c84...`).
+   - Replacing only the worktree-root prefix with `<repo-root>` yields `6c2548c1e5116925fc5da35e5899c8905d6a679f7631ddcc2d0c1d7c99ccb437`, which matches the plan.
+   - The compact re-serialization equals the original line shape. `git diff` shows one changed line.
+   - A prototype of the integrity invariants was RED only on the UPSTREAM boundary check before the edit and GREEN after.
+   - After the edit, `publication_boundary_lint` exits 0. A `ledger_emit.append` AMENDMENT verifies under `ledger_hash.py verify`. The full suite (3566 passed, 3 skipped) stays green.
+   - No tracked file other than the plan cites the old id. No ledger entry binds the file's bytes. `.qor/` holds no reference to the id.
+   - The AMENDMENT shape matches precedent Entry #806.
+5. **LD-9: contradicts LD-10 and the append-only ledger. See V1 below.**
+6. **Hotfix scope.** The operator decision fixes 0.175.1. The work is release-integrity only, with no remote tag, publication, or workflow change. The new invariant test is the proof obligation for LD-10. No scope finding.
 
 ## Passes
 
 - Prompt Injection: PASS.
-- Version-Applicability: **FAIL (V1)**.
-- Security / OWASP: no auth, credential, subprocess-shell, network, or unsafe-deserialization surface. The record is parsed with `json.loads` against a closed field set and fails closed. PASS.
+- Version-Applicability: PASS.
+- Security / OWASP: no auth, credential, or network surface. Git is invoked through list-form argv, and the record is parsed with `json.loads` against a closed shape and fails closed. PASS.
 - Ghost UI / Live-Progress: no UI. PASS.
-- Section 4 Razor: the new module, new test, and rewritten test are each under 250 lines. No nesting or ternary pressure is implied. PASS.
-- Self-Application (`originating_remediation: GH #520`): **FAIL (V2)**.
-- Test Functionality: every described test invokes the coverage computation or the validator and asserts on its outcome. None is presence-only. PASS.
+- Section 4 Razor: the base test is 143 lines, and the new module and tests are each well under 250 lines. No nesting or ternary pressure. PASS.
+- Self-Application (`originating_remediation: GH #520`): no rule treats an unreachable or remote-unknown tag as publication, and LD-8 uses the remote tag list for its publication statement. PASS. See A1.
+- Test Functionality: every described test invokes `load_release_state`, `merged_semver_tags`, `coverage_violations`, `shadow_process`, or `scan_text` and asserts on the result. PASS.
+- Closed-enum coverage: forward (each state loads) and inverse (unsupported state rejected) are both present. PASS.
 - Dependency: none added. PASS.
-- Macro-Level Architecture: the validator lives in `qor/scripts`, the tests consume it, and there is no cycle. PASS.
+- Macro-Level Architecture: the owner module is in `qor/scripts` and the tests consume it. No cycle. PASS.
 - Feature Test Coverage: `feature_inventory_touches` is empty, which is legitimate for governance/test maintenance. Exempt.
-- Infrastructure Alignment: all four grep-evidence statements were re-run at `15729311`, and each cited line holds the quoted text:
-  - `tests/test_changelog_tag_coverage.py:29/56/59/70`
-  - `pyproject.toml:7`
-  - `CHANGELOG.md:11/13`
-  - `qor/references/doctrine-changelog.md:19/20/23`
-
-  The NEW files are declared in Affected Files. PASS on base; see V1 and V2 for the audited checkout.
-- LD-4 inventory: checked at base against the remote tag list (`git ls-remote --tags origin`). No `v0.69.0`, `v0.70.0`, `v0.71.0`, `v0.102.2` or `v0.173.0`-`v0.175.0` tag exists remotely. The dated CHANGELOG versions without any tag are exactly these ten. Correct.
-- Filter-Stage Ordering: coverage computes ceiling, then candidate exemption, then disposition exemption. This order is coherent. PASS.
-- Orphan Detection: `qor/scripts/release_state.py` is connected through the tag-coverage test and the package. There is no production caller (A3). PASS.
+- Infrastructure Alignment: all citations reproduce, NEW files are declared, and `shadow_process.read_events`, `validate`, `compute_id`, `publication_boundary_lint.scan_text(rel, text, terms)`, and `ledger_emit.append` exist with the cited signatures. The Step 4.6.14 fail-closed claim holds (`qor-substantiate/SKILL.md:249`). PASS.
+- Filter-Stage Ordering: validation, then reachable-tag read, then missing sections, then ceiling, then candidate and disposition exemption. The order is coherent. PASS.
+- Orphan Detection: `release_state.py` is connected through the CI test gate. PASS.
+- Plan-internal consistency: **FAIL (V1)**.
 - Execution-Continuity: not declared; not applicable.
 
 ## Violations Found
 
 | ID | Category | Location | Description |
 | --- | --- | --- | --- |
-| V1 | specification-drift | plan header `**change_class**: hotfix`; LD-2 | `version_applicability.validate` returns ok=False: "target v0.175.1 <= current highest v0.175.1". The hotfix target collides with the existing local-only seal tag `v0.175.1` (`af0ae68c`, Phase 298, unmerged, not on remote). The plan pins itself to base `15729311` and does not declare how its release target coexists with that in-flight candidate. As written, `/qor-substantiate` would hit the same downgrade guard or a pre-existing tag. |
-| V2 | specification-drift | Problem (state list); LD-2 forward rule and "observed tag newer than project version extends the ceiling"; LD-3; D4 | Self-application of GH #520 (sealed/versioned != released/published; local tag does not mint truth). The Problem names "a local-only seal tag created during governed work" as a distinct state. LD-3 covers only local tags whose version already has a `sealed_unpublished` disposition. LD-2 treats every observed local tag as part of this branch's release history, both for forward coverage and for the ceiling. Observed: the plan's CI command 1 fails in the audited checkout (`test_every_tag_has_changelog_section`: `v0.175.1`). The D4 GREEN claim is therefore unattainable wherever a parallel governed phase has sealed, which is routine because every substantiation creates a local tag. |
+| V1 | specification-drift | LD-9; Phase 1 Changes step 1; Phase 1 Affected Files; LD-10 step 1 | LD-9 says `/qor-implement` "starts by restoring each Phase 1 and Phase 2 Affected File to its base `15729311` content", and Phase 1 step 1 repeats it for "the Affected Files of both phases". Phase 1 Affected Files list `docs/META_LEDGER.md` and `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`. At base, `META_LEDGER.md` has no Entry #809, and this audit's #810 would also be erased. At base, `PROCESS_SHADOW_GENOME_UPSTREAM.md` has 71 lines, not 78, and does not contain the `70f04c84...` event. Executed as written, the restore rewrites the append-only ledger and deletes seven Shadow Genome events. After that, LD-10 step 1 ("Confirm that its `id` is `70f04c84...`; if either check fails, stop") cannot pass. The prose before the instruction names only the five pre-audit files, but the operative instruction does not. For a phase whose subject is governance-record integrity, that ambiguity cannot go to implementation. |
 
 ## Per-ground directives
 
 #### Plan-text
 
-V1 and V2. The plan must record the release-target continuity decision against the existing local-only `v0.175.1` seal tag. That decision is the operator's, for example the declared 297-before-298 ordering and what happens to Phase 298's local tag. The plan must also define the coverage rule's behavior for an observed local-only tag whose version has no section on this branch, together with a test that exercises that case.
+V1. The restore instruction in LD-9 and Phase 1 Changes step 1 must name its exact file set. It must exclude the append-only records (`docs/META_LEDGER.md`, `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`), which the plan changes only by LD-10's one-line edit and one appended AMENDMENT.
 
 **Required next action:** Governor: amend plan text, re-run `/qor-audit`
 
 ## Advisories (non-blocking)
 
-- **A1**: all four evidence statements use multi-result observations joined in one statement plus trailing punctuation. The canonical P1 grammar `-> NN:<exact observed text>` parses these as one mismatching observation, so `plan_grep_lint` reports them non-reproducible. Manual re-run confirms each cited line. This is iter 1, so P2 is not triggered. On iter 2 or later, one statement per cited line would make the lint agree.
-- **A2**: `publication_boundary_lint` rc 1 on `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md:75`. This branch added an absolute local path inside the `gate_override` event reason for plan session `2026-09-25T2350-e05ce1`. It is outside plan text, but it will fail the seal-time boundary check unless it is remediated through a governed path. The four recorded plan-session override reasons read "user override: research.json not found", not the operator-confirmed reason string.
-- **A3**: `runtime_contract_walk` finds no production importer of `qor.scripts.release_state`. Its only consumer is the test gate, yet LD-6 calls it a "production owner".
-- **A4**: LD-1 cites `585741f0` as "ancestry/reference". That commit is not an ancestor of HEAD and is not contained in any local or remote branch, so it is unreachable and subject to garbage collection. Its tree does carry the same grammar LD-1 states.
-- **A5**: the branch already carries an implementation checkpoint made before any audit gate (`532e883`, `22dfa33`, `1ff41c6`, `c038535`, `6d1a146`). This audit judged the plan only. That checkpoint has no gate standing, and `/qor-implement` must not treat it as authorized.
-- **A6**: whichever of Phase 297 and Phase 298 lands second needs 0.175.x continuity handling at rebase: its version, its CHANGELOG section, a `sealed_unpublished` disposition for the other's version, and its ledger numbering.
+- **A1**: A reachable local-only seal tag still covers its version locally, while CI sees only origin tags. For example, once Phase 298 rebases, `0.175.1` is covered locally but is an orphan in CI until an entry is added. This split is inherent to offline checks (LD-3), and the operator scoped the rule to reachability. The doctrine text should say that CI is the enforcement point.
+- **A2**: nothing checks that an `unreachable_tag` entry names a version whose tag exists and is unreachable. This matches the other two states, which are operator-asserted dispositions.
+- **A3**: the base Phase 42 regression tests for `_released_orphans` encode the removed "above the highest tag is exempt" rule. The plan replaces them implicitly but does not name their removal.
+- **A4**: git fixtures should isolate global git config (for example `commit.gpgsign`) as well as pinning identity. The `file://` URL should come from `Path.as_uri()` for the Windows matrix leg.
+- **A5**: the shallow-skip test mechanism for the live tests is unspecified.
 
 ## Documentation Drift
 
