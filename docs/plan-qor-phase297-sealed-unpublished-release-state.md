@@ -8,18 +8,22 @@
 
 **Current base**: `15729311f9f4d55d5dad2db004b972415c39432c`
 
+**Iteration**: 2 (responds to the iteration-1 VETO, ledger #809: V1, V2, advisories A1-A6)
+
 ## Open Questions
 
-None.
+None. OQ-1 (the boundary finding in a Shadow Genome event) was decided by the operator on 2026-09-27 and is locked as LD-10.
 
 ## Problem
 
 `tests/test_changelog_tag_coverage.py` currently exempts every dated CHANGELOG version above the highest observed Git tag. That rule was sufficient while only one release candidate was in flight, but it allows a stack of sealed-but-unpublished versions to remain implicit and therefore conflates version sealing with publication.
 
+The same test reads every local tag (`git tag -l`), including tags that exist only on another line of history. A parallel governed phase's local seal tag, which every substantiation creates, therefore breaks this branch's coverage even though it says nothing about this branch's CHANGELOG.
+
 Qor-logic needs an explicit distinction between:
 
 - a version stamped and sealed by `/qor-substantiate`;
-- a local-only seal tag created during governed work;
+- a local-only seal tag created during governed work, on this branch or on another;
 - the one current release candidate that may legitimately remain untagged;
 - a version actually published through the remote tag-driven release path.
 
@@ -41,39 +45,44 @@ Add `docs/release-state.json` as the machine-readable record for versions whose 
 The root object contains exactly `schema` and `exceptions`. `schema` is exactly `qor.release-state/v1`; `exceptions` is a list. Each exception entry contains exactly:
 
 - `version`: strict `MAJOR.MINOR.PATCH`;
-- `state`: `sealed_unpublished` or `legacy_untagged`;
+- `state`: `sealed_unpublished`, `legacy_untagged`, or `unreachable_tag`;
 - `reason`: non-empty explanatory text.
 
-This pins the same bounded grammar already exercised by the earlier technically-green implementation checkpoint `585741f05cbb1ac1dc9b0997dfb4cf249e42400d`; that checkpoint remains ancestry/reference only until the plan receives current `/qor-audit` PASS and the implementation is lawfully recomposed.
+The current base hard-codes the historical exceptions in the test. Evidence, one line per statement:
 
-The current base proves the historical exceptions are hard-coded in the test today:
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:tests/test_changelog_tag_coverage.py | grep -nE '^_GRANDFATHERED_UNTAGGED_SECTIONS'` -> `29:_GRANDFATHERED_UNTAGGED_SECTIONS = frozenset({"0.69.0", "0.70.0", "0.71.0", "0.102.2"})`
 
-`git show 15729311f9f4d55d5dad2db004b972415c39432c:tests/test_changelog_tag_coverage.py | grep -nE '_GRANDFATHERED_UNTAGGED_SECTIONS|def _released_orphans|Versions above the highest existing'` -> `29:_GRANDFATHERED_UNTAGGED_SECTIONS = frozenset({"0.69.0", "0.70.0", "0.71.0", "0.102.2"})`, `56:def _released_orphans(versions: set[str], tags: set[str]) -> set[str]:`, `59:    Versions above the highest existing tag are pre-release entries (about to ship`, `70:        for v in versions - tags - _GRANDFATHERED_UNTAGGED_SECTIONS`.
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:tests/test_changelog_tag_coverage.py | grep -nE 'def _released_orphans'` -> `56:def _released_orphans(versions: set[str], tags: set[str]) -> set[str]:`
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:tests/test_changelog_tag_coverage.py | grep -nE 'Versions above the highest existing'` -> `59:    Versions above the highest existing tag are pre-release entries (about to ship`
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:tests/test_changelog_tag_coverage.py | grep -nE 'versions - tags - '` -> `70:        for v in versions - tags - _GRANDFATHERED_UNTAGGED_SECTIONS`
 
 The exceptional record is not a release registry and does not duplicate ordinary tagged releases.
 
 ### LD-2: `[project].version` is the single implicit untagged candidate
-
-Every observed SemVer Git tag must still have a corresponding dated CHANGELOG section.
 
 For the inverse direction:
 
 - read `[project].version` from `pyproject.toml`;
 - require that exact version to have a dated CHANGELOG section;
 - treat only that exact project version as the implicit untagged release candidate;
-- require every other dated CHANGELOG version at or below the greater of the project version and highest observed tag to have ordinary tag coverage or an explicit release-state disposition.
+- the ceiling is the greater of the project version and the highest tag reachable from `HEAD` (LD-7);
+- require every other dated CHANGELOG version at or below the ceiling to have a reachable tag or an explicit release-state disposition.
 
-The current base establishes the candidate and its dated section:
+The current base establishes the candidate and its dated section. Evidence, one line per statement:
 
-`git show 15729311f9f4d55d5dad2db004b972415c39432c:pyproject.toml | grep -nE '^version = '` -> `7:version = "0.175.0"`.
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:pyproject.toml | grep -nE '^version = '` -> `7:version = "0.175.0"`
 
-`git show 15729311f9f4d55d5dad2db004b972415c39432c:CHANGELOG.md | grep -nE '^## \[(Unreleased|0\.175\.0)\]'` -> `11:## [Unreleased]` and `13:## [0.175.0] - 2026-09-24`.
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:CHANGELOG.md | grep -nE '^## \[Unreleased\]'` -> `11:## [Unreleased]`
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:CHANGELOG.md | grep -nE '^## \[0\.175\.0\]'` -> `13:## [0.175.0] - 2026-09-24`
 
 This replaces the broad "everything above the highest tag is pre-release" exemption. An older missing tag may not hide merely because later versions were sealed without publication.
 
 ### LD-3: local tag presence does not mint publication truth
 
-A `sealed_unpublished` disposition remains authoritative even if the checkout contains a local-only seal tag. Unit tests must not attempt network access to infer remote publication from local Git state.
+A `sealed_unpublished` disposition remains authoritative even when the checkout contains a local-only seal tag for that version, whether or not the tag is reachable from `HEAD`. The tag does not void the disposition, and the disposition does not make the tag a coverage failure. Unit tests must not attempt network access to infer remote publication from local Git state.
 
 If a version is intentionally published later, its exceptional disposition must be removed or changed in the same governed release action. This phase does not push or backfill any remote tag.
 
@@ -95,7 +104,13 @@ Record the currently established sealed-but-unpublished versions as `sealed_unpu
 - `0.174.3`
 - `0.175.0`
 
-This phase does not rewrite any historical CHANGELOG section.
+Record the three versions whose tag exists but is not reachable from `HEAD` (LD-7) as `unreachable_tag`:
+
+- `0.24.1`
+- `0.25.0`
+- `0.39.0`
+
+`0.175.0` is the implicit candidate at base. Once `/qor-substantiate` bumps the project version to `0.175.1`, it stops being the candidate, and its `sealed_unpublished` entry is what keeps coverage green. This phase records no disposition for `0.175.1` or any later version, and it does not rewrite any historical CHANGELOG section.
 
 ### LD-5: doctrine names the lifecycle boundary
 
@@ -103,15 +118,17 @@ Update `qor/references/doctrine-changelog.md` to state explicitly:
 
 `sealed/versioned != released/published`
 
-The base doctrine already establishes that substantiation stamps `Unreleased` into a dated version section before later staging:
+The base doctrine already establishes that the seal stamps the CHANGELOG mechanically, as a pure rename, before any publication step. Evidence, one line per statement:
 
-`git show 15729311f9f4d55d5dad2db004b972415c39432c:qor/references/doctrine-changelog.md | grep -nE 'On `/qor-substantiate`|which renames'` -> `` 19:- **On `/qor-substantiate`**: Step 7.6 invokes `qor/scripts/changelog_stamp.py` ``, `` 20:  which renames `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` and inserts ``, `` 23:- **On `/qor-substantiate` Step 9.5**: the auto-stage list includes ``.
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:qor/references/doctrine-changelog.md | grep -nE 'stamped mechanically on seal'` -> `5:> hand during implementation and stamped mechanically on seal.`
 
-The updated doctrine must distinguish that sealed/versioned state from the later remote publication transition and document the narrow exceptional-state record.
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:qor/references/doctrine-changelog.md | grep -nE 'stamp is a pure rename'` -> `22:  stamp is a pure rename.`
 
-### LD-6: release-state validation has one bounded production owner
+The updated doctrine must separate that sealed/versioned state from the later remote publication transition. It must also document the narrow exceptional-state record and the reachable-tag rule (LD-7).
 
-Create `qor/scripts/release_state.py` as the canonical closed-schema parser/validator rather than embedding the grammar in the already-large tag-coverage test.
+### LD-6: release-state rules have one canonical owner module
+
+Create `qor/scripts/release_state.py` as the canonical owner of the closed-schema parser/validator, the reachable-tag reader (LD-7), and the pure coverage computation. The grammar is not embedded in the already-large tag-coverage test.
 
 Validation fails closed on:
 
@@ -125,7 +142,98 @@ Validation fails closed on:
 - duplicate versions;
 - exception versions absent from CHANGELOG.
 
-`tests/test_release_state.py` owns malformed-state regressions. `tests/test_changelog_tag_coverage.py` owns candidate/tag coverage behavior and consumes the validator. This keeps the modified source/test files inside the Section 4 250-line file budget.
+This module's enforcement consumer is the repository test gate, `tests/test_changelog_tag_coverage.py`, which runs in CI. No runtime CLI or skill caller is added, because the rule exists to fail the test gate. It is not called a production runtime surface (A3 accepted).
+
+`tests/test_release_state.py` owns validator and reachable-tag regressions. `tests/test_changelog_tag_coverage.py` owns the live candidate/tag coverage behavior and consumes the module. This keeps each modified source or test file inside the Section 4 budget of 250 lines.
+
+### LD-7: tag coverage considers only tags reachable from `HEAD`
+
+Tag observation uses `git tag --merged HEAD --list 'v*'`, filtered to strict `vMAJOR.MINOR.PATCH`. The tag coverage rules use only this reachable set:
+
+- **Forward rule:** every reachable SemVer tag must have a dated CHANGELOG section.
+- **Ceiling (LD-2):** the ceiling is computed from reachable tags and the project version.
+- **Inverse membership:** an older version counts as tag-covered only by a reachable tag.
+
+A tag that is not reachable from `HEAD` belongs to another line of history, for example a parallel phase's local seal tag. It makes no claim about this branch's CHANGELOG. It cannot fail the forward rule, raise the ceiling, or cover an older version.
+
+A shallow repository cannot decide reachability, because its history is truncated and older tags look unreachable. The reader detects this with `git rev-parse --is-shallow-repository` and raises a named error instead of returning a partial set. The live coverage test turns that error into a `pytest.skip` that states the reason, which matches the existing skip when git is unavailable. CI checks out full history, so CI enforcement is unchanged:
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:.github/workflows/ci.yml | grep -m1 -nE 'fetch-depth: 0'` -> `31:          fetch-depth: 0`
+
+The base test reads every local tag instead:
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:tests/test_changelog_tag_coverage.py | grep -nE '"git", "tag", "-l"'` -> `36:            ["git", "tag", "-l", "v*"],`
+
+Three historical tags are not reachable from the base. Each was created on a phase branch whose tagged commit is not an ancestor of the base. Evidence, one line per statement:
+
+`git merge-base --is-ancestor v0.24.1 15729311f9f4d55d5dad2db004b972415c39432c; echo $?` -> `1`
+
+`git merge-base --is-ancestor v0.25.0 15729311f9f4d55d5dad2db004b972415c39432c; echo $?` -> `1`
+
+`git merge-base --is-ancestor v0.39.0 15729311f9f4d55d5dad2db004b972415c39432c; echo $?` -> `1`
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:CHANGELOG.md | grep -nE '^## \[0\.24\.1\]'` -> `3083:## [0.24.1] - 2026-04-19`
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:CHANGELOG.md | grep -nE '^## \[0\.25\.0\]'` -> `3072:## [0.25.0] - 2026-04-19`
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:CHANGELOG.md | grep -nE '^## \[0\.39\.0\]'` -> `2894:## [0.39.0] - 2026-04-30`
+
+Under the reachable-only rule these three dated versions would be orphans. The plan does not widen inverse membership to unreachable tags, because that would let a tag from another line of history cover a version. Instead each version gets an explicit `unreachable_tag` disposition (LD-4). The state says only that a tag exists off this line of history. It makes no claim about remote publication (LD-3). With the LD-4 entries, the base has no missing section and no orphan under this rule.
+
+This rule is the self-application of GH #520 (V2). A local seal tag on another line of history does not mint release truth for this branch.
+
+### LD-8: release target and in-flight candidate continuity
+
+Phase 297 targets `0.175.1`: a `hotfix` bump from the base project version `0.175.0`.
+
+On 2026-09-27 the operator decided that Phase 297 lands first and takes `0.175.1`. The operator also deleted the never-pushed local tag `v0.175.1`, which the held Phase 298 seal had created on its unmerged branch. In this checkout, `git tag -l 'v0.175*'` prints nothing, and `git ls-remote --tags origin` lists no `v0.175.x` tag. `version_applicability.validate` now returns ok: target `v0.175.1` is greater than the current highest tag, `v0.172.2`. Neither a downgrade nor a tag collision remains (V1).
+
+Phase 298 remains a superseded candidate. Its sealed evidence stays on its own pull request, bound to its revision. It re-seals later, at `0.175.2`, after it rebases onto the new `main`. This plan records no release-state disposition for Phase 298 or its versions. That disposition, together with the rest of its 0.175.x continuity handling (CHANGELOG section, ledger numbering, and a `sealed_unpublished` entry for `0.175.1` if 297 is still unpublished), belongs to Phase 298's own rebase (A6 accepted as out of scope).
+
+The substantiate-time version guard still reads all local tags. Its parallel-phase collisions are resolved by operator ordering, as they were here. Changing that guard is outside this hotfix.
+
+### LD-9: pre-audit implementation checkpoint has no gate standing
+
+This branch carries implementation commits made before any audit gate. They touch `qor/scripts/release_state.py`, `docs/release-state.json`, `tests/test_release_state.py`, `tests/test_changelog_tag_coverage.py`, and `qor/references/doctrine-changelog.md`. Those commits are drafts, not evidence (A5).
+
+`/qor-implement` must not treat them as authorized. It starts by restoring each Phase 1 and Phase 2 Affected File to its base `15729311` content, deleting files that do not exist at base. It then proceeds test-first under this plan.
+
+### LD-10: disclosed remediation of one Shadow Genome event (operator decision OQ-1)
+
+`publication_boundary_lint` reports one structural finding on this branch. `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` line 75 is the `gate_override` event from plan session `2026-09-25T2350-e05ce1`. Its `details.reason` carries an absolute local worktree path. The seal ladder runs this lint fail-closed at `/qor-substantiate` Step 4.6.14, so Phase 297 cannot seal while that line stands.
+
+On 2026-09-27 the operator chose the disclosed direct edit for this one event only. There is no history rewrite and no force-push. `/qor-implement` performs the remediation. It is not performed during planning.
+
+The event id function and the append serialization at base. Evidence, one line per statement:
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:qor/scripts/shadow_process.py | grep -nE '^def compute_id'` -> `40:def compute_id(event: dict) -> str:`
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:qor/scripts/shadow_process.py | grep -nE 'line = json.dumps'` -> `129:    line = json.dumps(event_with_id, separators=(",", ":")) + "\n"`
+
+`git show 15729311f9f4d55d5dad2db004b972415c39432c:qor/scripts/ledger_emit.py | grep -nE '^def append'` -> `70:def append(ledger_path: Path, entry: LedgerEntry,`
+
+Mechanics:
+
+1. Parse line 75 with `json.loads`. Confirm that its `id` is `70f04c8458699f7e7c82c864f19d02ad7d77820cffba8c2517a38e76df454073` and equals `shadow_process.compute_id(event)`. If either check fails, stop.
+2. In `details.reason`, replace the absolute worktree-root prefix that precedes `/.qor/gates/2026-09-25T2350-e05ce1/research.json` with the neutral token `<repo-root>`. Change no other field.
+3. Set `id` to `shadow_process.compute_id(event)` on the edited event. The expected value is `6c2548c1e5116925fc5da35e5899c8905d6a679f7631ddcc2d0c1d7c99ccb437`. It was computed during planning from the same inputs, and the implementation must recompute it and confirm the match.
+4. Serialize with `json.dumps(event, separators=(",", ":"))`, keeping key order with `id` first, and write it back as line 75. `git diff` must show exactly one changed line in that file.
+5. Append one META_LEDGER entry through `ledger_emit.append(Path("docs/META_LEDGER.md"), LedgerEntry(...))`. It takes the next free entry number. The title is `AMENDMENT -- publication-boundary edit disclosure for shadow event of session 2026-09-25T2350-e05ce1`. The fields are `Timestamp`, `Phase: IMPLEMENT`, and `Author: Specialist`. The entry has no `**Artifact**` line, because nothing binds the file's bytes. It has no `**Amends**` line, because no ledger entry records the event. Its content hash is the default self-bound body hash. The body states:
+   - the file `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` and line 75;
+   - the event's session `2026-09-25T2350-e05ce1` and type `gate_override`;
+   - the old id `70f04c8458699f7e7c82c864f19d02ad7d77820cffba8c2517a38e76df454073` and the new id `6c2548c1e5116925fc5da35e5899c8905d6a679f7631ddcc2d0c1d7c99ccb437`;
+   - the edited field, `details.reason`, where an absolute local path was replaced by `<repo-root>`;
+   - the reason: the path violated the publication boundary, and `publication_boundary_lint` fails closed at seal;
+   - the authority: operator decision OQ-1, dated 2026-09-27;
+   - that no other byte of the file changed, that no history was rewritten, and that the removed text is not quoted.
+
+No other tracked record cites the old id, so nothing else changes. The iteration-1 plan text quoted only an id prefix and no path.
+
+Proof:
+
+- `tests/test_shadow_log_integrity.py` (NEW, written first and observed RED on the unremediated line). For each tracked log, `docs/PROCESS_SHADOW_GENOME.md` and `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`, it reads the events with `shadow_process.read_events`. Every event passes `shadow_process.validate`, which is `shadow_event.schema.json`. Every event's `id` equals `shadow_process.compute_id(event)`. The ids are unique. `publication_boundary_lint.scan_text(rel, text, [])` returns no finding. These are invariants over every event, and the test asserts no specific id or hash.
+- `python -m qor.scripts.publication_boundary_lint --repo-root .` exits 0.
+- `python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md` verifies the chain with the AMENDMENT included.
 
 ## Feature Inventory Touches
 
@@ -137,36 +245,52 @@ Empty. This is release-governance/test maintenance and introduces no `src/` or u
 
 ### Affected Files
 
-- `tests/test_changelog_tag_coverage.py` - candidate-ceiling and explicit-disposition regressions.
-- `tests/test_release_state.py` - new validator regressions.
-- `qor/scripts/release_state.py` - new bounded closed-schema validator.
-- `docs/release-state.json` - explicit exceptional release dispositions.
+- `tests/test_release_state.py` - NEW validator, reachable-tag, and coverage-computation regressions.
+- `tests/test_changelog_tag_coverage.py` - live candidate, reachable-tag, and explicit-disposition coverage.
+- `qor/scripts/release_state.py` - NEW closed-schema validator, reachable-tag reader, and coverage computation.
+- `docs/release-state.json` - NEW explicit exceptional release dispositions.
+- `tests/test_shadow_log_integrity.py` - NEW schema, id, uniqueness, and boundary invariants over the tracked Shadow Genome logs (LD-10).
+- `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` - line 75 only: neutral token and recomputed id (LD-10).
+- `docs/META_LEDGER.md` - one appended AMENDMENT disclosing the LD-10 edit.
 
 ### Changes
 
-1. Before production changes, extend tag-coverage tests to require the project-version candidate rule and to catch an older unrecorded version even when it sits above the highest observed tag.
-2. Add release-state validator tests covering both allowed states plus every fail-closed shape named in LD-6.
-3. Observe the new tests RED against the current implementation.
-4. Add `qor/scripts/release_state.py`, `docs/release-state.json`, and integrate the validator into tag coverage.
-5. Remove `_GRANDFATHERED_UNTAGGED_SECTIONS` from test code.
-6. Observe the focused tests GREEN.
+1. Restore the Affected Files of both phases to base `15729311` content (LD-9).
+2. Before production changes, write the tests below, then observe them RED against the base implementation.
+3. Add `qor/scripts/release_state.py` with three parts: `load_release_state(path, changelog_versions)`, which raises `ReleaseStateError` on every LD-6 shape; `merged_semver_tags(repo_root)`, which raises `ShallowHistoryError` on a shallow repository; and the pure `coverage_violations(versions, tags, project_version, exceptions)`, which returns missing sections and orphans.
+4. Add `docs/release-state.json` with the LD-4 entries. Rewire the tag-coverage test to consume the module, and remove `_GRANDFATHERED_UNTAGGED_SECTIONS` from the test code.
+5. Write `tests/test_shadow_log_integrity.py` and observe it RED on line 75. Then perform the LD-10 remediation and the AMENDMENT append, and observe it GREEN.
+6. Observe the focused tests GREEN twice in a row.
 
 ### Unit Tests
 
-- project version has a dated CHANGELOG section;
-- project version is the only implicit untagged candidate;
-- older untagged version under the candidate/tag ceiling fails;
-- observed tag newer than project version extends the ceiling;
-- explicit exceptional disposition exempts only the named version;
-- local tag presence does not erase `sealed_unpublished` state;
-- accepted `sealed_unpublished` and `legacy_untagged` entries validate;
-- wrong root shape, extra root fields, unsupported schema id, duplicate, malformed, unsupported, orphaned, empty-reason, extra-entry-field, invalid-JSON, and unreadable release-state records fail closed.
+- `tests/test_release_state.py`:
+  - accepted `sealed_unpublished`, `legacy_untagged`, and `unreachable_tag` entries load, and each named version is returned with its state;
+  - these records raise `ReleaseStateError`: wrong root shape, extra root fields, unsupported schema id, non-list `exceptions`, duplicate, malformed version, unsupported state, orphaned version, empty reason, extra entry field, invalid JSON, and an unreadable path;
+  - `coverage_violations` reports an older untagged version under the ceiling as an orphan;
+  - `coverage_violations` does not report the project version as an orphan;
+  - `coverage_violations` reports a project version that has no dated section;
+  - a reachable tag above the project version raises the ceiling;
+  - an explicit disposition exempts only the named version;
+  - a `sealed_unpublished` version that also has a tag still produces no violation (LD-3);
+  - fixture repository (built with `git init` in `tmp_path`, committer identity pinned, no network): a `v*` tag on an unmerged side branch is absent from `merged_semver_tags`. With a CHANGELOG lacking that version, `coverage_violations` reports no missing section, and the tag raises no ceiling;
+  - fixture repository: a tag reachable from `HEAD` whose version has no CHANGELOG section is returned by `merged_semver_tags`, and `coverage_violations` reports it as a missing section;
+  - fixture repository: a version whose only tag sits on an unmerged side branch is reported as an orphan, and it stops being reported once an `unreachable_tag` disposition names it;
+  - fixture repository: a `--depth 1` clone made through a `file://` URL makes `merged_semver_tags` raise `ShallowHistoryError`.
+- `tests/test_shadow_log_integrity.py`:
+  - every event in each tracked Shadow Genome log validates against `shadow_event.schema.json`;
+  - every event's `id` equals `shadow_process.compute_id` of that event, and no id repeats;
+  - `publication_boundary_lint.scan_text` reports no finding for either log.
+- `tests/test_changelog_tag_coverage.py`:
+  - the live repository's reachable tags each have a dated section;
+  - the live repository has no orphans under the project-version candidate and `docs/release-state.json`;
+  - both live tests skip with the stated reason on a shallow checkout.
 
 ## Phase 2: Doctrine and user-facing release-state disclosure
 
 ### Affected Files
 
-- `qor/references/doctrine-changelog.md` - define sealed/versioned versus released/published state and the candidate/exception coverage rule.
+- `qor/references/doctrine-changelog.md` - define sealed/versioned versus released/published state, the candidate/exception coverage rule, and the reachable-tag rule.
 - `CHANGELOG.md` - add one user-facing Unreleased note before substantiation.
 
 ### Changes
@@ -176,23 +300,26 @@ Document the new state boundary without claiming that a local tag proves publica
 ### Unit Tests
 
 - existing changelog format/stamp/substantiate integration tests remain green;
-- tag-coverage tests exercise the documented candidate and explicit-exception behavior.
+- tag-coverage tests exercise the documented candidate, reachable-tag, and explicit-exception behavior.
 
 ## Definition of Done
 
 ### Deliverable: explicit sealed-versus-published release-state model
 
-- **D1**: sealed/versioned state and released/published state are no longer conflated; only the current project version is an implicit untagged candidate and exceptional history is explicit.
-- **D2**: `qor/scripts/release_state.py`, `docs/release-state.json`, and tag-coverage integration implement the closed state vocabulary and candidate/tag ceiling while keeping modified code/test files within Section 4 budgets.
-- **D3**: doctrine states `sealed/versioned != released/published`; no historical remote tag is fabricated, no package is published, and promotion occurs only after truthful current-revision audit/substantiation evidence exists.
-- **D4**: the focused release-state/tag-coverage suite is observed RED before implementation and GREEN after implementation; the changelog/substantiation regression set and full repository suite pass on the implemented revision.
+- **D1**: sealed/versioned state and released/published state are no longer conflated. Only the current project version is an implicit untagged candidate, and exceptional history is explicit. Only tags reachable from `HEAD` take part in coverage.
+- **D2**: `qor/scripts/release_state.py`, `docs/release-state.json`, and the tag-coverage integration implement the closed state vocabulary, the reachable-tag reader, and the candidate/tag ceiling. Each modified code or test file stays within the Section 4 budget.
+- **D3**: doctrine states `sealed/versioned != released/published` and the reachable-tag rule. No historical remote tag is fabricated, and no package is published. The LD-10 remediation changes only line 75 of `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`, and one META_LEDGER AMENDMENT discloses it with the old and new event ids. Promotion happens only after truthful audit and substantiation evidence exists for the current revision.
+- **D4**: the focused release-state/tag-coverage suite and `tests/test_shadow_log_integrity.py` are observed RED before implementation and GREEN after it. On the implemented revision, the changelog/substantiation regression set, the full repository suite, and `publication_boundary_lint` all pass.
 
 ## CI Commands
 
-- `python -m pytest tests/test_changelog_tag_coverage.py tests/test_release_state.py -q` - verifies candidate coverage and exceptional-state validation.
+- `python -m pytest tests/test_changelog_tag_coverage.py tests/test_release_state.py -q` - verifies candidate coverage, reachable-tag scoping, and exceptional-state validation.
+- `python -m pytest tests/test_shadow_log_integrity.py -q` - verifies every Shadow Genome event validates, carries its computed id, and is boundary-clean.
+- `python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md` - verifies the ledger chain including the LD-10 AMENDMENT.
 - `python -m pytest tests/test_changelog_format.py tests/test_changelog_stamp.py tests/test_substantiate_changelog_integration.py -q` - verifies CHANGELOG/substantiation compatibility.
 - `python -m pytest tests/ -q` - verifies repository regression safety.
 - `ruff check qor/ tests/` - verifies the repository's configured Python lint contract.
+- `python -m qor.scripts.publication_boundary_lint --repo-root .` - verifies the LD-10 remediation leaves no boundary finding.
 
 ## Non-goals
 
@@ -200,6 +327,9 @@ Document the new state boundary without claiming that a local tag proves publica
 - publishing any package;
 - modifying historical CHANGELOG sections;
 - changing release workflow behavior;
+- changing the substantiate-time version guard's tag source;
+- recording any release-state disposition for Phase 298's versions;
+- editing any Shadow Genome event other than the LD-10 event;
 - inferring remote publication through network access in unit tests;
 - reconstructing uncertain historical publication state from incomplete evidence;
 - changing semantic-version calculation;
