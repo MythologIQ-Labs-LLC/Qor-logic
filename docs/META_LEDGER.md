@@ -24139,6 +24139,25 @@ Sealed/versioned != released/published (GH #520). `qor/scripts/release_state.py`
 
 **Gates**: substantiate_gates (10 parsed), intent_lock verify, skill_admission, gate_skill_matrix (broken 0), session_id_lint, secret_scanner, merge_velocity (healthy), skill_size_budget (3 WARN, 0 EXCEEDED), ledger_commitment (9 touched), doc_integrity strict, governance_index enforce, feature_index_verify (27/27), version_applicability (v0.175.1 > v0.172.2) all pass. dod_check: no findings. procedural_fidelity WARN: doc-surface-uncovered (its genome append names no log and is swallowed). Doc currency WARN: release_state.py and doctrine-changelog.md without a system-tier doc update (plan: doc_tier minimal, operations.md unchanged). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 33 (every source skill reported missing). continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body. Boundary: pre-seal `publication_boundary_lint` 0 findings at scope structural (no identity overlay present); Step 4.6.14 re-runs after staging. Suite pre-seal: 3579 passed, 3 skipped.
 
+### Entry #815: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-27T23:37:22Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `6327ee2b331c`
+**Verdict**: VETO
+
+**Content Hash**: `04d95525eee5c34cb23f6faf1adb01ed8aabbcd3878b3eff6ca8da3849a8f47a`
+**Previous Hash**: `f7de1f9875f54169520a8646f609cfa828f87ea1454aca6d3215d83c6c6f727c`
+**Chain Hash (Merkle seal)**: `ac5aa546ad57d7218e9a50972a6c571be77ccfedce9d2ee327eaff09482b698b`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+**Decision**: VETO (iter 1 on base 43ee76b). Carried substance holds: all 49 evidence statements reproduce at 43ee76b; Phase 1 tests prototyped in a scratch clone (CLI tests GREEN x2, RED under both LD-9 mutations; workflow tests RED pre-fix, GREEN post-fix); LD-10 true (v0.175.2 > v0.175.1; af0ae68c not an ancestor); LD-11 entry truthful and the implement-time CI-view simulation discriminates ({'0.175.1'} {'0.175.1'} at base, set() {'0.175.1'} with entry). V1 (`specification-drift`): the Provenance paragraph claims every cited file is byte-identical to 15729311; false for 8 of 17 cited files (5 differ, release_state.py, release-state.json and test_release_state.py absent at 15729311), exactly the LD-10/LD-11 citations. V2 (`infrastructure-mismatch`): the substantiate-time scratch-clone proof copies committed history only but is scheduled after the version bump, which /qor-substantiate makes at Step 7.5 and commits at Step 9.5; run there it clones version 0.175.1 and passes with no release-state entry (reproduced: 4 passed). Option B fresh-context reviewer (audit_risk_score option_b_required). Session `2026-09-27T2325-bf1a15`.
+
+**Required next action**: Governor amends via /qor-plan (correct the Provenance byte-identity claim; bind the clone proof to the committed seal revision with a guard that the clone's project version is 0.175.2), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*
