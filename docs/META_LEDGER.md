@@ -24069,6 +24069,46 @@ Remediation (not quoted): one non-goal line anonymized in `docs/plan-shadow-esca
 
 **Required next action**: /qor-implement.
 
+### Entry #812: AMENDMENT -- publication-boundary edit disclosure for shadow event of session 2026-09-25T2350-e05ce1
+
+**Timestamp**: 2026-09-27T23:03:46Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+
+**Content Hash**: `57ce71f7e522f3101a8b342f7e421599148f696169bb351ccf15cedf0e3c9c19`
+**Previous Hash**: `34379d6c3047da169f6e8972e297b86742dd5f79cc5b86643302c1f65c407bb1`
+**Chain Hash (Merkle seal)**: `da14adab9c5e34c27fa83ea85e20d02fe86dc75d71d9aacb80cc55e477fde274`
+
+**Decision**: Disclosed direct edit of one Process Shadow Genome event under operator decision OQ-1 (2026-09-27), executed as Phase 297 plan LD-10. File: `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md`, line 75. Event: session `2026-09-25T2350-e05ce1`, type `gate_override`. Old id: `70f04c8458699f7e7c82c864f19d02ad7d77820cffba8c2517a38e76df454073`. New id: `6c2548c1e5116925fc5da35e5899c8905d6a679f7631ddcc2d0c1d7c99ccb437` (recomputed with `shadow_process.compute_id` and confirmed equal to the plan's precomputed value). Edited field: `details.reason`, where an absolute local path was replaced by the neutral token `<repo-root>`; no other field changed. Reason: the path violated the publication boundary, and `publication_boundary_lint` fails closed at seal (`/qor-substantiate` Step 4.6.14). Authority: operator decision OQ-1, dated 2026-09-27; it covers only this one event. No other byte of the file changed (the line was re-serialized in the append-path form, `id` first); no history was rewritten; the removed text is not quoted here.
+
+### Entry #813: IMPLEMENTATION
+
+**Timestamp**: 2026-09-27T23:06:27Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `4f4300c5162e`
+**Plan**: docs/plan-qor-phase297-sealed-unpublished-release-state.md
+**Session**: 2026-09-27T2225-1d09cf
+
+**Content Hash**: `2fb5a2bd102f3e1781af137da17acf12529e60f8be7da86755c10d3b9b579b28`
+**Previous Hash**: `da14adab9c5e34c27fa83ea85e20d02fe86dc75d71d9aacb80cc55e477fde274`
+**Chain Hash (Merkle seal)**: `97edc603b6c5fcb048591a5613db0445d1d4b324bfcdb5d60deae9bcde92d8cc`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Sealed/versioned != released/published (GH #520).
+
+LD-9: the pre-audit draft was reset first, exactly the named five paths (three `git rm`, two restored from 15729311); post-check empty; no append-only record touched.
+
+Module: `qor/scripts/release_state.py` owns the closed `qor.release-state/v1` validator (`load_release_state`, fail-closed `ReleaseStateError` on every LD-6 shape including non-object entries), the reachable-tag reader (`merged_semver_tags`: `git tag --merged HEAD`, strict SemVer; `ShallowHistoryError` on shallow history), and the pure `coverage_violations` (project version is the single implicit candidate; ceiling = max(project version, highest reachable tag); no-tag checkouts exempt nothing, disclosed in doctrine). `docs/release-state.json` carries the 13 LD-4 entries (4 legacy_untagged, 6 sealed_unpublished, 3 unreachable_tag). `tests/test_changelog_tag_coverage.py` consumes the module via `_reachable_tags()` with shallow and git-unavailable skips; the four base tests of the removed exemption are removed and their surviving behaviors re-asserted in `tests/test_release_state.py`; live test names unchanged, so `docs/operations.md` needs no edit.
+
+TDD: both release-state test files RED at collection (module absent) before implementation, then 29 passed twice. `tests/test_shadow_log_integrity.py` RED on exactly the upstream-log boundary check (1 failed, 5 passed), GREEN (6 passed) twice after LD-10.
+
+LD-10: one event edited per operator decision OQ-1 and disclosed by AMENDMENT #812 (old id 70f04c84..., new id 6c2548c1..., recomputed and equal to the plan value); one changed line.
+
+Doctrine: `qor/references/doctrine-changelog.md` gains the release-state section (lifecycle boundary, reachable-tag rule, record states, CI as authoritative enforcement point). CHANGELOG Unreleased carries one Fixed note.
+
+Verification: full suite 3579 passed, 3 skipped; ruff clean; `publication_boundary_lint` 0 findings; ledger chain verifies. Intent lock captured before implementation code.
+
 ---
 
 *Chain integrity: VALID*

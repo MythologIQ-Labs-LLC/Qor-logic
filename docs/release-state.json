@@ -2,54 +2,69 @@
   "schema": "qor.release-state/v1",
   "exceptions": [
     {
+      "version": "0.24.1",
+      "state": "unreachable_tag",
+      "reason": "A v0.24.1 tag exists, but its tagged commit sits on a phase branch that is not an ancestor of the mainline, so it is not reachable from HEAD. No publication claim."
+    },
+    {
+      "version": "0.25.0",
+      "state": "unreachable_tag",
+      "reason": "A v0.25.0 tag exists, but its tagged commit sits on a phase branch that is not an ancestor of the mainline, so it is not reachable from HEAD. No publication claim."
+    },
+    {
+      "version": "0.39.0",
+      "state": "unreachable_tag",
+      "reason": "A v0.39.0 tag exists, but its tagged commit sits on a phase branch that is not an ancestor of the mainline, so it is not reachable from HEAD. No publication claim."
+    },
+    {
       "version": "0.69.0",
       "state": "legacy_untagged",
-      "reason": "Historical CHANGELOG version retained as an explicit exception from the predecessor tag-coverage rule; current public records do not justify reconstructing a stronger publication claim."
+      "reason": "Merged during the stacked PyPI-hardening cluster (Phase 106); the release tag was never pushed and backfilling it would re-trigger old release workflows. Publication history is not reconstructed."
     },
     {
       "version": "0.70.0",
       "state": "legacy_untagged",
-      "reason": "Historical CHANGELOG version retained as an explicit exception from the predecessor tag-coverage rule; current public records do not justify reconstructing a stronger publication claim."
+      "reason": "Merged during the stacked PyPI-hardening cluster (Phase 106); the release tag was never pushed and backfilling it would re-trigger old release workflows. Publication history is not reconstructed."
     },
     {
       "version": "0.71.0",
       "state": "legacy_untagged",
-      "reason": "Historical CHANGELOG version retained as an explicit exception from the predecessor tag-coverage rule; current public records do not justify reconstructing a stronger publication claim."
+      "reason": "Merged during the stacked PyPI-hardening cluster (Phase 106); the release tag was never pushed and backfilling it would re-trigger old release workflows. Publication history is not reconstructed."
     },
     {
       "version": "0.102.2",
       "state": "legacy_untagged",
-      "reason": "Historical CHANGELOG version had a local tag but no retained remote tag; preserve the known exception without overstating whether an external publication remains authoritative."
+      "reason": "A local tag existed but never reached origin (Phase 140); pushing it now would re-fire the release workflow for an already-shipped version. Publication history is not reconstructed."
     },
     {
       "version": "0.173.0",
       "state": "sealed_unpublished",
-      "reason": "Governed version was sealed but no remote release tag was pushed and no package publication was completed."
+      "reason": "Sealed by /qor-substantiate (META_LEDGER #792); no release tag was pushed to the remote, so the version is sealed but not published."
     },
     {
       "version": "0.174.0",
       "state": "sealed_unpublished",
-      "reason": "Governed version was sealed but no remote release tag was pushed and no package publication was completed."
+      "reason": "Sealed by /qor-substantiate (META_LEDGER #795); no release tag was pushed to the remote, so the version is sealed but not published."
     },
     {
       "version": "0.174.1",
       "state": "sealed_unpublished",
-      "reason": "Governed version was sealed but no remote release tag was pushed and no package publication was completed."
+      "reason": "Sealed by /qor-substantiate (META_LEDGER #797); no release tag was pushed to the remote, so the version is sealed but not published."
     },
     {
       "version": "0.174.2",
       "state": "sealed_unpublished",
-      "reason": "Governed version was sealed but no remote release tag was pushed and no package publication was completed."
+      "reason": "Sealed by /qor-substantiate (META_LEDGER #799); no release tag was pushed to the remote, so the version is sealed but not published."
     },
     {
       "version": "0.174.3",
       "state": "sealed_unpublished",
-      "reason": "Governed version was sealed but no remote release tag was pushed and no package publication was completed."
+      "reason": "Sealed by /qor-substantiate (META_LEDGER #801); no release tag was pushed to the remote, so the version is sealed but not published."
     },
     {
       "version": "0.175.0",
       "state": "sealed_unpublished",
-      "reason": "Phase 296 was sealed and merged, but publication was intentionally deferred; no remote release tag was pushed."
+      "reason": "Sealed by /qor-substantiate (META_LEDGER #808); no release tag was pushed to the remote, so the version is sealed but not published."
     }
   ]
 }
