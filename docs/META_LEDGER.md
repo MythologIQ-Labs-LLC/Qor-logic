@@ -24482,6 +24482,25 @@ A second remediation proposal no longer destroys the first (GH #446). `qor/scrip
 
 **Post-seal proof**: the plan's guarded CI-view clone proof (LD-10, Phase 3) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
 
+### Entry #830: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T04:24:47Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `e033a1d07e4f`
+**Verdict**: PASS
+
+**Content Hash**: `b903e239734e1c39b49d7c89eecb2a8babe7a61b25df6a52d92e2a746f82ab55`
+**Previous Hash**: `c4f564957e414d823dec987b829011d38ddecd3ad277de9788298b252f7be0a6`
+**Chain Hash (Merkle seal)**: `601e8516a6e2747da00a5e06e3817feee07a377cb19fffc7732ae7fbc23e1cfc`
+
+**Decision**: **Target**: `docs/plan-qor-phase301-shadow-breach-header.md`
+
+**Decision**: PASS (iter 1 on base e062a3dd). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface). Engineering reproduced in scratch clones outside the repo: all 42 evidence statements re-run at e062a3dd, 0 mismatches; git grep, merge-base, ledger-line and remote-tag observations reproduce. Phase 1 tests rebuilt from plan text: 10 failed, 2 passed at base; Phase 2 code gives 12 passed twice; M1-M8 fail exactly their named items (6/1/4/2/2/4/4/1 of 60); consumer suites 113 passed; full suite with Phases 1-3 3627 passed, 3 skipped, 4 deselected; ruff and publication boundary clean. All three GH #474 paths prototyped with markers from the real writer: --events neutral (not checked), --mark-resolved subset and --flip-only subset neutral (not reached), writer agrees OK; LD-6 accepts every writer-produced marker including after escalation. No title/body consumer found in tests, skills, docs, workflows or issue search. CHANGELOG bullet matches the implemented rule. Release-state proof non-vacuous: CI-view simulation {'0.175.4'} {'0.175.4'} at base, set() {'0.175.4'} with the entry; guarded clone proof fails at base, bump-only and seal without entry (1 failed, orphan 0.175.4), passes with it (4 passed, twice); remote highest tag v0.172.2. Scope stays hotfix. Advisories: A1 plain-sum residual reproduced (remainder with repeated signature: breach title at plain 10 while writer reports 5 < 10), declared in boundaries, LD-5 and CHANGELOG, narrower than base, header never contradicts its printed numbers; A2 module 410 lines and main 116 lines pre-existing over cap, disposition declared; A3 workspace fragility pre-existing; A4 github-api-helpers.md doc example is not an issue search. Escalator: cce.check and check_session_total None. Session `2026-09-28T0359-d92786`.
+
+**Required next action**: /qor-implement.
+
 ---
 
 *Chain integrity: VALID*
