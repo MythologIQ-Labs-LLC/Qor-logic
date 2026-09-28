@@ -24450,6 +24450,38 @@ Release state: `docs/release-state.json` gains 0.175.3 sealed_unpublished (reaso
 
 Verification: consumer suites 100 passed; release/changelog suites 34 passed; full suite 3615 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored, timestamp only); ruff clean; publication_boundary_lint 0; check_variant_drift OK 406 files; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
 
+### Entry #829: SESSION SEAL -- Phase 300 a second remediation proposal no longer destroys the first (v0.175.4)
+
+**Timestamp**: 2026-09-28T03:47:44Z
+**Phase**: SEAL (Phase 300)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `2ac9c32038a5`
+**Plan**: docs/plan-qor-phase300-remediate-gate-versioning.md
+**Session**: 2026-09-28T0308-4cbf90
+
+**Content Hash**: `83d8958f45f57f4824887e8b6e5402cbf6011a1c5ac2801d597b9bbfe9e15ea3`
+**Previous Hash**: `e1b191b687a78b2f13576242c8328211712b931d08daf4ece2228d7f4e3d7a21`
+**Chain Hash (Merkle seal)**: `c4f564957e414d823dec987b829011d38ddecd3ad277de9788298b252f7be0a6`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+A second remediation proposal no longer destroys the first (GH #446). `qor/scripts/remediate_emit_gate.py` imports `next_iteration_path` from `qor.scripts.validate_gate_artifact`, adds `_atomic_write(target, text)`, and `emit` writes one text to `remediate-iter<N>.json` (N one more than the highest existing remediate iteration, the numbering shared with `write_gate_artifact`) and then the same bytes to `remediate.json`, returning `remediate.json` as before. Signatures of `emit` and `validate_session_id` unchanged; the `emit` docstring carries LD-7 deviation 4. `tests/test_remediate.py` gains the four Phase 1 tests (36 items). `docs/release-state.json` gains the single LD-10 entry `0.175.3` / `sealed_unpublished`. Declared residuals (LD-5): concurrent `emit` calls are not serialized; `emit` writes no provenance sidecar; earlier losses, including the Entry #748 proposal, are not recovered. Audit: VETO iter 1 (#826), PASS iter 2 (#827); implementation #828; intent lock VERIFIED against the iter-2 plan and audit hashes.
+
+**Version**: 0.175.3 -> 0.175.4 (hotfix; LD-8). After the bump `0.175.4` is the single implicit candidate and the superseded `0.175.3` (sealed at #825, no remote tag) is covered by its `sealed_unpublished` entry. No remote tag is created; the seal tag stays local. Nothing is published.
+
+**CHANGELOG**: stamped `[0.175.4] - 2026-09-28` by `changelog_backends.stamp` (keepachangelog). The stamp does not emit the `_Built via ..._` line and `tests/test_attribution_tiered_usage.py::test_changelog_post_cutoff_versions_have_attribution_line` failed without it, so the line was inserted below the new header from `attribution.changelog_attribution_line()`. The Unreleased note, now under `[0.175.4]`, is the LD-9 bullet verbatim and describes only what was implemented.
+
+**Reality audit**: all planned files exist and match the plan: module diff against the base is the import, `_atomic_write`, the docstring and the two writes; the CHANGELOG bullet equals the LD-9 text byte for byte; the release-state entry carries the LD-10 reason. No MISSING, no UNPLANNED implementation file (the shadow-genome and gate-artifact changes on the branch are plan/audit governance output). `ledger_commitment` OK (5 touched artifacts). Section 4: module 72 lines, longest function `emit` 34 lines including its 15-line docstring (under the 40-line cap); `tests/test_remediate.py` 732 lines, over-cap growth accepted by the plan (Phase 1 disposition); ruff clean. Presence-only gate: every new test calls `reg.emit` and asserts file names, bytes or proposal text. Judge re-proof in a scratch clone outside the repository: base module 4 failed, 32 passed (exactly the four new tests); M1 4 failed; M3 1 failed (`test_emit_gate_numbers_after_highest_existing_iteration`); implemented module 36 passed twice. No skill file modified.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), merge_velocity (healthy, 7 PRs/7d), skill_size_budget (3 WARN, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), governance_index enforce (Last Reviewed 2026-09-28), feature_index_verify (27/27, snapshot 2026-09-28T0026-1e38ee), version_applicability (v0.175.4 > v0.175.3), ledger chain verified through #828. dod_check: no findings. procedural_fidelity WARN: doc-surface-uncovered (script change without an architecture/lifecycle/operations doc update); doc currency WARN: the same observation. Both accepted: LD-6 shows every normative statement about the remediate gate file stays true, and `docs/SYSTEM_STATE.md` is updated in this seal. data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 32 (every source skill reported missing). Continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body. Spec fold: plan declares no spec_deltas (Step 7.9). Suite pre-seal: 3615 passed, 3 skipped, 4 deselected. Step 4.6.14 publication_boundary_lint re-runs after staging.
+
+**Post-seal proof**: the plan's guarded CI-view clone proof (LD-10, Phase 3) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
+
 ---
 
 *Chain integrity: VALID*
