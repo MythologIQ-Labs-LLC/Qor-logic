@@ -10,6 +10,9 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+### Fixed
+- **Phase 299 (hotfix; stale session marker keeps its gate chain, GH #483)**: the session marker still goes stale 24h after it was last written, and reads (`current()`, or `get_or_create()` on a fresh marker) do not refresh it. A stale marker now keeps its id while its session is live: the id matches the session-id format, and `.qor/gates/<sid>/` holds `ideation.json`, `research.json`, `plan.json`, `audit.json` or `implement.json` and no `substantiate.json`. Then `current()` returns the id, and `get_or_create()` keeps it and re-writes the marker, which refreshes it, so a cycle that runs past 24h no longer splits its gate chain across two session directories. A stale marker whose directory is absent, empty or sealed, or holds no pre-seal phase artifact, still rotates to a new id, and so does a marker of any age with malformed content. A fresh marker with valid content keeps its id, as before. Accepted residual: an abandoned session whose directory holds a pre-seal phase artifact and no `substantiate.json` now stays current past 24h; after abandoning an unsealed cycle, end the session (`qor-logic scripts session end`) or rotate it (`qor-logic scripts session_tool rotate`) before starting a new phase. `docs/release-state.json` records `0.175.2` as `sealed_unpublished`.
+
 ## [0.175.2] - 2026-09-28
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

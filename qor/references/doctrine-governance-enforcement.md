@@ -106,7 +106,7 @@ session's directory -- operators choose when to prune `.qor/gates/<old_sid>/`
 archives.
 
 **Enforcement**: Phase 30 substantiate Step Z is the canonical call site.
-Manual session rotation (e.g., via `python -m qor.scripts.session new`) is
+Manual session rotation (e.g., via `python -m qor.scripts.session_tool rotate`) is
 permitted outside the seal flow but SHOULD be rare.
 
 **Anti-pattern**: do NOT rotate at `/qor-plan` entry (Step 0.5). Rotation at

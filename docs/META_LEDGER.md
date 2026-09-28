@@ -24330,6 +24330,32 @@ Dependency Review root-path and per-lockfile admission coverage (GH #511). `.git
 
 **Required next action**: /qor-implement.
 
+### Entry #824: IMPLEMENTATION
+
+**Timestamp**: 2026-09-28T02:30:14Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `2c9d28d6852e`
+**Plan**: docs/plan-qor-phase299-session-marker-staleness.md
+**Session**: 2026-09-28T0026-1e38ee
+
+**Content Hash**: `34c4b4d014a4f5343c39aec92155b3b1846d1a405531f6b96634665c827c329c`
+**Previous Hash**: `47f1244616e127a1295f8b101d9978e692351f95ab0506811077c4780e5ce80e`
+**Chain Hash (Merkle seal)**: `af31aa9144730678aeaa5abdfdebba2df6a356ce5acda49fa6b0156609f5fc1a`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Stale but live session marker keeps its gate chain (GH #483), implemented test-first on base 8ee9d98 per the iteration-5 plan (audit PASS #823); the candidate branch head 5f8be1e2 was reference only and no file was copied from it.
+
+Code: `qor/scripts/session.py` replaces `_marker_fresh` with `_marker_state` (absent/stale/fresh), adds `_GATE_PHASE_ARTIFACTS` (ideation, research, plan, audit, implement), `_SEAL_ARTIFACT`, `_has_unsealed_gate_artifacts` and `_recoverable_stale_id`; `get_or_create` keeps and re-writes a stale live id, `current` returns it without writing; `SESSION_ID_PATTERN` is checked before any gate-directory lookup. Docstring lines 7 and 8 and the two helper docstrings carry the plan text. Signatures unchanged (LD-4).
+
+Tests: new `tests/test_session_marker_staleness.py` (15 functions, 29 items, 242 lines, within the 250-line razor per audit A1). RED at base: 10 failed, 19 passed (the ten named items). GREEN after: 29 passed, twice. Mutations M1-M15 under `python -B -m pytest`, each reverted: M1 1, M2 1, M3 5, M4 7, M5 7, M6 4, M7 8, M8 3, M9 2, M10 2, M11 3, M12 4, M13 1, M14 1, M15 4 failed, each exactly the named set; session.py restored byte-identical. Fidelity diff against 5f8be1e2 shows only LD-7 deviations 1-11.
+
+Docs: `docs/lifecycle.md` line 68, `qor/gates/chain.md` line 20, `qor/references/doctrine-governance-enforcement.md` line 109 and the `qor/skills/meta/qor-help/SKILL.md` line 135 parenthetical carry the plan text verbatim. `python -m qor.scripts.dist_compile` regenerated exactly the six qor-help copies and seven manifests; manifests differ from a base-only compile only in generated_ts and the qor-help hash; check_variant_drift OK 406 files.
+
+Release state: `docs/release-state.json` gains 0.175.2 sealed_unpublished (reason names the #818 seal); CI-view simulation printed {'0.175.2'} {'0.175.2'} before and set() {'0.175.2'} after. CHANGELOG `## [Unreleased]` gains the LD-9 Fixed bullet verbatim.
+
+Verification: full suite 3611 passed, 3 skipped, 4 deselected; ruff clean; publication_boundary_lint 0; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
+
 ---
 
 *Chain integrity: VALID*

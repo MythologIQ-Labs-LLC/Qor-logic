@@ -4,8 +4,8 @@
 session_id format: <YYYY-MM-DDTHHMM>-<6hex>  (e.g. 2026-04-15T1743-a3f9c2)
 No colons — safe as a directory name on Windows.
 
-- .qor/current_session holds the current id as a single line
-- Regenerated when missing OR mtime older than 24h
+- .qor/session/current holds the current id as a single line
+- Regenerated when missing, malformed, or stale (last written 24h or more ago; reads do not refresh it), except a stale id whose gate dir holds a pre-seal phase artifact and no substantiate.json, which get_or_create keeps and re-writes (GH #483)
 - Atomic writes via os.replace (Windows-safe)
 """
 from __future__ import annotations
@@ -55,21 +55,62 @@ def _atomic_write(path: Path, content: str) -> None:
     os.replace(tmp, path)
 
 
-def _marker_fresh(path: Path, now: datetime) -> bool:
+#: GH #483: gate-phase artifact names checked by _has_unsealed_gate_artifacts.
+#: This is gate_chain.IDEATION_PHASE plus every gate_chain.CHAIN phase before
+#: substantiate. Declared locally (not imported from gate_chain) because
+#: gate_chain.py imports this module; importing back would be a cycle.
+#: tests/test_session_marker_staleness.py pins the two sets as equal.
+_GATE_PHASE_ARTIFACTS = ("ideation.json", "research.json", "plan.json", "audit.json", "implement.json")
+_SEAL_ARTIFACT = "substantiate.json"
+
+
+def _marker_state(path: Path, now: datetime) -> str:
+    """"absent", "stale", or "fresh" for the marker at ``path``.
+
+    GH #483: these were collapsed into one boolean (fresh/not-fresh), so a
+    marker whose content was correct but whose mtime alone aged past
+    SESSION_TTL was indistinguishable from a marker that was never written.
+    """
     if not path.exists():
-        return False
+        return "absent"
     mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
-    return (now - mtime) < SESSION_TTL
+    return "fresh" if (now - mtime) < SESSION_TTL else "stale"
+
+
+def _has_unsealed_gate_artifacts(session_id: str) -> bool:
+    """True if this session's gate dir holds a pre-seal phase artifact and no seal.
+
+    Pre-seal phase artifacts are the _GATE_PHASE_ARTIFACTS names; the seal is
+    _SEAL_ARTIFACT. GH #483: a stale marker naming such a session is kept.
+    """
+    sess_dir = _workdir.gate_dir() / session_id
+    if not sess_dir.is_dir() or (sess_dir / _SEAL_ARTIFACT).exists():
+        return False
+    return any((sess_dir / name).exists() for name in _GATE_PHASE_ARTIFACTS)
+
+
+def _recoverable_stale_id(marker: Path) -> str | None:
+    """The marker's id if it is valid and its gate dir holds a pre-seal phase artifact and no seal."""
+    content = marker.read_text(encoding="utf-8").strip()
+    if not SESSION_ID_PATTERN.match(content):
+        return None
+    return content if _has_unsealed_gate_artifacts(content) else None
 
 
 def get_or_create(marker: Path | None = None, now: datetime | None = None) -> str:
     if marker is None:
         marker = MARKER_PATH
     now = now or datetime.now(timezone.utc)
-    if _marker_fresh(marker, now):
+    state = _marker_state(marker, now)
+    if state == "fresh":
         content = marker.read_text(encoding="utf-8").strip()
         if SESSION_ID_PATTERN.match(content):
             return content
+    elif state == "stale":
+        recovered = _recoverable_stale_id(marker)
+        if recovered is not None:
+            _atomic_write(marker, recovered + "\n")
+            return recovered
     new_id = generate_id(now)
     _atomic_write(marker, new_id + "\n")
     return new_id
@@ -79,10 +120,15 @@ def current(marker: Path | None = None, now: datetime | None = None) -> str | No
     if marker is None:
         marker = MARKER_PATH
     now = now or datetime.now(timezone.utc)
-    if not _marker_fresh(marker, now):
+    state = _marker_state(marker, now)
+    if state == "absent":
         return None
     content = marker.read_text(encoding="utf-8").strip()
-    return content if SESSION_ID_PATTERN.match(content) else None
+    if not SESSION_ID_PATTERN.match(content):
+        return None
+    if state == "fresh":
+        return content
+    return content if _has_unsealed_gate_artifacts(content) else None
 
 
 def end_session(marker: Path | None = None) -> None:
