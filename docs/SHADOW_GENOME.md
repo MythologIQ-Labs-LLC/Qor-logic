@@ -2973,4 +2973,28 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #39: VETO -- plan-qor-phase299-session-marker-staleness (iter 2)
+
+**Date**: 2026-09-28
+**Verdict ID**: session 2026-09-28T0026-1e38ee audit (META_LEDGER Entry #820)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The amendment closed all three iteration-1 grounds, and each closure reproduces. Two new defects came from the same amendment. First, to fix the lifecycle wording it promoted "a directory holding no pre-seal phase artifact rotates" to a normative rule in two documents. It also called the liveness tuple derived from `gate_chain` and pinned by a test, but the test checks only one direction. Adding `remediate.json` to the tuple, or counting any JSON file as live, keeps all 1273 session-related tests green. Second, the rewritten lifecycle line kept its inherited opening, "After 24h of inactivity". The marker ages from its last write, and reads do not refresh it, while the plan asserted that every clause matches the code.
+
+### Why It Failed
+
+The fix for each ground was checked against that ground, not against the new claims the fix introduced. A rule written into normative text got no mutation of its own. The one-directional drift test was described as pinning equality. The rewrite of a normative line reused an inherited clause without re-deriving it from the code.
+
+### Pattern to Avoid
+
+When an amendment adds or sharpens a normative rule, give the rule its own discriminating test and a named mutation, in both directions for any set that is said to be derived from another. When a normative line is rewritten, re-derive every clause, including inherited ones, from the implementing code before asserting that it matches. Related: Entry #38.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*

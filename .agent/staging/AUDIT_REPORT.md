@@ -2,11 +2,11 @@
 
 **Tribunal Date**: 2026-09-28
 **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
-**Iteration**: 1 (branch `phase/299-session-marker-staleness`, head `2e880e4c`, plan-only; base `main` `8ee9d98a` = 0.175.2)
+**Iteration**: 2 (branch `phase/299-session-marker-staleness`, head `b5f636f1`, plan-only; base `main` `8ee9d98a` = 0.175.2)
 **Session**: `2026-09-28T0026-1e38ee`
 **Risk Grade**: L2
 **Auditor**: The Qor-logic Judge
-**Mode**: Option B fresh-context reviewer, independent of the plan author. `audit_risk_score`: `option_b_required: true` (flag `high-citation-surface`). Codex plugin unavailable; `external_reviewer.run_external_review` returned `fallback` (no reviewer configured in `.qorlogic/config.json`); both `capability_shortfall` events emitted. Reviewer toolset declaration: shell, git (local objects plus `git ls-remote` over the proxy), file read/grep, Python with the in-tree `qor` package on `PYTHONPATH`, pytest in scratch clones outside the repository; no GitHub API. The candidate branch `fix/483-session-marker-current` (`5f8be1e2`) was read as reference only; it carries no audit authority.
+**Mode**: Option B fresh-context reviewer, independent of the plan author and of the iteration-1 auditor. `audit_risk_score`: `option_b_required: true` (flag `high-citation-surface`). Codex plugin unavailable; `external_reviewer.run_external_review` returned `fallback` (no reviewer configured); both `capability_shortfall` events emitted. Reviewer toolset declaration: shell, git (local objects plus `git ls-remote` over the proxy), file read/grep, Python with the in-tree `qor` package on `PYTHONPATH`, pytest in scratch clones outside the repository; no GitHub API. The candidate branch head `5f8be1e2` was read as reference only.
 
 ---
 
@@ -16,31 +16,39 @@
 
 ### Executive Summary
 
-The carried substance mostly holds. All 44 `git show 8ee9d98...:<path> | grep -nE` evidence statements were re-executed and reproduce exactly. Provenance claims reproduce: the candidate is not an ancestor of the base, its diff against merge base `15729311` is the declared four files (`250 insertions(+), 7 deletions(-)`), and `session.py` and `docs/lifecycle.md` are unchanged between `15729311` and the base. In a scratch clone of the base, the Judge rebuilt the eight Phase 1 tests (the candidate's seven plus the declared eighth). The base gives `2 failed, 6 passed`. With the candidate logic it gives `8 passed` twice. Each of mutations M1 to M5 fails exactly the tests the plan names. An end-to-end run on the real `gate_chain` with a session id created before a day boundary and a marker aged 26 h behaves as intended. At the base, `current()` is `None` and `qor_audit_runtime.session_id()` splits to a new id whose directory lacks `plan.json`. With the fix, both return the original id, `check_prior_artifact("audit")` finds the plan and the marker mtime is refreshed. A sealed session still rotates. The release-state continuity proof is non-vacuous. The CI-view simulation prints `{'0.175.2'} {'0.175.2'}` at the base. The guarded clone proof fails at the base, fails on a bump-only commit, fails on a simulated seal without the entry (`1 failed, 3 passed`, orphan `0.175.2`), and passes with the entry (`4 passed`, twice). The remote's highest tag is `v0.172.2`. Scope stays hotfix. Three grounds remain. V1: the one guard that keeps marker content from becoming a path segment on the new recovery path is not tested. Deleting it leaves all 1263 session-related tests green, and `get_or_create()` then returns `../../evil` as the session id. V2: the lifecycle wording the plan mandates is contradicted by the plan's own rule and eighth test. The plan also leaves `qor/gates/chain.md` stating the old 24 h rule while asserting that only two lines change. V3: the liveness tuple omits `ideation.json`, which `gate_chain` treats as a chain predecessor. An ideation-only cycle that outlives the TTL is still split, which is the #483 failure.
+The three iteration-1 grounds are closed as written. V1: the Judge rebuilt the 18-item Phase 1 file from the plan text in a scratch clone of the base. The base gives `8 failed, 10 passed`; with the Phase 2 `session.py` it gives `18 passed` twice. M6 and M7 each fail exactly the four malformed-content cases, and M6 over the 150 session-related files gives `4 failed, 1269 passed, 4 deselected`. V2: the four replacement lines apply verbatim, and a repository grep finds no other normative statement of the old rule. V3: `ideation.json` is in the tuple, and the parametrized drift test fails when `gate_chain.CHAIN` gains a pre-seal phase (simulated `review`: `1 failed, 18 passed`). End to end on the real `gate_chain`, an ideation-only session with a 26 h marker keeps its id and `check_prior_artifact("plan")` finds `ideation.json`; at the base it splits. All 55 evidence statements reproduce at `8ee9d98`, M1 to M9 match their named failures and counts, and the full suite with Phases 1 and 2 applied gives `3600 passed, 3 skipped`. The release-state proofs reproduce as well. Two grounds remain. First, the amendment makes "a directory with no pre-seal phase artifact rotates" a normative rule, but no test discriminates it: two mutations that widen liveness beyond the chain set keep all 1273 session-related tests green. Second, the lifecycle text keeps "After 24h of inactivity", but the plan asserts every clause matches `_marker_state`, which measures age since the last marker write.
 
 ### Pre-audit gates
 
 - Governance health preflight (`python -m qor.cli governance-health --profile skill-entry`): all 8 artifacts OK.
-- Step 0 gate check: plan artifact found and valid (`.qor/gates/2026-09-28T0026-1e38ee/plan-iter1.json`).
+- Step 0 gate check: plan artifact found and valid (`.qor/gates/2026-09-28T0026-1e38ee/plan-iter2.json`).
 - Step 0.3 `plan_iteration_status_lint`: exit 0.
-- Step 0.4 unchanged-plan short-circuit: `should_skip=False` (no prior audit in session); plan hash `b270cf06ceb32ee65ffcf6f0b63517c72bb949e84a7fbdef7003e38a4e1311cc`.
-- Step 0.5 cycle-count escalator: `cce.check` None, `cce.check_session_total` None.
-- Step 0.6 lints (WARN-only): `plan_grep_lint` 44 citations truth-checked, 0 findings; `workspace_fragility_check` medium (`dirty_gate_artifact_count=64`, pre-existing); `sg_closure_lint` 40 entries, 0 missing; `gate_schema_freeze_lint` 0; `publication_boundary_lint` 0 findings. All other lints: exit 0, no output.
-- Step 0.7 spec-delta pre-pass: no `spec_deltas` declared; the contracted behavior (session marker rule) is carried by `docs/lifecycle.md` and `qor/gates/chain.md`, addressed under V2.
+- Step 0.4 unchanged-plan short-circuit: `should_skip=False`; plan hash `7f5271858e65004554fb5ab1efedda3b832cc41d453a70c3f7a235b882ed4686` (iteration 1 audited `b270cf06...`).
+- Step 0.5 cycle-count escalator: `cce.check` None, `cce.check_session_total` None. This is the second audit in the session; the prior VETO (#819) carried categories `coverage-gap`, `specification-drift`, `infrastructure-mismatch`.
+- Step 0.6 lints (WARN-only): `plan_grep_lint` 55 citations truth-checked, 0 findings; `workspace_fragility_check` medium (`dirty_gate_artifact_count=64`, pre-existing); `sg_closure_lint` 40 entries, 0 missing; `gate_schema_freeze_lint` 0; `publication_boundary_lint` 0 findings. All other lints: exit 0, no output.
+- Step 0.7 spec-delta pre-pass: no `spec_deltas` declared; the contracted rule is carried by `docs/lifecycle.md` and `qor/gates/chain.md`, which the plan edits (see V2).
 - Version-Applicability Pass: `ok=True`, `hotfix`, target v0.175.3 > current highest v0.175.2.
 - Prompt Injection Pass: `prompt_injection_canaries` over ARCHITECTURE_PLAN, META_LEDGER, CONCEPT and the plan: exit 0.
 - Runtime Contract Walk (WARN-only): 6 backward WARN findings on unchanged caller modules; no forward finding.
 - `prose_test_lint --enforce`: exit 0 (69 exempted with reason).
 
+### Iteration-1 grounds (verification)
+
+| Ground | Check | Observed | Status |
+| ------ | ----- | -------- | ------ |
+| V1 | 4-case malformed-content test; M6, M7 | Each of M6 and M7 fails all four cases (`4 failed, 14 passed`). M6 over 150 files gives `4 failed, 1269 passed, 4 deselected`. Without M6/M7, `18 passed` twice. | Closed |
+| V2 | Exact lines `docs/lifecycle.md:68`, `qor/gates/chain.md:20`, `session.py:7-8` | All four apply verbatim and are ASCII. A `git grep` at `8ee9d98` over `qor`, `docs`, `README.md` and `tests` (excluding dated plans, ledgers and vendored text) finds no other statement of the 24 h marker rule. The 7 chain/lifecycle test files plus `test_gates`/`test_e2e` give `95 passed`. | Closed (see new V2) |
+| V3 | `ideation.json` in the tuple; drift test; ideation-only end to end | M8 gives `2 failed`, M9 `1 failed`. With `review` added to `CHAIN`, `[review]` fails. End to end at the base: `current()` None, new id, plan prior missing. With the fix: same id from both calls, `ideation.json` found, marker refreshed. | Closed |
+
 ### Audit Results
 
 #### Security Pass
-**Result**: PASS (design) -- see V1 for the untested guard
-No placeholder auth, credentials, or bypassed checks. The design validates marker content against `SESSION_ID_PATTERN` before `_workdir.gate_dir() / session_id` (LD-2).
+**Result**: PASS
+No placeholder auth, credentials or bypassed checks. The `SESSION_ID_PATTERN` guard precedes every gate-directory lookup on the stale path in both `current` and `_recoverable_stale_id`, and it is now pinned by M6/M7.
 
 #### OWASP Top 10 Pass
-**Result**: PASS (design)
-No subprocess, deserialization, or secrets. The path-segment guard (A01/A03 class) is present in the design, but no test protects it (V1). `gate_chain.check_prior_artifact` and `write_gate_artifact` build `GATES_DIR / sid` without `validate_session_id`, so this guard is the only protection on that path.
+**Result**: PASS
+No subprocess, deserialization or secrets in the product change. The path-segment guard (A01/A03 class) is tested.
 
 #### Ghost UI Pass
 **Result**: PASS
@@ -51,14 +59,14 @@ No UI surface.
 
 | Check              | Limit | Blueprint Proposes | Status |
 | ------------------ | ----- | ------------------ | ------ |
-| Max function lines | 40    | ~20 (`current`)    | OK     |
-| Max file lines     | 250   | ~172 (`session.py`), ~129 (test) | OK |
+| Max function lines | 40    | ~15 (`get_or_create`) | OK  |
+| Max file lines     | 250   | 172 (`session.py`), ~190 (test) | OK |
 | Max nesting depth  | 3     | 2                  | OK     |
 | Nested ternaries   | 0     | 0                  | OK     |
 
 #### Self-Application Sub-Pass
-**Result**: FAIL (V2, V3)
-`originating_remediation` is `GH #483`. The plan's own discipline has two parts. LD-6 says documentation must state the new rule, and LD-3 says a live chain must not be split by the clock. Applied to the plan itself, both fail: one normative document stays false (V2), and one chain predecessor is left out (V3).
+**Result**: FAIL (V1, V2)
+`originating_remediation` is `GH #483`. The plan's own disciplines are LD-6 (every normative statement matches the new rule) and the iteration-1 V1 standard it adopts in LD-7 deviation 6 (a declared rotation case needs a test that fails when its check is removed). Applied to the plan: the "no pre-seal phase artifact rotates" rule, now normative, has no discriminating test (V1). One clause of the mandated lifecycle text does not match `_marker_state` (V2).
 
 #### Test Functionality Pass
 **Result**: FAIL (V1)
@@ -73,9 +81,10 @@ No UI surface.
 | absent marker unaffected | yes | yes | PASS |
 | fresh marker unaffected | yes | yes | PASS |
 | empty gate dir rotates | yes | yes | PASS |
-| stale marker with non-pattern content rotates | not planned | -- | coverage-gap (V1) |
-
-Every planned test is functional, but the planned set leaves out a declared, security-relevant behavior (V1).
+| malformed content rotates (4 cases) | yes | yes | PASS |
+| ideation-only dir is current | yes | yes | PASS |
+| every pre-seal chain phase is live (5 cases) | yes | yes | PASS |
+| non-empty dir holding only non-chain artifacts rotates | not planned | -- | coverage-gap (V1) |
 
 #### Dependency Pass
 **Result**: PASS
@@ -83,46 +92,44 @@ No new dependencies.
 
 #### Macro-Level Architecture Pass
 **Result**: PASS
-The local artifact tuple avoids the `gate_chain` -> `session` import cycle (verified: `gate_chain.py:15`). Callers unchanged (LD-4).
+The local tuple avoids the `gate_chain` -> `session` import cycle (`gate_chain.py:15`). The six modules that call `current()`/`get_or_create()` are exactly the six LD-4 names (`git grep` at the base); the other six importers of `session` use only `validate_session_id`.
 
 #### Feature Test Coverage Pass
 **Result**: PASS (exempt)
-`feature_inventory_touches: []`; `docs/FEATURE_INDEX.md` has no session row.
+`feature_inventory_touches: []`.
 
 #### Infrastructure Alignment Pass
-**Result**: FAIL (V3)
-All 44 citations reproduce. The run observations reproduce too: `2 failed, 6 passed` at the base, M1 to M5 as named, `1263 passed, 4 deselected` over the session-related files, and the CI-view and clone-proof outcomes. The phase-artifact set does not match the chain `gate_chain` actually resolves (V3).
+**Result**: PASS
+All 55 `git show 8ee9d98...:<path> | grep -nE` statements, re-run by hand, print exactly one line each and match. The provenance claims reproduce: `_marker_fresh` has 3 hits, all in `session.py`; the candidate diff against `15729311` is 4 files, `250 insertions(+), 7 deletions(-)`; `--is-ancestor` of the candidate exits 1; the three edited files are unchanged from `15729311` to the base; the completeness grep prints 3 lines; `qor/dist` has 0 hits; the Entry #818 sentence is on lines 24134 and 24228; the local `v0.175.2` is an ancestor. The highest remote tag is `v0.172.2`. The Phase 3 proofs reproduce. The CI-view simulation prints `{'0.175.2'} {'0.175.2'}` at the base and `set() {'0.175.2'}` with the entry. The guarded clone proof on a simulated seal commit exits 1 without the entry (orphan assertion) and exits 0 with it (`4 passed`, twice).
 
 #### Filter-Stage Ordering Coherence
 **Result**: PASS
-The stages run in this order: marker state, then pattern match, then liveness, then reuse or rotation. The pattern check precedes the path build in both `current` and `_recoverable_stale_id`.
+The order is marker state, then pattern match, then seal check, then phase-artifact membership. No stage precedes its precondition.
 
 #### Orphan Pass
 **Result**: PASS
-The new test file is collected by pytest. `session.py` is already on the build path.
+The new test file is collected. `session.py` is on the build path.
 
 ### Violations Found
 
 | ID | Category | Location | Description |
 | -- | -------- | -------- | ----------- |
-| V1 | coverage-gap | plan Phase 1 Unit Tests; LD-2; boundaries.exclusions; Deliverable 1 D1 | The `SESSION_ID_PATTERN` guard on the new stale-recovery path has no discriminating test. Mutation M6 deletes the pattern check in `_recoverable_stale_id`. Under M6, the 8-test file, `tests/test_gates.py` and `tests/test_e2e.py` give `47 passed`, and all 150 session-related test files give `1263 passed, 4 deselected`. In a scratch run with a stale marker reading `../../evil` and `<root>/evil/plan.json` present, `get_or_create()` returns `'../../evil'` under M6 and a fresh id with the guard. |
-| V2 | specification-drift | plan LD-6 and Phase 2 (`docs/lifecycle.md` line 68 text); `qor/gates/chain.md:20` | The mandated lifecycle sentence says a new id is issued "only if" the gate directory "is absent, or already sealed via `substantiate.json`", and otherwise the id is reused. The plan's own D1 and its eighth test (`test_stale_valid_marker_with_empty_gate_dir_still_rotates`) rotate an existing, unsealed, empty directory, and the code also rotates a directory holding only non-phase files. The document would therefore misstate the implemented rule. Separately, `qor/gates/chain.md:20` ("regenerated if older than 24h") becomes false, while LD-6 asserts "Only these two lines change". |
-| V3 | infrastructure-mismatch | plan LD-2 / LD-3 / Phase 2 `_GATE_PHASE_ARTIFACTS` | `gate_chain` accepts `ideation.json` as the predecessor of research and plan (`gate_chain.py:24-29`, `IDEATION_PHASE`; `check_prior_artifact` lines 64-86). LD-2 cites `CHAIN` at line 28 but not this predecessor, and the tuple omits it. Reproduced with the candidate logic: a session holding only `ideation.json` with a 26 h marker gives `current()` None, `get_or_create()` issues a new id, and `check_prior_artifact("plan")` in the new id reports the prior artifact missing. LD-3 says the fix "never issues a second id for an in-flight phase". The limitations boundary lists the four artifacts but does not disclose this remaining #483 path. |
+| V1 | coverage-gap | plan LD-2 (liveness set, remediate sentence, derivation decision); Phase 2 tuple comment; DoD D1 ("phase-artifact-free"); Phase 2 `docs/lifecycle.md` and `qor/gates/chain.md` text ("it holds no pre-seal phase artifact") | In response to #819 V2, the iteration-2 text makes "a stale marker whose directory holds no pre-seal phase artifact rotates" a normative rule, and LD-2 states that a remediation-only directory is not live. No planned test discriminates that rule for a non-empty directory. The drift test pins only one direction (every `gate_chain` pre-seal phase is in the tuple), yet the plan calls the tuple derived and has the code comment say the test "pins the two sets". Reproduced with the Phase 2 `session.py`. M10 (append `"remediate.json"` to `_GATE_PHASE_ARTIFACTS`) and M11 (replace the membership `any(...)` with `any(p.suffix == ".json" for p in sess_dir.iterdir())`) each give `18 passed` on the Phase 1 file and `1273 passed, 4 deselected` over all 150 session-related files. Each mutation silently widens the LD-5 accepted residual, because more abandoned sessions then stay current past the TTL. This is the same failure class as #819 V1, and the plan's own LD-7 deviation 6 rejects it for M3. |
+| V2 | specification-drift | plan Phase 2 `docs/lifecycle.md` line 68 replacement ("After 24h of inactivity, the marker is considered stale"); plan claim "every clause matches `_marker_state` ..." | `_marker_state` measures age since the last marker write. The marker is written only on creation, on `rotate`, and on the new stale-live reuse. Fresh reads, `current()` and gate writes do not refresh it. Reproduced: a marker aged 23 h stays 23.0 h old after three `get_or_create()`/`current()` calls, and at 25 h with no phase artifact `current()` returns None despite that activity. So an actively used session goes stale 24 h after its marker was written, not after 24 h of inactivity. That is the #483 trigger, which the plan's own Problem section words correctly ("without a marker write"). The replacement `chain.md` line ("A marker older than 24h") and the docstring ("older than 24h") are accurate, so the lifecycle line alone misstates the rule while LD-6 and Phase 2 assert that every clause matches. |
 
 ### Per-ground directives (if VETO)
 
 #### Plan-text
 
-V1: the plan declares that invalid marker content keeps the base behavior (boundaries.exclusions, D1) and relies on the pattern check as the path-safety guard (LD-2), yet no planned test fails when that guard is removed. V2: the prescribed `docs/lifecycle.md` sentence contradicts the plan's own rule and test, and a second normative statement of the old rule (`qor/gates/chain.md:20`) is left out of Affected Files while LD-6 asserts completeness. V3: the liveness artifact set omits the `ideation.json` chain predecessor that `gate_chain` resolves, with no declared residual. The plan's claim that the recovery keeps one gate chain is therefore not true for every in-flight chain.
+V1: the plan declares a rotation rule for non-empty directories that hold no pre-seal phase artifact (LD-2, D1, and the new lifecycle and chain.md text). It also describes the liveness tuple as derived from and pinned to `gate_chain`, but no planned test fails when the tuple or the membership check admits a non-chain artifact (M10, M11). V2: the prescribed `docs/lifecycle.md` line 68 text keeps an "inactivity" clause that does not match `_marker_state`, contrary to the plan's LD-6 completeness and clause-match assertions.
 
 **Required next action:** Governor: amend plan text, re-run `/qor-audit`
 
 ### Advisories (non-VETO)
 
-- **A1** LD-5 residual scope. Under the fix, `/qor-plan` Step 0 (`session.get_or_create()`) run after an abandoned, unsealed cycle older than the TTL no longer starts a new session. The new phase's artifacts land in the old session directory, and session-scoped counters (`cycle_count_escalator.check_session_total`, audit history) then span two phases. `verdict_reconcile` target binding limits wrong-plan PASS reuse. The plan describes the residual only as "stays current until an operator ends or rotates it".
-- **A2** `MARKER_PATH` (`session.py`) and `GATES_DIR` (`gate_chain.py:21`) are fixed at import, while the new `_has_unsealed_gate_artifacts` resolves `_workdir.gate_dir()` at call time. `current(marker=X)` also judges liveness against the cwd root, not X's root. A process that changes cwd or `QOR_ROOT` after import can judge liveness against a different gates directory than `gate_chain` reads.
-- **A3** LD-4 counts "149 test files ... the Phase 1 file among them"; the Judge's `grep -l -E 'session|lifecycle\.md' tests/*.py` with the Phase 1 file present selects 150, with the identical `1263 passed, 4 deselected`.
-- **A4** `workspace_fragility_check` reports medium (64 dirty gate-artifact directories across the repository). This is pre-existing.
+- **A1** `workspace_fragility_check` reports medium (64 dirty gate-artifact directories across the repository). This is pre-existing.
+- **A2** LD-4 names six callers. They are exactly the modules that call `current()` or `get_or_create()`. Six further importers use only `validate_session_id` and are unaffected.
+- **A3** The drift test's parameter list is computed from `gate_chain` at collection time. If `substantiate` were renamed, collection would raise `ValueError` (fail-loud). Recorded as a property of the design, not a finding.
 
 ## Documentation Drift
 

@@ -24254,6 +24254,25 @@ Dependency Review root-path and per-lockfile admission coverage (GH #511). `.git
 
 **Required next action**: Governor amends via /qor-plan (add a discriminating non-pattern stale-marker test with a named mutation; make the lifecycle sentence match the implemented rule and cover qor/gates/chain.md:20; include ideation.json in the liveness set or declare it as a residual), then /qor-audit.
 
+### Entry #820: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T01:01:52Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `eb532f53371b`
+**Verdict**: VETO
+
+**Content Hash**: `c36e1615ddf3fe4c1ddfc14e1f0a5ca33ca3e06bca574be0f65ebdcafaab52e4`
+**Previous Hash**: `37302d178d307f36b01e1e879eff1f1564f0940bd26c5abc7532376259a407a5`
+**Chain Hash (Merkle seal)**: `470fb29604a20227eb6f2f8c4797f5e70c0019cb17434fc0dbadd18e692f6e5f`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: VETO (iter 2 on base 8ee9d98). Iteration-1 grounds closed as written, reproduced in scratch clones outside the repo: 18-item Phase 1 file rebuilt from plan text gives 8 failed, 10 passed at base and 18 passed twice with the Phase 2 session.py; M1-M9 fail exactly their named tests with the stated counts; M6 and M7 each fail all four malformed-content cases (M6 over 150 session files: 4 failed, 1269 passed); the four doc/docstring lines apply verbatim and no other normative statement of the 24h rule exists; ideation.json is in the tuple, the drift test fails when CHAIN gains a pre-seal phase, and an ideation-only session with a 26 h marker keeps its id end to end (base splits). All 55 citations re-run at 8ee9d98: 0 mismatches. Full suite with Phases 1-2: 3600 passed, 3 skipped. Release-state CI-view simulation and guarded clone proof reproduce. V1 (`coverage-gap`): the now-normative rule that a directory holding no pre-seal phase artifact rotates (LD-2, D1, lifecycle.md, chain.md; remediate-only not live) has no discriminating test; the drift test pins only gate_chain-subset-of-tuple; M10 (add remediate.json to the tuple) and M11 (any *.json counts) each keep 18 passed and 1273 session-related tests green. V2 (`specification-drift`): the mandated lifecycle.md line 68 text keeps 'After 24h of inactivity', but _marker_state measures age since the last marker write; reads do not refresh it (reproduced), while the plan asserts every clause matches. Option B fresh-context reviewer. Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: Governor amends via /qor-plan (add a discriminating test for a non-empty directory holding only non-chain artifacts, with named mutations; correct the lifecycle 'inactivity' clause to age since the last marker write), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*
