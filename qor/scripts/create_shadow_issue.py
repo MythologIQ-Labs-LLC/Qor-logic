@@ -83,6 +83,7 @@ def parse_events_argument(raw: str) -> set[str]:
 
 from qor.scripts import shadow_process
 from qor.scripts import advisory_filing_control as advisory
+from qor.scripts import check_shadow_threshold as _cst
 
 from qor import workdir as _workdir
 
@@ -130,8 +131,10 @@ def load_marker() -> dict:
     The fields checked are the ones this module dereferences, not the writer's
     full payload, so the guard cannot drift as that payload grows. Typing is
     asymmetric by consequence: a wrong-typed `event_ids` produces a wrong
-    governance verdict, while `threshold` and `breach_ts` interpolate into an
-    issue body and produce a visibly odd line nobody acts on.
+    governance verdict. Since Phase 301 (GH #474) a wrong-typed `threshold`
+    does too, because it decides whether the issue header says breach, so
+    both are typed. `breach_ts` only interpolates into an issue body and
+    produces a visibly odd line nobody acts on.
     """
     if not MARKER_PATH.exists():
         raise SystemExit(f"No marker at {MARKER_PATH}. Run check_shadow_threshold.py first.")
@@ -168,18 +171,78 @@ def load_marker() -> dict:
             raise SystemExit(
                 f"Marker at {MARKER_PATH} has an unusable event id ({exc}); {_REGEN}"
             ) from exc
+    # Phase 301 (GH #474): the writer stores an int; bool is an int subclass.
+    threshold = data["threshold"]
+    if isinstance(threshold, bool) or not isinstance(threshold, int):
+        raise SystemExit(
+            f"Marker at {MARKER_PATH} has threshold as {type(threshold).__name__}, "
+            f"expected an integer; {_REGEN}"
+        )
     return data
 
 
-def build_body(events: list[dict], marker: dict) -> str:
-    counts = Counter(e["event_type"] for e in events)
-    sev_sum = sum(e["severity"] for e in events)
-    lines = [
-        "## Process Shadow Genome — threshold breach",
+def _severity_sum(events: list[dict]) -> int:
+    return sum(e["severity"] for e in events)
+
+
+def is_breach(events: list[dict], marker: dict | None) -> bool:
+    """True only when a threshold marker was loaded and the selected events'
+    own severity sum reaches that marker's threshold.
+
+    Phase 301 (GH #474): the title and header said "threshold breach" for every
+    filing, including an --events selection (no threshold test ran) and the
+    remainder of a marker after some of its events were resolved, where the
+    printed sum sat below the printed threshold. This decides wording only: it
+    compares the plain sum the header prints with the threshold the marker
+    records. The marker's lifecycle and the breach predicate itself (collapsed
+    severity) stay with check_shadow_threshold, which owns them.
+    """
+    if marker is None:
+        return False
+    return _severity_sum(events) >= marker["threshold"]
+
+
+def build_title(events: list[dict], marker: dict | None) -> str:
+    sev_sum = _severity_sum(events)
+    if is_breach(events, marker):
+        return f"[qor-shadow] Process threshold breach \u2014 {len(events)} events, sev {sev_sum}"
+    return f"[qor-shadow] Process shadow events - {len(events)} events, sev {sev_sum}"
+
+
+def _header(events: list[dict], marker: dict | None) -> list[str]:
+    sev_sum = _severity_sum(events)
+    count = f"Event count: {len(events)}"
+    if is_breach(events, marker):
+        return [
+            "## Process Shadow Genome \u2014 threshold breach",
+            "",
+            f"Severity sum: **{sev_sum}** (threshold {marker['threshold']})",
+            count,
+            f"Detected: {marker['breach_ts']}",
+        ]
+    heading = "## Process Shadow Genome - unaddressed events"
+    if marker is None:
+        # No threshold check ran for an --events selection; the threshold is
+        # read from its one owner, never restated here.
+        return [
+            heading,
+            "",
+            f"Severity sum: **{sev_sum}** (threshold {_cst.THRESHOLD}; "
+            "not checked: the events were named with --events)",
+            count,
+        ]
+    return [
+        heading,
         "",
-        f"Severity sum: **{sev_sum}** (threshold {marker['threshold']})",
-        f"Event count: {len(events)}",
-        f"Detected: {marker['breach_ts']}",
+        f"Severity sum: **{sev_sum}** (threshold {marker['threshold']}; not reached by these events)",
+        count,
+        f"Marker written: {marker['breach_ts']}",
+    ]
+
+
+def build_body(events: list[dict], marker: dict | None) -> str:
+    counts = Counter(e["event_type"] for e in events)
+    lines = _header(events, marker) + [
         "",
         "### Event type distribution",
         "",
@@ -367,7 +430,7 @@ def main() -> int:
         except EventIdArgumentError as exc:
             print(f"ERROR: {exc}", file=sys.stderr)
             return 2
-        marker = {"breach_ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "threshold": 10}
+        marker = None
     else:
         marker = load_marker()
         target_ids = set(marker["event_ids"])
@@ -381,7 +444,7 @@ def main() -> int:
         print("No matching unaddressed events. Nothing to do.")
         return 0
 
-    title = f"[qor-shadow] Process threshold breach — {len(selected)} events, sev {sum(e['severity'] for e in selected)}"
+    title = build_title(selected, marker)
     body = build_body(selected, marker)
 
     if args.dry_run:

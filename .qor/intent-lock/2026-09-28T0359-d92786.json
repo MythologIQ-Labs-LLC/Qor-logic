@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-28T0359-d92786",
+  "plan_path": "docs/plan-qor-phase301-shadow-breach-header.md",
+  "plan_hash": "71a00e948fa28efea5715a4272cec22e3cea134cd5538bcd28ddfe6c695db2d4",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "b903e239734e1c39b49d7c89eecb2a8babe7a61b25df6a52d92e2a746f82ab55",
+  "head_commit": "7e086555966bb75368c30f3eb252908267d07590",
+  "captured_ts": "2026-09-28T04:26:52.911327Z"
+}

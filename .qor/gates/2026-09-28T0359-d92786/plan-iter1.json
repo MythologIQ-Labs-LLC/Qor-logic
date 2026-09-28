@@ -1,0 +1,55 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-28T0359-d92786",
+  "ts": "2026-09-28T04:13:41Z",
+  "plan_path": "docs/plan-qor-phase301-shadow-breach-header.md",
+  "phases": [
+    "Phase 1: Regression tests",
+    "Phase 2: Honest header and one threshold owner",
+    "Phase 3: Release-state continuity and CHANGELOG note"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_shadow_issue_header.py -q",
+    "python -m pytest tests/test_shadow.py tests/test_e2e.py tests/test_collect.py tests/test_advisory_filing_control.py tests/test_security_fixes.py -q",
+    "python -m pytest tests/test_release_state.py tests/test_changelog_tag_coverage.py -q",
+    "python -m pytest tests/test_changelog_format.py -q",
+    "python -c \"import subprocess; from pathlib import Path; from qor.scripts import release_state as rs; import tests.test_changelog_tag_coverage as t; remote = {l.rsplit('/', 1)[1] for l in subprocess.run(['git', 'ls-remote', '--tags', 'origin'], capture_output=True, text=True, check=True).stdout.split() if l.startswith('refs/tags/v') and not l.endswith('^{}')}; tags = {v for v in rs.merged_semver_tags(t.REPO) if 'v' + v in remote}; versions = t._changelog_versions() | {'0.175.5'}; ex = rs.load_release_state(t.RELEASE_STATE, versions); print(rs.coverage_violations(versions, tags, '0.175.5', ex).orphans, rs.coverage_violations(versions, tags, '0.175.5', {k: v for k, v in ex.items() if k != '0.175.4'}).orphans)\"",
+    "(T=$(mktemp -d) && R=$(git ls-remote --tags origin | awk '{print $2}') && git clone -q --no-local . \"$T/c\" && git -C \"$T/c\" tag -l 'v*' | while read tg; do printf '%s\\n' \"$R\" | grep -qx \"refs/tags/$tg\" || git -C \"$T/c\" tag -d \"$tg\" >/dev/null; done && cd \"$T/c\" && python -c \"import sys, tomllib; v = tomllib.load(open('pyproject.toml', 'rb'))['project']['version']; c = open('CHANGELOG.md', encoding='utf-8').read(); sys.exit(0 if v == '0.175.5' and '## [0.175.5] - ' in c else 'CI-view guard FAIL: clone is not a sealed 0.175.5 (project version ' + v + ')')\" && PYTHONPATH=. python -m pytest tests/test_changelog_tag_coverage.py -q -rs -p no:cacheprovider > \"$T/out\" 2>&1; rc=$?; cat \"$T/out\" 2>/dev/null; [ \"$rc\" -eq 0 ] && ! grep -q skipped \"$T/out\")",
+    "python -m pytest tests/ -q",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m ruff check qor/ tests/",
+    "python -m qor.scripts.publication_boundary_lint --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "change_class": "hotfix",
+  "originating_remediation": "GH #474",
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "the breach wording is decided by the plain severity sum of the filed events, the number the header prints, compared with the loaded marker's threshold; it is not the collapsed sum check_shadow_threshold computes, so a filing whose plain sum reaches the threshold keeps the breach wording even where the collapsed sum of the same events would not (LD-5)",
+      "a marker whose schema-valid events are all still unaddressed and present in the events read keeps the breach wording whenever its own threshold test held, because the plain sum of a set is never below its collapsed sum (LD-3)",
+      "--events filings never carry the breach wording, even at a plain sum at or above the threshold, because no threshold test ran (LD-2)"
+    ],
+    "non_goals": [
+      "recomputing the collapsed sum or any other part of the breach predicate in create_shadow_issue",
+      "changing when the marker is written or removed",
+      "changing collect_shadow_genomes (its own title, body and configured threshold)",
+      "changing the --flip-only or --mark-resolved paths",
+      "the second MARKER_PATH definition",
+      "release publication"
+    ],
+    "exclusions": [
+      "issues already filed, whose titles and bodies this plan does not rewrite (LD-5)"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.4",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-28T04:13:41Z"
+  }
+}
