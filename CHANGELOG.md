@@ -10,6 +10,9 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+### Fixed
+- **Phase 301 (hotfix; a shadow issue no longer claims a threshold breach its own numbers do not show, GH #474)**: `create_shadow_issue` titled every issue it filed "Process threshold breach" and headed its body "threshold breach", including when the filed events' severity sum was below the threshold: an explicit `--events` selection, which runs no threshold check, and what remains of a breach marker's events after some were resolved with `--mark-resolved` or flipped with `--flip-only`. The title and header now say threshold breach only when a breach marker was loaded and the severity sum the header prints, the plain sum of the filed events, reaches that marker's threshold. Otherwise the title reads "Process shadow events" and the header reports the sum against the threshold as not reached or, for `--events`, as not checked. A filing that meets that rule keeps the title and header it had before. The `--events` path no longer invents a breach time or restates the threshold; it reads the threshold from `check_shadow_threshold`. A breach marker whose `threshold` is not an integer now stops with a message naming it. `docs/release-state.json` records `0.175.4` as `sealed_unpublished`.
+
 ## [0.175.4] - 2026-09-28
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -24501,6 +24501,30 @@ A second remediation proposal no longer destroys the first (GH #446). `qor/scrip
 
 **Required next action**: /qor-implement.
 
+### Entry #831: IMPLEMENTATION
+
+**Timestamp**: 2026-09-28T04:29:56Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `aae28d9f4933`
+**Plan**: docs/plan-qor-phase301-shadow-breach-header.md
+**Session**: 2026-09-28T0359-d92786
+
+**Content Hash**: `9bdb8b586a223c3860b1cfec8aa2720cd08f3ba8b6d0e5738f7d48bf87db6cb3`
+**Previous Hash**: `601e8516a6e2747da00a5e06e3817feee07a377cb19fffc7732ae7fbc23e1cfc`
+**Chain Hash (Merkle seal)**: `0554c43954e0d44800e1e0702af22a29d91e6193a3f129272ce66be7e360b817`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** A shadow issue no longer claims a threshold breach its own numbers do not show (GH #474), implemented test-first on base e062a3dd per the iteration-1 plan (audit PASS #830).
+
+Code: `qor/scripts/create_shadow_issue.py` imports `check_shadow_threshold as _cst` after the advisory import (LD-4); `load_marker` exits naming a non-integer or bool `threshold` and its docstring now types it alongside `event_ids` (LD-6); adds `_severity_sum`, `is_breach`, `build_title` and `_header`; `build_body` takes `marker: dict | None` and builds its header from `_header`; `main` passes `None` on the `--events` path and titles with `build_title` (LD-2). Breach title and header text unchanged byte for byte; module source is ASCII-only (em dash written as an escape). Module 473 lines (over-cap disposition declared in LD-7, audit A2).
+
+Tests: new `tests/test_shadow_issue_header.py` (152 lines, 6 functions, 12 items). RED at base: 10 failed, 2 passed. GREEN after: 12 passed, twice. Mutations M1-M8 under `python -B -m pytest` over the new file plus `tests/test_shadow.py` (60 items), each reverted: M1 6, M2 1, M3 4, M4 2, M5 2, M6 4, M7 4, M8 1 failed, each exactly the named set; module restored byte-identical and the new file re-run GREEN twice after each.
+
+Release state: `docs/release-state.json` gains 0.175.4 sealed_unpublished (reason names the #829 seal); CI-view simulation printed set() {'0.175.4'} after the entry. CHANGELOG `## [Unreleased]` gains the LD-10 Fixed bullet verbatim. No documentation, skill, schema, spec or compiled variant changes (LD-8); doc sync Step 8.5 has nothing to author.
+
+Verification: consumer suites 113 passed; release/changelog suites 34 passed; full suite 3627 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored); ruff clean; publication_boundary_lint 0; check_variant_drift OK 406 files; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
+
 ---
 
 *Chain integrity: VALID*
