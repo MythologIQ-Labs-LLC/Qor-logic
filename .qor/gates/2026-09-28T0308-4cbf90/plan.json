@@ -1,0 +1,53 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-28T0308-4cbf90",
+  "ts": "2026-09-28T03:10:48Z",
+  "plan_path": "docs/plan-qor-phase300-remediate-gate-versioning.md",
+  "phases": [
+    "Phase 1: Regression tests",
+    "Phase 2: Versioned emission",
+    "Phase 3: Release-state continuity and CHANGELOG note"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_remediate.py -q",
+    "python -m pytest tests/test_security_fixes.py tests/test_sg_closure_enforcement.py tests/test_remediate_enforcer_edges.py tests/test_remediate_per_event_enforcers.py tests/test_session_marker_staleness.py tests/test_gates.py -q",
+    "python -m pytest tests/test_release_state.py tests/test_changelog_tag_coverage.py -q",
+    "python -m pytest tests/test_changelog_format.py -q",
+    "python -c \"import subprocess; from pathlib import Path; from qor.scripts import release_state as rs; import tests.test_changelog_tag_coverage as t; remote = {l.rsplit('/', 1)[1] for l in subprocess.run(['git', 'ls-remote', '--tags', 'origin'], capture_output=True, text=True, check=True).stdout.split() if l.startswith('refs/tags/v') and not l.endswith('^{}')}; tags = {v for v in rs.merged_semver_tags(t.REPO) if 'v' + v in remote}; versions = t._changelog_versions() | {'0.175.4'}; ex = rs.load_release_state(t.RELEASE_STATE, versions); print(rs.coverage_violations(versions, tags, '0.175.4', ex).orphans, rs.coverage_violations(versions, tags, '0.175.4', {k: v for k, v in ex.items() if k != '0.175.3'}).orphans)\"",
+    "(T=$(mktemp -d) && R=$(git ls-remote --tags origin | awk '{print $2}') && git clone -q --no-local . \"$T/c\" && git -C \"$T/c\" tag -l 'v*' | while read tg; do printf '%s\\n' \"$R\" | grep -qx \"refs/tags/$tg\" || git -C \"$T/c\" tag -d \"$tg\" >/dev/null; done && cd \"$T/c\" && python -c \"import sys, tomllib; v = tomllib.load(open('pyproject.toml', 'rb'))['project']['version']; c = open('CHANGELOG.md', encoding='utf-8').read(); sys.exit(0 if v == '0.175.4' and '## [0.175.4] - ' in c else 'CI-view guard FAIL: clone is not a sealed 0.175.4 (project version ' + v + ')')\" && PYTHONPATH=. python -m pytest tests/test_changelog_tag_coverage.py -q -rs -p no:cacheprovider > \"$T/out\" 2>&1; rc=$?; cat \"$T/out\" 2>/dev/null; [ \"$rc\" -eq 0 ] && ! grep -q skipped \"$T/out\")",
+    "python -m pytest tests/ -q",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m ruff check qor/ tests/",
+    "python -m qor.scripts.publication_boundary_lint --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "change_class": "hotfix",
+  "originating_remediation": "GH #446",
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "limitations": [
+      "remediate.json still holds only the newest proposal, so a review that cites remediate.json finds the newest proposal at that path; a superseded proposal is readable, byte for byte, in its own remediate-iter<N>.json (LD-5)",
+      "emit writes no provenance sidecar for either file, as at the base (LD-5)",
+      "two concurrent emit calls in one session are not serialized (LD-5)"
+    ],
+    "non_goals": [
+      "routing emit through gate_chain.write_gate_artifact",
+      "changing emit's return value, the remediate schema, /qor-remediate or /qor-audit skill text, remediate_attestation or remediate_mark_addressed",
+      "recovering a proposal overwritten before this fix",
+      "release publication"
+    ],
+    "exclusions": [
+      "gate files already on disk or in history, which this plan neither rewrites nor migrates (LD-5)"
+    ]
+  },
+  "terms": [],
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.3",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-28T03:10:48Z"
+  }
+}
