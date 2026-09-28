@@ -16,9 +16,12 @@ def _stage_gemini_variant(dist_root: Path) -> None:
 
     import hashlib
     files = []
-    for name, body in [("a.toml", body_a), ("b.toml", body_b)]:
+    for name in ("a.toml", "b.toml"):
         rel = f"commands/{name}"
-        sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+        # Hash the bytes actually staged on this platform.  Path.write_text may
+        # translate newlines on Windows, and the manifest is an integrity claim
+        # about source bytes rather than the pre-write Python string.
+        sha = hashlib.sha256((commands / name).read_bytes()).hexdigest()
         files.append({
             "id": name,
             "source_path": rel,
