@@ -1,37 +1,44 @@
 #!/usr/bin/env python3
-"""Verify qor/dist/ matches what compile.py would produce.
+"""Verify qor/dist/ matches what dist_compile.py would produce.
 
-Regenerates into a tempdir, then diffs byte-for-byte via hashlib against
-the committed qor/dist. Exits 0 on clean, 1 on drift.
+Regenerates into a tempdir, then diffs deterministic content against the
+committed qor/dist. Manifest timestamps are intentionally ignored, but every
+other manifest field, including per-artifact SHA256 claims, is verified.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import tempfile
 from pathlib import Path
 
 from qor.scripts import dist_compile as compile_mod
-
 from qor import resources as _resources
 
 COMMITTED_DIST = Path(str(_resources.asset("dist")))
 
 
-# Files excluded from drift comparison (contain non-deterministic fields like timestamps)
-_DRIFT_EXCLUDE = {"manifest.json"}
+def _content_hash(path: Path) -> str:
+    """Return a deterministic hash, normalizing only manifest generated_ts."""
+    if path.name == "manifest.json":
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data.pop("generated_ts", None)
+        payload = json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    else:
+        payload = path.read_bytes()
+    return hashlib.sha256(payload).hexdigest()
 
 
 def hash_tree(root: Path) -> dict[str, str]:
-    """Map of relative-path -> sha256. Deterministic snapshot of a directory tree."""
+    """Map relative path to deterministic content hash for every dist file."""
     out: dict[str, str] = {}
     if not root.exists():
         return out
     for p in sorted(root.rglob("*")):
-        if p.is_file() and p.name not in _DRIFT_EXCLUDE:
+        if p.is_file():
             rel = p.relative_to(root).as_posix()
-            h = hashlib.sha256(p.read_bytes()).hexdigest()
-            out[rel] = h
+            out[rel] = _content_hash(p)
     return out
 
 
@@ -58,11 +65,8 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="qor-drift-") as tmp:
         tmp_path = Path(tmp)
         compile_mod.compile_all(tmp_path)
-        regenerated_root = tmp_path
-        # compile_all writes under <out>/variants/, and committed dist also has variants/
-        # Hash both roots at the same level
         committed_hashes = hash_tree(args.committed)
-        regenerated_hashes = hash_tree(regenerated_root)
+        regenerated_hashes = hash_tree(tmp_path)
 
     diffs = compare(committed_hashes, regenerated_hashes)
     if diffs:
