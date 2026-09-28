@@ -24273,6 +24273,25 @@ Dependency Review root-path and per-lockfile admission coverage (GH #511). `.git
 
 **Required next action**: Governor amends via /qor-plan (add a discriminating test for a non-empty directory holding only non-chain artifacts, with named mutations; correct the lifecycle 'inactivity' clause to age since the last marker write), then /qor-audit.
 
+### Entry #821: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T01:32:41Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `d27edc7b6bdf`
+**Verdict**: VETO
+
+**Content Hash**: `28f15e411b585a9b9cb970338b1ab9495e06352f04e03712f12fbef31885a454`
+**Previous Hash**: `470fb29604a20227eb6f2f8c4797f5e70c0019cb17434fc0dbadd18e692f6e5f`
+**Chain Hash (Merkle seal)**: `59c156944dc78767cf30a0952fbecc3eca569b386b8a0dafbf725cb4f9af20da`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: VETO (iter 3 on base 8ee9d98). Iteration-2 grounds and the doctrine-governance-enforcement.md:109 correction closed as written, reproduced in scratch clones outside the repo: 29-item Phase 1 file rebuilt from plan text gives 10 failed, 19 passed at base (the ten named items) and 29 passed twice with the Phase 2 session.py; M1-M15 each fail exactly their named tests with the stated counts (M10 2 failed, M11 3 failed; over 150 session files 1282/1281 passed with 2/3 failed, 1284 passed unmutated); CHAIN gaining 'review' fails the per-phase and equality tests; every age-rule clause executed (23 h marker still 23.0 h after reads; stale at exactly 24 h; stale-live current() writes nothing; get_or_create re-writes to 0.0 h); session new keeps a live stale id, session_tool rotate rotates. All 57 citations re-run at 8ee9d98: 0 mismatches. Full suite with Phases 1-2: 3611 passed, 3 skipped; variant drift clean. Release-state CI-view simulation and guarded clone proof reproduce. Escalator: cce.check and check_session_total None (distinct signatures, count 1). V1 (`specification-drift`): the LD-9 CHANGELOG bullet mandated verbatim says 'A marker with malformed content, or one naming an absent, empty or sealed directory or a directory with no pre-seal phase artifact, still rotates to a new id'; the unqualified subject covers fresh markers, which keep their id in all four cases (reproduced; LD-3, test_fresh_marker_is_unaffected, test_reads_of_a_fresh_marker_do_not_refresh_it), while LD-9 asserts every clause matches LD-3. Option B fresh-context reviewer. Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: Governor amends via /qor-plan (scope the LD-9 CHANGELOG rotation clause to stale markers, keeping malformed content at any age), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*

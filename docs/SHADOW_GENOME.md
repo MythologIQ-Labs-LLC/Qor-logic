@@ -2997,4 +2997,28 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #40: VETO -- plan-qor-phase299-session-marker-staleness (iter 3)
+
+**Date**: 2026-09-28
+**Verdict ID**: session 2026-09-28T0026-1e38ee audit (META_LEDGER Entry #821)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The amendment closed both iteration-2 grounds and the doctrine correction, and every test, mutation and executed clause reproduces. The mandated CHANGELOG bullet still carries one false clause: "A marker with malformed content, or one naming an absent, empty or sealed directory or a directory with no pre-seal phase artifact, still rotates to a new id." The subject is left unqualified so that malformed content covers any age, and this also extends the directory clauses to fresh markers. A fresh marker with valid content keeps its id whatever its directory holds. That state is normal right after every seal. The plan's own LD-3 and two of its tests state this, yet LD-9 asserts that every clause matches LD-3.
+
+### Why It Failed
+
+The four surfaces were re-derived one by one. The internal texts (lifecycle, chain.md, docstring, DoD) each scope the rotation list with "stale". The user-facing summary merged two lists with different age scopes, malformed content at any age and directory state only when stale, under one subject. The claim that every clause matches was then made about the merged sentence without checking it against the fresh-marker case.
+
+### Pattern to Avoid
+
+When one sentence joins conditions that apply over different domains (here, any-age versus stale-only), give each condition its own qualifier. Check the sentence against the complement case, here a fresh valid marker, before asserting that every clause matches. Related: Entries #38, #39.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*
