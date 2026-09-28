@@ -5,11 +5,11 @@
 **doc_tier**: standard
 
 **boundaries**:
-- limitations: a stale marker is kept only while its own session directory holds `research.json`, `plan.json`, `audit.json` or `implement.json` and no `substantiate.json`; an abandoned unsealed session therefore stays current until an operator ends or rotates it (LD-5)
+- limitations: a stale marker is kept only while its own session directory holds `ideation.json`, `research.json`, `plan.json`, `audit.json` or `implement.json` and no `substantiate.json`; an abandoned unsealed session therefore stays current past the TTL until an operator ends or rotates it, and a new phase started in it shares its session directory and session-scoped counters (accepted residual, LD-5); liveness is judged against the gate directory of the process's project root at call time (LD-5)
 - non_goals: session identity redesign, TTL policy change, gate-chain resolver changes, release publication
-- exclusions: sessions whose marker content does not match `SESSION_ID_PATTERN` (they rotate as before)
+- exclusions: stale markers whose content does not match `SESSION_ID_PATTERN` (traversal, absolute path, empty or wrong format); they rotate to a fresh id as before, and a test pins it (LD-2)
 
-**iteration**: 1 (on branch `phase/299-session-marker-staleness`)
+**iteration**: 2 (on branch `phase/299-session-marker-staleness`; responds to VETO at META_LEDGER #819, see `## Iteration 2 response`)
 
 **Issue**: GH #483 ("A cycle spanning a day boundary loses its session marker, and the recovery path orphans the gate chain")
 
@@ -17,21 +17,35 @@
 
 **Target version**: `0.175.3` (hotfix bump from `0.175.2`)
 
-**Provenance**: the code, tests and lifecycle wording below are carried from the candidate branch `fix/483-session-marker-current`, head `5f8be1e2b325825a022172bc3d2b23697eaa1d30`. That branch is non-canonical (not a `phase/<NN>-` branch; its plan `docs/plan-session-marker-staleness-current.md` is not a `plan-qor-phase<NN>*.md` file), so Qor's resolver cannot audit it. Relative to its merge base `15729311f9f4d55d5dad2db004b972415c39432c` the branch changes exactly four files and nothing else: `git diff --stat 15729311f9f4d55d5dad2db004b972415c39432c 5f8be1e2b325825a022172bc3d2b23697eaa1d30` lists `docs/lifecycle.md`, `docs/plan-session-marker-staleness-current.md`, `qor/scripts/session.py` and `tests/test_session_marker_staleness.py` and ends `4 files changed, 250 insertions(+), 7 deletions(-)`. It therefore carries no gate artifact, intent lock, ledger entry, seal or version change for this work. It is reference and ancestry only; it is not audit, implementation or seal authority. `git merge-base --is-ancestor 5f8be1e2b325825a022172bc3d2b23697eaa1d30 8ee9d98aad71f059b69231aa370fdbae6bfe52d4` exits 1. The candidate plan describes earlier review of the same semantics; this plan does not rely on that description, and every claim below is re-derived at the current base.
+**Provenance**: the code and tests below are carried, with the deviations declared in LD-7, from the candidate branch `fix/483-session-marker-current`, head `5f8be1e2b325825a022172bc3d2b23697eaa1d30`. That branch is non-canonical (not a `phase/<NN>-` branch; its plan `docs/plan-session-marker-staleness-current.md` is not a `plan-qor-phase<NN>*.md` file), so Qor's resolver cannot audit it. Relative to its merge base `15729311f9f4d55d5dad2db004b972415c39432c` the branch changes exactly four files and nothing else: `git diff --stat 15729311f9f4d55d5dad2db004b972415c39432c 5f8be1e2b325825a022172bc3d2b23697eaa1d30` lists `docs/lifecycle.md`, `docs/plan-session-marker-staleness-current.md`, `qor/scripts/session.py` and `tests/test_session_marker_staleness.py` and ends `4 files changed, 250 insertions(+), 7 deletions(-)`. It therefore carries no gate artifact, intent lock, ledger entry, seal or version change for this work. It is reference and ancestry only; it is not audit, implementation or seal authority. `git merge-base --is-ancestor 5f8be1e2b325825a022172bc3d2b23697eaa1d30 8ee9d98aad71f059b69231aa370fdbae6bfe52d4` exits 1. The candidate plan describes earlier review of the same semantics; this plan does not rely on that description, and every claim below is re-derived at the current base.
 
-**Base currency of the ported files**: `git diff --name-only 15729311f9f4d55d5dad2db004b972415c39432c 8ee9d98aad71f059b69231aa370fdbae6bfe52d4 -- qor/scripts/session.py docs/lifecycle.md` prints nothing, so both files the candidate edits are byte-identical at the candidate's merge base and at the current base. `tests/test_session_marker_staleness.py` is absent at the current base.
+**Base currency of the ported files**: `git diff --name-only 15729311f9f4d55d5dad2db004b972415c39432c 8ee9d98aad71f059b69231aa370fdbae6bfe52d4 -- qor/scripts/session.py docs/lifecycle.md qor/gates/chain.md` prints nothing, so both files the candidate edits, and `qor/gates/chain.md`, are byte-identical at the candidate's merge base and at the current base. `tests/test_session_marker_staleness.py` is absent at the current base.
 
-**Citation currency**: every `git show` evidence statement below cites `8ee9d98aad71f059b69231aa370fdbae6bfe52d4` and was re-executed against it while authoring this plan (one observed line per statement). The other command outputs quoted (`git diff`, `git grep`, `git merge-base`, scratch runs) were observed at authoring time on 2026-09-28.
+**Citation currency**: every `git show` evidence statement below cites `8ee9d98aad71f059b69231aa370fdbae6bfe52d4` and was re-executed against it while authoring iteration 2 (one observed line per statement). The other command outputs quoted (`git diff`, `git grep`, `git merge-base`, scratch runs) were observed at authoring time on 2026-09-28; the scratch runs for iteration 2 used a clone of the base outside the repository.
 
 ## Open Questions
 
 None.
 
+## Iteration 2 response
+
+VETO grounds from META_LEDGER #819 and where each is closed:
+
+- V1 (coverage-gap): the `SESSION_ID_PATTERN` guard on the stale-recovery path now has a discriminating test, `test_stale_marker_with_malformed_content_rotates_to_fresh_id`, over four malformed contents (traversal, absolute path, empty, wrong format). Each case places a live-looking `plan.json` where the content would resolve, so only the pattern guard keeps the id out. Mutation M6 (the auditor's M6: delete the pattern check in `_recoverable_stale_id`) fails all four cases, and M7 (delete the pattern check in `current`) fails all four too (Phase 1; LD-2; DoD D4).
+- V2 (specification-drift): the mandated `docs/lifecycle.md` line 68 text now states the rule the code implements, including that an absent, empty, phase-artifact-free or sealed directory rotates. `qor/gates/chain.md:20` is in scope with exact replacement text, and LD-6 lists the exact four changed lines (Phase 2).
+- V3 (infrastructure-mismatch): the liveness set is `gate_chain.IDEATION_PHASE` plus every `gate_chain.CHAIN` phase before `substantiate`, so `ideation.json` is included. The set stays a local tuple because of the import cycle, and a parametrized test derives the expected phases from `gate_chain` itself, so it fails when `gate_chain` gains a pre-seal phase that the tuple lacks or when the tuple drops one. An ideation-only session with an expired marker keeps its id (`test_stale_valid_marker_with_ideation_only_gate_dir_is_still_current`) (LD-2, LD-3, Phase 1).
+- A1: stated in LD-5 as an explicit accepted residual, with its consequences and the operator action; the CHANGELOG bullet repeats it.
+- A2: stated in LD-5 as a declared limitation; no change.
+- A3: the count is 150 test files (LD-4).
+- A4: pre-existing workspace fragility; no action in this plan.
+
 ## Problem
 
 `session.py` decides marker validity with one boolean. A marker whose file is missing and a marker whose content is valid but whose mtime is older than 24 hours both read as "not fresh". So when a governed cycle (plan, audit, implement, substantiate) runs past 24 hours without a marker write, `session.current()` returns `None` and `session.get_or_create()` issues a new id. The new id's gate directory is empty, so the next phase's prior-artifact check cannot find the earlier artifacts under the old id. The chain splits across two session directories and the operator is pushed into a gate override.
 
-Reproduction at the base (scratch copy of `8ee9d98aad71f059b69231aa370fdbae6bfe52d4`, outside the repository, Phase 1 test file added): `test_stale_valid_marker_with_unsealed_gate_dir_is_still_current` and `test_get_or_create_reuses_stale_valid_marker_with_unsealed_gate_dir` FAIL; the other six tests pass (`2 failed, 6 passed`).
+Reproduction at the base (scratch copy of `8ee9d98aad71f059b69231aa370fdbae6bfe52d4`, outside the repository, Phase 1 test file added): `test_stale_valid_marker_with_unsealed_gate_dir_is_still_current`, `test_get_or_create_reuses_stale_valid_marker_with_unsealed_gate_dir`, `test_stale_valid_marker_with_ideation_only_gate_dir_is_still_current` and the five cases of `test_stale_marker_liveness_covers_every_pre_seal_chain_phase` FAIL; the other ten test items pass (`8 failed, 10 passed`).
+
+End-to-end at the base, with the real `gate_chain` and `QOR_ROOT` set to a scratch directory: a session holding only `ideation.json` whose marker is 26 h old gives `current()` `None`, `get_or_create()` a new id, and `check_prior_artifact("plan")` reports `prior-phase artifact missing` under the new id. With the Phase 2 code the same setup gives the original id from both calls, and `check_prior_artifact("plan")` finds `ideation.json` in the original session directory.
 
 ## Locked Decisions
 
@@ -61,7 +75,7 @@ Decision: `_marker_fresh` is replaced by `_marker_state(path, now) -> str` retur
 
 ### LD-2: a stale marker is kept only while its own session holds unsealed phase work
 
-The rotation decision for a stale marker depends on the liveness of the session it names, not on age alone. A stale marker is live when its content matches `SESSION_ID_PATTERN` and `.qor/gates/<sid>/` is a directory that holds at least one of `research.json`, `plan.json`, `audit.json`, `implement.json` and does not hold `substantiate.json`. Otherwise it rotates exactly as at the base.
+The rotation decision for a stale marker depends on the liveness of the session it names, not on age alone. A stale marker is live when its content matches `SESSION_ID_PATTERN` and `.qor/gates/<sid>/` is a directory that holds at least one of `ideation.json`, `research.json`, `plan.json`, `audit.json`, `implement.json` and does not hold `substantiate.json`. Otherwise (content malformed; directory absent, empty, holding none of those five files, or sealed) it rotates exactly as at the base.
 
 The seal writes `substantiate.json` and then rotates, so a sealed session's directory is the one that holds `substantiate.json`:
 
@@ -77,19 +91,47 @@ The gate directory comes from `workdir.gate_dir()`, which `session.py` already i
 
 `git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/session.py | grep -nE '^from qor import workdir as _workdir'` -> `21:from qor import workdir as _workdir`
 
-The phase artifact names are declared locally in `session.py` as a tuple. They are not imported from `gate_chain.CHAIN`, because `gate_chain` imports `session`:
-
-`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/gate_chain.py | grep -nE '^from qor.scripts import session$'` -> `15:from qor.scripts import session`
+The liveness set is the set of pre-seal phases that `gate_chain` resolves as chain predecessors: every `CHAIN` phase before `substantiate`, plus the optional `ideation` phase, which `gate_chain` accepts as the prior of both `research` and `plan`:
 
 `git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/gate_chain.py | grep -nE '^CHAIN = '` -> `28:CHAIN = ["research", "plan", "audit", "implement", "substantiate", "validate"]`
 
-The marker content is used as a path segment only after it matches `SESSION_ID_PATTERN`, which admits no `/`, `\` or `.`:
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/gate_chain.py | grep -nE '^IDEATION_PHASE = '` -> `29:IDEATION_PHASE = "ideation"`
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/gate_chain.py | grep -nE 'return _check_ideation_predecessor\(session_id\) or GateResult\('` -> `68:            return _check_ideation_predecessor(session_id) or GateResult(`
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/gate_chain.py | grep -nE 'ideation_result = _check_ideation_predecessor\(session_id\)'` -> `86:            ideation_result = _check_ideation_predecessor(session_id)`
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/gate_chain.py | grep -nE 'artifact = vga.latest_artifact_path\("ideation", GATES_DIR / sid\)'` -> `140:    artifact = vga.latest_artifact_path("ideation", GATES_DIR / sid)`
+
+`/qor-ideate` writes that artifact through the normal writer:
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/skills/sdlc/qor-ideate/SKILL.md | grep -nE 'phase="ideation", payload=payload'` -> `128:    phase="ideation", payload=payload, session_id=sid, ai_provenance=manifest,`
+
+Checking the unversioned `<phase>.json` name is enough, because every write refreshes it beside the versioned `<phase>-iter<N>.json` file:
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/validate_gate_artifact.py | grep -nE '_atomic_write\(session_dir / f"\{phase\}.json", text\)'` -> `206:    _atomic_write(session_dir / f"{phase}.json", text)`
+
+`validate` follows `substantiate`, so its directory is already sealed. `remediate` is out-of-band and is not a chain predecessor (`qor/gates/chain.md` line 12 marks it "Not part of the strict forward chain"), so a directory holding only a remediation artifact is not live.
+
+Derivation decision: `session.py` cannot import `gate_chain` at module load, because `gate_chain` imports `session`:
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/gate_chain.py | grep -nE '^from qor.scripts import session$'` -> `15:from qor.scripts import session`
+
+A call-time import from `session` into `gate_chain` would couple the low-level marker module to `gate_chain`'s import-time state (`GATES_DIR`, `shadow_process`, `validate_gate_artifact`), so it is not the minimal or safe option. The set is therefore a local tuple, `_GATE_PHASE_ARTIFACTS = ("ideation.json", "research.json", "plan.json", "audit.json", "implement.json")`, and the derivation is enforced by a test instead. `test_stale_marker_liveness_covers_every_pre_seal_chain_phase` is parametrized over `[gate_chain.IDEATION_PHASE, *gate_chain.CHAIN[: gate_chain.CHAIN.index("substantiate")]]`. That list is computed from `gate_chain` at collection time, so the test fails when `gate_chain` gains a pre-seal phase that the tuple lacks, and when a tuple member is dropped (M8, M9).
+
+The marker content is used as a path segment only after it matches `SESSION_ID_PATTERN`, which admits no `/`, `\` or `.` and no empty string:
 
 `git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/session.py | grep -nE '^SESSION_ID_PATTERN = '` -> `26:SESSION_ID_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{4}-[0-9a-f]{6}$")`
 
+This guard is the only path-safety check on the recovery path, because `gate_chain` builds `GATES_DIR / sid` without `validate_session_id`:
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/gate_chain.py | grep -nE 'artifact = vga.latest_artifact_path\(prior, GATES_DIR / sid\)'` -> `81:    artifact = vga.latest_artifact_path(prior, GATES_DIR / sid)`
+
+The guard runs in both places that read stale content: `_recoverable_stale_id` (used by `get_or_create`) and `current`. `test_stale_marker_with_malformed_content_rotates_to_fresh_id` pins both. It is parametrized over four contents: `../../evil`, an absolute path under `tmp_path`, the empty string, and `2026-04-17T2335-F284B9` (upper-case hex). In each case the test creates `.qor/gates/` and places `plan.json` in the directory the content would resolve to, so the directory looks live and only the guard can reject the content. It asserts `current()` is `None`, `get_or_create()` returns an id that differs from the content and matches `SESSION_ID_PATTERN`, and the marker holds that id. Observed in the scratch clone: with the guard, all four pass; under M6 (the pattern check removed from `_recoverable_stale_id`), all four fail; under M7 (the pattern check removed from `current`), all four fail. In an earlier draft the test did not create `.qor/gates/`. The `traversal` case then passed under M6, because `..` cannot be resolved through a missing directory, so the test now creates it.
+
 ### LD-3: recovery keeps one gate chain
 
-`get_or_create` on a live stale marker returns the same id and rewrites the marker with that id, which refreshes its mtime. It never issues a second id for an in-flight phase. `current` on a live stale marker returns the id and writes nothing. `current` on an absent, invalid, or stale non-live marker returns `None`; `get_or_create` on those issues a new id, as at the base.
+`get_or_create` on a live stale marker returns the same id and rewrites the marker with that id, which refreshes its mtime. It never issues a second id for a session whose directory holds any artifact that `gate_chain` can resolve as a prior phase, from `ideation.json` through `implement.json` (LD-2). `current` on a live stale marker returns the id and writes nothing. `current` on an absent, invalid, or stale non-live marker returns `None`; `get_or_create` on those issues a new id, as at the base.
 
 The orphaning this prevents is in the prior-artifact check, which resolves the session from `current()` and looks only in that session's directory:
 
@@ -113,11 +155,15 @@ Callers (`qor/scripts/gate_chain.py`, `qor/scripts/validate_gate_artifact.py`, `
 
 `git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:tests/test_gates.py | grep -nE 'def test_current_returns_none_when_absent'` -> `57:def test_current_returns_none_when_absent(tmp_path, monkeypatch):`
 
-`test_marker_regenerates_after_24h` stays green because its fresh random id names no gate directory, so the stale marker is not live. Observed in a scratch clone of the base (outside the repository) with the candidate's `qor/scripts/session.py` and `docs/lifecycle.md` and the Phase 1 test file applied: the 149 test files that mention `session` or `lifecycle.md`, the Phase 1 file among them, gave `1263 passed, 4 deselected`. The Phase 2 code differs from the candidate's only in docstring line 8 (LD-7), which no test reads.
+`test_marker_regenerates_after_24h` stays green because its fresh random id names no gate directory, so the stale marker is not live. Observed in a scratch clone of the base (outside the repository) with the Phase 2 `qor/scripts/session.py`, `docs/lifecycle.md` and `qor/gates/chain.md` and the Phase 1 test file applied: `grep -l -E 'session|lifecycle\.md' tests/*.py` selects 150 test files, the Phase 1 file among them, and they gave `1273 passed, 4 deselected`, twice. The Phase 1 file contributes 18 of those test items. The seven test files that mention `chain.md` or `lifecycle.md`, plus `tests/test_gates.py` and `tests/test_e2e.py`, gave `95 passed`.
 
 ### LD-5: residual - an abandoned unsealed session is not rotated by age
 
-Under LD-2 a session with phase work and no seal stays current past the TTL indefinitely. This is the accepted cost of never splitting a live chain. The operator exits it explicitly, by ending the session (the marker becomes absent) or by rotating it:
+Under LD-2 a session with phase work and no seal stays current past the TTL indefinitely. This is the accepted cost of never splitting a live chain, and it is an explicit accepted residual, not a mitigated one. Its consequence: if an operator abandons an unsealed cycle and later starts a new phase (for example `/qor-plan` Step 0, which calls `session.get_or_create()`) without ending or rotating the session, the new phase is recorded in the old session directory. Session-scoped state then spans both phases, including the audit history and the session-total VETO counter:
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/cycle_count_escalator.py | grep -nE 'def check_session_total'` -> `108:def check_session_total(session_id: str) -> EscalationRecommendation | None:`
+
+This is not new behavior: at the base, an abandoned cycle already carries into the next phase whenever the marker is younger than 24 h. The fix removes the 24 h cut-off, which could only end that carry-over by splitting live chains too. No automatic mitigation is in scope, because telling "abandoned" from "long-running" needs a lifecycle signal that does not exist (non-goal). The CHANGELOG bullet (LD-9) states the residual and the operator action. The operator exits the session explicitly, by ending the session (the marker becomes absent) or by rotating it:
 
 `git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/session.py | grep -nE 'def end_session'` -> `88:def end_session(marker: Path | None = None) -> None:`
 
@@ -127,28 +173,45 @@ Under LD-2 a session with phase work and no seal stays current past the TTL inde
 
 No TTL, rotation command or resolver change is made (non-goals).
 
-### LD-6: lifecycle and module docstring must match the new rule
+Declared limitation (resolution time): `MARKER_PATH` is fixed when `session` is imported, and so is `gate_chain.GATES_DIR`. `_has_unsealed_gate_artifacts` resolves `_workdir.gate_dir()` at call time:
 
-The lifecycle doc states the base rule, which becomes false:
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/session.py | grep -nE '^MARKER_PATH = '` -> `23:MARKER_PATH = _workdir.root() / ".qor" / "session" / "current"`
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/gate_chain.py | grep -nE '^GATES_DIR = '` -> `21:GATES_DIR = _workdir.gate_dir()`
+
+A process that changes its working directory or `QOR_ROOT` after import can therefore judge liveness against a different gates directory than the one `gate_chain` reads. Likewise, `current(marker=X)` judges liveness against the process's project root, not against X's root. Governed skill runs keep one project root for the process, so the three coincide. This plan changes neither, and the Phase 1 tests rely on call-time resolution (they monkeypatch `_workdir.root`).
+
+### LD-6: every normative statement of the marker rule must match the new rule
+
+Three normative surfaces state the base rule, which becomes false. The lifecycle doc:
 
 `git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:docs/lifecycle.md | grep -nE 'marker is considered stale'` -> `68:- After 24h of inactivity, the marker is considered stale and a new ID is issued on next read.`
 
-So does the `session.py` module docstring:
+The gate-chain contract: at `8ee9d98aad71f059b69231aa370fdbae6bfe52d4`, `grep -n 'regenerated if older than 24h'` over `qor/gates/chain.md` prints only its line 20, which reads, in full: "Generated by `qor/scripts/session.py get_or_create`. Cached in `.qor/current_session` file, regenerated if older than 24h." (The line carries inline code spans, so it is quoted here in prose rather than as a truth-checked evidence statement.)
+
+The `session.py` module docstring, whose line 7 also names the marker path that `MARKER_PATH` stopped using (it is `.qor/session/current`, LD-5):
+
+`git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/session.py | grep -nE 'holds the current id as a single line'` -> `7:- .qor/current_session holds the current id as a single line`
 
 `git show 8ee9d98aad71f059b69231aa370fdbae6bfe52d4:qor/scripts/session.py | grep -nE 'Regenerated when missing OR mtime older than 24h'` -> `8:- Regenerated when missing OR mtime older than 24h`
 
-Only these two lines change. The docstring's marker-path wording on line 7 is a pre-existing, unrelated inaccuracy and stays out of scope.
+Exactly these four lines change, and no other existing statement of the marker rule changes (the LD-9 CHANGELOG bullet is new text): `docs/lifecycle.md:68`, `qor/gates/chain.md` line 20, `qor/scripts/session.py:7` and `qor/scripts/session.py:8`. The exact replacement text for each is in Phase 2. The `chain.md` line and docstring line 7 carry the same stale marker path, so the path is corrected in both, since each line is rewritten anyway. Completeness: `git grep -nE 'considered stale|regenerated if older than 24h|Regenerated when missing' 8ee9d98aad71f059b69231aa370fdbae6bfe52d4 -- qor docs/lifecycle.md ':!qor/dist' ':!qor/vendor'` prints exactly three lines: lifecycle line 68, `chain.md` line 20 and `session.py` line 8. `qor/gates/chain.md` is not compiled into `qor/dist` (`git grep -c 'regenerated if older than 24h' 8ee9d98aad71f059b69231aa370fdbae6bfe52d4 -- qor/dist` prints nothing). Earlier statements of the 24 h rule in dated plans (`docs/plan-qor-phase3-gates.md`, `docs/plan-qor-migration-final.md`) and in dated CHANGELOG sections are historical records and are not edited.
 
 ### LD-7: fidelity to the candidate, with every deviation declared
 
-The implemented `qor/scripts/session.py`, `tests/test_session_marker_staleness.py` and `docs/lifecycle.md` equal the candidate head `5f8be1e2b325825a022172bc3d2b23697eaa1d30` except for exactly these four deviations:
+The implemented `qor/scripts/session.py`, `tests/test_session_marker_staleness.py`, `docs/lifecycle.md` and `qor/gates/chain.md` equal the candidate head `5f8be1e2b325825a022172bc3d2b23697eaa1d30` except for exactly these deviations:
 
-1. `docs/lifecycle.md` line 68: the candidate's parenthetical `(GH #483; Phase 288)` reads `(GH #483; Phase 299)`. Phase 288 is not this phase.
-2. `tests/test_session_marker_staleness.py` module docstring: `Phase 288 Phase 1:` reads `Phase 299 Phase 1:`.
-3. `qor/scripts/session.py` line 8 (LD-6): the candidate leaves it unchanged; this plan corrects it.
-4. `tests/test_session_marker_staleness.py` gains an eighth test, `test_stale_valid_marker_with_empty_gate_dir_still_rotates`. Without it no test fails when the phase-artifact membership check is replaced by `True` (mutation M3, Phase 1; observed `7 passed` for the candidate's seven tests under M3, `1 failed, 7 passed` with the eighth).
+1. `docs/lifecycle.md` line 68: replaced by the Phase 2 text instead of the candidate's. The candidate's text says a new id is issued "only if" the directory "is absent, or already sealed", which misstates the empty-directory and no-phase-artifact cases (VETO #819 V2), omits `ideation.json`, and names Phase 288.
+2. `qor/gates/chain.md` line 20: replaced by the Phase 2 text; the candidate leaves it stating the base rule (V2).
+3. `qor/scripts/session.py` docstring lines 7 and 8 (LD-6): the candidate leaves both unchanged; this plan corrects them.
+4. `qor/scripts/session.py` `_GATE_PHASE_ARTIFACTS` gains `"ideation.json"` as its first member (V3), and its comment names the source set (`gate_chain.IDEATION_PHASE` plus the `gate_chain.CHAIN` phases before `substantiate`) and the pinning test.
+5. `tests/test_session_marker_staleness.py` module docstring: `Phase 288 Phase 1:` reads `Phase 299 Phase 1:`. The module adds `import pytest` and `from qor.scripts import gate_chain`.
+6. `tests/test_session_marker_staleness.py` gains `test_stale_valid_marker_with_empty_gate_dir_still_rotates`. Without it no test fails when the phase-artifact membership check is replaced by `True` (mutation M3; observed `7 passed` for the candidate's seven tests under M3).
+7. `tests/test_session_marker_staleness.py` gains `test_stale_marker_with_malformed_content_rotates_to_fresh_id` (four parametrized cases; V1), `test_stale_valid_marker_with_ideation_only_gate_dir_is_still_current` (V3) and `test_stale_marker_liveness_covers_every_pre_seal_chain_phase` (five parametrized cases; V3). The file then has 11 test functions and 18 collected test items.
 
-The candidate's seven tests use the real clock with margins of at least one hour against the 24-hour TTL (ages 25 h and 1 h; the refresh test compares a just-written mtime with the current time). They do not sleep, use no network, and assert no live repository state. With the candidate's `session.py`, the eight-test file was observed green twice in a row (`8 passed`, twice).
+The candidate's `session.py` logic is otherwise unchanged: `_marker_state`, `_has_unsealed_gate_artifacts`, `_recoverable_stale_id`, `get_or_create` and `current` are the candidate's. With the candidate's `session.py` (no `ideation.json`), the 18-item file gives `2 failed, 16 passed`: the ideation-only test and the `[ideation]` case fail. That is the V3 gap, now pinned.
+
+All tests use the real clock with margins of at least one hour against the 24-hour TTL (ages 25 h and 1 h; the refresh test compares a just-written mtime with the current time). They do not sleep, use no network, and assert no live repository state; every path is under `tmp_path`. With the Phase 2 `session.py`, the 18-item file was observed green twice in a row (`18 passed`, twice).
 
 The implementer writes the tests first (Phase 1) and the code second (Phase 2). No file is checked out, copied or cherry-picked from the candidate branch as a substitute for that sequence. The Phase 2 fidelity check compares the result with the candidate afterwards.
 
@@ -174,7 +237,7 @@ The implementer writes the tests first (Phase 1) and the code second (Phase 2). 
 
 Line 14 continues line 13, which opens the `/qor-implement` rule for populating `## [Unreleased]`; line 32 continues line 31, the fail-fast rule that an empty `Unreleased` section raises `ValueError` at the stamp. Lines 13 and 31 carry inline code spans and are paraphrased here rather than quoted as full-line evidence.
 
-The note is one `### Fixed` bullet beginning `**Phase 299 (hotfix; stale session marker keeps its gate chain, GH #483)**:`. It states the LD-2/LD-3 rule, the LD-5 residual, and that `docs/release-state.json` records `0.175.2` as `sealed_unpublished`. It describes only what is implemented.
+The note is one `### Fixed` bullet beginning `**Phase 299 (hotfix; stale session marker keeps its gate chain, GH #483)**:`. It states the LD-2/LD-3 rule (including `ideation.json` and that malformed marker content still rotates), the LD-5 residual with its operator action (end or rotate the session before starting a new phase after abandoning an unsealed cycle), and that `docs/release-state.json` records `0.175.2` as `sealed_unpublished`. It describes only what is implemented.
 
 ### LD-10: release-state continuity for 0.175.2
 
@@ -242,7 +305,7 @@ Empty. This is a governance session-continuity correction; it introduces no `src
 
 ### Changes
 
-The candidate's test module (LD-7) with the docstring deviation, plus one test. The module imports `session` from `qor/scripts` via `sys.path`, and each test isolates state by pointing `session.MARKER_PATH` at `tmp_path / ".qor" / "session" / "current"` and monkeypatching `session._workdir.root` to return `tmp_path`. Helper `_write_marker(marker, sid, *, age)` writes the id and sets the mtime `age` into the past with `os.utime`. The fixed id is `2026-04-17T2335-f284b9`; "stale" is age 25 h and "fresh" is age 1 h.
+The candidate's test module (LD-7) with the docstring deviation, plus four test functions (LD-7 deviations 6 and 7). The module imports `session` from `qor/scripts` via `sys.path` (as the candidate does) and `gate_chain` as `from qor.scripts import gate_chain`, which it only reads for the phase list. Each test isolates state by pointing `session.MARKER_PATH` at `tmp_path / ".qor" / "session" / "current"` and monkeypatching `session._workdir.root` to return `tmp_path`. Helper `_write_marker(marker, sid, *, age)` writes the content and sets the mtime `age` into the past with `os.utime`. The fixed id is `2026-04-17T2335-f284b9`; "stale" is age 25 h and "fresh" is age 1 h.
 
 ### Unit Tests
 
@@ -253,51 +316,68 @@ The candidate's test module (LD-7) with the docstring deviation, plus one test. 
 - `tests/test_session_marker_staleness.py::test_stale_valid_marker_with_no_gate_dir_still_rotates` - stale marker, no gate dir: `current()` is `None` and `get_or_create()` returns a different id. GREEN at the base; discriminates M4 and M5.
 - `tests/test_session_marker_staleness.py::test_absent_marker_is_unaffected` - no marker: `current()` is `None`, and `get_or_create()` writes the id it returns. GREEN at the base and after (regression coverage backfill: preserves the base absent-marker behavior).
 - `tests/test_session_marker_staleness.py::test_fresh_marker_is_unaffected` - fresh marker: `current()` and `get_or_create()` both return the id. GREEN at the base and after (regression coverage backfill: preserves the base fresh-marker behavior).
-- `tests/test_session_marker_staleness.py::test_stale_valid_marker_with_empty_gate_dir_still_rotates` (added; LD-7 deviation 4) - stale marker, gate dir exists but is empty: `current()` is `None`, `get_or_create()` returns a different id, and the marker holds that id. GREEN at the base; discriminates M3, M4 and M5.
+- `tests/test_session_marker_staleness.py::test_stale_valid_marker_with_empty_gate_dir_still_rotates` (added; LD-7 deviation 6) - stale marker, gate dir exists but is empty: `current()` is `None`, `get_or_create()` returns a different id, and the marker holds that id. GREEN at the base; discriminates M3, M4 and M5.
+- `tests/test_session_marker_staleness.py::test_stale_marker_with_malformed_content_rotates_to_fresh_id` (added; V1), parametrized `kind` in `traversal`, `absolute`, `empty`, `wrong-format`, with content `../../evil`, `str(tmp_path / "abs")`, `""` and `2026-04-17T2335-F284B9`. Setup: stale marker holding that content; `tmp_path / ".qor" / "gates"` created; `plan.json` placed in the directory that `gates / content` resolves to (`tmp_path / "evil"`, `tmp_path / "abs"`, the gates directory itself, `gates / "2026-04-17T2335-F284B9"`). Assertions: `current()` is `None`, `get_or_create()` returns an id that differs from the content and matches `session.SESSION_ID_PATTERN`, and the marker holds that id. GREEN at the base (the base never reuses stale content); discriminates M6 and M7 (all four cases each).
+- `tests/test_session_marker_staleness.py::test_stale_valid_marker_with_ideation_only_gate_dir_is_still_current` (added; V3) - stale marker, gate dir holding only `ideation.json`: `current()` returns the id, `get_or_create()` returns the same id, and the marker holds it. RED at the base (returns `None`); discriminates M8.
+- `tests/test_session_marker_staleness.py::test_stale_marker_liveness_covers_every_pre_seal_chain_phase` (added; V3), parametrized `phase` over `[gate_chain.IDEATION_PHASE, *gate_chain.CHAIN[: gate_chain.CHAIN.index("substantiate")]]`, which evaluates to `ideation`, `research`, `plan`, `audit`, `implement` at the base - stale marker, gate dir holding only `<phase>.json`: `current()` returns the id. RED at the base for all five cases; discriminates M8 (`[ideation]`) and M9 (`[audit]`), and fails if `gate_chain` gains a pre-seal phase the tuple lacks.
 
-TDD: the first two tests are observed RED before Phase 2 (`2 failed, 6 passed` at the base). The other six are GREEN before Phase 2 by design, since they pin behavior the fix must keep. Their discrimination is proven after Phase 2 by local, uncommitted mutations of `qor/scripts/session.py`, each run with `python -B -m pytest tests/test_session_marker_staleness.py -q` and then reverted:
+TDD: `test_stale_valid_marker_with_unsealed_gate_dir_is_still_current`, `test_get_or_create_reuses_stale_valid_marker_with_unsealed_gate_dir`, `test_stale_valid_marker_with_ideation_only_gate_dir_is_still_current` and the five `test_stale_marker_liveness_covers_every_pre_seal_chain_phase` cases are observed RED before Phase 2 (`8 failed, 10 passed` at the base). The other ten items are GREEN before Phase 2 by design, since they pin behavior the fix must keep. Their discrimination is proven after Phase 2 by local, uncommitted mutations of `qor/scripts/session.py`, each run with `python -B -m pytest tests/test_session_marker_staleness.py -q` and then reverted:
 
 - M1: in `get_or_create`, drop the `_atomic_write(marker, recovered + "\n")` call on the stale-live branch -> `test_get_or_create_refreshes_marker_mtime_on_reuse` FAILS.
 - M2: in `_has_unsealed_gate_artifacts`, drop the `substantiate.json` check -> `test_stale_valid_marker_with_sealed_gate_dir_still_rotates` FAILS.
 - M3: in `_has_unsealed_gate_artifacts`, replace the final `any(...)` with `True` -> `test_stale_valid_marker_with_empty_gate_dir_still_rotates` FAILS.
 - M4: in `_recoverable_stale_id`, return `content` without the liveness check -> the sealed, no-gate-dir and empty-gate-dir tests FAIL.
 - M5: in `current`, return `content` for a stale marker without the liveness check -> the sealed, no-gate-dir and empty-gate-dir tests FAIL.
+- M6: in `_recoverable_stale_id`, delete the `if not SESSION_ID_PATTERN.match(content): return None` check -> all four `test_stale_marker_with_malformed_content_rotates_to_fresh_id` cases FAIL (`get_or_create()` returns the malformed content).
+- M7: in `current`, delete the `if not SESSION_ID_PATTERN.match(content): return None` check -> all four `test_stale_marker_with_malformed_content_rotates_to_fresh_id` cases FAIL (`current()` returns the malformed content).
+- M8: drop `"ideation.json"` from `_GATE_PHASE_ARTIFACTS` -> `test_stale_valid_marker_with_ideation_only_gate_dir_is_still_current` and `test_stale_marker_liveness_covers_every_pre_seal_chain_phase[ideation]` FAIL.
+- M9: drop `"audit.json"` from `_GATE_PHASE_ARTIFACTS` -> `test_stale_marker_liveness_covers_every_pre_seal_chain_phase[audit]` FAILS.
 
-Each mutation outcome above was observed while authoring, in a scratch copy outside the repository, applied to the candidate's `session.py` (logic identical to Phase 2; LD-7). After each mutation the implementer restores the Phase 2 content, re-runs the Phase 2 fidelity diff to confirm no mutation remains, and runs the file twice GREEN.
+Each mutation outcome above was observed while authoring, in a scratch clone of the base outside the repository, applied to the Phase 2 `session.py` with the 18-item test file. Observed counts: M1 `1 failed, 17 passed`; M2 `1 failed, 17 passed`; M3 `1 failed, 17 passed`; M4 `3 failed, 15 passed`; M5 `3 failed, 15 passed`; M6 `4 failed, 14 passed`; M7 `4 failed, 14 passed`; M8 `2 failed, 16 passed`; M9 `1 failed, 17 passed`. Each failing set is exactly the one named above. Under M6, the 150 session-related test files give `4 failed, 1269 passed, 4 deselected`, so M6 no longer leaves the session-related suite green. After each mutation the implementer restores the Phase 2 content, re-runs the Phase 2 fidelity diff to confirm no mutation remains, and runs the file twice GREEN.
 
 ## Phase 2: Session marker semantics and lifecycle wording
 
 ### Affected Files
 
-- `qor/scripts/session.py` - three-state marker, liveness check, stale-live reuse and refresh; docstring line 8.
-- `docs/lifecycle.md` - line 68 states the stale-live exception.
+- `qor/scripts/session.py` - three-state marker, liveness check, stale-live reuse and refresh; docstring lines 7 and 8.
+- `docs/lifecycle.md` - line 68 states the rule exactly (LD-6).
+- `qor/gates/chain.md` - line 20 states the rule exactly (LD-6).
 
 ### Changes
 
 `qor/scripts/session.py`:
 
-- Add module constants `_GATE_PHASE_ARTIFACTS = ("research.json", "plan.json", "audit.json", "implement.json")` and `_SEAL_ARTIFACT = "substantiate.json"`, with a comment that they are local because `gate_chain` imports this module (LD-2).
+- Add module constants `_GATE_PHASE_ARTIFACTS = ("ideation.json", "research.json", "plan.json", "audit.json", "implement.json")` and `_SEAL_ARTIFACT = "substantiate.json"`, with a comment that the tuple is `gate_chain.IDEATION_PHASE` plus every `gate_chain.CHAIN` phase before `substantiate`, that it is local because `gate_chain` imports this module, and that `tests/test_session_marker_staleness.py` pins the two sets (LD-2).
 - Replace `_marker_fresh` with `_marker_state(path: Path, now: datetime) -> str`: `"absent"` when the file is missing, else `"fresh"` when `now - mtime < SESSION_TTL`, else `"stale"`.
 - Add `_has_unsealed_gate_artifacts(session_id: str) -> bool`: `sess_dir = _workdir.gate_dir() / session_id`; `False` if `sess_dir` is not a directory or holds `_SEAL_ARTIFACT`; else `any((sess_dir / name).exists() for name in _GATE_PHASE_ARTIFACTS)`.
 - Add `_recoverable_stale_id(marker: Path) -> str | None`: read and strip the marker; `None` unless it matches `SESSION_ID_PATTERN`; then the content if `_has_unsealed_gate_artifacts(content)`, else `None`.
 - `get_or_create`: compute `state`. On `"fresh"`, return the content if it matches `SESSION_ID_PATTERN` (as at the base). On `"stale"`, if `_recoverable_stale_id(marker)` returns an id, rewrite the marker with `_atomic_write(marker, recovered + "\n")` and return it. Otherwise fall through to the base new-id path unchanged.
 - `current`: `None` on `"absent"`; `None` if the content does not match `SESSION_ID_PATTERN`; the content on `"fresh"`; on `"stale"`, the content if `_has_unsealed_gate_artifacts(content)`, else `None`. No write.
-- Docstring line 8 becomes: `- Regenerated when missing, or when older than 24h unless its own gate dir holds unsealed phase work (GH #483)`.
+- Docstring line 7 becomes exactly: `- .qor/session/current holds the current id as a single line`.
+- Docstring line 8 becomes exactly: `- Regenerated when missing, malformed, or older than 24h, except a stale id whose gate dir holds unsealed phase work (GH #483)`.
 
 `docs/lifecycle.md` line 68 becomes exactly:
 
 ```markdown
-- After 24h of inactivity, the marker is considered stale. A new ID is issued on next read only if the stale marker's own session has no live, unsealed gate directory (its `.qor/gates/<sid>/` is absent, or already sealed via `substantiate.json`); otherwise the existing id is reused and the marker's mtime is refreshed, so a long-running phase does not lose its gate artifacts to the clock (GH #483; Phase 299).
+- After 24h of inactivity, the marker is considered stale. A stale marker keeps its id only while that session is live: the id matches the session-id format, and `.qor/gates/<sid>/` holds at least one pre-seal phase artifact (`ideation.json`, `research.json`, `plan.json`, `audit.json` or `implement.json`) and no `substantiate.json`. Then `current()` returns the id, and `get_or_create()` reuses it and refreshes the marker's mtime, so a long-running cycle does not lose its gate chain to the clock. In every other case (the directory is absent or empty, it holds no pre-seal phase artifact, it is sealed, or the marker content is malformed) a new ID is issued on next read, as before (GH #483; Phase 299).
 ```
+
+`qor/gates/chain.md` line 20 becomes exactly:
+
+```markdown
+Generated by `qor/scripts/session.py get_or_create`. Cached in `.qor/session/current`. A marker older than 24h is regenerated unless its session is live: the id matches the session-id format, and `.qor/gates/<sid>/` holds `ideation.json`, `research.json`, `plan.json`, `audit.json` or `implement.json` and no `substantiate.json`. A live stale id is kept and its marker refreshed (GH #483).
+```
+
+Each replacement is one line, ASCII only, and every clause matches `_marker_state`, `_has_unsealed_gate_artifacts`, `_recoverable_stale_id`, `get_or_create` and `current` as specified above. In particular, an existing directory that is empty or holds none of the five pre-seal artifacts rotates, as `test_stale_valid_marker_with_empty_gate_dir_still_rotates` requires. Applied in the scratch clone, the seven test files that mention `chain.md` or `lifecycle.md`, plus `tests/test_gates.py` and `tests/test_e2e.py`, gave `95 passed`.
 
 `end_session`, `rotate`, `generate_id`, `validate_session_id` and `main` do not change.
 
 ### Unit Tests
 
-- Re-run `tests/test_session_marker_staleness.py` after the edit: all eight GREEN, twice in a row.
-- Run mutations M1-M5 (Phase 1) and observe each named failure; revert.
+- Re-run `tests/test_session_marker_staleness.py` after the edit: all 18 items GREEN, twice in a row.
+- Run mutations M1-M9 (Phase 1) and observe each named failure; revert.
 - Run `tests/test_gates.py` and `tests/test_e2e.py` unchanged: GREEN (LD-4).
-- Fidelity check (LD-7), after `git fetch origin fix/483-session-marker-current`: `git diff 5f8be1e2b325825a022172bc3d2b23697eaa1d30 -- qor/scripts/session.py docs/lifecycle.md tests/test_session_marker_staleness.py` shows only deviations 1-4. The implementer records the observed diff summary in the implementation report.
+- Fidelity check (LD-7), after `git fetch origin fix/483-session-marker-current`: `git diff 5f8be1e2b325825a022172bc3d2b23697eaa1d30 -- qor/scripts/session.py docs/lifecycle.md qor/gates/chain.md tests/test_session_marker_staleness.py` shows only deviations 1-7. The implementer records the observed diff summary in the implementation report.
 
 ## Phase 3: Release-state continuity and CHANGELOG note
 
@@ -326,10 +406,10 @@ Append the LD-10 entry as the last element of `exceptions`, with the same key or
 
 ### Deliverable: stale-but-live session marker keeps its gate chain
 
-- **D1**: a marker older than `SESSION_TTL` whose valid id names a gate directory holding research/plan/audit/implement work and no `substantiate.json` is treated as the current session: `current()` returns it and `get_or_create()` reuses it and refreshes the marker mtime. Absent markers, invalid content, and stale markers naming a sealed, empty or missing gate directory keep the base behavior. The LD-5 residual is declared.
-- **D2**: `qor/scripts/session.py` defines `_marker_state(path: Path, now: datetime) -> str`, `_has_unsealed_gate_artifacts(session_id: str) -> bool` and `_recoverable_stale_id(marker: Path) -> str | None`, and no longer defines `_marker_fresh`. `get_or_create` and `current` keep their signatures (LD-4). The Phase 2 fidelity diff against `5f8be1e2b325825a022172bc3d2b23697eaa1d30` shows only LD-7 deviations 1-4.
-- **D3**: `docs/lifecycle.md` line 68 and the `session.py` docstring describe the stale-live exception (LD-6). Phase 299 follows canonical branch and plan resolution and receives current-revision audit and substantiation evidence before promotion; no evidence from the candidate branch is reused as authority. The `## [Unreleased]` bullet exists at implement time (LD-9).
-- **D4**: `tests/test_session_marker_staleness.py::test_stale_valid_marker_with_unsealed_gate_dir_is_still_current` and `tests/test_session_marker_staleness.py::test_get_or_create_reuses_stale_valid_marker_with_unsealed_gate_dir` are RED before Phase 2 and GREEN after. Every test in the file is GREEN twice in a row after Phase 2, each mutation M1-M5 turns its named tests RED, and `tests/test_gates.py` and `tests/test_e2e.py` stay GREEN.
+- **D1**: a marker older than `SESSION_TTL` whose valid id names a gate directory holding ideation, research, plan, audit or implement work and no `substantiate.json` is treated as the current session: `current()` returns it and `get_or_create()` reuses it and refreshes the marker mtime. Absent markers, and stale markers naming a sealed, empty, phase-artifact-free or missing gate directory, keep the base behavior. Stale markers with malformed content (traversal, absolute path, empty, wrong format) are never used as a path segment for reuse and rotate to a fresh id. The LD-5 residual and limitation are declared.
+- **D2**: `qor/scripts/session.py` defines `_GATE_PHASE_ARTIFACTS = ("ideation.json", "research.json", "plan.json", "audit.json", "implement.json")`, `_marker_state(path: Path, now: datetime) -> str`, `_has_unsealed_gate_artifacts(session_id: str) -> bool` and `_recoverable_stale_id(marker: Path) -> str | None`, and no longer defines `_marker_fresh`. `_recoverable_stale_id` and `current` both check `SESSION_ID_PATTERN` before any gate-directory lookup. `get_or_create` and `current` keep their signatures (LD-4). The Phase 2 fidelity diff against `5f8be1e2b325825a022172bc3d2b23697eaa1d30` shows only LD-7 deviations 1-7.
+- **D3**: `docs/lifecycle.md` line 68, `qor/gates/chain.md` line 20 and `qor/scripts/session.py` docstring lines 7 and 8 carry exactly the Phase 2 text, and no other existing statement of the marker rule changes (LD-6). Phase 299 follows canonical branch and plan resolution and receives current-revision audit and substantiation evidence before promotion; no evidence from the candidate branch is reused as authority. The `## [Unreleased]` bullet exists at implement time and states the LD-5 residual and its operator action (LD-9).
+- **D4**: `tests/test_session_marker_staleness.py::test_stale_valid_marker_with_unsealed_gate_dir_is_still_current`, `tests/test_session_marker_staleness.py::test_get_or_create_reuses_stale_valid_marker_with_unsealed_gate_dir`, `tests/test_session_marker_staleness.py::test_stale_valid_marker_with_ideation_only_gate_dir_is_still_current` and the five `tests/test_session_marker_staleness.py::test_stale_marker_liveness_covers_every_pre_seal_chain_phase` cases are RED before Phase 2 and GREEN after (`8 failed, 10 passed` at the base). All 18 items are GREEN twice in a row after Phase 2. `tests/test_session_marker_staleness.py::test_stale_marker_with_malformed_content_rotates_to_fresh_id` is GREEN in all four cases, and all four turn RED under M6 (the session-id format check removed from `_recoverable_stale_id`) and under M7 (removed from `current`). Each mutation M1-M9 turns exactly its named tests RED, and `tests/test_gates.py` and `tests/test_e2e.py` stay GREEN.
 
 ### Deliverable: release-state continuity for 0.175.2
 
@@ -340,7 +420,7 @@ Append the LD-10 entry as the last element of `exceptions`, with the same key or
 
 ## CI Commands
 
-- `python -m pytest tests/test_session_marker_staleness.py -q` - verifies the stale versus absent marker semantics (eight tests).
+- `python -m pytest tests/test_session_marker_staleness.py -q` - verifies the stale versus absent marker semantics, the malformed-content guard and the pre-seal liveness set (18 test items).
 - `python -m pytest tests/test_gates.py tests/test_e2e.py -q` - verifies existing session and gate-chain behavior is unchanged.
 - `python -m pytest tests/test_release_state.py tests/test_changelog_tag_coverage.py -q` - verifies the release-state record validates with the new entry and local tag coverage holds.
 - `python -c "import subprocess; from pathlib import Path; from qor.scripts import release_state as rs; import tests.test_changelog_tag_coverage as t; remote = {l.rsplit('/', 1)[1] for l in subprocess.run(['git', 'ls-remote', '--tags', 'origin'], capture_output=True, text=True, check=True).stdout.split() if l.startswith('refs/tags/v') and not l.endswith('^{}')}; tags = {v for v in rs.merged_semver_tags(t.REPO) if 'v' + v in remote}; versions = t._changelog_versions() | {'0.175.3'}; ex = rs.load_release_state(t.RELEASE_STATE, versions); print(rs.coverage_violations(versions, tags, '0.175.3', ex).orphans, rs.coverage_violations(versions, tags, '0.175.3', {k: v for k, v in ex.items() if k != '0.175.2'}).orphans)"` - CI-view simulation of the post-seal state at `/qor-implement` (network: reads remote tag names only); expected output `set() {'0.175.2'}`.
@@ -367,8 +447,9 @@ Append the LD-10 entry as the last element of `exceptions`, with the same key or
 
 - redesign of session identity, the id format, or `SESSION_TTL`;
 - automatic rotation of abandoned unsealed sessions (LD-5 residual);
-- changes to `gate_chain`, `validate_gate_artifact`, `session_tool` or any other caller of `session`;
-- the pre-existing marker-path wording on `session.py` docstring line 7;
+- changes to `gate_chain`, `validate_gate_artifact`, `session_tool` or any other caller of `session` (`gate_chain` is only read by the new test);
+- automatic detection of abandoned sessions, or import-time versus call-time root reconciliation (LD-5);
+- edits to dated plans or dated CHANGELOG sections that record the old 24 h rule (LD-6);
 - release-state dispositions for any version other than `0.175.2`, changes to `qor/scripts/release_state.py`, remote tag pushes, or publication;
 - reusing any evidence from the candidate branch as audit, implementation or seal authority;
 - hand-issuing governance evidence;
