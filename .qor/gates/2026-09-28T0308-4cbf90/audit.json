@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-28T0308-4cbf90",
+  "ts": "2026-09-28T03:22:06Z",
+  "target": "docs/plan-qor-phase300-remediate-gate-versioning.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "specification-drift"
+  ],
+  "target_content_hash": "41f7a5ce02286c031b4f94c479847467868a585bc13207607be24a5c9b47a356",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.3",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "veto",
+    "ts": "2026-09-28T03:22:06Z"
+  }
+}

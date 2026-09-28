@@ -24388,6 +24388,25 @@ Stale but live session marker keeps its gate chain (GH #483). `qor/scripts/sessi
 
 **Post-seal proof**: the plan's guarded CI-view clone proof (LD-10, Phase 3) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
 
+### Entry #826: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T03:21:39Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `23139d787325`
+**Verdict**: VETO
+
+**Content Hash**: `7b85f44649b59e2c92b7b301c8dba3f3338d0df7695f45b7b8c7e534d17d6116`
+**Previous Hash**: `62bbfd8f40b1b6a5200d1f3dd2f4368551f17ac925e45068ad67a4726e1144cd`
+**Chain Hash (Merkle seal)**: `f228878612ed6b2263a56d3bca1aaf9168fc2a9b3818e80f70f718ad55598860`
+
+**Decision**: **Target**: `docs/plan-qor-phase300-remediate-gate-versioning.md`
+
+**Decision**: VETO (iter 1 on base 25002459). Engineering holds, reproduced in scratch clones outside the repo: all 45 evidence statements re-run at 25002459, 0 mismatches; candidate 878c38b3 not an ancestor, 3-file diff vs 15729311 as quoted, ported files unchanged to base, chain.md differs only at line 20; 12-entry ls-tree and ten-line doc grep reproduce. Phase 1 tests rebuilt from plan text: 4 failed, 32 passed at base; candidate module (byte-identical to 878c38b3) gives 36 passed twice; M1-M6 fail exactly their named tests (4/4/1/4/2/2); candidate test file under M3 and M6 gives 35 passed. Readers prototyped on base vs fixed code (emit-only, write_artifact then emit, emit then write_artifact, iteration gap): first proposal bytes survive, remediate.json stays newest and returned, shared numbering, validator/active-phase/snapshot/provenance/liveness unchanged; consumer suites 100 passed; full suite 3615 passed, 3 skipped; ruff and publication boundary clean. Release-state proof non-vacuous: CI-view simulation {'0.175.3'} {'0.175.3'} at base, set() {'0.175.3'} with the entry; guarded clone proof fails at base, bump-only, and seal without entry (1 failed, orphan 0.175.3), passes with it (4 passed, twice); remote highest tag v0.172.2. Scope stays hotfix. V1 (`specification-drift`): the LD-9 CHANGELOG bullet mandated verbatim says an existing iteration file is never overwritten, while LD-5 and the limitations boundary declare that concurrent emits can pick the same number and the later write replaces the earlier; D1 scopes the guarantee to a sequential emit and LD-9 claims the bullet states only what Phase 2 implements. Advisories: A1 test_remediate.py already 616 lines, grows ~87 (precedent test_shadow.py); A2 mixed-session remediate resolution now lands on the emit iteration (no production reader); A3 workspace fragility pre-existing. Escalator: cce.check and check_session_total None. Option B fresh-context reviewer (audit_risk_score option_b_required). Session `2026-09-28T0308-4cbf90`.
+
+**Required next action**: Governor amends via /qor-plan (qualify the LD-9 clause to sequential emissions or state the concurrency residual, consistent with D1 and LD-5), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*

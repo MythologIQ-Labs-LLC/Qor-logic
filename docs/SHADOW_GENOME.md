@@ -3045,4 +3045,28 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #42: VETO -- plan-qor-phase300-remediate-gate-versioning (iter 1)
+
+**Date**: 2026-09-28
+**Verdict ID**: session 2026-09-28T0308-4cbf90 audit (META_LEDGER Entry #826)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The port of the GH #446 fix holds in every executed check: citations, RED/GREEN counts, mutations M1-M6, reader behavior, the full suite and the release-state proofs all reproduce. The CHANGELOG bullet that LD-9 mandates word for word says that an existing iteration file "is never overwritten". The plan's own LD-5 and limitations boundary say that two concurrent `emit` calls can pick the same number and that the later write replaces the earlier. D1 limits the guarantee to a sequential `emit`, and LD-9 claims that the bullet states only what Phase 2 implements.
+
+### Why It Failed
+
+The user-facing sentence was written from the design intent (next number after the highest) rather than from the declared limits of the implementation. The qualifier that D1 carries ("sequential") was dropped when the clause was compressed for the CHANGELOG. The clause-to-proof list cited only sequential tests, so it could not expose the gap.
+
+### Pattern to Avoid
+
+When a plan declares a residual, check every mandated user-facing sentence against it. A guarantee that the residual limits (sequential only, same process only, and so on) must carry that limit, or the residual must be stated beside it. An absolute word ("never", "always") in a mandated text needs a proof that covers the declared exceptions. Related: Entry #41 (mandated CHANGELOG text checked against the code but not against its governing rule).
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*
