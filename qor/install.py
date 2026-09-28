@@ -9,6 +9,7 @@ uses ``commands/`` without changing the copy loop.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 import sys
@@ -19,6 +20,10 @@ def _load_manifest(manifest_path: Path) -> dict | None:
     if not manifest_path.exists():
         return None
     return json.loads(manifest_path.read_text(encoding="utf-8"))
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _resolve_dest(rel: str, install_map: dict[str, Path]) -> Path | None:
@@ -52,6 +57,25 @@ def _resolve_install_source(host: str, dist_root: Path | None) -> tuple[Path, di
     return source_root, _load_manifest(source_root / "manifest.json")
 
 
+def _validate_manifest_entries(manifest: dict, source_root: Path) -> list[str]:
+    """Validate every installable source against the manifest before mutation."""
+    errors: list[str] = []
+    for entry in manifest.get("files", []):
+        rel = entry.get("install_rel_path")
+        expected = entry.get("sha256")
+        if not isinstance(rel, str) or not isinstance(expected, str):
+            errors.append("manifest entry is missing install_rel_path or sha256")
+            continue
+        src = source_root / rel
+        if not src.exists():
+            errors.append(f"manifest source missing: {rel}")
+            continue
+        actual = _sha256(src)
+        if actual != expected:
+            errors.append(f"manifest SHA256 mismatch: {rel}")
+    return errors
+
+
 def _copy_manifest_entries(
     manifest: dict, source_root: Path, install_map: dict[str, Path], dry_run: bool,
 ) -> list[dict]:
@@ -64,7 +88,8 @@ def _copy_manifest_entries(
             continue
         _copy_entry(src, dst, dry_run)
         if not dry_run:
-            installed.append({"path": str(dst), "sha256": entry["sha256"]})
+            # Receipt records the bytes actually copied, not an inherited claim.
+            installed.append({"path": str(dst), "sha256": _sha256(dst)})
     return installed
 
 
@@ -86,6 +111,13 @@ def _do_install(
             f"Run 'qor-logic compile' first.",
             file=sys.stderr,
         )
+        return 1
+
+    manifest_errors = _validate_manifest_entries(manifest, source_root)
+    if manifest_errors:
+        print("Manifest integrity check failed; install aborted:", file=sys.stderr)
+        for error in manifest_errors:
+            print(f"  - {error}", file=sys.stderr)
         return 1
 
     installed = _copy_manifest_entries(manifest, source_root, target.install_map, dry_run)
