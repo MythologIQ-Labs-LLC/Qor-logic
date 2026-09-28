@@ -24407,6 +24407,25 @@ Stale but live session marker keeps its gate chain (GH #483). `qor/scripts/sessi
 
 **Required next action**: Governor amends via /qor-plan (qualify the LD-9 clause to sequential emissions or state the concurrency residual, consistent with D1 and LD-5), then /qor-audit.
 
+### Entry #827: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T03:36:43Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `6d6435f9aa0d`
+**Verdict**: PASS
+
+**Content Hash**: `d2cd456c637d074073d6d55cb9feb69b346a7e62db1da0b7435ed25dcd1cf257`
+**Previous Hash**: `f228878612ed6b2263a56d3bca1aaf9168fc2a9b3818e80f70f718ad55598860`
+**Chain Hash (Merkle seal)**: `2f08258465f61f4860d8cb6f879b9465300e335e74f2383077d4d5c49fe22816`
+
+**Decision**: **Target**: `docs/plan-qor-phase300-remediate-gate-versioning.md`
+
+**Decision**: PASS (iter 2 on base 25002459). V1 cured: the LD-9 CHANGELOG bullet now limits no-overwrite to a later proposal and states the concurrent residual in the bullet; LD-9 defines second/later/superseded as sequential; D1, LD-1/3/4/5/6, the limitations boundary and the new LD-7 deviation 4 emit docstring agree; no remaining absolute claim contradicts a residual. Full re-walk: 45 evidence statements re-run at 25002459, 0 mismatches; candidate diff stat, non-ancestry, base currency, ls-tree, git grep, ledger lines, remote tags (highest v0.172.2), local v0.175.3 ancestry and six compiled copies reproduce. Independent rebuild in scratch clones outside the repo: 4 failed, 32 passed at base; 36 passed twice with plan code; M1-M6 fail exactly their named tests (4/4/1/4/2/2); candidate tests under M3/M6 35 passed; deviation 4 is docstring-only (AST equal with docstrings stripped, 35 passed twice, ruff clean). Consumers 100 passed; release/changelog 34 passed; full suite 3615 passed, 3 skipped; boundary lint 0. Release-state proofs non-vacuous: simulation {'0.175.3'} {'0.175.3'} at base, set() {'0.175.3'} with entry; guarded clone proof exit 1 at base, bump-only and seal-without-entry (orphan 0.175.3), exit 0 with entry (4 passed, twice). Advisories: A1 Governor edited the plan before /qor-plan Steps 0/0.2-0.4/2c, disclosed; outcomes plan-text independent, escalator re-run None, no evidence affected; A2 emit docstring qualifies its opening sentence in the same paragraph; A3 workspace fragility pre-existing. Option B independent subagent reviewer (audit_risk_score option_b_required). Session `2026-09-28T0308-4cbf90`.
+
+**Required next action**: /qor-implement.
+
 ---
 
 *Chain integrity: VALID*
