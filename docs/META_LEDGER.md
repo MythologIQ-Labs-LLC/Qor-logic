@@ -24426,6 +24426,30 @@ Stale but live session marker keeps its gate chain (GH #483). `qor/scripts/sessi
 
 **Required next action**: /qor-implement.
 
+### Entry #828: IMPLEMENTATION
+
+**Timestamp**: 2026-09-28T03:42:24Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `b8c8fed240e3`
+**Plan**: docs/plan-qor-phase300-remediate-gate-versioning.md
+**Session**: 2026-09-28T0308-4cbf90
+
+**Content Hash**: `a2ceb9fbbb962fb5758d7f895a723574674974104b925952202513c437b2e56c`
+**Previous Hash**: `2f08258465f61f4860d8cb6f879b9465300e335e74f2383077d4d5c49fe22816`
+**Chain Hash (Merkle seal)**: `e1b191b687a78b2f13576242c8328211712b931d08daf4ece2228d7f4e3d7a21`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** A second remediation proposal no longer destroys the first (GH #446), implemented test-first on base 25002459 per the iteration-2 plan (audit PASS #827); the candidate branch head 878c38b3 was reference only and no file was copied from it.
+
+Code: `qor/scripts/remediate_emit_gate.py` imports `next_iteration_path` from `qor.scripts.validate_gate_artifact`, adds `_atomic_write(target, text)`, and `emit` now writes one text to `remediate-iter<N>.json` (N after the highest existing iteration) and then to `remediate.json`, returning `remediate.json` as before. Signatures of `emit` and `validate_session_id` unchanged. The `emit` docstring carries LD-7 deviation 4 (sequential no-re-target; concurrent calls not serialized).
+
+Tests: `tests/test_remediate.py` gains four tests (three candidate tests with LD-7 deviations 1, 2 and 4, plus `test_emit_gate_numbers_after_highest_existing_iteration`); 36 items. RED at base: 4 failed, 32 passed (exactly the four new tests). GREEN after: 36 passed, twice. Mutations M1-M6 under `python -B -m pytest`, each reverted: M1 4, M2 4, M3 1, M4 4, M5 2, M6 2 failed, each exactly the named set; module restored byte-identical. Fidelity diff against 878c38b3: module shows only the deviation 4 docstring hunk; test file shows only deviations 1-4.
+
+Release state: `docs/release-state.json` gains 0.175.3 sealed_unpublished (reason names the #825 seal); CI-view simulation printed set() {'0.175.3'} after the entry. CHANGELOG `## [Unreleased]` gains the LD-9 Fixed bullet verbatim. No documentation, skill, schema or compiled variant changes (LD-6); doc sync Step 8.5 has nothing to author.
+
+Verification: consumer suites 100 passed; release/changelog suites 34 passed; full suite 3615 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored, timestamp only); ruff clean; publication_boundary_lint 0; check_variant_drift OK 406 files; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
+
 ---
 
 *Chain integrity: VALID*
