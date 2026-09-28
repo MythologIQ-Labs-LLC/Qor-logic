@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-28T0308-4cbf90",
+  "plan_path": "docs/plan-qor-phase300-remediate-gate-versioning.md",
+  "plan_hash": "83d8958f45f57f4824887e8b6e5402cbf6011a1c5ac2801d597b9bbfe9e15ea3",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "d2cd456c637d074073d6d55cb9feb69b346a7e62db1da0b7435ed25dcd1cf257",
+  "head_commit": "b6501e442dd37d5daad74728d41eef030d3a8cfd",
+  "captured_ts": "2026-09-28T03:38:36.680702Z"
+}

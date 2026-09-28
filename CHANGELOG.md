@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.175.4] - 2026-09-28
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 300 (hotfix; a second remediation proposal no longer destroys the first, GH #446)**: `/qor-remediate` Step 5 wrote every proposal to the same `.qor/gates/<sid>/remediate.json`, so a second proposal in a session overwrote the first, including one that had already been reviewed. Each proposal is now also written to an iteration file `.qor/gates/<sid>/remediate-iter<N>.json`, where N is one more than the highest existing iteration in that session, so a later proposal does not overwrite an existing iteration file, and a superseded proposal stays readable, byte for byte, in its own iteration file. Two proposals emitted at the same moment in one session are not serialized and can still land in the same iteration file. `remediate.json` keeps its path and each call refreshes it with the same bytes it wrote to its iteration file, and the Step 5 call still returns that path, so readers of `remediate.json` keep working and see the newest proposal there. A proposal overwritten before this fix is not recovered. `docs/release-state.json` records `0.175.3` as `sealed_unpublished`.
+
 ## [0.175.3] - 2026-09-28
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

@@ -299,6 +299,122 @@ def test_emit_gate_writes_json_at_expected_path(tmp_path):
     assert expected.exists()
 
 
+def test_emit_gate_second_proposal_does_not_destroy_first(tmp_path):
+    """A second remediation proposal in the same session must not erase the first.
+
+    Regression test for GH #446: the prior implementation wrote a fixed
+    ``remediate.json`` filename with no iteration suffix, so a second
+    emission -- the expected shape of the revise-and-re-emit remediation
+    contract -- silently destroyed a first proposal a tribunal may already
+    have audited and bound by content hash.
+    """
+    first = {
+        "pattern": "gate-loop",
+        "proposal_kind": "gate",
+        "proposal_text": "First proposal, already audited to VETO.",
+        "addressed_event_ids": ["a" * 64],
+    }
+    second = {
+        "pattern": "gate-loop",
+        "proposal_kind": "gate",
+        "proposal_text": "Second proposal, superseding the first.",
+        "addressed_event_ids": ["a" * 64],
+    }
+    session_dir = tmp_path / ".qor" / "gates" / "gate-session-versioned"
+    reg.emit(first, session_id="gate-session-versioned", base_dir=tmp_path)
+    first_bytes = (session_dir / "remediate.json").read_bytes()
+    reg.emit(second, session_id="gate-session-versioned", base_dir=tmp_path)
+
+    versioned = sorted(session_dir.glob("remediate-iter*.json"))
+    texts = [
+        json.loads(p.read_text(encoding="utf-8"))["proposal_text"]
+        for p in versioned
+    ]
+    assert first["proposal_text"] in texts, (
+        "first proposal's text is not recoverable from any versioned artifact"
+    )
+    assert second["proposal_text"] in texts
+    assert first_bytes in [p.read_bytes() for p in versioned], (
+        "no versioned artifact holds the exact bytes a reviewer of the first "
+        "proposal would have hashed"
+    )
+
+
+def test_emit_gate_versioned_paths_never_reused(tmp_path):
+    """Sequential emissions each get their own iteration path, never re-targeted."""
+    proposal = {
+        "pattern": "regression",
+        "proposal_kind": "skill",
+        "proposal_text": "iter1",
+        "addressed_event_ids": ["a" * 64],
+    }
+    reg.emit(proposal, session_id="gate-session-iter", base_dir=tmp_path)
+    reg.emit({**proposal, "proposal_text": "iter2"}, session_id="gate-session-iter", base_dir=tmp_path)
+    reg.emit({**proposal, "proposal_text": "iter3"}, session_id="gate-session-iter", base_dir=tmp_path)
+
+    session_dir = tmp_path / ".qor" / "gates" / "gate-session-iter"
+    versioned = sorted(session_dir.glob("remediate-iter*.json"))
+    assert len(versioned) == 3
+    assert [p.name for p in versioned] == [
+        "remediate-iter1.json", "remediate-iter2.json", "remediate-iter3.json",
+    ]
+
+
+def test_emit_gate_singleton_still_written_as_latest_copy(tmp_path):
+    """The unversioned remediate.json singleton still exists and is the latest.
+
+    Downstream consumers (mark_addressed's remediate_gate_path argument)
+    reference the fixed singleton path directly; it must remain the latest
+    proposal, byte-identical to its versioned counterpart.
+    """
+    proposal = {
+        "pattern": "regression",
+        "proposal_kind": "skill",
+        "proposal_text": "the newest one",
+        "addressed_event_ids": ["a" * 64],
+    }
+    reg.emit({**proposal, "proposal_text": "stale"}, session_id="gate-session-latest", base_dir=tmp_path)
+    path = reg.emit(proposal, session_id="gate-session-latest", base_dir=tmp_path)
+
+    session_dir = tmp_path / ".qor" / "gates" / "gate-session-latest"
+    expected_singleton = session_dir / "remediate.json"
+    assert path == expected_singleton
+    payload = json.loads(expected_singleton.read_text(encoding="utf-8"))
+    assert payload["proposal_text"] == "the newest one"
+    assert expected_singleton.read_bytes() == (
+        session_dir / "remediate-iter2.json"
+    ).read_bytes()
+
+
+def test_emit_gate_numbers_after_highest_existing_iteration(tmp_path):
+    """The next iteration follows the highest existing one, not the file count.
+
+    A session directory with a gap (iterations 1 and 3 only) must receive
+    iteration 4; a count-based number (3) would overwrite remediate-iter3.json.
+    """
+    session_dir = tmp_path / ".qor" / "gates" / "gate-session-gap"
+    session_dir.mkdir(parents=True)
+    iter1_bytes = b'{"proposal_text": "existing iteration 1"}\n'
+    iter3_bytes = b'{"proposal_text": "existing iteration 3"}\n'
+    (session_dir / "remediate-iter1.json").write_bytes(iter1_bytes)
+    (session_dir / "remediate-iter3.json").write_bytes(iter3_bytes)
+    proposal = {
+        "pattern": "regression",
+        "proposal_kind": "skill",
+        "proposal_text": "after the gap",
+        "addressed_event_ids": ["a" * 64],
+    }
+    reg.emit(proposal, session_id="gate-session-gap", base_dir=tmp_path)
+
+    assert (session_dir / "remediate-iter1.json").read_bytes() == iter1_bytes
+    assert (session_dir / "remediate-iter3.json").read_bytes() == iter3_bytes
+    assert sorted(p.name for p in session_dir.glob("remediate-iter*.json")) == [
+        "remediate-iter1.json", "remediate-iter3.json", "remediate-iter4.json",
+    ]
+    newest = json.loads((session_dir / "remediate-iter4.json").read_text(encoding="utf-8"))
+    assert newest["proposal_text"] == "after the gap"
+
+
 def test_emit_gate_payload_roundtrips(tmp_path):
     proposal = {
         "pattern": "gate-loop",
