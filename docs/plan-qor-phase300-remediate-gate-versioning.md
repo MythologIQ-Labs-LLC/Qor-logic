@@ -7,11 +7,11 @@
 **terms**: `[]` (this plan introduces no new term; the plan gate artifact carries `terms: []`)
 
 **boundaries**:
-- limitations: `remediate.json` still holds only the newest proposal, so a review that cites `remediate.json` finds the newest proposal at that path; a superseded proposal is readable, byte for byte, in its own `remediate-iter<N>.json` (LD-5); `emit` writes no provenance sidecar for either file, as at the base (LD-5); two concurrent `emit` calls in one session are not serialized (LD-5)
+- limitations: `remediate.json` still holds only the newest proposal, so a review that cites `remediate.json` finds the newest proposal at that path; a superseded proposal is readable, byte for byte, in its own `remediate-iter<N>.json` (LD-5); `emit` writes no provenance sidecar for either file, as at the base (LD-5); two concurrent `emit` calls in one session are not serialized, can pick the same iteration number, and the later write then replaces the earlier, so every no-overwrite statement in this plan, in D1 and in the LD-9 CHANGELOG bullet is scoped to sequential `emit` calls (LD-5)
 - non_goals: routing `emit` through `gate_chain.write_gate_artifact`; changing `emit`'s return value, the remediate schema, `/qor-remediate` or `/qor-audit` skill text, `remediate_attestation` or `remediate_mark_addressed`; recovering a proposal overwritten before this fix; release publication
 - exclusions: gate files already on disk or in history, which this plan neither rewrites nor migrates (LD-5)
 
-**iteration**: 1 (on branch `phase/300-remediate-gate-versioning`)
+**iteration**: 2 (on branch `phase/300-remediate-gate-versioning`)
 
 **Issue**: GH #446 ("remediate_emit_gate overwrites a previously audited proposal; the remediation path is the only gate writer without versioning")
 
@@ -67,7 +67,7 @@ The other gate phases write through `validate_gate_artifact.write_artifact`, whi
 
 `git show 25002459b02c21e1067454fded55f47f2de967f1:qor/scripts/gate_chain.py | grep -nE 'path = vga.write_artifact.phase, payload, session_id=sid.'` -> `297:    path = vga.write_artifact(phase, payload, session_id=sid)`
 
-Decision: `emit` also writes each proposal to its own versioned file before it refreshes `remediate.json`.
+Decision: `emit` also writes each proposal to a versioned file before it refreshes `remediate.json`; sequential calls each get their own file (LD-2), concurrent calls are the LD-5 residual.
 
 ### LD-2: reuse `next_iteration_path`; the numbering is shared with `write_gate_artifact`
 
@@ -115,11 +115,11 @@ The current-session validator reads the singleton by name:
 
 `git show 25002459b02c21e1067454fded55f47f2de967f1:qor/scripts/validate_gate_artifact.py | grep -nE 'artifact = session_dir / f'` -> `130:        artifact = session_dir / f"{phase}.json"`
 
-Decision: `emit` writes the proposal text once to the versioned path and then the same text to `remediate.json`, and returns `remediate.json` as before. `write_artifact` returns the versioned path because its callers bind provenance to it; `emit` has no such caller, and changing its return value would change what the skill hands to the review step. The singleton therefore stays the newest proposal, byte-identical to the newest iteration that `emit` wrote.
+Decision: `emit` writes the proposal text once to the versioned path and then the same text to `remediate.json`, and returns `remediate.json` as before. `write_artifact` returns the versioned path because its callers bind provenance to it; `emit` has no such caller, and changing its return value would change what the skill hands to the review step. After sequential calls the singleton therefore holds the newest proposal, byte-identical to the newest iteration that `emit` wrote. Two concurrent calls can leave the singleton and the highest iteration holding different proposals (LD-5).
 
 ### LD-4: the other readers of gate files are unaffected
 
-- Generic resolution picks the highest iteration, with the singleton as fallback. For `remediate`, the highest iteration and the singleton hold the same bytes after either writer runs, because both write the iteration and then the singleton:
+- Generic resolution picks the highest iteration, with the singleton as fallback. For `remediate`, after sequential calls the highest iteration and the singleton hold the same bytes after either writer runs, because both write the iteration and then the singleton. One answer does change: in a session where `write_gate_artifact(phase="remediate", ...)` ran and a later `emit` followed, the base resolves to the `write_gate_artifact` iteration, and the fix resolves to the `emit` iteration, whose bytes equal the singleton, which already held the `emit` proposal at the base. No production reader resolves `remediate` this way: `remediate` is not in `gate_chain.CHAIN` (line 23 at the base marks it out-of-band), and the status snapshot excludes it (below):
 
   `git show 25002459b02c21e1067454fded55f47f2de967f1:qor/scripts/gate_chain.py | grep -nE 'path = vga.latest_artifact_path.phase, vga.GATES_DIR / sid.'` -> `208:    path = vga.latest_artifact_path(phase, vga.GATES_DIR / sid)`
 
@@ -145,24 +145,43 @@ Decision: `emit` writes the proposal text once to the versioned path and then th
 
 - GH #446 suggests that a superseded proposal stay readable "at the path its tribunal cited". This plan meets that when the review cites the iteration file. A review that cites `remediate.json`, the path the skill documents and `emit` returns (LD-3), finds the newest proposal there after a later emission; the superseded proposal's exact bytes are in its own `remediate-iter<N>.json`, where any hash computed over the file bytes can be checked again. Pointing reviews at the iteration path would change `emit`'s return value, the `/qor-remediate` Step 5 and Step 6 text, its six compiled copies and the `mark_addressed` call contract; that is wider than the GH #446 fix and is left out (Non-goals).
 - `emit` writes no provenance sidecar, before or after this fix. In a session where `write_gate_artifact(phase="remediate", ...)` also wrote `remediate.provenance`, a later `emit` refreshes `remediate.json` without refreshing that sidecar. The base has the same behavior, since it overwrites `remediate.json` too; this plan does not change it.
-- `next_iteration_path` followed by the write is not atomic. Two `emit` calls running at the same moment in one session could pick the same number, and the later write would replace the earlier. The base loses one of the two proposals in the same case; the check-then-write in `write_artifact` has the same window.
+- `next_iteration_path` followed by the write is not atomic. Two `emit` calls running at the same moment in one session could pick the same number, and the later write would replace the earlier. The base loses one of the two proposals in the same case. `write_artifact` re-checks that the chosen path does not exist before it writes (lines 200 to 203 at the base) and `emit` does not; that re-check narrows but does not close the window, since `write_artifact` also writes with `os.replace`. The fix therefore guarantees no overwrite only for sequential `emit` calls, and D1, the LD-9 bullet and the `emit` docstring (LD-7 deviation 4) say so.
 - A proposal overwritten before this fix is not recovered, including the Entry #748 proposal. No gate file on disk or in history is rewritten or migrated.
 
 ### LD-6: documentation surfaces stay true without edits
 
 The normative statements about the remediation gate file at the base are exactly these (`git grep -n -e 'remediate[.]json' -e 'remediate-iter' 25002459b02c21e1067454fded55f47f2de967f1 -- qor/skills qor/gates qor/references qor/scripts docs/lifecycle.md docs/operations.md docs/architecture.md README.md` prints ten lines): `qor/gates/chain.md` line 41, `qor/gates/schema/audit.schema.json` line 23, `qor/references/doctrine-governance-enforcement.md` lines 218 and 230, `qor/scripts/remediate_emit_gate.py` lines 2, 34 and 42, and `qor/skills/sdlc/qor-remediate/SKILL.md` lines 13, 122 and 134. Each still holds after Phase 2: `emit` still writes `remediate.json` (chain.md line 41's output column, the module docstring lines 2 and 34, skill lines 13 and 122), the review signal still names a remediate gate path (doctrine lines 218 and 230, schema line 23), and skill line 134 still passes a path that exists. Line 42 is the code line Phase 2 keeps.
 
-The general rule at `qor/gates/chain.md` line 16 ("Runtime:" names `<phase>-iter<N>.json`, immutable, one per emission, plus `<phase>.json` as the latest copy; the line carries inline code spans and is paraphrased) was false for `remediate` at the base and becomes true with this fix; `docs/lifecycle.md` line 15 states the same rule. `qor/gates/chain.md` line 24 scopes its iteration-versioning paragraph, including the sidecar sentence on line 27, to "Every emission through `write_gate_artifact`" (quoted in part), which `emit` is not. No documentation file, skill or compiled variant changes, so `check_variant_drift.py` is unaffected.
+The general rule at `qor/gates/chain.md` line 16 ("Runtime:" names `<phase>-iter<N>.json`, immutable, one per emission, plus `<phase>.json` as the latest copy; the line carries inline code spans and is paraphrased) was false for `remediate` at the base and becomes true with this fix for sequential emissions (LD-5; `write_artifact` also has a narrower concurrency window); `docs/lifecycle.md` line 15 states the same rule. `qor/gates/chain.md` line 24 scopes its iteration-versioning paragraph, including the sidecar sentence on line 27, to "Every emission through `write_gate_artifact`" (quoted in part), which `emit` is not. No documentation file, skill or compiled variant changes, so `check_variant_drift.py` is unaffected.
 
 ### LD-7: fidelity to the candidate, with every deviation declared
 
-`qor/scripts/remediate_emit_gate.py` after Phase 2 equals the candidate head `878c38b3c7bbe5801501ab39f5d6f670205894d2` byte for byte. `tests/test_remediate.py` after Phase 1 equals the candidate except for exactly these deviations:
+`qor/scripts/remediate_emit_gate.py` after Phase 2 equals the candidate head `878c38b3c7bbe5801501ab39f5d6f670205894d2` except for deviation 4. `tests/test_remediate.py` after Phase 1 equals the candidate except for exactly deviations 1 to 4:
 
 1. `test_emit_gate_second_proposal_does_not_destroy_first` reads the bytes of `remediate.json` after the first emission (the bytes a reviewer of that proposal would have hashed) and, after the second emission, asserts that one of the `remediate-iter*.json` files holds exactly those bytes. To do this it defines `session_dir` before the two `emit` calls and globs `versioned = sorted(session_dir.glob("remediate-iter*.json"))` once. The candidate asserted only that the proposal text is recoverable, and its three tests stay green when `emit` writes the singleton with different bytes (M6 below; observed `35 passed` with the candidate's test file under M6).
 2. `test_emit_gate_singleton_still_written_as_latest_copy` asserts that `remediate.json` and `remediate-iter2.json` hold identical bytes. The candidate's docstring claims byte identity but its body checks only `proposal_text`. With this assertion the test is RED at the base (no `remediate-iter2.json`), where the candidate's version was GREEN.
 3. `test_emit_gate_numbers_after_highest_existing_iteration` is added. Without it no test fails when the next number is derived from the count of iteration files (M3 below; observed `35 passed` with the candidate's test file under M3), which is the failure mode the LD-2 gap would expose.
+4. Docstring wording only, so that no docstring states an unqualified no-overwrite guarantee (LD-5). In the `emit` docstring, the candidate's three lines
 
-The candidate plan text is not carried; this plan replaces it. The candidate's code is not otherwise changed: `emit`, `_atomic_write` and the new import are the candidate's.
+   ```text
+       destroys the first. Every call also writes an immutable versioned
+       copy (`remediate-iter<N>.json`, never re-targeting an existing
+       iteration) before refreshing the singleton, mirroring the pattern
+   ```
+
+   become these five lines, and every other line stays the candidate's:
+
+   ```text
+       destroys the first. Every call also writes a versioned copy
+       (`remediate-iter<N>.json`, N one more than the highest existing
+       iteration, so a sequential call never re-targets an existing
+       iteration; concurrent calls in one session are not serialized and can
+       pick the same N) before refreshing the singleton, mirroring the pattern
+   ```
+
+   The docstring of `test_emit_gate_versioned_paths_never_reused` becomes `"""Sequential emissions each get their own iteration path, never re-targeted."""` (the candidate's reads `"""Each emission gets its own immutable iteration path, never re-targeted."""`). The test name is kept; the test makes three sequential emissions. Observed in a scratch clone of the base with the candidate module and test file and only this deviation applied: both files parse to the same syntax tree as the candidate once docstrings are removed, `tests/test_remediate.py` gives `35 passed` twice, and ruff passes. Deviation 4 therefore changes no executable statement, and the test and mutation observations elsewhere in this plan hold unchanged.
+
+The candidate plan text is not carried; this plan replaces it. The candidate's code is not otherwise changed: `emit`, `_atomic_write` and the new import are the candidate's, and only the `emit` docstring text differs (deviation 4).
 
 The tests use only `tmp_path`, write fixed content, never sleep, use no network, and assert no live repository state. The `ts` field is set from the clock, but every byte comparison is between files written by the same `emit` call from one text, so the clock cannot make them differ. The 36-item file was observed green twice in a row with the Phase 2 code (`36 passed`, twice).
 
@@ -195,14 +214,15 @@ Line 14 continues line 13, which opens the `/qor-implement` rule for `## [Unrele
 The note is one `### Fixed` bullet with exactly this text:
 
 ```markdown
-- **Phase 300 (hotfix; a second remediation proposal no longer destroys the first, GH #446)**: `/qor-remediate` Step 5 wrote every proposal to the same `.qor/gates/<sid>/remediate.json`, so a second proposal in a session overwrote the first, including one that had already been reviewed. Each proposal is now also written to its own `.qor/gates/<sid>/remediate-iter<N>.json`, where N is one more than the highest existing iteration in that session, so an existing iteration file is never overwritten, and a superseded proposal stays readable, byte for byte, in its own iteration file. `remediate.json` keeps its path and is refreshed with the same bytes as the newest iteration, and the Step 5 call still returns that path, so readers of `remediate.json` keep working and see the newest proposal there. A proposal overwritten before this fix is not recovered. `docs/release-state.json` records `0.175.3` as `sealed_unpublished`.
+- **Phase 300 (hotfix; a second remediation proposal no longer destroys the first, GH #446)**: `/qor-remediate` Step 5 wrote every proposal to the same `.qor/gates/<sid>/remediate.json`, so a second proposal in a session overwrote the first, including one that had already been reviewed. Each proposal is now also written to an iteration file `.qor/gates/<sid>/remediate-iter<N>.json`, where N is one more than the highest existing iteration in that session, so a later proposal does not overwrite an existing iteration file, and a superseded proposal stays readable, byte for byte, in its own iteration file. Two proposals emitted at the same moment in one session are not serialized and can still land in the same iteration file. `remediate.json` keeps its path and each call refreshes it with the same bytes it wrote to its iteration file, and the Step 5 call still returns that path, so readers of `remediate.json` keep working and see the newest proposal there. A proposal overwritten before this fix is not recovered. `docs/release-state.json` records `0.175.3` as `sealed_unpublished`.
 ```
 
-It is ASCII only and states only what Phase 2 implements. Its only `#` number is the issue reference `GH #446`; it carries no ledger entry number and no hash value; it names no private helper; `/qor-remediate` Step 5 and `.qor/gates/<sid>/` paths are the operator-facing surface. Clause to proof:
+It is ASCII only and states only what Phase 2 implements: its no-overwrite clause is limited to a later proposal, the sequential case D1 guarantees, and it states the concurrent residual of LD-5. In the bullet, "second", "later" and "superseded" name a proposal emitted after an earlier `emit` call has returned. Its only `#` number is the issue reference `GH #446`; it carries no ledger entry number and no hash value; it names no private helper; `/qor-remediate` Step 5 and `.qor/gates/<sid>/` paths are the operator-facing surface. Clause to proof:
 
-- each proposal also goes to its own iteration file, numbered after the highest existing iteration, and no existing iteration is overwritten: LD-2, `test_emit_gate_versioned_paths_never_reused`, `test_emit_gate_numbers_after_highest_existing_iteration`;
+- each proposal also goes to an iteration file numbered after the highest existing iteration, and a later proposal does not overwrite an existing iteration: LD-2, `test_emit_gate_versioned_paths_never_reused`, `test_emit_gate_numbers_after_highest_existing_iteration` (both sequential);
+- proposals emitted at the same moment can land in the same iteration file: LD-5 (a declared residual; no test);
 - a superseded proposal stays readable byte for byte: `test_emit_gate_second_proposal_does_not_destroy_first`;
-- `remediate.json` keeps its path, holds the newest iteration's bytes, and is still returned: LD-3, `test_emit_gate_singleton_still_written_as_latest_copy`, `test_emit_gate_writes_json_at_expected_path`;
+- `remediate.json` keeps its path, is refreshed by each call with the bytes of that call's iteration file (so after sequential calls it holds the newest iteration's bytes), and is still returned: LD-3, `test_emit_gate_singleton_still_written_as_latest_copy`, `test_emit_gate_writes_json_at_expected_path`;
 - readers of `remediate.json` keep working: LD-3, LD-4, the unchanged `mark_addressed` tests in `tests/test_remediate.py`;
 - earlier losses are not recovered: LD-5;
 - the release-state record: LD-10.
@@ -279,7 +299,7 @@ Empty. This plan changes a governance gate writer and its tests; it introduces n
 
 ### Affected Files
 
-- `tests/test_remediate.py` - three candidate tests with deviations 1 and 2, and one added test (LD-7), in the `remediate_emit_gate` block after `test_emit_gate_writes_json_at_expected_path`.
+- `tests/test_remediate.py` - three candidate tests with deviations 1, 2 and 4, and one added test (LD-7), in the `remediate_emit_gate` block after `test_emit_gate_writes_json_at_expected_path`. The file is 616 lines at the base, already over the 250-line Razor cap, and grows by about 87 lines. Disposition: accepted, as sealed Phases 273, 278 and 279 accepted the growth of the already over-cap `tests/test_shadow.py`; the tests sit beside the `emit` tests they extend, and splitting the file is unrelated cleanup (Non-goals).
 
 ### Changes
 
@@ -288,7 +308,7 @@ Insert the four tests below between `test_emit_gate_writes_json_at_expected_path
 ### Unit Tests
 
 - `tests/test_remediate.py::test_emit_gate_second_proposal_does_not_destroy_first` - emits proposal A, reads the bytes of `remediate.json`, emits proposal B in the same session; asserts both proposal texts appear among the `remediate-iter*.json` files and that one of those files holds exactly the bytes read after A. RED at the base (only B exists); discriminates M1, M2, M4 and M6.
-- `tests/test_remediate.py::test_emit_gate_versioned_paths_never_reused` - three emissions in one session; asserts the iteration files are exactly `remediate-iter1.json`, `remediate-iter2.json`, `remediate-iter3.json`. RED at the base; discriminates M1 and M2.
+- `tests/test_remediate.py::test_emit_gate_versioned_paths_never_reused` - three sequential emissions in one session; asserts the iteration files are exactly `remediate-iter1.json`, `remediate-iter2.json`, `remediate-iter3.json`. RED at the base; discriminates M1 and M2.
 - `tests/test_remediate.py::test_emit_gate_singleton_still_written_as_latest_copy` - two emissions; asserts `emit` returns `.../remediate.json`, that file holds the second proposal, and its bytes equal `remediate-iter2.json`. RED at the base (no iteration file); discriminates M1, M2, M4, M5 and M6.
 - `tests/test_remediate.py::test_emit_gate_numbers_after_highest_existing_iteration` (added; LD-7 deviation 3) - the session directory already holds `remediate-iter1.json` and `remediate-iter3.json` with fixed bytes; one emission; asserts both files keep their bytes, the iteration files are exactly iterations 1, 3 and 4, and `remediate-iter4.json` holds the new proposal. RED at the base; discriminates M1, M2 and M3.
 
@@ -307,14 +327,14 @@ Observed in the scratch clone with the Phase 2 code and the 36-item file: M1 `4 
 
 ### Affected Files
 
-- `qor/scripts/remediate_emit_gate.py` - import `next_iteration_path`; add `_atomic_write`; `emit` writes the versioned file, then the singleton; docstring of `emit`.
+- `qor/scripts/remediate_emit_gate.py` - import `next_iteration_path`; add `_atomic_write`; `emit` writes the versioned file, then the singleton; docstring of `emit` (LD-7 deviation 4).
 
 ### Changes
 
 - Below `from qor import workdir as _workdir`, add `from qor.scripts.validate_gate_artifact import next_iteration_path`.
 - Add `_atomic_write(target: Path, text: str) -> None`: `tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=target.parent, delete=False, suffix=".tmp")`, write `text`, then `os.replace(tmp_path, target)`.
 - In `emit`, after `payload["ts"]` is set: `text = json.dumps(payload, indent=2, sort_keys=False) + "\n"`; `versioned_path = next_iteration_path("remediate", out_dir)`; `_atomic_write(versioned_path, text)`; `_atomic_write(out_path, text)`; `return out_path`. The base's inline temporary-file block is removed. `validate_session_id`, the directory creation and `out_path` are unchanged.
-- The `emit` docstring is the candidate's: it keeps its first line, says it returns the singleton path, and adds a GH #446 paragraph on the versioned copy, the shared pattern with `write_gate_artifact`, and the unchanged singleton path and return value.
+- The `emit` docstring is the candidate's with LD-7 deviation 4 applied: it keeps its first line, says it returns the singleton path, and adds a GH #446 paragraph on the versioned copy (no re-targeting for sequential calls; concurrent calls not serialized), the shared pattern with `write_gate_artifact`, and the unchanged singleton path and return value.
 
 The bytes written are the base's bytes: `json.dump(payload, tf, indent=2, sort_keys=False)` followed by `"\n"` at the base equals `json.dumps(payload, indent=2, sort_keys=False) + "\n"`.
 
@@ -324,7 +344,7 @@ The bytes written are the base's bytes: `json.dump(payload, tf, indent=2, sort_k
 - Run mutations M1-M6 (Phase 1) and observe each named failure; revert.
 - The consumers named in LD-3 and LD-4 stay GREEN unchanged: `python -m pytest tests/test_security_fixes.py tests/test_sg_closure_enforcement.py tests/test_remediate_enforcer_edges.py tests/test_remediate_per_event_enforcers.py tests/test_session_marker_staleness.py tests/test_gates.py -q` (observed in the scratch clone with Phase 2 applied: `100 passed`).
 - Full suite: `python -m pytest tests/ -q` stays GREEN (observed in the scratch clone with Phases 1 to 3 applied: `3615 passed, 3 skipped, 4 deselected`); `python -m ruff check qor/ tests/` prints `All checks passed!`, and `python -m qor.scripts.publication_boundary_lint --repo-root .` reports `0 finding(s)`.
-- Fidelity check (LD-7), after `git fetch origin phase/292-remediate-gate-versioning`: `git diff 878c38b3c7bbe5801501ab39f5d6f670205894d2 -- qor/scripts/remediate_emit_gate.py` prints nothing, and `git diff 878c38b3c7bbe5801501ab39f5d6f670205894d2 -- ./tests/test_remediate.py` shows only deviations 1 to 3. The implementer records the observed diff summary in the implementation report.
+- Fidelity check (LD-7), after `git fetch origin phase/292-remediate-gate-versioning`: `git diff 878c38b3c7bbe5801501ab39f5d6f670205894d2 -- qor/scripts/remediate_emit_gate.py` shows only the deviation 4 docstring hunk, and `git diff 878c38b3c7bbe5801501ab39f5d6f670205894d2 -- ./tests/test_remediate.py` shows only deviations 1 to 4. The implementer records the observed diff summary in the implementation report.
 
 ## Phase 3: Release-state continuity and CHANGELOG note
 
@@ -353,8 +373,8 @@ Append the LD-10 entry as the last element of `exceptions`, with the same key or
 
 ### Deliverable: a second remediation proposal no longer destroys the first
 
-- **D1**: every `emit` call writes the proposal to a new `.qor/gates/<sid>/remediate-iter<N>.json`, N being one more than the highest existing remediate iteration in that directory, then refreshes `.qor/gates/<sid>/remediate.json` with the same bytes, and returns the `remediate.json` path. No existing iteration file is overwritten by a sequential `emit`. The LD-5 residuals are declared.
-- **D2**: `qor/scripts/remediate_emit_gate.py` imports `next_iteration_path` from `qor.scripts.validate_gate_artifact`, defines `_atomic_write(target: Path, text: str) -> None`, and keeps `emit(proposal: dict, session_id: str, base_dir: Path | None = None) -> Path` and `validate_session_id` unchanged in signature. The Phase 2 fidelity check shows no diff to the candidate for the module and only LD-7 deviations 1 to 3 for the test file.
+- **D1**: every `emit` call writes the proposal to `.qor/gates/<sid>/remediate-iter<N>.json`, N being one more than the highest existing remediate iteration in that directory when the call computes it, then refreshes `.qor/gates/<sid>/remediate.json` with the same bytes, and returns the `remediate.json` path. No existing iteration file is overwritten by a sequential `emit`. Two concurrent `emit` calls in one session can pick the same N, and the later write replaces the earlier; this and the other LD-5 residuals are declared, and the LD-9 bullet and the `emit` docstring state no wider guarantee.
+- **D2**: `qor/scripts/remediate_emit_gate.py` imports `next_iteration_path` from `qor.scripts.validate_gate_artifact`, defines `_atomic_write(target: Path, text: str) -> None`, and keeps `emit(proposal: dict, session_id: str, base_dir: Path | None = None) -> Path` and `validate_session_id` unchanged in signature. The Phase 2 fidelity check shows only LD-7 deviation 4 (docstring text) against the candidate for the module and only LD-7 deviations 1 to 4 for the test file.
 - **D3**: no documentation, skill, schema or compiled variant changes (LD-6). Phase 300 follows canonical branch and plan resolution and receives current-revision audit and substantiation evidence before promotion; no evidence from the candidate branch is reused as authority. The `## [Unreleased]` bullet carries exactly the LD-9 text at implement time.
 - **D4**: the four Phase 1 tests are RED before Phase 2 and GREEN after (`4 failed, 32 passed` at the base; `36 passed` twice after). Each mutation M1-M6 turns exactly its named tests RED. The LD-3 and LD-4 consumer tests stay GREEN.
 
