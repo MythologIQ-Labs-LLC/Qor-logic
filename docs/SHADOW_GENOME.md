@@ -3021,4 +3021,28 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #41: VETO -- plan-qor-phase299-session-marker-staleness (iter 4)
+
+**Date**: 2026-09-28
+**Verdict ID**: session 2026-09-28T0026-1e38ee audit (META_LEDGER Entry #822)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The amendment closed the iteration-3 ground and both advisories, and every behavior clause of the mandated texts now holds across the full age-by-directory matrix. The mandated CHANGELOG bullet still breaks the rule that governs it. It ends "(sealed at META_LEDGER #818; no remote tag)", and `qor/references/doctrine-changelog.md`, which LD-9 cites as the `/qor-implement` rule for that bullet, says ledger entry numbers do not appear in the CHANGELOG. The plan's citation stops at line 14, one line before the prohibition. The ledger number entered in iteration 3 and survived one audit.
+
+### Why It Failed
+
+Each re-derivation checked the bullet's clauses against the code, not against the authoring rules for the file it lands in. The rule was cited by a truncated line, so the prohibition in the same sentence was never read against the text. Internal provenance (a ledger entry number) was carried from the release-state reason into the user-facing note.
+
+### Pattern to Avoid
+
+When a plan mandates verbatim text for a governed file, check the text against that file's authoring doctrine as well as against the code, and read the cited rule to the end of its sentence. Keep internal provenance (ledger entry numbers, hashes) in the ledger and machine records, not in the CHANGELOG. Related: Entries #38, #39, #40.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*

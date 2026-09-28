@@ -24292,6 +24292,25 @@ Dependency Review root-path and per-lockfile admission coverage (GH #511). `.git
 
 **Required next action**: Governor amends via /qor-plan (scope the LD-9 CHANGELOG rotation clause to stale markers, keeping malformed content at any age), then /qor-audit.
 
+### Entry #822: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T01:54:55Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `f90531390a32`
+**Verdict**: VETO
+
+**Content Hash**: `9b197349fe264498739b1e728be8181501106bee307c03a4d8b0738ca42999aa`
+**Previous Hash**: `59c156944dc78767cf30a0952fbecc3eca569b386b8a0dafbf725cb4f9af20da`
+**Chain Hash (Merkle seal)**: `302d493de46d3b415429a53ae45e59afc57de2211a820958570ea8a64493d55d`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: VETO (iter 4 on base 8ee9d98). Iteration-3 ground V1 and advisories A1/A2 closed as written, reproduced in a scratch clone outside the repo: 29-item Phase 1 file rebuilt from plan text gives 10 failed, 19 passed at base (the ten named items) and 29 passed twice with the Phase 2 session.py; M1-M15 each fail exactly their named items with the stated counts; behavior matrix (1 h and 25 h x ten directory states, valid content; three malformed contents at both ages) matches every scoped clause of the LD-9 bullet, lifecycle.md:68, chain.md:20 and the docstrings; `qor-logic scripts session end` / `session_tool rotate` / `session new` behave as stated through qor.cli. All 61 citations re-run at 8ee9d98: 0 mismatches. 150 session files 1284 passed; full suite with Phases 1-3: 3611 passed, 3 skipped; variant drift clean; release-state CI-view simulation and guarded clone proof reproduce. Governor ordering deviation (plan text tightened after the plan gate write) judged immaterial: the plan gate carries no plan hash, its phases/ci_commands/boundaries match the final text, and target_content_hash c4f85f82 binds the audited text. Escalator: cce.check and check_session_total None (consecutive count 1). V1 (`specification-drift`): the LD-9 CHANGELOG bullet mandated verbatim by D3 carries the ledger entry number 'META_LEDGER #818', while doctrine-changelog.md lines 14-16, the rule LD-9 cites, says ledger entry numbers do not appear in the CHANGELOG; the Phase 298 precedent bullet omits it. Advisories: LD-6 wider-grep output omits docs/archive hits; qor-help SKILL.md:135 None-cause list outside the sweep. Option B fresh-context reviewer. Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: Governor amends via /qor-plan (remove the ledger entry number from the LD-9 CHANGELOG bullet; keep it in the LD-10 release-state reason), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*
