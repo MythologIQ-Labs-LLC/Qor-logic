@@ -24311,6 +24311,25 @@ Dependency Review root-path and per-lockfile admission coverage (GH #511). `.git
 
 **Required next action**: Governor amends via /qor-plan (remove the ledger entry number from the LD-9 CHANGELOG bullet; keep it in the LD-10 release-state reason), then /qor-audit.
 
+### Entry #823: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T02:23:22Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `c06b0f2c7546`
+**Verdict**: PASS
+
+**Content Hash**: `9641a16c3bb802d5a279b4c8424e140dbd6a3054b96bbc53239a7ac13c677965`
+**Previous Hash**: `302d493de46d3b415429a53ae45e59afc57de2211a820958570ea8a64493d55d`
+**Chain Hash (Merkle seal)**: `47f1244616e127a1295f8b101d9978e692351f95ab0506811077c4780e5ce80e`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: PASS (iter 5 on base 8ee9d98). Iteration-4 ground V1 and advisories A1/A2 resolved as written, reproduced in scratch clones outside the repo: the LD-9 CHANGELOG bullet carries no ledger number or hash (only GH #483) and matches the Phase 298 release-state sentence form, the #818 reference stays only in the LD-10 release-state reason per the #792-#814 precedent; the LD-6 wider grep prints exactly the eleven named lines; the qor-help SKILL.md:135 parenthetical is corrected and dist_compile rewrites exactly the six named copies plus seven manifests (manifests differ from a base-only compile only in generated_ts and the qor-help hash), variant drift OK 406, and without recompile drift reports 6 differences and the four named variant sync tests fail. Fresh audit: all 63 citations re-run at 8ee9d98, 0 mismatches; 29-item Phase 1 file rebuilt from plan text gives 10 failed, 19 passed at base, 29 passed twice with the fix, 3 failed with the candidate session.py; M1-M15 fail exactly their named items with the stated counts; two-age by ten-directory matrix and malformed contents match LD-3 and every mandated text; installed-CLI session new/rotate/end behave as stated; 150 session files 1284 passed; full suite 3611 passed, 3 skipped; CI-view simulation prints set() {'0.175.2'} with the entry and {'0.175.2'} {'0.175.2'} without; guarded clone proof exits 0 (4 passed, twice) on a simulated seal commit, 1 without the entry, and fails its guard at base. Escalator: consecutive specification-drift count 2 (<3), session totals max 2; did not fire. Advisories: test file lands near the 250-line razor limit (keep <=250 at implement); header limitation shorthand for the read rule; workspace fragility pre-existing. Option B fresh-context reviewer. Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: /qor-implement.
+
 ---
 
 *Chain integrity: VALID*
