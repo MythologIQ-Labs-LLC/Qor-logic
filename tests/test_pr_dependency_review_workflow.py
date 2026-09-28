@@ -6,11 +6,32 @@ import re
 
 import yaml
 
-_WORKFLOW = pathlib.Path(".github/workflows/pr-dependency-review.yml")
+_REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
+_WORKFLOW = _REPO_ROOT / ".github" / "workflows" / "pr-dependency-review.yml"
+
+# Phase 298 (GH #511): guards the derived set against silently shrinking.
+_KNOWN_GOVERNED = {
+    "pyproject.toml",
+    "requirements-release.in",
+    "requirements-release.txt",
+    "requirements-sbom.in",
+    "requirements-sbom.txt",
+}
 
 
 def _load() -> dict:
     return yaml.safe_load(_WORKFLOW.read_text(encoding="utf-8"))
+
+
+def _governed_dependency_paths() -> set[str]:
+    """Root requirements-*.in / requirements-*.txt files plus pyproject.toml."""
+    names = {
+        p.name
+        for pattern in ("requirements-*.in", "requirements-*.txt")
+        for p in _REPO_ROOT.glob(pattern)
+        if p.is_file()
+    }
+    return names | {"pyproject.toml"}
 
 
 def test_workflow_file_exists():
@@ -51,14 +72,56 @@ def test_workflow_triggers_on_dependency_paths():
     assert on_block is not None, "workflow must declare an 'on' trigger block"
     pr_block = on_block.get("pull_request") or {}
     paths = pr_block.get("paths") or []
-    required_paths = {"pyproject.toml", "requirements-release.txt"}
-    assert required_paths.issubset(set(paths)), (
-        f"on.pull_request.paths must include {required_paths}; got {paths!r}"
+    governed = _governed_dependency_paths()
+    assert _KNOWN_GOVERNED <= governed, (
+        f"derived governed set lost known members: {_KNOWN_GOVERNED - governed}"
+    )
+    missing = governed - set(paths)
+    assert not missing, (
+        f"on.pull_request.paths must cover every governed dependency path; "
+        f"missing {sorted(missing)}"
     )
     workflow_glob_present = any(p.startswith(".github/workflows/") for p in paths)
     assert workflow_glob_present, (
         "on.pull_request.paths must include a glob covering .github/workflows/**"
     )
+
+
+def _admission_steps(workflow: dict) -> list[tuple[dict, dict]]:
+    """(job, step) pairs whose run invokes dependency_admission_lint."""
+    return [
+        (job, step)
+        for job in (workflow.get("jobs") or {}).values()
+        for step in job.get("steps") or []
+        if "dependency_admission_lint" in (step.get("run") or "")
+    ]
+
+
+def _lockfile_arg(run: str) -> str | None:
+    m = re.search(r"--lockfile\s+\"?([^\s\"]+)\"?", run)
+    return m.group(1) if m else None
+
+
+def test_admission_lint_runs_for_every_governed_lockfile():
+    """Phase 298: one unguarded hard-fail admission step per governed lockfile."""
+    pairs = _admission_steps(_load())
+    named = [_lockfile_arg(step["run"]) for _, step in pairs]
+    lockfiles = {p for p in _governed_dependency_paths() if p.endswith(".txt")}
+    for lockfile in sorted(lockfiles):
+        assert named.count(lockfile) == 1, (
+            f"{lockfile} must be named by exactly one admission step; got {named!r}"
+        )
+    for job, step in pairs:
+        run = step["run"]
+        assert "--base" in run, f"admission step must pass --base: {run!r}"
+        assert "|| true" not in run and "set +e" not in run, (
+            f"admission step must hard-fail: {run!r}"
+        )
+        for owner in (step, job):
+            assert "if" not in owner, f"admission step or job is if-guarded: {run!r}"
+            assert not owner.get("continue-on-error"), (
+                f"admission step or job continues on error: {run!r}"
+            )
 
 
 def test_lint_step_does_not_have_or_true_wrap():

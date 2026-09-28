@@ -24139,6 +24139,102 @@ Sealed/versioned != released/published (GH #520). `qor/scripts/release_state.py`
 
 **Gates**: substantiate_gates (10 parsed), intent_lock verify, skill_admission, gate_skill_matrix (broken 0), session_id_lint, secret_scanner, merge_velocity (healthy), skill_size_budget (3 WARN, 0 EXCEEDED), ledger_commitment (9 touched), doc_integrity strict, governance_index enforce, feature_index_verify (27/27), version_applicability (v0.175.1 > v0.172.2) all pass. dod_check: no findings. procedural_fidelity WARN: doc-surface-uncovered (its genome append names no log and is swallowed). Doc currency WARN: release_state.py and doctrine-changelog.md without a system-tier doc update (plan: doc_tier minimal, operations.md unchanged). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 33 (every source skill reported missing). continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body. Boundary: pre-seal `publication_boundary_lint` 0 findings at scope structural (no identity overlay present); Step 4.6.14 re-runs after staging. Suite pre-seal: 3579 passed, 3 skipped.
 
+### Entry #815: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-27T23:37:22Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `6327ee2b331c`
+**Verdict**: VETO
+
+**Content Hash**: `04d95525eee5c34cb23f6faf1adb01ed8aabbcd3878b3eff6ca8da3849a8f47a`
+**Previous Hash**: `f7de1f9875f54169520a8646f609cfa828f87ea1454aca6d3215d83c6c6f727c`
+**Chain Hash (Merkle seal)**: `ac5aa546ad57d7218e9a50972a6c571be77ccfedce9d2ee327eaff09482b698b`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+**Decision**: VETO (iter 1 on base 43ee76b). Carried substance holds: all 49 evidence statements reproduce at 43ee76b; Phase 1 tests prototyped in a scratch clone (CLI tests GREEN x2, RED under both LD-9 mutations; workflow tests RED pre-fix, GREEN post-fix); LD-10 true (v0.175.2 > v0.175.1; af0ae68c not an ancestor); LD-11 entry truthful and the implement-time CI-view simulation discriminates ({'0.175.1'} {'0.175.1'} at base, set() {'0.175.1'} with entry). V1 (`specification-drift`): the Provenance paragraph claims every cited file is byte-identical to 15729311; false for 8 of 17 cited files (5 differ, release_state.py, release-state.json and test_release_state.py absent at 15729311), exactly the LD-10/LD-11 citations. V2 (`infrastructure-mismatch`): the substantiate-time scratch-clone proof copies committed history only but is scheduled after the version bump, which /qor-substantiate makes at Step 7.5 and commits at Step 9.5; run there it clones version 0.175.1 and passes with no release-state entry (reproduced: 4 passed). Option B fresh-context reviewer (audit_risk_score option_b_required). Session `2026-09-27T2325-bf1a15`.
+
+**Required next action**: Governor amends via /qor-plan (correct the Provenance byte-identity claim; bind the clone proof to the committed seal revision with a guard that the clone's project version is 0.175.2), then /qor-audit.
+
+### Entry #816: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-27T23:53:17Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `322c3a8f8141`
+**Verdict**: PASS
+
+**Content Hash**: `d996618335b1f30261b03cc8ac9ce2b9f1aa9cc5220b580cd7414bd6c704a159`
+**Previous Hash**: `ac5aa546ad57d7218e9a50972a6c571be77ccfedce9d2ee327eaff09482b698b`
+**Chain Hash (Merkle seal)**: `9973efbef85e069c46172b59734c6e50b7484e61ebdc0882608aeee1221cb930`
+
+**Decision**: **Target**: `docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md`
+
+**Decision**: PASS (iter 2 on base 43ee76b). VETO #815 grounds resolved: V1 per-file byte-identity record recomputed with git diff --name-only 15729311..43ee76b for all 18 cited files and matches (10 identical, 5 changed, 3 absent; all changes via PR #521); V2 guarded post-seal clone proof reproduced in a scratch clone outside the repo: guard FAIL at implement state, uncommitted bump and unstamped bump; 1 failed (orphan 0.175.1) on a simulated seal without the entry; 4 passed twice with it; exit 1 when pytest is green with skips. Fresh audit: 51 evidence statements re-run at 43ee76b with 0 mismatches; Phase 1/2 tests prototyped (CLI GREEN x2, RED under both LD-9 mutations; workflow tests RED pre-fix, GREEN post-fix). Escalator not fired. Advisories A1-A4 (CI Commands pre-seal contract vs post-seal proof; proof after Merkle seal; empty Unreleased relies on seal-time population; workspace fragility). Option B fresh-context reviewer. Session `2026-09-27T2325-bf1a15`.
+
+**Required next action**: /qor-implement.
+
+### Entry #817: IMPLEMENTATION
+
+**Timestamp**: 2026-09-27T23:58:03Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `7af5a894b801`
+**Plan**: docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md
+**Session**: 2026-09-27T2325-bf1a15
+
+**Content Hash**: `4ff65d490d89c3c1367c92396d2417934180e692e9629f83e3fdcce45527abfa`
+**Previous Hash**: `9973efbef85e069c46172b59734c6e50b7484e61ebdc0882608aeee1221cb930`
+**Chain Hash (Merkle seal)**: `3007cc17e21f8ea064ab4a089008d4b7a240142a95ac2d678262c86be5c4f616`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Dependency Review root-path and per-lockfile admission coverage (GH #511), re-done test-first on base 43ee76b7; the prior-branch implementation 357baf3 was reference only and nothing was copied from it.
+
+Workflow: `.github/workflows/pr-dependency-review.yml` `pull_request.paths` adds `requirements-release.in`, `requirements-sbom.in`, `requirements-sbom.txt` (existing paths, action pin, `fail-on-severity: high` unchanged). The single admission step is replaced by two unguarded hard-fail steps, each passing `--base` and `--lockfile` (`requirements-release.txt`, `requirements-sbom.txt`). No code under `qor/` changed (LD-3).
+
+Tests: `tests/test_pr_dependency_review_workflow.py` resolves the workflow from the repository root, derives the governed set (root `requirements-*.in/.txt` plus `pyproject.toml`, guarded by `_KNOWN_GOVERNED`), rewrites `test_workflow_triggers_on_dependency_paths` and adds `test_admission_lint_runs_for_every_governed_lockfile` (all jobs; step and job `if:`/`continue-on-error` guards). RED before the workflow edit: 2 failed, 6 passed (three missing paths; no step named a lockfile). New `tests/test_dependency_admission_lint_cli.py` (regression coverage backfill, LD-9): GREEN on first run; line-254 mutation RED (fetched cyclonedx-bom and sbom-anchor), line-248 mutation RED (fetched build), each under `python -B -m pytest`; reverted, `git diff --exit-code` clean. GREEN after: 8 passed, twice.
+
+Doctrine and glossary: `doctrine-dependency-admission.md` names `requirements-sbom.txt`, adds the Phase 298 lockfile-coverage paragraph with the pyproject-pin residual (LD-7), and corrects the stale manual/deferred wording; the `dependency-admission-lint` glossary definition no longer says WARN-only or release-lockfile-only.
+
+Release state (LD-11): `docs/release-state.json` gains one entry, `0.175.1` / `sealed_unpublished` (META_LEDGER #814). CI-view simulation printed `{'0.175.1'} {'0.175.1'}` before the entry and `set() {'0.175.1'}` after. Post-seal clone proof deferred to substantiate by plan. CHANGELOG Unreleased carries one Fixed note (advisory A3).
+
+Verification: full suite 3582 passed, 3 skipped; release-state and tag-coverage 29 passed; doctrine and glossary tests 11 passed; ruff clean; `publication_boundary_lint` 0 findings; variant drift none; ledger chain verifies. Intent lock captured before implementation code.
+
+### Entry #818: SESSION SEAL -- Phase 298 dependency review SBOM path coverage (v0.175.2)
+
+**Timestamp**: 2026-09-28T00:04:42Z
+**Phase**: SEAL (Phase 298)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `a5c605021d30`
+**Plan**: docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md
+**Session**: 2026-09-27T2325-bf1a15
+
+**Content Hash**: `9af6ca65d3ad8444b2dc37da9b1be6cb297cf51bb37cd0551396715a3da44554`
+**Previous Hash**: `3007cc17e21f8ea064ab4a089008d4b7a240142a95ac2d678262c86be5c4f616`
+**Chain Hash (Merkle seal)**: `4addc7df12666bfbb03a305f99a20a35f371b48d6501f236813a008ae701f69c`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.3, PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+Dependency Review root-path and per-lockfile admission coverage (GH #511). `.github/workflows/pr-dependency-review.yml` `pull_request.paths` names every governed root dependency file (`pyproject.toml`, `requirements-release.in`, `requirements-release.txt`, `requirements-sbom.in`, `requirements-sbom.txt`; `.github/workflows/**` kept), and the cooling-period admission step runs once per governed root lockfile, each step passing `--base` and `--lockfile`, unguarded and hard-fail. `tests/test_pr_dependency_review_workflow.py` derives the governed set from the repository root; `tests/test_dependency_admission_lint_cli.py` (regression coverage backfill) proves `main` routes `--lockfile` to both reads. Doctrine and glossary wording corrected; pyproject-pin residual declared (LD-7). No code under `qor/` changed (LD-3). `docs/release-state.json` gains the single LD-11 entry `0.175.1` / `sealed_unpublished`. Audit: VETO iter 1 (#815), PASS iter 2 (#816); implementation #817.
+
+**Version**: 0.175.1 -> 0.175.2 (hotfix; LD-10). After the bump `0.175.2` is the single implicit candidate and the superseded `0.175.1` (sealed at #814, no remote tag) is covered by its `sealed_unpublished` entry. No remote tag is created; the seal tag stays local. Nothing is published.
+
+**CHANGELOG**: stamped `[0.175.2] - 2026-09-28` by `changelog_backends.stamp` (keepachangelog). The stamp does not emit the `_Built via ..._` line and `tests/test_attribution_tiered_usage.py::test_changelog_post_cutoff_versions_have_attribution_line` failed without it, so the line was inserted below the new header from `attribution.changelog_attribution_line()`. The Unreleased note, now under `[0.175.2]`, describes only what was implemented.
+
+**Reality audit**: all planned files exist (workflow, two test files, doctrine, glossary, release-state record); no MISSING, no UNPLANNED implementation file. Governance artifacts (plan, audit report, gate artifacts, shadow-genome appends, ledger) come from the plan/audit/implement sessions. Judge re-proved independently in a scratch clone: CLI test RED under the line-254 and line-248 `args.lockfile` mutations (`python -B`), GREEN reverted; both workflow tests RED on the pre-fix workflow from 43ee76b7, 8 passed on HEAD. Section 4: test files 95 and 159 lines, longest function 25 lines; ruff clean. Presence-only gate: every new test invokes its unit and asserts output.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner, merge_velocity (healthy, 5 PRs/7d), skill_size_budget (3 WARN, 0 EXCEEDED), ledger_commitment (8 touched), doc_integrity strict, governance_index enforce (Last Reviewed advanced to 2026-09-28), feature_index_verify (27/27, snapshot 2026-09-27T2225-1d09cf), version_applicability (v0.175.2 > v0.175.1), ledger chain verified through #817, variant drift none, per-lockfile admission lint `_No lockfile bumps detected._` for both lockfiles. dod_check: no findings. procedural_fidelity WARN: doc-surface-uncovered. Doc currency WARN: doctrine-dependency-admission.md without a system-tier doc update (plan doc_tier minimal; WARN + continue). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 32 (every source skill reported missing). Continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body. Spec fold: no declared deltas. Boundary: pre-seal `publication_boundary_lint` 0 findings at scope structural (no identity overlay present); Step 4.6.14 re-runs after staging. Suite pre-seal: 3582 passed, 3 skipped.
+
+**Post-seal proof**: the plan's guarded CI-view clone proof (LD-11, Phase 4) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
+
 ---
 
 *Chain integrity: VALID*

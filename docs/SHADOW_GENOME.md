@@ -2925,4 +2925,28 @@ A restore, reset, or discard instruction must name its exact file set. Never cov
 
 ---
 
+## Entry #37: VETO -- plan-qor-phase298-dependency-review-sbom-path-coverage (recomposed, iter 1)
+
+**Date**: 2026-09-27
+**Verdict ID**: session 2026-09-27T2325-bf1a15 audit (META_LEDGER Entry #815)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The plan was recomposed on a new base, and two things in it were wrong. First, its Provenance paragraph kept a blanket statement that every cited file is byte-identical to the prior base. The recomposition had added citations to files that the intervening phase changed or created. Second, the new seal-time proof clones the checkout to model the CI view. It was scheduled "after the version bump", but at that point the bump is not yet committed, so the clone carries the pre-seal version and passes with or without the release-state entry under test.
+
+### Why It Failed
+
+The blanket attestation was carried over from the prior plan and not re-scoped when new LD citations were added. The clone proof was written against the idea of a "sealed revision" without checking where /qor-substantiate commits the bump relative to its verification steps.
+
+### Pattern to Avoid
+
+When a plan is recomposed, re-derive every blanket verification claim ("all cited files unchanged") over the final citation set, or drop it. Any proof that clones or archives the checkout observes committed history only: bind it to a named committed revision and assert the observed state (for example the clone's project version) so it cannot pass vacuously. Related: Entry #35, Entry #36.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*

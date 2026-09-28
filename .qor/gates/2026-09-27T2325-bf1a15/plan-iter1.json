@@ -1,0 +1,52 @@
+{
+  "phase": "plan",
+  "session_id": "2026-09-27T2325-bf1a15",
+  "ts": "2026-09-27T23:29:41Z",
+  "plan_path": "docs/plan-qor-phase298-dependency-review-sbom-path-coverage.md",
+  "phases": [
+    "Phase 1: Regression tests",
+    "Phase 2: Workflow coverage",
+    "Phase 3: Doctrine scope note",
+    "Phase 4: Release-state continuity"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_pr_dependency_review_workflow.py -q",
+    "python -m pytest tests/test_dependency_admission_lint_cli.py -q",
+    "python -m pytest tests/test_doctrine_dependency_admission.py -q",
+    "for f in requirements-*.txt; do python -m qor.scripts.dependency_admission_lint --base origin/main --lockfile \"$f\" || exit 1; done",
+    "python -m pytest tests/test_release_state.py tests/test_changelog_tag_coverage.py -q",
+    "python -c \"import subprocess; from pathlib import Path; from qor.scripts import release_state as rs; import tests.test_changelog_tag_coverage as t; remote = {l.rsplit('/', 1)[1] for l in subprocess.run(['git', 'ls-remote', '--tags', 'origin'], capture_output=True, text=True, check=True).stdout.split() if l.startswith('refs/tags/v') and not l.endswith('^{}')}; tags = {v for v in rs.merged_semver_tags(t.REPO) if 'v' + v in remote}; versions = t._changelog_versions() | {'0.175.2'}; ex = rs.load_release_state(t.RELEASE_STATE, versions); print(rs.coverage_violations(versions, tags, '0.175.2', ex).orphans, rs.coverage_violations(versions, tags, '0.175.2', {k: v for k, v in ex.items() if k != '0.175.1'}).orphans)\"",
+    "T=$(mktemp -d) && R=$(git ls-remote --tags origin | awk '{print $2}') && git clone -q --no-local . \"$T/c\" && git -C \"$T/c\" tag -l 'v*' | while read tg; do printf '%s\\n' \"$R\" | grep -qx \"refs/tags/$tg\" || git -C \"$T/c\" tag -d \"$tg\" >/dev/null; done && (cd \"$T/c\" && PYTHONPATH=. python -m pytest tests/test_changelog_tag_coverage.py -q)",
+    "python -m pytest tests/ -q",
+    "python qor/scripts/check_variant_drift.py",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m ruff check qor/ tests/",
+    "python -m qor.scripts.publication_boundary_lint --repo-root ."
+  ],
+  "open_questions": [],
+  "doc_tier": "minimal",
+  "change_class": "hotfix",
+  "originating_remediation": "GH #511",
+  "feature_inventory_touches": [],
+  "boundaries": {
+    "non_goals": [
+      "dependency version changes",
+      "dependency-policy redesign (threshold, override, severity)",
+      "changes to dependency_admission_lint code, including wiring pyproject pins through its CLI entry point",
+      "weakening or bypassing Dependency Review",
+      "merging #496 through the pre-fix enforcement gap",
+      "release-state dispositions for any version other than 0.175.1, changes to qor/scripts/release_state.py, remote tag pushes, or publication",
+      "reusing PR #522's audit, implementation or seal evidence as authority on this branch",
+      "hand-issuing governance evidence",
+      "unrelated repository cleanup"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.1",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-09-27T23:29:41Z"
+  }
+}
