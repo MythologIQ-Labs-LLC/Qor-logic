@@ -24525,6 +24525,38 @@ Release state: `docs/release-state.json` gains 0.175.4 sealed_unpublished (reaso
 
 Verification: consumer suites 113 passed; release/changelog suites 34 passed; full suite 3627 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored); ruff clean; publication_boundary_lint 0; check_variant_drift OK 406 files; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
 
+### Entry #832: SESSION SEAL -- Phase 301 a shadow issue no longer claims a threshold breach its own numbers do not show (v0.175.5)
+
+**Timestamp**: 2026-09-28T04:35:57Z
+**Phase**: SEAL (Phase 301)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `68b44646692f`
+**Plan**: docs/plan-qor-phase301-shadow-breach-header.md
+**Session**: 2026-09-28T0359-d92786
+
+**Content Hash**: `71a00e948fa28efea5715a4272cec22e3cea134cd5538bcd28ddfe6c695db2d4`
+**Previous Hash**: `0554c43954e0d44800e1e0702af22a29d91e6193a3f129272ce66be7e360b817`
+**Chain Hash (Merkle seal)**: `939e7209bd580eadce5d11468ecc4080b382690456aca790079f59375d73e83a`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+A shadow issue no longer claims a threshold breach its own numbers do not show (GH #474). `qor/scripts/create_shadow_issue.py` imports `check_shadow_threshold as _cst` directly after the advisory import; `load_marker` exits naming a non-integer or bool `threshold` and its docstring now types `threshold` alongside `event_ids`; it adds `_severity_sum`, `is_breach`, `build_title` and `_header`; `build_body` takes `marker: dict | None` and builds its header from `_header`; `main` passes `None` as the `--events` marker and titles with `build_title`. The breach title and header are unchanged byte for byte (em dash written as an escape; module source ASCII-only). `tests/test_shadow_issue_header.py` adds 6 functions (12 items). `docs/release-state.json` gains the single LD-11 entry `0.175.4` / `sealed_unpublished`. Declared residuals (LD-5): the wording compares the plain sum the header prints, not the collapsed sum the writer tests; a marker is judged by the threshold it records; issues already filed are not rewritten; the second `MARKER_PATH` definition stays. Audit: PASS iter 1 (#830); implementation #831; intent lock VERIFIED against the iter-1 plan and audit hashes.
+
+**Version**: 0.175.4 -> 0.175.5 (hotfix; LD-9). After the bump `0.175.5` is the single implicit candidate and the superseded `0.175.4` (sealed at #829, no remote tag) is covered by its `sealed_unpublished` entry. No remote tag is created; the seal tag stays local. Nothing is published.
+
+**CHANGELOG**: stamped `[0.175.5] - 2026-09-28` by `changelog_backends.stamp` (keepachangelog). The stamp does not emit the `_Built via ..._` line and `tests/test_attribution_tiered_usage.py::test_changelog_post_cutoff_versions_have_attribution_line` failed without it (`v0.175.5`), so the line was inserted below the new header from `attribution.changelog_attribution_line()`. The Unreleased note, now under `[0.175.5]`, is the LD-10 bullet byte for byte and describes only what was implemented.
+
+**Reality audit**: all planned files exist and match the plan: the module diff against the base is the import, the threshold type check and docstring sentence, the four helpers, the `build_body` head and the two `main` lines; the CHANGELOG bullet equals the LD-10 text byte for byte; the release-state entry carries the LD-11 reason. No MISSING, no UNPLANNED implementation file (the shadow-genome, audit-report and gate-artifact changes on the branch are plan/audit governance output). `ledger_commitment` OK (5 touched artifacts). Section 4: module 473 lines and `main` over the cap before this phase (LD-7 disposition, audit A2); each new function is under 40 lines with nesting of 2 or less; ruff clean. Presence-only gate: every new test drives `csi.main()` or `csi.load_marker()` and asserts exact title, header lines or the exit message. Judge re-proof in a scratch clone outside the repository: base module 10 failed, 2 passed; implemented module 12 passed twice; mutations M1-M8 over the new file plus `tests/test_shadow.py` (60 items) 6/1/4/2/2/4/4/1 failed, as the plan names; consumer suites 113 passed. No skill file modified.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), merge_velocity (healthy, 8 PRs/7d), skill_size_budget (3 WARN, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), governance_index enforce (Last Reviewed 2026-09-28), feature_index_verify (27/27, snapshot 2026-09-28T0308-4cbf90), version_applicability (v0.175.5 > v0.175.4), ledger chain verified through #831. dod_check: no findings. procedural_fidelity WARN: doc-surface-uncovered (script change without an architecture/lifecycle/operations doc update); doc currency WARN: the same observation. Both accepted: LD-8 shows no documentation, skill or compiled variant states the title or header text, and `docs/SYSTEM_STATE.md` is updated in this seal. data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 32 (every source skill reported missing). Continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body, and the guard reads issues through the GitHub API. Spec fold: plan declares no spec_deltas (Step 7.9). Suite pre-seal: 3627 passed, 3 skipped, 4 deselected. Step 4.6.14 publication_boundary_lint re-runs after staging.
+
+**Post-seal proof**: the plan's guarded CI-view clone proof (LD-11, Phase 3) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
+
 ---
 
 *Chain integrity: VALID*
