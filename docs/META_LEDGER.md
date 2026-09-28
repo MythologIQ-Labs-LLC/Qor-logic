@@ -24356,6 +24356,38 @@ Release state: `docs/release-state.json` gains 0.175.2 sealed_unpublished (reaso
 
 Verification: full suite 3611 passed, 3 skipped, 4 deselected; ruff clean; publication_boundary_lint 0; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
 
+### Entry #825: SESSION SEAL -- Phase 299 stale session marker keeps its gate chain (v0.175.3)
+
+**Timestamp**: 2026-09-28T02:43:35Z
+**Phase**: SEAL (Phase 299)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `2716cf0a76e6`
+**Plan**: docs/plan-qor-phase299-session-marker-staleness.md
+**Session**: 2026-09-28T0026-1e38ee
+
+**Content Hash**: `ee69349fe76d0d66a2ef9a5720d12d374864c4716e27b73d3d90de855de05ac5`
+**Previous Hash**: `af31aa9144730678aeaa5abdfdebba2df6a356ce5acda49fa6b0156609f5fc1a`
+**Chain Hash (Merkle seal)**: `62bbfd8f40b1b6a5200d1f3dd2f4368551f17ac925e45068ad67a4726e1144cd`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.3, PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+Stale but live session marker keeps its gate chain (GH #483). `qor/scripts/session.py` replaces `_marker_fresh` with the three-state `_marker_state` (absent, stale, fresh); a stale marker whose valid id names a gate directory holding a pre-seal phase artifact (`ideation.json`, `research.json`, `plan.json`, `audit.json` or `implement.json`) and no `substantiate.json` keeps its id: `current()` returns it without writing, `get_or_create()` keeps it and re-writes the marker. Malformed content at any age, and stale markers naming an absent, empty, sealed or no-pre-seal-artifact directory, rotate as before. Signatures unchanged. `docs/lifecycle.md` line 68, `qor/gates/chain.md` line 20, the session docstrings, doctrine line 109 and the `qor-help` line 135 parenthetical carry the plan text verbatim; the six compiled `qor-help` copies were recompiled at implement. `docs/release-state.json` gains the single LD-10 entry `0.175.2` / `sealed_unpublished`. Accepted residual (LD-5) declared in the CHANGELOG. Audit: VETO iters 1-4 (#819-#822), PASS iter 5 (#823, plan content hash unchanged); implementation #824; plan gate re-registered as plan-iter6 only to add `terms: []` after a prior seal attempt aborted at Step 4.7 (doc_tier standard requires `terms`).
+
+**Version**: 0.175.2 -> 0.175.3 (hotfix; LD-8). After the bump `0.175.3` is the single implicit candidate and the superseded `0.175.2` (sealed at #818, no remote tag) is covered by its `sealed_unpublished` entry. No remote tag is created; the seal tag stays local. Nothing is published.
+
+**CHANGELOG**: stamped `[0.175.3] - 2026-09-28` by `changelog_backends.stamp` (keepachangelog). The stamp does not emit the `_Built via ..._` line and `tests/test_attribution_tiered_usage.py::test_changelog_post_cutoff_versions_have_attribution_line` failed without it, so the line was inserted below the new header from `attribution.changelog_attribution_line()`. The Unreleased note, now under `[0.175.3]`, describes only what was implemented.
+
+**Reality audit**: all planned files exist with the mandated text verbatim (session.py constants, helpers and docstrings; lifecycle, chain.md, doctrine and qor-help lines; CHANGELOG bullet; release-state entry); `_marker_fresh` is gone; no MISSING, no UNPLANNED implementation file. `ledger_commitment` OK (22 touched artifacts). Section 4: `session.py` 174 lines, test file 242 lines, longest function 17 lines; ruff clean. Presence-only gate: every new test invokes `session.current()` / `session.get_or_create()` and asserts ids, marker content or mtime. Skill integrity: `qor-help` section set unchanged from base (one-clause edit). New test file 29 passed twice.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), merge_velocity (healthy, 6 PRs/7d), skill_size_budget (3 WARN, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), governance_index enforce (Last Reviewed 2026-09-28), feature_index_verify (27/27, snapshot 2026-09-27T2325-bf1a15), version_applicability (v0.175.3 > v0.175.2), ledger chain verified through #824, variant drift none (406 files). dod_check: no findings. procedural_fidelity: no findings. Doc currency: no warnings. data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 32 (every source skill reported missing). Continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body. Spec fold: no declared deltas. Suite pre-seal: 3611 passed, 3 skipped. Step 4.6.14 publication_boundary_lint re-runs after staging.
+
+**Post-seal proof**: the plan's guarded CI-view clone proof (LD-10, Phase 3) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
+
 ---
 
 *Chain integrity: VALID*
