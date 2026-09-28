@@ -2949,4 +2949,28 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #38: VETO -- plan-qor-phase299-session-marker-staleness (iter 1)
+
+**Date**: 2026-09-28
+**Verdict ID**: session 2026-09-28T0026-1e38ee audit (META_LEDGER Entry #819)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The plan ports a candidate fix that keeps a stale but live session marker bound to its gate chain. Its mutation program proves every liveness guard except the one that matters for safety. The `SESSION_ID_PATTERN` check keeps marker content from becoming a path segment on the new recovery path. Deleting it left all 1263 session-related tests green, and `get_or_create()` then returned `../../evil`. The lifecycle sentence carried over from the candidate says a stale id rotates only when its gate directory is absent or sealed. The plan's own added test rotates an empty unsealed directory, so the sentence contradicts it. A second normative statement of the old rule, in `qor/gates/chain.md`, was left out while the plan asserted that only two lines change. The liveness set was derived from `gate_chain.CHAIN` and missed the `ideation.json` predecessor that the chain also resolves.
+
+### Why It Failed
+
+The candidate's tests and wording were carried over and extended with one new test. The wording was not re-derived against the extended rule. The mutation list enumerated the new behavioral branches but not the pre-existing guard those branches newly route through. Documentation coverage was taken from the candidate's diff rather than from a grep of the repository for the rule being changed.
+
+### Pattern to Avoid
+
+When a change makes untrusted content reach a new sink, such as a path segment, the guard on that route needs its own discriminating test and a named mutation. When a behavioral rule changes, grep every normative statement of the old rule before declaring the affected documents complete. Re-derive carried-over prose whenever a test is added that narrows or widens the rule. Derive "live chain" membership from everything the resolver accepts, including optional predecessors, not only the main chain list. Related: Entry #37.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*

@@ -24235,6 +24235,25 @@ Dependency Review root-path and per-lockfile admission coverage (GH #511). `.git
 
 **Post-seal proof**: the plan's guarded CI-view clone proof (LD-11, Phase 4) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
 
+### Entry #819: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T00:37:13Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `8a457b85138d`
+**Verdict**: VETO
+
+**Content Hash**: `ab3984158f8fbfb43acf8fce94fdf801ae20ea97dfbfda699440f7c53d78702d`
+**Previous Hash**: `4addc7df12666bfbb03a305f99a20a35f371b48d6501f236813a008ae701f69c`
+**Chain Hash (Merkle seal)**: `37302d178d307f36b01e1e879eff1f1564f0940bd26c5abc7532376259a407a5`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: VETO (iter 1 on base 8ee9d98). Carried substance holds: all 44 evidence statements reproduce at 8ee9d98; provenance claims reproduce (candidate 5f8be1e2 not an ancestor; 4-file diff vs 15729311; session.py and lifecycle.md unchanged to base). Phase 1 tests prototyped in a scratch clone: 2 failed, 6 passed at base; 8 passed twice with the candidate logic; M1-M5 each fail exactly their named tests. End-to-end on real gate_chain with a pre-day-boundary id and a 26 h marker: base splits the session (plan.json orphaned), fix keeps the id, finds plan.json and refreshes the marker; a sealed session still rotates. Release-state proof non-vacuous: CI-view simulation {'0.175.2'} {'0.175.2'} at base; guarded clone proof fails at base, on bump-only, and on a simulated seal without the entry (1 failed, orphan 0.175.2), passes with it (4 passed, twice); remote highest tag v0.172.2. Scope stays hotfix. V1 (`coverage-gap`): no planned test protects the SESSION_ID_PATTERN guard on the new stale-recovery path; mutation M6 (drop the check in _recoverable_stale_id) leaves 1263 session-related tests green and get_or_create() returns '../../evil'. V2 (`specification-drift`): the mandated lifecycle.md line 68 sentence says a new id is issued only if the gate dir is absent or sealed, contradicted by the plan's own D1 and eighth test (empty unsealed dir rotates); qor/gates/chain.md:20 keeps the old 24h rule while LD-6 asserts only two lines change. V3 (`infrastructure-mismatch`): the liveness tuple omits ideation.json, which gate_chain accepts as the research/plan predecessor; an ideation-only cycle past the TTL is still split (reproduced), contrary to LD-3. Advisories A1-A4 (LD-5 residual joins a new phase to an abandoned session; import-time vs call-time gates dir; 149 vs 150 file count; workspace fragility). Option B fresh-context reviewer (audit_risk_score option_b_required). Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: Governor amends via /qor-plan (add a discriminating non-pattern stale-marker test with a named mutation; make the lifecycle sentence match the implemented rule and cover qor/gates/chain.md:20; include ideation.json in the liveness set or declare it as a residual), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*
