@@ -24235,6 +24235,159 @@ Dependency Review root-path and per-lockfile admission coverage (GH #511). `.git
 
 **Post-seal proof**: the plan's guarded CI-view clone proof (LD-11, Phase 4) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
 
+### Entry #819: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T00:37:13Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `8a457b85138d`
+**Verdict**: VETO
+
+**Content Hash**: `ab3984158f8fbfb43acf8fce94fdf801ae20ea97dfbfda699440f7c53d78702d`
+**Previous Hash**: `4addc7df12666bfbb03a305f99a20a35f371b48d6501f236813a008ae701f69c`
+**Chain Hash (Merkle seal)**: `37302d178d307f36b01e1e879eff1f1564f0940bd26c5abc7532376259a407a5`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: VETO (iter 1 on base 8ee9d98). Carried substance holds: all 44 evidence statements reproduce at 8ee9d98; provenance claims reproduce (candidate 5f8be1e2 not an ancestor; 4-file diff vs 15729311; session.py and lifecycle.md unchanged to base). Phase 1 tests prototyped in a scratch clone: 2 failed, 6 passed at base; 8 passed twice with the candidate logic; M1-M5 each fail exactly their named tests. End-to-end on real gate_chain with a pre-day-boundary id and a 26 h marker: base splits the session (plan.json orphaned), fix keeps the id, finds plan.json and refreshes the marker; a sealed session still rotates. Release-state proof non-vacuous: CI-view simulation {'0.175.2'} {'0.175.2'} at base; guarded clone proof fails at base, on bump-only, and on a simulated seal without the entry (1 failed, orphan 0.175.2), passes with it (4 passed, twice); remote highest tag v0.172.2. Scope stays hotfix. V1 (`coverage-gap`): no planned test protects the SESSION_ID_PATTERN guard on the new stale-recovery path; mutation M6 (drop the check in _recoverable_stale_id) leaves 1263 session-related tests green and get_or_create() returns '../../evil'. V2 (`specification-drift`): the mandated lifecycle.md line 68 sentence says a new id is issued only if the gate dir is absent or sealed, contradicted by the plan's own D1 and eighth test (empty unsealed dir rotates); qor/gates/chain.md:20 keeps the old 24h rule while LD-6 asserts only two lines change. V3 (`infrastructure-mismatch`): the liveness tuple omits ideation.json, which gate_chain accepts as the research/plan predecessor; an ideation-only cycle past the TTL is still split (reproduced), contrary to LD-3. Advisories A1-A4 (LD-5 residual joins a new phase to an abandoned session; import-time vs call-time gates dir; 149 vs 150 file count; workspace fragility). Option B fresh-context reviewer (audit_risk_score option_b_required). Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: Governor amends via /qor-plan (add a discriminating non-pattern stale-marker test with a named mutation; make the lifecycle sentence match the implemented rule and cover qor/gates/chain.md:20; include ideation.json in the liveness set or declare it as a residual), then /qor-audit.
+
+### Entry #820: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T01:01:52Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `eb532f53371b`
+**Verdict**: VETO
+
+**Content Hash**: `c36e1615ddf3fe4c1ddfc14e1f0a5ca33ca3e06bca574be0f65ebdcafaab52e4`
+**Previous Hash**: `37302d178d307f36b01e1e879eff1f1564f0940bd26c5abc7532376259a407a5`
+**Chain Hash (Merkle seal)**: `470fb29604a20227eb6f2f8c4797f5e70c0019cb17434fc0dbadd18e692f6e5f`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: VETO (iter 2 on base 8ee9d98). Iteration-1 grounds closed as written, reproduced in scratch clones outside the repo: 18-item Phase 1 file rebuilt from plan text gives 8 failed, 10 passed at base and 18 passed twice with the Phase 2 session.py; M1-M9 fail exactly their named tests with the stated counts; M6 and M7 each fail all four malformed-content cases (M6 over 150 session files: 4 failed, 1269 passed); the four doc/docstring lines apply verbatim and no other normative statement of the 24h rule exists; ideation.json is in the tuple, the drift test fails when CHAIN gains a pre-seal phase, and an ideation-only session with a 26 h marker keeps its id end to end (base splits). All 55 citations re-run at 8ee9d98: 0 mismatches. Full suite with Phases 1-2: 3600 passed, 3 skipped. Release-state CI-view simulation and guarded clone proof reproduce. V1 (`coverage-gap`): the now-normative rule that a directory holding no pre-seal phase artifact rotates (LD-2, D1, lifecycle.md, chain.md; remediate-only not live) has no discriminating test; the drift test pins only gate_chain-subset-of-tuple; M10 (add remediate.json to the tuple) and M11 (any *.json counts) each keep 18 passed and 1273 session-related tests green. V2 (`specification-drift`): the mandated lifecycle.md line 68 text keeps 'After 24h of inactivity', but _marker_state measures age since the last marker write; reads do not refresh it (reproduced), while the plan asserts every clause matches. Option B fresh-context reviewer. Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: Governor amends via /qor-plan (add a discriminating test for a non-empty directory holding only non-chain artifacts, with named mutations; correct the lifecycle 'inactivity' clause to age since the last marker write), then /qor-audit.
+
+### Entry #821: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T01:32:41Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `d27edc7b6bdf`
+**Verdict**: VETO
+
+**Content Hash**: `28f15e411b585a9b9cb970338b1ab9495e06352f04e03712f12fbef31885a454`
+**Previous Hash**: `470fb29604a20227eb6f2f8c4797f5e70c0019cb17434fc0dbadd18e692f6e5f`
+**Chain Hash (Merkle seal)**: `59c156944dc78767cf30a0952fbecc3eca569b386b8a0dafbf725cb4f9af20da`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: VETO (iter 3 on base 8ee9d98). Iteration-2 grounds and the doctrine-governance-enforcement.md:109 correction closed as written, reproduced in scratch clones outside the repo: 29-item Phase 1 file rebuilt from plan text gives 10 failed, 19 passed at base (the ten named items) and 29 passed twice with the Phase 2 session.py; M1-M15 each fail exactly their named tests with the stated counts (M10 2 failed, M11 3 failed; over 150 session files 1282/1281 passed with 2/3 failed, 1284 passed unmutated); CHAIN gaining 'review' fails the per-phase and equality tests; every age-rule clause executed (23 h marker still 23.0 h after reads; stale at exactly 24 h; stale-live current() writes nothing; get_or_create re-writes to 0.0 h); session new keeps a live stale id, session_tool rotate rotates. All 57 citations re-run at 8ee9d98: 0 mismatches. Full suite with Phases 1-2: 3611 passed, 3 skipped; variant drift clean. Release-state CI-view simulation and guarded clone proof reproduce. Escalator: cce.check and check_session_total None (distinct signatures, count 1). V1 (`specification-drift`): the LD-9 CHANGELOG bullet mandated verbatim says 'A marker with malformed content, or one naming an absent, empty or sealed directory or a directory with no pre-seal phase artifact, still rotates to a new id'; the unqualified subject covers fresh markers, which keep their id in all four cases (reproduced; LD-3, test_fresh_marker_is_unaffected, test_reads_of_a_fresh_marker_do_not_refresh_it), while LD-9 asserts every clause matches LD-3. Option B fresh-context reviewer. Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: Governor amends via /qor-plan (scope the LD-9 CHANGELOG rotation clause to stale markers, keeping malformed content at any age), then /qor-audit.
+
+### Entry #822: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T01:54:55Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `f90531390a32`
+**Verdict**: VETO
+
+**Content Hash**: `9b197349fe264498739b1e728be8181501106bee307c03a4d8b0738ca42999aa`
+**Previous Hash**: `59c156944dc78767cf30a0952fbecc3eca569b386b8a0dafbf725cb4f9af20da`
+**Chain Hash (Merkle seal)**: `302d493de46d3b415429a53ae45e59afc57de2211a820958570ea8a64493d55d`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: VETO (iter 4 on base 8ee9d98). Iteration-3 ground V1 and advisories A1/A2 closed as written, reproduced in a scratch clone outside the repo: 29-item Phase 1 file rebuilt from plan text gives 10 failed, 19 passed at base (the ten named items) and 29 passed twice with the Phase 2 session.py; M1-M15 each fail exactly their named items with the stated counts; behavior matrix (1 h and 25 h x ten directory states, valid content; three malformed contents at both ages) matches every scoped clause of the LD-9 bullet, lifecycle.md:68, chain.md:20 and the docstrings; `qor-logic scripts session end` / `session_tool rotate` / `session new` behave as stated through qor.cli. All 61 citations re-run at 8ee9d98: 0 mismatches. 150 session files 1284 passed; full suite with Phases 1-3: 3611 passed, 3 skipped; variant drift clean; release-state CI-view simulation and guarded clone proof reproduce. Governor ordering deviation (plan text tightened after the plan gate write) judged immaterial: the plan gate carries no plan hash, its phases/ci_commands/boundaries match the final text, and target_content_hash c4f85f82 binds the audited text. Escalator: cce.check and check_session_total None (consecutive count 1). V1 (`specification-drift`): the LD-9 CHANGELOG bullet mandated verbatim by D3 carries the ledger entry number 'META_LEDGER #818', while doctrine-changelog.md lines 14-16, the rule LD-9 cites, says ledger entry numbers do not appear in the CHANGELOG; the Phase 298 precedent bullet omits it. Advisories: LD-6 wider-grep output omits docs/archive hits; qor-help SKILL.md:135 None-cause list outside the sweep. Option B fresh-context reviewer. Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: Governor amends via /qor-plan (remove the ledger entry number from the LD-9 CHANGELOG bullet; keep it in the LD-10 release-state reason), then /qor-audit.
+
+### Entry #823: GATE TRIBUNAL
+
+**Timestamp**: 2026-09-28T02:23:22Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `c06b0f2c7546`
+**Verdict**: PASS
+
+**Content Hash**: `9641a16c3bb802d5a279b4c8424e140dbd6a3054b96bbc53239a7ac13c677965`
+**Previous Hash**: `302d493de46d3b415429a53ae45e59afc57de2211a820958570ea8a64493d55d`
+**Chain Hash (Merkle seal)**: `47f1244616e127a1295f8b101d9978e692351f95ab0506811077c4780e5ce80e`
+
+**Decision**: **Target**: `docs/plan-qor-phase299-session-marker-staleness.md`
+
+**Decision**: PASS (iter 5 on base 8ee9d98). Iteration-4 ground V1 and advisories A1/A2 resolved as written, reproduced in scratch clones outside the repo: the LD-9 CHANGELOG bullet carries no ledger number or hash (only GH #483) and matches the Phase 298 release-state sentence form, the #818 reference stays only in the LD-10 release-state reason per the #792-#814 precedent; the LD-6 wider grep prints exactly the eleven named lines; the qor-help SKILL.md:135 parenthetical is corrected and dist_compile rewrites exactly the six named copies plus seven manifests (manifests differ from a base-only compile only in generated_ts and the qor-help hash), variant drift OK 406, and without recompile drift reports 6 differences and the four named variant sync tests fail. Fresh audit: all 63 citations re-run at 8ee9d98, 0 mismatches; 29-item Phase 1 file rebuilt from plan text gives 10 failed, 19 passed at base, 29 passed twice with the fix, 3 failed with the candidate session.py; M1-M15 fail exactly their named items with the stated counts; two-age by ten-directory matrix and malformed contents match LD-3 and every mandated text; installed-CLI session new/rotate/end behave as stated; 150 session files 1284 passed; full suite 3611 passed, 3 skipped; CI-view simulation prints set() {'0.175.2'} with the entry and {'0.175.2'} {'0.175.2'} without; guarded clone proof exits 0 (4 passed, twice) on a simulated seal commit, 1 without the entry, and fails its guard at base. Escalator: consecutive specification-drift count 2 (<3), session totals max 2; did not fire. Advisories: test file lands near the 250-line razor limit (keep <=250 at implement); header limitation shorthand for the read rule; workspace fragility pre-existing. Option B fresh-context reviewer. Session `2026-09-28T0026-1e38ee`.
+
+**Required next action**: /qor-implement.
+
+### Entry #824: IMPLEMENTATION
+
+**Timestamp**: 2026-09-28T02:30:14Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `2c9d28d6852e`
+**Plan**: docs/plan-qor-phase299-session-marker-staleness.md
+**Session**: 2026-09-28T0026-1e38ee
+
+**Content Hash**: `34c4b4d014a4f5343c39aec92155b3b1846d1a405531f6b96634665c827c329c`
+**Previous Hash**: `47f1244616e127a1295f8b101d9978e692351f95ab0506811077c4780e5ce80e`
+**Chain Hash (Merkle seal)**: `af31aa9144730678aeaa5abdfdebba2df6a356ce5acda49fa6b0156609f5fc1a`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Stale but live session marker keeps its gate chain (GH #483), implemented test-first on base 8ee9d98 per the iteration-5 plan (audit PASS #823); the candidate branch head 5f8be1e2 was reference only and no file was copied from it.
+
+Code: `qor/scripts/session.py` replaces `_marker_fresh` with `_marker_state` (absent/stale/fresh), adds `_GATE_PHASE_ARTIFACTS` (ideation, research, plan, audit, implement), `_SEAL_ARTIFACT`, `_has_unsealed_gate_artifacts` and `_recoverable_stale_id`; `get_or_create` keeps and re-writes a stale live id, `current` returns it without writing; `SESSION_ID_PATTERN` is checked before any gate-directory lookup. Docstring lines 7 and 8 and the two helper docstrings carry the plan text. Signatures unchanged (LD-4).
+
+Tests: new `tests/test_session_marker_staleness.py` (15 functions, 29 items, 242 lines, within the 250-line razor per audit A1). RED at base: 10 failed, 19 passed (the ten named items). GREEN after: 29 passed, twice. Mutations M1-M15 under `python -B -m pytest`, each reverted: M1 1, M2 1, M3 5, M4 7, M5 7, M6 4, M7 8, M8 3, M9 2, M10 2, M11 3, M12 4, M13 1, M14 1, M15 4 failed, each exactly the named set; session.py restored byte-identical. Fidelity diff against 5f8be1e2 shows only LD-7 deviations 1-11.
+
+Docs: `docs/lifecycle.md` line 68, `qor/gates/chain.md` line 20, `qor/references/doctrine-governance-enforcement.md` line 109 and the `qor/skills/meta/qor-help/SKILL.md` line 135 parenthetical carry the plan text verbatim. `python -m qor.scripts.dist_compile` regenerated exactly the six qor-help copies and seven manifests; manifests differ from a base-only compile only in generated_ts and the qor-help hash; check_variant_drift OK 406 files.
+
+Release state: `docs/release-state.json` gains 0.175.2 sealed_unpublished (reason names the #818 seal); CI-view simulation printed {'0.175.2'} {'0.175.2'} before and set() {'0.175.2'} after. CHANGELOG `## [Unreleased]` gains the LD-9 Fixed bullet verbatim.
+
+Verification: full suite 3611 passed, 3 skipped, 4 deselected; ruff clean; publication_boundary_lint 0; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
+
+### Entry #825: SESSION SEAL -- Phase 299 stale session marker keeps its gate chain (v0.175.3)
+
+**Timestamp**: 2026-09-28T02:43:35Z
+**Phase**: SEAL (Phase 299)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `2716cf0a76e6`
+**Plan**: docs/plan-qor-phase299-session-marker-staleness.md
+**Session**: 2026-09-28T0026-1e38ee
+
+**Content Hash**: `ee69349fe76d0d66a2ef9a5720d12d374864c4716e27b73d3d90de855de05ac5`
+**Previous Hash**: `af31aa9144730678aeaa5abdfdebba2df6a356ce5acda49fa6b0156609f5fc1a`
+**Chain Hash (Merkle seal)**: `62bbfd8f40b1b6a5200d1f3dd2f4368551f17ac925e45068ad67a4726e1144cd`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.3, PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+Stale but live session marker keeps its gate chain (GH #483). `qor/scripts/session.py` replaces `_marker_fresh` with the three-state `_marker_state` (absent, stale, fresh); a stale marker whose valid id names a gate directory holding a pre-seal phase artifact (`ideation.json`, `research.json`, `plan.json`, `audit.json` or `implement.json`) and no `substantiate.json` keeps its id: `current()` returns it without writing, `get_or_create()` keeps it and re-writes the marker. Malformed content at any age, and stale markers naming an absent, empty, sealed or no-pre-seal-artifact directory, rotate as before. Signatures unchanged. `docs/lifecycle.md` line 68, `qor/gates/chain.md` line 20, the session docstrings, doctrine line 109 and the `qor-help` line 135 parenthetical carry the plan text verbatim; the six compiled `qor-help` copies were recompiled at implement. `docs/release-state.json` gains the single LD-10 entry `0.175.2` / `sealed_unpublished`. Accepted residual (LD-5) declared in the CHANGELOG. Audit: VETO iters 1-4 (#819-#822), PASS iter 5 (#823, plan content hash unchanged); implementation #824; plan gate re-registered as plan-iter6 only to add `terms: []` after a prior seal attempt aborted at Step 4.7 (doc_tier standard requires `terms`).
+
+**Version**: 0.175.2 -> 0.175.3 (hotfix; LD-8). After the bump `0.175.3` is the single implicit candidate and the superseded `0.175.2` (sealed at #818, no remote tag) is covered by its `sealed_unpublished` entry. No remote tag is created; the seal tag stays local. Nothing is published.
+
+**CHANGELOG**: stamped `[0.175.3] - 2026-09-28` by `changelog_backends.stamp` (keepachangelog). The stamp does not emit the `_Built via ..._` line and `tests/test_attribution_tiered_usage.py::test_changelog_post_cutoff_versions_have_attribution_line` failed without it, so the line was inserted below the new header from `attribution.changelog_attribution_line()`. The Unreleased note, now under `[0.175.3]`, describes only what was implemented.
+
+**Reality audit**: all planned files exist with the mandated text verbatim (session.py constants, helpers and docstrings; lifecycle, chain.md, doctrine and qor-help lines; CHANGELOG bullet; release-state entry); `_marker_fresh` is gone; no MISSING, no UNPLANNED implementation file. `ledger_commitment` OK (22 touched artifacts). Section 4: `session.py` 174 lines, test file 242 lines, longest function 17 lines; ruff clean. Presence-only gate: every new test invokes `session.current()` / `session.get_or_create()` and asserts ids, marker content or mtime. Skill integrity: `qor-help` section set unchanged from base (one-clause edit). New test file 29 passed twice.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), merge_velocity (healthy, 6 PRs/7d), skill_size_budget (3 WARN, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), governance_index enforce (Last Reviewed 2026-09-28), feature_index_verify (27/27, snapshot 2026-09-27T2325-bf1a15), version_applicability (v0.175.3 > v0.175.2), ledger chain verified through #824, variant drift none (406 files). dod_check: no findings. procedural_fidelity: no findings. Doc currency: no warnings. data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 32 (every source skill reported missing). Continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body. Spec fold: no declared deltas. Suite pre-seal: 3611 passed, 3 skipped. Step 4.6.14 publication_boundary_lint re-runs after staging.
+
+**Post-seal proof**: the plan's guarded CI-view clone proof (LD-10, Phase 3) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
+
 ---
 
 *Chain integrity: VALID*

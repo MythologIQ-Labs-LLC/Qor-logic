@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-09-28T0026-1e38ee",
+  "ts": "2026-09-28T01:55:20Z",
+  "target": "docs/plan-qor-phase299-session-marker-staleness.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "specification-drift"
+  ],
+  "target_content_hash": "c4f85f82d759f9970c4455843a12f3758a2d773e9a8f9d35211aeb472fee8af6",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.2",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "veto",
+    "ts": "2026-09-28T01:55:20Z"
+  }
+}

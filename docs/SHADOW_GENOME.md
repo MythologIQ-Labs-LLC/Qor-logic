@@ -2949,4 +2949,100 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #38: VETO -- plan-qor-phase299-session-marker-staleness (iter 1)
+
+**Date**: 2026-09-28
+**Verdict ID**: session 2026-09-28T0026-1e38ee audit (META_LEDGER Entry #819)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The plan ports a candidate fix that keeps a stale but live session marker bound to its gate chain. Its mutation program proves every liveness guard except the one that matters for safety. The `SESSION_ID_PATTERN` check keeps marker content from becoming a path segment on the new recovery path. Deleting it left all 1263 session-related tests green, and `get_or_create()` then returned `../../evil`. The lifecycle sentence carried over from the candidate says a stale id rotates only when its gate directory is absent or sealed. The plan's own added test rotates an empty unsealed directory, so the sentence contradicts it. A second normative statement of the old rule, in `qor/gates/chain.md`, was left out while the plan asserted that only two lines change. The liveness set was derived from `gate_chain.CHAIN` and missed the `ideation.json` predecessor that the chain also resolves.
+
+### Why It Failed
+
+The candidate's tests and wording were carried over and extended with one new test. The wording was not re-derived against the extended rule. The mutation list enumerated the new behavioral branches but not the pre-existing guard those branches newly route through. Documentation coverage was taken from the candidate's diff rather than from a grep of the repository for the rule being changed.
+
+### Pattern to Avoid
+
+When a change makes untrusted content reach a new sink, such as a path segment, the guard on that route needs its own discriminating test and a named mutation. When a behavioral rule changes, grep every normative statement of the old rule before declaring the affected documents complete. Re-derive carried-over prose whenever a test is added that narrows or widens the rule. Derive "live chain" membership from everything the resolver accepts, including optional predecessors, not only the main chain list. Related: Entry #37.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
+## Entry #39: VETO -- plan-qor-phase299-session-marker-staleness (iter 2)
+
+**Date**: 2026-09-28
+**Verdict ID**: session 2026-09-28T0026-1e38ee audit (META_LEDGER Entry #820)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The amendment closed all three iteration-1 grounds, and each closure reproduces. Two new defects came from the same amendment. First, to fix the lifecycle wording it promoted "a directory holding no pre-seal phase artifact rotates" to a normative rule in two documents. It also called the liveness tuple derived from `gate_chain` and pinned by a test, but the test checks only one direction. Adding `remediate.json` to the tuple, or counting any JSON file as live, keeps all 1273 session-related tests green. Second, the rewritten lifecycle line kept its inherited opening, "After 24h of inactivity". The marker ages from its last write, and reads do not refresh it, while the plan asserted that every clause matches the code.
+
+### Why It Failed
+
+The fix for each ground was checked against that ground, not against the new claims the fix introduced. A rule written into normative text got no mutation of its own. The one-directional drift test was described as pinning equality. The rewrite of a normative line reused an inherited clause without re-deriving it from the code.
+
+### Pattern to Avoid
+
+When an amendment adds or sharpens a normative rule, give the rule its own discriminating test and a named mutation, in both directions for any set that is said to be derived from another. When a normative line is rewritten, re-derive every clause, including inherited ones, from the implementing code before asserting that it matches. Related: Entry #38.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
+## Entry #40: VETO -- plan-qor-phase299-session-marker-staleness (iter 3)
+
+**Date**: 2026-09-28
+**Verdict ID**: session 2026-09-28T0026-1e38ee audit (META_LEDGER Entry #821)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The amendment closed both iteration-2 grounds and the doctrine correction, and every test, mutation and executed clause reproduces. The mandated CHANGELOG bullet still carries one false clause: "A marker with malformed content, or one naming an absent, empty or sealed directory or a directory with no pre-seal phase artifact, still rotates to a new id." The subject is left unqualified so that malformed content covers any age, and this also extends the directory clauses to fresh markers. A fresh marker with valid content keeps its id whatever its directory holds. That state is normal right after every seal. The plan's own LD-3 and two of its tests state this, yet LD-9 asserts that every clause matches LD-3.
+
+### Why It Failed
+
+The four surfaces were re-derived one by one. The internal texts (lifecycle, chain.md, docstring, DoD) each scope the rotation list with "stale". The user-facing summary merged two lists with different age scopes, malformed content at any age and directory state only when stale, under one subject. The claim that every clause matches was then made about the merged sentence without checking it against the fresh-marker case.
+
+### Pattern to Avoid
+
+When one sentence joins conditions that apply over different domains (here, any-age versus stale-only), give each condition its own qualifier. Check the sentence against the complement case, here a fresh valid marker, before asserting that every clause matches. Related: Entries #38, #39.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
+## Entry #41: VETO -- plan-qor-phase299-session-marker-staleness (iter 4)
+
+**Date**: 2026-09-28
+**Verdict ID**: session 2026-09-28T0026-1e38ee audit (META_LEDGER Entry #822)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The amendment closed the iteration-3 ground and both advisories, and every behavior clause of the mandated texts now holds across the full age-by-directory matrix. The mandated CHANGELOG bullet still breaks the rule that governs it. It ends "(sealed at META_LEDGER #818; no remote tag)", and `qor/references/doctrine-changelog.md`, which LD-9 cites as the `/qor-implement` rule for that bullet, says ledger entry numbers do not appear in the CHANGELOG. The plan's citation stops at line 14, one line before the prohibition. The ledger number entered in iteration 3 and survived one audit.
+
+### Why It Failed
+
+Each re-derivation checked the bullet's clauses against the code, not against the authoring rules for the file it lands in. The rule was cited by a truncated line, so the prohibition in the same sentence was never read against the text. Internal provenance (a ledger entry number) was carried from the release-state reason into the user-facing note.
+
+### Pattern to Avoid
+
+When a plan mandates verbatim text for a governed file, check the text against that file's authoring doctrine as well as against the code, and read the cited rule to the end of its sentence. Keep internal provenance (ledger entry numbers, hashes) in the ledger and machine records, not in the CHANGELOG. Related: Entries #38, #39, #40.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*
