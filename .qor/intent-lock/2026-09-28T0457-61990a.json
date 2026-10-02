@@ -1,0 +1,9 @@
+{
+  "session": "2026-09-28T0457-61990a",
+  "plan_path": "docs/plan-qor-phase302-dist-manifest-integrity.md",
+  "plan_hash": "3fe222fb3720c4de89b617448d2d6d83540b619d2dbbdadf70d90d6524b90c9e",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "9ee430b4350f0ce9b4e27c18e12b300a405d0b8213663bdf99b223698042b3d8",
+  "head_commit": "16dd99611310a72f3699eaeaa4d6c6e527855c8e",
+  "captured_ts": "2026-10-02T14:33:30.409824Z"
+}

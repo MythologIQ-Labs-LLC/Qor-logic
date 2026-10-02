@@ -24600,6 +24600,38 @@ Release state: `docs/release-state.json` gains 0.175.5 sealed_unpublished (reaso
 
 Verification: consumer suites 78 passed; release/changelog suites 29 + 5 passed; full suite 3641 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored); check_variant_drift OK 413 files before and after the suite; ruff clean; publication_boundary_lint 0; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
 
+### Entry #835: SESSION SEAL -- Phase 302 the install receipt records only sha256 values checked against the installed bytes, and dist manifests are drift-checked (v0.175.6)
+
+**Timestamp**: 2026-10-02T14:44:15Z
+**Phase**: SEAL (Phase 302)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `cad8fffbd6b0`
+**Plan**: docs/plan-qor-phase302-dist-manifest-integrity.md
+**Session**: 2026-09-28T0457-61990a
+
+**Content Hash**: `3fe222fb3720c4de89b617448d2d6d83540b619d2dbbdadf70d90d6524b90c9e`
+**Previous Hash**: `3196ffbb5f124be2293695476a5d140cc49617ca2d06778c0629bfec3ad7a793`
+**Chain Hash (Merkle seal)**: `a685f89b39d303ee3977cb89a5242409bba5cde45ba9312f9cbdfbbccfbe5f57`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+The install receipt records only sha256 values checked against the installed bytes, and dist manifests are drift-checked (GH #440). `qor/install.py` imports `hashlib`; `_copy_entry` writes already-verified bytes (`write_bytes` then `shutil.copystat`); `_copy_manifest_entries` is replaced by `_verified_entries` (reads each copied file once, compares its sha256 with the manifest entry, returns the planned copies and every mismatched `install_rel_path`; absent or unrouted entries are neither copied nor checked) and `_copy_verified` (the receipt sha256 is the hash of the bytes written); `_do_install` refuses before any write on a mismatch, dry run included, naming each file on stderr and returning 1. `qor/scripts/check_variant_drift.py` replaces `_DRIFT_EXCLUDE` with `_MANIFEST_NAME`, `_VOLATILE_MANIFEST_KEYS` and `_comparable_bytes` (a manifest is compared as parsed JSON without `generated_ts`; an unparseable manifest is hashed raw); `hash_tree` and `compare` keep their signatures. `.github/workflows/ci.yml` adds the `Variant drift on the committed dist` step to `gate-chain-completeness` directly after `pip install`. `.gitattributes` pins `qor/dist/** text eol=lf` (no blob change). `tests/test_cli_install_gemini.py` writes its fixture bytes (regression-coverage maintenance, LD-7). `tests/test_dist_manifest_integrity.py` adds 8 functions (14 items). `docs/release-state.json` gains the single LD-13 entry `0.175.5` / `sealed_unpublished`. Declared residuals (LD-8): entries install does not copy stay unchecked; key order and whitespace in a manifest are not drift; the test-matrix drift step still follows the in-place recompile; the Windows effect of the LF pin is argued, not observed; receipts already written are not rewritten. Audit: PASS iter 1 (#833); implementation #834; intent lock VERIFIED against the iter-1 plan and audit hashes.
+
+**Version**: 0.175.5 -> 0.175.6 (hotfix; LD-11). After the bump `0.175.6` is the single implicit candidate and the superseded `0.175.5` (sealed at #832, no remote tag) is covered by its `sealed_unpublished` entry. No remote tag is created; the seal tag stays local. Nothing is published.
+
+**CHANGELOG**: stamped `[0.175.6] - 2026-10-02` by `changelog_backends.stamp` (keepachangelog). The stamp does not emit the `_Built via ..._` line and `tests/test_attribution_tiered_usage.py::test_changelog_post_cutoff_versions_have_attribution_line` failed without it, so the line was inserted below the new header from `attribution.changelog_attribution_line()`. The Unreleased note, now under `[0.175.6]`, is the LD-12 bullet byte for byte and describes only what was implemented.
+
+**Reality audit**: all 8 planned files exist and match the plan: the `qor/install.py` and `qor/scripts/check_variant_drift.py` diffs against the base are the Phase 2 and Phase 3 code as written, the CI step and `.gitattributes` rule are the LD-6 and LD-7 text, the CHANGELOG bullet equals the LD-12 text byte for byte, and the release-state entry carries the LD-13 reason. No MISSING, no UNPLANNED implementation file (the shadow-genome, audit-report and gate-artifact changes on the branch are plan/audit governance output). `ledger_commitment` OK (9 touched artifacts). Section 4: `qor/install.py` 230 lines, `check_variant_drift.py` 104, new test file 212; longest function 38 lines (`_do_uninstall`, unchanged); nesting 2 or less in new code; ruff clean; changed source ASCII. Presence-only gate: every new test drives `_do_install`, `check_variant_drift.main`, the parsed `ci.yml` or `git check-attr` and asserts exit codes, stderr lines, receipt rows or attribute values. Judge re-proof: new file 14 passed twice; consumer suites 78 passed; release/changelog suites 34 passed; committed drift check `OK: 413 files, no drift` before and after the suite; mutations re-run in a scratch clone outside the repository over the 53-item set: M1 4, M2 2, M4 5, M5 1, M8 1 failed, as the plan names; clean 53 passed. No skill file modified.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), merge_velocity (healthy, 5 PRs/7d), skill_size_budget (3 WARN, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), governance_index enforce (Last Reviewed 2026-10-02), feature_index_verify (27/27, snapshot 2026-09-28T0359-d92786), version_applicability (v0.175.6 > v0.175.5), ledger chain verified through #834. dod_check: no findings. procedural_fidelity WARN: doc-surface-uncovered (script change without an architecture/lifecycle/operations doc update); doc currency WARN: the same observation for `qor/scripts/check_variant_drift.py`. Both accepted: LD-10 shows no README, doctrine or skill states the manifest exclusion or the receipt's sha256 source (the README and `doctrine-ci-budget.md` mentions of the drift script stay true), and `docs/SYSTEM_STATE.md` is updated in this seal. data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 32 (every source skill reported missing). Continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body, and the guard reads issues through the GitHub API. Spec fold: plan declares no spec_deltas (Step 7.9). Suite pre-seal: 3641 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored; only `generated_ts` had changed). Step 4.6.14 publication_boundary_lint re-runs after staging.
+
+**Post-seal proof**: the plan's guarded CI-view clone proof (LD-13, Phase 4) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
+
 ---
 
 *Chain integrity: VALID*
