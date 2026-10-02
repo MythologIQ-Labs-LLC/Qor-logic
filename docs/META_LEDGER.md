@@ -24557,6 +24557,25 @@ A shadow issue no longer claims a threshold breach its own numbers do not show (
 
 **Post-seal proof**: the plan's guarded CI-view clone proof (LD-11, Phase 3) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
 
+### Entry #833: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-02T14:31:22Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `c324a189c8a7`
+**Verdict**: PASS
+
+**Content Hash**: `9ee430b4350f0ce9b4e27c18e12b300a405d0b8213663bdf99b223698042b3d8`
+**Previous Hash**: `939e7209bd580eadce5d11468ecc4080b382690456aca790079f59375d73e83a`
+**Chain Hash (Merkle seal)**: `9a3c57354a914c6468684348ffdca6ee5547058236accf314ca8270fec90999f`
+
+**Decision**: **Target**: `docs/plan-qor-phase302-dist-manifest-integrity.md`
+
+**Decision**: PASS (iter 1 on base f2e4be9a). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); session marker, key and plan gate survived the container restart and were reused, nothing re-created. Engineering reproduced in scratch clones outside the repo: all 46 evidence statements re-run at f2e4be9a, 0 mismatches; eol attribute counts (339 lf, 74 unspecified) reproduce. GH #440 reproduced at base on the committed dist: stale manifest hash passes drift and is copied into the receipt; tampered shipped file installs exit 0; dropped entry passes drift and installs 77; autocrlf checkout gives the 5 named false receipt rows. Phase 1 tests rebuilt from plan text: 11 failed, 3 passed at base; Phases 2-3 give 14 passed twice; M1-M8 fail exactly their named items (4/2/2/5/1/1/1/1 of 53); consumer suites 78 passed; full suite 3641 passed, 3 skipped, 4 deselected, drift OK 413 files before and after; ruff and publication boundary clean. New CI step runs in gate-chain-completeness after only checkout, setup-python and pip install (no compile hook) and fails on a stale committed manifest. Linux autocrlf simulation with the pin: every dist file LF, claude/codex/kilo-code/gemini install exit 0, full suite 3641 passed; Windows run itself unobserved (declared residual). Release-state proof non-vacuous: CI-view {'0.175.5'} {'0.175.5'} at base; guarded clone proof fails at head (0.175.5) and on a simulated seal without the entry (1 failed, orphan 0.175.5), passes with it (4 passed, twice); remote highest tag v0.172.2. CHANGELOG bullet matches the implementation. Scope stays hotfix. Advisories: A1 line-41 citation imprecise; A2 CHANGELOG omits parsed-JSON normalization (declared in LD-5/LD-8); A3 text attribute would apply to a future binary under qor/dist (none today); A4 pre-pin Windows working copies refuse install until re-checkout, remedy named; A5 workspace fragility pre-existing. Escalator: cce.check and check_session_total None. Session `2026-09-28T0457-61990a`.
+
+**Required next action**: /qor-implement.
+
 ---
 
 *Chain integrity: VALID*

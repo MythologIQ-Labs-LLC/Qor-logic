@@ -1,12 +1,14 @@
 # AUDIT REPORT
 
-**Tribunal Date**: 2026-09-28
-**Target**: `docs/plan-qor-phase301-shadow-breach-header.md`
-**Iteration**: 1 (branch `phase/301-shadow-breach-header`, head `db2d8bd5`, plan-only; base `main` `e062a3dd` = 0.175.4)
-**Session**: `2026-09-28T0359-d92786`
+**Tribunal Date**: 2026-10-02
+**Target**: `docs/plan-qor-phase302-dist-manifest-integrity.md`
+**Iteration**: 1 (branch `phase/302-dist-manifest-integrity`, head `f93b106b`, plan-only; base `main` `f2e4be9a` = 0.175.5)
+**Session**: `2026-09-28T0457-61990a`
 **Risk Grade**: L2
 **Auditor**: The Qor-logic Judge
-**Mode**: Option B fresh-context reviewer, independent of the plan author. `audit_risk_score` reported `option_b_required: true` (flag `high-citation-surface`), and this review is that independent audit. The Codex plugin is unavailable. `external_reviewer.run_external_review` returned `fallback` ("no reviewer configured"). Both `capability_shortfall` events were emitted (`abf45d14...` codex-plugin, `67560839...` external-reviewer). Reviewer toolset: shell, git (local objects, plus `git ls-remote` over the proxy), file read and grep, Python with the in-tree `qor` package on `PYTHONPATH`, and pytest in scratch clones outside the repository. No GitHub API was used.
+**Mode**: Option B fresh-context reviewer, independent of the plan author. `audit_risk_score` reported `option_b_required: true` (flag `high-citation-surface`). This review is that independent audit: a subagent with no plan-authoring context. The Codex plugin is unavailable. `external_reviewer.run_external_review` returned `fallback` ("no reviewer configured"). Both `capability_shortfall` events were emitted (`399c2fec...` codex-plugin, `f030521a...` external-reviewer). Reviewer toolset: shell, git (local objects, plus `git ls-remote` over the proxy), file read and grep, Python with the in-tree `qor` package on `PYTHONPATH`, and pytest in scratch clones outside the repository. No GitHub API was used.
+
+**Session continuity disclosure**: the container restarted after the plan was written. The session marker `.qor/session/current` (`2026-09-28T0457-61990a`), the session key and the plan gate artifacts survived on disk. `qor_audit_runtime.session_id()` resolves to this session, and `check_prior_artifact` reports the plan artifact found and valid. Nothing was re-created.
 
 ---
 
@@ -16,144 +18,151 @@
 
 ### Executive Summary
 
-The plan closes GH #474 on all three reachable paths and does what it says. Every evidence statement reproduces at `e062a3dd`: 42 `git show ... | grep` statements, with 0 mismatches. The `git grep`, `merge-base`, ledger-line and remote-tag observations also reproduce.
+The plan closes both halves of GH #440 and does what it says.
 
-The Judge rebuilt the Phase 1 test file from the plan text in a scratch clone of the base. The base gives `10 failed, 2 passed`. The Phase 2 code, applied as the plan specifies, gives `12 passed` twice. Mutations M1 to M8 each fail exactly the tests the plan names, with the stated counts (6/1/4/2/2/4/4/1 of 60). The consumer suites give `113 passed`. The full suite with Phases 1 to 3 gives `3627 passed, 3 skipped, 4 deselected`. Ruff and the publication-boundary lint are clean.
+Citations: all 46 `git show ... | grep` evidence statements were re-run at `f2e4be9a`, with 0 mismatches. The two `prints` statements also match. The prose line references were spot-checked: `qor/cli.py` 314, `doctrine-changelog.md` 9/14-16/31-32/78-79/91-93, FEATURE_INDEX row 12, and the `git grep` caller list. The attribute counts reproduce: 339 `lf` and 74 `unspecified` (47 toml, 16 yml, 4 yaml, 7 json), and all 413 index blobs are `i/lf`.
 
-The real writer (`check_shadow_threshold.main`) was used to produce each marker, and every marker passes the new LD-6 type check, including one written after an aged-event escalation. The three #474 paths were prototyped end to end:
+The defect reproduces at the base, using the committed dist in a scratch clone:
 
-- `--events` with one severity-1 event is now filed as neutral, with the threshold "not checked".
-- A `--mark-resolved` subset followed by a default run files the remainder as neutral, with the threshold "not reached". The writer agrees: `OK: 5 < 10`.
-- A `--flip-only` subset with the marker surviving gives the same neutral result. The writer agrees: `OK: 7 < 10`.
+- A stale manifest hash passes drift (`OK: 406 files`), installs 78 files, and writes a receipt row `00000000...` for a file that hashes to `921f39ce...`.
+- A tampered shipped file fails drift but still installs with exit 0.
+- A dropped entry passes drift, and install silently omits the file (`Installed 77`).
+- An autocrlf checkout gives exactly the 5 named receipt rows whose hash differs from the installed file.
 
-The release-state proof is non-vacuous. The CI-view simulation prints `{'0.175.4'} {'0.175.4'}` at the base and `set() {'0.175.4'}` with the entry. The guarded clone proof fails in three cases: at the base, on a bump-only commit, and on a simulated seal commit without the entry (`1 failed, 3 passed`, orphan `0.175.4`). It passes with the entry (`4 passed`, twice). The remote's highest tag is `v0.172.2`.
+The Judge rebuilt the Phase 1 test file from the plan text and applied the Phase 2 and Phase 3 code exactly as specified:
 
-The plain-sum residual was probed hard (A1). It can still produce a breach title that `check_shadow_threshold` would not agree with. That case is declared in the boundaries, in LD-5 and in the CHANGELOG rule. It is narrower than at the base, where the same filing had the same title, so it is not a reintroduction. The header never contradicts its own printed numbers on any branch.
+- The base gives `11 failed, 3 passed`. The implementation gives `14 passed`, twice.
+- Mutations M1 to M8 over the 53-item set each fail exactly the named items (4/2/2/5/1/1/1/1), and the set is GREEN twice after revert.
+- The consumer suites give `78 passed`.
+- The full suite gives `3641 passed, 3 skipped, 4 deselected`. Afterwards only the seven manifests are modified, and the drift check still gives `OK: 413 files, no drift`.
+- Ruff and the publication boundary lint are clean.
+- On the real committed dist, a stale claude manifest hash now fails drift (`~ variants/claude/manifest.json`, exit 1), and install refuses with no target created.
+
+The CI step is effective. It runs in `gate-chain-completeness` after only checkout, setup-python and `pip install -e` (setuptools build, no compile hook), so it sees the committed tree and fails on a stale manifest.
+
+The LF pin was checked with a Linux autocrlf simulation. Every dist file checks out LF, and claude/codex/kilo-code/gemini install with exit 0 (78/78/78/47). The full suite in an autocrlf clone gives `3641 passed`, against `3627 passed` for the base in the same simulation.
+
+The release-state proof is non-vacuous:
+
+- The CI-view simulation prints `{'0.175.5'} {'0.175.5'}` at the base.
+- The guarded clone proof fails at the current head (`project version 0.175.5`). A clone of a worktree takes that worktree's HEAD, so the proof is not reading the wrong branch.
+- A simulated seal commit (`0.175.6`, dated section, local `v0.175.6`) without the entry gives `1 failed, 3 passed` with orphan `0.175.5`.
+- With the LD-13 entry it gives `4 passed` (exit 0), twice.
+- The remote's highest tag is `v0.172.2`.
+
+The scope stays hotfix. The CI step and the `.gitattributes` pin are each a necessary condition of the fix. Without the step, nothing checks the committed manifests. Without the pin, LD-4 would refuse legitimate autocrlf checkouts.
 
 ### Pre-audit gates
 
-- Governance health preflight (`python -m qor.cli governance-health --profile skill-entry`): all 8 artifacts OK.
-- Step 0 gate check: plan artifact found and valid (`.qor/gates/2026-09-28T0359-d92786/plan-iter1.json`).
+- Governance health preflight (`skill-entry`): all OK.
+- Step 0 gate check: plan artifact `plan-iter1.json` found and valid.
 - Step 0.3 `plan_iteration_status_lint`: exit 0.
-- Step 0.4 unchanged-plan short-circuit: `should_skip=False` (no prior audit in this session). Plan hash `71a00e948fa28efea5715a4272cec22e3cea134cd5538bcd28ddfe6c695db2d4`.
-- Step 0.5 cycle-count escalator: `cce.check` returned None and `cce.check_session_total` returned None.
-- Step 0.6 lints (WARN-only):
-  - `plan_grep_lint`: 40 citations truth-checked, 0 findings.
-  - `workspace_fragility_check`: medium (`dirty_gate_artifact_count=66`, pre-existing).
-  - `sg_closure_lint`: 40 entries, 0 without an enforcer citation.
-  - `gate_schema_freeze_lint`: 0.
-  - `publication_boundary_lint`: 0 findings.
-  - All other lints: no findings.
-- Step 0.7 spec-delta pre-pass: no `spec_deltas` are declared. The only capability specs are `execution-context-governance` and `spec-corpus`, and neither covers shadow issue filing, so no contracted behavior changes without a delta.
-- Version-Applicability Pass: `ok=True`, `hotfix`, target v0.175.5 > current highest v0.175.4.
-- Prompt Injection Pass: `prompt_injection_canaries` over ARCHITECTURE_PLAN, META_LEDGER, CONCEPT and the plan exited 0.
-- Runtime Contract Walk (WARN-only): 1 backward WARN (`qor.scripts.release_state` has no production importer). This is pre-existing and not touched by the plan.
-- `prose_test_lint --tests-dir tests --enforce`: exit 0 (69 exempted with a reason).
+- Step 0.4 unchanged-plan short-circuit: `should_skip=False` (no prior audit); plan hash `3fe222fb...90c9e`.
+- Step 0.5 escalator: `cce.check` and `check_session_total` both None.
+- Step 0.6 lints: all exit 0. plan_grep 46 citations truth-checked; sg_closure 40/0; gate_schema_freeze 0; publication_boundary 0. `workspace_fragility_check` reports medium (67 dirty gate artifacts, pre-existing, WARN-only).
+- Step 0.7 spec-delta: the plan declares no `spec_deltas`, and no contracted spec covers install or drift (LD-10 verified: only `execution-context-governance` and `spec-corpus` exist).
+- Prompt injection canaries: exit 0.
+- Version applicability: `target v0.175.6 > current highest v0.175.5`.
+- `prose_test_lint --enforce`: exit 0.
+- Runtime contract walk (WARN-only): 2 backward WARNs (`check_variant_drift`, `release_state` have no production importer; both are CLI/test-driven by design).
 
 ### Audit Results
 
 #### Security Pass
 **Result**: PASS
-The plan adds no auth logic, credentials, bypassed checks or mock returns. The `gh` argv construction is unchanged. The new `SystemExit` on a non-integer threshold fails closed, which is this loader's documented contract.
+There is no auth, credential or secret surface. Install now fails closed on any hash mismatch before writing anything. The bytes that are verified are the bytes that are written, so there is no read-twice TOCTOU.
 
 #### OWASP Top 10 Pass
 **Result**: PASS
-The plan adds no subprocess call and no deserialization beyond the existing `json.loads`. There is no fail-open: a wrong-typed threshold now stops with a named message instead of raising `TypeError` in the comparison.
+- A03: no subprocess in product code. The tests use list-form `git` argv.
+- A04: fail-closed with a named next step; no silent drop.
+- A08: the manifest is parsed with `json.loads`, and `yaml.safe_load` is used in the test only.
 
 #### Ghost UI Pass
-**Result**: PASS (not applicable; no UI surface)
+**Result**: PASS (no UI surface)
 
 #### Section 4 Razor Pass
-**Result**: PASS (see A2)
-The new functions are short. `_severity_sum` has 1 line, `is_breach` about 8, `build_title` 5 and `_header` 29, all with nesting of 2 or less and no nested ternaries. `build_body` shrinks. The module was already over the file cap at the base (410 lines). The Judge's reconstruction is 464 lines, against the plan's 471, which carries the full docstrings. The plan declares the overage and accepts it (LD-7). `main` was already over the function cap at the base (116 lines), and the plan changes two of its lines with a net change of 0.
+**Result**: PASS
+Measured on the reconstruction: `qor/install.py` is 220 lines (the plan says 228 with the full docstring) and `check_variant_drift.py` is 96 (103). `_do_install` is 38 lines, and every new function is under 20. Nesting is at most 3, with no nested ternaries.
 
 #### Self-Application Sub-Pass
 **Result**: PASS
-`originating_remediation: GH #474`. The discipline has two parts: a claim must be true of the numbers printed beside it, and a value has one owner. Both were applied to the plan itself:
-- Every "observed" number the plan prints reproduces: 10 failed/2 passed, 12 passed, the M1 to M8 counts, 113, 34, 3627/3/4, both simulation outputs and the four clone-proof outcomes.
-- The plan's CHANGELOG bullet claims no guarantee wider than the rule it implements. It names the plain sum as the compared number, which matches the LD-5 residual.
-- The plan restates no owned constant: the `--events` threshold is read from `_cst.THRESHOLD` at call time, and M5 proves that a restated literal fails.
+`originating_remediation` is GH #440, whose discipline is: record no unchecked value as an integrity claim, and exclude no file class from verification. Applied to the plan, every quoted observation the Judge could run reproduced:
+
+- RED/GREEN counts, mutation counts, suite totals and the 413-file drift result.
+- The autocrlf install results and the CI-view and clone-proof outputs.
+- The remote tag ceiling.
+
+The one claim that was not observed is Windows CI behaviour. It is declared as unobserved in the boundaries, in LD-7 and in LD-8, and is not stated as fact.
 
 #### Test Functionality Pass
 **Result**: PASS
 
-| Test description | Invokes unit? | Asserts on output? | Verdict |
-| --- | --- | --- | --- |
-| `test_events_selection_never_claims_a_breach` (x2) | yes (`csi.main` via `--dry-run --events`) | yes (exact title, heading, sum line; no `Detected:`; no "breach") | PASS |
-| `test_marker_subset_below_threshold_is_not_framed_as_breach` | yes (`csi.mark_resolved`, then `csi.main`) | yes (exact title and four header lines) | PASS |
-| `test_marker_at_threshold_keeps_the_breach_title_and_header` | yes (`csi.main`) | yes (exact base title and five base header lines) | PASS |
-| `test_breach_is_judged_against_the_marker_threshold` (x2) | yes (`csi.main`) | yes (breach prefix and heading in both directions) | PASS |
-| `test_events_threshold_is_read_from_the_writer` (x2) | yes (`csi.main`, with `cst.THRESHOLD` patched) | yes (exact sum line carrying the patched value) | PASS |
-| `test_load_marker_rejects_a_non_integer_threshold` (x4) | yes (`csi.load_marker`) | yes (`SystemExit` message naming `threshold` and "expected an integer") | PASS |
+| Test | Invokes unit? | Asserts on output? | Verdict |
+| ---- | ------------- | ------------------ | ------- |
+| drift_flags_a_manifest... (4) | yes (`drift_mod.main`) | exit code + diff line, both directions | PASS |
+| drift_flags_an_unparseable_manifest | yes | exit 1 + diff line, no raise | PASS |
+| drift_ignores_only_the_generated_timestamp | yes | exit 0 + `OK:` | PASS |
+| install_refuses_bytes... (4) | yes (`_do_install`) | rc, stderr names file, empty target, no `Installed` | PASS |
+| install_receipt_hashes_equal_the_installed_bytes | yes | path set + per-row sha256 vs bytes | PASS |
+| install_does_not_verify_an_entry... | yes | rc 0, row count, no `extra` row | PASS |
+| a_ci_job_checks_variant_drift... | parses the workflow | step order (drift before pytest/compile) | PASS (config-ordering check; M7 proves discrimination) |
+| every_committed_dist_file... | runs `git check-attr` | resolved `eol` per tracked path | PASS (M8 proves discrimination) |
 
-Acceptance question: each mutation M1 to M8 turns its named items RED, as observed, so a silent break in behavior would fail a test. The tests use only `tmp_path`, `monkeypatch`, `capsys` and fixed timestamps, with no network and no live state.
+No closed-enum taxonomy is introduced.
 
 #### Dependency Pass
 **Result**: PASS
-The plan adds no dependency. The new import is the in-package `qor.scripts.check_shadow_threshold`.
+The plan adds no dependency. The modules it adds are all stdlib (`hashlib`, `json`), and `yaml` is already a dependency.
 
 #### Macro-Level Architecture Pass
 **Result**: PASS
-The import adds no cycle. `check_shadow_threshold` imports `session`, `shadow_process` and `workdir`, plus a function-local import of `remediate_mark_addressed`, and nothing under `qor/` imports `create_shadow_issue`. The collector reaches it only through a `--flip-only` subprocess. After the fix the threshold has one owner. The breach predicate stays with `check_shadow_threshold`: the wording rule compares printed numbers and does not recompute the collapsed sum.
+The fix sits at the only place a manifest sha256 becomes a claim. That is verified: `install_drift_check` reads no manifest, and `sbom_emit` has 0 `sha256` references. The drift check reuses its existing regenerate-and-compare path, and no logic is duplicated.
 
 #### Feature Test Coverage Pass
-**Result**: PASS (exempt; `feature_inventory_touches: []`, governance script only)
+**Result**: PASS
+FX001 cites `tests/test_dist_manifest_integrity.py` with a behavioural descriptor (exit 1, nothing copied, no receipt; otherwise each receipt sha256 equals the installed bytes). The descriptor holds under the acceptance question (mutations M1 and M3).
 
 #### Infrastructure Alignment Pass
-**Result**: PASS (see A4)
-- All 42 evidence statements reproduce at `e062a3dd`, and the other quoted outputs reproduce.
-- `git grep 'Process threshold breach' -- qor tests` gives one line (384).
-- The same grep over the whole tree lists four files, as quoted.
-- `.github` has no `qor-shadow` or "threshold breach" match.
-- No `qor/*.py` imports `create_shadow_issue`.
-- `v0.175.4` is a local ancestor of the base, and the remote's highest tag is `v0.172.2`.
-- The ledger lines 24134, 24228, 24381 and 24475 reproduce.
-- `docs/release-state.json` line 80 holds `0.175.3` and has no `0.175.4` entry.
-- The base `--events` output reproduces the Problem statement exactly: "Process threshold breach", "Severity sum: **1** (threshold 10)" and a filing-time `Detected:`.
-- `git log -S'"threshold":'` over the writer shows one introducing commit, and it has always stored the `int` `THRESHOLD`. `.qor/remediate-pending` is gitignored and absent, so no committed marker exists that LD-6 could reject.
-- No consumer reads the title or body text. Tests assert only on the collector's own body builder. No skill or compiled variant quotes the header. The only title-bearing sibling is `collect_shadow_genomes`, which is not changed. `ac_close_guard` searches bodies for `#N`, and `nightly-health.yml` searches its own title. `advisory_filing_control.inspect` renders nothing for either new header.
-- Delivery-branch currency: the remote `main` is `e062a3dd`, the branch base.
+**Result**: PASS
+Every cited path, function and line was verified at `f2e4be9a`, and so was every new symbol (`_verified_entries`, `_copy_verified`, `_comparable_bytes`, `_MANIFEST_NAME`, `_VOLATILE_MANIFEST_KEYS`). The removed `_copy_manifest_entries` and `_copy_entry` have callers only in `qor/install.py`, and `_do_install`'s only product caller is `qor/cli.py:314`. All test callers of `_do_install` were enumerated:
+
+- `test_cli_install_source` hashes its `read_bytes`.
+- `test_phase21_harness` compiles its dist.
+- `test_cli_install_gemini` hashes `body.encode`. It is LF-only on Windows `write_text`, which is why the plan converts it to `write_bytes`.
+
+No other test installs from a manifest with false hashes; `test_cli_feature_index_backfill`'s zero hashes reach only `_do_list`. The behavioural claim that `eol=lf` overrides `core.autocrlf` on checkout is git's documented attribute precedence, and it was observed in the simulation.
 
 #### Filter-Stage Ordering Coherence
 **Result**: PASS
-The pipeline in `main` runs in this order: parse, then resolve the marker (or `None`), then read the events, then select the unaddressed events in the target set, then compute `is_breach` over the selection, then build the title and body. The wording predicate runs after the selection it describes, and no stage runs before its precondition.
+In `_verified_entries` the stages run in order: resolve the route, skip absent or unrouted entries, read, hash-compare, plan. `_do_install` refuses before `_copy_verified` (mutation M3). In CI, the drift step precedes every recompile in its job.
 
 #### Orphan Detection
 **Result**: PASS
+The new test file is collected by pytest (`testpaths = ["tests"]`). The modified modules stay on the CLI path (`qor.cli` -> `qor.install`; CI -> `check_variant_drift.py`).
 
-| Proposed File | Entry Point Connection | Status |
-| --- | --- | --- |
-| `tests/test_shadow_issue_header.py` | pytest collection (`tests/`) | Connected |
-| `qor/scripts/create_shadow_issue.py` (modified) | `qor-logic scripts create_shadow_issue`; `python -m qor.scripts.create_shadow_issue` | Connected |
-| `docs/release-state.json` (modified) | `tests/test_changelog_tag_coverage.py` via `release_state.load_release_state` | Connected |
-| `CHANGELOG.md` (modified) | `/qor-substantiate` stamp; `tests/test_changelog_format.py` | Connected |
+#### Documentation Drift
+`doc_integrity.render_drift_section` returned empty (glossary clean).
 
-### Probe record (scratch clones outside the repository)
+### Windows line-ending analysis (brief-mandated)
 
-Each scenario was run through the real writer (`check_shadow_threshold.main --log`), then the named action, then a `create_shadow_issue --dry-run` default run, then a writer `--dry-run` re-check:
-
-- `--events`, one severity-1 event, no marker. Title `Process shadow events - 1 events, sev 1`. Sum line `(threshold 10; not checked: the events were named with --events)`. No time line.
-- Two severity-5 events (writer `BREACH 10 >= 10`, marker `threshold` type `int`), then `--mark-resolved` on one. Title `Process shadow events - 1 events, sev 5`. Sum line `(threshold 10; not reached by these events)`. The writer now reports `OK: 5 < 10`.
-- Severities 5/5/2 (writer `BREACH 12`), then `--flip-only` on one. Title `Process shadow events - 2 events, sev 7`, "not reached". The writer now reports `OK: 7 < 10`.
-- Recurrence residual: two severity-5 events sharing gate `a`, plus a severity-5 event on gate `b` (writer collapsed `10`), then `--mark-resolved` on `b`. Title `Process threshold breach` + em dash + ` 2 events, sev 10` (base breach text). Header `Severity sum: **10** (threshold 10)`. The writer now reports `OK: 5 < 10` (A1).
-- Full marker, same three events, no resolution: breach with plain sum 15. The writer still reports a breach.
-- Aged severity-3 event escalated to severity 5 (writer collapsed `12`): breach with plain sum 15. The marker passes `load_marker`.
+- **Fresh Windows checkout with the pin.** All dist files are LF, which matches the manifests (index blobs are all LF). Install verifies clean.
+- **Test-matrix suite on Windows.** `tests/test_cli.py` recompiles `qor/dist` in place from sources. The `.yml` and `qor/agents/*.md` sources are unpinned, so on Windows they are CRLF. The recompiled dist and its manifests are therefore mutually consistent. That stays true because manifests hash the emitted bytes, and drift now compares manifests as parsed JSON, so a `write_text`-translated CRLF manifest is not drift. The same state already exists at the base for the pinned dist `.md`, so the pin adds no new class.
+- **No new break from the pin.** No test reads committed `.yml`/`.toml`/`.json` dist files byte-for-byte against sources. `test_install_sync_with_source` compares markdown only.
+- **Installs the tests drive.** Only the gemini fixture builds a manifest from `str.encode` while writing in text mode, and the plan fixes it.
+- **Residual (declared).** The Windows run itself is unobserved. The Linux autocrlf simulation does not reproduce `write_text` newline translation, and that gap is exactly the gemini case the plan addresses.
 
 ### Violations Found
 
 None.
 
-### Advisories (non-VETO)
+### Advisories (non-binding)
 
-- **A1 (declared residual, reproduced)**: the plain-sum rule can still title a filing a threshold breach when `check_shadow_threshold` would not agree. The reproduced case is a partial resolution whose remainder repeats a signature: plain sum 10, collapsed sum 5. The header is consistent with the numbers it prints. It is not consistent with the owner's measure, which the printed "Severity sum" is not. This is exactly what the limitations boundary, LD-5 bullet 1 and the CHANGELOG rule ("the plain sum of the filed events") state. At the base the same filing carried the same breach title, so the fix narrows the defect and does not reintroduce it. The neutral branches cannot err in the other direction: for schema-valid events the plain sum is at least the collapsed sum, so a "not reached" header never covers a selection whose own collapsed sum reaches the threshold.
-- **A2 (Razor, pre-existing)**: `create_shadow_issue.py` was 410 lines at the base and grows by about 55 to 61 lines. `main` was 116 lines at the base, with a net change of 0. Both overages are pre-existing, and the plan declares the file-size disposition (LD-7). The same disposition was accepted for the over-cap test files in Phases 279 and 300.
-- **A3**: `workspace_fragility_check` reports medium (66 dirty gate-artifact directories), which is pre-existing. The local `main` ref is stale (`15729311`), while the remote `main` and the branch base are `e062a3dd`.
-- **A4 (plan precision)**: LD-5 says "the only `gh issue list` search under `qor/` is in `ac_close_guard.py`". `qor/references/github-api-helpers.md` line 44 also carries a documentation example, `gh issue list --state open`. That example is not a search and not a dedup key, so the claim holds in substance.
-
-## Documentation Drift
-
-<!-- qor:drift-section -->
-(clean)
+- **A1**: LD-2 cites `_write_install_record` at "line 41". The `def` is at line 39, and line 41 is the receipt write. The citation is imprecise but not false.
+- **A2**: The CHANGELOG clause "after removing only `generated_ts`" does not say that the comparison is on parsed JSON, so key order and whitespace are not drift. All values are still compared. The behaviour is declared in the boundaries, LD-5 and LD-8. The wording is not misleading about integrity.
+- **A3**: `qor/dist/** text eol=lf` forces the `text` attribute on any future binary placed under `qor/dist/`. Today all 413 tracked files are md/toml/yml/yaml/json, so the risk is latent and not declared.
+- **A4**: A Windows working copy checked out before the pin keeps CRLF in the five claude `.yml` files until it is re-checked-out, because git does not rewrite unchanged blobs when attributes change. Install from that copy now refuses and names the files, and the message gives a working remedy (`qor-logic compile`). This is fail-closed by design, but it is not stated in LD-8.
+- **A5**: `workspace_fragility_check` reports medium (67 dirty gate artifacts). This is pre-existing.
 
 ## Process Pattern Advisory
 
@@ -161,9 +170,7 @@ None.
 
 No repeated-VETO pattern detected in the last 2 sealed phases.
 
-### Report Hash
-
-SHA256(this_report) is recorded as the Content Hash of the GATE TRIBUNAL entry in `docs/META_LEDGER.md`. A report cannot contain its own hash.
+**Required next action:** `/qor-implement`.
 
 ---
 _This verdict is binding._
