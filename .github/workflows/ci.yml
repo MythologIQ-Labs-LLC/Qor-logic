@@ -91,6 +91,12 @@ jobs:
           cache: pip
       # [dev] carries ruff, which the publication-boundary and ruff steps below use.
       - run: pip install -e ".[dev]"
+      - name: Variant drift on the committed dist
+        # Phase 302 (GH #440): the test job runs this after pytest, and the
+        # suite recompiles qor/dist in place (test_cli compile), so there it
+        # compares a fresh compile with itself. This job runs no pytest, so the
+        # check here sees the committed dist and its manifests.
+        run: python qor/scripts/check_variant_drift.py
       - name: Verify gate-chain completeness for sealed phases >= 52
         run: python -m qor.reliability.gate_chain_completeness --phase-min 52
       - name: Verify committed intent-lock evidence for sealed phases >= 231

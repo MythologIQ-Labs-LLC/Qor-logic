@@ -85,6 +85,11 @@
       "version": "0.175.4",
       "state": "sealed_unpublished",
       "reason": "Sealed by /qor-substantiate (META_LEDGER #829); no release tag was pushed to the remote, so the version is sealed but not published."
+    },
+    {
+      "version": "0.175.5",
+      "state": "sealed_unpublished",
+      "reason": "Sealed by /qor-substantiate (META_LEDGER #832); no release tag was pushed to the remote, so the version is sealed but not published."
     }
   ]
 }

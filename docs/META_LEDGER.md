@@ -24576,6 +24576,30 @@ A shadow issue no longer claims a threshold breach its own numbers do not show (
 
 **Required next action**: /qor-implement.
 
+### Entry #834: IMPLEMENTATION
+
+**Timestamp**: 2026-10-02T14:37:32Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `baa073950537`
+**Plan**: docs/plan-qor-phase302-dist-manifest-integrity.md
+**Session**: 2026-09-28T0457-61990a
+
+**Content Hash**: `f3b3e886ec68f4efc0f369d2373c739f9b0215dc7be8e53264a69bb0be3ed29a`
+**Previous Hash**: `9a3c57354a914c6468684348ffdca6ee5547058236accf314ca8270fec90999f`
+**Chain Hash (Merkle seal)**: `3196ffbb5f124be2293695476a5d140cc49617ca2d06778c0629bfec3ad7a793`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** The install receipt records only sha256 values checked against the installed bytes, and dist manifests are drift-checked (GH #440), implemented test-first on base f2e4be9a per the iteration-1 plan (audit PASS #833).
+
+Code: `qor/install.py` imports hashlib; `_copy_entry` writes already-verified bytes (write_bytes + copystat); `_copy_manifest_entries` replaced by `_verified_entries` (reads each copied file once, compares its sha256 with the manifest, returns planned copies and mismatched install_rel_paths; absent or unrouted entries neither copied nor checked) and `_copy_verified` (receipt sha256 = hash of bytes written); `_do_install` refuses before any write on a mismatch, in a dry run too, naming each file on stderr, exit 1 (LD-4). `qor/scripts/check_variant_drift.py` drops `_DRIFT_EXCLUDE` for `_MANIFEST_NAME`, `_VOLATILE_MANIFEST_KEYS` and `_comparable_bytes` (manifest compared as parsed JSON without generated_ts; unparseable manifest hashed raw) (LD-5). `.github/workflows/ci.yml` gate-chain-completeness gains the `Variant drift on the committed dist` step after pip install (LD-6). `.gitattributes` pins `qor/dist/** text eol=lf`; `git add --renormalize .` staged no blob change (LD-7). `tests/test_cli_install_gemini.py` fixture writes bytes (regression-coverage maintenance, LD-7). install.py 230 lines, check_variant_drift.py 104; all functions <= 40 lines; all changed source ASCII.
+
+Tests: new `tests/test_dist_manifest_integrity.py` (212 lines, 8 functions, 14 items). RED at base: 11 failed, 3 passed. GREEN after: 14 passed, twice. Mutations M1-M8 under `python -B -m pytest` over the 53-item set, each reverted: M1 4, M2 2, M3 2, M4 5, M5 1, M6 1, M7 1, M8 1 failed, each exactly the named set; 53 passed twice after each restore.
+
+Release state: `docs/release-state.json` gains 0.175.5 sealed_unpublished (reason names the #832 seal); CI-view simulation printed set() {'0.175.5'} after the entry. CHANGELOG `## [Unreleased]` gains the LD-12 Fixed bullet verbatim. No documentation, skill, schema, spec or compiled variant changes (LD-10); doc sync Step 8.5 has nothing to author; FEATURE_INDEX FX001 row unchanged and accurate.
+
+Verification: consumer suites 78 passed; release/changelog suites 29 + 5 passed; full suite 3641 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored); check_variant_drift OK 413 files before and after the suite; ruff clean; publication_boundary_lint 0; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
+
 ---
 
 *Chain integrity: VALID*

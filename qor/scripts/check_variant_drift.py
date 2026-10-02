@@ -3,11 +3,14 @@
 
 Regenerates into a tempdir, then diffs byte-for-byte via hashlib against
 the committed qor/dist. Exits 0 on clean, 1 on drift.
+A manifest.json is compared as its parsed JSON without the volatile
+generated_ts key (Phase 302, GH #440).
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import tempfile
 from pathlib import Path
 
@@ -18,8 +21,28 @@ from qor import resources as _resources
 COMMITTED_DIST = Path(str(_resources.asset("dist")))
 
 
-# Files excluded from drift comparison (contain non-deterministic fields like timestamps)
-_DRIFT_EXCLUDE = {"manifest.json"}
+# Phase 302 (GH #440): manifest.json was excluded from the comparison because
+# it carries a compile-time timestamp. It is now compared with that one key
+# removed, so a manifest whose file list or sha256 values do not describe the
+# shipped bytes is drift.
+_MANIFEST_NAME = "manifest.json"
+_VOLATILE_MANIFEST_KEYS = ("generated_ts",)
+
+
+def _comparable_bytes(p: Path) -> bytes:
+    """The bytes drift compares: the file's own bytes, except that a manifest
+    is compared as its parsed JSON without its volatile keys. An unparseable
+    manifest is compared raw, so it differs from any regenerated one."""
+    data = p.read_bytes()
+    if p.name != _MANIFEST_NAME:
+        return data
+    try:
+        doc = json.loads(data)
+    except ValueError:
+        return data
+    if isinstance(doc, dict):
+        doc = {k: v for k, v in doc.items() if k not in _VOLATILE_MANIFEST_KEYS}
+    return json.dumps(doc, sort_keys=True).encode("utf-8")
 
 
 def hash_tree(root: Path) -> dict[str, str]:
@@ -28,9 +51,9 @@ def hash_tree(root: Path) -> dict[str, str]:
     if not root.exists():
         return out
     for p in sorted(root.rglob("*")):
-        if p.is_file() and p.name not in _DRIFT_EXCLUDE:
+        if p.is_file():
             rel = p.relative_to(root).as_posix()
-            h = hashlib.sha256(p.read_bytes()).hexdigest()
+            h = hashlib.sha256(_comparable_bytes(p)).hexdigest()
             out[rel] = h
     return out
 

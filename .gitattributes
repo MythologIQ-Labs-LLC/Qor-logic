@@ -13,3 +13,8 @@ docs/**/*.md text eol=lf
 # canonical/variant block-equality tests comparing like for like.
 qor/skills/**/*.md text eol=lf
 qor/dist/**/*.md text eol=lf
+
+# Phase 302 (GH #440): install verifies every shipped dist file against the
+# sha256 its manifest records over the committed LF bytes, so every dist text
+# file is pinned to LF, not only the markdown above.
+qor/dist/** text eol=lf
