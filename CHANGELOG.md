@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.175.6] - 2026-10-02
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 302 (hotfix; the install receipt records only sha256 values checked against the installed bytes, and dist manifests are drift-checked, GH #440)**: `qor-logic install` wrote each file's sha256 from the variant's `manifest.json` into `.qorlogic-installed.json` without hashing the bytes it copied, so a stale or edited manifest, an edited shipped file, or a checkout that rewrote line endings produced a receipt whose sha256 values did not describe the installed files. Install now hashes each file it is about to copy; if any file's hash differs from its manifest sha256, it installs nothing, writes no receipt, names each mismatched file and exits 1, in a dry run as well. The receipt records the sha256 of the bytes written. Manifest entries that install does not copy (no source file, or no install route for the host) are still skipped without a check. `check_variant_drift` no longer excludes `manifest.json`: it compares each manifest with the regenerated one after removing only `generated_ts`, and a CI job now runs it on the committed dist before anything recompiles it. Every file under `qor/dist/` now checks out with LF line endings, so a checkout with `core.autocrlf` keeps the bytes the manifests hash. `docs/release-state.json` records `0.175.5` as `sealed_unpublished`.
+
 ## [0.175.5] - 2026-09-28
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

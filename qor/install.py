@@ -9,6 +9,7 @@ uses ``commands/`` without changing the copy loop.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 import sys
@@ -28,12 +29,14 @@ def _resolve_dest(rel: str, install_map: dict[str, Path]) -> Path | None:
     return None
 
 
-def _copy_entry(src: Path, dst: Path, dry_run: bool) -> None:
+def _copy_entry(src: Path, dst: Path, data: bytes, dry_run: bool) -> None:
+    """Write the already-verified ``data`` (read once from ``src``) to ``dst``."""
     if dry_run:
         print(f"  [dry-run] {src} -> {dst}")
         return
     dst.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(src, dst)
+    dst.write_bytes(data)
+    shutil.copystat(src, dst)
 
 
 def _write_install_record(base: Path, installed: list[dict]) -> None:
@@ -52,19 +55,42 @@ def _resolve_install_source(host: str, dist_root: Path | None) -> tuple[Path, di
     return source_root, _load_manifest(source_root / "manifest.json")
 
 
-def _copy_manifest_entries(
-    manifest: dict, source_root: Path, install_map: dict[str, Path], dry_run: bool,
-) -> list[dict]:
-    installed: list[dict] = []
+def _verified_entries(
+    manifest: dict, source_root: Path, install_map: dict[str, Path],
+) -> tuple[list[tuple[Path, Path, bytes]], list[str]]:
+    """Resolve the entries install copies and check each file's bytes.
+
+    Phase 302 (GH #440): install used to record the manifest's sha256 in the
+    receipt without hashing the bytes it copied, so a stale manifest or an
+    edited shipped file produced a receipt that did not describe the installed
+    files. Each file is now read once and hashed before anything is written.
+    Returns ``(planned, mismatches)``: the ``(src, dst, data)`` copies whose
+    bytes match their manifest sha256, and the ``install_rel_path`` of every
+    file whose bytes do not. Entries whose source file is absent, or that no
+    install route covers, are neither copied nor checked.
+    """
+    planned: list[tuple[Path, Path, bytes]] = []
+    mismatches: list[str] = []
     for entry in manifest["files"]:
         rel = entry["install_rel_path"]
         src = source_root / rel
         dst = _resolve_dest(rel, install_map)
         if not src.exists() or dst is None:
             continue
-        _copy_entry(src, dst, dry_run)
+        data = src.read_bytes()
+        if hashlib.sha256(data).hexdigest() != entry["sha256"]:
+            mismatches.append(rel)
+            continue
+        planned.append((src, dst, data))
+    return planned, mismatches
+
+
+def _copy_verified(planned: list[tuple[Path, Path, bytes]], dry_run: bool) -> list[dict]:
+    installed: list[dict] = []
+    for src, dst, data in planned:
+        _copy_entry(src, dst, data, dry_run)
         if not dry_run:
-            installed.append({"path": str(dst), "sha256": entry["sha256"]})
+            installed.append({"path": str(dst), "sha256": hashlib.sha256(data).hexdigest()})
     return installed
 
 
@@ -88,7 +114,18 @@ def _do_install(
         )
         return 1
 
-    installed = _copy_manifest_entries(manifest, source_root, target.install_map, dry_run)
+    planned, mismatches = _verified_entries(manifest, source_root, target.install_map)
+    if mismatches:
+        print(
+            f"Install refused: {len(mismatches)} file(s) under {source_root} do not "
+            f"match the sha256 in its manifest.json; nothing was installed. "
+            f"Rebuild the dist with 'qor-logic compile' or reinstall the package.",
+            file=sys.stderr,
+        )
+        for rel in mismatches:
+            print(f"  sha256 mismatch: {rel}", file=sys.stderr)
+        return 1
+    installed = _copy_verified(planned, dry_run)
     if dry_run:
         print(f"[dry-run] Would install {len(manifest['files'])} files to {target.name}")
     elif installed:

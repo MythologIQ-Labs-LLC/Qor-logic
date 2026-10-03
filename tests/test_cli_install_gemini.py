@@ -11,8 +11,10 @@ def _stage_gemini_variant(dist_root: Path) -> None:
     commands.mkdir(parents=True)
     body_a = 'description = "A"\nprompt = """\nA body\n"""\n'
     body_b = 'description = "B"\nprompt = """\nB body\n"""\n'
-    (commands / "a.toml").write_text(body_a, encoding="utf-8")
-    (commands / "b.toml").write_text(body_b, encoding="utf-8")
+    # Phase 302: write the exact bytes the manifest hashes; write_text translates
+    # newlines on Windows and install now verifies each file's sha256.
+    (commands / "a.toml").write_bytes(body_a.encode("utf-8"))
+    (commands / "b.toml").write_bytes(body_b.encode("utf-8"))
 
     import hashlib
     files = []
