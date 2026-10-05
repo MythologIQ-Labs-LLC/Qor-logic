@@ -49,6 +49,10 @@ Drop-in instructions for Claude Code (and similar harnesses). Keep responses ter
 - **Definition of done = green tests.** Code is not done until its tests pass. A skill, helper, or feature with no tests is not done; it is a draft.
 - **Tests must be reliable.** No flakes, no hidden time/random/network coupling, no live-state hardcoding (e.g., asserting against a specific ledger entry's hash). Run new tests at least twice in a row to confirm determinism before claiming green.
 
+## Maintenance freeze (mandatory)
+
+- Qor-logic is frozen and superseded; see [AGENTS.md](AGENTS.md#maintenance-freeze). Do not start a `/qor-plan` or any other change unless the owner lifts the freeze.
+
 ## Governance flow
 
 - After substantiation passes, commit automatically; do not offer continuation.

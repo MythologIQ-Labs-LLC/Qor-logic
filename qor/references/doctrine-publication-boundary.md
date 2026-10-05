@@ -39,7 +39,7 @@ specific outside repository.
 Enforcement also reaches outbound. A report filed from one repository into
 another crosses the boundary at the moment it is transmitted, and that is the
 only moment at which the reporter still knows which details identify them. The
-tracked-file lint and the scheduled surface scan both act after the fact, so a
+tracked-file lint and the surface scan both act after the fact, so a
 filing path inspects what it passes to `gh`.
 
 It derives the reporter's identity from the directory the reported events were
@@ -99,11 +99,12 @@ place to park prose that should have been anonymized.
 pull-request titles, bodies, and comments are outside its reach: that surface
 was cleaned by hand twice, and one issue title survived a body-only
 anonymization performed the same day. `qor/scripts/github_surface.py` closes
-that gap on a schedule (`nightly-health.yml`), sharing the same detectors and
+that gap when `nightly-health.yml` is run by hand (it ran on a schedule until
+the Phase 304 maintenance freeze), sharing the same detectors and
 the same `boundary-lint: ok=<reason>` marker so the two surfaces cannot drift
 into separate dialects.
 
-The scheduled scan is read-only and reports for a human to anonymize; rewriting
+The surface scan is read-only and reports for a human to anonymize; rewriting
 an operator's issue text unattended is not a decision a lint should make. It
 does not run in the pull-request job, which executes on forks with no token
 where an authenticated scan would fail for reasons unrelated to the boundary.

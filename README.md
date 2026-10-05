@@ -31,6 +31,10 @@
 
 ---
 
+## Maintenance freeze
+
+Qor-logic is feature-complete and frozen as of version 0.176.0, its final release. It has been superseded and receives no further development: no new features, fixes, dependency updates, or releases. The published package stays on PyPI and continues to install and work as documented below. New issues and pull requests are not accepted.
+
 ## What Qor-logic Does
 
 Qor-logic is a governance framework that ships curated skills, doctrines, and runtime enforcement to AI coding agents. It covers the full software development lifecycle with hash-chained evidence, machine-enforceable policies, and a process-failure feedback loop.

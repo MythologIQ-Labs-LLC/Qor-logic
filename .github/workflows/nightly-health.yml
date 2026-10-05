@@ -7,13 +7,11 @@ name: Nightly Health
 # QA exemplar's drift-detection workflow (self-test before verdict; JSON as the
 # final output line; idempotent gh-issue lifecycle).
 
-# cost justification: one ~2-minute ubuntu job per day (checkout + pip install
-# + in-process read-only checks + 4 packaging tests); replaces a recurring
-# manual governance-health review and is the enforcement surface for GH #250.
+# cost justification: manual runs only (workflow_dispatch) since the Phase 304
+# maintenance freeze removed the daily schedule; one ~2-minute ubuntu job per run
+# (checkout + pip install + in-process read-only checks + 4 packaging tests).
 
 on:
-  schedule:
-    - cron: '0 9 * * *'
   workflow_dispatch:
 
 concurrency:

@@ -24814,6 +24814,34 @@ Two shipped skill references invoke `qor-logic`, the publication-boundary lint i
 
 **Required next action**: /qor-implement
 
+### Entry #845: IMPLEMENTATION
+
+**Timestamp**: 2026-10-05T18:45:31Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase304-maintenance-freeze.md
+**Session**: 2026-10-05T1757-41eb02
+**Entry ID**: `c856385c2377`
+
+**Content Hash**: `f91d6067b4b3d72e2f5b0de4477e84f4cccbca54fc66b12da773d6a814abb756`
+**Previous Hash**: `2e01f5d284d0983f586bab2f4e3c938f6e0482d8500e0973a94e971d09b7ae78`
+**Chain Hash (Merkle seal)**: `aec3f528d6207fce5cd77a2a057665d01d45c374c56c24a1a80f208f2d6c1cd8`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Maintenance freeze implemented test-first on base 7228bacd per the iteration-4 plan (audit PASS #844, remediation applied). Content hash is the sha256 of `qor/scripts/freeze_check.py`.
+
+Code: new `qor/scripts/freeze_check.py` (134 lines, longest function 13 lines, nesting 2): `FROZEN_CLASSIFIER`, `FREEZE_HEADING`, `NOTICE_FILES`, `DEPENDABOT_FILES`, `check(repo_root) -> list[str]` (classifier, dependabot, schedule and notice violations, each prefixed by the repository-relative POSIX path; workflows read with `yaml.safe_load`, parse errors propagate) and `main(argv) -> int` (`--repo-root`, default `.`; prints each violation then `freeze_check: OK` or `freeze_check: <n> violation(s)`; exit 0/1).
+
+Tests: new `tests/test_freeze_check.py` (103 lines, 9 items, K0-K6); each regression test asserts its mutation took effect before calling `check`. `tests/test_dependabot_config.py` deleted with `.github/dependabot.yml` (LD-4). `tests/test_nightly_health_wiring.py::test_workflow_declares_schedule_dispatch_and_permissions` renamed `test_workflow_is_dispatch_only_with_least_permissions` and inverted (no `schedule:` line, no `cron:`); other assertions unchanged. RED: collection error (`qor.scripts.freeze_check` absent); with the module and the unfrozen tree, 9 failed; nightly test failed on its no-schedule assertion. GREEN: 26 passed, twice.
+
+Freeze edits: README.md `## Maintenance freeze` above `## What Qor-logic Does` (LD-1 text); AGENTS.md `## Maintenance freeze` above `## Public-repository boundary`; CLAUDE.md `## Maintenance freeze (mandatory)` above `## Governance flow`; CONTRIBUTING.md `## Maintenance freeze` above `## Reading order`; no notice names or links a successor. `pyproject.toml` classifier `Development Status :: 7 - Inactive` (LD-3). `nightly-health.yml` schedule removed, `workflow_dispatch` kept, cost-justification comment states manual-only (LD-4). Doctrine-publication-boundary lines 42, 102 and 106 per LD-8 (line 102 re-wrapped onto two lines). `docs/release-state.json` gains `0.175.7` / `sealed_unpublished` (LD-7). CHANGELOG `[Unreleased]` `### Changed` entry. FEATURE_INDEX row FX028.
+
+Doc sync (Step 8.5, standard tier): `docs/architecture.md` gains a `## Maintenance freeze (Phase 304)` section naming `freeze_check.py` and its K0-K6 contract; not in the plan's Affected Files, added under the Step 8.5 obligation and disclosed here.
+
+Outward action (LD-5): dependabot PR #529 closed unmerged with a comment citing the freeze; `requirements-sbom.txt` unchanged.
+
+Verification: full suite 3671 passed, 3 skipped, 4 deselected (after unshallowing the clone; on the shallow clone `test_plan_grep_evidence_parse::test_reproduces_compares_stripped_text` failed because commit 2d356ec was absent, and passes with full history); suite-regenerated `qor/dist` manifests restored (only `generated_ts` changed). `freeze_check: OK`; check_variant_drift OK 413; publication_boundary_lint 0 findings at `--expect-scope structural`; ruff clean; prose_test_lint exit 0; ledger chain verified through #844.
+
 ---
 
 *Chain integrity: VALID*
