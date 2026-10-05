@@ -84,9 +84,7 @@ qor = [
     "policies/*.cedar",
     "templates/*.md",
     "templates/*",
-    "dist/variants/**/*.md",
-    "dist/variants/**/*.json",
-    "dist/variants/**/*.toml",
+    "dist/**/*",
 ]
 
 [tool.pytest.ini_options]

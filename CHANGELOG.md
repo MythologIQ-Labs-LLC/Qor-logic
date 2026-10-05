@@ -10,6 +10,12 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+### Changed
+- **Phase 305 (hotfix; the freeze notices name 0.176.1 as the final release)**: The owner lifted the maintenance freeze for this one packaging fix; the freeze otherwise stays in force, and no release follows 0.176.1. README (the package long description) and AGENTS.md now name 0.176.1 as the final release, and AGENTS.md permits that one release and no other. The README no longer says that the published package works as documented, which the 0.176.0 README and its CHANGELOG section said: the published 0.176.0 and 0.172.2 packages lack `qor/dist/manifest.json` and the 20 `.yml` and `.yaml` files of the claude, codex, cursor and kilo-code variants, so `qor-logic list --available` exits 1 after installing either of them. The README now says so, and that 0.176.1 fixes this for the tracked files under `qor/dist`.
+
+### Fixed
+- **Phase 305 (hotfix; the package ships the tracked files under `qor/dist`, so `qor-logic list --available` works after a package install and variant installs copy every file their manifest lists)**: The package data shipped only the `.md`, `.json` and `.toml` files under `qor/dist/variants/`. An installed package therefore lacked `qor/dist/manifest.json`, so `qor-logic list --available` exited 1 with `No manifest. Run 'qor-logic compile' first.`, and lacked the 20 `.yml` and `.yaml` files of the claude, codex, cursor and kilo-code variants, so installing one of those variants copied 73 of the 78 files its manifest lists without saying so. The package data now declares one `dist/**/*` glob in place of the three extension globs, and a wheel built from these sources with the release build tools carried every tracked file under `qor/dist`. A new test fails if a dist manifest lists a path with a segment the build is known to drop: a name that starts with a dot, or `RCS`, `CVS` or `_darcs`. Install still skips, without a message, a manifest entry whose source file is absent.
+
 ## [0.176.0] - 2026-10-05
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
