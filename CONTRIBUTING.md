@@ -2,6 +2,10 @@
 
 Qor-logic is a prompt system. Contributions are proposed, audited, implemented, and sealed through the `/qor-*` skill chain. This document points to the authorities; read them in order.
 
+## Maintenance freeze
+
+Qor-logic is frozen and superseded; contributions are no longer accepted. See [the maintenance freeze notice](README.md#maintenance-freeze).
+
 ## Reading order
 
 Read these documents before proposing a change:

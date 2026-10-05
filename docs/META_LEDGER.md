@@ -24738,6 +24738,140 @@ Two shipped skill references invoke `qor-logic`, the publication-boundary lint i
 
 **Decision**: Disclosed post-seal test fix for Phase 303 (GH #457), following SESSION SEAL #839 (seal commit eda4866a, Merkle seal `ce903075a8bbdb619bde420b642551413d979db58e343663d939e7189f13c2ea`). CI on the seal commit failed on windows-latest (Python 3.12 and 3.13), run 37350028252 job 111898252282: `tests/test_boundary_lint_expected_scope.py::test_a_bom_does_not_hide_the_first_term` (1 failed, 3664 passed, 3 skipped), at index 0 `[boundary] docs\\a.md:1: identity term: example-outside-cli` != `[boundary] docs/a.md:1: identity term: example-outside-cli`. Root cause: the test hardcoded a POSIX relative path, while `publication_boundary_lint.collect_findings` with `no_git=True` renders each finding path as `str(path.relative_to(repo_root))`, which uses OS-native separators. The lint's behavior is unchanged and out of scope. Change (test only, one assertion): the finding list is normalized with `f.replace("\\", "/")` before the equality check, the convention `tests/test_publication_boundary_lint.py` already uses (`out.replace("\\", "/")`). No other assertion in that file or in `tests/test_ci_coverage_lint.py` compares a lint-rendered path. `tests/test_boundary_lint_expected_scope.py` sha256 before `511752babe99db42f2558d71cdf3159ab780ccbe87947bc3c13611f6c414fbc2`, after `d68abfdb6681f9ee32a74dcacba98ea35911056857cee0a12a6d9fe8d437db36`. Proof: a scratch pytest plugin outside the repository that renders each lint path as `str(PureWindowsPath(rel))` reproduces the CI failure byte for byte on the old assertion and passes the new one; on Linux both Phase 303 test files 37 passed twice and the full suite 3665 passed, 3 skipped, 4 deselected. No product code, plan, CHANGELOG version section, gate artifact or other sealed artifact changed; the seal's content hash (the plan hash `ed9115d9da1a83d7b72b7e7152e87348f4b8c743a9f0e328bf151803470661ed`) still equals the plan's live sha256 and is unaffected. This entry carries no Artifact or Plan line, so it binds no artifact; its content hash is the self-bound body hash. The local seal tag v0.175.7 remains on the seal commit eda4866a and was never pushed; it is not moved, so any release tag must be created from the post-fix commit at release time.
 
+### Entry #841: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T18:08:50Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `cfb790edca32`
+**Verdict**: VETO
+
+**Content Hash**: `6335152fe0985cc43c49ce6b90b4c9cc289c2e7029b1f7a869390c9832541e88`
+**Previous Hash**: `e23e1381d71f79421ae17281a6cafd513c7ab447f6241aa662d3a53f391dbb18`
+**Chain Hash (Merkle seal)**: `6b78061a811cef1fa842052254bae17b79365645f2ef2cf6d97da1486006d732`
+
+**Decision**: **Target**: `docs/plan-qor-phase304-maintenance-freeze.md`
+
+**Decision**: VETO (iter 1 on base 7228bacd, head 427006e). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. All 13 grep evidence statements reproduce at 7228bacd; PyYAML's bare `on:` -> True, the single scheduled workflow, README as the PyPI long description and the scripts module dispatch all verified; a scratch copy with LD-1, LD-3, LD-4 and an LD-2 prototype applied kept 156 coupled tests green (test_ci_coverage_lint, test_workflow_budget, test_boundary_scope_disclosure, docs and plan-glob tests), drift OK, boundary lint 0, ruff clean; the 0.175.7 exception removes exactly the 0.175.7 orphan. V1 (coverage-gap): LD-2 makes two behaviours normative that no planned test covers, a missing NOTICE_FILES file and a list- or string-form `on:` holding schedule; mutations skipping either leave all 15 planned tests green. Advisories: A1 Branch line names the remote branch, work is on phase/304-maintenance-freeze; A2 doctrine-publication-boundary.md says the GitHub-surface scan runs on a schedule; A3 safe_load not stated (enforced by the discipline test); A4 missing pyproject or unparseable workflow behaviour unstated; A5 RED is a collection error; A6 FX028 row columns unspecified; A7 the v0.175.7 tag is not in this clone. Escalator: cce.check and check_session_total None; no repeated-VETO pattern. Session `2026-10-05T1757-41eb02`.
+
+**Required next action**: Governor amends via /qor-plan (a test for each normative LD-2 rule, or drop the rule), then /qor-audit.
+
+### Entry #842: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T18:17:18Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `0127cc1c53a8`
+**Verdict**: VETO
+
+**Content Hash**: `57abc208e110ea59057e02d5ca1f3b29680844aa083c71f22d47c8a5f2d5bcd1`
+**Previous Hash**: `6b78061a811cef1fa842052254bae17b79365645f2ef2cf6d97da1486006d732`
+**Chain Hash (Merkle seal)**: `cfd41eefb93624dbbfcb5084155cfb16cc614b204a5c76822e47ad50cc47e22c`
+
+**Decision**: **Target**: `docs/plan-qor-phase304-maintenance-freeze.md`
+
+**Decision**: VETO (iter 2 on base 7228bacd, head b149ae2). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. Full re-walk: all 17 evidence and prints statements reproduce at 7228bacd; iteration-1 V1 cured (each of the seven named mutations is caught by a planned test); a scratch clone with every planned edit applied gives freeze_check OK, 40 passed twice on the new and nightly test files, 822 passed and 2 skipped across 123 coupled test files, drift OK 413, boundary lint 0 at --expect-scope structural, ruff clean; the LD-8 doctrine edits break no test and the doctrine is not compiled into qor/dist. V1 (coverage-gap): three normative clauses of LD-2 property 4 have no discriminating test (heading equality, non-blank content, end-of-file section end); mutations treating blank lines as content, an end-of-file empty section as non-empty, or a prefixed heading as the freeze heading each leave all 23 planned tests green. Advisories: A1 property order untested; A2 empty-section test bullet does not say parametrized; A3 main's default --repo-root untested; A4 Branch line; A5 ci_coverage_lint dependency_admission_lint WARN. Escalator: cce.check and check_session_total None; no repeated-VETO pattern. Session `2026-10-05T1757-41eb02`.
+
+**Required next action**: Governor amends via /qor-plan (a discriminating test for every property-4 clause, or drop the clause), then /qor-audit.
+
+### Entry #843: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T18:27:33Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `239d3a7dacf0`
+**Verdict**: VETO
+
+**Content Hash**: `78f7d5c027060a97419a4d6cf97c968db8f62bc106e5b61f8d3a69557174aee7`
+**Previous Hash**: `cfd41eefb93624dbbfcb5084155cfb16cc614b204a5c76822e47ad50cc47e22c`
+**Chain Hash (Merkle seal)**: `003b7ca05e845dad1d27d5c4f06e747801cecfbd195ff396e458916757a39679`
+
+**Decision**: **Target**: `docs/plan-qor-phase304-maintenance-freeze.md`
+
+**Decision**: VETO (iter 3 on base 7228bacd, head fe4068c). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. Full re-walk: every evidence and prints statement reproduces at 7228bacd; iteration-2 V1 cured (31 per-clause mutants caught, including heading equality, blank-only sections and the end-of-file boundary); a scratch clone with every planned edit and a simulated 0.176.0 seal gives freeze_check OK, 1658 passed and 16 skipped across 220 coupled test files, 59 passed twice on the new and nightly files, drift OK 413, boundary lint 0, ruff clean, prose_test_lint exit 0. V1 (coverage-gap): seven mutants survive all planned cases: C1.4 duplicate frozen classifiers, C3.5 key precedence with a schedule under the quoted key only, C3.9 a file scheduling under both keys counted twice, C5.2 main printing violations sorted, the unidentified "directly in .github/workflows" and property-4 file-order conditions, and C1.5 a [project] table without classifiers raising KeyError. Advisories: A1 third consecutive coverage-gap VETO, escalator expected to route to /qor-remediate; A2 POSIX path form only discriminated on Windows CI; A3 Branch line; A4 ci_coverage_lint WARN. Session `2026-10-05T1757-41eb02`.
+
+**Required next action**: /qor-remediate (cycle-count escalation), or Governor amends via /qor-plan if the operator declines escalation.
+
+### Entry #844: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T18:40:29Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `c75573177009`
+**Verdict**: PASS
+
+**Content Hash**: `9e6105a5a8e87c0375d1c835160db7d6c6633fc81e2542e6d12e2f8df5293518`
+**Previous Hash**: `003b7ca05e845dad1d27d5c4f06e747801cecfbd195ff396e458916757a39679`
+**Chain Hash (Merkle seal)**: `2e01f5d284d0983f586bab2f4e3c938f6e0482d8500e0973a94e971d09b7ae78`
+
+**Decision**: **Target**: `docs/plan-qor-phase304-maintenance-freeze.md`
+
+**Decision**: PASS (iter 4 on base 7228bacd, head b65c774; reviews-remediate:.qor/gates/2026-10-05T1757-41eb02/remediate.json). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. Full re-walk of LD-1 to LD-8: all 17 evidence and prints statements reproduce at 7228bacd; version target v0.176.0 above v0.172.2; the LD-7 exception leaves no orphan in a simulated v0.176.0 tag set. Self-application of the remediation: LD-2's normative contract is the finite K0-K6 regression set over this repository's own files; a prototype built from plan text with every planned edit applied gives 26 passed twice, all 21 mutants violating a K item killed, 7 surviving mutants each confined to inputs the plan declares non-normative; every test invokes check or main and first asserts its mutation took effect. Coupled tests 1573 passed, 3 skipped, 1 failure attributable to the reviewer's hand-bumped seal simulation (installed metadata 0.175.7); drift OK 413; boundary lint 0 at --expect-scope structural; ruff clean; prose_test_lint exit 0. Advisories: A1 intent prose broader than K; A2 parse-error fail-closed untested; A3 CLAUDE.md and CONTRIBUTING.md notices outside freeze_check; A4 ci_coverage_lint WARN; A5 escalator signature closes with the Step 4.2 flip. Session `2026-10-05T1757-41eb02`.
+
+**Required next action**: /qor-implement
+
+### Entry #845: IMPLEMENTATION
+
+**Timestamp**: 2026-10-05T18:45:31Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase304-maintenance-freeze.md
+**Session**: 2026-10-05T1757-41eb02
+**Entry ID**: `c856385c2377`
+
+**Content Hash**: `f91d6067b4b3d72e2f5b0de4477e84f4cccbca54fc66b12da773d6a814abb756`
+**Previous Hash**: `2e01f5d284d0983f586bab2f4e3c938f6e0482d8500e0973a94e971d09b7ae78`
+**Chain Hash (Merkle seal)**: `aec3f528d6207fce5cd77a2a057665d01d45c374c56c24a1a80f208f2d6c1cd8`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Maintenance freeze implemented test-first on base 7228bacd per the iteration-4 plan (audit PASS #844, remediation applied). Content hash is the sha256 of `qor/scripts/freeze_check.py`.
+
+Code: new `qor/scripts/freeze_check.py` (134 lines, longest function 13 lines, nesting 2): `FROZEN_CLASSIFIER`, `FREEZE_HEADING`, `NOTICE_FILES`, `DEPENDABOT_FILES`, `check(repo_root) -> list[str]` (classifier, dependabot, schedule and notice violations, each prefixed by the repository-relative POSIX path; workflows read with `yaml.safe_load`, parse errors propagate) and `main(argv) -> int` (`--repo-root`, default `.`; prints each violation then `freeze_check: OK` or `freeze_check: <n> violation(s)`; exit 0/1).
+
+Tests: new `tests/test_freeze_check.py` (103 lines, 9 items, K0-K6); each regression test asserts its mutation took effect before calling `check`. `tests/test_dependabot_config.py` deleted with `.github/dependabot.yml` (LD-4). `tests/test_nightly_health_wiring.py::test_workflow_declares_schedule_dispatch_and_permissions` renamed `test_workflow_is_dispatch_only_with_least_permissions` and inverted (no `schedule:` line, no `cron:`); other assertions unchanged. RED: collection error (`qor.scripts.freeze_check` absent); with the module and the unfrozen tree, 9 failed; nightly test failed on its no-schedule assertion. GREEN: 26 passed, twice.
+
+Freeze edits: README.md `## Maintenance freeze` above `## What Qor-logic Does` (LD-1 text); AGENTS.md `## Maintenance freeze` above `## Public-repository boundary`; CLAUDE.md `## Maintenance freeze (mandatory)` above `## Governance flow`; CONTRIBUTING.md `## Maintenance freeze` above `## Reading order`; no notice names or links a successor. `pyproject.toml` classifier `Development Status :: 7 - Inactive` (LD-3). `nightly-health.yml` schedule removed, `workflow_dispatch` kept, cost-justification comment states manual-only (LD-4). Doctrine-publication-boundary lines 42, 102 and 106 per LD-8 (line 102 re-wrapped onto two lines). `docs/release-state.json` gains `0.175.7` / `sealed_unpublished` (LD-7). CHANGELOG `[Unreleased]` `### Changed` entry. FEATURE_INDEX row FX028.
+
+Doc sync (Step 8.5, standard tier): `docs/architecture.md` gains a `## Maintenance freeze (Phase 304)` section naming `freeze_check.py` and its K0-K6 contract; not in the plan's Affected Files, added under the Step 8.5 obligation and disclosed here.
+
+Outward action (LD-5): dependabot PR #529 closed unmerged with a comment citing the freeze; `requirements-sbom.txt` unchanged.
+
+Verification: full suite 3671 passed, 3 skipped, 4 deselected (after unshallowing the clone; on the shallow clone `test_plan_grep_evidence_parse::test_reproduces_compares_stripped_text` failed because commit 2d356ec was absent, and passes with full history); suite-regenerated `qor/dist` manifests restored (only `generated_ts` changed). `freeze_check: OK`; check_variant_drift OK 413; publication_boundary_lint 0 findings at `--expect-scope structural`; ruff clean; prose_test_lint exit 0; ledger chain verified through #844.
+
+### Entry #846: SESSION SEAL -- Phase 304 maintenance freeze: Qor-logic is declared feature-complete and frozen, and a check keeps it frozen (v0.176.0)
+
+**Timestamp**: 2026-10-05T18:47:05Z
+**Phase**: SEAL (Phase 304)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase304-maintenance-freeze.md
+**Session**: 2026-10-05T1757-41eb02
+**Entry ID**: `6a70dbde547c`
+
+**Content Hash**: `6cb022950bb7a16c413c9503b75e57ff7efb7ce2142e516c00d9d47e3f0ab95f`
+**Previous Hash**: `aec3f528d6207fce5cd77a2a057665d01d45c374c56c24a1a80f208f2d6c1cd8`
+**Chain Hash (Merkle seal)**: `f5a15875736798492a840730d46ee1188fec2f06cc3e9a28d7eb0bf3feabb216`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PW.1.1, PW.5.1, RV.1.1, RV.1.2
+
+**Feature Inventory**: Total: 28 / verified: 28 / unverified: 0 / n/a: 0
+
+Qor-logic is declared feature-complete, frozen and superseded, and a check keeps it frozen. README.md (the PyPI long description), AGENTS.md, CLAUDE.md and CONTRIBUTING.md carry the LD-1 `## Maintenance freeze` notices, none naming or linking a successor; `pyproject.toml` declares `Development Status :: 7 - Inactive`; `.github/dependabot.yml` and `tests/test_dependabot_config.py` are deleted; `nightly-health.yml` keeps only `workflow_dispatch` and its renamed test asserts no schedule; the publication-boundary doctrine no longer calls the GitHub-surface scan scheduled (LD-8); `docs/release-state.json` gains `0.175.7` / `sealed_unpublished`. New `qor/scripts/freeze_check.py` (FX028) with `tests/test_freeze_check.py` enforcing the LD-2 K0-K6 regression contract. Dependabot PR #529 closed unmerged (LD-5). Audit: VETO iter 1 (#841), VETO iter 2 (#842), VETO iter 3 (#843, cycle-count escalation), `/qor-remediate` (remediate.json; LD-2 narrowed to a regression contract), PASS iter 4 (#844) with the reviews-remediate flip (9 events addressed); implementation #845; intent lock VERIFIED.
+
+**Version**: 0.175.7 -> 0.176.0 (feature). `0.175.7` (sealed at #839, no remote tag) is covered by its `sealed_unpublished` entry. The annotated seal tag `v0.176.0` is created on the seal commit and pushed only after that commit is on `origin/main` with green CI (Step 9.7); its push triggers the PyPI release workflow, which the owner approved for this final version.
+
+**CHANGELOG**: stamped `[0.176.0] - 2026-10-05` by `changelog_backends.stamp` (keepachangelog); the `_Built via ..._` line was inserted below the header from `attribution.changelog_attribution_line()` because the stamp does not emit it and the tiered-attribution test requires it.
+
+**Reality audit**: every planned file exists and matches the plan: the four notices carry the LD-1 text, the classifier line, the dependabot deletion, the nightly schedule removal and comment, the three LD-8 doctrine sentences, the release-state entry, the FX028 row and the CHANGELOG entry. UNPLANNED (disclosed in #845): `docs/architecture.md` `## Maintenance freeze (Phase 304)` section added under the implement Step 8.5 doc-sync obligation. Governance output on the branch (plan iterations, audit reports, shadow-genome entries #44-#46, gate artifacts, remediation) is plan/audit/remediate ceremony. `ledger_commitment` OK (17 touched artifacts). Section 4: `freeze_check.py` 134 lines, longest function 13, nesting 2; test file 103 lines; ruff clean; changed source ASCII. Presence-only gate: every new test calls `check` or `main` and asserts the returned violations, exit code or printed lines, and each regression test first asserts its mutation took effect.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), procedural_fidelity (no findings), dod_check (no findings), merge_velocity (healthy, 2 PRs/7d), skill_size_budget (WARN only, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), documentation currency (no warnings), governance_index enforce (Last Reviewed 2026-10-05), feature_index_verify (28/28, snapshot 2026-10-05T1620-2b159a), version_applicability (v0.176.0 > v0.172.2). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, every source skill reported missing (no claude install in this container). Continuity gate not applicable. Spec fold: no spec_deltas. Suite pre-seal: 3671 passed, 3 skipped, 4 deselected (full history; suite-regenerated qor/dist manifests restored). Step 4.6.14 publication_boundary_lint re-runs after staging.
+
 ---
 
 *Chain integrity: VALID*

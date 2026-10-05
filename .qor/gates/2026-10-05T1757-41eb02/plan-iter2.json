@@ -1,0 +1,56 @@
+{
+  "phase": "plan",
+  "session_id": "2026-10-05T1757-41eb02",
+  "ts": "2026-10-05T18:10:23Z",
+  "plan_path": "docs/plan-qor-phase304-maintenance-freeze.md",
+  "phases": [
+    "Phase 1: Tests first",
+    "Phase 2: The check",
+    "Phase 3: Freeze the repository"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_freeze_check.py tests/test_nightly_health_wiring.py -q",
+    "python -m qor.scripts.freeze_check --repo-root .",
+    "python -m pytest tests/test_release_state.py tests/test_changelog_tag_coverage.py tests/test_changelog_format.py tests/test_wayfinding_discipline.py tests/test_publication_boundary_policy.py tests/test_attribution_docs_consistency.py -q",
+    "python qor/scripts/check_variant_drift.py",
+    "python -m qor.scripts.publication_boundary_lint --repo-root . --expect-scope structural",
+    "python -m pytest tests/ -q",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m ruff check qor/ tests/"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "change_class": "feature",
+  "feature_inventory_touches": [
+    {
+      "entry_id": "FX028",
+      "operation": "NEW",
+      "test_path": "tests/test_freeze_check.py",
+      "test_descriptor": "freeze_check.check returns no violations for a frozen tree and exactly one named violation for each of a non-Inactive classifier, a dependabot config, a scheduled workflow and a missing or empty freeze section; on this repository it returns none"
+    }
+  ],
+  "boundaries": {
+    "limitations": [
+      "the freeze is declared and checked inside the repository only; repository settings (issues, branch protection, archiving) are owner actions outside this plan (LD-6)",
+      "freeze_check checks the four properties LD-2 names and nothing else"
+    ],
+    "non_goals": [
+      "removing or deprecating any skill, script, CLI command or doctrine",
+      "changing runtime behavior of any shipped command",
+      "any dependency update (dependabot PR #529 is closed unmerged, LD-5)",
+      "editing sealed plans, gate artifacts, intent-lock records, the ledger or the shadow genome"
+    ],
+    "exclusions": [
+      "naming or linking any successor project (owner decision, LD-1)"
+    ]
+  },
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.7",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-10-05T18:10:23Z"
+  }
+}

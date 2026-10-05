@@ -268,3 +268,13 @@ suppresses. An unqualified "0 findings" therefore means different things in CI
 and locally, and the seal records which one it got.
 
 `/qor-substantiate` Step 4.6.14 runs the lint fail-closed AFTER staging.
+
+## Maintenance freeze (Phase 304)
+
+Qor-logic is frozen and superseded; see `AGENTS.md` (Maintenance freeze). One module keeps the frozen state checkable:
+
+| Module | Role |
+|---|---|
+| `qor/scripts/freeze_check.py` | `check(repo_root) -> list[str]`: one violation per regression of the frozen state (classifier other than `Development Status :: 7 - Inactive`, a committed dependabot config, a workflow with a `schedule` trigger, a missing or empty `## Maintenance freeze` section in README.md or AGENTS.md), each naming the file it concerns; `main` prints them and exits 0 or 1 |
+
+Its contract is the regression set in the Phase 304 plan (LD-2, K0 to K6), enforced by `tests/test_freeze_check.py`, which runs it on this repository and on regressed copies of the repository's own files.

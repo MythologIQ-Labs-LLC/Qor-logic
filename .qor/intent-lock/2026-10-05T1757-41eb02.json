@@ -1,0 +1,9 @@
+{
+  "session": "2026-10-05T1757-41eb02",
+  "plan_path": "docs/plan-qor-phase304-maintenance-freeze.md",
+  "plan_hash": "6cb022950bb7a16c413c9503b75e57ff7efb7ce2142e516c00d9d47e3f0ab95f",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "9e6105a5a8e87c0375d1c835160db7d6c6633fc81e2542e6d12e2f8df5293518",
+  "head_commit": "cf5a855ed1de157cae43c604a7cb6164b9a17471",
+  "captured_ts": "2026-10-05T18:40:45.678248Z"
+}

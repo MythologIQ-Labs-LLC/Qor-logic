@@ -3093,4 +3093,76 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #44: VETO -- plan-qor-phase304-maintenance-freeze (iter 1)
+
+**Date**: 2026-10-05
+**Verdict ID**: session 2026-10-05T1757-41eb02 audit (META_LEDGER Entry #841)
+**Failure Mode**: VALIDATION_GAP (coverage-gap)
+
+### What Failed
+
+LD-2 of the freeze plan specifies four properties for `freeze_check`, including two edge rules: a missing notice file (README.md or AGENTS.md) is one violation, and a workflow whose `on:` is a list or a string holding `schedule` is one violation. The planned tests always built both notice files and wrote every schedule trigger in mapping form. A check that skipped missing files, or read only the mapping form, passed the whole planned suite.
+
+### Why It Failed
+
+The test list was written from the fixture outward (one mutation of a complete frozen tree per test) rather than from the LD-2 rule list inward. Rules stated as "a missing file ... is one violation" and "a list ... or the string ... is one violation" had no mutation that produced their input.
+
+### Pattern to Avoid
+
+For every normative clause in a locked decision ("X is one violation", "Y is read as Z"), name the test whose input exercises that clause, and check the mapping clause by clause before submitting. Related: doctrine-test-functionality inverse-coverage discipline (every declared outcome must be reachable by a test input).
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
+## Entry #45: VETO -- plan-qor-phase304-maintenance-freeze (iter 2)
+
+**Date**: 2026-10-05
+**Verdict ID**: session 2026-10-05T1757-41eb02 audit (META_LEDGER Entry #842)
+**Failure Mode**: VALIDATION_GAP (coverage-gap; Entry #44 recurrence)
+
+### What Failed
+
+The iteration-2 clause-to-test map listed property 4 as three rows (missing file, missing heading, empty section) while LD-2's property-4 sentence carries more rules: the heading line must equal the heading exactly, the section needs a non-blank line, and the section ends at the next  line or at end of file. The only empty-section input put the next heading directly after the freeze heading, so blank-only sections, an empty section at end of file, and a prefixed heading all passed.
+
+### Why It Failed
+
+The map was built from the iteration-1 finding outward (the rules the reviewer named) rather than by splitting every LD-2 sentence into its atomic conditions. A row named "empty section" stood for several distinct boundary conditions, and one input satisfied the row.
+
+### Pattern to Avoid
+
+Decompose each normative sentence into atomic conditions (each comparison, each boundary, each alternative joined by "or") before mapping tests; one map row per atomic condition, and one input per row that a mutation of exactly that condition would flip.
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
+## Entry #46: VETO -- plan-qor-phase304-maintenance-freeze (iter 3)
+
+**Date**: 2026-10-05
+**Verdict ID**: session 2026-10-05T1757-41eb02 audit (META_LEDGER Entry #843)
+**Failure Mode**: VALIDATION_GAP (coverage-gap; Entries #44 and #45 recurrence, cycle-count escalation)
+
+### What Failed
+
+Iteration 3 restated LD-2 as 23 atomic clauses with one discriminating test each, and the reviewer's per-clause mutants were all caught. Seven further mutants survived: inputs for C1.4 and C3.5 also satisfied a neighbouring clause, C3.9 had no file scheduling under both keys, main's print order matched sorted order by coincidence, two conditions stated in prose ("directly in", "in that order") carried no ID, and a [project] table without classifiers had no input.
+
+### Why It Failed
+
+Each iteration widened the specification of a small helper (more edge rules, more precision) and then had to test the wider specification exhaustively. The clause surface grew faster than the tests: every new atomic rule created new neighbours and boundaries for a mutant to exploit. The design was complected: a release-hygiene notice was carried by a general-purpose YAML/TOML/Markdown checker whose every parsing decision became a normative clause.
+
+### Pattern to Avoid
+
+When repeated coverage-gap VETOs land on the same small unit, shrink the unit's specification instead of enumerating it further: state only the behaviour the deliverable needs, make implementation details non-normative, and prefer checking the concrete repository state over a general checker. Three same-signature VETOs mean the design is wrong, not the test list.
+
+### Remediation Attempted
+
+Escalated to /qor-remediate.
+
+---
+
 *Shadow integrity: ACTIVE*

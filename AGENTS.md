@@ -3,6 +3,10 @@
 These instructions apply to every human or automated agent operating in this
 repository.
 
+## Maintenance freeze
+
+Qor-logic is frozen at version 0.176.0 and superseded. Do not start new phases, plans, features, fixes, dependency updates, or releases in this repository. A change requires the owner to lift the freeze explicitly first; `qor-logic scripts freeze_check` and `tests/test_freeze_check.py` keep the frozen state checked.
+
 ## Public-repository boundary
 
 Qor-logic is a public, standalone repository. Direct references to any other

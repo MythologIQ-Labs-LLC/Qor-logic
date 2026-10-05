@@ -16,10 +16,11 @@ def _text() -> str:
     return WORKFLOW.read_text(encoding="utf-8")
 
 
-def test_workflow_declares_schedule_dispatch_and_permissions():
+def test_workflow_is_dispatch_only_with_least_permissions():
     text = _text()
-    assert re.search(r"^\s*schedule:\s*$", text, re.MULTILINE), "nightly cron trigger missing"
-    assert re.search(r"cron:\s*'0 9 \* \* \*'", text), "expected daily 09:00 UTC cron"
+    # Phase 304 maintenance freeze: nothing schedules new work.
+    assert not re.search(r"^\s*schedule:\s*$", text, re.MULTILINE), "schedule trigger restored"
+    assert "cron:" not in text, "cron entry restored"
     assert "workflow_dispatch:" in text, "manual trigger missing (needed for post-merge D4 evidence)"
     assert re.search(r"issues:\s*write", text), "issue lifecycle needs issues: write"
     assert re.search(r"contents:\s*read", text), "checkout needs contents: read"
