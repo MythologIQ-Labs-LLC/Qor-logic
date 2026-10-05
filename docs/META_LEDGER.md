@@ -24891,6 +24891,25 @@ Qor-logic is declared feature-complete, frozen and superseded, and a check keeps
 
 **Required next action**: Governor: amend plan text (owner to re-establish the v0.176.0 release outcome), re-run /qor-audit
 
+### Entry #848: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T22:08:32Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `10aea7e641f5`
+**Verdict**: PASS
+
+**Content Hash**: `a7fba6e5c288486d7191a97d22ab0e28b4acf4f7e08249ac6c21ebcfbe0db807`
+**Previous Hash**: `d3ac5c39532191a14bc4ea34c0950da07fb1a9de5a4881c0b4b3342efecd2d8c`
+**Chain Hash (Merkle seal)**: `4a92b5e7d63e9043d7374bdb452f51a1fcc5d542012077b826abfa4b52238637`
+
+**Decision**: **Target**: `docs/plan-qor-phase305-package-data-ships-dist.md`
+
+**Decision**: PASS (iter 2 on base 2f301780, plan head 643fa480, plan sha256 79217554). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. V1 of #847 cured: package index re-observed 2026-10-05T21:58Z (0.176.0 newest, then 0.172.2; earlier versions declared unchecked); published 0.176.0 and 0.172.2 wheels and sdists hold 392 dist files, no root manifest, no YAML; installed, list --available exit 1 and installs 73/73/73/47; no leftover never-published claim. Full re-walk: 81 of 81 citations and 26 setuptools source greps reproduce; rebuilt test 5 failed 3 passed at base and 8 passed after, twice; M1-M8 exact; full suite 3671 / 5F+3674 / 3679 passed; fixed wheels with setuptools 84.0.0 and 68.0.0 carry 413 of 413 tracked dist files (599 set-equal at 84.0.0); installed fixed wheel list exit 0 (47 ids), installs 78/78/78/47. freeze_check OK, 9+29+5+58 passed; CI-view simulation None True set() {'0.176.0'} {'0.175.7'} at base and after; clone proof discriminates (base, unstamped bump, no 0.175.7 entry, bare remote without v0.176.0 all exit 1; seal exit 0 twice). AGENTS exception permits only the 0.176.1 release; CLAUDE.md and CONTRIBUTING.md stay true. Advisories A1-A4 (residual over-generalization to unchecked versions, Fixed bullet without setuptools qualifier, README cursor/cline, runtime walk WARNs). Session `2026-10-05T2111-166d9d`.
+
+**Required next action**: /qor-implement
+
 ---
 
 *Chain integrity: VALID*
