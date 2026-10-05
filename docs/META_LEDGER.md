@@ -24694,6 +24694,38 @@ Release state: `docs/release-state.json` gains 0.175.6 sealed_unpublished (reaso
 
 Verification: consumer entry 199 passed; release/changelog suites 29 + 5 passed; full suite 3665 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifest generated_ts restored to the compile output); check_variant_drift OK 413 files; ruff clean; prose_test_lint --enforce exit 0; publication_boundary_lint --expect-scope structural 0 findings [scope: structural]; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
 
+### Entry #839: SESSION SEAL -- Phase 303 two shipped skill references invoke qor-logic, the boundary lint ignores a terms-file BOM, and CI asserts the boundary scope it intends (v0.175.7)
+
+**Timestamp**: 2026-10-05T17:35:13Z
+**Phase**: SEAL (Phase 303)
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `7baefde5e46a`
+**Plan**: docs/plan-qor-phase303-boundary-lint-scope.md
+**Session**: 2026-10-05T1620-2b159a
+
+**Content Hash**: `ed9115d9da1a83d7b72b7e7152e87348f4b8c743a9f0e328bf151803470661ed`
+**Previous Hash**: `1cde9926ba171a5f1f88eaac3ed63906d0bd5b8b0ae3915d401b9de3bd7cd4e6`
+**Chain Hash (Merkle seal)**: `ce903075a8bbdb619bde420b642551413d979db58e343663d939e7189f13c2ea`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, PW.4.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 27 / verified: 27 / unverified: 0 / n/a: 0
+
+Two shipped skill references invoke `qor-logic`, the publication-boundary lint ignores a terms-file byte-order mark, and CI asserts the boundary scope it intends (GH #457). `qor/scripts/publication_boundary_lint.py` gains `SCOPES = ("structural", "structural+identity")`; `_load_terms` reads `utf-8-sig`; `collect_findings` returns a `SCOPES` value; `main` gains `--expect-scope` (choices `SCOPES`, default None) and on a mismatch prints `scope mismatch: expected <e>, achieved <a>` and returns 1; signatures unchanged. `.github/workflows/ci.yml` publication-boundary step passes `--expect-scope structural` under the two-line Phase 303 comment. Line 151 of the bootstrap template and line 457 of the seal ladder each changed exactly one token, an outside project's CLI name, to `qor-logic`; the compile regenerated the 8 variant copies (same one-token change each) and 7 manifests. `tests/test_boundary_lint_expected_scope.py` (new, 21 items) and `tests/test_ci_coverage_lint.py` (exact-line Phase 303 allowance helper, changed `test_lint_self_applies_to_phase_89_plan`, new 3-item drift test, and the owner-directed module docstring fix of audit advisory A2 disclosed in #838). `docs/release-state.json` gains the single LD-12 entry `0.175.6` / `sealed_unpublished`. Declared residuals (LD-8): CI scans no identity terms; 62 tracked files still carry the outside name in some letter case (61 sealed or historical records, one live absence test); only a leading mark is removed; runs without `--expect-scope` keep reporting the scope without asserting it. Audit: VETO iter 1 (#836), PASS iter 2 (#837); implementation #838; intent lock VERIFIED against the iter-2 plan and audit hashes.
+
+**Version**: 0.175.6 -> 0.175.7 (hotfix; LD-10). After the bump `0.175.7` is the single implicit candidate and the superseded `0.175.6` (sealed at #835, no remote tag) is covered by its `sealed_unpublished` entry. No remote tag is created; the seal tag stays local. Nothing is published.
+
+**CHANGELOG**: stamped `[0.175.7] - 2026-10-05` by `changelog_backends.stamp` (keepachangelog). The stamp does not emit the `_Built via ..._` line and `tests/test_attribution_tiered_usage.py::test_changelog_post_cutoff_versions_have_attribution_line` failed without it, so the line was inserted below the new header from `attribution.changelog_attribution_line()`. The note under `[0.175.7]` is the LD-11 bullet byte for byte and describes only what was implemented.
+
+**Reality audit**: every planned file exists and matches the plan: the `publication_boundary_lint.py` diff against base 25babc0e is the Phase 2 code as written, the CI step and comment are the Phase 3 text, the ten skill-reference files differ from base in exactly one token on one line, the CHANGELOG bullet equals LD-11 byte for byte, and the release-state entry carries the LD-12 reason. No MISSING, no UNPLANNED implementation file (shadow-genome, audit-report and gate-artifact changes on the branch are plan/audit governance output). No sealed plan or ledger-bound artifact was modified by this phase (owner decision): `git diff --name-status 25babc0e HEAD` over `docs/plan-*.md`, `.qor/intent-lock` and the ledger shows only the new Phase 303 plan and an append-only ledger (62 insertions, 0 deletions); the Phase 89 plan is untouched and Entry #237's binding stands. `ledger_commitment` OK (24 touched artifacts). Section 4: `publication_boundary_lint.py` 207 lines, longest function 30 (`scan_text`, unchanged); new test file 188 lines; `tests/test_ci_coverage_lint.py` 356 lines (advisory A1, over the razor at base, accepted as declared in #838); nesting 2 or less in new code; ruff clean; changed source ASCII; neither test file, CHANGELOG, SYSTEM_STATE nor this entry contains the outside name in any letter case. Presence-only gate: every new test drives `_load_terms`, `collect_findings`, `main` or `ci_coverage_lint.check_plan` and asserts exit codes, output lines, scopes or warning lists; the CLI-form tests assert the shipped line's invoked token. Judge re-proof: both files 37 passed twice; 220-item consumer set passed twice; mutations re-run in a scratch clone outside the repository: M1 3, M3 2, M4 5, M5 1, M8 2 failed, each exactly the named set. No skill SKILL.md modified.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), merge_velocity (healthy, 1 PR/7d), skill_size_budget (3 WARN, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), governance_index enforce (Last Reviewed 2026-10-05), feature_index_verify (27/27, snapshot 2026-09-28T0457-61990a), version_applicability (v0.175.7 > v0.175.6), ledger chain verified through #838. dod_check: no findings. procedural_fidelity WARN: doc-surface-uncovered; doc currency WARN for `publication_boundary_lint.py` and the two skill references. Both accepted: LD-9 shows no README, doctrine or skill text mentions `--expect-scope`, the doctrine's statement of CI's structural scope stays true, the reference edits are one-token CLI corrections, and `docs/SYSTEM_STATE.md` is updated in this seal. data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, digest none (no claude install at that scope), drift count 32 (every source skill reported missing). Continuity gate not applicable (no execution_continuity). ac_close_guard not run: held local, no PR body, and the guard reads issues through the GitHub API. Spec fold: plan declares no spec_deltas (Step 7.9). Suite pre-seal: 3665 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored; only `generated_ts` had changed). Step 4.6.14 publication_boundary_lint re-runs after staging.
+
+**Post-seal proof**: the plan's guarded CI-view clone proof (Phase 5) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
+
 ---
 
 *Chain integrity: VALID*

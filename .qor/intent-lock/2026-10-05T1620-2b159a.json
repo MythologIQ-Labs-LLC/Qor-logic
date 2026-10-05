@@ -1,0 +1,9 @@
+{
+  "session": "2026-10-05T1620-2b159a",
+  "plan_path": "docs/plan-qor-phase303-boundary-lint-scope.md",
+  "plan_hash": "ed9115d9da1a83d7b72b7e7152e87348f4b8c743a9f0e328bf151803470661ed",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "aac2cf3ff85f913cbb5c54572a45db28d7cf27e1884ad1f2d318af9e9b5218d3",
+  "head_commit": "b069befc2c262514c69f0f6a7a5d89805050402e",
+  "captured_ts": "2026-10-05T17:23:50.782416Z"
+}
