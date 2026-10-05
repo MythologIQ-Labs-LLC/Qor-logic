@@ -2,155 +2,153 @@
 
 **Tribunal Date**: 2026-10-05
 **Target**: `docs/plan-qor-phase303-boundary-lint-scope.md`
-**Iteration**: 1 (branch `phase/303-boundary-lint-scope`, head `bcd331a3`, plan-only; base `main` `25babc0e` = 0.175.6)
+**Iteration**: 2 (branch `phase/303-boundary-lint-scope`, head `b4933db8`, plan-only; base `main` `25babc0e` = 0.175.6)
 **Session**: `2026-10-05T1620-2b159a`
 **Risk Grade**: L2
 **Auditor**: The Qor-logic Judge
-**Mode**: Option B fresh-context reviewer, independent of the plan author. `audit_risk_score` reported `option_b_required: true` (flag `high-citation-surface`); this review is that independent audit, run by a subagent with no plan-authoring context. The Codex plugin is unavailable (`should_run_adversarial_mode` False) and `external_reviewer.run_external_review` returned `fallback` ("no reviewer configured"); both `capability_shortfall` events were emitted (`d8e5f9a9...` codex-plugin, `e4c763e1...` external-reviewer). Reviewer toolset: shell, git (local objects, plus `git ls-remote` over the proxy), file read and grep, Python with the in-tree `qor` package on `PYTHONPATH`, pytest in scratch clones outside the repository. No GitHub API was used.
+**Mode**: Option B fresh-context reviewer, independent of the plan author. `audit_risk_score` reported `option_b_required: true` (flag `high-citation-surface`); this review is that independent audit, run by a subagent with no plan-authoring context. The Codex plugin is unavailable (`should_run_adversarial_mode` False) and `external_reviewer.run_external_review` returned `fallback` ("no reviewer configured"); both `capability_shortfall` events were emitted (`10237f62...` codex-plugin, `29931985...` external-reviewer). Reviewer toolset: shell, git (local objects, plus `git ls-remote` over the proxy), file read and grep, Python with the in-tree `qor` package on `PYTHONPATH`, pytest in scratch clones outside the repository. No GitHub API was used.
 
 ---
 
-## VERDICT: VETO
+## VERDICT: PASS
 
 ---
 
 ### Executive Summary
 
-The engineering of the plan holds in every executed check. The veto rests on one plan-text ground in LD-6.
+Iteration 1 ground V1 is cured. The plan no longer edits the sealed Phase 89 plan or any other sealed or ledger-bound artifact. Per the owner decision of 2026-10-05, the one test that reads that plan changes instead, through an exact-line allowance that is proven narrow by a three-case drift test and by mutations M8 and M9. This was a full re-audit, not a diff review. Every citation reproduces at `25babc0e`. Phase 1 to Phase 5, rebuilt from the plan text in scratch clones outside the repository, give exactly the RED, GREEN and mutation counts the plan states. M1 to M9 each fail exactly their named set. Failure output never contains the outside name in any letter case. The release-state proofs discriminate in all four cases. The iteration 1 carry-over observations still hold at base. No binding ground was found.
 
-LD-6 edits line 316 of the sealed Phase 89 plan. META_LEDGER Entry #237 (IMPLEMENTATION, Phase 89) commits that file by content hash: `SHA256(plan-qor-phase89-ci-commands-reconciliation.md) = b98d4ff9...`, and that value equals the file at the Phase 89 seal commit `4a34b08e`. `qor/references/doctrine-ledger-commitment.md` says that a phase which changes an artifact already committed by content hash MUST append an AMENDMENT that records the superseded and current hashes and the reason.
+### V1 cure (explicit)
 
-The plan does not mention Entry #237. It plans no amendment and gives no reason why the rule does not apply. It also contradicts its own boundaries:
+- The branch diff `25babc0e..b4933db8` touches only the plan, its gate artifacts, `docs/META_LEDGER.md`, `docs/SHADOW_GENOME.md`, `docs/PROCESS_SHADOW_GENOME_UPSTREAM.md` (appends only) and `.agent/staging/AUDIT_REPORT.md`. The iteration 2 commit touches only the plan, its gate artifacts and the upstream shadow log. No sealed plan is in either diff.
+- The plan's affected files are `tests/test_boundary_lint_expected_scope.py` (new), `tests/test_ci_coverage_lint.py`, `qor/scripts/publication_boundary_lint.py`, `.github/workflows/ci.yml`, the two skill reference sources, the 15 regenerated `qor/dist/` files, `docs/release-state.json` (one appended entry) and `CHANGELOG.md` (the `Unreleased` section only).
+- `ledger_commitment.latest_commitments` holds no commitment for any of those paths. A search of the legacy `SHA256(...)` and `Content Hash` forms in `docs/META_LEDGER.md` finds no binding of them either. The Phase 89 plan is named only as read-only input.
+- The boundaries `non_goals`, the LD-3 rationale and LD-6 now agree: no sealed plan, gate artifact, intent-lock record, ledger or shadow genome is edited. The iteration 1 precedent statement is withdrawn.
+- The plan states the Entry #237 binding (`b98d4ff9...`, reproduced at seal commit `4a34b08e`, an ancestor of the base) and the pre-existing live-file divergence (`239a2820...` at base). It records no AMENDMENT, correctly, because nothing committed changes.
 
-- `non_goals` names "rewriting sealed plans".
-- LD-3 refuses to edit 17 sealed plans because "they are ledger-bound evidence".
-- LD-6 then edits a sealed plan that is ledger-bound in the same way.
+### LD-6 allowance ruling
 
-The seal gate cannot catch the omission. `ledger_commitment._CONTENT_RE` does not parse Entry #237's legacy `SHA256(...) =` form, so `latest_commitments` holds no commitment for this path. `stale_commitments_scoped` would therefore count the file as examined and report it clean (observed: `ScopedResult(findings=[], examined=1)`). A content-hash binding would be reported as checked when it was not. That is a testimonial pass, the defect class this review was asked to rule on.
+- **Narrowness.** `_apply_phase_303_allowance` rewrites only a line whose stripped text equals `run: ` plus the exact Phase 303 command. Rebuilt from the plan text:
+  - with the real `ci.yml` it rewrites exactly 1 line;
+  - a changed scope value or an added `--no-git` is not rewritten, and `check_plan` returns exactly that command;
+  - an unrelated uncovered command in a new workflow file is reported alone.
+  - The self-test's "exactly one rewrite" assertion fails closed if the line disappears or is duplicated.
+  - M8 (prefix-wide rewrite) fails exactly the two boundary drift items. M9 (no rewrite) fails exactly the self-test and `unrelated-command-added`.
+- **Real workflow coverage.** `ci_coverage_lint.discover_ci_commands` reads only `workflows_dir/*.yml`, non-recursively. The helper copies exactly that set, so `check_plan` sees the live workflows byte for byte except the one mapped line. The only CI line no longer compared to the Phase 89 plan is the Phase 303 boundary command, and the plan's `limitations` boundary declares that. The real command is covered by this plan's own `## CI Commands` (Step 0.6 `ci_coverage_lint` against the scratch implementation's workflows exits 0 with no warning).
+- **Design.** The plan rejects three alternatives with reasons: general normalization would hide later scope drift (M8 proves it); an exemption in the sealed plan would edit it; a `ci_coverage_lint` change would affect every plan. Filtering the one exact warning in the test would be about as narrow and would run on the real directory. The plan does not discuss that option. Mapping a tmp copy is sound and meets the owner's "narrowly scoped, documented allowance". It is not a ground.
 
-### LD-6 ruling (explicit)
+### Engineering verification (all reproduced)
 
-1. **Binding search.**
-   - `docs/META_LEDGER.md` names the Phase 89 plan in Entries #236 (GATE TRIBUNAL: its content hash binds the audit report, not the plan), #237 (IMPLEMENTATION: its content hash binds the plan, `b98d4ff926a655fa...`) and #238 (SESSION SEAL), and in later entries' files-touched lists (Phases 105, 106, 164 and 233).
-   - No AMENDMENT for the path exists.
-   - The Phase 89 gate artifacts (`.qor/gates/2026-05-22T2305-dc33d5/*.json`) carry no `target_content_hash`.
-   - No intent-lock record covers Phase 89. The other gate artifacts that name the path list it as a file touched; none binds its hash.
-   - So the only binding is Entry #237.
-2. **Is the binding verifiable today?**
-   - The file has been edited 13 times since the seal (Phases 105, 106, 156, 158, 162 and 164, the ungoverned Phase 164 follow-up `4be56cd2`, then Phases 165, 172, 208, 211, 213 and 233).
-   - The live file has not matched `b98d4ff9` since 2026-05-25. At the base it hashes to `239a2820...`.
-   - The binding is verifiable only as bound to a revision: `git show 4a34b08e:<path>` reproduces `b98d4ff9`, and `4a34b08e` is an ancestor of HEAD.
-   - The Phase 303 edit does not change that, so it does not by itself degrade a binding that is verifiable today.
-   - It does extend a drift that has never been disclosed. It is also the first edit of this file since the ledger-commitment doctrine (Phase 251) made disclosure mandatory; Phase 233 was the last edit before it.
-3. **Precedent check.**
-   - `git log --format=%s 25babc0e -- <path>` does list the seals of Phases 233, 213, 211 and 208 first, so the claim reproduces literally.
-   - Diffed against their first parents, all four are append-only: each adds one new bullet (`-0 +1`). None replaced an existing bullet's code span.
-   - Phase 303 modifies the bullet that Phase 208 authored. The only earlier modification of an existing bullet is `4be56cd2` (a non-seal fix commit; it also added the BOM and the mojibake now in the file).
-   - So the cited precedents support adding a bullet, not modifying one.
-4. **Alternatives.**
-   - An exemption in the Phase 89 plan's `## CI Coverage Exemptions` section is also an edit to the sealed plan.
-   - Repointing `test_lint_self_applies_to_phase_89_plan` at another registry changes a self-application contract and goes beyond the owner-narrowed hotfix scope.
-   - Keeping the bullet edit is consistent with the forward-maintenance convention the ledger records, provided the doctrine's disclosure is made.
-   - The edit itself is therefore not the defect. The undisclosed edit of a content-hash-committed sealed artifact, contradicting the plan's own boundaries, is the defect.
-5. **Ruling.** VETO on LD-6 (V1, `specification-drift`).
-
-### Engineering verification (all reproduced; not veto grounds)
-
-- **Citations.** All 42 `git show ... | grep` -> statements and all 6 `prints` statements re-run at `25babc0e`: 0 mismatches. `plan_grep_lint` also checked 42 citations with no finding.
-  - The `git grep` no-match claim (LD-9) reproduces: 0 lines.
-  - The LD-3 enumeration reproduces with a case-sensitive search: 69 files, 30 gates, 10 intent-lock, 17 plans, the ledger, the process shadow genome, the 2 sources and the 8 compiled copies.
-- **Scope.** The case-sensitive scope is exactly the two source lines (151 and 457) plus their eight compiled copies, one occurrence each. The plan touches no other occurrence and leaves none of the three owner-narrowed items out.
-- **Dist regeneration.** `python -m qor.cli compile` after the two source edits rewrote exactly 15 files under `qor/dist/`:
-  - the 8 copies, with one line each;
-  - the 7 manifests: two sha256 values in each of the top-level, claude, codex, cursor and kilo-code manifests, and `generated_ts` in all 7.
-  - `check_variant_drift` then gave `OK: 413 files, no drift`.
-- **Tests (rebuilt from the plan text).**
-  - Base: `19 failed, 2 passed`.
-  - With Phases 2 to 4: `21 passed`, twice.
-  - Test file plus the 17 consumer files: `217 passed`, twice after restore.
-  - Mutations, each failing exactly its named set: M1 3, M2 2, M3 2, M4 1, M5 1, M6 1, M7 1 failed.
-- **`--expect-scope` semantics.** It fails closed in both directions. In a fresh clone of the scratch implementation:
-  - CI form with no overlay: `0 finding(s) [scope: structural]`, exit 0.
-  - With an overlay: a mismatch line and exit 1.
-  - Expecting `structural+identity` with no overlay: a mismatch line and exit 1.
+- **Citations.**
+  - All 45 `git show ... | grep` -> statements re-run at `25babc0e` with 0 mismatches. `plan_grep_lint` truth-checked 45.
+  - All 19 `prints` statements reproduce. The 7 that use `N` were run with `N` taken from the base seal-ladder line, as the plan specifies.
+  - The two Phase 89 `sha256sum` prints reproduce.
+  - The prose-cited lines also match their descriptions: changelog doctrine lines 9, 13 to 16, 31, 32, 78, 79, 83 and 91 to 93; ledger line 24625; Feature Index row 28; Phase 89 plan line 316 (non-ASCII).
+- **LD-3 (advisory A1 cured).**
+  - The counts are 69 case-sensitive and 72 case-insensitive.
+  - The 72 split into 30 gates, 11 intent-lock, 18 plans, the ledger, the process shadow genome, the live test (lines 118 and 119) and the 10 Phase 4 files.
+  - `qor` has 10 matching files, each with exactly 1 matching line.
+  - The 3 matches that are case-insensitive only are the intent-lock snapshot, the Phase 268 plan and the live test.
+- **Dist.** After the two one-token edits, the compile rewrites exactly 15 files under `qor/dist/` and `check_variant_drift` prints `OK: 413 files, no drift`. Afterwards `qor/` contains 0 case-insensitive matches.
+- **Tests rebuilt from the plan text.**
+  - Base: the new file alone gives `19 failed, 2 passed`. With the changed `tests/test_ci_coverage_lint.py` it gives `23 failed, 14 passed`, and so do the default, `-vv`, `-l` and `--tb=long -vv -l` runs.
+  - After Phases 2 to 4: `21 passed` and `16 passed`, each twice. The test file plus the 17 consumer files give `220 passed`, twice. The consumer files alone give `196 passed` at base, `4 failed, 195 passed` at base with the changed test file, and `199 passed` after.
+- **Mutations.** Of 220 items, M1 fails 3, M2 2, M3 2, M4 5, M5 1, M6 1, M8 2 and M9 2; M7 fails 1 of 217. Each fails exactly its named set, and the tree is restored to `220 passed`, twice.
+- **Advisory A2 cured (outside name in output).** A case-insensitive search for `N` returns 0 in all four base outputs and in every mutation output. Both test files contain 0 matches. The CLI-form tests assert a precomputed boolean with only the path as the message.
+- **`--expect-scope`.**
+  - Fresh clone of the scratch implementation, running the CI step's own `run` text:
+    - no overlay: `0 finding(s) [scope: structural]`, exit 0;
+    - with an overlay: `scope mismatch: expected structural, achieved structural+identity`, exit 1;
+    - with the value changed to `structural+identity`: the reverse mismatch, exit 1.
   - An invalid choice is rejected by argparse.
-  - Findings are not masked by the flag.
-- **CI wiring.** The step `publication boundary` is the last step of `gate-chain-completeness` (`runs-on: ubuntu-latest`, no `if:`, no `continue-on-error`). The workflow triggers on push to main and on pull_request, so the flag runs.
+  - The step is in `gate-chain-completeness` (`runs-on: ubuntu-latest`, no `if:`, no `continue-on-error`), which runs on push to `main` and on pull requests.
 - **Release state.**
-  - CI-view simulation: `{'0.175.6'} {'0.175.6'}` at the base and `set() {'0.175.6'}` with the LD-12 entry.
-  - The post-seal clone proof equals Phase 302's command with `0.175.7` substituted and `printf '%s'` in place of `printf '%s\n'` (diffed). The change is equivalent because `$R` is newline-separated and `grep -x` matches a final line that has no newline.
-  - The proof discriminates: base, guard FAIL (0.175.6), exit 1; bump without stamp, guard FAIL (0.175.7), exit 1; simulated seal without the entry, `1 failed, 3 passed` (orphan 0.175.6), exit 1; with the entry, `4 passed`, exit 0, twice.
+  - The CI-view simulation prints `{'0.175.6'} {'0.175.6'}` at base and `set() {'0.175.6'}` with the LD-12 entry.
+  - `test_release_state`, `test_changelog_tag_coverage` and `test_changelog_format` give `34 passed`.
+  - Guarded post-seal clone proof, run as the plan text states (no backslash):
+    - base: exit 1, guard FAIL at 0.175.6;
+    - bump without stamp: exit 1, guard FAIL at 0.175.7;
+    - simulated seal without the entry: exit 1, orphan `0.175.6`;
+    - with the entry: exit 0, `4 passed`, twice.
   - The remote's highest tag is `v0.172.2`.
-  - `test_release_state`, `test_changelog_tag_coverage` and `test_changelog_format` with Phase 5: `34 passed`.
-- **CHANGELOG.** The LD-11 bullet's clauses match the implementation. It is ASCII, carries no ledger number or hash, and does not spell the outside name.
-- **Full suite** (scratch, Phases 1 to 4): `3662 passed, 3 skipped, 4 deselected`. Ruff is clean. `prose_test_lint --enforce` exits 0. After the suite and a manifest restore, the drift check gives `OK: 413 files`.
+- **CHANGELOG.** The LD-11 bullet is ASCII and name-free, and its only `#` number is `GH #457`. Each clause matches the reconstructed behavior. Its last sentence has the form of the Phase 302 bullet.
+- **Full suite.** Base: `3641 passed, 3 skipped, 4 deselected`. After Phases 1 to 5: `3665 passed, 3 skipped, 4 deselected`. Both are iteration 1 carry-over observations and both still hold. Ruff is clean, `prose_test_lint --enforce` exits 0 and the CI boundary step reports `0 finding(s) [scope: structural]`.
 
 ### Audit Results
 
+#### Prompt Injection Pass
+**Result**: PASS. `prompt_injection_canaries` exits 0 on the architecture plan, the ledger, the concept and the plan.
+
 #### Security Pass
-**Result**: PASS. No auth, secrets or bypassed checks. The change narrows a lint and adds a fail-closed assertion.
+**Result**: PASS. No auth, secrets or bypassed checks. The change adds a fail-closed scope assertion.
 
 #### OWASP Top 10 Pass
 **Result**: PASS.
-- A03: no subprocess change, and the tests use list-form argv.
+- A03: tests use list-form argv (`git check-ignore`).
 - A04: `--expect-scope` fails closed in both directions.
 - A05: none.
-- A08: the test plan uses `yaml.safe_load`.
+- A08: `yaml.safe_load` only.
 
 #### Ghost UI Pass
 **Result**: PASS. There is no UI surface.
 
 #### Section 4 Razor Pass
-**Result**: PASS. The lint module grows from 194 to 207 lines. `main` stays under 40 lines, nesting is 2 or less, and there are no nested ternaries.
+**Result**: PASS.
+- The lint module grows from 194 to 207 lines.
+- `main` stays under 40 lines, with nesting of 2 or less and no nested ternaries.
+- The new test file is 200 lines or fewer.
+- See advisory A1 on `tests/test_ci_coverage_lint.py`.
 
 #### Dependency Pass
-**Result**: PASS. No new dependency (`yaml` is already used; `shlex` is stdlib).
+**Result**: PASS. No new dependency (`yaml` and `pytest` are already used; `shlex` is stdlib).
 
 #### Orphan Pass
-**Result**: PASS. The new test file is collected by pytest. Every edited file is on the build or CI path.
+**Result**: PASS. Both test files are collected. Every edited file is on the build or CI path.
 
 #### Macro-Level Architecture Pass
-**Result**: PASS. `SCOPES` is the single source for the scope strings. `_load_terms` is shared unchanged by `github_surface` and `advisory_filing_control`.
+**Result**: PASS. `SCOPES` is the single source for the scope strings. `_load_terms` stays shared, unchanged in signature, by `github_surface` and `advisory_filing_control`.
 
 #### Test Functionality Pass
-**Result**: PASS. The lint tests invoke `_load_terms`, `collect_findings` and `main` and assert on their output. The CI test executes CI's own argv. The CLI-form tests assert the token of the shipped instruction line, and M5 and M6 prove they discriminate. `prose_test_lint --enforce` exits 0.
+**Result**: PASS.
+- The lint tests invoke `_load_terms`, `collect_findings` and `main` and assert on their output.
+- The CI test executes CI's own argv.
+- The allowance tests invoke `ci_coverage_lint.check_plan` and assert the exact warnings.
+- The CLI-form tests assert the token of the shipped instruction line, and M5 and M6 discriminate.
+- `prose_test_lint --enforce` exits 0.
+
+#### Feature Test Coverage Pass
+**Result**: PASS. The FX017 row is `n/a-justified`, with a behavioral `test_descriptor` (exit 1 plus mismatch, both directions; exit 0 on match).
 
 #### Infrastructure Alignment Pass
-**Result**: PASS on citations; finding V1 is recorded under Plan-text. `runtime_contract_walk` gives 1 WARN (backward: `release_state` has no production caller), which predates this plan.
+**Result**: PASS. All citations reproduce (above). `runtime_contract_walk` gives 1 WARN (backward: `release_state` has no production caller), which predates this plan. The iteration 2 full re-walk of LD-1 to LD-13 found no drift.
 
 #### Self-Application Sub-Pass (originating_remediation GH #457)
-**Result**: PASS. Neither the plan nor its commit carries the outside name (a case-insensitive search found 0 occurrences). The plan file is ASCII, and `publication_boundary_lint` reports 0 findings.
+**Result**: PASS. The plan, its gate artifact and its commit message contain 0 case-insensitive matches of the outside name. The plan is ASCII, and `publication_boundary_lint` reports 0 findings.
 
 #### Version-Applicability Pass
 **Result**: PASS. `target v0.175.7 > current highest v0.175.6`.
 
 #### Spec-delta pre-pass
-**Result**: PASS. No `spec_deltas` are declared. No contracted capability spec covers the lint (LD-9).
+**Result**: PASS. No `spec_deltas` are declared, and no contracted capability spec covers the lint (LD-9).
+
+#### Filter-Stage Ordering / Execution-Continuity
+**Result**: not applicable. There is no pipeline-shaped selection, and the plan declares no `execution_continuity`.
+
+### Pre-audit lints (Step 0.6, WARN-only)
+
+- `plan_iteration_status_lint` exits 0. The plan hash differs from the iteration 1 audit target (no short-circuit), and the cycle-count escalator reports nothing in either mode.
+- Clean: `plan_test_lint`, `plan_enumeration_lint`, `plan_text_consistency_lint`, `delivery_branch_lint`, `ci_coverage_lint`, `plan_signature_widening_caller_lint`, `plan_data_round_trip_lint`, `plan_live_progress_lint`, `plan_feature_tdd_lint`, `sg_closure_lint` and `gate_schema_freeze_lint`. `plan_grep_lint` truth-checked 45 citations, and `publication_boundary_lint` reports 0 findings.
+- `workspace_fragility_check` reports `medium` (68 dirty gate artifacts and 10 active branches). Both predate this plan.
 
 ### Violations Found
 
-| ID | Category | Location | Description |
-| --- | --- | --- | --- |
-| V1 | specification-drift | LD-6; Phase 3; boundaries `non_goals`; LD-3 | Edits the sealed Phase 89 plan, whose bytes Entry #237 commits by content hash (`b98d4ff9...`). The plan neither discloses the commitment nor plans the AMENDMENT that doctrine-ledger-commitment mandates, and it contradicts its own `non_goals` ("rewriting sealed plans") and the LD-3 rationale ("ledger-bound evidence"). The seal's Step 3 cannot parse Entry #237's legacy hash form and would report the file examined and clean. The cited precedents (Phases 208, 211, 213 and 233) only append bullets; none modifies one. |
+None.
 
 Advisories (not grounds):
 
-- A1: LD-3 counts the outside name case-sensitively. A case-insensitive search finds 3 more tracked files: an intent-lock snapshot, the Phase 268 plan and `tests/test_portable_governance_boundary.py`, which is a live test asserting absence. The owner's narrowing keeps them out of scope, but the residual statement ("59 files") understates them.
-- A2: under pytest's assertion rewriting, a test of the form `assert tok == "qor-logic", rel` prints the compared token. The reconstruction printed the outside name once at the base. LD-7's "failure message names the file only" holds only if the comparison is reduced to a boolean before the assert, and the plan does not say so.
-- A3: `workspace_fragility_check` flags 68 dirty gate artifacts and 10 active branches. Both predate this plan.
-
-### Per-ground directives
-
-#### Plan-text
-
-V1. Make LD-6 and Phase 3 account for Entry #237's content-hash commitment of `docs/plan-qor-phase89-ci-commands-reconciliation.md`:
-
-- State the commitment, and that the live file has diverged since Phase 105.
-- Either record the AMENDMENT that `qor/references/doctrine-ledger-commitment.md` requires, with Superseded Content Hash `b98d4ff926a655fa1e7f78a4a003428ac066f223a969eb842210f1826d6baaf4`, the post-edit hash and the reason, or cite a doctrine ground for why the rule does not apply.
-- Reconcile the boundaries `non_goals` and the LD-3 rationale with the edit.
-- State the precedent accurately: the four cited seals append bullets, and this edit modifies one.
-
-**Required next action:** Governor: amend plan text, re-run `/qor-audit`
+- A1: `tests/test_ci_coverage_lint.py` is 276 lines at base, already over the 250-line razor, and LD-7 grows it to 351. The repository's sealed precedent grows test files beyond 250 without a veto, but the plan gives no razor justification.
+- A2: the module docstring of `tests/test_ci_coverage_lint.py` says the self-application test runs against the actual `.github/workflows`. After LD-6 it runs against a mapped copy, and the plan does not say the docstring changes.
+- A3: `workspace_fragility_check` reports medium fragility, which predates this plan.
 
 ## Process Pattern Advisory
 

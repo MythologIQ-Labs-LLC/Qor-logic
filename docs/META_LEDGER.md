@@ -24651,6 +24651,25 @@ The install receipt records only sha256 values checked against the installed byt
 
 **Required next action**: Governor amends via /qor-plan (account for Entry #237's commitment of the Phase 89 plan: disclose it, record the doctrine-mandated AMENDMENT or cite why it does not apply, reconcile non_goals and LD-3, state the precedent accurately), then /qor-audit.
 
+### Entry #837: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T17:21:00Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `ec0f745a3a3b`
+**Verdict**: PASS
+
+**Content Hash**: `aac2cf3ff85f913cbb5c54572a45db28d7cf27e1884ad1f2d318af9e9b5218d3`
+**Previous Hash**: `fb1c1295c24c88902dc7e0d266d432b3a8d7804e988cab0078f4ad46bbb1ba46`
+**Chain Hash (Merkle seal)**: `ab354ff4fd446aa9c5da1c72051f57b4b6dbd824a65d7bf456c5571e12c54baf`
+
+**Decision**: **Target**: `docs/plan-qor-phase303-boundary-lint-scope.md`
+
+**Decision**: PASS (iter 2 on base 25babc0e, head b4933db8). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. Iteration-1 V1 cured: the plan no longer edits the sealed Phase 89 plan or any sealed or ledger-bound artifact; no affected file carries a ledger content-hash commitment; non_goals, LD-3 and LD-6 agree; Entry #237's binding (b98d4ff9..., verifiable at seal commit 4a34b08e) is disclosed and untouched, so no AMENDMENT is needed. Per the owner decision the test changes instead: an exact-line allowance maps the one Phase 303 CI line in a tmp copy of the *.yml workflows (the same input set discover_ci_commands reads) back to the Phase 89-covered form, requires exactly one rewrite, and a three-case drift test proves it hides nothing else (M8 widened allowance and M9 no rewrite each fail exactly their named items); the single unmapped-line gap is declared in the plan's limitations. Full re-audit reproduced in scratch clones outside the repo: 45 arrow and 19 prints citations at 25babc0e, 0 mismatches; LD-3 counts 69/72 with the 30/11/18/3 split and 10 qor files at one line each; compile rewrites 15 dist files, drift OK 413; tests rebuilt from plan text give 19 failed, 2 passed and 23 failed, 14 passed at base (default, -vv, -l, --tb=long -vv -l), 21 and 16 passed twice after, 220 passed twice with the consumer entry; M1-M9 fail exactly their named sets (3/2/2/5/1/1/1 of 217/2/2); every failing output and both test files contain the outside name 0 times in any case; --expect-scope fails closed both ways in a fresh clone running CI's own run text; CI-view simulation and the guarded post-seal clone proof discriminate in all four cases; CHANGELOG bullet matches; carry-over base full suite 3641 passed and after 3665 passed (3 skipped, 4 deselected). Advisories: A1 tests/test_ci_coverage_lint.py grows from 276 to 351 lines past the 250 razor without justification (sealed precedent tolerates oversize test files); A2 that file's module docstring will misdescribe the self-application test; A3 workspace fragility pre-existing. Escalator: cce.check and check_session_total None; no repeated-VETO pattern. Session `2026-10-05T1620-2b159a`.
+
+**Required next action**: /qor-implement
+
 ---
 
 *Chain integrity: VALID*
