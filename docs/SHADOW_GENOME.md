@@ -3093,4 +3093,28 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #44: VETO -- plan-qor-phase304-maintenance-freeze (iter 1)
+
+**Date**: 2026-10-05
+**Verdict ID**: session 2026-10-05T1757-41eb02 audit (META_LEDGER Entry #841)
+**Failure Mode**: VALIDATION_GAP (coverage-gap)
+
+### What Failed
+
+LD-2 of the freeze plan specifies four properties for `freeze_check`, including two edge rules: a missing notice file (README.md or AGENTS.md) is one violation, and a workflow whose `on:` is a list or a string holding `schedule` is one violation. The planned tests always built both notice files and wrote every schedule trigger in mapping form. A check that skipped missing files, or read only the mapping form, passed the whole planned suite.
+
+### Why It Failed
+
+The test list was written from the fixture outward (one mutation of a complete frozen tree per test) rather than from the LD-2 rule list inward. Rules stated as "a missing file ... is one violation" and "a list ... or the string ... is one violation" had no mutation that produced their input.
+
+### Pattern to Avoid
+
+For every normative clause in a locked decision ("X is one violation", "Y is read as Z"), name the test whose input exercises that clause, and check the mapping clause by clause before submitting. Related: doctrine-test-functionality inverse-coverage discipline (every declared outcome must be reachable by a test input).
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*

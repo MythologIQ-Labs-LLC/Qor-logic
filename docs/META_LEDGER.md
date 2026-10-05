@@ -24738,6 +24738,25 @@ Two shipped skill references invoke `qor-logic`, the publication-boundary lint i
 
 **Decision**: Disclosed post-seal test fix for Phase 303 (GH #457), following SESSION SEAL #839 (seal commit eda4866a, Merkle seal `ce903075a8bbdb619bde420b642551413d979db58e343663d939e7189f13c2ea`). CI on the seal commit failed on windows-latest (Python 3.12 and 3.13), run 37350028252 job 111898252282: `tests/test_boundary_lint_expected_scope.py::test_a_bom_does_not_hide_the_first_term` (1 failed, 3664 passed, 3 skipped), at index 0 `[boundary] docs\\a.md:1: identity term: example-outside-cli` != `[boundary] docs/a.md:1: identity term: example-outside-cli`. Root cause: the test hardcoded a POSIX relative path, while `publication_boundary_lint.collect_findings` with `no_git=True` renders each finding path as `str(path.relative_to(repo_root))`, which uses OS-native separators. The lint's behavior is unchanged and out of scope. Change (test only, one assertion): the finding list is normalized with `f.replace("\\", "/")` before the equality check, the convention `tests/test_publication_boundary_lint.py` already uses (`out.replace("\\", "/")`). No other assertion in that file or in `tests/test_ci_coverage_lint.py` compares a lint-rendered path. `tests/test_boundary_lint_expected_scope.py` sha256 before `511752babe99db42f2558d71cdf3159ab780ccbe87947bc3c13611f6c414fbc2`, after `d68abfdb6681f9ee32a74dcacba98ea35911056857cee0a12a6d9fe8d437db36`. Proof: a scratch pytest plugin outside the repository that renders each lint path as `str(PureWindowsPath(rel))` reproduces the CI failure byte for byte on the old assertion and passes the new one; on Linux both Phase 303 test files 37 passed twice and the full suite 3665 passed, 3 skipped, 4 deselected. No product code, plan, CHANGELOG version section, gate artifact or other sealed artifact changed; the seal's content hash (the plan hash `ed9115d9da1a83d7b72b7e7152e87348f4b8c743a9f0e328bf151803470661ed`) still equals the plan's live sha256 and is unaffected. This entry carries no Artifact or Plan line, so it binds no artifact; its content hash is the self-bound body hash. The local seal tag v0.175.7 remains on the seal commit eda4866a and was never pushed; it is not moved, so any release tag must be created from the post-fix commit at release time.
 
+### Entry #841: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T18:08:50Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `cfb790edca32`
+**Verdict**: VETO
+
+**Content Hash**: `6335152fe0985cc43c49ce6b90b4c9cc289c2e7029b1f7a869390c9832541e88`
+**Previous Hash**: `e23e1381d71f79421ae17281a6cafd513c7ab447f6241aa662d3a53f391dbb18`
+**Chain Hash (Merkle seal)**: `6b78061a811cef1fa842052254bae17b79365645f2ef2cf6d97da1486006d732`
+
+**Decision**: **Target**: `docs/plan-qor-phase304-maintenance-freeze.md`
+
+**Decision**: VETO (iter 1 on base 7228bacd, head 427006e). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. All 13 grep evidence statements reproduce at 7228bacd; PyYAML's bare `on:` -> True, the single scheduled workflow, README as the PyPI long description and the scripts module dispatch all verified; a scratch copy with LD-1, LD-3, LD-4 and an LD-2 prototype applied kept 156 coupled tests green (test_ci_coverage_lint, test_workflow_budget, test_boundary_scope_disclosure, docs and plan-glob tests), drift OK, boundary lint 0, ruff clean; the 0.175.7 exception removes exactly the 0.175.7 orphan. V1 (coverage-gap): LD-2 makes two behaviours normative that no planned test covers, a missing NOTICE_FILES file and a list- or string-form `on:` holding schedule; mutations skipping either leave all 15 planned tests green. Advisories: A1 Branch line names the remote branch, work is on phase/304-maintenance-freeze; A2 doctrine-publication-boundary.md says the GitHub-surface scan runs on a schedule; A3 safe_load not stated (enforced by the discipline test); A4 missing pyproject or unparseable workflow behaviour unstated; A5 RED is a collection error; A6 FX028 row columns unspecified; A7 the v0.175.7 tag is not in this clone. Escalator: cce.check and check_session_total None; no repeated-VETO pattern. Session `2026-10-05T1757-41eb02`.
+
+**Required next action**: Governor amends via /qor-plan (a test for each normative LD-2 rule, or drop the rule), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*
