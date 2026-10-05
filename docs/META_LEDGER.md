@@ -24776,6 +24776,25 @@ Two shipped skill references invoke `qor-logic`, the publication-boundary lint i
 
 **Required next action**: Governor amends via /qor-plan (a discriminating test for every property-4 clause, or drop the clause), then /qor-audit.
 
+### Entry #843: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T18:27:33Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `239d3a7dacf0`
+**Verdict**: VETO
+
+**Content Hash**: `78f7d5c027060a97419a4d6cf97c968db8f62bc106e5b61f8d3a69557174aee7`
+**Previous Hash**: `cfd41eefb93624dbbfcb5084155cfb16cc614b204a5c76822e47ad50cc47e22c`
+**Chain Hash (Merkle seal)**: `003b7ca05e845dad1d27d5c4f06e747801cecfbd195ff396e458916757a39679`
+
+**Decision**: **Target**: `docs/plan-qor-phase304-maintenance-freeze.md`
+
+**Decision**: VETO (iter 3 on base 7228bacd, head fe4068c). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. Full re-walk: every evidence and prints statement reproduces at 7228bacd; iteration-2 V1 cured (31 per-clause mutants caught, including heading equality, blank-only sections and the end-of-file boundary); a scratch clone with every planned edit and a simulated 0.176.0 seal gives freeze_check OK, 1658 passed and 16 skipped across 220 coupled test files, 59 passed twice on the new and nightly files, drift OK 413, boundary lint 0, ruff clean, prose_test_lint exit 0. V1 (coverage-gap): seven mutants survive all planned cases: C1.4 duplicate frozen classifiers, C3.5 key precedence with a schedule under the quoted key only, C3.9 a file scheduling under both keys counted twice, C5.2 main printing violations sorted, the unidentified "directly in .github/workflows" and property-4 file-order conditions, and C1.5 a [project] table without classifiers raising KeyError. Advisories: A1 third consecutive coverage-gap VETO, escalator expected to route to /qor-remediate; A2 POSIX path form only discriminated on Windows CI; A3 Branch line; A4 ci_coverage_lint WARN. Session `2026-10-05T1757-41eb02`.
+
+**Required next action**: /qor-remediate (cycle-count escalation), or Governor amends via /qor-plan if the operator declines escalation.
+
 ---
 
 *Chain integrity: VALID*

@@ -3141,4 +3141,28 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #46: VETO -- plan-qor-phase304-maintenance-freeze (iter 3)
+
+**Date**: 2026-10-05
+**Verdict ID**: session 2026-10-05T1757-41eb02 audit (META_LEDGER Entry #843)
+**Failure Mode**: VALIDATION_GAP (coverage-gap; Entries #44 and #45 recurrence, cycle-count escalation)
+
+### What Failed
+
+Iteration 3 restated LD-2 as 23 atomic clauses with one discriminating test each, and the reviewer's per-clause mutants were all caught. Seven further mutants survived: inputs for C1.4 and C3.5 also satisfied a neighbouring clause, C3.9 had no file scheduling under both keys, main's print order matched sorted order by coincidence, two conditions stated in prose ("directly in", "in that order") carried no ID, and a [project] table without classifiers had no input.
+
+### Why It Failed
+
+Each iteration widened the specification of a small helper (more edge rules, more precision) and then had to test the wider specification exhaustively. The clause surface grew faster than the tests: every new atomic rule created new neighbours and boundaries for a mutant to exploit. The design was complected: a release-hygiene notice was carried by a general-purpose YAML/TOML/Markdown checker whose every parsing decision became a normative clause.
+
+### Pattern to Avoid
+
+When repeated coverage-gap VETOs land on the same small unit, shrink the unit's specification instead of enumerating it further: state only the behaviour the deliverable needs, make implementation details non-normative, and prefer checking the concrete repository state over a general checker. Three same-signature VETOs mean the design is wrong, not the test list.
+
+### Remediation Attempted
+
+Escalated to /qor-remediate.
+
+---
+
 *Shadow integrity: ACTIVE*
