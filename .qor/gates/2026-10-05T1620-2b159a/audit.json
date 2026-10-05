@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-10-05T1620-2b159a",
+  "ts": "2026-10-05T16:49:52Z",
+  "target": "docs/plan-qor-phase303-boundary-lint-scope.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "specification-drift"
+  ],
+  "target_content_hash": "57be54a2455a843df0289ace49dc27811df0a746a2313ba7c5497c1efde7e373",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.175.6",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "veto",
+    "ts": "2026-10-05T16:49:52Z"
+  }
+}

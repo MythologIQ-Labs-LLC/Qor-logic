@@ -24632,6 +24632,25 @@ The install receipt records only sha256 values checked against the installed byt
 
 **Post-seal proof**: the plan's guarded CI-view clone proof (LD-13, Phase 4) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
 
+### Entry #836: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T16:49:37Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `bfccb693eb25`
+**Verdict**: VETO
+
+**Content Hash**: `3894f7b6e635146da1a61a230b342e650c4b2eac8989c3bb3817e6eb8d57d390`
+**Previous Hash**: `a685f89b39d303ee3977cb89a5242409bba5cde45ba9312f9cbdfbbccfbe5f57`
+**Chain Hash (Merkle seal)**: `fb1c1295c24c88902dc7e0d266d432b3a8d7804e988cab0078f4ad46bbb1ba46`
+
+**Decision**: **Target**: `docs/plan-qor-phase303-boundary-lint-scope.md`
+
+**Decision**: VETO (iter 1 on base 25babc0e). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. Engineering reproduced in scratch clones outside the repo: all 42 evidence statements and 6 prints statements re-run at 25babc0e, 0 mismatches; LD-3 case-sensitive enumeration (69 files) reproduces; the compile rewrites exactly 15 dist files (8 copies, 7 manifests), drift OK 413; Phase 1 tests rebuilt from plan text give 19 failed, 2 passed at base and 21 passed twice after; M1-M7 fail exactly their named sets (3/2/2/1/1/1/1 of 217); full suite 3662 passed, 3 skipped, 4 deselected; --expect-scope fails closed in both directions and the CI step runs it unconditionally; CI-view simulation and the guarded post-seal clone proof (printf deviation equivalent) discriminate in all four cases; CHANGELOG bullet matches the implementation. V1 (specification-drift, LD-6 ruling): the plan edits the sealed Phase 89 plan, whose bytes Entry #237 commits by content hash (b98d4ff9..., equal to the file at seal commit 4a34b08e), without disclosing that commitment or planning the AMENDMENT doctrine-ledger-commitment mandates, contradicting its own non_goals (rewriting sealed plans) and the LD-3 ledger-bound rationale. The binding was already revision-bound since Phase 105, so the edit does not by itself break a currently verifiable binding, but the seal's Step 3 cannot parse Entry #237's legacy hash form and would report the file examined and clean, a testimonial pass. Cited precedents (Phases 208, 211, 213, 233) append bullets only; none modifies one. Advisories: A1 three further tracked files carry a case variant of the outside name; A2 pytest assertion rewriting can print the compared token unless reduced to a boolean; A3 workspace fragility pre-existing. Escalator: cce.check and check_session_total None; no repeated-VETO pattern. Session `2026-10-05T1620-2b159a`.
+
+**Required next action**: Governor amends via /qor-plan (account for Entry #237's commitment of the Phase 89 plan: disclose it, record the doctrine-mandated AMENDMENT or cite why it does not apply, reconcile non_goals and LD-3, state the precedent accurately), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*
