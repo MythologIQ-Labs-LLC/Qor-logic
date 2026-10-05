@@ -1,0 +1,9 @@
+{
+  "session": "2026-10-05T2111-166d9d",
+  "plan_path": "docs/plan-qor-phase305-package-data-ships-dist.md",
+  "plan_hash": "79217554a0d78d746c91925903e66575cdc9095d5dad083cc9d5b3828ff3d01b",
+  "audit_path": ".agent/staging/AUDIT_REPORT.md",
+  "audit_hash": "a7fba6e5c288486d7191a97d22ab0e28b4acf4f7e08249ac6c21ebcfbe0db807",
+  "head_commit": "78592eb19de539894b559f1bd75fcba9a0880da2",
+  "captured_ts": "2026-10-05T22:10:21.117989Z"
+}

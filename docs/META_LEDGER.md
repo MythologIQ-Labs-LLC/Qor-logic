@@ -24926,6 +24926,36 @@ Qor-logic is declared feature-complete, frozen and superseded, and a check keeps
 
 **Decision**: 
 
+### Entry #850: SESSION SEAL -- Phase 305 package data ships dist: the package ships every tracked file under qor/dist, and the freeze notices name 0.176.1 as the final release (v0.176.1)
+
+**Timestamp**: 2026-10-05T22:21:29Z
+**Phase**: SEAL (Phase 305)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase305-package-data-ships-dist.md
+**Session**: 2026-10-05T2111-166d9d
+**Entry ID**: `0f9d44fb7030`
+
+**Content Hash**: `79217554a0d78d746c91925903e66575cdc9095d5dad083cc9d5b3828ff3d01b`
+**Previous Hash**: `d2c04c0737ab59a86bd548ba103857d58263de29792dcaad51e0785b854c2c83`
+**Chain Hash (Merkle seal)**: `f476b0d9aca30ae359a6878197129868ef7bb10ede43439eb4f79fc55b9a1e4d`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 28 / verified: 28 / unverified: 0 / n/a: 0
+
+The package data ships every tracked file under `qor/dist`. `pyproject.toml` `[tool.setuptools.package-data]` `qor` declares one `dist/**/*` glob in place of the three `dist/variants/**/*.md|json|toml` globs, so the root `qor/dist/manifest.json` that `qor-logic list --available` reads and the 20 tracked `.yml`/`.yaml` variant files are selected. New `tests/test_package_data_ships_dist.py` (8 items) stages the files the declared globs select and runs the real `_do_list` and `_do_install` handlers against them, and guards that no dist manifest lists a path with a dot-prefixed, `RCS`, `CVS` or `_darcs` segment; `tests/test_packaging.py` line 41 fragment is `"dist/"` (LD-6). The owner lifted the maintenance freeze for this one phase: README.md line 36 and AGENTS.md line 8 name 0.176.1 as the final release, state the fault of the published 0.176.0 and 0.172.2 packages, and AGENTS.md permits only the 0.176.1 release. `freeze_check` OK. Audit: VETO iter 1 (#847, release-state premise), PASS iter 2 (#848); implementation #849; intent lock VERIFIED.
+
+**Version**: 0.176.0 -> 0.176.1 (hotfix). `docs/release-state.json` is unchanged: the remote `v0.176.0` tag covers 0.176.0 (LD-9). The annotated seal tag `v0.176.1` is created locally on the seal commit and is not pushed by this seal; pushing it is the owner's release action after merge (LD-10).
+
+**CHANGELOG**: stamped `[0.176.1] - 2026-10-05` by `changelog_backends.stamp` (keepachangelog); the `_Built via ..._` line was inserted below the header from `attribution.changelog_attribution_line()` because the stamp does not emit it and the tiered-attribution test requires it. The dated `[0.176.0]` section is not edited.
+
+**Reality audit**: every planned file exists and matches the plan: the `dist/**/*` glob (no other `pyproject.toml` line changed before the bump), the new test file, the one-string `tests/test_packaging.py` change, and the README, AGENTS and CHANGELOG text byte-equal to the plan's Phase 3 and LD-11 blocks. No `qor/install.py`, `qor/cli.py`, `qor/scripts/dist_compile.py`, `freeze_check`, `release_state`, doctrine, skill, spec or compiled variant changed. No sealed plan, ledger entry, gate artifact, intent-lock record or dated CHANGELOG section was modified (META_LEDGER, SHADOW_GENOME and PROCESS_SHADOW_GENOME_UPSTREAM diffs against base are append-only). UNPLANNED: none in the implementation. Observation: the plan states the new test file is 93 lines; it holds 92 newline-terminated lines (no content consequence). Seal mechanics: `docs/SYSTEM_STATE.md` gains the Phase 305 `**Phase**:` paragraph and the Phase 304 paragraph is relabeled `**Prior phase**:` with its text unchanged, the established header rotation; the Phase 305 paragraph corrects it forward. `ledger_commitment` OK (7 touched artifacts). Section 4: test file 92 lines, longest function 12 lines, nesting 2; ruff clean; changed source ASCII. Presence-only gate: each new test calls `_do_list` or `_do_install` and asserts the return code and output or install-record count, or asserts the guard's offending list on the live manifests.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), procedural_fidelity (no findings), dod_check (no findings), merge_velocity (healthy, 3 PRs/7d), skill_size_budget (3 WARN, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), documentation currency (no warnings), governance_index enforce (Last Reviewed 2026-10-05), feature_index_verify (28/28, snapshot 2026-10-05T1757-41eb02), version_applicability (v0.176.1 > v0.176.0). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, 32 source skills reported missing (no claude install in this container). Continuity gate not applicable (no execution_continuity). Spec fold: no spec_deltas. AC close guard: not applicable (no issue closed). Suite pre-seal: 3679 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored). Step 4.6.14 publication_boundary_lint re-runs after staging; the plan's guarded post-seal clone proof runs after Step 9.5.5.
+
 ---
 
 *Chain integrity: VALID*

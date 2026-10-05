@@ -10,6 +10,10 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.176.1] - 2026-10-05
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
 ### Changed
 - **Phase 305 (hotfix; the freeze notices name 0.176.1 as the final release)**: The owner lifted the maintenance freeze for this one packaging fix; the freeze otherwise stays in force, and no release follows 0.176.1. README (the package long description) and AGENTS.md now name 0.176.1 as the final release, and AGENTS.md permits that one release and no other. The README no longer says that the published package works as documented, which the 0.176.0 README and its CHANGELOG section said: the published 0.176.0 and 0.172.2 packages lack `qor/dist/manifest.json` and the 20 `.yml` and `.yaml` files of the claude, codex, cursor and kilo-code variants, so `qor-logic list --available` exits 1 after installing either of them. The README now says so, and that 0.176.1 fixes this for the tracked files under `qor/dist`.
 
