@@ -24670,6 +24670,30 @@ The install receipt records only sha256 values checked against the installed byt
 
 **Required next action**: /qor-implement
 
+### Entry #838: IMPLEMENTATION
+
+**Timestamp**: 2026-10-05T17:28:24Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Entry ID**: `e4c3607f9485`
+**Plan**: docs/plan-qor-phase303-boundary-lint-scope.md
+**Session**: 2026-10-05T1620-2b159a
+
+**Content Hash**: `87a501433898338a9ec404e73f8bc75db1802bba7142c7a014dba92472a96c06`
+**Previous Hash**: `ab354ff4fd446aa9c5da1c72051f57b4b6dbd824a65d7bf456c5571e12c54baf`
+**Chain Hash (Merkle seal)**: `1cde9926ba171a5f1f88eaac3ed63906d0bd5b8b0ae3915d401b9de3bd7cd4e6`
+
+**Decision**: **IMPLEMENTATION COMPLETE.** Two shipped skill references invoke `qor-logic`, the publication-boundary lint ignores a terms-file byte-order mark, and CI asserts the boundary scope it intends (GH #457), implemented test-first on base 25babc0e per the iteration-2 plan (audit PASS #837).
+
+Code: `qor/scripts/publication_boundary_lint.py` gains `SCOPES = ("structural", "structural+identity")`; `_load_terms` reads `utf-8-sig` (LD-4); `collect_findings` returns a SCOPES value; `main` gains `--expect-scope` (choices=SCOPES, default None) and on a mismatch prints `scope mismatch: expected <e>, achieved <a>` and returns 1 (LD-5); 194 -> 207 lines, longest function 30 lines, signatures unchanged. `.github/workflows/ci.yml` publication-boundary step passes `--expect-scope structural` under a two-line Phase 303 comment (LD-6). The two shipped references (bootstrap ledger-template comment line 151, seal-ladder Step 3 line 457) had the outside project's CLI name replaced by `qor-logic`, one token each (LD-1); `PYTHONPATH=. python -m qor.cli compile` rewrote exactly 15 files under qor/dist (8 variant copies, 7 manifests), drift check OK 413 files (LD-2). No sealed plan, gate artifact, intent-lock record, shadow genome or ledger-bound artifact edited; the Phase 89 plan is untouched (LD-6).
+
+Tests: new `tests/test_boundary_lint_expected_scope.py` (188 lines, 11 functions, 21 items). `tests/test_ci_coverage_lint.py` gains `_PHASE_303_CI_COMMAND`, `_PHASE_89_COVERED_COMMAND`, `LIVE_WORKFLOWS`, `PHASE_89_PLAN`, the exact-line helper `_apply_phase_303_allowance`, the changed `test_lint_self_applies_to_phase_89_plan` (exactly one rewrite on a tmp copy) and `test_phase_303_allowance_does_not_hide_other_ci_drift` (3 items); 276 -> 356 lines (advisory A1; Step 9.5 NO REFACTOR REQUIRED: the file was already over the razor at base and a split would widen scope). Owner-directed fix of audit advisory A2 (decision 2026-10-05): that file's module docstring now states the Phase 89 self-test runs against a temporary copy of the workflows with exactly one CI line rewritten by the Phase 303 allowance; docstring only. RED at base: new file 19 failed, 2 passed; both files 23 failed, 14 passed. GREEN after: 21 passed and 16 passed, twice each. Mutations under `python -B -m pytest` over the 220-item set, each reverted: M1 3, M2 2, M3 2, M4 5, M5 1, M6 1, M7 1 (of 217), M8 2, M9 2 failed, each exactly the named set (M9 applied as an identity rewrite of the matched line so the mutant stays ruff-clean); 220 passed twice after restore. No failing output, and neither test file, contains the outside name in any letter case.
+
+Release state: `docs/release-state.json` gains 0.175.6 sealed_unpublished (reason names the #835 seal); CI-view simulation printed set() {'0.175.6'}. CHANGELOG `## [Unreleased]` gains the LD-11 Fixed bullet verbatim. No README, doctrine or architecture change (LD-9); Step 8.5 has nothing to author; FEATURE_INDEX FX017 n/a-justified, row unchanged; no BACKLOG item addressed.
+
+Verification: consumer entry 199 passed; release/changelog suites 29 + 5 passed; full suite 3665 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifest generated_ts restored to the compile output); check_variant_drift OK 413 files; ruff clean; prose_test_lint --enforce exit 0; publication_boundary_lint --expect-scope structural 0 findings [scope: structural]; ledger chain verified. Post-seal clone proof deferred to /qor-substantiate per plan.
+
 ---
 
 *Chain integrity: VALID*

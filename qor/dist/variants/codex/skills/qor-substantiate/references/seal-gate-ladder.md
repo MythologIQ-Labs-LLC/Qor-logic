@@ -454,7 +454,7 @@ to the recorded string, not to live bytes. That is a property of the chain
 rather than a defect in it.
 
 ```bash
-qor-logic-plus scripts ledger_commitment --session "$SESSION_ID" --repo-root . || ABORT
+qor-logic scripts ledger_commitment --session "$SESSION_ID" --repo-root . || ABORT
 ```
 
 Scoped to the implement gate's `files_touched`, not the whole ledger -- a full

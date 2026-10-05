@@ -129,7 +129,9 @@ jobs:
         # enforceable. Note this runs WITHOUT the operator terms overlay
         # (.qor/private/ is gitignored), so CI enforces the structural
         # detectors; identity terms are verified locally.
-        run: python -m qor.scripts.publication_boundary_lint --repo-root .
+        # Phase 303 (GH #457): --expect-scope states that intent, so the step
+        # fails if the achieved scope ever differs from it.
+        run: python -m qor.scripts.publication_boundary_lint --repo-root . --expect-scope structural
 
   provenance-attest:
     # Phase 158 wiring (GAP-GOV-05): non-forgeable gate-artifact provenance.

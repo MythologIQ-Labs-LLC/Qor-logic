@@ -1,8 +1,10 @@
 """Phase 89: behavior tests for qor.scripts.ci_coverage_lint (GH #91).
 
 Each test uses tmp-path workflow + plan fixtures except the dedicated
-self-application test, which runs the lint against this repo's actual
-.github/workflows + Phase 89's own plan file.
+self-application test, which runs the lint against Phase 89's own plan file
+and a temporary copy of this repo's .github/workflows in which the Phase 303
+allowance rewrites exactly one CI line (the publication-boundary step) back to
+the form that sealed plan covers; every other line is copied unchanged.
 
 Per qor/references/doctrine-test-functionality.md: each assertion verifies
 the lint's behavior on a specific classification branch, not the existence
@@ -15,9 +17,44 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from qor.scripts import ci_coverage_lint
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+LIVE_WORKFLOWS = REPO_ROOT / ".github" / "workflows"
+PHASE_89_PLAN = REPO_ROOT / "docs" / "plan-qor-phase89-ci-commands-reconciliation.md"
+
+# Phase 303 (GH #457): CI's publication-boundary step now passes
+# `--expect-scope structural`. The Phase 89 plan is sealed and ledger-bound, so
+# its CI Commands bullet is not edited; the self-application test maps exactly
+# this one CI line back to the command that sealed plan covers.
+_PHASE_303_CI_COMMAND = (
+    "python -m qor.scripts.publication_boundary_lint --repo-root . --expect-scope structural")
+_PHASE_89_COVERED_COMMAND = "python -m qor.scripts.publication_boundary_lint --repo-root ."
+
+
+def _apply_phase_303_allowance(src: Path, dest: Path) -> int:
+    """Copy every src/*.yml into dest, rewriting only the exact Phase 303 line.
+
+    A line whose stripped text is exactly `run: <Phase 303 command>` becomes the
+    same indentation plus `run: <Phase 89 covered command>`. Any other line,
+    including one that differs in a single character, is copied unchanged.
+    Returns how many lines were rewritten.
+    """
+    dest.mkdir(parents=True, exist_ok=True)
+    rewritten = 0
+    for wf in sorted(src.glob("*.yml")):
+        out = []
+        for line in wf.read_text(encoding="utf-8").splitlines(keepends=True):
+            if line.strip() == f"run: {_PHASE_303_CI_COMMAND}":
+                indent = line[: len(line) - len(line.lstrip())]
+                eol = line[len(line.rstrip("\r\n")):]
+                line = f"{indent}run: {_PHASE_89_COVERED_COMMAND}{eol}"
+                rewritten += 1
+            out.append(line)
+        (dest / wf.name).write_text("".join(out), encoding="utf-8")
+    return rewritten
 
 
 def _write_workflow(tmp_path: Path, name: str, content: str) -> Path:
@@ -262,15 +299,58 @@ jobs:
     )
 
 
-def test_lint_self_applies_to_phase_89_plan():
-    """Self-application: the lint against this repo's actual workflows
-    and Phase 89's own plan reports zero WARNs. This is the deterministic
-    shipping-correctness test for the lint.
+def test_lint_self_applies_to_phase_89_plan(tmp_path):
+    """Self-application: the lint against Phase 89's own plan and a copy of
+    this repo's workflows, with only the Phase 303 line mapped, reports zero
+    WARNs. This is the deterministic shipping-correctness test for the lint.
     """
-    plan = REPO_ROOT / "docs" / "plan-qor-phase89-ci-commands-reconciliation.md"
-    workflows_dir = REPO_ROOT / ".github" / "workflows"
-    warnings = ci_coverage_lint.check_plan(plan, workflows_dir)
+    workflows_dir = tmp_path / "workflows"
+    rewritten = _apply_phase_303_allowance(LIVE_WORKFLOWS, workflows_dir)
+    assert rewritten == 1, (
+        f"the Phase 303 allowance must map exactly one live CI line; mapped {rewritten}")
+    warnings = ci_coverage_lint.check_plan(PHASE_89_PLAN, workflows_dir)
     assert warnings == [], (
         f"Phase 89's own plan must cover its own CI surface (or exempt "
         f"explicitly). Unmatched: {warnings}"
     )
+
+
+_UNCOVERED_WORKFLOW = """\
+name: Extra
+on: [pull_request]
+jobs:
+  extra:
+    runs-on: ubuntu-latest
+    steps:
+      - run: python -m example_uncovered_check
+"""
+
+
+@pytest.mark.parametrize("drift", [
+    "boundary-scope-value-changed", "boundary-flag-added", "unrelated-command-added"])
+def test_phase_303_allowance_does_not_hide_other_ci_drift(tmp_path, drift):
+    src = tmp_path / "src"
+    src.mkdir()
+    phase_303_line = f"run: {_PHASE_303_CI_COMMAND}"
+    found = 0
+    for wf in LIVE_WORKFLOWS.glob("*.yml"):
+        text = wf.read_text(encoding="utf-8")
+        found += sum(1 for ln in text.splitlines() if ln.strip() == phase_303_line)
+        (src / wf.name).write_text(text, encoding="utf-8")
+    assert found == 1, f"the Phase 303 CI line must exist exactly once; found {found}"
+    if drift == "unrelated-command-added":
+        (src / "extra.yml").write_text(_UNCOVERED_WORKFLOW, encoding="utf-8")
+        expected = "python -m example_uncovered_check"
+    else:
+        expected = (_PHASE_303_CI_COMMAND.replace("structural", "structural+identity")
+                    if drift == "boundary-scope-value-changed"
+                    else _PHASE_303_CI_COMMAND + " --no-git")
+        ci = src / "ci.yml"
+        ci.write_text(ci.read_text(encoding="utf-8").replace(
+            phase_303_line, f"run: {expected}"), encoding="utf-8")
+    dest = tmp_path / "dest"
+    rewritten = _apply_phase_303_allowance(src, dest)
+    if drift == "unrelated-command-added":
+        assert rewritten == 1, rewritten
+    warnings = ci_coverage_lint.check_plan(PHASE_89_PLAN, dest)
+    assert [w.command for w in warnings] == [expected], warnings
