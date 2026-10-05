@@ -1,0 +1,86 @@
+{
+  "phase": "plan",
+  "session_id": "2026-10-05T2111-166d9d",
+  "plan_path": "docs/plan-qor-phase305-package-data-ships-dist.md",
+  "phases": [
+    "Phase 1: Regression tests",
+    "Phase 2: Ship every tracked file under qor/dist",
+    "Phase 3: Freeze notices and CHANGELOG notes"
+  ],
+  "ci_commands": [
+    "python -m pytest tests/test_package_data_ships_dist.py -q",
+    "python -m pytest tests/test_packaging.py tests/test_package_data_ships_matrix.py tests/test_cli_feature_index_backfill.py tests/test_cli_install_gemini.py tests/test_cli_install_source.py tests/test_dist_manifest_integrity.py tests/test_compile.py tests/test_install_sync_with_source.py tests/test_installed_import_paths.py -q",
+    "python qor/scripts/check_variant_drift.py",
+    "python -m qor.scripts.freeze_check --repo-root .",
+    "python -m pytest tests/test_freeze_check.py -q",
+    "python -m qor.scripts.publication_boundary_lint --repo-root . --expect-scope structural",
+    "python -m pytest tests/test_release_state.py tests/test_changelog_tag_coverage.py -q",
+    "python -m pytest tests/test_changelog_format.py -q",
+    "python -c \"import subprocess; from qor.scripts import release_state as rs; import tests.test_changelog_tag_coverage as t; remote = {l.rsplit('/', 1)[1] for l in subprocess.run(['git', 'ls-remote', '--tags', 'origin'], capture_output=True, text=True, check=True).stdout.split() if l.startswith('refs/tags/v') and not l.endswith('^{}')}; tags = {v for v in rs.merged_semver_tags(t.REPO) if 'v' + v in remote}; versions = t._changelog_versions() | {'0.176.1'}; ex = rs.load_release_state(t.RELEASE_STATE, versions); print(ex.get('0.176.0'), '0.176.0' in tags, rs.coverage_violations(versions, tags, '0.176.1', ex).orphans, rs.coverage_violations(versions, tags - {'0.176.0'}, '0.176.1', ex).orphans, rs.coverage_violations(versions, tags, '0.176.1', {k: v for k, v in ex.items() if k != '0.175.7'}).orphans)\"",
+    "(T=$(mktemp -d) && R=$(git ls-remote --tags origin | awk '{print $2}') && git clone -q --no-local . \"$T/c\" && git -C \"$T/c\" tag -l 'v*' | while read tg; do printf '%s' \"$R\" | grep -qx \"refs/tags/$tg\" || git -C \"$T/c\" tag -d \"$tg\" >/dev/null; done && cd \"$T/c\" && python -c \"import sys, tomllib; v = tomllib.load(open('pyproject.toml', 'rb'))['project']['version']; c = open('CHANGELOG.md', encoding='utf-8').read(); sys.exit(0 if v == '0.176.1' and '## [0.176.1] - ' in c else 'CI-view guard FAIL: clone is not a sealed 0.176.1 (project version ' + v + ')')\" && PYTHONPATH=. python -m pytest tests/test_changelog_tag_coverage.py -q -rs -p no:cacheprovider > \"$T/out\" 2>&1; rc=$?; cat \"$T/out\" 2>/dev/null; [ \"$rc\" -eq 0 ] && ! grep -q skipped \"$T/out\")",
+    "python -m pytest tests/ -q",
+    "python qor/scripts/ledger_hash.py verify docs/META_LEDGER.md",
+    "python -m ruff check qor/ tests/"
+  ],
+  "open_questions": [],
+  "doc_tier": "standard",
+  "terms": [],
+  "boundaries": {
+    "limitations": [
+      "the packaging fix is to packaging only",
+      "`install` still skips, without a message, a manifest entry whose source file is absent (LD-7)",
+      "the shipped-set claim is limited to the tracked `qor/dist` tree (413 files at the base): real wheels built with the pinned build tool carried every tracked file, with the setuptools versions observed (84.0.0, and 68.0.0, the floor), and the release workflow builds from a checkout whose committed dist CI's drift check holds equal to a fresh compile (LD-4)",
+      "the build can drop other paths, among them a path with a dot-prefixed segment (the `build_py` glob) and a path under a directory named `RCS` or `CVS`, or `_darcs` at 84.0.0 (the sdist prune), and that list is not claimed complete",
+      "untracked files may or may not ship (LD-4, LD-5, LD-7)",
+      "a guard test fails if any dist manifest lists a path with a dot-prefixed, `RCS`, `CVS` or `_darcs` segment, so such a file fails CI instead of installing short, but the guard covers only the segments named (LD-5, LD-7)",
+      "the staged-dist simulation is checked against real builds for the tracked tree only and is not a model of the build (LD-5)",
+      "release builds resolve setuptools at build time from `setuptools>=68` in an isolated environment, so the setuptools version is not pinned (LD-7)",
+      "the freeze notices are prose that `freeze_check` checks for presence and non-emptiness only, not for wording (LD-8)",
+      "`0.176.0` is published and carries the packaging fault, and this phase changes no published artifact: the notices and CHANGELOG say so and name `0.176.1` as the fix, and `docs/release-state.json` gains no entry, because the remote `v0.176.0` tag covers `0.176.0` (LD-9)"
+    ],
+    "non_goals": [
+      "changing `qor/install.py`, `qor/cli.py` or `qor/scripts/dist_compile.py`",
+      "making install report or refuse an absent manifest source",
+      "adding `cursor` or `cline` to the `qor-logic install --host` choices",
+      "pinning the build backend",
+      "building a wheel in the test suite",
+      "changing `qor/scripts/freeze_check.py`, `qor/scripts/release_state.py` or `docs/release-state.json`",
+      "release publication, tag pushes or triggering the release workflow"
+    ],
+    "exclusions": [
+      "the silent skip of absent manifest sources (owner decision, LD-7)",
+      "the host choices of the `install` command (LD-7)",
+      "any change after 0.176.1 (the freeze stays in force, LD-8)"
+    ]
+  },
+  "change_class": "hotfix",
+  "feature_inventory_touches": [
+    {
+      "entry_id": "FX003",
+      "operation": "n/a-justified",
+      "test_path": "tests/test_package_data_ships_dist.py",
+      "test_descriptor": "list --available against a dist staged from the package-data globs returns 0 and prints exactly the de-duplicated ids of the root manifest"
+    },
+    {
+      "entry_id": "FX001",
+      "operation": "n/a-justified",
+      "test_path": "tests/test_package_data_ships_dist.py",
+      "test_descriptor": "install of every variant host from a dist staged from the package-data globs returns 0 and its install record lists as many files as that host's manifest"
+    },
+    {
+      "entry_id": "FX028",
+      "operation": "n/a-justified",
+      "test_path": "tests/test_freeze_check.py",
+      "test_descriptor": "freeze_check.check returns [] on this repository with the amended notices, and reports README.md or AGENTS.md when its freeze section is removed from a copy"
+    }
+  ],
+  "ts": "2026-10-05T21:55:46Z",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.176.0",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "absent",
+    "ts": "2026-10-05T21:55:46Z"
+  }
+}

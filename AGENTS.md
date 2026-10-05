@@ -5,7 +5,7 @@ repository.
 
 ## Maintenance freeze
 
-Qor-logic is frozen at version 0.176.0 and superseded. Do not start new phases, plans, features, fixes, dependency updates, or releases in this repository. A change requires the owner to lift the freeze explicitly first; `qor-logic scripts freeze_check` and `tests/test_freeze_check.py` keep the frozen state checked.
+Qor-logic is frozen at version 0.176.1, its final release, and superseded. The owner lifted the freeze once, for the Phase 305 packaging fix that 0.176.1 carries; the freeze is otherwise in force. Do not start new phases, plans, features, fixes, dependency updates, or releases in this repository. The one exception is the 0.176.1 release itself: pushing the `v0.176.1` tag of the merged Phase 305 seal commit, when the owner directs it; no other release is permitted. A change requires the owner to lift the freeze explicitly first; `qor-logic scripts freeze_check` and `tests/test_freeze_check.py` keep the frozen state checked.
 
 ## Public-repository boundary
 

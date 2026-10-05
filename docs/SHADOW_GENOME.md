@@ -3165,4 +3165,28 @@ Escalated to /qor-remediate.
 
 ---
 
+## Entry #47: VETO -- plan-qor-phase305-package-data-ships-dist (iter 1)
+
+**Date**: 2026-10-05
+**Verdict ID**: session 2026-10-05T2111-166d9d audit (META_LEDGER Entry #847)
+**Failure Mode**: HALLUCINATION (infrastructure-mismatch; external release state changed after observation)
+
+### What Failed
+
+The plan recorded 0.176.0 as `sealed_unpublished` and wrote README and CHANGELOG text saying 0.176.0 was tagged but never published and that 0.172.2 is the newest version on the package index. At audit time the package index listed qor-logic 0.176.0 (wheel and sdist uploaded 2026-10-05T21:31Z), and downloading 0.176.0 succeeded.
+
+### Why It Failed
+
+The disposition rested on a relayed statement (release run cancelled before anything published) and on index observations made shortly before the upload happened. External publication state is mutable: a cancelled or re-run tag-driven release can still publish, and an observation of absence is only true at its timestamp. The plan treated a point-in-time absence as a settled fact and built a governed record and user-facing text on it.
+
+### Pattern to Avoid
+
+Do not record a version as unpublished, or tell users it was never published, from a relayed cancellation or a single earlier index check. Re-observe the package index immediately before audit and again before the record is written, and prefer a disposition that coverage does not need when the remote tag already covers the version.
+
+### Remediation Attempted
+
+Returned to the Governor: amend plan text after the owner re-establishes the v0.176.0 release outcome, then re-run /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*

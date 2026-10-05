@@ -7,14 +7,14 @@
   <a href="https://pypi.org/project/qor-logic/"><img src="https://img.shields.io/pypi/v/qor-logic?color=blue&label=PyPI" alt="PyPI"></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-blue" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/License-BSL--1.1-orange" alt="License: BSL-1.1">
-  <img src="https://img.shields.io/badge/Tests-3674%20passing-brightgreen" alt="Tests: 3674 passing">
+  <img src="https://img.shields.io/badge/Tests-3682%20passing-brightgreen" alt="Tests: 3682 passing">
   <img src="https://img.shields.io/badge/NIST-SP%20800--218A%20%2B%20AI%20RMF%201.0-004488" alt="NIST SP 800-218A + AI RMF 1.0">
   <img src="https://img.shields.io/badge/OWASP-Top%2010%20%2B%20LLM%20Top%2010-004488" alt="OWASP Top 10 + LLM Top 10">
   <img src="https://img.shields.io/badge/EU%20AI%20Act-aligned-004488" alt="EU AI Act aligned">
   <img src="https://img.shields.io/badge/Skills-32-blue" alt="Skills: 32">
   <img src="https://img.shields.io/badge/Agents-13-blue" alt="Agents: 13">
   <img src="https://img.shields.io/badge/Doctrines-40-blue" alt="Doctrines: 40">
-  <img src="https://img.shields.io/badge/Ledger-844%20entries%20sealed-green" alt="Ledger: 844 entries sealed">
+  <img src="https://img.shields.io/badge/Ledger-848%20entries%20sealed-green" alt="Ledger: 848 entries sealed">
   <img src="https://img.shields.io/badge/Doc%20Tier-system-green" alt="Doc Tier: system">
 </p>
 
@@ -33,7 +33,7 @@
 
 ## Maintenance freeze
 
-Qor-logic is feature-complete and frozen as of version 0.176.0, its final release. It has been superseded and receives no further development: no new features, fixes, dependency updates, or releases. The published package stays on PyPI and continues to install and work as documented below. New issues and pull requests are not accepted.
+Qor-logic is feature-complete and frozen as of version 0.176.1, its final release. It has been superseded and receives no further development: no new features, fixes, dependency updates, or releases after 0.176.1. The owner lifted the freeze once, for the packaging fix that 0.176.1 carries: the published 0.176.0 and 0.172.2 packages lack `qor/dist/manifest.json` and the 20 YAML files of the claude, codex, cursor and kilo-code variants, so `qor-logic list --available` exits 1 after installing either of them, and installing the claude, codex or kilo-code variant from them copies 73 of the 78 files its manifest lists. Version 0.176.1 fixes this for the tracked files under `qor/dist`. New issues and pull requests are not accepted.
 
 ## What Qor-logic Does
 

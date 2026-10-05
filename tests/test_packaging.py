@@ -38,7 +38,7 @@ def test_pyproject_declares_package_data():
         "py.typed",
         "platform/",
         "templates/",
-        "dist/variants/",
+        "dist/",
     ]
     globs_joined = "\n".join(globs)
     for fragment in required_fragments:

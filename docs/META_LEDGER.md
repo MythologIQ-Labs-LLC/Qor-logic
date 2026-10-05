@@ -24872,6 +24872,90 @@ Qor-logic is declared feature-complete, frozen and superseded, and a check keeps
 
 **Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), procedural_fidelity (no findings), dod_check (no findings), merge_velocity (healthy, 2 PRs/7d), skill_size_budget (WARN only, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), documentation currency (no warnings), governance_index enforce (Last Reviewed 2026-10-05), feature_index_verify (28/28, snapshot 2026-10-05T1620-2b159a), version_applicability (v0.176.0 > v0.172.2). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, every source skill reported missing (no claude install in this container). Continuity gate not applicable. Spec fold: no spec_deltas. Suite pre-seal: 3671 passed, 3 skipped, 4 deselected (full history; suite-regenerated qor/dist manifests restored). Step 4.6.14 publication_boundary_lint re-runs after staging.
 
+### Entry #847: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T21:42:01Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `b2f92cb6cfc4`
+**Verdict**: VETO
+
+**Content Hash**: `02216441bde74195cf79f894a634041e17af4f45b776513ca07652b2836b6c50`
+**Previous Hash**: `f5a15875736798492a840730d46ee1188fec2f06cc3e9a28d7eb0bf3feabb216`
+**Chain Hash (Merkle seal)**: `d3ac5c39532191a14bc4ea34c0950da07fb1a9de5a4881c0b4b3342efecd2d8c`
+
+**Decision**: **Target**: `docs/plan-qor-phase305-package-data-ships-dist.md`
+
+**Decision**: VETO (iter 1 on base 2f301780, plan head 003346dc). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. V1 infrastructure-mismatch: the plan's premise that 0.176.0 was never published is false at audit time; the package index lists qor-logic 0.176.0 (wheel uploaded 2026-10-05T21:31:10Z, sdist 21:31:12Z), pip index versions first line is 0.176.0 and pip download of 0.176.0 succeeds, so the LD-9 sealed_unpublished disposition, the Phase 3 README line, the Changed bullet and the Problem/LD-9 observations would record or publish false statements. Packaging half reproduces: 83 of 83 evidence statements at 2f301780; rebuilt test 5 failed 3 passed at base and 8 passed after, twice; M1-M8 exact; real wheels 578 and 599 set-equal to the simulation, 392 and 413 of 413 tracked dist files; installed wheels list exit 1 then 0 (47 ids), installs 73 then 78; full suite 3679 passed; freeze_check OK; CI-view simulation and clone proof reproduce and discriminate. Advisories A1-A5 (README dangling referent, unqualified title tense, AGENTS release prohibition vs 0.176.1 publication, README cursor/cline host choices, runtime walk WARNs). Session `2026-10-05T2111-166d9d`.
+
+**Required next action**: Governor: amend plan text (owner to re-establish the v0.176.0 release outcome), re-run /qor-audit
+
+### Entry #848: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T22:08:32Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `10aea7e641f5`
+**Verdict**: PASS
+
+**Content Hash**: `a7fba6e5c288486d7191a97d22ab0e28b4acf4f7e08249ac6c21ebcfbe0db807`
+**Previous Hash**: `d3ac5c39532191a14bc4ea34c0950da07fb1a9de5a4881c0b4b3342efecd2d8c`
+**Chain Hash (Merkle seal)**: `4a92b5e7d63e9043d7374bdb452f51a1fcc5d542012077b826abfa4b52238637`
+
+**Decision**: **Target**: `docs/plan-qor-phase305-package-data-ships-dist.md`
+
+**Decision**: PASS (iter 2 on base 2f301780, plan head 643fa480, plan sha256 79217554). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. V1 of #847 cured: package index re-observed 2026-10-05T21:58Z (0.176.0 newest, then 0.172.2; earlier versions declared unchecked); published 0.176.0 and 0.172.2 wheels and sdists hold 392 dist files, no root manifest, no YAML; installed, list --available exit 1 and installs 73/73/73/47; no leftover never-published claim. Full re-walk: 81 of 81 citations and 26 setuptools source greps reproduce; rebuilt test 5 failed 3 passed at base and 8 passed after, twice; M1-M8 exact; full suite 3671 / 5F+3674 / 3679 passed; fixed wheels with setuptools 84.0.0 and 68.0.0 carry 413 of 413 tracked dist files (599 set-equal at 84.0.0); installed fixed wheel list exit 0 (47 ids), installs 78/78/78/47. freeze_check OK, 9+29+5+58 passed; CI-view simulation None True set() {'0.176.0'} {'0.175.7'} at base and after; clone proof discriminates (base, unstamped bump, no 0.175.7 entry, bare remote without v0.176.0 all exit 1; seal exit 0 twice). AGENTS exception permits only the 0.176.1 release; CLAUDE.md and CONTRIBUTING.md stay true. Advisories A1-A4 (residual over-generalization to unchecked versions, Fixed bullet without setuptools qualifier, README cursor/cline, runtime walk WARNs). Session `2026-10-05T2111-166d9d`.
+
+**Required next action**: /qor-implement
+
+### Entry #849: IMPLEMENTATION
+
+**Timestamp**: 2026-10-05T22:14:45Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase305-package-data-ships-dist.md
+**Session**: 2026-10-05T2111-166d9d
+**Entry ID**: `9f0be6cbb33f`
+
+**Content Hash**: `2e5d0118934c1a5fc606f9abd8689a548e778ce0e713878710aeef2ed4bc26f6`
+**Previous Hash**: `4a92b5e7d63e9043d7374bdb452f51a1fcc5d542012077b826abfa4b52238637`
+**Chain Hash (Merkle seal)**: `d2c04c0737ab59a86bd548ba103857d58263de29792dcaad51e0785b854c2c83`
+
+**Decision**: 
+
+### Entry #850: SESSION SEAL -- Phase 305 package data ships dist: the package ships every tracked file under qor/dist, and the freeze notices name 0.176.1 as the final release (v0.176.1)
+
+**Timestamp**: 2026-10-05T22:21:29Z
+**Phase**: SEAL (Phase 305)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase305-package-data-ships-dist.md
+**Session**: 2026-10-05T2111-166d9d
+**Entry ID**: `0f9d44fb7030`
+
+**Content Hash**: `79217554a0d78d746c91925903e66575cdc9095d5dad083cc9d5b3828ff3d01b`
+**Previous Hash**: `d2c04c0737ab59a86bd548ba103857d58263de29792dcaad51e0785b854c2c83`
+**Chain Hash (Merkle seal)**: `f476b0d9aca30ae359a6878197129868ef7bb10ede43439eb4f79fc55b9a1e4d`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PS.2.1, PW.5.1, RV.1.1, RV.1.2, RV.2.1
+
+**Feature Inventory**: Total: 28 / verified: 28 / unverified: 0 / n/a: 0
+
+The package data ships every tracked file under `qor/dist`. `pyproject.toml` `[tool.setuptools.package-data]` `qor` declares one `dist/**/*` glob in place of the three `dist/variants/**/*.md|json|toml` globs, so the root `qor/dist/manifest.json` that `qor-logic list --available` reads and the 20 tracked `.yml`/`.yaml` variant files are selected. New `tests/test_package_data_ships_dist.py` (8 items) stages the files the declared globs select and runs the real `_do_list` and `_do_install` handlers against them, and guards that no dist manifest lists a path with a dot-prefixed, `RCS`, `CVS` or `_darcs` segment; `tests/test_packaging.py` line 41 fragment is `"dist/"` (LD-6). The owner lifted the maintenance freeze for this one phase: README.md line 36 and AGENTS.md line 8 name 0.176.1 as the final release, state the fault of the published 0.176.0 and 0.172.2 packages, and AGENTS.md permits only the 0.176.1 release. `freeze_check` OK. Audit: VETO iter 1 (#847, release-state premise), PASS iter 2 (#848); implementation #849; intent lock VERIFIED.
+
+**Version**: 0.176.0 -> 0.176.1 (hotfix). `docs/release-state.json` is unchanged: the remote `v0.176.0` tag covers 0.176.0 (LD-9). The annotated seal tag `v0.176.1` is created locally on the seal commit and is not pushed by this seal; pushing it is the owner's release action after merge (LD-10).
+
+**CHANGELOG**: stamped `[0.176.1] - 2026-10-05` by `changelog_backends.stamp` (keepachangelog); the `_Built via ..._` line was inserted below the header from `attribution.changelog_attribution_line()` because the stamp does not emit it and the tiered-attribution test requires it. The dated `[0.176.0]` section is not edited.
+
+**Reality audit**: every planned file exists and matches the plan: the `dist/**/*` glob (no other `pyproject.toml` line changed before the bump), the new test file, the one-string `tests/test_packaging.py` change, and the README, AGENTS and CHANGELOG text byte-equal to the plan's Phase 3 and LD-11 blocks. No `qor/install.py`, `qor/cli.py`, `qor/scripts/dist_compile.py`, `freeze_check`, `release_state`, doctrine, skill, spec or compiled variant changed. No sealed plan, ledger entry, gate artifact, intent-lock record or dated CHANGELOG section was modified (META_LEDGER, SHADOW_GENOME and PROCESS_SHADOW_GENOME_UPSTREAM diffs against base are append-only). UNPLANNED: none in the implementation. Observation: the plan states the new test file is 93 lines; it holds 92 newline-terminated lines (no content consequence). Seal mechanics: `docs/SYSTEM_STATE.md` gains the Phase 305 `**Phase**:` paragraph and the Phase 304 paragraph is relabeled `**Prior phase**:` with its text unchanged, the established header rotation; the Phase 305 paragraph corrects it forward. `ledger_commitment` OK (7 touched artifacts). Section 4: test file 92 lines, longest function 12 lines, nesting 2; ruff clean; changed source ASCII. Presence-only gate: each new test calls `_do_list` or `_do_install` and asserts the return code and output or install-record count, or asserts the guard's offending list on the live manifests.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), procedural_fidelity (no findings), dod_check (no findings), merge_velocity (healthy, 3 PRs/7d), skill_size_budget (3 WARN, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), documentation currency (no warnings), governance_index enforce (Last Reviewed 2026-10-05), feature_index_verify (28/28, snapshot 2026-10-05T1757-41eb02), version_applicability (v0.176.1 > v0.176.0). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, 32 source skills reported missing (no claude install in this container). Continuity gate not applicable (no execution_continuity). Spec fold: no spec_deltas. AC close guard: not applicable (no issue closed). Suite pre-seal: 3679 passed, 3 skipped, 4 deselected (suite-regenerated qor/dist manifests restored). Step 4.6.14 publication_boundary_lint re-runs after staging; the plan's guarded post-seal clone proof runs after Step 9.5.5.
+
 ---
 
 *Chain integrity: VALID*
