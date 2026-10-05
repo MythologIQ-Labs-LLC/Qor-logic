@@ -15,7 +15,9 @@
 
 **Target version**: `0.176.0` (feature bump from `0.175.7`)
 
-**Branch**: `claude/determined-lovelace-7lwx3r` (harness-designated; Step 0.5 isolation is satisfied by a non-default branch)
+**Branch**: local `phase/304-maintenance-freeze`, pushed to the harness-designated remote branch `claude/determined-lovelace-7lwx3r`
+
+**iteration**: 2. Iteration 1 was vetoed (V1, `coverage-gap`, META_LEDGER #841): LD-2 made a missing notice file and the list and string forms of `on:` normative, and no planned test produced either input. Iteration 2 adds a test for each normative LD-2 clause (the clause-to-test map under Phase 1), states what a missing `pyproject.toml` and an unparseable workflow do (advisory A4) and that workflows are read with `yaml.safe_load` (A3), corrects the doctrine sentences that describe the GitHub-surface scan as scheduled (A2, LD-8), specifies the FX028 row (A6), states the expected RED as a collection error (A5) and corrects the LD-7 tag wording (A7). Everything else is unchanged from iteration 1.
 
 **Owner decision (2026-10-05)**: freeze Qor-logic so that no further development happens on it; state that it is superseded without naming or linking a successor; publish the final version to PyPI.
 
@@ -80,9 +82,9 @@ def main(argv: list[str] | None = None) -> int: ...
 
 `check` returns one string per violation, each prefixed by the path it concerns:
 
-1. **classifier**: `pyproject.toml` (read with `tomllib`) has exactly one `Development Status :: ` classifier and it equals `FROZEN_CLASSIFIER`. A different value, a second value, or none is one violation.
+1. **classifier**: `pyproject.toml` (read with `tomllib`) has exactly one `Development Status :: ` classifier and it equals `FROZEN_CLASSIFIER`. A different value, a second value, none, or a missing `pyproject.toml` is one violation.
 2. **dependabot**: neither `DEPENDABOT_FILES` path exists. Each present file is one violation.
-3. **schedule**: no file matching `.github/workflows/*.yml` or `*.yaml` declares a `schedule` trigger. The trigger key is read from the parsed YAML as `"on"` or as `True` (PyYAML parses a bare `on:` key as the boolean `True`: observed `python -c "import yaml;print(list(yaml.safe_load(open('.github/workflows/ci.yml'))))"` prints `['name', True, 'permissions', 'concurrency', 'jobs']`). A mapping containing `schedule`, a list containing `"schedule"`, or the string `"schedule"` is one violation per workflow file.
+3. **schedule**: no file matching `.github/workflows/*.yml` or `*.yaml` declares a `schedule` trigger. Each file is read with `yaml.safe_load`; a file that does not parse raises (the check fails loudly rather than passing a workflow it could not read). The trigger key is read from the parsed YAML as `"on"` or as `True` (PyYAML parses a bare `on:` key as the boolean `True`: observed `python -c "import yaml;print(list(yaml.safe_load(open('.github/workflows/ci.yml'))))"` prints `['name', True, 'permissions', 'concurrency', 'jobs']`). A mapping containing `schedule`, a list containing `"schedule"`, or the string `"schedule"` is one violation per workflow file.
 4. **notice**: each `NOTICE_FILES` file exists and has a line equal to `FREEZE_HEADING` followed, before the next `## ` line or end of file, by at least one non-blank line. A missing file, a missing heading, or an empty section is one violation per file.
 
 `main` parses `--repo-root` (default `.`), prints each violation on its own line, then `freeze_check: OK` or `freeze_check: <n> violation(s)`, and returns 0 when frozen and 1 otherwise. Each helper stays under 40 lines and the module under 250 (Section 4 Razor).
@@ -125,11 +127,25 @@ Not performed by this plan, reported to the owner: disabling issues or archiving
 
 ### LD-7: release-state continuity
 
-`0.175.7` (sealed by Phase 303, local tag only) gets a `sealed_unpublished` exception in `docs/release-state.json`, the same shape as the existing ones; the most recent:
+`0.175.7` (sealed by Phase 303, never tagged on the remote) gets a `sealed_unpublished` exception in `docs/release-state.json`, the same shape as the existing ones; the most recent:
 
 `git show 7228bacd1a0f3dfb0d410bf0e69f8a8e100624e2:docs/release-state.json | grep -nE '"version": "0.175.6"'` -> `95:      "version": "0.175.6",`
 
+`0.175.7` has no tag on the remote; Phase 303's seal tag exists only in the checkout that sealed it.
+
 This keeps the changelog tag-coverage test green when `0.176.0` is the tagged version.
+
+### LD-8: the publication-boundary doctrine stops calling the surface scan scheduled
+
+`qor/references/doctrine-publication-boundary.md` describes the GitHub-surface scan as scheduled in three places:
+
+`git show 7228bacd1a0f3dfb0d410bf0e69f8a8e100624e2:qor/references/doctrine-publication-boundary.md | grep -nE 'scheduled surface scan both act'` -> `42:tracked-file lint and the scheduled surface scan both act after the fact, so a`
+
+`git show 7228bacd1a0f3dfb0d410bf0e69f8a8e100624e2:qor/references/doctrine-publication-boundary.md | grep -noE 'that gap on a schedule [(].nightly-health[.]yml'` prints `102:that gap on a schedule (`, then a backtick, then `nightly-health.yml` (the line carries backticks, so it is cited by this command rather than quoted as arrow evidence)
+
+`git show 7228bacd1a0f3dfb0d410bf0e69f8a8e100624e2:qor/references/doctrine-publication-boundary.md | grep -nE '^The scheduled scan is read-only'` -> `106:The scheduled scan is read-only and reports for a human to anonymize; rewriting`
+
+Decision: line 42 reads "the surface scan"; line 102 reads "that gap when `nightly-health.yml` is run by hand (it ran on a schedule until the Phase 304 maintenance freeze)"; line 106 reads "The surface scan is read-only". Paragraphs are re-wrapped only where the edited line requires it; no other doctrine text changes. The doctrine is not compiled into `qor/dist` (`git ls-tree -r --name-only 7228bacd1a0f3dfb0d410bf0e69f8a8e100624e2 qor/dist | grep -c doctrine-publication-boundary` prints `0`), so no recompile follows.
 
 ## Phase 1: Tests first
 
@@ -147,9 +163,15 @@ This keeps the changelog tag-coverage test green when `0.176.0` is the tagged ve
 - `test_a_beta_classifier_is_reported` - classifier `4 - Beta` gives exactly one violation naming `pyproject.toml`.
 - `test_two_development_status_classifiers_are_reported` - frozen plus Beta gives one violation.
 - `test_a_missing_development_status_is_reported` - no Development Status classifier gives one violation.
+- `test_a_missing_pyproject_is_reported` - no `pyproject.toml` gives one violation naming it.
 - `test_a_dependabot_config_is_reported` - parametrized over `.yml` and `.yaml`; one violation naming that path.
 - `test_a_scheduled_workflow_is_reported` - parametrized over a `.yml` and a `.yaml` workflow whose `on:` mapping holds `schedule`; one violation naming that workflow.
 - `test_a_quoted_on_key_with_schedule_is_reported` - `"on":` written quoted (parsed as the string key) is still caught.
+- `test_a_list_form_schedule_trigger_is_reported` - `on: [push, schedule]` gives one violation naming that workflow.
+- `test_a_string_form_schedule_trigger_is_reported` - `on: schedule` gives one violation naming that workflow.
+- `test_a_dispatch_only_list_form_is_not_reported` - `on: [push, workflow_dispatch]` gives no violation (the list rule matches `schedule`, not any list).
+- `test_an_unparseable_workflow_raises` - a workflow whose YAML does not parse makes `check` raise `yaml.YAMLError`.
+- `test_a_missing_notice_file_is_reported` - parametrized over README.md and AGENTS.md; the file deleted gives one violation naming that file.
 - `test_a_missing_freeze_heading_is_reported` - parametrized over README.md and AGENTS.md; heading removed gives one violation naming that file.
 - `test_an_empty_freeze_section_is_reported` - heading followed directly by the next `## ` heading gives one violation.
 - `test_main_returns_zero_and_prints_ok_when_frozen` and `test_main_returns_one_and_prints_each_violation` - exit code and printed lines.
@@ -157,14 +179,35 @@ This keeps the changelog tag-coverage test green when `0.176.0` is the tagged ve
 
 `tests/test_nightly_health_wiring.py::test_workflow_is_dispatch_only_with_least_permissions` - the workflow text has no `schedule:` line and no `cron:`, keeps `workflow_dispatch:` and the existing permission assertions.
 
-Expected RED before Phase 2: every `test_freeze_check.py` test fails (module absent), and the renamed nightly test fails (schedule still present).
+Clause-to-test map for LD-2 (every normative clause has a test whose input exercises it):
+
+| LD-2 clause | Test |
+|---|---|
+| 1: different value | `test_a_beta_classifier_is_reported` |
+| 1: second value | `test_two_development_status_classifiers_are_reported` |
+| 1: none | `test_a_missing_development_status_is_reported` |
+| 1: missing `pyproject.toml` | `test_a_missing_pyproject_is_reported` |
+| 2: each present dependabot file | `test_a_dependabot_config_is_reported` (both paths) |
+| 3: `*.yml` and `*.yaml` globbed | `test_a_scheduled_workflow_is_reported` (both extensions) |
+| 3: unparseable file raises | `test_an_unparseable_workflow_raises` |
+| 3: key read as `"on"` | `test_a_quoted_on_key_with_schedule_is_reported` |
+| 3: key read as `True` | `test_a_scheduled_workflow_is_reported` |
+| 3: mapping form | `test_a_scheduled_workflow_is_reported` |
+| 3: list form | `test_a_list_form_schedule_trigger_is_reported`, `test_a_dispatch_only_list_form_is_not_reported` |
+| 3: string form | `test_a_string_form_schedule_trigger_is_reported` |
+| 4: missing file | `test_a_missing_notice_file_is_reported` (both files) |
+| 4: missing heading | `test_a_missing_freeze_heading_is_reported` (both files) |
+| 4: empty section | `test_an_empty_freeze_section_is_reported` (both files) |
+| `main`: output and exit codes | `test_main_returns_zero_and_prints_ok_when_frozen`, `test_main_returns_one_and_prints_each_violation` |
+
+Expected RED before Phase 2: `tests/test_freeze_check.py` fails at collection (`ModuleNotFoundError: qor.scripts.freeze_check`), so pytest reports one collection error for the file rather than per-test failures; the renamed nightly test fails on its no-`schedule:` assertion.
 
 ## Phase 2: The check
 
 ### Affected Files
 
 - `qor/scripts/freeze_check.py` - NEW, per LD-2
-- `docs/FEATURE_INDEX.md` - new row `FX028` for `qor-logic scripts freeze_check`, test `tests/test_freeze_check.py::test_the_repository_is_frozen`, status `verified`
+- `docs/FEATURE_INDEX.md` - new row `| FX028 | \`qor-logic scripts freeze_check\` maintenance-freeze conformance check | qor/scripts/freeze_check.py | AGENTS.md (Maintenance freeze) | tests/test_freeze_check.py::test_the_repository_is_frozen | verified |`
 
 ### Changes
 
@@ -179,11 +222,12 @@ Implement LD-2. No other module changes.
 - `.github/workflows/nightly-health.yml` - schedule removed, comment updated (LD-4)
 - `README.md`, `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md` - notices per LD-1
 - `docs/release-state.json` - `0.175.7` exception per LD-7
+- `qor/references/doctrine-publication-boundary.md` - three sentences per LD-8
 - `CHANGELOG.md` - `[Unreleased]` entry under `### Changed` describing the freeze (stamped `0.176.0` at seal)
 
 ### Changes
 
-Apply LD-1, LD-3, LD-4 and LD-7. After this phase `qor-logic scripts freeze_check --repo-root .` prints `freeze_check: OK`.
+Apply LD-1, LD-3, LD-4, LD-7 and LD-8. After this phase `qor-logic scripts freeze_check --repo-root .` prints `freeze_check: OK`.
 
 ## Feature Inventory Touches
 
@@ -203,7 +247,7 @@ Apply LD-1, LD-3, LD-4 and LD-7. After this phase `qor-logic scripts freeze_chec
 ### Deliverable: repository frozen
 
 - **D1**: README (and so PyPI), AGENTS, CLAUDE and CONTRIBUTING state the freeze without naming a successor; nothing schedules new work.
-- **D2**: LD-1, LD-3, LD-4 and LD-7 edits as specified.
+- **D2**: LD-1, LD-3, LD-4, LD-7 and LD-8 edits as specified.
 - **D3**: CHANGELOG `0.176.0` entry; `docs/release-state.json` carries `0.175.7`.
 - **D4**: `tests/test_nightly_health_wiring.py::test_workflow_is_dispatch_only_with_least_permissions` passes; `qor-logic scripts freeze_check --repo-root .` prints `freeze_check: OK`.
 
