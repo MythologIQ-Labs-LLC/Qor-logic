@@ -3113,7 +3113,7 @@ For every normative clause in a locked decision ("X is one violation", "Y is rea
 
 ### Remediation Attempted
 
-Iteration 2 added a clause-to-test map and the missing tests; that cured the two named rules but missed three property-4 clauses (Entry #45).
+Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
