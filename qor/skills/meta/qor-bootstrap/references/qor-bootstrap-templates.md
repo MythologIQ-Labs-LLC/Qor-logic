@@ -148,7 +148,7 @@ src/
 <!-- Every hash value MUST be backtick-wrapped exactly as above. qor/scripts/
      ledger_dialect.py accepts three value forms; an inline unbackticked hex
      on a **Previous Hash**: line matches none of them, so the entry is
-     classified non-verifiable and `qor-logic-plus verify-ledger` skips it.
+     classified non-verifiable and `qor-logic verify-ledger` skips it.
      Backticks are the strictest accepted form and always parse (GH #404). -->
 
 ---

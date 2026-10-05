@@ -3069,4 +3069,28 @@ Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---
 
+## Entry #43: VETO -- plan-qor-phase303-boundary-lint-scope (iter 1)
+
+**Date**: 2026-10-05
+**Verdict ID**: session 2026-10-05T1620-2b159a audit (META_LEDGER Entry #836)
+**Failure Mode**: HALLUCINATION
+
+### What Failed
+
+The engineering holds in every executed check: citations, the 15-file dist regeneration, RED/GREEN counts, mutations M1-M7, both directions of `--expect-scope`, the CI wiring, the full suite and the release-state proofs all reproduce. LD-6 edits a bullet of the sealed Phase 89 plan so that the CI-surface self-test keeps passing. META_LEDGER Entry #237 commits that plan by content hash. The plan does not mention the commitment and plans no AMENDMENT, while its own non_goals exclude rewriting sealed plans and its LD-3 refuses to edit 17 other sealed plans because they are ledger-bound evidence.
+
+### Why It Failed
+
+The plan treated the Phase 89 plan as a living registry, because the forward-maintenance convention and the cited precedents made it look like one. It did not check which ledger entries bind the file's bytes. The precedents it cited only appended bullets, so they never raised the question of modifying committed text. The seal-time ledger-commitment gate cannot parse Entry #237's legacy hash form, so nothing downstream would have caught the omission: the file would be reported examined and clean.
+
+### Pattern to Avoid
+
+Before a plan edits any file under `docs/plan-*.md` or another sealed artifact, search META_LEDGER and the gate artifacts for that path and for its content hash in every dialect, including the legacy `SHA256(<file>) = <hex>` form. A content-hash commitment requires the doctrine-ledger-commitment AMENDMENT or an argued inapplicability. Check every cited precedent for the operation actually performed (append versus modify), not only for touching the same file. Related: Entry #42 (mandated text checked against the code but not against its governing rule).
+
+### Remediation Attempted
+
+Pending: Governor amends the plan and re-runs /qor-audit.
+
+---
+
 *Shadow integrity: ACTIVE*

@@ -10,6 +10,13 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.175.7] - 2026-10-05
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
+### Fixed
+- **Phase 303 (hotfix; two shipped skill references invoke `qor-logic`, the publication-boundary lint ignores a byte-order mark on its terms file, and CI asserts the boundary scope it intends, GH #457)**: The ledger-entry template comment in the `qor-bootstrap` references and the ledger-commitment step of the `qor-substantiate` seal ladder, and their compiled variant copies, named a different project's command-line tool where this repository's `qor-logic` command was meant; both now invoke `qor-logic`. `publication_boundary_lint` read its operator terms file without removing a UTF-8 byte-order mark, so the mark stayed on the first line: a first-line comment was loaded as a term, which reported `structural+identity` scope with no real term, and a first-line term never matched. The terms file is now read with a leading mark removed. The lint gains `--expect-scope structural|structural+identity`: when the scope it reached differs from the one given, it prints `scope mismatch: expected <scope>, achieved <scope>` and exits 1. The CI publication-boundary step now passes `--expect-scope structural`, so it fails if the scope it reaches ever differs from the structural scope it states. CI still does not scan identity terms, because no terms list is committed or provided to CI. `docs/release-state.json` records `0.175.6` as `sealed_unpublished`.
+
 ## [0.175.6] - 2026-10-02
 
 _Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._

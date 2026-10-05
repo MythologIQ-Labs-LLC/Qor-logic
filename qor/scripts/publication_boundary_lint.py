@@ -50,6 +50,10 @@ _CROSS_ISSUE_RE = re.compile(r"\b([A-Z][\w-]{2,})#\d+\b")
 # Scope is per line: no wildcard, no per-file or directory suppression.
 _ALLOW_RE = re.compile(r"boundary-lint:\s*ok=(\S[^\s>]*)")
 
+# Phase 303 (GH #457): the two scopes a run can achieve; `--expect-scope`
+# accepts exactly these.
+SCOPES = ("structural", "structural+identity")
+
 _TEXT_SUFFIXES = {".md", ".py", ".json", ".jsonl", ".yml", ".yaml", ".toml", ".txt", ".cfg", ".ini"}
 _SKIP_PARTS = {".git", "node_modules", "__pycache__"}
 # Phase 208: the second exception doctrine-publication-boundary already grants.
@@ -95,7 +99,10 @@ def _load_terms(terms_file: Path | None) -> list[str]:
     if terms_file is None or not terms_file.is_file():
         return []
     terms = []
-    for line in terms_file.read_text(encoding="utf-8").splitlines():
+    # Phase 303 (GH #457): `utf-8-sig` drops a leading BOM. Plain `utf-8` kept it
+    # on the first line, so a first-line comment loaded as a term and a
+    # first-line term never matched.
+    for line in terms_file.read_text(encoding="utf-8-sig").splitlines():
         line = line.strip()
         if line and not line.startswith("#"):
             terms.append(line)
@@ -170,7 +177,7 @@ def collect_findings(
         if rel.replace("\\", "/").startswith(_CARVE_OUT_PREFIXES):
             continue
         findings.extend(scan_text(rel, text, terms))
-    return BoundaryResult(findings, "structural+identity" if terms else "structural")
+    return BoundaryResult(findings, SCOPES[1] if terms else SCOPES[0])
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -178,6 +185,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--repo-root", type=Path, default=Path.cwd())
     ap.add_argument("--terms-file", type=Path, default=None,
                     help="operator-local identity terms (default .qor/private/boundary-terms.txt)")
+    ap.add_argument("--expect-scope", choices=SCOPES, default=None,
+                    help="exit 1 unless the achieved scope equals this one (Phase 303)")
     ap.add_argument("--no-git", action="store_true",
                     help="walk the filesystem instead of git ls-files (test fixtures)")
     args = ap.parse_args(argv)
@@ -187,6 +196,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f)
     print(f"publication_boundary_lint: {len(result.findings)} finding(s) "
           f"[scope: {result.scope}]")
+    if args.expect_scope is not None and result.scope != args.expect_scope:
+        print(f"publication_boundary_lint: scope mismatch: expected "
+              f"{args.expect_scope}, achieved {result.scope}")
+        return 1
     return 1 if result.findings else 0
 
 

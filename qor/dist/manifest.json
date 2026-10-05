@@ -1,6 +1,6 @@
 {
   "schema_version": "1",
-  "generated_ts": "2026-09-28T02:28:53Z",
+  "generated_ts": "2026-10-05T17:24:06Z",
   "files": [
     {
       "id": "agent-architect.md",
@@ -150,7 +150,7 @@
       "id": "qor-bootstrap",
       "source_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
       "install_rel_path": "skills/qor-bootstrap/references/qor-bootstrap-templates.md",
-      "sha256": "f54b13b9e55b2be99a390304c5e7d352218c74858d65576abf3656c5e1907ef9"
+      "sha256": "9b97e8cc50e8c55ebf62a29199a4017a0836698ed6141c3f33dbd124ebb5e1c1"
     },
     {
       "id": "qor-debug",
@@ -444,7 +444,7 @@
       "id": "qor-substantiate",
       "source_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
       "install_rel_path": "skills/qor-substantiate/references/seal-gate-ladder.md",
-      "sha256": "5a1445b4b5d34727a91d829184ff5683149ac87d639f407c062e11b8c14cafa8"
+      "sha256": "9d2ff4bc0583c98b5db859aa56c1b98feaa022f023dda823f2ca4d66b19ac76f"
     },
     {
       "id": "qor-tone",
