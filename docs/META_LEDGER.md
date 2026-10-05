@@ -24842,6 +24842,36 @@ Outward action (LD-5): dependabot PR #529 closed unmerged with a comment citing 
 
 Verification: full suite 3671 passed, 3 skipped, 4 deselected (after unshallowing the clone; on the shallow clone `test_plan_grep_evidence_parse::test_reproduces_compares_stripped_text` failed because commit 2d356ec was absent, and passes with full history); suite-regenerated `qor/dist` manifests restored (only `generated_ts` changed). `freeze_check: OK`; check_variant_drift OK 413; publication_boundary_lint 0 findings at `--expect-scope structural`; ruff clean; prose_test_lint exit 0; ledger chain verified through #844.
 
+### Entry #846: SESSION SEAL -- Phase 304 maintenance freeze: Qor-logic is declared feature-complete and frozen, and a check keeps it frozen (v0.176.0)
+
+**Timestamp**: 2026-10-05T18:47:05Z
+**Phase**: SEAL (Phase 304)
+**Author**: Judge
+**Risk Grade**: L2
+**Plan**: docs/plan-qor-phase304-maintenance-freeze.md
+**Session**: 2026-10-05T1757-41eb02
+**Entry ID**: `6a70dbde547c`
+
+**Content Hash**: `6cb022950bb7a16c413c9503b75e57ff7efb7ce2142e516c00d9d47e3f0ab95f`
+**Previous Hash**: `aec3f528d6207fce5cd77a2a057665d01d45c374c56c24a1a80f208f2d6c1cd8`
+**Chain Hash (Merkle seal)**: `f5a15875736798492a840730d46ee1188fec2f06cc3e9a28d7eb0bf3feabb216`
+
+**Decision**: **Verdict**: **SUBSTANTIATED**. Reality matches the blueprint.
+
+**SSDF Practices**: PO.1.3, PO.1.4, PS.2.1, PW.1.1, PW.5.1, RV.1.1, RV.1.2
+
+**Feature Inventory**: Total: 28 / verified: 28 / unverified: 0 / n/a: 0
+
+Qor-logic is declared feature-complete, frozen and superseded, and a check keeps it frozen. README.md (the PyPI long description), AGENTS.md, CLAUDE.md and CONTRIBUTING.md carry the LD-1 `## Maintenance freeze` notices, none naming or linking a successor; `pyproject.toml` declares `Development Status :: 7 - Inactive`; `.github/dependabot.yml` and `tests/test_dependabot_config.py` are deleted; `nightly-health.yml` keeps only `workflow_dispatch` and its renamed test asserts no schedule; the publication-boundary doctrine no longer calls the GitHub-surface scan scheduled (LD-8); `docs/release-state.json` gains `0.175.7` / `sealed_unpublished`. New `qor/scripts/freeze_check.py` (FX028) with `tests/test_freeze_check.py` enforcing the LD-2 K0-K6 regression contract. Dependabot PR #529 closed unmerged (LD-5). Audit: VETO iter 1 (#841), VETO iter 2 (#842), VETO iter 3 (#843, cycle-count escalation), `/qor-remediate` (remediate.json; LD-2 narrowed to a regression contract), PASS iter 4 (#844) with the reviews-remediate flip (9 events addressed); implementation #845; intent lock VERIFIED.
+
+**Version**: 0.175.7 -> 0.176.0 (feature). `0.175.7` (sealed at #839, no remote tag) is covered by its `sealed_unpublished` entry. The annotated seal tag `v0.176.0` is created on the seal commit and pushed only after that commit is on `origin/main` with green CI (Step 9.7); its push triggers the PyPI release workflow, which the owner approved for this final version.
+
+**CHANGELOG**: stamped `[0.176.0] - 2026-10-05` by `changelog_backends.stamp` (keepachangelog); the `_Built via ..._` line was inserted below the header from `attribution.changelog_attribution_line()` because the stamp does not emit it and the tiered-attribution test requires it.
+
+**Reality audit**: every planned file exists and matches the plan: the four notices carry the LD-1 text, the classifier line, the dependabot deletion, the nightly schedule removal and comment, the three LD-8 doctrine sentences, the release-state entry, the FX028 row and the CHANGELOG entry. UNPLANNED (disclosed in #845): `docs/architecture.md` `## Maintenance freeze (Phase 304)` section added under the implement Step 8.5 doc-sync obligation. Governance output on the branch (plan iterations, audit reports, shadow-genome entries #44-#46, gate artifacts, remediation) is plan/audit/remediate ceremony. `ledger_commitment` OK (17 touched artifacts). Section 4: `freeze_check.py` 134 lines, longest function 13, nesting 2; test file 103 lines; ruff clean; changed source ASCII. Presence-only gate: every new test calls `check` or `main` and asserts the returned violations, exit code or printed lines, and each regression test first asserts its mutation took effect.
+
+**Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), procedural_fidelity (no findings), dod_check (no findings), merge_velocity (healthy, 2 PRs/7d), skill_size_budget (WARN only, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), documentation currency (no warnings), governance_index enforce (Last Reviewed 2026-10-05), feature_index_verify (28/28, snapshot 2026-10-05T1620-2b159a), version_applicability (v0.176.0 > v0.172.2). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, every source skill reported missing (no claude install in this container). Continuity gate not applicable. Spec fold: no spec_deltas. Suite pre-seal: 3671 passed, 3 skipped, 4 deselected (full history; suite-regenerated qor/dist manifests restored). Step 4.6.14 publication_boundary_lint re-runs after staging.
+
 ---
 
 *Chain integrity: VALID*

@@ -10,6 +10,10 @@ file is the user-facing narrative.
 
 ## [Unreleased]
 
+## [0.176.0] - 2026-10-05
+
+_Built via [Qor-logic SDLC](https://github.com/MythologIQ-Labs-LLC/qor-logic)._
+
 ### Changed
 - **Phase 304 (feature; maintenance freeze)**: Qor-logic is feature-complete and frozen. It has been superseded and receives no further development: no new features, fixes, dependency updates, or releases after this one. The published package stays on PyPI and keeps working as documented. README (and so the PyPI page), AGENTS.md, CLAUDE.md and CONTRIBUTING.md carry the freeze notice; the PyPI classifier is `Development Status :: 7 - Inactive`. Dependabot is removed and `nightly-health.yml` runs only on manual dispatch. `qor-logic scripts freeze_check` reports any regression of the frozen state (the Beta classifier, a dependabot config, a scheduled workflow, or a missing README or AGENTS freeze section) against the file it concerns, and `tests/test_freeze_check.py` runs it on this repository. The publication-boundary doctrine no longer describes the GitHub-surface scan as scheduled. `docs/release-state.json` records `0.175.7` as `sealed_unpublished`.
 
