@@ -24795,6 +24795,25 @@ Two shipped skill references invoke `qor-logic`, the publication-boundary lint i
 
 **Required next action**: /qor-remediate (cycle-count escalation), or Governor amends via /qor-plan if the operator declines escalation.
 
+### Entry #844: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T18:40:29Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `c75573177009`
+**Verdict**: PASS
+
+**Content Hash**: `9e6105a5a8e87c0375d1c835160db7d6c6633fc81e2542e6d12e2f8df5293518`
+**Previous Hash**: `003b7ca05e845dad1d27d5c4f06e747801cecfbd195ff396e458916757a39679`
+**Chain Hash (Merkle seal)**: `2e01f5d284d0983f586bab2f4e3c938f6e0482d8500e0973a94e971d09b7ae78`
+
+**Decision**: **Target**: `docs/plan-qor-phase304-maintenance-freeze.md`
+
+**Decision**: PASS (iter 4 on base 7228bacd, head b65c774; reviews-remediate:.qor/gates/2026-10-05T1757-41eb02/remediate.json). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. Full re-walk of LD-1 to LD-8: all 17 evidence and prints statements reproduce at 7228bacd; version target v0.176.0 above v0.172.2; the LD-7 exception leaves no orphan in a simulated v0.176.0 tag set. Self-application of the remediation: LD-2's normative contract is the finite K0-K6 regression set over this repository's own files; a prototype built from plan text with every planned edit applied gives 26 passed twice, all 21 mutants violating a K item killed, 7 surviving mutants each confined to inputs the plan declares non-normative; every test invokes check or main and first asserts its mutation took effect. Coupled tests 1573 passed, 3 skipped, 1 failure attributable to the reviewer's hand-bumped seal simulation (installed metadata 0.175.7); drift OK 413; boundary lint 0 at --expect-scope structural; ruff clean; prose_test_lint exit 0. Advisories: A1 intent prose broader than K; A2 parse-error fail-closed untested; A3 CLAUDE.md and CONTRIBUTING.md notices outside freeze_check; A4 ci_coverage_lint WARN; A5 escalator signature closes with the Step 4.2 flip. Session `2026-10-05T1757-41eb02`.
+
+**Required next action**: /qor-implement
+
 ---
 
 *Chain integrity: VALID*
