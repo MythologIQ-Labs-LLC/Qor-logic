@@ -1,0 +1,21 @@
+{
+  "phase": "audit",
+  "session_id": "2026-10-05T2111-166d9d",
+  "ts": "2026-10-05T21:42:28Z",
+  "target": "docs/plan-qor-phase305-package-data-ships-dist.md",
+  "verdict": "VETO",
+  "report_path": ".agent/staging/AUDIT_REPORT.md",
+  "risk_grade": "L2",
+  "findings_categories": [
+    "infrastructure-mismatch"
+  ],
+  "target_content_hash": "d49a236886b34644bb7af21d528fa42311dc74cee25ec24938392b1e6602cb3c",
+  "ai_provenance": {
+    "system": "Qor-logic",
+    "version": "0.176.0",
+    "host": "claude-code",
+    "model_family": "claude-opus",
+    "human_oversight": "veto",
+    "ts": "2026-10-05T21:42:28Z"
+  }
+}

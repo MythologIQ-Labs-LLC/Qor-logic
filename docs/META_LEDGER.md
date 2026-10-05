@@ -24872,6 +24872,25 @@ Qor-logic is declared feature-complete, frozen and superseded, and a check keeps
 
 **Gates**: substantiate_gates (10 parsed, order verified), intent_lock verify (VERIFIED), skill_admission qor-substantiate (ADMITTED), gate_skill_matrix (broken 0), session_id_lint, secret_scanner (exit 0), procedural_fidelity (no findings), dod_check (no findings), merge_velocity (healthy, 2 PRs/7d), skill_size_budget (WARN only, 0 EXCEEDED), doc_integrity strict (tier standard, terms []), documentation currency (no warnings), governance_index enforce (Last Reviewed 2026-10-05), feature_index_verify (28/28, snapshot 2026-10-05T1620-2b159a), version_applicability (v0.176.0 > v0.172.2). data_api_acl SKIP (no SQL migrations; gate_skipped_prerequisite_absent recorded); feature_index surface-lint SKIP (no Surface column; event recorded). install_drift disclosed: scope auto, every source skill reported missing (no claude install in this container). Continuity gate not applicable. Spec fold: no spec_deltas. Suite pre-seal: 3671 passed, 3 skipped, 4 deselected (full history; suite-regenerated qor/dist manifests restored). Step 4.6.14 publication_boundary_lint re-runs after staging.
 
+### Entry #847: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T21:42:01Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `b2f92cb6cfc4`
+**Verdict**: VETO
+
+**Content Hash**: `02216441bde74195cf79f894a634041e17af4f45b776513ca07652b2836b6c50`
+**Previous Hash**: `f5a15875736798492a840730d46ee1188fec2f06cc3e9a28d7eb0bf3feabb216`
+**Chain Hash (Merkle seal)**: `d3ac5c39532191a14bc4ea34c0950da07fb1a9de5a4881c0b4b3342efecd2d8c`
+
+**Decision**: **Target**: `docs/plan-qor-phase305-package-data-ships-dist.md`
+
+**Decision**: VETO (iter 1 on base 2f301780, plan head 003346dc). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. V1 infrastructure-mismatch: the plan's premise that 0.176.0 was never published is false at audit time; the package index lists qor-logic 0.176.0 (wheel uploaded 2026-10-05T21:31:10Z, sdist 21:31:12Z), pip index versions first line is 0.176.0 and pip download of 0.176.0 succeeds, so the LD-9 sealed_unpublished disposition, the Phase 3 README line, the Changed bullet and the Problem/LD-9 observations would record or publish false statements. Packaging half reproduces: 83 of 83 evidence statements at 2f301780; rebuilt test 5 failed 3 passed at base and 8 passed after, twice; M1-M8 exact; real wheels 578 and 599 set-equal to the simulation, 392 and 413 of 413 tracked dist files; installed wheels list exit 1 then 0 (47 ids), installs 73 then 78; full suite 3679 passed; freeze_check OK; CI-view simulation and clone proof reproduce and discriminate. Advisories A1-A5 (README dangling referent, unqualified title tense, AGENTS release prohibition vs 0.176.1 publication, README cursor/cline host choices, runtime walk WARNs). Session `2026-10-05T2111-166d9d`.
+
+**Required next action**: Governor: amend plan text (owner to re-establish the v0.176.0 release outcome), re-run /qor-audit
+
 ---
 
 *Chain integrity: VALID*
