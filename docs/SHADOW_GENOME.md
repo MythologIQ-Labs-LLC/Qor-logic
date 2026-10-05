@@ -3113,6 +3113,30 @@ For every normative clause in a locked decision ("X is one violation", "Y is rea
 
 ### Remediation Attempted
 
+Iteration 2 added a clause-to-test map and the missing tests; that cured the two named rules but missed three property-4 clauses (Entry #45).
+
+---
+
+## Entry #45: VETO -- plan-qor-phase304-maintenance-freeze (iter 2)
+
+**Date**: 2026-10-05
+**Verdict ID**: session 2026-10-05T1757-41eb02 audit (META_LEDGER Entry #842)
+**Failure Mode**: VALIDATION_GAP (coverage-gap; Entry #44 recurrence)
+
+### What Failed
+
+The iteration-2 clause-to-test map listed property 4 as three rows (missing file, missing heading, empty section) while LD-2's property-4 sentence carries more rules: the heading line must equal the heading exactly, the section needs a non-blank line, and the section ends at the next  line or at end of file. The only empty-section input put the next heading directly after the freeze heading, so blank-only sections, an empty section at end of file, and a prefixed heading all passed.
+
+### Why It Failed
+
+The map was built from the iteration-1 finding outward (the rules the reviewer named) rather than by splitting every LD-2 sentence into its atomic conditions. A row named "empty section" stood for several distinct boundary conditions, and one input satisfied the row.
+
+### Pattern to Avoid
+
+Decompose each normative sentence into atomic conditions (each comparison, each boundary, each alternative joined by "or") before mapping tests; one map row per atomic condition, and one input per row that a mutation of exactly that condition would flip.
+
+### Remediation Attempted
+
 Pending: Governor amends the plan and re-runs /qor-audit.
 
 ---

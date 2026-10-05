@@ -24757,6 +24757,25 @@ Two shipped skill references invoke `qor-logic`, the publication-boundary lint i
 
 **Required next action**: Governor amends via /qor-plan (a test for each normative LD-2 rule, or drop the rule), then /qor-audit.
 
+### Entry #842: GATE TRIBUNAL
+
+**Timestamp**: 2026-10-05T18:17:18Z
+**Phase**: AUDIT
+**Author**: Judge
+**Risk Grade**: L2
+**Entry ID**: `0127cc1c53a8`
+**Verdict**: VETO
+
+**Content Hash**: `57abc208e110ea59057e02d5ca1f3b29680844aa083c71f22d47c8a5f2d5bcd1`
+**Previous Hash**: `6b78061a811cef1fa842052254bae17b79365645f2ef2cf6d97da1486006d732`
+**Chain Hash (Merkle seal)**: `cfd41eefb93624dbbfcb5084155cfb16cc614b204a5c76822e47ad50cc47e22c`
+
+**Decision**: **Target**: `docs/plan-qor-phase304-maintenance-freeze.md`
+
+**Decision**: VETO (iter 2 on base 7228bacd, head b149ae2). Option B fresh-context reviewer (audit_risk_score option_b_required, high-citation-surface); codex-plugin and external-reviewer capability shortfalls recorded. Full re-walk: all 17 evidence and prints statements reproduce at 7228bacd; iteration-1 V1 cured (each of the seven named mutations is caught by a planned test); a scratch clone with every planned edit applied gives freeze_check OK, 40 passed twice on the new and nightly test files, 822 passed and 2 skipped across 123 coupled test files, drift OK 413, boundary lint 0 at --expect-scope structural, ruff clean; the LD-8 doctrine edits break no test and the doctrine is not compiled into qor/dist. V1 (coverage-gap): three normative clauses of LD-2 property 4 have no discriminating test (heading equality, non-blank content, end-of-file section end); mutations treating blank lines as content, an end-of-file empty section as non-empty, or a prefixed heading as the freeze heading each leave all 23 planned tests green. Advisories: A1 property order untested; A2 empty-section test bullet does not say parametrized; A3 main's default --repo-root untested; A4 Branch line; A5 ci_coverage_lint dependency_admission_lint WARN. Escalator: cce.check and check_session_total None; no repeated-VETO pattern. Session `2026-10-05T1757-41eb02`.
+
+**Required next action**: Governor amends via /qor-plan (a discriminating test for every property-4 clause, or drop the clause), then /qor-audit.
+
 ---
 
 *Chain integrity: VALID*
