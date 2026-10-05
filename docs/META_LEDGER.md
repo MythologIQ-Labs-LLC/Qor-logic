@@ -24726,6 +24726,18 @@ Two shipped skill references invoke `qor-logic`, the publication-boundary lint i
 
 **Post-seal proof**: the plan's guarded CI-view clone proof (Phase 5) runs after Step 9.5.5 and before Step 9.6 on the seal commit; its output is recorded in the substantiation hand-off, not in this entry.
 
+### Entry #840: AMENDMENT -- post-seal test fix for Phase 303 (Windows path separator)
+
+**Timestamp**: 2026-10-05T17:46:45Z
+**Phase**: IMPLEMENT
+**Author**: Specialist
+
+**Content Hash**: `4bb7249093bf5f5bf9453db9d9c2f0d7bea82bd086eadae08eb7fe72bd072bf8`
+**Previous Hash**: `ce903075a8bbdb619bde420b642551413d979db58e343663d939e7189f13c2ea`
+**Chain Hash (Merkle seal)**: `e23e1381d71f79421ae17281a6cafd513c7ab447f6241aa662d3a53f391dbb18`
+
+**Decision**: Disclosed post-seal test fix for Phase 303 (GH #457), following SESSION SEAL #839 (seal commit eda4866a, Merkle seal `ce903075a8bbdb619bde420b642551413d979db58e343663d939e7189f13c2ea`). CI on the seal commit failed on windows-latest (Python 3.12 and 3.13), run 37350028252 job 111898252282: `tests/test_boundary_lint_expected_scope.py::test_a_bom_does_not_hide_the_first_term` (1 failed, 3664 passed, 3 skipped), at index 0 `[boundary] docs\\a.md:1: identity term: example-outside-cli` != `[boundary] docs/a.md:1: identity term: example-outside-cli`. Root cause: the test hardcoded a POSIX relative path, while `publication_boundary_lint.collect_findings` with `no_git=True` renders each finding path as `str(path.relative_to(repo_root))`, which uses OS-native separators. The lint's behavior is unchanged and out of scope. Change (test only, one assertion): the finding list is normalized with `f.replace("\\", "/")` before the equality check, the convention `tests/test_publication_boundary_lint.py` already uses (`out.replace("\\", "/")`). No other assertion in that file or in `tests/test_ci_coverage_lint.py` compares a lint-rendered path. `tests/test_boundary_lint_expected_scope.py` sha256 before `511752babe99db42f2558d71cdf3159ab780ccbe87947bc3c13611f6c414fbc2`, after `d68abfdb6681f9ee32a74dcacba98ea35911056857cee0a12a6d9fe8d437db36`. Proof: a scratch pytest plugin outside the repository that renders each lint path as `str(PureWindowsPath(rel))` reproduces the CI failure byte for byte on the old assertion and passes the new one; on Linux both Phase 303 test files 37 passed twice and the full suite 3665 passed, 3 skipped, 4 deselected. No product code, plan, CHANGELOG version section, gate artifact or other sealed artifact changed; the seal's content hash (the plan hash `ed9115d9da1a83d7b72b7e7152e87348f4b8c743a9f0e328bf151803470661ed`) still equals the plan's live sha256 and is unaffected. This entry carries no Artifact or Plan line, so it binds no artifact; its content hash is the self-bound body hash. The local seal tag v0.175.7 remains on the seal commit eda4866a and was never pushed; it is not moved, so any release tag must be created from the post-fix commit at release time.
+
 ---
 
 *Chain integrity: VALID*

@@ -100,7 +100,8 @@ def test_a_bom_does_not_hide_the_first_term(tmp_path):
     terms = _overlay(tmp_path / "terms.txt", f"{BOM}{TERM}\n")
     result = pbl.collect_findings(root, no_git=True, terms_file=terms)
     assert result.scope == "structural+identity"
-    assert result.findings == [f"[boundary] docs/a.md:1: identity term: {TERM}"]
+    found = [f.replace("\\", "/") for f in result.findings]
+    assert found == [f"[boundary] docs/a.md:1: identity term: {TERM}"]
 
 
 def test_a_bom_comment_only_overlay_claims_no_identity_scope(tmp_path):
