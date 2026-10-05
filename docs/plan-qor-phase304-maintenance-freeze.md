@@ -7,7 +7,7 @@
 **terms**: `[]` (no new canonical term; "maintenance freeze" is used as plain English in the notices and the check, and the plan gate artifact carries `terms: []`)
 
 **boundaries**:
-- limitations: the freeze is declared and checked inside the repository only; repository settings (issues, branch protection, archiving) are owner actions outside this plan (LD-6); `freeze_check` checks the clauses LD-2 names (C1.1 to C5.2) and nothing else
+- limitations: the freeze is declared and checked inside the repository only; repository settings (issues, branch protection, archiving) are owner actions outside this plan (LD-6); the `freeze_check` contract is the regression set LD-2 names (K0 to K6); behaviour on other inputs is not specified
 - non_goals: removing or deprecating any skill, script, CLI command or doctrine; changing runtime behavior of any shipped command; any dependency update (dependabot PR #529 is closed unmerged, LD-5); editing sealed plans, gate artifacts, intent-lock records, the ledger or the shadow genome
 - exclusions: naming or linking any successor project (owner decision, LD-1)
 
@@ -17,7 +17,7 @@
 
 **Branch**: local `phase/304-maintenance-freeze`, pushed to the harness-designated remote branch `claude/determined-lovelace-7lwx3r`
 
-**iteration**: 3. Iteration 1 was vetoed (V1, `coverage-gap`, META_LEDGER #841): a missing notice file and the list and string forms of `on:` were normative with no test. Iteration 2 (vetoed, `coverage-gap`, META_LEDGER #842) added those tests and a clause-to-test map, but the map grouped several property-4 conditions in one row, so heading equality, blank-only sections and the end-of-file boundary had no discriminating input. Iteration 3 restates LD-2 as atomic clauses with IDs (C1.1 to C5.2) and gives each ID a test in the Phase 1 table whose input flips under a mutation of that clause alone; it also adds the property order (C5.1) and `main`'s default root (C5.2) tests (iteration-2 advisories A1, A3), and closes the iteration-1 advisories as before: safe_load and unparseable files (C3.3), a missing `pyproject.toml` (C1.1), the doctrine sentences (LD-8), the FX028 row, the collection-error RED and the LD-7 tag wording. LD-1 and LD-3 to LD-8 are unchanged from iteration 2.
+**iteration**: 4. Iterations 1 to 3 were vetoed for `coverage-gap` (META_LEDGER #841, #842, #843); each found surviving mutants in a wider clause list (2, then 3, then 7 after 23 atomic clauses). The cycle-count escalator routed the session to `/qor-remediate`, whose proposal (`.qor/gates/2026-10-05T1757-41eb02/remediate.json`, SHADOW_GENOME #46) is applied here: LD-2 no longer specifies a general-purpose checker clause by clause. Its normative contract is a finite regression contract over this repository's own files (K0 to K6), and parsing details are declared implementation detail. LD-1 and LD-3 to LD-8 are unchanged from iteration 3; the iteration-1 advisories stay closed (safe_load and parse errors in LD-2, the doctrine sentences in LD-8, the FX028 row, the collection-error RED, the LD-7 tag wording).
 
 **Owner decision (2026-10-05)**: freeze Qor-logic so that no further development happens on it; state that it is superseded without naming or linking a successor; publish the final version to PyPI.
 
@@ -80,41 +80,19 @@ def check(repo_root: Path) -> list[str]: ...   # [] when frozen
 def main(argv: list[str] | None = None) -> int: ...
 ```
 
-`check` returns one string per violation, each starting with the repository-relative POSIX path it concerns followed by `: `. Each clause below is atomic and carries an ID; the Phase 1 map gives every ID a test whose input flips under a mutation of that clause alone.
+**Intent.** The frozen state is four properties: (1) `pyproject.toml` declares `FROZEN_CLASSIFIER` as its only `Development Status` classifier; (2) no dependabot configuration is committed; (3) no workflow under `.github/workflows` declares a `schedule` trigger; (4) `README.md` and `AGENTS.md` each carry a non-empty `FREEZE_HEADING` section. `check` returns one string per violation, each starting with the repository-relative POSIX path it concerns followed by `: `.
 
-**Property 1, classifier** (`pyproject.toml`, read with `tomllib`). A classifier is a status classifier when it starts with `Development Status :: `.
-- C1.1 `pyproject.toml` absent: one violation.
-- C1.2 the status classifiers are exactly `[FROZEN_CLASSIFIER]`: no violation (other classifiers are ignored).
-- C1.3 exactly one status classifier with another value: one violation.
-- C1.4 more than one status classifier, even if one is frozen: one violation.
-- C1.5 no status classifier (including no `[project]` table): one violation.
+**Normative contract (remediation, `.qor/gates/2026-10-05T1757-41eb02/remediate.json`).** The contract is stated over this repository's own files, not over arbitrary trees. A "copy" is a temporary directory holding copies of this repository's `pyproject.toml`, `README.md`, `AGENTS.md` and `.github/workflows/*.yml`.
 
-**Property 2, dependabot.**
-- C2.1 each `DEPENDABOT_FILES` path that exists is one violation, so both present give two; neither present gives none.
+- K0 On this repository, and on an unmodified copy, `check` returns `[]`.
+- K1 Copy with the `FROZEN_CLASSIFIER` string in `pyproject.toml` replaced by `Development Status :: 4 - Beta` (the pre-freeze value): `check` returns a non-empty list and every element names `pyproject.toml`.
+- K2 Copy with `.github/dependabot.yml` written (`version: 2` and an empty `updates` list): non-empty, every element names `.github/dependabot.yml`.
+- K3 Copy with the pre-freeze schedule restored in `.github/workflows/nightly-health.yml` (the two lines `  schedule:` and `    - cron: '0 9 * * *'` inserted directly after its `on:` line): non-empty, every element names `.github/workflows/nightly-health.yml`.
+- K4 Copy with the `FREEZE_HEADING` section removed from `README.md` (the heading line through the line before the next line starting with `## `): non-empty, every element names `README.md`.
+- K5 As K4 for `AGENTS.md`.
+- K6 `main(["--repo-root", <copy>])` returns 0 on an unmodified copy and prints exactly `freeze_check: OK`; on the K2 copy it returns 1 and prints the `check` result, one element per line, followed by `freeze_check: 1 violation(s)`.
 
-**Property 3, schedule** (each file directly in `.github/workflows/` whose name ends in `.yml` or `.yaml`).
-- C3.1 no `.github/workflows` directory: no violation.
-- C3.2 files with any other extension are not read.
-- C3.3 each file is read with `yaml.safe_load`; a file that does not parse makes `check` raise `yaml.YAMLError` (fail loudly rather than pass a file it could not read).
-- C3.4 an empty file, or one whose top level is not a mapping, declares no trigger.
-- C3.5 the triggers are the values of both the `"on"` key and the `True` key (PyYAML reads a bare `on:` key as the boolean `True`: `python -c "import yaml;print(list(yaml.safe_load(open('.github/workflows/ci.yml'))))"` prints `['name', True, 'permissions', 'concurrency', 'jobs']`); a schedule under either key is a violation.
-- C3.6 a mapping value schedules iff it has the key `schedule`.
-- C3.7 a list value schedules iff it contains `"schedule"`.
-- C3.8 a string value schedules iff it equals `"schedule"`.
-- C3.9 a scheduling file is exactly one violation; files are reported in sorted order of their path, across both extensions.
-
-**Property 4, notice** (for each name in `NOTICE_FILES`, in that order).
-- C4.1 the file is absent: one violation.
-- C4.2 no line of the file is exactly equal to `FREEZE_HEADING` (no stripping; a longer heading, a deeper heading or trailing whitespace does not match): one violation.
-- C4.3 the section is the lines after the first line equal to `FREEZE_HEADING`, up to the next line that starts with `## ` or the end of the file.
-- C4.4 a `### ` line does not end the section and is section content.
-- C4.5 the section is empty when it has no line with a non-whitespace character: one violation.
-
-**Order and `main`.**
-- C5.1 violations are listed property 1, 2, 3, 4 in that order.
-- C5.2 `main` parses `--repo-root` (default `.`), prints each violation on its own line in `check` order, then `freeze_check: OK` or `freeze_check: <n> violation(s)`, and returns 0 when frozen and 1 otherwise.
-
-Each helper stays under 40 lines and the module under 250 (Section 4 Razor).
+Everything else, including how YAML trigger keys and forms are read, how the heading and section are matched, behaviour on other trees and the order of violations from different files, is implementation detail and not part of the contract. The implementation reads workflows with `yaml.safe_load` and lets a parse error propagate. Each helper stays under 40 lines and the module under 250 (Section 4 Razor).
 
 ### LD-3: the classifier
 
@@ -184,44 +162,20 @@ Decision: line 42 reads "the surface scan"; line 102 reads "that gap when `night
 
 ### Unit Tests
 
-`tests/test_freeze_check.py` builds a frozen tree in `tmp_path` (a `pyproject.toml` whose classifiers are `FROZEN_CLASSIFIER` and `Programming Language :: Python :: 3`, a workflow `manual.yml` whose `on:` mapping holds only `workflow_dispatch`, and README.md and AGENTS.md each holding `# Title`, a blank line, `FREEZE_HEADING`, a blank line, `Frozen.`, a blank line and `## Next` with text) and invokes `freeze_check.check` or `freeze_check.main` on it or on one mutation of it. "One violation naming X" means `check` returns a list of length 1 whose element starts with `X: `.
+`tests/test_freeze_check.py` has a fixture that builds a copy as LD-2 defines it, and one test per contract item:
 
-| ID | Test | Input (mutation of the frozen tree) | Expected |
-|---|---|---|---|
-| C1.2 | `test_a_frozen_tree_has_no_violations` | none | `[]` |
-| C1.1 | `test_a_missing_pyproject_is_reported` | `pyproject.toml` deleted | one violation naming `pyproject.toml` |
-| C1.3 | `test_a_beta_classifier_is_reported` | status `4 - Beta` only | one violation naming `pyproject.toml` |
-| C1.4 | `test_two_development_status_classifiers_are_reported` | frozen and `4 - Beta` | one violation naming `pyproject.toml` |
-| C1.5 | `test_a_missing_development_status_is_reported` | parametrized: only `Programming Language :: Python :: 3`; and a `pyproject.toml` with no `[project]` table | one violation naming `pyproject.toml` |
-| C2.1 | `test_a_dependabot_config_is_reported` | parametrized over each `DEPENDABOT_FILES` path | one violation naming that path |
-| C2.1 | `test_both_dependabot_configs_are_reported_separately` | both paths | two violations, `.yml` then `.yaml` |
-| C3.1 | `test_a_tree_without_workflows_has_no_schedule_violation` | `.github/workflows` removed | `[]` |
-| C3.2 | `test_a_non_yaml_file_in_workflows_is_not_read` | `.github/workflows/notes.txt` holding a scheduled workflow text | `[]` |
-| C3.3 | `test_an_unparseable_workflow_raises` | `broken.yml` holding `on: [push` | `check` raises `yaml.YAMLError` |
-| C3.4 | `test_an_empty_or_non_mapping_workflow_declares_no_trigger` | parametrized: empty `empty.yml`; `list.yml` holding `- schedule` | `[]` |
-| C3.5, C3.6 | `test_a_scheduled_workflow_is_reported` | parametrized over `nightly.yml` and `nightly.yaml` with a bare `on:` mapping holding `schedule` and `workflow_dispatch` | one violation naming that file |
-| C3.5 | `test_a_quoted_on_key_with_schedule_is_reported` | `"on":` written quoted, mapping holding `schedule` | one violation naming that file |
-| C3.5 | `test_a_schedule_under_either_on_key_is_reported` | one file with a quoted `"on":` mapping holding only `workflow_dispatch` and a bare `on:` mapping holding `schedule` | one violation naming that file |
-| C3.6 | (frozen tree) | mapping without `schedule` | `[]` |
-| C3.7 | `test_a_list_form_schedule_trigger_is_reported` | `on: [push, schedule]` | one violation naming that file |
-| C3.7 | `test_a_list_form_without_schedule_is_not_reported` | `on: [push, workflow_dispatch]` | `[]` |
-| C3.8 | `test_a_string_form_schedule_trigger_is_reported` | `on: schedule` | one violation naming that file |
-| C3.8 | `test_a_string_form_without_schedule_is_not_reported` | `on: push` | `[]` |
-| C3.9 | `test_scheduling_workflows_are_reported_in_path_order` | `b.yml` and `a.yaml`, both scheduled | two violations, `a.yaml` then `b.yml` |
-| C4.1 | `test_a_missing_notice_file_is_reported` | parametrized over `NOTICE_FILES`: the file deleted | one violation naming that file |
-| C4.2 | `test_a_missing_freeze_heading_is_reported` | parametrized over `NOTICE_FILES`: heading line removed | one violation naming that file |
-| C4.2 | `test_a_heading_that_is_not_exactly_the_freeze_heading_is_reported` | parametrized over `## Maintenance freeze (lifted)`, `### Maintenance freeze` and `## Maintenance freeze` with a trailing space, each followed by `Work resumes.`, in README.md | one violation naming `README.md` |
-| C4.3, C4.5 | `test_an_empty_freeze_section_is_reported` | parametrized over `NOTICE_FILES`: heading directly followed by `## Next` and text | one violation naming that file |
-| C4.5 | `test_a_blank_only_freeze_section_is_reported` | heading, two empty lines and a line of spaces, then `## Next` and text, in README.md | one violation naming `README.md` |
-| C4.3, C4.5 | `test_an_empty_freeze_section_at_end_of_file_is_reported` | AGENTS.md ending in the heading followed by one blank line | one violation naming `AGENTS.md` |
-| C4.3 | `test_a_freeze_section_at_end_of_file_with_text_is_not_reported` | AGENTS.md ending in the heading and `Frozen.` | `[]` |
-| C4.4 | `test_a_subheading_counts_as_freeze_section_content` | heading followed only by `### Detail`, then `## Next` | `[]` |
-| C4.3 | `test_only_the_first_freeze_heading_counts` | README.md: an empty freeze section, then `## Other`, then a second freeze heading with text | one violation naming `README.md` |
-| C5.1 | `test_violations_are_listed_in_property_order` | Beta classifier, `.github/dependabot.yml`, scheduled `nightly.yml`, README.md deleted | four violations naming `pyproject.toml`, `.github/dependabot.yml`, `.github/workflows/nightly.yml`, `README.md` in that order |
-| C5.2 | `test_main_returns_zero_and_prints_ok_when_frozen` | none, `--repo-root <tree>` | exit 0; stdout exactly `freeze_check: OK` |
-| C5.2 | `test_main_returns_one_and_prints_each_violation` | dependabot `.yml` and scheduled `nightly.yml` | exit 1; stdout the two violations in order, then `freeze_check: 2 violation(s)` |
-| C5.2 | `test_main_defaults_to_the_current_directory` | `monkeypatch.chdir(<tree>)`, then `main([])`; then dependabot added and `main([])` again | exit 0, then exit 1 |
-| (repo) | `test_the_repository_is_frozen` | this repository | `[]` |
+| ID | Test | Expected |
+|---|---|---|
+| K0 | `test_the_repository_is_frozen` | `check(<repository root>) == []` |
+| K0 | `test_an_unmodified_copy_is_frozen` | `check(<copy>) == []` |
+| K1 | `test_restoring_the_beta_classifier_is_reported` | non-empty; every element starts with `pyproject.toml: ` |
+| K2 | `test_committing_a_dependabot_config_is_reported` | non-empty; every element starts with `.github/dependabot.yml: ` |
+| K3 | `test_restoring_the_nightly_schedule_is_reported` | non-empty; every element starts with `.github/workflows/nightly-health.yml: ` |
+| K4, K5 | `test_removing_a_freeze_section_is_reported` (parametrized over `README.md` and `AGENTS.md`) | non-empty; every element starts with `<file>: ` |
+| K6 | `test_main_prints_ok_and_returns_zero_on_a_frozen_copy` | 0; stdout lines exactly `["freeze_check: OK"]` |
+| K6 | `test_main_prints_each_violation_and_returns_one` | 1 on the K2 copy; stdout lines equal `check(<copy>)` followed by `freeze_check: 1 violation(s)` |
+
+Each regression test also asserts its mutation took effect on the copy before calling `check` (the replaced string, written file, inserted lines or removed heading is present or absent as intended), so a fixture that silently stopped mutating cannot turn a test green.
 
 `tests/test_nightly_health_wiring.py::test_workflow_is_dispatch_only_with_least_permissions` - the workflow text has no `schedule:` line and no `cron:`, keeps `workflow_dispatch:` and the existing permission assertions.
 
@@ -258,7 +212,7 @@ Apply LD-1, LD-3, LD-4, LD-7 and LD-8. After this phase `qor-logic scripts freez
 
 | entry_id | operation | test_path | test_descriptor |
 |---|---|---|---|
-| FX028 | NEW | tests/test_freeze_check.py | freeze_check.check returns no violations for a frozen tree and exactly one named violation for each of a non-Inactive classifier, a dependabot config, a scheduled workflow and a missing or empty freeze section; on this repository it returns none |
+| FX028 | NEW | tests/test_freeze_check.py | freeze_check.check returns [] on this repository and on a copy of its files, and a non-empty list naming only the regressed file for each of the restored Beta classifier, a committed dependabot config, the restored nightly schedule and a removed README or AGENTS freeze section |
 
 ## Definition of Done
 
@@ -267,7 +221,7 @@ Apply LD-1, LD-3, LD-4, LD-7 and LD-8. After this phase `qor-logic scripts freez
 - **D1**: The frozen state (Inactive classifier, no dependabot, no scheduled workflow, freeze notice in README and AGENTS) is checkable by one command.
 - **D2**: `qor/scripts/freeze_check.py` exposes `check(repo_root: Path) -> list[str]` and `main(argv) -> int` per LD-2.
 - **D3**: `FX028` row in `docs/FEATURE_INDEX.md`; ledger implementation and seal entries.
-- **D4**: every test in the Phase 1 table passes with the expected result in its row, and `tests/test_freeze_check.py::test_the_repository_is_frozen` passes on this repository.
+- **D4**: every test in the Phase 1 table passes with the expected result in its row (K0 to K6).
 
 ### Deliverable: repository frozen
 
